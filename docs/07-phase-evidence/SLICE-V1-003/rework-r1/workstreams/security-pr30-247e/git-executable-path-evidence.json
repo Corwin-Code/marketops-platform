@@ -1,0 +1,28 @@
+{
+  "kind": "SUPPORTED_GIT_EXECUTABLE_READ_ONLY_EVIDENCE",
+  "capturedAtUTC": "2026-09-05T10:57:04.586065+00:00",
+  "local": {
+    "argv": [
+      "/usr/bin/git",
+      "--version"
+    ],
+    "result": "git version 2.50.1 (Apple Git-155)",
+    "evidence": "local-usr-bin-git-version.txt",
+    "sha256": "0a72a762b37a3800276a1004e2c169aed0610d4a3ba601ba59e70e1c4d9f3200"
+  },
+  "github": {
+    "repository": "Corwin-Code/marketops-platform",
+    "pullRequest": 30,
+    "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "runId": 33960570489,
+    "jobId": 101291630738,
+    "evidence": "dependency-review-job-r2.log",
+    "sha256": "bf5434196b1039d261017a3e3c214c9e6cd7a0c9fc295c5da454124882591c6e",
+    "commandLine": 53,
+    "versionLine": 54,
+    "observedCommand": "/usr/bin/git version",
+    "observedVersion": "git version 2.55.0",
+    "observedAtUTC": "2026-09-05T10:24:32.0445799Z"
+  },
+  "boundary": "Read-only proof that /usr/bin/git exists on observed local macOS and exact GitHub Ubuntu runner. The proposed one-line test helper correction and its future verification are Root-owned; this receipt does not claim the alert is closed. Initial gh default-cache refusal is retained unchanged; XDG_CACHE_HOME=/tmp/slice3-security-default-alert-review/gh-cache enabled read-only retrieval."
+}

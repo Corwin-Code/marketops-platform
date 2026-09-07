@@ -1,0 +1,3314 @@
+{
+  "kind": "FINAL_CONTAINING_COMMIT_SECURITY_RAW_REVIEW_CANDIDATE",
+  "recordedAt": "2026-09-06T17:36:55.179444+00:00",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+  "testedMergeTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "32b307c648d16f2ecb7f0074e615e78e95ed4121"
+  ],
+  "productSourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "productInventory": {
+    "path": "/private/tmp/slice3-final-drivers-32b307c-r1/expected-source-inventory.json",
+    "sha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+    "bytes": 310649
+  },
+  "sourceComparison": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/PRODUCT-TO-FINAL-CI-SOURCE-COMPARISON.json",
+    "sha256": "d54c606ba26cdf52cd7bc0b00aa2e36b1786f801d094f6fb83d86821cc2f681d",
+    "bytes": 553699
+  },
+  "capture": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/CAPTURE-RECEIPT.json",
+    "sha256": "72c0a2f074848f4c18557d0eb3f9a9bf15dd4a3c98549ee6088d97cea9765827",
+    "bytes": 14306
+  },
+  "criteria": {
+    "officialRunSuccess": true,
+    "allThreeJobsSuccess": true,
+    "aggregateCodeQLSuccess": true,
+    "noNewSecurityHighOrCritical": true,
+    "noNewDependencyVulnerabilityRecords": true
+  },
+  "run": {
+    "id": 34048388769,
+    "run_attempt": 1,
+    "head_sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "status": "completed",
+    "conclusion": "success",
+    "run_started_at": "2026-09-06T17:22:12Z",
+    "updated_at": "2026-09-06T17:27:03Z"
+  },
+  "jobs": [
+    {
+      "id": 101527455265,
+      "name": "dependency-review",
+      "run_id": 34048388769,
+      "run_attempt": 1,
+      "head_sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T17:22:14Z",
+      "completed_at": "2026-09-06T17:22:38Z"
+    },
+    {
+      "id": 101527455460,
+      "name": "codeql-typescript",
+      "run_id": 34048388769,
+      "run_attempt": 1,
+      "head_sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T17:22:15Z",
+      "completed_at": "2026-09-06T17:23:38Z"
+    },
+    {
+      "id": 101527455461,
+      "name": "codeql-java",
+      "run_id": 34048388769,
+      "run_attempt": 1,
+      "head_sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T17:22:15Z",
+      "completed_at": "2026-09-06T17:27:02Z"
+    }
+  ],
+  "aggregate": {
+    "id": 101527635982,
+    "name": "CodeQL",
+    "node_id": "CR_kwDOTwsbvM8AAAAXo4TIDg",
+    "head_sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "external_id": "",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101527635982",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/runs/101527635982",
+    "details_url": "https://github.com/Corwin-Code/marketops-platform/runs/101527635982",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-09-06T17:23:30Z",
+    "completed_at": "2026-09-06T17:23:32Z",
+    "output": {
+      "title": "95 new alerts",
+      "summary": "### New alerts in code changed by this pull request\n\n * 12 warnings\n * 83 notes\n\n_Alerts not introduced by this pull request might have been detected because the code changes were too large._\n\nSee annotations below for details.\n\n[View all branch alerts](/Corwin-Code/marketops-platform/security/code-scanning?query=pr%3A30+tool%3ACodeQL+is%3Aopen).",
+      "text": null,
+      "annotations_count": 95,
+      "annotations_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101527635982/annotations"
+    },
+    "check_suite": {
+      "id": 92248469027
+    },
+    "app": {
+      "id": 57789,
+      "client_id": "Iv1.4643383dd86f00de",
+      "slug": "github-advanced-security",
+      "node_id": "MDM6QXBwNTc3ODk=",
+      "owner": {
+        "login": "github",
+        "id": 9919,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/github",
+        "html_url": "https://github.com/github",
+        "followers_url": "https://api.github.com/users/github/followers",
+        "following_url": "https://api.github.com/users/github/following{/other_user}",
+        "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+        "organizations_url": "https://api.github.com/users/github/orgs",
+        "repos_url": "https://api.github.com/users/github/repos",
+        "events_url": "https://api.github.com/users/github/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/github/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "name": "GitHub Advanced Security",
+      "description": "",
+      "external_url": "https://github.com/features/security",
+      "html_url": "https://github.com/apps/github-advanced-security",
+      "created_at": "2020-03-17T21:25:09Z",
+      "updated_at": "2026-05-04T22:40:45Z",
+      "permissions": {
+        "actions": "read",
+        "checks": "write",
+        "contents": "read",
+        "metadata": "read",
+        "pull_requests": "read"
+      },
+      "events": []
+    },
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/pulls/30",
+        "id": 4450091491,
+        "number": 30,
+        "head": {
+          "ref": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+          "sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+          "repo": {
+            "id": 1326128060,
+            "url": "https://api.github.com/repos/Corwin-Code/marketops-platform",
+            "name": "marketops-platform"
+          }
+        },
+        "base": {
+          "ref": "main",
+          "sha": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+          "repo": {
+            "id": 1326128060,
+            "url": "https://api.github.com/repos/Corwin-Code/marketops-platform",
+            "name": "marketops-platform"
+          }
+        }
+      }
+    ]
+  },
+  "actualAggregateAnnotationCount": 95,
+  "actualCheckoutProof": [
+    {
+      "member": {
+        "member": "codeql-java/2_Checkout repository.txt",
+        "sha256": "3a3a70b45b60576a708faa4c8f72468bfaa7c39cda680a07991cb2102e64a28c",
+        "bytes": 15878,
+        "crc32": "f23e5357"
+      },
+      "actualLines": [
+        {
+          "line": 68,
+          "text": "2026-09-06T17:22:17.9590971Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e:refs/remotes/pull/30/merge"
+        },
+        {
+          "line": 70,
+          "text": "2026-09-06T17:22:40.5252950Z  * [new ref]         f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e -> pull/30/merge"
+        },
+        {
+          "line": 156,
+          "text": "2026-09-06T17:22:43.7338999Z HEAD is now at f9fe2f5 Merge 32b307c648d16f2ecb7f0074e615e78e95ed4121 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 159,
+          "text": "2026-09-06T17:22:43.7581604Z f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+        }
+      ]
+    },
+    {
+      "member": {
+        "member": "codeql-typescript/2_Checkout repository.txt",
+        "sha256": "c2607966e043f63da804653f736ffdccc4431e01ba84d476df319506a9f216fb",
+        "bytes": 15754,
+        "crc32": "80bb65c4"
+      },
+      "actualLines": [
+        {
+          "line": 68,
+          "text": "2026-09-06T17:22:16.7957815Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e:refs/remotes/pull/30/merge"
+        },
+        {
+          "line": 70,
+          "text": "2026-09-06T17:22:33.0962330Z  * [new ref]         f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e -> pull/30/merge"
+        },
+        {
+          "line": 154,
+          "text": "2026-09-06T17:22:36.3674537Z HEAD is now at f9fe2f5 Merge 32b307c648d16f2ecb7f0074e615e78e95ed4121 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 157,
+          "text": "2026-09-06T17:22:36.3896900Z f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+        }
+      ]
+    },
+    {
+      "member": {
+        "member": "dependency-review/2_Checkout repository.txt",
+        "sha256": "036a598edc246a61ea1383967eb87dde158702d14928dca025082eb036dd2d7a",
+        "bytes": 15816,
+        "crc32": "50b497e4"
+      },
+      "actualLines": [
+        {
+          "line": 68,
+          "text": "2026-09-06T17:22:16.1345192Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e:refs/remotes/pull/30/merge"
+        },
+        {
+          "line": 70,
+          "text": "2026-09-06T17:22:32.7805000Z  * [new ref]         f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e -> pull/30/merge"
+        },
+        {
+          "line": 155,
+          "text": "2026-09-06T17:22:35.8353595Z HEAD is now at f9fe2f5 Merge 32b307c648d16f2ecb7f0074e615e78e95ed4121 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 158,
+          "text": "2026-09-06T17:22:35.8564316Z f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+        }
+      ]
+    }
+  ],
+  "actualJavaBuildProof": [
+    {
+      "member": {
+        "member": "codeql-java/5_Build the backend for analysis.txt",
+        "sha256": "811fda2811d8615eca914bcaf122198856041b76e50a929d1360e043b55b8164",
+        "bytes": 30350,
+        "crc32": "1efa6f12"
+      },
+      "actualBuildSuccessLines": [
+        167
+      ]
+    }
+  ],
+  "actualSarifUploadProof": [
+    {
+      "member": {
+        "member": "0_codeql-java.txt",
+        "sha256": "500be4266d95798fbbee32e8d4ec7bd4bc78c140b5ec1fed98594da02c4db5d2",
+        "bytes": 394544,
+        "crc32": "26ed2b87"
+      },
+      "actualUploadLines": [
+        2882
+      ]
+    },
+    {
+      "member": {
+        "member": "1_codeql-typescript.txt",
+        "sha256": "d7905775f34cfbcb82e00446692aae1a9523a44b00419fccafe9883903c0ebee",
+        "bytes": 403617,
+        "crc32": "32eeae42"
+      },
+      "actualUploadLines": [
+        2872
+      ]
+    },
+    {
+      "member": {
+        "member": "codeql-java/6_Analyse.txt",
+        "sha256": "e841f3225dd7c65a7733f162e1a1f2b87df77c4846bcd355f5c980e404ea1927",
+        "bytes": 272554,
+        "crc32": "66ccf698"
+      },
+      "actualUploadLines": [
+        1572
+      ]
+    },
+    {
+      "member": {
+        "member": "codeql-typescript/4_Analyse.txt",
+        "sha256": "714263af33324c0c2d6cf7b8092a31c3f536b74ea008c6b458fa94f3f3856484",
+        "bytes": 316443,
+        "crc32": "a0799b5b"
+      },
+      "actualUploadLines": [
+        1786
+      ]
+    }
+  ],
+  "sarifCounts": [
+    {
+      "file": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      },
+      "actualResults": 99,
+      "analysisId": 1732338800,
+      "sarifId": "259adc6c-aa18-11f1-80cc-d8f79968b436",
+      "analysisKey": ".github/workflows/security.yml:codeql-java"
+    },
+    {
+      "file": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/typescript.sarif.json",
+        "sha256": "5dedd61d0eaf5e6aa85e36e669e10b6641ee8aecc7c45b492b94b0d56510eb0a",
+        "bytes": 938202
+      },
+      "actualResults": 1,
+      "analysisId": 1732331984,
+      "sarifId": "adcf3f98-aa17-11f1-9b95-cfe32cba5904",
+      "analysisKey": ".github/workflows/security.yml:codeql-typescript"
+    }
+  ],
+  "sarifAlertLocationMatches": [
+    {
+      "number": 66,
+      "ruleId": "java/spring-disabled-csrf-protection",
+      "state": "dismissed",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/IdentitySecurityConfig.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 31,
+        "end_column": 45
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 74,
+      "ruleId": "java/xss",
+      "state": "dismissed",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+        "start_line": 167,
+        "end_line": 167,
+        "start_column": 62,
+        "end_column": 107
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 75,
+      "ruleId": "java/user-controlled-bypass",
+      "state": "dismissed",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+        "start_line": 72,
+        "end_line": 72,
+        "start_column": 9,
+        "end_column": 69
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 76,
+      "ruleId": "java/user-controlled-bypass",
+      "state": "dismissed",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+        "start_line": 80,
+        "end_line": 80,
+        "start_column": 9,
+        "end_column": 68
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 217,
+      "ruleId": "java/local-variable-is-never-read",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+        "start_line": 128,
+        "end_line": 128,
+        "start_column": 13,
+        "end_column": 172
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 130,
+      "ruleId": "java/local-variable-is-never-read",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+        "start_line": 79,
+        "end_line": 79,
+        "start_column": 9,
+        "end_column": 45
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 131,
+      "ruleId": "java/local-variable-is-never-read",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGraphFixture.java",
+        "start_line": 216,
+        "end_line": 216,
+        "start_column": 9,
+        "end_column": 32
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 218,
+      "ruleId": "java/local-variable-is-never-read",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "start_line": 292,
+        "end_line": 292,
+        "start_column": 9,
+        "end_column": 25
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 132,
+      "ruleId": "java/uncaught-number-format-exception",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "start_line": 55,
+        "end_line": 55,
+        "start_column": 132,
+        "end_column": 152
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 219,
+      "ruleId": "java/uncaught-number-format-exception",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePurposeFreshnessIT.java",
+        "start_line": 182,
+        "end_line": 182,
+        "start_column": 115,
+        "end_column": 137
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 133,
+      "ruleId": "java/internal-representation-exposure",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteResult.java",
+        "start_line": 95,
+        "end_line": 95,
+        "start_column": 12,
+        "end_column": 28
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 134,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 67,
+        "end_line": 67,
+        "start_column": 66,
+        "end_column": 99
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 135,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 55,
+        "end_line": 55,
+        "start_column": 15,
+        "end_column": 54
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 136,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 56,
+        "end_line": 56,
+        "start_column": 51,
+        "end_column": 87
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 137,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 58,
+        "end_column": 94
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 138,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 61,
+        "end_line": 61,
+        "start_column": 57,
+        "end_column": 91
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 139,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 61,
+        "end_line": 61,
+        "start_column": 99,
+        "end_column": 132
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 140,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 42,
+        "end_column": 103
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 141,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 49,
+        "end_line": 49,
+        "start_column": 52,
+        "end_column": 90
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 146,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 104,
+        "end_line": 104,
+        "start_column": 20,
+        "end_column": 73
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 142,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 108,
+        "end_line": 108,
+        "start_column": 20,
+        "end_column": 77
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 148,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 152,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 63,
+        "end_line": 64,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 153,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 20,
+        "end_column": 104
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 143,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 162,
+        "end_line": 162,
+        "start_column": 20,
+        "end_column": 74
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 144,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 168,
+        "end_line": 168,
+        "start_column": 20,
+        "end_column": 74
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 145,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 171,
+        "end_line": 171,
+        "start_column": 20,
+        "end_column": 85
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 149,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 24,
+        "end_column": 74
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 155,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 104,
+        "end_line": 104,
+        "start_column": 20,
+        "end_column": 104
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 150,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 86,
+        "end_line": 86,
+        "start_column": 24,
+        "end_column": 83
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 151,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 95,
+        "end_line": 95,
+        "start_column": 24,
+        "end_column": 92
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 154,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 117,
+        "end_line": 118,
+        "start_column": 20,
+        "end_column": 58
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 147,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 250,
+        "end_line": 250,
+        "start_column": 145,
+        "end_column": 155
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 156,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 219,
+        "end_line": 219,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 157,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 229,
+        "end_line": 229,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 158,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 244,
+        "end_line": 244,
+        "start_column": 20,
+        "end_column": 56
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 159,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 167,
+        "end_line": 167,
+        "start_column": 20,
+        "end_column": 62
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 162,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 211,
+        "end_line": 211,
+        "start_column": 20,
+        "end_column": 61
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 164,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 287,
+        "end_line": 287,
+        "start_column": 20,
+        "end_column": 84
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 165,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 288,
+        "end_line": 288,
+        "start_column": 20,
+        "end_column": 88
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 166,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 291,
+        "end_line": 291,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 168,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 293,
+        "end_line": 293,
+        "start_column": 20,
+        "end_column": 62
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 172,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 352,
+        "end_line": 352,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 173,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 354,
+        "end_line": 354,
+        "start_column": 60,
+        "end_column": 99
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 174,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 405,
+        "end_line": 405,
+        "start_column": 20,
+        "end_column": 46
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 175,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 406,
+        "end_line": 406,
+        "start_column": 20,
+        "end_column": 63
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 176,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 410,
+        "end_line": 410,
+        "start_column": 20,
+        "end_column": 57
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 177,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 428,
+        "end_line": 428,
+        "start_column": 31,
+        "end_column": 47
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 178,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 428,
+        "end_line": 428,
+        "start_column": 51,
+        "end_column": 64
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 179,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 429,
+        "end_line": 429,
+        "start_column": 84,
+        "end_column": 97
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 160,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 31,
+        "end_line": 31,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 161,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 137,
+        "end_line": 137,
+        "start_column": 20,
+        "end_column": 83
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 163,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 142,
+        "end_line": 142,
+        "start_column": 20,
+        "end_column": 94
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 167,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 182,
+        "end_line": 182,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 169,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 72,
+        "end_line": 72,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 170,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 77,
+        "end_line": 77,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 171,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 180,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 811,
+        "end_line": 811,
+        "start_column": 33,
+        "end_column": 78
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 181,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 253,
+        "end_line": 253,
+        "start_column": 20,
+        "end_column": 73
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 182,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 257,
+        "end_line": 257,
+        "start_column": 20,
+        "end_column": 81
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 183,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 258,
+        "end_line": 258,
+        "start_column": 20,
+        "end_column": 58
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 184,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "start_line": 18,
+        "end_line": 18,
+        "start_column": 20,
+        "end_column": 51
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 185,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "start_line": 20,
+        "end_line": 20,
+        "start_column": 20,
+        "end_column": 52
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 220,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEconomicCauseBoundIT.java",
+        "start_line": 117,
+        "end_line": 117,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 222,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "start_line": 142,
+        "end_line": 142,
+        "start_column": 20,
+        "end_column": 98
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 223,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedPreparationIT.java",
+        "start_line": 81,
+        "end_line": 81,
+        "start_column": 32,
+        "end_column": 59
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 224,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedPreparationIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 20,
+        "end_column": 97
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 225,
+      "ruleId": "java/deprecated-call",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+        "start_line": 122,
+        "end_line": 122,
+        "start_column": 20,
+        "end_column": 72
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 186,
+      "ruleId": "java/missing-case-in-switch",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+        "start_line": 165,
+        "end_line": 165,
+        "start_column": 9,
+        "end_column": 34
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 187,
+      "ruleId": "java/misleading-indentation",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+        "start_line": 65,
+        "end_line": 65,
+        "start_column": 31,
+        "end_column": 84
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 188,
+      "ruleId": "java/misleading-indentation",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "start_line": 126,
+        "end_line": 126,
+        "start_column": 43,
+        "end_column": 67
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 189,
+      "ruleId": "java/misleading-indentation",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 925,
+        "end_line": 925,
+        "start_column": 101,
+        "end_column": 138
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 190,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 82,
+        "end_column": 90
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 191,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 31,
+        "end_column": 36
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 192,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "start_line": 140,
+        "end_line": 140,
+        "start_column": 36,
+        "end_column": 44
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 193,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "start_line": 141,
+        "end_line": 141,
+        "start_column": 36,
+        "end_column": 44
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 194,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "start_line": 147,
+        "end_line": 147,
+        "start_column": 63,
+        "end_column": 70
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 195,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "start_line": 148,
+        "end_line": 148,
+        "start_column": 39,
+        "end_column": 47
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 226,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "start_line": 345,
+        "end_line": 345,
+        "start_column": 32,
+        "end_column": 39
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 227,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "start_line": 361,
+        "end_line": 361,
+        "start_column": 71,
+        "end_column": 78
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 197,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 330,
+        "end_line": 330,
+        "start_column": 13,
+        "end_column": 36
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 198,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "start_line": 338,
+        "end_line": 338,
+        "start_column": 36,
+        "end_column": 55
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 199,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "start_line": 338,
+        "end_line": 338,
+        "start_column": 57,
+        "end_column": 90
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 200,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 23,
+        "end_column": 34
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 201,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 250,
+        "end_line": 250,
+        "start_column": 39,
+        "end_column": 57
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 202,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 250,
+        "end_line": 250,
+        "start_column": 77,
+        "end_column": 103
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 203,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 250,
+        "end_line": 250,
+        "start_column": 104,
+        "end_column": 124
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 204,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 31,
+        "end_line": 31,
+        "start_column": 33,
+        "end_column": 57
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 205,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 27,
+        "end_line": 27,
+        "start_column": 32,
+        "end_column": 56
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 206,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 23,
+        "end_line": 23,
+        "start_column": 30,
+        "end_column": 54
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 207,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 39,
+        "end_line": 39,
+        "start_column": 34,
+        "end_column": 58
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 208,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 33,
+        "end_line": 33,
+        "start_column": 36,
+        "end_column": 60
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 209,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 28,
+        "end_line": 28,
+        "start_column": 31,
+        "end_column": 55
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 210,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 23,
+        "end_line": 23,
+        "start_column": 27,
+        "end_column": 51
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 211,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 663,
+        "end_line": 663,
+        "start_column": 13,
+        "end_column": 33
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 213,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+        "start_line": 139,
+        "end_line": 139,
+        "start_column": 63,
+        "end_column": 98
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 214,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "start_line": 254,
+        "end_line": 254,
+        "start_column": 32,
+        "end_column": 67
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 215,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 32,
+        "end_column": 52
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 228,
+      "ruleId": "java/unused-parameter",
+      "state": "open",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 883,
+        "end_line": 883,
+        "start_column": 27,
+        "end_column": 48
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/java.sarif.json",
+        "sha256": "6e2ff86e9f7259c5f718ce5141d973e67d59d4734a8ce66611bb09422cb3643e",
+        "bytes": 1534264
+      }
+    },
+    {
+      "number": 73,
+      "ruleId": "js/empty-password-in-configuration-file",
+      "state": "dismissed",
+      "exactLocation": {
+        "path": "backend/marketops-server/src/main/resources/application-production.yaml",
+        "start_line": 21,
+        "end_line": 21,
+        "start_column": 15,
+        "end_column": 17
+      },
+      "sarif": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/typescript.sarif.json",
+        "sha256": "5dedd61d0eaf5e6aa85e36e669e10b6641ee8aecc7c45b492b94b0d56510eb0a",
+        "bytes": 938202
+      }
+    }
+  ],
+  "actualOpenCount": 95,
+  "actualOpenLevelCounts": {
+    "note": 83,
+    "warning": 12
+  },
+  "openDelta": {
+    "added": [
+      226,
+      227,
+      228
+    ],
+    "removed": [
+      196,
+      216
+    ],
+    "newHighOrCritical": [],
+    "expressionChecks": [
+      {
+        "number": 228,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "currentWholeSourceSha256": "ef021ecdb5b98f035896aa38895df79ea7b9700f8c1ecb83a1bab98c5fe78355",
+        "currentExpressionSha256": "23a0abdd794eea2fbb1819c1c3e603ac252d5791372d4f0103f53b63bf4b8567",
+        "priorWholeSourceSha256": null,
+        "priorExpressionSha256": null,
+        "samePriorExpression": false,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 227,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "currentWholeSourceSha256": "bbac9246346d0ff8280beac507f37b900af1ff2a9f265d340e0a855acda8388d",
+        "currentExpressionSha256": "424fb0794608103b88e8671a3d8b723c393be64bc1c4a48389e438952a58af0e",
+        "priorWholeSourceSha256": null,
+        "priorExpressionSha256": null,
+        "samePriorExpression": false,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 226,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "currentWholeSourceSha256": "bbac9246346d0ff8280beac507f37b900af1ff2a9f265d340e0a855acda8388d",
+        "currentExpressionSha256": "424fb0794608103b88e8671a3d8b723c393be64bc1c4a48389e438952a58af0e",
+        "priorWholeSourceSha256": null,
+        "priorExpressionSha256": null,
+        "samePriorExpression": false,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 225,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+        "currentWholeSourceSha256": "bb5479116940e0859bfdb785fe68eb2631ffe47bb465207bf7c2806ef90c02f2",
+        "currentExpressionSha256": "dd65e2fa5181db960343e6a3223fce2015a54c8872a8952a5a8990274970f459",
+        "priorWholeSourceSha256": "bb5479116940e0859bfdb785fe68eb2631ffe47bb465207bf7c2806ef90c02f2",
+        "priorExpressionSha256": "dd65e2fa5181db960343e6a3223fce2015a54c8872a8952a5a8990274970f459",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 224,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedPreparationIT.java",
+        "currentWholeSourceSha256": "493f1b3168b8c5c8d373cdaaa217e5bfca92c41033e741a6ca76308d3a8d8720",
+        "currentExpressionSha256": "d3ff6ad50965b3992eb8e22878c03a4115b8402e6451eda0b3838e9c5832e80f",
+        "priorWholeSourceSha256": "493f1b3168b8c5c8d373cdaaa217e5bfca92c41033e741a6ca76308d3a8d8720",
+        "priorExpressionSha256": "d3ff6ad50965b3992eb8e22878c03a4115b8402e6451eda0b3838e9c5832e80f",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 223,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedPreparationIT.java",
+        "currentWholeSourceSha256": "493f1b3168b8c5c8d373cdaaa217e5bfca92c41033e741a6ca76308d3a8d8720",
+        "currentExpressionSha256": "3d503ebd1624527253874d55579a4b448951a42f28ab9672b86cd7d4ac1396df",
+        "priorWholeSourceSha256": "493f1b3168b8c5c8d373cdaaa217e5bfca92c41033e741a6ca76308d3a8d8720",
+        "priorExpressionSha256": "3d503ebd1624527253874d55579a4b448951a42f28ab9672b86cd7d4ac1396df",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 222,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "currentWholeSourceSha256": "e2dc342603a84ac84181aeb0bd1c08b7f3c9f92387be1d472817ed4ba346b87c",
+        "currentExpressionSha256": "23082ec09c70881c9b52b340e50d6f2a78648c8e9708d4a38a32b039348fabcc",
+        "priorWholeSourceSha256": "e2dc342603a84ac84181aeb0bd1c08b7f3c9f92387be1d472817ed4ba346b87c",
+        "priorExpressionSha256": "23082ec09c70881c9b52b340e50d6f2a78648c8e9708d4a38a32b039348fabcc",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 220,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEconomicCauseBoundIT.java",
+        "currentWholeSourceSha256": "d440b6045d656c56e392b3fca843fd2ec1d2a1d8dd228e6545b0aaa1eac6cad0",
+        "currentExpressionSha256": "ae73617b453573580394374df45f461c6e83ada85cea70869b3a9ab4db386ab8",
+        "priorWholeSourceSha256": "d440b6045d656c56e392b3fca843fd2ec1d2a1d8dd228e6545b0aaa1eac6cad0",
+        "priorExpressionSha256": "ae73617b453573580394374df45f461c6e83ada85cea70869b3a9ab4db386ab8",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 219,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePurposeFreshnessIT.java",
+        "currentWholeSourceSha256": "fd44ca9ffd05ea0397d929d73d67fb521cbcd8aaad1cc6ab27da3b1a585c45b3",
+        "currentExpressionSha256": "807b481288fd174f2552d1469b78dc4dbae35fb03f5cb09f9cb619f40075317a",
+        "priorWholeSourceSha256": "fd44ca9ffd05ea0397d929d73d67fb521cbcd8aaad1cc6ab27da3b1a585c45b3",
+        "priorExpressionSha256": "807b481288fd174f2552d1469b78dc4dbae35fb03f5cb09f9cb619f40075317a",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 218,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "currentWholeSourceSha256": "e2dc342603a84ac84181aeb0bd1c08b7f3c9f92387be1d472817ed4ba346b87c",
+        "currentExpressionSha256": "f150b47943c60e91cc8a61627f0e00f601c487d0ef5404d3c46c14af3620e850",
+        "priorWholeSourceSha256": "e2dc342603a84ac84181aeb0bd1c08b7f3c9f92387be1d472817ed4ba346b87c",
+        "priorExpressionSha256": "f150b47943c60e91cc8a61627f0e00f601c487d0ef5404d3c46c14af3620e850",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 217,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+        "currentWholeSourceSha256": "00dbb10c4213693cd6466e3e9b1aab1e99d6fd8219934c4b9ba882f548bf5345",
+        "currentExpressionSha256": "fe8bf0e1aa6a85a6bfcfa634e71e6ed598494c299969a8bd6e109e4b95ad51e5",
+        "priorWholeSourceSha256": "00dbb10c4213693cd6466e3e9b1aab1e99d6fd8219934c4b9ba882f548bf5345",
+        "priorExpressionSha256": "fe8bf0e1aa6a85a6bfcfa634e71e6ed598494c299969a8bd6e109e4b95ad51e5",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 215,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "currentWholeSourceSha256": "a757657f3ec9b7e9088b138f160202cb32a04a5007ad7904a97d74f5f0d37f53",
+        "currentExpressionSha256": "c462ca76abcd0a81a34b9ac66b29517e2b954494b3105b0b8a80ede9d81e6796",
+        "priorWholeSourceSha256": "a757657f3ec9b7e9088b138f160202cb32a04a5007ad7904a97d74f5f0d37f53",
+        "priorExpressionSha256": "c462ca76abcd0a81a34b9ac66b29517e2b954494b3105b0b8a80ede9d81e6796",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 214,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "currentWholeSourceSha256": "a757657f3ec9b7e9088b138f160202cb32a04a5007ad7904a97d74f5f0d37f53",
+        "currentExpressionSha256": "4609ed78927c1459354392d66f5fe96a65d4fcb5d4c7b890dfd85e97eb644892",
+        "priorWholeSourceSha256": "a757657f3ec9b7e9088b138f160202cb32a04a5007ad7904a97d74f5f0d37f53",
+        "priorExpressionSha256": "4609ed78927c1459354392d66f5fe96a65d4fcb5d4c7b890dfd85e97eb644892",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 213,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+        "currentWholeSourceSha256": "620d5ef8e53fd5173e6f1d2761a0812e665e4bcce5028889917b673bec4c796e",
+        "currentExpressionSha256": "4609ed78927c1459354392d66f5fe96a65d4fcb5d4c7b890dfd85e97eb644892",
+        "priorWholeSourceSha256": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955",
+        "priorExpressionSha256": "4609ed78927c1459354392d66f5fe96a65d4fcb5d4c7b890dfd85e97eb644892",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 211,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "currentWholeSourceSha256": "b6de3de409e58e64b949c043a10132f688b0bb4327b13c4b2939c1c6d1fcb660",
+        "currentExpressionSha256": "2695a0a3cc56f838823c0210a40ce8ef0971140ffcff3514841b80558f41df19",
+        "priorWholeSourceSha256": "b6de3de409e58e64b949c043a10132f688b0bb4327b13c4b2939c1c6d1fcb660",
+        "priorExpressionSha256": "2695a0a3cc56f838823c0210a40ce8ef0971140ffcff3514841b80558f41df19",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 210,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "currentWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 209,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "currentWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 208,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "currentWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 207,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "currentWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 206,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "currentWholeSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 205,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "currentWholeSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 204,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "currentWholeSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+        "currentExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "priorWholeSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+        "priorExpressionSha256": "c94a963454ba20b81f2c4ac76da2aa648f98b61167d7c638ec627409fb1ccb87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 203,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "currentWholeSourceSha256": "8e751ec8b694ffc81b908d21232c62d8b9810579f59b1509b1c65313aa16e79e",
+        "currentExpressionSha256": "240c420daa09eb02cdc0beeb40bb592149fde376ec884279e4b5e8bc96cd94da",
+        "priorWholeSourceSha256": "a31e6696eeb9f73dd0d60cf62590e07c1f0635cb3f62488b4ec399ca27ea4699",
+        "priorExpressionSha256": "240c420daa09eb02cdc0beeb40bb592149fde376ec884279e4b5e8bc96cd94da",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 202,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "currentWholeSourceSha256": "8e751ec8b694ffc81b908d21232c62d8b9810579f59b1509b1c65313aa16e79e",
+        "currentExpressionSha256": "2d98c39205ac6d2778a496f11842cdfc327a04a8035e902341c59a5c2885bb2d",
+        "priorWholeSourceSha256": "a31e6696eeb9f73dd0d60cf62590e07c1f0635cb3f62488b4ec399ca27ea4699",
+        "priorExpressionSha256": "2d98c39205ac6d2778a496f11842cdfc327a04a8035e902341c59a5c2885bb2d",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 201,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "currentWholeSourceSha256": "8e751ec8b694ffc81b908d21232c62d8b9810579f59b1509b1c65313aa16e79e",
+        "currentExpressionSha256": "2f29bd7c3d1e8c9747799a5715f2db08d602625b3fba0d512a0952961555c5b2",
+        "priorWholeSourceSha256": "a31e6696eeb9f73dd0d60cf62590e07c1f0635cb3f62488b4ec399ca27ea4699",
+        "priorExpressionSha256": "2f29bd7c3d1e8c9747799a5715f2db08d602625b3fba0d512a0952961555c5b2",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 200,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "currentWholeSourceSha256": "a7348a4f06ba43437573184ad06325b1190fd620a6edd8ae28b294ce08fb739f",
+        "currentExpressionSha256": "9ecd0304f3fe5b11cb6ab4614b62787675b89bd27f7b151a6b7bee7cfb60ca62",
+        "priorWholeSourceSha256": "ad4e82fb0915f0d2bc3657d615de244e621c95f6e245fd8f5bfc5a8e642bd0b1",
+        "priorExpressionSha256": "9ecd0304f3fe5b11cb6ab4614b62787675b89bd27f7b151a6b7bee7cfb60ca62",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 199,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "currentWholeSourceSha256": "a2e0c7f1ae8c6e73d5380255bbf9d1c63a7c556d18c5637d8ae4cff17af498f7",
+        "currentExpressionSha256": "3c11d8ef5092ab3715bccccdd41e5a333742973e40bc6be048cf0f7a7d868a9f",
+        "priorWholeSourceSha256": "a2e0c7f1ae8c6e73d5380255bbf9d1c63a7c556d18c5637d8ae4cff17af498f7",
+        "priorExpressionSha256": "3c11d8ef5092ab3715bccccdd41e5a333742973e40bc6be048cf0f7a7d868a9f",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 198,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "currentWholeSourceSha256": "a2e0c7f1ae8c6e73d5380255bbf9d1c63a7c556d18c5637d8ae4cff17af498f7",
+        "currentExpressionSha256": "12c2ea7162eb469d2a4e03fa0c899e1d59233241ad3e65549d459aceda2eadbd",
+        "priorWholeSourceSha256": "a2e0c7f1ae8c6e73d5380255bbf9d1c63a7c556d18c5637d8ae4cff17af498f7",
+        "priorExpressionSha256": "12c2ea7162eb469d2a4e03fa0c899e1d59233241ad3e65549d459aceda2eadbd",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 197,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "currentWholeSourceSha256": "b6de3de409e58e64b949c043a10132f688b0bb4327b13c4b2939c1c6d1fcb660",
+        "currentExpressionSha256": "fb4d16085cf46989c3bae782d1e4484c259cfa85ac58f18ba035fba37b9973d2",
+        "priorWholeSourceSha256": "b6de3de409e58e64b949c043a10132f688b0bb4327b13c4b2939c1c6d1fcb660",
+        "priorExpressionSha256": "fb4d16085cf46989c3bae782d1e4484c259cfa85ac58f18ba035fba37b9973d2",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 195,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "currentWholeSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+        "currentExpressionSha256": "5152790e278eb89039f8bfaa354b944ec1b44c5d3fc144edc5720c3edc045c73",
+        "priorWholeSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+        "priorExpressionSha256": "5152790e278eb89039f8bfaa354b944ec1b44c5d3fc144edc5720c3edc045c73",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 194,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "currentWholeSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+        "currentExpressionSha256": "1900eab6c028483d7126599ee6f50de0d27907b5c65fa90524580b4b0f9852b0",
+        "priorWholeSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+        "priorExpressionSha256": "1900eab6c028483d7126599ee6f50de0d27907b5c65fa90524580b4b0f9852b0",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 193,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "currentWholeSourceSha256": "0d6732bcd602110fcbeb1e65d132a891e1fd7c78b8b67734cd7f08c10b9cd2ba",
+        "currentExpressionSha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c",
+        "priorWholeSourceSha256": "0d6732bcd602110fcbeb1e65d132a891e1fd7c78b8b67734cd7f08c10b9cd2ba",
+        "priorExpressionSha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 192,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "currentWholeSourceSha256": "0d6732bcd602110fcbeb1e65d132a891e1fd7c78b8b67734cd7f08c10b9cd2ba",
+        "currentExpressionSha256": "8ba8496a2525ae171ffd104d632dede6ef418d9b95962a9d88e2fcdbc8d48d24",
+        "priorWholeSourceSha256": "0d6732bcd602110fcbeb1e65d132a891e1fd7c78b8b67734cd7f08c10b9cd2ba",
+        "priorExpressionSha256": "8ba8496a2525ae171ffd104d632dede6ef418d9b95962a9d88e2fcdbc8d48d24",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 191,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "currentWholeSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+        "currentExpressionSha256": "f64a33ff88c38111769d86b2679168f7cdabcaa7c9c20cbb51aa0a3a506a8717",
+        "priorWholeSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+        "priorExpressionSha256": "f64a33ff88c38111769d86b2679168f7cdabcaa7c9c20cbb51aa0a3a506a8717",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 190,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "currentWholeSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+        "currentExpressionSha256": "466e5b9cd57fa444cceaa8e5b053ddd58d05cbbcf162a54d6ccd08492ef36dfd",
+        "priorWholeSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+        "priorExpressionSha256": "466e5b9cd57fa444cceaa8e5b053ddd58d05cbbcf162a54d6ccd08492ef36dfd",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 189,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "currentWholeSourceSha256": "ef021ecdb5b98f035896aa38895df79ea7b9700f8c1ecb83a1bab98c5fe78355",
+        "currentExpressionSha256": "83cf3b14c27885d59438a08578baeb77ac2472f78440914bd7c098f192ee6a78",
+        "priorWholeSourceSha256": "2b78089f9aeb46729a82302c95ee6ca947040ab3fca1f8ff056395664a4be96b",
+        "priorExpressionSha256": "83cf3b14c27885d59438a08578baeb77ac2472f78440914bd7c098f192ee6a78",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 188,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "currentWholeSourceSha256": "32442b56d9c91ceef6f78cfc8f174880e83e4adc912ec4b26544749c9be9484e",
+        "currentExpressionSha256": "e1b60d5f7ce0c72888ba8ffd43c1e98502d50c986aaf95f0fdda88ff54336b12",
+        "priorWholeSourceSha256": "32442b56d9c91ceef6f78cfc8f174880e83e4adc912ec4b26544749c9be9484e",
+        "priorExpressionSha256": "e1b60d5f7ce0c72888ba8ffd43c1e98502d50c986aaf95f0fdda88ff54336b12",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 187,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+        "currentWholeSourceSha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+        "currentExpressionSha256": "337747066971967b00d266095b023c0cdd1afae81200681a0066a97153298965",
+        "priorWholeSourceSha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+        "priorExpressionSha256": "337747066971967b00d266095b023c0cdd1afae81200681a0066a97153298965",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 186,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+        "currentWholeSourceSha256": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0",
+        "currentExpressionSha256": "914668078c9a76df1b05563076ee1f3de430f16e2607b8d4a1d7c3fa39cce976",
+        "priorWholeSourceSha256": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0",
+        "priorExpressionSha256": "914668078c9a76df1b05563076ee1f3de430f16e2607b8d4a1d7c3fa39cce976",
+        "samePriorExpression": true,
+        "level": "warning",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 185,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "currentWholeSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+        "currentExpressionSha256": "71b8ac02fba8fc5b91fa44a325f47c49fe646b6659536f752fcf9acd67f310f4",
+        "priorWholeSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+        "priorExpressionSha256": "71b8ac02fba8fc5b91fa44a325f47c49fe646b6659536f752fcf9acd67f310f4",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 184,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "currentWholeSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+        "currentExpressionSha256": "4117ace549ffd708a8f56e65068d3a65fd3e79841bd3c302b5892ce057857613",
+        "priorWholeSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+        "priorExpressionSha256": "4117ace549ffd708a8f56e65068d3a65fd3e79841bd3c302b5892ce057857613",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 183,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "currentWholeSourceSha256": "b7192bea7637e1cc1b73e88261bdfe8647922cbcc28ca8c4ae6cad30af4c9df2",
+        "currentExpressionSha256": "7c83961d995311a398bc7e8db28b641a5b67e8439619b504a242a18ee4e2a843",
+        "priorWholeSourceSha256": "feb88382cdcdedd67ea0ccf1677bae55167ad113668e2560455c6763b3a8bc29",
+        "priorExpressionSha256": "7c83961d995311a398bc7e8db28b641a5b67e8439619b504a242a18ee4e2a843",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 182,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "currentWholeSourceSha256": "b7192bea7637e1cc1b73e88261bdfe8647922cbcc28ca8c4ae6cad30af4c9df2",
+        "currentExpressionSha256": "2a49f8eda4de9f32b917fb6c9b1dd69ca0203ee603d4ea9ad3d9e7f5a83325a9",
+        "priorWholeSourceSha256": "feb88382cdcdedd67ea0ccf1677bae55167ad113668e2560455c6763b3a8bc29",
+        "priorExpressionSha256": "2a49f8eda4de9f32b917fb6c9b1dd69ca0203ee603d4ea9ad3d9e7f5a83325a9",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 181,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "currentWholeSourceSha256": "b7192bea7637e1cc1b73e88261bdfe8647922cbcc28ca8c4ae6cad30af4c9df2",
+        "currentExpressionSha256": "95a67706e9de72bf6f75ff2143bf5e43f2bd167b26c53063aaada992bd04a2f4",
+        "priorWholeSourceSha256": "feb88382cdcdedd67ea0ccf1677bae55167ad113668e2560455c6763b3a8bc29",
+        "priorExpressionSha256": "95a67706e9de72bf6f75ff2143bf5e43f2bd167b26c53063aaada992bd04a2f4",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 180,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "currentWholeSourceSha256": "ef021ecdb5b98f035896aa38895df79ea7b9700f8c1ecb83a1bab98c5fe78355",
+        "currentExpressionSha256": "8cca7d84f530efe20f58afcb9f04a498987307ef26d562f1e4a1a28d1ce16de8",
+        "priorWholeSourceSha256": "2b78089f9aeb46729a82302c95ee6ca947040ab3fca1f8ff056395664a4be96b",
+        "priorExpressionSha256": "8cca7d84f530efe20f58afcb9f04a498987307ef26d562f1e4a1a28d1ce16de8",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 179,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "5f72bf5b2a58a8f29268d3ac8b95109e6abd30695e1dad76c1a9c340db72df98",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "5f72bf5b2a58a8f29268d3ac8b95109e6abd30695e1dad76c1a9c340db72df98",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 178,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "5f72bf5b2a58a8f29268d3ac8b95109e6abd30695e1dad76c1a9c340db72df98",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "5f72bf5b2a58a8f29268d3ac8b95109e6abd30695e1dad76c1a9c340db72df98",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 177,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "d13dbc9eed28acc8d2151a2a48f74b7f99dbe988b3b8e9d764189b258f96d15c",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "d13dbc9eed28acc8d2151a2a48f74b7f99dbe988b3b8e9d764189b258f96d15c",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 176,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "e71772dbf0483e05bd626dc4fad27a5517f82cd082b54d70969971447de154eb",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "e71772dbf0483e05bd626dc4fad27a5517f82cd082b54d70969971447de154eb",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 175,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "a9b71d52e2b52ec323af5e10d156c41fa8d633b5dae7b26fbbcdbde93194becd",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "a9b71d52e2b52ec323af5e10d156c41fa8d633b5dae7b26fbbcdbde93194becd",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 174,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "d59d9903669b34b3fb97064c8570db4af8c0be81994fa6bf21516ef50a4a5a87",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "d59d9903669b34b3fb97064c8570db4af8c0be81994fa6bf21516ef50a4a5a87",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 173,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "33dba9b2c1f01120498ee313b623e4d4b1679fa6230f23a1f3435e034745607a",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "33dba9b2c1f01120498ee313b623e4d4b1679fa6230f23a1f3435e034745607a",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 172,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "4eb67e96581c4b742d87b42c799b5b5778f1b37609be7be5778716bc11f31f62",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "4eb67e96581c4b742d87b42c799b5b5778f1b37609be7be5778716bc11f31f62",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 171,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "currentWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "currentExpressionSha256": "626f1342fc5f8dd8cc0ed4d6c8987955db1ddd6bced48e8838df235ea44afaf2",
+        "priorWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "priorExpressionSha256": "626f1342fc5f8dd8cc0ed4d6c8987955db1ddd6bced48e8838df235ea44afaf2",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 170,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "currentWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "currentExpressionSha256": "13bfdc143f1bf47aa478905e5e22f9785715429f075d029ac37a10673abb78c3",
+        "priorWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "priorExpressionSha256": "13bfdc143f1bf47aa478905e5e22f9785715429f075d029ac37a10673abb78c3",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 169,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "currentWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "currentExpressionSha256": "626f1342fc5f8dd8cc0ed4d6c8987955db1ddd6bced48e8838df235ea44afaf2",
+        "priorWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "priorExpressionSha256": "626f1342fc5f8dd8cc0ed4d6c8987955db1ddd6bced48e8838df235ea44afaf2",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 168,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "3306e05fca3242e9ae004c7e82c06a8a6b21ad8aa27ad429b7e37f5929d3aed2",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "3306e05fca3242e9ae004c7e82c06a8a6b21ad8aa27ad429b7e37f5929d3aed2",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 167,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "currentWholeSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+        "currentExpressionSha256": "ae73617b453573580394374df45f461c6e83ada85cea70869b3a9ab4db386ab8",
+        "priorWholeSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+        "priorExpressionSha256": "ae73617b453573580394374df45f461c6e83ada85cea70869b3a9ab4db386ab8",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 166,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "b702f9343c7a3923a9c58b9ba3c0259738c7c0d03c65aa62744e93523680fc2b",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "b702f9343c7a3923a9c58b9ba3c0259738c7c0d03c65aa62744e93523680fc2b",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 165,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "4fcd183d7224f68a0c2d68f0ab82aa736391c1408ce6578a5618308d78ecc0f5",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "4fcd183d7224f68a0c2d68f0ab82aa736391c1408ce6578a5618308d78ecc0f5",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 164,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "47d8906ca9aa23bcd76d4016fad30bdeca33e25317a5ac475e48484f257fbaa7",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "47d8906ca9aa23bcd76d4016fad30bdeca33e25317a5ac475e48484f257fbaa7",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 163,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "currentWholeSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+        "currentExpressionSha256": "50a64796115c983b11c3ddcef834e23859f5542e374b19b32e4cdaa89eb0c0fa",
+        "priorWholeSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+        "priorExpressionSha256": "50a64796115c983b11c3ddcef834e23859f5542e374b19b32e4cdaa89eb0c0fa",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 162,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "aea283ebe7bbe2243a68361a34987f28d0cac80a6fa82322724a6a2e4cac3024",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "aea283ebe7bbe2243a68361a34987f28d0cac80a6fa82322724a6a2e4cac3024",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 161,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "currentWholeSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+        "currentExpressionSha256": "68541771a1d4784889fe4ebe981a2c7cfe3be84c44c95d4862ee9b4343db99b4",
+        "priorWholeSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+        "priorExpressionSha256": "68541771a1d4784889fe4ebe981a2c7cfe3be84c44c95d4862ee9b4343db99b4",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 160,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "currentWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "currentExpressionSha256": "13bfdc143f1bf47aa478905e5e22f9785715429f075d029ac37a10673abb78c3",
+        "priorWholeSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+        "priorExpressionSha256": "13bfdc143f1bf47aa478905e5e22f9785715429f075d029ac37a10673abb78c3",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 159,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "f34e68844980bb55fa342d265fee57cb3792c63022d0e2e7307a9a80d3c63054",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "f34e68844980bb55fa342d265fee57cb3792c63022d0e2e7307a9a80d3c63054",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 158,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "6a6fac7b85b5f976bc4e309c05ff1a3d0353c43bcea0ebf0b96dd8bf16aa61d2",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "6a6fac7b85b5f976bc4e309c05ff1a3d0353c43bcea0ebf0b96dd8bf16aa61d2",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 157,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "e19bf7783b13651ae4f1a1fd5c3416058a6f35f7b53e6640a135f88596bc53ab",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "e19bf7783b13651ae4f1a1fd5c3416058a6f35f7b53e6640a135f88596bc53ab",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 156,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "e19bf7783b13651ae4f1a1fd5c3416058a6f35f7b53e6640a135f88596bc53ab",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "e19bf7783b13651ae4f1a1fd5c3416058a6f35f7b53e6640a135f88596bc53ab",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 155,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "209dc8801014907d8da4acd011508d5b29c3fafa095b61a63595c7219f29373f",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "209dc8801014907d8da4acd011508d5b29c3fafa095b61a63595c7219f29373f",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 154,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "2b38e3d3c5d15aee3c8988ef349f5956ee76c435081f3e15ef741cdffe061d92",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "2b38e3d3c5d15aee3c8988ef349f5956ee76c435081f3e15ef741cdffe061d92",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 153,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "209dc8801014907d8da4acd011508d5b29c3fafa095b61a63595c7219f29373f",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "209dc8801014907d8da4acd011508d5b29c3fafa095b61a63595c7219f29373f",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 152,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "a38cf8942075c2064cc29c7b0e9377c72b6f062a2d8ce508751d094f568cd53f",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "a38cf8942075c2064cc29c7b0e9377c72b6f062a2d8ce508751d094f568cd53f",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 151,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "68b6c91cc852896927c45682c1f7b0b2a0265a7ac34d576ec719c09d92773466",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "68b6c91cc852896927c45682c1f7b0b2a0265a7ac34d576ec719c09d92773466",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 150,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "1e7bfd8b23ffdd70a2d24e6e07cb25c1c7f42cd028aebfb5e269509b81c9d155",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "1e7bfd8b23ffdd70a2d24e6e07cb25c1c7f42cd028aebfb5e269509b81c9d155",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 149,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "currentWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "currentExpressionSha256": "621208ad659feb434db77df7e41a6b027bf9201293679b28c71f0ad2befc33eb",
+        "priorWholeSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+        "priorExpressionSha256": "621208ad659feb434db77df7e41a6b027bf9201293679b28c71f0ad2befc33eb",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 148,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "currentWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "currentExpressionSha256": "e19bf7783b13651ae4f1a1fd5c3416058a6f35f7b53e6640a135f88596bc53ab",
+        "priorWholeSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+        "priorExpressionSha256": "e19bf7783b13651ae4f1a1fd5c3416058a6f35f7b53e6640a135f88596bc53ab",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 147,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "currentWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "currentExpressionSha256": "7d1068fbea1e39b8ed5f90212e3ace415ca531c282cd4b9ce7c122c0b4e50ad3",
+        "priorWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "priorExpressionSha256": "7d1068fbea1e39b8ed5f90212e3ace415ca531c282cd4b9ce7c122c0b4e50ad3",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 146,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "currentWholeSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+        "currentExpressionSha256": "8e223247600da751b40b81a18f2dd86bee6d745d51ba5927a50cfd4671c82c16",
+        "priorWholeSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+        "priorExpressionSha256": "8e223247600da751b40b81a18f2dd86bee6d745d51ba5927a50cfd4671c82c16",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 145,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "currentWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "currentExpressionSha256": "b05fd3aa2eb693ebecbf3883dd7694cccb34f5a2fb2b3e9b14d0b1e7f24fd9ba",
+        "priorWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "priorExpressionSha256": "b05fd3aa2eb693ebecbf3883dd7694cccb34f5a2fb2b3e9b14d0b1e7f24fd9ba",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 144,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "currentWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "currentExpressionSha256": "e468f11bf3cd86b760c8f5f558912fe1eb236d7ae981a3b0394678c5385edcb9",
+        "priorWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "priorExpressionSha256": "e468f11bf3cd86b760c8f5f558912fe1eb236d7ae981a3b0394678c5385edcb9",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 143,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "currentWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "currentExpressionSha256": "e468f11bf3cd86b760c8f5f558912fe1eb236d7ae981a3b0394678c5385edcb9",
+        "priorWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "priorExpressionSha256": "e468f11bf3cd86b760c8f5f558912fe1eb236d7ae981a3b0394678c5385edcb9",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 142,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "currentWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "currentExpressionSha256": "d0518257aef9194aa5db47e81d4b15fbd0f3fa4681da93116333178145c3c47b",
+        "priorWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "priorExpressionSha256": "d0518257aef9194aa5db47e81d4b15fbd0f3fa4681da93116333178145c3c47b",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 141,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "currentWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "currentExpressionSha256": "9ce570d24464d9c6b674bc50b6062d4f31034b5819991d411e16b5d9f901c18b",
+        "priorWholeSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+        "priorExpressionSha256": "9ce570d24464d9c6b674bc50b6062d4f31034b5819991d411e16b5d9f901c18b",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 140,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "currentWholeSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+        "currentExpressionSha256": "bd33f0c9450b7ff68c0256217504f22213fc3e3a17e1d5058c5accb9a370b446",
+        "priorWholeSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+        "priorExpressionSha256": "bd33f0c9450b7ff68c0256217504f22213fc3e3a17e1d5058c5accb9a370b446",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 139,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "currentWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "currentExpressionSha256": "efa629f646a9e95c962ba75328f95939806ab23a6a5f7579f67ba50dccf7f4e9",
+        "priorWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "priorExpressionSha256": "efa629f646a9e95c962ba75328f95939806ab23a6a5f7579f67ba50dccf7f4e9",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 138,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "currentWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "currentExpressionSha256": "d005d75fcdf31876352fb68f3dddb3196a5d398962d10b86d156ece0ad36216b",
+        "priorWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "priorExpressionSha256": "d005d75fcdf31876352fb68f3dddb3196a5d398962d10b86d156ece0ad36216b",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 137,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "currentWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "currentExpressionSha256": "e3d0d3d62235d33d01262f4f1565f2be47a53c18c76563c53188d324f4d1eb12",
+        "priorWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "priorExpressionSha256": "e3d0d3d62235d33d01262f4f1565f2be47a53c18c76563c53188d324f4d1eb12",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 136,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "currentWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "currentExpressionSha256": "ae51ab157b8435485c4e99d0da881f435c157caedf0137a1637dd49535452d9e",
+        "priorWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "priorExpressionSha256": "ae51ab157b8435485c4e99d0da881f435c157caedf0137a1637dd49535452d9e",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 135,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "currentWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "currentExpressionSha256": "cad3f3a101cb6ccbcd72a421af8d19b630094fb4d47de9dd5d46e77fd026a44a",
+        "priorWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "priorExpressionSha256": "cad3f3a101cb6ccbcd72a421af8d19b630094fb4d47de9dd5d46e77fd026a44a",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 134,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "currentWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "currentExpressionSha256": "efa629f646a9e95c962ba75328f95939806ab23a6a5f7579f67ba50dccf7f4e9",
+        "priorWholeSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+        "priorExpressionSha256": "efa629f646a9e95c962ba75328f95939806ab23a6a5f7579f67ba50dccf7f4e9",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 133,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteResult.java",
+        "currentWholeSourceSha256": "996a2e230ee0ef67006d9fa93203eaab1234f256d5afac82ab97bc922dbde88a",
+        "currentExpressionSha256": "1a25ca38bf5a1a6cece9e77d16e28bb4d3d1cf85faf518a5bd8460be6f7bc397",
+        "priorWholeSourceSha256": "996a2e230ee0ef67006d9fa93203eaab1234f256d5afac82ab97bc922dbde88a",
+        "priorExpressionSha256": "1a25ca38bf5a1a6cece9e77d16e28bb4d3d1cf85faf518a5bd8460be6f7bc397",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 132,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "currentWholeSourceSha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+        "currentExpressionSha256": "bd25104f023556261141870d0194a73661bb7432e16f0df25d099062404653ac",
+        "priorWholeSourceSha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+        "priorExpressionSha256": "bd25104f023556261141870d0194a73661bb7432e16f0df25d099062404653ac",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 131,
+        "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGraphFixture.java",
+        "currentWholeSourceSha256": "d3fc18c2c5239c4888dc41e425dc53ff6406c10b4ad9f7502c7353ebe128feb2",
+        "currentExpressionSha256": "fdc722d2bf7e3193dc10adaeb08d7e601b5547ee6dda36c1314ae3006be551b9",
+        "priorWholeSourceSha256": "d3fc18c2c5239c4888dc41e425dc53ff6406c10b4ad9f7502c7353ebe128feb2",
+        "priorExpressionSha256": "fdc722d2bf7e3193dc10adaeb08d7e601b5547ee6dda36c1314ae3006be551b9",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      },
+      {
+        "number": 130,
+        "sourcePath": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+        "currentWholeSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+        "currentExpressionSha256": "cae53ed37f3a1d9786a4b1bbb8e711d997f397b35e47c82fe8a81fd3171ef392",
+        "priorWholeSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+        "priorExpressionSha256": "cae53ed37f3a1d9786a4b1bbb8e711d997f397b35e47c82fe8a81fd3171ef392",
+        "samePriorExpression": true,
+        "level": "note",
+        "securitySeverity": null,
+        "scope": "A same expression and source permit prior triage context to be reviewed, not automatic dismissal."
+      }
+    ]
+  },
+  "historicalDismissedFindings": [
+    {
+      "number": 76,
+      "securitySeverity": "high",
+      "state": "dismissed",
+      "dismissedAt": "2026-08-28T03:02:48Z",
+      "dismissedReason": "false positive",
+      "dismissedCommentSha256": "f138f8166bac890a10591549bf58e6985da7b1203e3ab29edd7d0461a8aa5019",
+      "sourceSha256": "993140f00c2cf3ec61f9798d420c1375d462cb0b072ea15f566d9a5fd82232cf",
+      "priorKnown": true,
+      "sameHistoricalSource": true,
+      "raw": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dismissed-alerts-pages.json",
+        "sha256": "52b45ccae8c5170960538688efb04c02f4d74d33d1438a198156786e0196c887",
+        "bytes": 23234
+      }
+    },
+    {
+      "number": 75,
+      "securitySeverity": "high",
+      "state": "dismissed",
+      "dismissedAt": "2026-08-28T03:02:16Z",
+      "dismissedReason": "false positive",
+      "dismissedCommentSha256": "60c28a9ffabdab3d92304dcd146148e3c7127b63cfe628b12dfb10e956a3ea03",
+      "sourceSha256": "993140f00c2cf3ec61f9798d420c1375d462cb0b072ea15f566d9a5fd82232cf",
+      "priorKnown": true,
+      "sameHistoricalSource": true,
+      "raw": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dismissed-alerts-pages.json",
+        "sha256": "52b45ccae8c5170960538688efb04c02f4d74d33d1438a198156786e0196c887",
+        "bytes": 23234
+      }
+    },
+    {
+      "number": 74,
+      "securitySeverity": "high",
+      "state": "dismissed",
+      "dismissedAt": "2026-08-28T03:00:47Z",
+      "dismissedReason": "false positive",
+      "dismissedCommentSha256": "c522440e7aac6f0470e9e7dc34d2950191faff862ac886e177e67b6d167aec68",
+      "sourceSha256": "d1479f7dd667434ee7ed7b8a6a929f9d978bb42feb7af7776e54c9beb1de09f9",
+      "priorKnown": true,
+      "sameHistoricalSource": true,
+      "raw": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dismissed-alerts-pages.json",
+        "sha256": "52b45ccae8c5170960538688efb04c02f4d74d33d1438a198156786e0196c887",
+        "bytes": 23234
+      }
+    },
+    {
+      "number": 73,
+      "securitySeverity": "high",
+      "state": "dismissed",
+      "dismissedAt": "2026-08-28T03:00:13Z",
+      "dismissedReason": "false positive",
+      "dismissedCommentSha256": "ed27b3ed6131c24d23e3e7c30e87da029bcc2e889422b5acea96b5ea9d7ef056",
+      "sourceSha256": "31e1072fd67dce7f10681dd7f4e0b442b1443d74f7f0d0e0ea0a4905a9c137ff",
+      "priorKnown": true,
+      "sameHistoricalSource": true,
+      "raw": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dismissed-alerts-pages.json",
+        "sha256": "52b45ccae8c5170960538688efb04c02f4d74d33d1438a198156786e0196c887",
+        "bytes": 23234
+      }
+    },
+    {
+      "number": 66,
+      "securitySeverity": "high",
+      "state": "dismissed",
+      "dismissedAt": "2026-08-28T02:58:13Z",
+      "dismissedReason": "false positive",
+      "dismissedCommentSha256": "ec98ef7246259d54e45e07828b67658b0ef582db678c736e97b7d1129ced209b",
+      "sourceSha256": "1d2d48e2bfd93fb27213a25c57305732fc446ad4b0c0adc34158f525757c65f2",
+      "priorKnown": true,
+      "sameHistoricalSource": true,
+      "raw": {
+        "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dismissed-alerts-pages.json",
+        "sha256": "52b45ccae8c5170960538688efb04c02f4d74d33d1438a198156786e0196c887",
+        "bytes": 23234
+      }
+    }
+  ],
+  "defaultMainDependencyAlerts": {
+    "actualCount": 4,
+    "severityCounts": {
+      "high": 4
+    },
+    "raw": {
+      "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/default-main-dependabot-pages.json",
+      "sha256": "1799077e3fbe6ee3967a92c3ca2581cb6a2ee59655d0f14abc9a9c1fb3c5bdf0",
+      "bytes": 15958
+    },
+    "scope": "Default branch only; not the PR source audit."
+  },
+  "actualPrDependencyDelta": {
+    "addedVulnerabilityRecords": 0,
+    "raw": {
+      "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dependency-diff.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    }
+  },
+  "baselineSecurity": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-schema-adapter-r1/SCHEMA-ADAPTER-RECEIPT.json",
+    "sha256": "1db1ad54fb7a0bf7d64d7acf4d8076084ff946acd016324802be277af95b7c60",
+    "bytes": 20088
+  },
+  "publicationReview": "PENDING_EXACT_RAW_PATTERN_SCAN_AND_PER_HIT_TRIAGE",
+  "scopeReview": "REQUIRES_ROOT_REVIEW_OF_ANY_DELTA_OR_CHANGED_CONTEXT",
+  "automaticGatePassClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "alertsModifiedOrDismissed": false,
+  "productionWriteEnabled": false,
+  "limits": [
+    "Final CI actual source/run is distinct from original02e local runs and evidence-onlyD executions.",
+    "No0quality or0rawHIGH claim. Historical dismissed HIGH/default-main HIGH remain separate.",
+    "Missing/failed contexts, changed source, unmatched SARIF locations or unreviewed changed expressions cannot be silently promoted.",
+    "Publication raw-scan remains separately mandatory; official rule help is triaged by exact bytes."
+  ]
+}

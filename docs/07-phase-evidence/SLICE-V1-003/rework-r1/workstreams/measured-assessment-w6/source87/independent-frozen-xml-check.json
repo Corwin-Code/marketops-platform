@@ -1,0 +1,39 @@
+{
+  "kind": "INDEPENDENT_FROZEN_XML_BINDING_CHECK",
+  "generatedAtUTC": "2026-09-05T12:04:11.327454+00:00",
+  "completedRunReceipt": "/private/tmp/slice3-r1-full-clean-w6-3ed3f4c/run-receipt.json",
+  "completedRunReceiptSha256": "d3e9012844be1a7d1810533e7d5b0ff3e1fe71afff3b0b55446abc9adcc2cdc3",
+  "fullObservedXmlNodes": 2472,
+  "fullDeclaredTests": 2471,
+  "fullDeclarationMismatchPreserved": [
+    {
+      "phase": "surefire",
+      "name": "com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest",
+      "rawXml": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+      "sha256": "5f2347776783232c2221b91153f45296a11b95f4768ad4d8dcd715bbc6c0f7fe",
+      "suiteDeclaredCounts": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actualTestcaseNodeCounts": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "countsMatch": false
+    }
+  ],
+  "uniqueSourceAndMethodBindings": 173,
+  "supplementalFrozenXmlBindingsNotInCentralIndex": [
+    "descriptiveListingFieldsDoNotInventNewMaterialityThresholds"
+  ],
+  "uniqueReferencedXmlReports": 31,
+  "uniqueReferencedCaseNodes": 191,
+  "allReferencedObservedCaseNodesPassed": true,
+  "allReferencedJavaSourceBytesMatchCompletedSourceManifest": true,
+  "readScope": "Only /tmp frozen full-run artifacts and exact W6 Git blobs; no live target XML read, no repository writes.",
+  "controllerVerdict": null
+}

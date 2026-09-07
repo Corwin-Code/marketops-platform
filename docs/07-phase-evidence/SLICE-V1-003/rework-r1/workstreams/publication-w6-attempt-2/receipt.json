@@ -1,0 +1,17 @@
+{
+  "kind": "APPEND_ONLY_SAME_DRAFT_PR_PUBLICATION",
+  "utc": "2026-09-05T11:10:35.068223+00:00",
+  "priorHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "head": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "pr": 30,
+  "url": "https://github.com/Corwin-Code/marketops-platform/pull/30",
+  "draft": true,
+  "merged": false,
+  "autoMerge": null,
+  "productionWriteEnabled": false,
+  "pushExitCode": 0,
+  "remoteReadbackExact": true,
+  "priorTransportFailure": "Attempt 1 SSL_ERROR_SYSCALL; independent PR API readback confirmed prior Head before this ordinary retry."
+}

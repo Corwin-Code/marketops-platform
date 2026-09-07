@@ -1,0 +1,18 @@
+{
+  "generatedAtUTC": "2026-09-05T10:57:04.586065+00:00",
+  "scope": "Every raw archive member, before compression; no credentials used or alerts dismissed. Regex scan is a publishability check, not a claim that security analysis is complete.",
+  "fileCount": 169,
+  "uncompressedBytes": 7880942,
+  "rules": [
+    "github_pat",
+    "github_token",
+    "jwt",
+    "aws_access_key",
+    "private_key",
+    "authorization_bearer",
+    "url_userinfo"
+  ],
+  "findings": [],
+  "rawArchiveSha256": "0193fd6e05e5adc82134606b59c85f674af2e20db559ec7b71bea724b2a71aa8",
+  "memberManifestSha256": "36a3f56802d7ca2efce22ca4d27d64fec9921bcaad9e4c634c721a89cb38a2fb"
+}

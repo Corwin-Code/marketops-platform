@@ -1,0 +1,559 @@
+{
+  "quality": {
+    "path": "/tmp/slice3-ui-slo-repair-quality-r4/receipt.json",
+    "sha256": "3eeed92f87c4e9672d7e6e3fc86049f411b741117bd372cff2457bd2dbbc8e47"
+  },
+  "qualityResult": "PASS327_PRECOMMIT_MEASURED_BYTES_EQUAL_W9",
+  "sourceManifest": {
+    "path": "/tmp/slice3-ui-slo-repair-quality-r4/source-before.json",
+    "sha256": "a89459fa82178407c96e5af482215c66fb7a9fd2403473a9f9783df1fddf483a"
+  },
+  "sourceIdentityBoundary": "Original quality run retained W8 base Git metadata and dirty 5-file source fingerprint; exact W9 Git bytes match. It is not restamped as a clean W9 quality invocation.",
+  "currentW9Sources": [
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "024023ffd37da2860b5eecbd211d1e928978e1539f79639cf1108e006289d609"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "c13556029e5d4bacb7ebccd18c0a4de396e771c90b2a2fb978c4478b755a6c08"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "c414ff4b23cad028b0dcdb01d0465c9e4b38f3dac752d9d44612dc49eb27f57c"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+      "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "efd840099b850831db7d01462e9c9121bbd3f356a882572df8280cfd10c98b86"
+    },
+    {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "d7775956248a3cd59e3c8b35a649a8f0ecfed43d5df7bb00ab857d11e79d80e0"
+    }
+  ],
+  "newSloUnitActualCases": [
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 7,
+      "title": "keeps missing-profile false flags unresolved without hiding the Task or borrowing legacy dates",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability keeps missing-profile false flags unresolved without hiding the Task or borrowing legacy dates",
+      "status": "passed",
+      "durationMs": 28.24929199999997,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 8,
+      "title": "preserves the Task when the live SLO is missing instead of inventing a running clock",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability preserves the Task when the live SLO is missing instead of inventing a running clock",
+      "status": "passed",
+      "durationMs": 16.896458000000166,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 9,
+      "title": "preserves the Task when the live SLO is array instead of inventing a running clock",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability preserves the Task when the live SLO is array instead of inventing a running clock",
+      "status": "passed",
+      "durationMs": 20.573207999999795,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 10,
+      "title": "preserves the Task when the live SLO is unrecognized coverage instead of inventing a running clock",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability preserves the Task when the live SLO is unrecognized coverage instead of inventing a running clock",
+      "status": "passed",
+      "durationMs": 14.178082999999788,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 11,
+      "title": "shows an active staffed clock only for an established pending server response",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability shows an active staffed clock only for an established pending server response",
+      "status": "passed",
+      "durationMs": 18.48199999999997,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 12,
+      "title": "does not use the ACK deadline to resolve a missing or invalid Action deadline null",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not use the ACK deadline to resolve a missing or invalid Action deadline null",
+      "status": "passed",
+      "durationMs": 12.06491700000015,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 13,
+      "title": "does not use the ACK deadline to resolve a missing or invalid Action deadline ",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not use the ACK deadline to resolve a missing or invalid Action deadline ",
+      "status": "passed",
+      "durationMs": 13.218333000000257,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 14,
+      "title": "does not use the ACK deadline to resolve a missing or invalid Action deadline not-an-instant",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not use the ACK deadline to resolve a missing or invalid Action deadline not-an-instant",
+      "status": "passed",
+      "durationMs": 34.58416599999964,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 15,
+      "title": "does not turn unknown breach into an active clock",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not turn unknown breach into an active clock",
+      "status": "passed",
+      "durationMs": 17.349500000000262,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 16,
+      "title": "does not turn unknown pause into an active clock",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not turn unknown pause into an active clock",
+      "status": "passed",
+      "durationMs": 7.9538330000000315,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 17,
+      "title": "does not turn invalid completion evidence into an active clock",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not turn invalid completion evidence into an active clock",
+      "status": "passed",
+      "durationMs": 13.811208999999963,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 18,
+      "title": "keeps OUT_OF_COVERAGE exposure visible while waiting for staffing instead of claiming active coverage",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability keeps OUT_OF_COVERAGE exposure visible while waiting for staffing instead of claiming active coverage",
+      "status": "passed",
+      "durationMs": 19.554458000000068,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 19,
+      "title": "keeps OUT_OF_COVERAGE_ACTIVE_HARM exposure visible while waiting for staffing instead of claiming active coverage",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability keeps OUT_OF_COVERAGE_ACTIVE_HARM exposure visible while waiting for staffing instead of claiming active coverage",
+      "status": "passed",
+      "durationMs": 17.22262499999988,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 20,
+      "title": "preserves reported breaches and a current pause even when deadline authority is unresolved",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability preserves reported breaches and a current pause even when deadline authority is unresolved",
+      "status": "passed",
+      "durationMs": 15.107000000000426,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 21,
+      "title": "preserves historical late completion and a reported pause without restarting the completed stage",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability preserves historical late completion and a reported pause without restarting the completed stage",
+      "status": "passed",
+      "durationMs": 25.029749999999694,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 22,
+      "title": "does not turn an acknowledgement into an attributable Action-stage completion",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not turn an acknowledgement into an attributable Action-stage completion",
+      "status": "passed",
+      "durationMs": 17.065292000000227,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 23,
+      "title": "keeps a supplied completion fact separate from unknown timeliness and a missing age",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability keeps a supplied completion fact separate from unknown timeliness and a missing age",
+      "status": "passed",
+      "durationMs": 18.72045799999978,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 24,
+      "title": "does not conflate negative exposure age -1 with an established zero",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not conflate negative exposure age -1 with an established zero",
+      "status": "passed",
+      "durationMs": 15.3425000000002,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    },
+    {
+      "file": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "ordinal": 25,
+      "title": "does not conflate negative exposure age 0 with an established zero",
+      "fullName": "advertising response evidence stays distinct from staffed-clock evaluability does not conflate negative exposure age 0 with an established zero",
+      "status": "passed",
+      "durationMs": 6.975750000000062,
+      "result": {
+        "path": "/tmp/slice3-ui-slo-repair-quality-r4/vitest-results.json",
+        "sha256": "ca67517028f5fdff173bdf5dae64bc8ce60948dc0ef3fd5b2ddb8b8d6125ce7b"
+      }
+    }
+  ],
+  "browserReceipt": {
+    "path": "/tmp/slice3-w9-browser-evidence/w9-r1/receipt.json",
+    "sha256": "35f41246a0d54cd08b3cb971d7eac7769548697b29c7594a2384e275850be282"
+  },
+  "browserNamedResults": {
+    "path": "/tmp/slice3-w9-browser-evidence/w9-r1/named-browser-results.json",
+    "sha256": "4cf6d60a4bd91c0d8d562eb2b8069193628516c247c6b7f473bb0c875f9c9e77"
+  },
+  "browserActualTests": [
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 97,
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-9443041678ce26b8dcca",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:06.834Z",
+          "durationMs": 8100,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 175,
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-61a0f95ad10ec5c7332c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:15.314Z",
+          "durationMs": 14,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 185,
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-87fb1433deeb78155e88",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:15.334Z",
+          "durationMs": 6427,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 185,
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-ebb96133c16052ef10f5",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:21.767Z",
+          "durationMs": 5914,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 278,
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-66cbfdce33bdb82fbdbe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:27.688Z",
+          "durationMs": 2233,
+          "reportedRepairSteps": [
+            {
+              "title": "DATA_REPAIR: missing staffed authority remains unresolved despite false breach flags",
+              "durationMs": 50,
+              "errorPresent": false
+            },
+            {
+              "title": "OPTIMIZATION: missing staffed authority remains unresolved despite false breach flags",
+              "durationMs": 47,
+              "errorPresent": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 361,
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-72c7d2eb2022f0f46ac5",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:29.927Z",
+          "durationMs": 4891,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 420,
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-af288b87bf5c722c6ffe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:34.823Z",
+          "durationMs": 4938,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-18f9a9535ca3b987c8e7",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:39.769Z",
+          "durationMs": 1660,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-8053fc9ea853c749b00c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:41.436Z",
+          "durationMs": 776,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-5ccbf40f996f61d6054c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:42.218Z",
+          "durationMs": 934,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-6492854d67c8bd0dd8c1",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:43.156Z",
+          "durationMs": 858,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 543,
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-5649881f60c39e36dbad",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:44.019Z",
+          "durationMs": 9106,
+          "reportedRepairSteps": [
+            {
+              "title": "keyboard ACK renders its own completion without completing Action",
+              "durationMs": 11,
+              "errorPresent": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "browserNewActualSteps": [
+    {
+      "title": "DATA_REPAIR: missing staffed authority remains unresolved despite false breach flags",
+      "durationMs": 50,
+      "errorPresent": false,
+      "parentTest": "all four real HTTP lane projections preserve unknown values and expose no invented action"
+    },
+    {
+      "title": "OPTIMIZATION: missing staffed authority remains unresolved despite false breach flags",
+      "durationMs": 47,
+      "errorPresent": false,
+      "parentTest": "all four real HTTP lane projections preserve unknown values and expose no invented action"
+    },
+    {
+      "title": "keyboard ACK renders its own completion without completing Action",
+      "durationMs": 11,
+      "errorPresent": false,
+      "parentTest": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets"
+    }
+  ],
+  "browserSourceHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "browserSourceTree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+  "browserDurationSeconds": 99.447,
+  "browserResult": "12_EXPECTED_0_UNEXPECTED_0_SKIPPED",
+  "visualReview": {
+    "path": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/report.json",
+    "sha256": "ae6f62857efeec4713a21c9fc993cd9724d42dfa40e8ff9420d8f7e99fbdec30"
+  },
+  "visualReviewerScope": "UI reviewer re-inspected3 affected W9 originals out of26 produced; this clause derivation reads their hash-bound report and does not claim to have inspected26 W9 pixels.",
+  "publicManifest": {
+    "path": "/tmp/slice3-w9-browser-evidence/w9-r1/public-manifest.json",
+    "sha256": "9933e109ca45ed01071980016ea863acc59c91426a1242850fbd762029d6ff72"
+  },
+  "privateArtifactsOpenedOrRepublished": false,
+  "historicalFailures": "W8 false on-time/active screenshots; qualityR1 generic ReturnType lint80 failure; R2 async selection fixture failures and later precise test await repair remain their own original runs."
+}

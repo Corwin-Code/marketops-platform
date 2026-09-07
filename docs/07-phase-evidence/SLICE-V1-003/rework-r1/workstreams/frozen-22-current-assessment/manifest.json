@@ -1,0 +1,47 @@
+{
+  "kind": "22_115_ENGINEERING_DERIVATION_MANIFEST",
+  "files": [
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/named-proof-catalog-current.json",
+      "sha256": "8230e856e0cd46d49c8eb61d0ebc7293865dd363c736381f18aa4e1ccdd37927"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/w9-actual-frontend-browser-evidence.json",
+      "sha256": "a59b77ca4e42644ed5fb43235140cf84f5e7a39a948d8d0b28ac333a7bd6eb4d"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/capacity-exact-bounded-proof.json",
+      "sha256": "c2dfc0a8de7191ea498dc3b0ef1d442f5ce3738e32fd3f300ceaa2b826294930"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/external-evidence-scope.json",
+      "sha256": "416a5b37703649761cc0388913e29e511bc588d2f8070c18e46d068430cd89cc"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/canonical-five-file-read-only-review.json",
+      "sha256": "8d36dac0f3ca7c8be39fba3c6e524c6a0388ff37698d049fe32fdf995af2d3b4"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/finding-clause-engineering-assessment.json",
+      "sha256": "755f9b95208011913ce0d31602f9ec76d6be4719625c1cea5153029c4be73d58"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/README.md",
+      "sha256": "003be3f7f1619712d445c5852f36c320db00c6f2f5c9ab5fe0b013390b772585"
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/supplementary-three-existing-java-methods.json",
+      "sha256": "3f9f77ab84d68be549d422cc290560f1113981701981813e75e161c11e6b3d5d"
+    }
+  ],
+  "generator": {
+    "path": "/tmp/derive-slice3-final-115-clause-assessment.py",
+    "sha256": "45c8aa3afc89243c0880944b648b3f32500b8003b066730c3878b47577c928c6"
+  },
+  "controllerVerdict": null,
+  "finalTipGate": "PENDING",
+  "supplementaryThreeJavaIndex": {
+    "path": "/tmp/slice3-final-22-clause-engineering-assessment-w8-w9/supplementary-three-existing-java-methods.json",
+    "sha256": "3f9f77ab84d68be549d422cc290560f1113981701981813e75e161c11e6b3d5d"
+  }
+}

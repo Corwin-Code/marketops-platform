@@ -1,0 +1,12 @@
+{
+  "result": "FAILED",
+  "recordedAtUTC": "2026-09-05T10:29:42.028855+00:00",
+  "sourceCommit": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "sourceTree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+  "receiptSha256": "0f78cdff019e67861150172ff98b57ac2f2f72a2d8a572444e2275383d11806a",
+  "stage": "ADVERTISING_BROWSER_FIXTURE_STARTUP",
+  "browserJourneysExecuted": 0,
+  "failure": "AdvertisingBrowserFixtureApplication repeated the MARKETPLACE_OPERATOR role already provided by the canonical synthetic graph, violating the existing no-overlap constraint. No browser page or data driver became ready.",
+  "repair": "Test-only driver now reuses all three seeded roles and Maker task scope. Pagination revokes the seeded organization task scope through UserAdministrationService with its real version/audit before granting only Store/ProductVariant scope. No IAM constraint or production control changed.",
+  "finalVerification": "PENDING_NEW_CHECKPOINT_AND_NEW_ATTEMPT"
+}

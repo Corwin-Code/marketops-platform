@@ -1,0 +1,134 @@
+{
+  "kind": "PREPARED_ONLY_FINAL_CANONICAL_APPLICABILITY_REVIEW",
+  "observedAtUTC": "2026-09-05T11:15:25.852154+00:00",
+  "head": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "worktreeClean": true,
+  "oldPackageSourceHead": "b871d6376f8ab88cd2544ac913e62453e9425475",
+  "oldLatestPreflightHead": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "files": [
+    {
+      "path": "docs/00-governance/CURRENT_STATE.md",
+      "w6Sha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf",
+      "preparedSha256": "8cb6b1178f2db03fef49e4a2d94c070a208d4cabcc0d0cf8cc6a3b7fc93c71a5",
+      "matchesOriginalBase": true,
+      "preparedMatchesManifest": true
+    },
+    {
+      "path": "scripts/validate_governance.py",
+      "w6Sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+      "preparedSha256": "976338f8ee8d2a59785c123d5449db14022e9102079dc0e67e6d1d0ef6b4fcc4",
+      "matchesOriginalBase": true,
+      "preparedMatchesManifest": true
+    },
+    {
+      "path": "tests/test_validate_governance.py",
+      "w6Sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "preparedSha256": "e31fbc38d890077a7558c8e06ecb88934cd3d7eabb626a43b54078e555ac6d67",
+      "matchesOriginalBase": true,
+      "preparedMatchesManifest": true
+    },
+    {
+      "path": "scripts/validate_production_readiness.py",
+      "w6Sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6",
+      "preparedSha256": "f06911294654d938dc1827d8ea6fe79b2d765511dc6ee514eecda51319d782e3",
+      "matchesOriginalBase": true,
+      "preparedMatchesManifest": true
+    },
+    {
+      "path": "tests/test_validate_production_readiness.py",
+      "w6Sha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "preparedSha256": "3c4fd0a533b869f3ba96fbd98d3f356a9a3b5a9f155dc9eb19ac6ce1dd40d07b",
+      "matchesOriginalBase": true,
+      "preparedMatchesManifest": true
+    }
+  ],
+  "artifactIntegrity": [
+    {
+      "path": "/tmp/slice3-r1-final-canonical-sync/PLAN.md",
+      "sha256": "8023883e946cdf3295bc74c0c6fd35035809dba0814f8742d0992c20b639af8b"
+    },
+    {
+      "path": "/tmp/slice3-r1-final-canonical-sync/ENGINEERING-ASSESSMENT.template.json",
+      "sha256": "a871f04b69835d6e743e3f7a1d83a54e82e2326069b93048f84f8ed6e2f4002c"
+    },
+    {
+      "path": "/tmp/slice3-r1-final-canonical-sync/final-canonical-sync.patch",
+      "sha256": "1d3863f5548eec31ea087d8927340ae44bf3a379c2d4bbf0721675b2366250d3"
+    },
+    {
+      "path": "/tmp/slice3-r1-final-canonical-sync/validator-probe.log",
+      "sha256": "b2a810869c0e1785a49f99844487f742d9eb03b154b6b8012905cb3b5b4d4dce"
+    }
+  ],
+  "gitApplyCheck": {
+    "argv": [
+      "git",
+      "apply",
+      "--check",
+      "/tmp/slice3-r1-final-canonical-sync/final-canonical-sync.patch"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "preparedPythonAstParse": "PASS",
+  "executedTests": "NONE; no validators or Maven executed",
+  "candidatePatch": {
+    "path": "/tmp/slice3-r1-final-canonical-review-w6/candidate-five-file-sync.patch",
+    "sha256": "1d3863f5548eec31ea087d8927340ae44bf3a379c2d4bbf0721675b2366250d3",
+    "unchangedCopy": true
+  },
+  "candidateState": "DO_NOT_APPLY_UNTIL_FINAL_EVIDENCE_AND_INDIVIDUAL_ASSESSMENTS_COMPLETE",
+  "currentMatrices": {
+    "findingFile": "FINDING-CLOSURE-MATRIX.json",
+    "findingCount": 22,
+    "findingStatuses": {
+      "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING": 22
+    },
+    "acceptanceFile": "S3-AC-REWORK-STATUS.json",
+    "criteriaCount": 200,
+    "acceptedTextsExactlyMatch": true,
+    "acceptanceStatuses": {
+      "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING": 200
+    },
+    "releaseFile": "S3-REL-DEFERRED-REGISTER.json",
+    "releaseCount": 24,
+    "allProductionBlockingNoRealEvidence": true
+  },
+  "oldBasesRequiringCorrection": [
+    "Keep W2 preparation and W3 preflight as historical provenance; use this new W6 applicability receipt. All five file bytes remain identical.",
+    "The old validator-probe is not execution of the future full repository suite. Run actual full Python checks after eventual application.",
+    "Use completed W6-or-later full/browser/security receipts and precise source deltas; earlier W2/W3 failures and W4/W5 results retain their true identities.",
+    "Central document_type, rework_head=null, progress notes and final README need separate evidence-based synchronization. This five-file patch does not assess or update matrices."
+  ],
+  "finalLegalStatusGuidance": {
+    "findingRows": "Proposed REWORK_COMPLETE_ENGINEERING_ASSESSED_CONTROLLER_PENDING only when each frozen repair/verification is met. controller_verdict stays PENDING_INDEPENDENT_REVIEW.",
+    "ac001To199": "Proposed ENGINEERING_EXECUTABLY_VERIFIED_CONTROLLER_PENDING requires criterion-specific combined proof and rationale. An unproved row remains pending; a status string is no authority.",
+    "ac200AcceptedText": "full repository regression, governance/production-readiness validation and security scans pass with no threshold weakening and no unresolved BLOCKER/MAJOR finding.",
+    "ac200Engineering": "Record executed regression, governance/readiness, security and unchanged threshold evidence. AC200 is not merely Controller approval.",
+    "ac200IndependentCondition": "PENDING_INDEPENDENT_CONTROLLER_CLOSURE_ASSESSMENT for the no-unresolved-BLOCKER/MAJOR condition; no unconditional PASS from Codex.",
+    "wholePacket": "Engineering assessment complete / independent Controller pending. Define closure_claim_made=false as no independent final closure claim and add an explicit engineering assessment field. Do not emit Contract section 19 closure as an independent verdict.",
+    "releaseRows": "All 24 remain DEFERRED_PRODUCTION_BLOCKING with real evidence false/reference null; no Ready/merge/production authority."
+  },
+  "applicationConditions": [
+    "Complete clean unselected full verification of coherent W6-or-later code and tests: exact XML inventories, package and migration/upgrade, JaCoCo, capacity/resources and unchanged business SLO evidence.",
+    "Complete built browser business/disclosure/role journeys including keyboard/pagination plus full frontend checks, all source-bound; no unfinished engineering proof.",
+    "Named governance/readiness and actual security/dependency analyses, not just scanner job success. Original W5 alerts and repairs must be reconciled with exact latest source results.",
+    "All 22 frozen findings individually assessed against every required repair/verification; all AC001–199 have actual assertion/measurement and reason; AC200 executable parts complete with independent determination separate.",
+    "Accepted/Frozen/Owner/protected migrations/historical evidence identities preserved and all 24 real-release obligations explicitly blocking.",
+    "Existing named branch and single PR30 remain append-only/Draft. Final packet differentiates measured runtime checkpoint and metadata tip; post-sync latest Head/tested-merge CI remains required before handoff."
+  ],
+  "minimumValidationAfterApplication": [
+    "Immediately recheck the five base hashes and git apply --check; rebase narrowly rather than overwrite any changed input.",
+    "Run unchanged assembler only if needed before manual assessment. Confirm exact 22/200/24 IDs/texts/production boundaries; do not rerun assembler after individual assessment.",
+    "Run actual make governance, which executes both validators and complete Python unittest discovery. Capture named results/raw logs/source hashes. Two new prepared methods normally add two to baseline410; report actual discovery counts rather than assuming412.",
+    "New one-factor negatives must perform real non-noop edits and refuse false Controller/Owner/Ready/merge/production/GateEV claims. Preserve all existing exact Contract-byte and immutable evidence tests.",
+    "Validate matrix/ledger consistency, row-specific positive/negative proof and actual run/source binding. Missing engineering limitations cannot be relabeled as release obligations.",
+    "Publish append-only to the same Draft PR and collect all required CI contexts plus actual security analyses/alerts for that new exact Head/tested merge.",
+    "These five changes alone do not require repeating unrelated local JVM/browser workloads if complete applicable measured runs exist and exact runtime/build/tests/frontend/browser/capacity/CI input hashes are unchanged. Keep the earlier runs actual identities; never claim they executed at the later tip. Required remote full jobs remain required. Any runtime/test/config repair needs affected proof and final coherent full verification."
+  ],
+  "assemblyBehavior": "Unchanged assembler always writes pending. make governance runs its assembly tests with ROOT patched to TemporaryDirectory and does not overwrite repository matrices.",
+  "stopConditionAssessment": "No Contract section15 authority expansion identified. Missing evidence requires continued authorized work, not fabricated completion or new Owner approval.",
+  "reviewBoundary": "Only applicability/state/evidence conditions; no automatic per-row PASS, no new runtime audit, no repo write or tests."
+}

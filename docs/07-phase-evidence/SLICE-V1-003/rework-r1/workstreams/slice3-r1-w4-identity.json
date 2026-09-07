@@ -1,0 +1,738 @@
+{
+  "document_type": "SLICE_V1_003_R1_IDENTITY_RECEIPT",
+  "collected_at": "2026-09-05T05:23:16.070513+00:00",
+  "repository": "Corwin-Code/marketops-platform",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+  "base_tree": "0ca229112bcf351ab5c572dd8d375c647bab61c0",
+  "reviewed_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+  "measured_head": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "measured_tree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+  "measured_parents": [
+    "fd3e00e3ab033d823bf5577f8dbfca736f067d86"
+  ],
+  "runtime_build_test_ci_tree_listing_sha256": "59e45cee1d1aa2e630eaa55b9c4dcdb82792a4f8f3aa17f5bb9ab8cec48640f8",
+  "working_tree_clean": true,
+  "working_tree_status": [],
+  "immutable_authorities": [
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md",
+      "sha256": "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
+      "git_blob": "fc7b7f61182bca4e8bb12daf424aa2aa4fec4a44"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+      "sha256": "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
+      "git_blob": "935d55034cc7680640b073216ca6a7d16d50d69a"
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+      "git_blob": "669c38dc4d9429249e663da0e684dabf570c4a4a"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.md",
+      "sha256": "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
+      "git_blob": "199b37e5724ccd1d5d67ac1af2065af01859a925"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.json",
+      "sha256": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0",
+      "git_blob": "100cd50a84fcffc1e1462eebb468fa53d6361954"
+    }
+  ],
+  "protected_base_authorities": [
+    {
+      "path": "CLAUDE.md",
+      "blob_sha1": "e0e7cab013bbd7ff0cee04e66e8ec14740d9a0b5",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "01cbb7d6863787feaa116b75636a9e77659d2fee1182de16659fb785ba696639",
+      "current_blob_sha1": "e0e7cab013bbd7ff0cee04e66e8ec14740d9a0b5",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/00-governance/CURRENT_STATE.md",
+      "blob_sha1": "3c0fd9a644801ee35005fbc58035bbc56621ae2a",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "8582db46c63ddc07f5c925df391df09340e84dc1d84524700939969ded1808af",
+      "current_blob_sha1": "44dad1017a3f4ede6f8b508f2faf78b9f9b0b4f4",
+      "current_equals_base": false
+    },
+    {
+      "path": "docs/00-governance/AI_OPERATING_MODEL.md",
+      "blob_sha1": "c624f1437f9455abccc68b8e6b41af35a93be42d",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "7415b3dcf8b362a165f3e99944850bbc7a7c31ed4ed3c9623a9cad50c7d85719",
+      "current_blob_sha1": "c624f1437f9455abccc68b8e6b41af35a93be42d",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/00-governance/EXECUTION_ENVELOPE_POLICY.md",
+      "blob_sha1": "cb44f2b2cba640b4d20d2415decd479e4818fa39",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "0dd73e8ed3e29a9903c991d5e723f40eb6a42d63841e6e952bf8f1292194f203",
+      "current_blob_sha1": "cb44f2b2cba640b4d20d2415decd479e4818fa39",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/00-governance/OWNER_DECISIONS_V1.md",
+      "blob_sha1": "5b728ddb6529fc500d63619382eebe87ceed36d2",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "b797f90cb5227808d650a6ab7bd0c8034a9bf32e22f1335ead35cfd2227820dd",
+      "current_blob_sha1": "5b728ddb6529fc500d63619382eebe87ceed36d2",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
+      "blob_sha1": "b3004b21f325f52bc3ab48575065f52256f5b5c5",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "99a02f2b21efa5f265199ed81d3d9826604fbb066b48c35ab00d81cb23dbc5c2",
+      "current_blob_sha1": "b3004b21f325f52bc3ab48575065f52256f5b5c5",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/03-work-items/V1_DELIVERY_SLICES.md",
+      "blob_sha1": "4614c4d82b1ac2ab330ab4bde40aafd8f989cf49",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "7dc352a49127e87f6b4e466e129987e724d4fc4b8978021b3b8b23787880b2b0",
+      "current_blob_sha1": "e33ab45be60e7f3dc0effd9b79042d3d21f5fca6",
+      "current_equals_base": false
+    },
+    {
+      "path": "docs/02-architecture/V1_SHARED_SPINE.md",
+      "blob_sha1": "cb20fd8126f42005a15f338156c1e8a080708200",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "d857ccc197f5f7d2b6dd90a0b61c4f849a2793b809c7e94b608d140dfd61b8b3",
+      "current_blob_sha1": "cb20fd8126f42005a15f338156c1e8a080708200",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/01-requirements/baseline-v1.0-cn.md",
+      "blob_sha1": "d3c1789a4fc3b93188203b10ffbb95ef2abeafb2",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "63400dc18aa690a1a627424256fac92f34f8af55cf54f321711dda259faccb64",
+      "current_blob_sha1": "d3c1789a4fc3b93188203b10ffbb95ef2abeafb2",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+      "blob_sha1": "efe7055d3184cd109bdacba45d7159eebba8a51b",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+      "current_blob_sha1": "efe7055d3184cd109bdacba45d7159eebba8a51b",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+      "blob_sha1": "1caa50f1b33011f7d226c83654835401c00bde1e",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
+      "current_blob_sha1": "1caa50f1b33011f7d226c83654835401c00bde1e",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md",
+      "blob_sha1": "da35a11b30843603c5defdc10299bcf8b53fbc83",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f",
+      "current_blob_sha1": "da35a11b30843603c5defdc10299bcf8b53fbc83",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-002-CLOSURE-SNAPSHOT-ACCEPTANCE-EVIDENCE.md",
+      "blob_sha1": "658458e0421ecf41bdbf5bba1c466c2ec69f571b",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "410d56fcba47ca2ccdd2807b743863e420a3ee49dea34cd3b60c1b71446f8be6",
+      "current_blob_sha1": "658458e0421ecf41bdbf5bba1c466c2ec69f571b",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/02-architecture/adr/ADR-0006-contract-governed-vibe-coding.md",
+      "blob_sha1": "f33175bcde3888732aa013c2cb0bcff5c0d92e25",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "2d9d37a273d93a8e330a883b6bde772a5ade803b3e4a3b1658607232f672063a",
+      "current_blob_sha1": "f33175bcde3888732aa013c2cb0bcff5c0d92e25",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/00-governance/CONTROLLER_REVIEW_STANDARD.md",
+      "blob_sha1": "a593926051649b694afc317ae535a240fd305b00",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "759e5709ce16a1270c639f1d6a17d97727866866e8e89984402df530f2df77b2",
+      "current_blob_sha1": "a593926051649b694afc317ae535a240fd305b00",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/00-governance/CHANGE_CONTROL.md",
+      "blob_sha1": "befd0032ac446fc745fdf3113063323d9e8ca021",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "b5331b02e97ecc08ea9afcd70fbccc75fc0bfc0e2ccb2d5289b96a7445378182",
+      "current_blob_sha1": "befd0032ac446fc745fdf3113063323d9e8ca021",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/00-governance/CLOSURE_SNAPSHOT_STANDARD.md",
+      "blob_sha1": "b751732d189f0713114a4cf935a127490bc06cc8",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "487379bc00badc37cd81bd82dec31621c25fbad2d56a7acd6f40cf2244d7ece1",
+      "current_blob_sha1": "b751732d189f0713114a4cf935a127490bc06cc8",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/01-requirements/traceability.csv",
+      "blob_sha1": "5043e079ca396d333a20bd585b5a0e5de30a4cac",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "32c4d6432bb35590a4cc4063051f195adaf23990cb799e6ac2d1f70da160c64a",
+      "current_blob_sha1": "5043e079ca396d333a20bd585b5a0e5de30a4cac",
+      "current_equals_base": true
+    },
+    {
+      "path": "docs/01-requirements/v1-traceability.csv",
+      "blob_sha1": "e448249f5b23959d458bd5ebd8fdbd562a593211",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "34ef83da15c431355774cf12f590f5ba90f3a4792efd97e0f8b2160a7882a53a",
+      "current_blob_sha1": "92f1e1e2d3f20d6336abe2241049e1d0297792b9",
+      "current_equals_base": false
+    },
+    {
+      "path": "AGENTS.md",
+      "blob_sha1": "609f925fed66db1e3479791e1b53214d7a67bf03",
+      "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "sha256": "0d4e908541fe65e95291238152a6a93c49211d9d05b346981959660a9d1abf0f",
+      "current_blob_sha1": "609f925fed66db1e3479791e1b53214d7a67bf03",
+      "current_equals_base": true
+    }
+  ],
+  "preserved_accepted_history": [
+    {
+      "path": "docs/00-governance/OWNER_DECISIONS_V1.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "b797f90cb5227808d650a6ab7bd0c8034a9bf32e22f1335ead35cfd2227820dd"
+    },
+    {
+      "path": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "99a02f2b21efa5f265199ed81d3d9826604fbb066b48c35ab00d81cb23dbc5c2"
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d"
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-001-AMENDMENT-002-DEFERRED-REAL-INTEGRATION-AND-PREPRODUCTION-ASSURANCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93"
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5"
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-002-CLOSURE-SNAPSHOT-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "410d56fcba47ca2ccdd2807b743863e420a3ee49dea34cd3b60c1b71446f8be6"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "3b1b0aa0c1ebbc2f8b995ac69e9adcf6cbc6c19548bd33a234071e7941ec1e46"
+    },
+    {
+      "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+      "reference_commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "sha256": "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d"
+    }
+  ],
+  "migrations": [
+    {
+      "version": 1,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "bytes": 1674,
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "protected_prefix": true
+    },
+    {
+      "version": 2,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "bytes": 894,
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "protected_prefix": true
+    },
+    {
+      "version": 3,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "bytes": 2888,
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "protected_prefix": true
+    },
+    {
+      "version": 4,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "bytes": 14204,
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "protected_prefix": true
+    },
+    {
+      "version": 5,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "bytes": 8692,
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "protected_prefix": true
+    },
+    {
+      "version": 6,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "bytes": 26224,
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "protected_prefix": true
+    },
+    {
+      "version": 7,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "bytes": 27435,
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "protected_prefix": true
+    },
+    {
+      "version": 8,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "bytes": 15001,
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "protected_prefix": true
+    },
+    {
+      "version": 9,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "bytes": 21831,
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "protected_prefix": true
+    },
+    {
+      "version": 10,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "bytes": 38681,
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "protected_prefix": true
+    },
+    {
+      "version": 11,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0011__create_human_identity_and_business_authorization.sql",
+      "bytes": 24177,
+      "sha256": "d5312e5c2348e8abe0fb445652567ad9a0e9ad1b7ce6eeb3a5202bb58af94555",
+      "protected_prefix": true
+    },
+    {
+      "version": 12,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0012__create_product_listing_identity_and_mapping.sql",
+      "bytes": 20276,
+      "sha256": "e6ea3caa30f69e9f533a69cb1387e25396c15f3f0fce1f0bcdced00c30522bb7",
+      "protected_prefix": true
+    },
+    {
+      "version": 13,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0013__create_cross_domain_operating_facts.sql",
+      "bytes": 27254,
+      "sha256": "db63fd8a4e50ceb39c78b58856a44ff4b4eed8e758a3975bc96fe9c439aad552",
+      "protected_prefix": true
+    },
+    {
+      "version": 14,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0014__create_internal_fact_intake_and_file_import.sql",
+      "bytes": 25308,
+      "sha256": "f0649d939caab975ff796b2e257ea1e642f9e7bf851bd7616171ac82e0a0b42a",
+      "protected_prefix": true
+    },
+    {
+      "version": 15,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0015__create_canonical_metric_definitions_and_values.sql",
+      "bytes": 17728,
+      "sha256": "cc695d22a1249b3e3520e359e75cdbfe7a90fb7519f0cc6e0b74369bdbdbed9b",
+      "protected_prefix": true
+    },
+    {
+      "version": 16,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+      "bytes": 11785,
+      "sha256": "9a7b8efa5d1948d3d5ca8522b6d5dd011eb4be2e16f53145c7c7364ae831056c",
+      "protected_prefix": true
+    },
+    {
+      "version": 17,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0017__create_ai_projection_invocation_and_output.sql",
+      "bytes": 24422,
+      "sha256": "b20b7138b2e177b87ec1a579cbdcdd13c60b4ed045b6721463c5496f974e74ff",
+      "protected_prefix": true
+    },
+    {
+      "version": 18,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0018__create_recommendation_task_and_approval_workflow.sql",
+      "bytes": 13582,
+      "sha256": "1df2c7fd599354dce06cd8f3a4d6363a88c65fa2c02446cbe569d56b333422d1",
+      "protected_prefix": true
+    },
+    {
+      "version": 19,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0019__create_commercial_policy_and_guardrails.sql",
+      "bytes": 23813,
+      "sha256": "ba6916d059cb5586bfe784e261a0243832acf97b097c112072899b5d01526e58",
+      "protected_prefix": true
+    },
+    {
+      "version": 20,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+      "bytes": 55450,
+      "sha256": "8437316450f3bae2e5ef532d360121ad825d25cac2cd67cb840cc31683d6721d",
+      "protected_prefix": true
+    },
+    {
+      "version": 21,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+      "bytes": 14712,
+      "sha256": "b67375962b84a3f37becd968af7f2aaf97df7b75760ce69748a1f4895a9fc97a",
+      "protected_prefix": true
+    },
+    {
+      "version": 22,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+      "bytes": 27537,
+      "sha256": "9a93dcaaafca30b9f738129974babe46509784c232854337ea023200d7c33f6e",
+      "protected_prefix": true
+    },
+    {
+      "version": 23,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0023__create_declared_normalization_and_drift_observation.sql",
+      "bytes": 20682,
+      "sha256": "6fdc3d7bef0b4f0e395a73bac1a7553b134668dd8a684224a74aeaa04f0df0fb",
+      "protected_prefix": true
+    },
+    {
+      "version": 24,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql",
+      "bytes": 14381,
+      "sha256": "55db8c34247172c1746439bb41a9cd376b4ad70e5e256ef0fbf0c5ee2ff80e2b",
+      "protected_prefix": true
+    },
+    {
+      "version": 25,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+      "bytes": 34081,
+      "sha256": "5039cdbf120e4db29d642d8d22dc3f952119921f04f3568eb367f15b9f8fdfa7",
+      "protected_prefix": true
+    },
+    {
+      "version": 26,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0026__rename_operational_capability_column_to_action_kind.sql",
+      "bytes": 9249,
+      "sha256": "82f42eea7990dc6502447d4832a08ca107830495f8f9d249e9d4b09c088b4df2",
+      "protected_prefix": true
+    },
+    {
+      "version": 27,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0027__create_account_bound_registry_verification.sql",
+      "bytes": 34485,
+      "sha256": "fbdd185d03324d145793ec7844ebc17aa02b844f8aaffe89579b5df1f6479ba1",
+      "protected_prefix": true
+    },
+    {
+      "version": 28,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0028__create_bounded_diagnostic_export.sql",
+      "bytes": 23858,
+      "sha256": "43170cf370079706ed8b39792815a5ec2bb447fae2d876afcd830cf7e30a1acf",
+      "protected_prefix": true
+    },
+    {
+      "version": 29,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql",
+      "bytes": 53562,
+      "sha256": "5ca31479f5230abb30c1607ac25f2c819145eebab0bcfed7c27750cc90968d03",
+      "protected_prefix": true
+    },
+    {
+      "version": 30,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0030__create_availability_risk_policy_inbound_and_case.sql",
+      "bytes": 82782,
+      "sha256": "6ad81c234c20134c5444f8b2a7606977fed5661987cd0354ab9ccfd2dda18e3d",
+      "protected_prefix": true
+    },
+    {
+      "version": 31,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0031__track_sustained_availability_lane.sql",
+      "bytes": 1907,
+      "sha256": "4322ccbbf2ae5e32724c29e4160bdcbacec798932fe6b8fd7be258861435042b",
+      "protected_prefix": true
+    },
+    {
+      "version": 32,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0032__create_availability_fact_feed_cursor.sql",
+      "bytes": 1819,
+      "sha256": "72fef0835de8d294ae92351758ba05931a9eafc7b38c4cd996720a743d4eec0e",
+      "protected_prefix": true
+    },
+    {
+      "version": 33,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0033__track_case_improvement_observation.sql",
+      "bytes": 1567,
+      "sha256": "767b3e79a6f17780940a18d323371757e04a82479f7d9882f6d140387619e7f2",
+      "protected_prefix": true
+    },
+    {
+      "version": 34,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql",
+      "bytes": 22094,
+      "sha256": "c7be2f0b6ae9444287875bdfccf4f9bc997e3080ff8689c77e6b6d80a33551b1",
+      "protected_prefix": true
+    },
+    {
+      "version": 35,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0035__close_availability_targeted_findings.sql",
+      "bytes": 18649,
+      "sha256": "e3ce956b28fa60a82aa4f6bce5f760bd803fd9222e5eed04777b6a03753532a7",
+      "protected_prefix": true
+    },
+    {
+      "version": 36,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+      "bytes": 47196,
+      "sha256": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d",
+      "protected_prefix": false
+    },
+    {
+      "version": 37,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0037__create_advertising_conversion_freshness_and_qualification.sql",
+      "bytes": 47855,
+      "sha256": "530e135f2f94073eea1271b2c0b47d7348dcc06c2c090791ab082b276eec7658",
+      "protected_prefix": false
+    },
+    {
+      "version": 38,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+      "bytes": 44941,
+      "sha256": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd",
+      "protected_prefix": false
+    },
+    {
+      "version": 39,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+      "bytes": 38921,
+      "sha256": "d5f6e0d55f833fa9013649cf01b93970e17f4ead0104ba571b36e9db435988a0",
+      "protected_prefix": false
+    },
+    {
+      "version": 40,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0040__widen_write_registry_for_ad_bid_capability.sql",
+      "bytes": 17636,
+      "sha256": "be93a31c395c68c5e2f520b5141cb72d1fa03b1fa467f200a87973041342b4e1",
+      "protected_prefix": false
+    },
+    {
+      "version": 41,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0041__create_advertising_containment_and_decision_bundle.sql",
+      "bytes": 41895,
+      "sha256": "e9bbb8c17df6b9894d3ead2e9f0ff9cb116ad7a82c7ec5ac03189ab662f098b8",
+      "protected_prefix": false
+    },
+    {
+      "version": 42,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+      "bytes": 62816,
+      "sha256": "a4df9505dd45b053e1f00b82e8ac87ec3d2c1c622eb722aace16015a1e385565",
+      "protected_prefix": false
+    },
+    {
+      "version": 43,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+      "bytes": 29249,
+      "sha256": "cf162db4a2da6ae9790fdcfcfb8c0e1ade5c18fd329e8a2ee232595a361dfb2a",
+      "protected_prefix": false
+    },
+    {
+      "version": 44,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+      "bytes": 2220,
+      "sha256": "25404a486fc44a36013013653704742a16e3ae545053ef9453700798c09e7050",
+      "protected_prefix": false
+    },
+    {
+      "version": 45,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+      "bytes": 15420,
+      "sha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398",
+      "protected_prefix": false
+    },
+    {
+      "version": 46,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+      "bytes": 1184,
+      "sha256": "f5f694721c6a843498aa49ad1e535a8e67e7e97234c9d94cccb128b68bf76a1a",
+      "protected_prefix": false
+    },
+    {
+      "version": 47,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+      "bytes": 2175,
+      "sha256": "d339f4ab34329a5cde474825125c8b12f141dd8868fd8e0e9b478f7094495b5a",
+      "protected_prefix": false
+    },
+    {
+      "version": 48,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0048__serialize_advertising_reservations_against_overlap.sql",
+      "bytes": 8358,
+      "sha256": "7d176e8c0415b21483cc498e3097669c3ea93a7a5ded4047ef1c90532e4502d1",
+      "protected_prefix": false
+    },
+    {
+      "version": 49,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0049__create_advertising_outcome_plan_and_lineage.sql",
+      "bytes": 16437,
+      "sha256": "2004ff05791dd441edd506abcf1e0ab7a38dafccdbc98db8a99545efa3a5782c",
+      "protected_prefix": false
+    },
+    {
+      "version": 50,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+      "bytes": 12603,
+      "sha256": "ae376ad2333854034b2522d62cded97e12bdb9ee7ad40960c03a93d95b36b7d9",
+      "protected_prefix": false
+    },
+    {
+      "version": 51,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
+      "bytes": 14150,
+      "sha256": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4",
+      "protected_prefix": false
+    },
+    {
+      "version": 52,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+      "bytes": 3530,
+      "sha256": "eb9e365bc7cf2ec83bb49ded39112fa6c01f357892c32537482d235cb8e7e137",
+      "protected_prefix": false
+    },
+    {
+      "version": 53,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+      "bytes": 13215,
+      "sha256": "71638012aa3f4250f3bd96ba5955b1e5c7549f1cef3b9a31a69f3c2fd799fdda",
+      "protected_prefix": false
+    },
+    {
+      "version": 54,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0054__index_the_demand_carry_forward_lookup.sql",
+      "bytes": 1643,
+      "sha256": "b4661aebcdfb4101a6fbec34d3eea058155614f6badfa3c09c179276722e6856",
+      "protected_prefix": false
+    },
+    {
+      "version": 55,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+      "bytes": 10528,
+      "sha256": "c770a3b884926e24cac010f0579453875ae031451c6bb3bd3b882228bfd6ca08",
+      "protected_prefix": false
+    },
+    {
+      "version": 56,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+      "bytes": 27411,
+      "sha256": "43b776ed8cb5e5deee10a0fb3bae2ea21a5669e96c48cca2b3d756b132380110",
+      "protected_prefix": false
+    },
+    {
+      "version": 57,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0057__bind_advertising_responsibility_and_human_decisions.sql",
+      "bytes": 10884,
+      "sha256": "3f594755b354a7e1cf351fcc20541ed1bc9997bbedc1c131d5ac25999f136813",
+      "protected_prefix": false
+    },
+    {
+      "version": 58,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+      "bytes": 123671,
+      "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523",
+      "protected_prefix": false
+    },
+    {
+      "version": 59,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+      "bytes": 36011,
+      "sha256": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56",
+      "protected_prefix": false
+    },
+    {
+      "version": 60,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+      "bytes": 36184,
+      "sha256": "8a73b4c7f4bf6fcbbeb9d6ab40ae26687e9f0a3505676e701472adb8f65a725d",
+      "protected_prefix": false
+    },
+    {
+      "version": 61,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+      "bytes": 10139,
+      "sha256": "5f6ead6500e6e8f1480678816d20c90ff4c56475f9ccf165d3ce5209c1d8147b",
+      "protected_prefix": false
+    },
+    {
+      "version": 62,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+      "bytes": 5099,
+      "sha256": "72b3d30ac503a1e7768545703e55520f93197cf2bf3286bdc2d1b294022419c8",
+      "protected_prefix": false
+    },
+    {
+      "version": 63,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+      "bytes": 19358,
+      "sha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f",
+      "protected_prefix": false
+    },
+    {
+      "version": 64,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+      "bytes": 17224,
+      "sha256": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116",
+      "protected_prefix": false
+    },
+    {
+      "version": 65,
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+      "bytes": 7417,
+      "sha256": "58811f26e8215fb227655baf1fb006d16d5ff155dcce0751c94ef844c118a3cc",
+      "protected_prefix": false
+    }
+  ],
+  "production_write_enabled": false,
+  "controller_verdict": "NOT_ISSUED_BY_CODEX",
+  "test_result": "NOT_ASSERTED_BY_IDENTITY_COLLECTION"
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "EXACT_R21_R22_SOURCE_DELTA",
+  "earlierRun": "r21",
+  "laterRun": "r22",
+  "changedInputs": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+      "r21Sha256": "509c0453325758abf1a76f7c3ab08aac23f3bbfb6f7b227fb756e6a0084019c1",
+      "r22Sha256": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+    }
+  ],
+  "exactChange": "One added IF NOT FOUND THEN RETURN failures; END IF; immediately after selecting Bundle in ad_bundle_validation_failures. Preserves existing BUNDLE_NOT_FOUND diagnostic without inventing an absent Semantic component. No tests or other runtime inputs changed.",
+  "proofBoundary": "R21 remains 289 actual/1 failure/0 errors. R22 passes five complete related classes, 83 actual. This source delta does not relabel R21 or substitute for a clean full run on the forthcoming checkpoint.",
+  "production_write_enabled": false
+}

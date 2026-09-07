@@ -1,0 +1,36 @@
+{
+  "kind": "ACTUAL_SAME_COMMIT_ADDITIONAL_INPUT_REGISTRATION",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "originalExpectedSource": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/EXPECTED-SOURCE.json",
+    "sha256": "1687693188515af33d7434811811189c52857ba2fc69d19cd279b6b23bfdf283",
+    "bytes": 3677
+  },
+  "actualGovernanceParent": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+    "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+    "bytes": 8324
+  },
+  "actualToolExecution": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+    "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+    "bytes": 13425
+  },
+  "registeredExpectedSource": {
+    "path": "/private/tmp/slice3-registered-inputs-e278b1e-r1/EXPECTED-SOURCE.json",
+    "sha256": "4f72d4ab9a9c0b2571cf558a89979a145a5f03a4f9bf1dc418cd1204500bee5a",
+    "bytes": 6217
+  },
+  "source": {
+    "path": "/private/tmp/slice3-register-actual-current-tool-inputs-r1.py",
+    "sha256": "6bf9fc0bd46ea30bf1562e7ac049684fe112a97b1c31defe6981a707ed511697",
+    "bytes": 3460
+  },
+  "additionalInputs": 8,
+  "newExecutions": 0,
+  "proofSelections": [],
+  "engineeringClosureClaimMade": false,
+  "productionWriteEnabled": false
+}

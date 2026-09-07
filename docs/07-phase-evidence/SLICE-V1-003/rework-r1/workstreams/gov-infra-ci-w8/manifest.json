@@ -1,0 +1,377 @@
+{
+  "kind": "W8_TWO_CONTEXT_PROVENANCE_FILES",
+  "createdAtUTC": "2026-09-05T13:13:48.192240+00:00",
+  "review": {
+    "path": "/tmp/slice3-w8-gov-infra-provenance/review.json",
+    "sha256": "da7ac5f33c6fe3c9eb4a3067ba63779a767b5ccf0bd1dfe56568ac4bc9f84f9b",
+    "bytes": 33865
+  },
+  "files": [
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/README.md",
+      "sha256": "80e971a7e7ca907437148425ad303e5783bf2de11e076b3c02b7ed8b030a8d38",
+      "bytes": 1908
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/capture-receipt.json",
+      "sha256": "66f2d159f1aa6a6a94f3478d665d01bad48b646d6d22f273c208128206a9bd87",
+      "bytes": 54547
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/failed-log-read-sanitized.txt",
+      "sha256": "5e0cd0c556b1f08ab55c4258a82e74fc01bd1607eba5a27e7c72517f3c10d935",
+      "bytes": 292
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078382.attempt-1.json",
+      "sha256": "e85f2181e66b6b13ef0f5ee5d4854f2366fb3c02bf607b3a23ba74f86a0c9f4d",
+      "bytes": 2914
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078382.attempt-1.request.json",
+      "sha256": "c3edd10ba15c13a5fefafc4c9456c569af1553cf963e8401bebb65ff060fa26d",
+      "bytes": 839
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078382.attempt-1.response.txt",
+      "sha256": "0532a89c605c93013bd700c06ffed08aaec955089e215e0ab2ee505f5cc88c2d",
+      "bytes": 3740
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078382.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078585.attempt-1.json",
+      "sha256": "df2f8955dd3fd16ac52ce4a3b8569237bb466a74e09864b0864c340e45012895",
+      "bytes": 3426
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078585.attempt-1.request.json",
+      "sha256": "d3fee2c4847a271848cfa12b97acd60e22d11e1bffb3397d06eef65152653e64",
+      "bytes": 839
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078585.attempt-1.response.txt",
+      "sha256": "9de620221b7692c2edd456bf88c8ff43b4c9747810fd698606251b8c09d2aafb",
+      "bytes": 4135
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/job-101311078585.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/published-head.attempt-1.json",
+      "sha256": "eb91e726520227c5d499c4f7aabe3c93b82755989e6b8aa8608f65baba93329b",
+      "bytes": 1369
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/published-head.attempt-1.request.json",
+      "sha256": "d75433ebb9dbd7ab794f546589325706a66faf3d5b5010fe437c8c6058942c27",
+      "bytes": 862
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/published-head.attempt-1.response.txt",
+      "sha256": "93e5c8b93ebecca44e5c41dba87e9ff9697e1066fe81c28e053ffbd7e8df8363",
+      "bytes": 2639
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/published-head.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifact-9970007109.attempt-1.request.json",
+      "sha256": "285dd195bd893a75c382c870dd9eb2d51c5147e52ccd985745eee71e53d46b65",
+      "bytes": 881
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifact-9970007109.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifact-9970007109.attempt-1.zip",
+      "sha256": "b2822859ce76dc0e5e092367e5e24d0afb9c16fc2afda21511e7d0f9e42e411c",
+      "bytes": 2316685
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifacts.attempt-1.json",
+      "sha256": "d9110f6293bb7febed8075777f6810dd01cb79890f970378b60065e89d244335",
+      "bytes": 961
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifacts.attempt-1.request.json",
+      "sha256": "a10ae3e3313d8a6892976fa084d12fea3b1aef37112880cd4eec8556f62a907b",
+      "bytes": 899
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifacts.attempt-1.response.txt",
+      "sha256": "099abe526c0172fcd77ba6364e2cf1f1f56c73a36b15f77778ff91daeb1fcbf6",
+      "bytes": 2179
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-artifacts.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-jobs.attempt-1.json",
+      "sha256": "2412557f51acf0177a37e2a2ce83e77665446046cfc681b69f9925e3b10e7cb3",
+      "bytes": 3898
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-jobs.attempt-1.request.json",
+      "sha256": "54944cc2a25687788248fd39a8ba14f3531a18ec545c236cca2279cc30f0f8b2",
+      "bytes": 895
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-jobs.attempt-1.response.txt",
+      "sha256": "43d59b6962d8ad63544c974833ad5c0e283c445e34f7fe93e7af220a0432bfed",
+      "bytes": 4163
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-jobs.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-1.request.json",
+      "sha256": "bb4583e4f58691969557a742055fad836fb86c6f33a5a0b6d8ef016a5aa0b49e",
+      "bytes": 853
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-1.stderr.txt",
+      "sha256": "002a97e92b30e011fca1653d1af049f068058cd178b201ee3798ca2750a366a8",
+      "bytes": 234
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-1.zip",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-2.request.json",
+      "sha256": "ee7122783b2af6198b8fa1f2de53adcbba6f44f6dd0895b3a589e2b846302cc3",
+      "bytes": 857
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-2.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-2.zip",
+      "sha256": "d3942b6ec7fa20cb138e29be161525b591bd0d7336562b76b565efad4cb9dd75",
+      "bytes": 16535
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661.attempt-1.json",
+      "sha256": "233d7f7cd7423113a151295e1e2ba6d88966d7016da578d50a89d4b6120a6882",
+      "bytes": 15254
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661.attempt-1.request.json",
+      "sha256": "4a7e2234dca268c68cf28534e91fdd969a348e4cc9e7529a8097b2cd66784f6f",
+      "bytes": 837
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661.attempt-1.response.txt",
+      "sha256": "250c4c8c2f9fb241ea7d3d5e3ddc28fd42a147ba0640fefa3ea6d91529815114",
+      "bytes": 15103
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-artifacts.attempt-1.json",
+      "sha256": "f7417e1fb877d3f5934f143cc38ad9e2905476e8f5ac6776507d09441efcd6f6",
+      "bytes": 42
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-artifacts.attempt-1.request.json",
+      "sha256": "3746cce6d4f4948750c9bee656a04204ed5555e447d026b34342410c952f424a",
+      "bytes": 899
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-artifacts.attempt-1.response.txt",
+      "sha256": "c49af35726f3da5f8b52af054748be0480480ae558557afba18193676c25088b",
+      "bytes": 1424
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-artifacts.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-jobs.attempt-1.json",
+      "sha256": "9fe3f0e1224da4425c2e9eaa42591e1318c2fc8d02be211a6f5f9a9e06bf7c7d",
+      "bytes": 3322
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-jobs.attempt-1.request.json",
+      "sha256": "b81e282f366c158f7bd045ec5fc7ebd67bbbad179198166ea3164dce6ea6f930",
+      "bytes": 895
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-jobs.attempt-1.response.txt",
+      "sha256": "c32b9a6e03bb2b09ce3f3a9cd3f53583fcbd261c451882ecf0506713c4eecbd7",
+      "bytes": 3767
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-jobs.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-logs.attempt-1.request.json",
+      "sha256": "178fedbaa1a1f555e387473a4aded2f2b8a2cffd2b90753ce91e5d7c41d95c30",
+      "bytes": 857
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-logs.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687-attempt-1-logs.attempt-1.zip",
+      "sha256": "98fb4908dd018f0eb2b2174d15a3ad6bae4ec1a29fd2abd80ebaf7e6dc7fd919",
+      "bytes": 11826
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687.attempt-1.json",
+      "sha256": "6f190ce4cf1d92501f40afe19743b4c45a9d4295585f0af3d7e4ea99a7536576",
+      "bytes": 15247
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687.attempt-1.request.json",
+      "sha256": "48ce2b7aa07b4f35dd53931689bf7ab8d9c0e1a2e11b0f4fad94639090f3f058",
+      "bytes": 837
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687.attempt-1.response.txt",
+      "sha256": "c92fc8ebc2c8054a7b166bec60ecb1e3de24ad9ed41868676454a22180d802ee",
+      "bytes": 15096
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874687.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/tested-merge.attempt-1.json",
+      "sha256": "9fa2fbdd11ba938af24aecbaf38fdabd090a765033a83180be9dd6c8c15f499c",
+      "bytes": 2890
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/tested-merge.attempt-1.request.json",
+      "sha256": "62e1b56b0a1bed9fd6ccda776744ab27a562ac2dd8077378406e2094ddde8bbf",
+      "bytes": 858
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/tested-merge.attempt-1.response.txt",
+      "sha256": "3be657d30a2026c46727f7b47343320cf6530433f5e8133a170e74badf44d53c",
+      "bytes": 4127
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/raw/tested-merge.attempt-1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/review.json",
+      "sha256": "da7ac5f33c6fe3c9eb4a3067ba63779a767b5ccf0bd1dfe56568ac4bc9f84f9b",
+      "bytes": 33865
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/2_Checkout exact candidate.txt",
+      "sha256": "6d594bb2a65232c6bf550fad497fd0e93ae7804f8b8e7067cc56298fcafd3dd7",
+      "bytes": 12089
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/3_Install checksum-pinned Terraform.txt",
+      "sha256": "935de1c563f0b5f6871dabb73ee883725d65e5a84677278b46201dbb0af19d15",
+      "bytes": 1270
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/4_Validate both environments and state bootstrap without credentials or apply.txt",
+      "sha256": "0458fa34922e599bf447a26ddcbbcba7a6b70aebe3505af4258ed395bd62805e",
+      "bytes": 4371
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/5_Test network and secret-delivery refusal controls.txt",
+      "sha256": "715dc2947f508456e40733e3af855d7736750cb6fbb83c23968265a15a212486",
+      "bytes": 562
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/6_Test ephemeral runtime secret delivery.txt",
+      "sha256": "03bd94573d2d44fc2665365c0cf4b64eaff5bc7850496668470a33654625998c",
+      "bytes": 573
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/7_Record tested identities.txt",
+      "sha256": "720aadd5cdba89ae995d57b436b826f81268781e92dad1c4b571ac2efb40d3b7",
+      "bytes": 708
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874661/8_Publish infrastructure verification evidence.txt",
+      "sha256": "42302ec0f02e839f848d48a3c0bde4899b3a1de815d2f1a70e5f7fae6985224c",
+      "bytes": 1722
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874687/2_Checkout repository.txt",
+      "sha256": "c28dc9477ef45336f1bc49307e1edd400a94b7ec0a2fd3eb2edb6e676cf33f6f",
+      "bytes": 12089
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874687/3_Record the identifiers this run is about.txt",
+      "sha256": "34b0c59537ba93dc7228b585030ca502d7bdf4a0957decc076eccbbef4ba341a",
+      "bytes": 569
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874687/4_Validate governance, source integrity and common secret patterns.txt",
+      "sha256": "d28c752630f59b97950945ba803ae3756a44b8cfbe6595213227cdfdcb6f25f8",
+      "bytes": 321
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874687/5_Validate the three production readiness rules.txt",
+      "sha256": "f113f80b61eaa1b77f07e67b8fde1987e6d44f5e9e7c8fe89f3bff4ddc4ce79b",
+      "bytes": 743
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/run-33967874687/6_Run the validator's own tests.txt",
+      "sha256": "011f1a4897eab041248cd8c3b4078149128138b029d51e5ced53e377c0353f72",
+      "bytes": 1245
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/summary.json",
+      "sha256": "71f8e9f7c6d6ab51486f1bfab0d4aa4827c104088e6f8cb3ca6065773f4ecb06",
+      "bytes": 2346
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/verification.tfrc",
+      "sha256": "bbd0f3318adbfddee23f2a81b6dfa831fa3dde2f63429abaf71e4b65c88702c3",
+      "bytes": 64
+    },
+    {
+      "path": "/tmp/slice3-w8-gov-infra-provenance/version.json",
+      "sha256": "8a3cabea3c1a86d3d0f43a38d0c791976cb4a2362f105121e9106ab25de124b8",
+      "bytes": 125
+    }
+  ],
+  "privateDoNotPublish": [
+    "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-1.stderr.txt"
+  ],
+  "publicFailureDerivative": {
+    "path": "/tmp/slice3-w8-gov-infra-provenance/failed-log-read-sanitized.txt",
+    "sha256": "5e0cd0c556b1f08ab55c4258a82e74fc01bd1607eba5a27e7c72517f3c10d935",
+    "bytes": 292
+  },
+  "collectorSha256": "fa3d6594cba363baaf2bce642fca8b75cb27771e9fb6fad95321bc3db423a4af",
+  "reviewerSha256": "189306b1117bc333d25ee8daf257c7c663c39029dc5fb4091f31f3b85d548b3e",
+  "wholeCiOrControllerPass": false
+}

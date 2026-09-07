@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest
+-------------------------------------------------------------------------------
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.164 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest

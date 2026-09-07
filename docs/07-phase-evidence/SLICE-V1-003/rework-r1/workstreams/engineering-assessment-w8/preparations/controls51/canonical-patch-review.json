@@ -1,0 +1,95 @@
+{
+  "kind": "W8_FIVE_CANONICAL_FILE_PATCH_READ_ONLY_APPLICABILITY",
+  "w8Head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "w8Tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "patch": {
+    "path": "/tmp/slice3-r1-final-canonical-review-w6/candidate-five-file-sync.patch",
+    "sha256": "1d3863f5548eec31ea087d8927340ae44bf3a379c2d4bbf0721675b2366250d3"
+  },
+  "originalPreparedManifest": {
+    "path": "/tmp/slice3-r1-final-canonical-sync/manifest.json",
+    "sha256": "795c201ef20f8d5819013f367330110ce0251f3e34b8f29bdb3b524a48ec2478"
+  },
+  "actualArgv": [
+    "git",
+    "apply",
+    "--check",
+    "/tmp/slice3-r1-final-canonical-review-w6/candidate-five-file-sync.patch"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+  "startedAtUTC": "2026-09-05T13:27:19.289969+00:00",
+  "finishedAtUTC": "2026-09-05T13:27:19.308386+00:00",
+  "exitCode": 0,
+  "stdout": {
+    "path": "/tmp/slice3-controls-w8-final-preparation/canonical-check.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "/tmp/slice3-controls-w8-final-preparation/canonical-check.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "files": [
+    {
+      "path": "docs/00-governance/CURRENT_STATE.md",
+      "baseSha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf",
+      "preparedSha256": "8cb6b1178f2db03fef49e4a2d94c070a208d4cabcc0d0cf8cc6a3b7fc93c71a5",
+      "w8GitSha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf",
+      "currentSha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf",
+      "currentEqualsW8": true,
+      "stillMatchesPreparedBase": true
+    },
+    {
+      "path": "scripts/validate_governance.py",
+      "baseSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+      "preparedSha256": "976338f8ee8d2a59785c123d5449db14022e9102079dc0e67e6d1d0ef6b4fcc4",
+      "w8GitSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+      "currentSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+      "currentEqualsW8": true,
+      "stillMatchesPreparedBase": true
+    },
+    {
+      "path": "tests/test_validate_governance.py",
+      "baseSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "preparedSha256": "e31fbc38d890077a7558c8e06ecb88934cd3d7eabb626a43b54078e555ac6d67",
+      "w8GitSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "currentSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "currentEqualsW8": true,
+      "stillMatchesPreparedBase": true
+    },
+    {
+      "path": "scripts/validate_production_readiness.py",
+      "baseSha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6",
+      "preparedSha256": "f06911294654d938dc1827d8ea6fe79b2d765511dc6ee514eecda51319d782e3",
+      "w8GitSha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6",
+      "currentSha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6",
+      "currentEqualsW8": true,
+      "stillMatchesPreparedBase": true
+    },
+    {
+      "path": "tests/test_validate_production_readiness.py",
+      "baseSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "preparedSha256": "3c4fd0a533b869f3ba96fbd98d3f356a9a3b5a9f155dc9eb19ac6ce1dd40d07b",
+      "w8GitSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "currentSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "currentEqualsW8": true,
+      "stillMatchesPreparedBase": true
+    }
+  ],
+  "mechanicallyApplicable": true,
+  "applied": false,
+  "testsExecuted": false,
+  "semanticPermissionToApplyNow": false,
+  "futureTipClassification": "NON_RUNTIME_CANONICAL_GOVERNANCE_AND_EVIDENCE_ONLY",
+  "classificationLimit": "The expected later tip contains CURRENT_STATE, two Python validators, two Python tests and evidence/docs. It must not be described merely as documentation-only. Verify the actual final changed-path set and input hashes before using this classification.",
+  "runtimeInputRequirement": "Backend/frontend runtime AND their tests, migrations, build inputs and workflow files must remain byte-identical to the applicable measured W8 scopes. Python governance code/tests are changed and require their own actual execution.",
+  "requiredNewActualValidation": [
+    "Full named governance/readiness/Python validation after application. Baseline 410 plus the two prepared new tests suggests 412 only if discovery is otherwise unchanged; report the actual executed count/results, never assume 412.",
+    "All final-tip required remote CI contexts and actual checkout/artifact/security provenance must execute for that new authored Head.",
+    "Keep W8 full as its actual measured Head/tree and bind the final tip by a reviewed explicit input delta. Never restamp W8 results as execution on the later tip."
+  ],
+  "remainingApplicationConditions": [
+    "W8 unselected full completed successfully and exact CI/semantic per-row gates reviewed",
+    "All 22 finding repairs and AC001–199 individually assessed with named proof, AC200 deterministic prerequisites actual",
+    "24 REL rows remain exact and production blocking; independent Controller verdict pending"
+  ]
+}

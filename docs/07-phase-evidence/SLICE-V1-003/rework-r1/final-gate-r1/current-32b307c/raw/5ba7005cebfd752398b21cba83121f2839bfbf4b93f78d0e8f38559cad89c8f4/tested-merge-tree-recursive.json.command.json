@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/git/trees/ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2?recursive=1",
+    "-X",
+    "GET"
+  ],
+  "startedAt": "2026-09-06T17:34:55.003518+00:00",
+  "finishedAt": "2026-09-06T17:34:56.884054+00:00",
+  "elapsedSeconds": 1.8805570839999994,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-tree-recursive.json",
+    "sha256": "0cb9ed372acf84e9a33a0e1185d8f1b8b5fdf8d00641dc9b79a42ef07b3fe132",
+    "bytes": 2639269
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-tree-recursive.json.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten.",
+  "originalResponse": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-tree-recursive.json.attempt-1",
+    "sha256": "0cb9ed372acf84e9a33a0e1185d8f1b8b5fdf8d00641dc9b79a42ef07b3fe132",
+    "bytes": 2639269
+  },
+  "originalStderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-tree-recursive.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attemptReceipts": [
+    {
+      "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-tree-recursive.json.attempt-1.command.json",
+      "sha256": "86318ec5e948202e4c450b8760b1e35f266d4a07a13353ea07028ae53798a6f2",
+      "bytes": 917
+    }
+  ],
+  "canonicalResponseIsExactCopy": true
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_RECURSIVE_PATTERN_SCAN",
+  "status": "COMPLETE",
+  "scope": "Exact current e278b1e ci package bytes, including every retained GET attempt and original raw; no blanket publication permission.",
+  "originalFiles": 213,
+  "originalBytesUnchanged": true,
+  "scannedRecords": 5927,
+  "archiveMembers": 5714,
+  "scannedBytesIncludingContainersAndDuplicateCopies": 393312736,
+  "elapsedSeconds": 59.674,
+  "hitCount": 0,
+  "ruleCounts": {},
+  "unreviewedHits": 0,
+  "rawPublicationAuthorized": false,
+  "productExecutions": 0,
+  "closureClaimMade": false,
+  "limits": "Nine bounded patterns; UTF8/raw/entity/JSON strings and actual nested archive members. Images scanned as bytes, no OCR. All hits require exact context review; no generic no-PII claim."
+}

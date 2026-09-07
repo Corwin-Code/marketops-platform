@@ -1,0 +1,106 @@
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java
+index d2e995e..b348524 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java
+@@ -28,5 +28,5 @@ import org.springframework.test.context.DynamicPropertySource;
+  *
+  * <p>These are reports, and this test's job is to prove they report rather than
+- * decide. The envelope read counts the same three axes the write gate counts and
++ * decide. The envelope read counts the same six axes the write gate counts and
+  * keeps them apart; the outcome read returns all three stages and every restatement;
+  * and both refuse a store the caller was not granted, in SQL rather than only in
+@@ -148,9 +148,6 @@ class AdvertisingOperationsReadIT {
+ 
+         assertThat(exposure.resolved()).isFalse();
+-        assertThat(exposure.exhaustedAxes()).containsExactly("AGGREGATE_ENVELOPE_UNRESOLVED");
+-        // The consumption figures are still reported rather than omitted, so an
+-        // operator can see what is standing while no envelope resolves.
+-        assertThat(exposure.activeInterventions()).isZero();
+-        assertThat(exposure.unresolvedTransmittedWrites()).isZero();
++        assertThat(exposure.status()).isEqualTo("UNRESOLVED");
++        assertThat(exposure.envelopes()).isEmpty();assertThat(exposure.measuredAt()).isNotNull();
+     }
+ 
+@@ -161,16 +158,70 @@ class AdvertisingOperationsReadIT {
+ 
+         assertThat(exposure.resolved()).isTrue();
+-        assertThat(exposure.maxActiveInterventions()).isEqualTo(10);
+-        assertThat(exposure.reservedRecoveryHeadroom()).isEqualTo(2);
+-        assertThat(exposure.maxUnresolvedTransmittedWrites()).isEqualTo(2);
+-        assertThat(exposure.cumulativeWindowHours()).isEqualTo(24);
+-        assertThat(exposure.currencyCode()).isEqualTo("RUB");
+-        // Every axis independently. There is no point in the gate where one
+-        // axis's slack is added to another's, and none here either: the
+-        // intervention axis is reported against capacity less the recovery
+-        // headroom, and the other two against their own limits.
+-        assertThat(exposure.cumulativeBidChangeAmount()).isNotNull();
+-        assertThat(exposure.activeInterventions()).isEqualTo(1);
+-        assertThat(exposure.exhaustedAxes()).isEmpty();
++        assertThat(exposure.envelopes()).hasSize(1);
++        var measured=exposure.envelopes().getFirst();
++        assertThat(measured.axes()).containsOnlyKeys("activeInterventions","associatedOfficialSpend","affectedRetainedSalesShare",
++                "cumulativeBidChangeMajor","unresolvedTransmittedWrites","reservedRecoveryHeadroom");
++        assertThat(measured.axes().get("activeInterventions").limit()).isEqualByComparingTo("10");
++        assertThat(measured.axes().get("activeInterventions").usage()).isEqualByComparingTo("1");
++        assertThat(measured.axes().get("reservedRecoveryHeadroom").reserved()).isEqualByComparingTo("2");
++        assertThat(measured.axes().get("unresolvedTransmittedWrites").limit()).isEqualByComparingTo("2");
++        assertThat(measured.axes().get("cumulativeBidChangeMajor").windowHours()).isEqualTo(24);
++        assertThat(measured.currencyCode()).isEqualTo("RUB");
++        assertThat(measured.axes().get("affectedRetainedSalesShare").state()).isEqualTo("AVAILABLE");
++        assertThat(measured.axes().get("affectedRetainedSalesShare").usage()).isEqualByComparingTo("1");
++        String actual=JdbcClient.create(application).sql("SELECT ops.ad_exposure_snapshot(:org,:store,'PROTECTION_DECREASE')::text")
++                .param("org",graph.organizationId()).param("store",graph.storeId()).query(String.class).single();
++        var mapper=new tools.jackson.databind.ObjectMapper();
++        assertThat(mapper.valueToTree(measured).path("axes").path("activeInterventions").path("usage").decimalValue())
++                .isEqualByComparingTo(mapper.readTree(actual).path("envelopes").get(0).path("axes").path("activeInterventions").path("usage").decimalValue());
++    }
++
++    @Test void incompleteRetainedCoverageRemainsUnknownInTheActualReaderInsteadOfInventingZeroSpareCapacity() throws Exception {
++        var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
++        var own=AdvertisingR1Fixture.seed(migration);
++        assertThat(operations.exposure(own.id("organization")).envelopes().getFirst()
++                .axes().get("affectedRetainedSalesShare").state()).isEqualTo("AVAILABLE");
++        seed.sql("""
++                INSERT INTO ledger.return_quality_evidence_snapshot
++                SELECT (jsonb_populate_record(NULL::ledger.return_quality_evidence_snapshot,to_jsonb(prior)||jsonb_build_object(
++                    'id',gen_random_uuid(),'supersedes_snapshot_id',prior.id,'accepted_at',clock_timestamp(),
++                    'retained_coverage','INCOMPLETE','evidence_reference','fixture://incomplete-retained-coverage'))).*
++                FROM ledger.return_quality_evidence_snapshot prior WHERE platform_listing_variant_id=:listing
++                  AND NOT EXISTS(SELECT 1 FROM ledger.return_quality_evidence_snapshot newer WHERE newer.supersedes_snapshot_id=prior.id)
++                """).param("listing",own.id("listingVariant")).update();
++        var read=operations.exposure(own.id("organization"));
++        assertThat(read.resolved()).isTrue(); // The envelope exists; one independent measurement is unknown.
++        var measured=read.envelopes().getFirst();var sales=measured.axes().get("affectedRetainedSalesShare");
++        assertThat(sales.state()).isEqualTo("UNKNOWN");assertThat(sales.usage()).isNull();
++        assertThat(sales.companySales()).isNull();assertThat(sales.affectedSales()).isNull();
++        assertThat(sales.limit()).isEqualByComparingTo("1");
++        assertThat(measured.reasons()).contains("RETAINED_SALES_SHARE_UNRESOLVED");
++        assertThat(measured.axes().get("activeInterventions").usage()).isZero();
++    }
++
++    @Test void everyApplicableScopeIsReportedOnceAndRetiredAuthorityDoesNotMasqueradeAsCurrent() throws Exception {
++        var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
++        var own=AdvertisingR1Fixture.seed(migration);var foreign=AdvertisingR1Fixture.seed(migration);
++        UUID narrow=UUID.randomUUID();
++        seed.sql("""
++                INSERT INTO core.ad_exposure_envelope
++                SELECT (jsonb_populate_record(NULL::core.ad_exposure_envelope,to_jsonb(e)||jsonb_build_object(
++                    'id',:id::text,'policy_version',2,'scope_kind','STORE','platform_code',:platform,'store_ref_id',:store::text,'max_active_interventions',3,
++                    'reserved_recovery_headroom_count',1))).*
++                FROM core.ad_exposure_envelope e WHERE id=:original
++                """).param("id",narrow).param("platform",own.platform()).param("store",own.id("store")).param("original",own.id("exposure")).update();
++        var both=operations.exposure(own.id("organization"));
++        assertThat(both.resolved()).isTrue();assertThat(both.envelopes()).hasSize(2);
++        assertThat(both.envelopes()).extracting(AdvertisingExposureView.Envelope::envelopeId)
++                .containsExactlyInAnyOrder(own.id("exposure"),narrow).doesNotContain(foreign.id("exposure"));
++        var scoped=both.envelopes().stream().filter(e->e.envelopeId().equals(narrow)).findFirst().orElseThrow();
++        assertThat(scoped.storeId()).isEqualTo(own.id("store"));
++        assertThat(scoped.axes().get("activeInterventions").limit()).isEqualByComparingTo("3");
++        assertThat(scoped.axes().get("reservedRecoveryHeadroom").reserved()).isEqualByComparingTo("1");
++        seed.sql("UPDATE core.ad_exposure_envelope SET status='RETIRED' WHERE organization_id=:org")
++                .param("org",own.id("organization")).update();
++        var retired=operations.exposure(own.id("organization"));
++        assertThat(retired.resolved()).isFalse();assertThat(retired.envelopes()).isEmpty();
++        assertThat(retired.unresolvedStoreIds()).containsExactly(own.id("store"));
+     }
+ 

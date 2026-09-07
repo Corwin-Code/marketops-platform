@@ -1,0 +1,22 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/pulls/30"
+  ],
+  "startedAt": "2026-09-06T00:34:22.311662+00:00",
+  "finishedAt": "2026-09-06T00:34:26.198812+00:00",
+  "elapsedSeconds": 3.887,
+  "exitCode": 0,
+  "artifact": {
+    "path": "pr-r1.json",
+    "bytes": 25004,
+    "sha256": "4b31e2b5f0177bab6c9ad1c7cf1977c746c9362b22c5a0f1d0b687bb710be481"
+  },
+  "stderr": {
+    "path": "pr-r1.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 7e66cf8; exact source CI only, not independent Controller approval."
+}

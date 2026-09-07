@@ -1,0 +1,32 @@
+{
+  "24": {
+    "path": "/tmp/slice3-r1-final-controls-r24/receipt.json",
+    "sha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+    "wholeCounts": {
+      "tests": 130,
+      "failures": 1,
+      "errors": 2,
+      "skipped": 0
+    },
+    "exitCode": 1,
+    "sourceStable": true,
+    "sourceBeforeSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+    "sourceAfterSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+    "logSha256": "4d7dbbee52d2a8fe6b948b173811d4bb665958e599502ee49458baf68264ae76"
+  },
+  "25": {
+    "path": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+    "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+    "wholeCounts": {
+      "tests": 72,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "exitCode": 0,
+    "sourceStable": true,
+    "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+    "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+    "logSha256": "ad22dd8a992c14b45fb930a8fb75887a18c9f2a5a6d156d6ef6bc536bd27351c"
+  }
+}

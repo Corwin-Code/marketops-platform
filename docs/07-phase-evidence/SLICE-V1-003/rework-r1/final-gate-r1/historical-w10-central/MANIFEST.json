@@ -1,0 +1,26 @@
+{
+  "kind": "IMMUTABLE_W10_CENTRAL_ASSESSMENTS",
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/historical-w10-central/ENGINEERING_VERIFICATION.json",
+      "originalPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json",
+      "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "bytes": 6535,
+      "sha256": "52083c8a36be39488ee4e64d4198d9904d1a4306bb0ecfd1f95c8711bdc51e25"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/historical-w10-central/FINDING-CLOSURE-MATRIX.json",
+      "originalPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json",
+      "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "bytes": 1192075,
+      "sha256": "e6089a0a662ae90fd641a5cb864f69e36807286133c886e2e95cb210e47dcb1d"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/historical-w10-central/S3-AC-REWORK-STATUS.json",
+      "originalPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json",
+      "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "bytes": 199176,
+      "sha256": "f9af2403b1ebe0eecd1bb47b442ad7a5b607e4a6a47eebf6d2590865473c53b5"
+    }
+  ]
+}

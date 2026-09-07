@@ -13,9 +13,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -24,14 +26,14 @@ import org.springframework.stereotype.Repository;
  * Append-only writing and current-value reading of canonical metrics.
  *
  * <p>Insertion is idempotent on the reproducibility key: identical inputs land
- * on the row that already exists, so a recomputation that changed nothing writes
- * nothing. A recomputation after late data has a different input digest and
+ * on the row that already exists, so a recomputation that changed nothing preserves the value and appends
+ * only its run-to-value evaluation proof. A recomputation after late data has a different input digest and
  * therefore writes a new row beside the old one, which is how a corrected figure
  * appears without erasing the one somebody acted on.
  *
- * <p>Current means most recently computed. The read below orders by computation
- * time rather than by period, because two values for the same period differ
- * precisely when the second one knows something the first did not.
+ * <p>Current means most recently evaluated by the canonical writer. Successful
+ * re-evaluation may reuse an immutable value. A newer unavailable value remains
+ * visible instead of being filtered away in favor of an older favorable answer.
  */
 @Repository
 public class MetricRepository {
@@ -143,7 +145,7 @@ public class MetricRepository {
                 .param("computedAt", Timestamp.from(computedAt))
                 .update();
 
-        return jdbc.sql("""
+        UUID actualId = jdbc.sql("""
                         SELECT id FROM mart.metric_value
                          WHERE metric_code = :metricCode
                            AND definition_version = :definitionVersion
@@ -162,6 +164,12 @@ public class MetricRepository {
                 .param("inputDigest", inputDigest)
                 .query(UUID.class)
                 .single();
+        jdbc.sql("""
+                INSERT INTO mart.metric_value_evaluation(metric_value_id,calculation_run_id,evaluated_at)
+                VALUES (:value,:run,:evaluated) ON CONFLICT DO NOTHING
+                """).param("value",actualId).param("run",calculationRunId)
+                .param("evaluated",Timestamp.from(computedAt)).update();
+        return actualId;
     }
 
     /** Record one thing a value was derived from. */
@@ -186,13 +194,42 @@ public class MetricRepository {
                                                   UUID subjectId,
                                                   MetricWindow window) {
         return jdbc.sql(currentValueSql() + " AND value.metric_code = :metricCode"
-                        + " ORDER BY value.computed_at DESC, value.id DESC LIMIT 1")
+                        + " ORDER BY greatest(value.computed_at,proof.verified_at) DESC, value.computed_at DESC, value.id DESC LIMIT 1")
                 .param("metricCode", metricCode.name())
                 .param("subjectKind", subjectKind.name())
                 .param("subjectId", subjectId)
                 .param("windowCode", window.name())
                 .query(MetricRepository::mapValue)
                 .optional();
+    }
+
+    /** Current values for one bounded page, using the same authority and version order as a single read. */
+    public Map<UUID, Map<MetricCode, MetricValueView>> currentValuesForSubjects(
+            SubjectKind subjectKind, List<UUID> subjectIds, MetricWindow window,
+            Set<MetricCode> metricCodes) {
+        List<UUID> subjects = List.copyOf(subjectIds);
+        Set<MetricCode> codes = Set.copyOf(metricCodes);
+        if (subjects.size() > 500) {
+            throw new IllegalArgumentException("A current-value page is limited to 500 subjects");
+        }
+        if (subjects.isEmpty() || codes.isEmpty()) return Map.of();
+        List<MetricValueView> latest = jdbc.sql(currentValueSql(true)
+                        + " AND value.metric_code IN (:metricCodes)"
+                        + " ORDER BY value.subject_id, value.metric_code,"
+                        + " greatest(value.computed_at,proof.verified_at) DESC,"
+                        + " value.computed_at DESC, value.id DESC")
+                .param("subjectKind", subjectKind.name())
+                .param("subjectIds", subjects)
+                .param("windowCode", window.name())
+                .param("metricCodes", codes.stream().map(Enum::name).sorted().toList())
+                .query(MetricRepository::mapValue).list();
+        Map<UUID, Map<MetricCode, MetricValueView>> values = new HashMap<>();
+        for (MetricValueView value : latest) {
+            values.computeIfAbsent(value.subjectId(), ignored -> new EnumMap<>(MetricCode.class))
+                    .put(value.metricCode(), value);
+        }
+        values.replaceAll((subject, byCode) -> Map.copyOf(byCode));
+        return Map.copyOf(values);
     }
 
     /**
@@ -217,10 +254,24 @@ public class MetricRepository {
                 java.util.Objects.requireNonNull(at, "at"));
     }
 
+    public Map<MetricCode, MetricValueView> currentValuesCoveringAt(SubjectKind subjectKind,
+            UUID subjectId, MetricWindow window, Instant cohortFrom, Instant cohortTo, Instant at) {
+        java.util.Objects.requireNonNull(cohortFrom, "cohortFrom");
+        java.util.Objects.requireNonNull(cohortTo, "cohortTo");
+        java.util.Objects.requireNonNull(at, "at");
+        if (!cohortFrom.isBefore(cohortTo) || cohortTo.isAfter(at)) return Map.of();
+        return currentValues(subjectKind, subjectId, window, at, cohortFrom, cohortTo);
+    }
+
     private Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
                                                             UUID subjectId,
                                                             MetricWindow window,
                                                             Instant at) {
+        return currentValues(subjectKind, subjectId, window, at, null, null);
+    }
+
+    private Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
+            UUID subjectId, MetricWindow window, Instant at, Instant cohortFrom, Instant cohortTo) {
         List<MetricValueView> latest = jdbc.sql("""
                         SELECT DISTINCT ON (value.metric_code)
                                value.id, value.metric_code, value.definition_version,
@@ -229,18 +280,24 @@ public class MetricRepository {
                                value.numeric_value, value.currency_code,
                                value.confidence_state, value.estimated,
                                value.oldest_source_time, value.freshness_seconds,
-                               value.input_digest, value.computed_at
+                               value.input_digest, value.computed_at, proof.verified_at, proof.verification_run_id
                           FROM mart.metric_value AS value
+                          CROSS JOIN LATERAL mart.metric_value_verification(value.id,CAST(:at AS timestamptz)) proof
                          WHERE value.subject_kind = :subjectKind
                            AND value.subject_id = :subjectId
                            AND value.window_code = :windowCode
                            AND (CAST(:at AS timestamptz) IS NULL OR value.computed_at <= :at)
-                         ORDER BY value.metric_code, value.computed_at DESC, value.id DESC
+                           AND (CAST(:cohortFrom AS timestamptz) IS NULL OR (
+                               value.period_start <= :cohortFrom AND value.period_end >= :cohortTo
+                               AND value.period_end <= :at))
+                         ORDER BY value.metric_code, greatest(value.computed_at,proof.verified_at) DESC, value.computed_at DESC, value.id DESC
                         """)
                 .param("subjectKind", subjectKind.name())
                 .param("subjectId", subjectId)
                 .param("windowCode", window.name())
                 .param("at", at == null ? null : Timestamp.from(at))
+                .param("cohortFrom", cohortFrom == null ? null : Timestamp.from(cohortFrom))
+                .param("cohortTo", cohortTo == null ? null : Timestamp.from(cohortTo))
                 .query(MetricRepository::mapValue)
                 .list();
 
@@ -253,7 +310,7 @@ public class MetricRepository {
     public List<MetricValueView> history(MetricCode metricCode, SubjectKind subjectKind,
                                          UUID subjectId, MetricWindow window, int limit) {
         return jdbc.sql(currentValueSql() + " AND value.metric_code = :metricCode"
-                        + " ORDER BY value.computed_at DESC, value.id DESC LIMIT :pageLimit")
+                        + " ORDER BY greatest(value.computed_at,proof.verified_at) DESC, value.computed_at DESC, value.id DESC LIMIT :pageLimit")
                 .param("metricCode", metricCode.name())
                 .param("subjectKind", subjectKind.name())
                 .param("subjectId", subjectId)
@@ -307,18 +364,24 @@ public class MetricRepository {
     }
 
     private static String currentValueSql() {
+        return currentValueSql(false);
+    }
+
+    private static String currentValueSql(boolean page) {
         return """
-                SELECT value.id, value.metric_code, value.definition_version,
+                SELECT %s value.id, value.metric_code, value.definition_version,
                        value.subject_kind, value.subject_id, value.window_code,
                        value.period_start, value.period_end, value.value_state,
                        value.numeric_value, value.currency_code, value.confidence_state,
                        value.estimated, value.oldest_source_time, value.freshness_seconds,
-                       value.input_digest, value.computed_at
+                       value.input_digest, value.computed_at, proof.verified_at, proof.verification_run_id
                   FROM mart.metric_value AS value
+                  CROSS JOIN LATERAL mart.metric_value_verification(value.id,NULL::timestamptz) proof
                  WHERE value.subject_kind = :subjectKind
-                   AND value.subject_id = :subjectId
+                   AND %s
                    AND value.window_code = :windowCode
-                """;
+                """.formatted(page ? "DISTINCT ON (value.subject_id, value.metric_code)" : "",
+                        page ? "value.subject_id IN (:subjectIds)" : "value.subject_id = :subjectId");
     }
 
     private static MetricValueView mapValue(ResultSet rows, int rowNumber) throws SQLException {
@@ -343,6 +406,8 @@ public class MetricRepository {
                 freshnessSeconds,
                 rows.getString("input_digest"),
                 rows.getTimestamp("computed_at").toInstant(),
-                new ArrayList<>());
+                new ArrayList<>(),
+                rows.getTimestamp("verified_at") == null ? null : rows.getTimestamp("verified_at").toInstant(),
+                rows.getObject("verification_run_id",UUID.class));
     }
 }

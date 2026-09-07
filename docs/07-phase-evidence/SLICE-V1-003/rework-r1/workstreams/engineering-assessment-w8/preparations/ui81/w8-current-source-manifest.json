@@ -1,0 +1,703 @@
+{
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "createdAtUTC": "2026-09-05T13:23:47.331580+00:00",
+  "files": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+      "w8Sha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "w6Sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "w8Sha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "w6Sha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+      "w8Sha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+      "w6Sha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+      "w8Sha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "w6Sha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityBindingIT.java",
+      "w8Sha256": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373",
+      "w6Sha256": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+      "w8Sha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+      "w6Sha256": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
+      "w8Sha256": "5240dff30fa59893e3b517570029cb36d75b9fe187d0a10294a6c8d3ebf57408",
+      "w6Sha256": "5240dff30fa59893e3b517570029cb36d75b9fe187d0a10294a6c8d3ebf57408",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+      "w8Sha256": "e4bc090e797b347a55f38be0c18961c26cc66231f3932fe0ecbb91e94a1ca8c9",
+      "w6Sha256": "e4bc090e797b347a55f38be0c18961c26cc66231f3932fe0ecbb91e94a1ca8c9",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+      "w8Sha256": "b3ba3341fa2920a16e6341af1f1caf082675ec9e4afdc0f381d55e95c5b52b13",
+      "w6Sha256": "b3ba3341fa2920a16e6341af1f1caf082675ec9e4afdc0f381d55e95c5b52b13",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+      "w8Sha256": "090f94fe8dfef39af895629d1d6fa8c289a1a5594933e48409a9cabb6fe9717e",
+      "w6Sha256": "090f94fe8dfef39af895629d1d6fa8c289a1a5594933e48409a9cabb6fe9717e",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingR1Fixture.java",
+      "w8Sha256": "c0e196b959251a6abf0208cc2fa4e79d71afe434f07de80c74dd6564894a3aed",
+      "w6Sha256": "c0e196b959251a6abf0208cc2fa4e79d71afe434f07de80c74dd6564894a3aed",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "w8Sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "w6Sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "w8Sha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+      "w6Sha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+      "w8Sha256": "a2c89d0f8e1868999332ff5e8f5bf59aedd2c681396d410ca6fc0ef4961bf192",
+      "w6Sha256": "a2c89d0f8e1868999332ff5e8f5bf59aedd2c681396d410ca6fc0ef4961bf192",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+      "w8Sha256": "19185459edd96213990890f7c00552683569b1d11aaa7b291d7347061aeb9528",
+      "w6Sha256": "19185459edd96213990890f7c00552683569b1d11aaa7b291d7347061aeb9528",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+      "w8Sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+      "w6Sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "w8Sha256": "98ca03d95da591ffedafc691e7b61a9b91cb3ec00792cf70090250c8f33928e6",
+      "w6Sha256": "98ca03d95da591ffedafc691e7b61a9b91cb3ec00792cf70090250c8f33928e6",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+      "w8Sha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "w6Sha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "w8Sha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+      "w6Sha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/api/advertising.ts",
+      "w8Sha256": "ddcb09ab7af193001b3f7c89c1bc68090b152fa0e7c34ce95ae1aa4c87849091",
+      "w6Sha256": "ddcb09ab7af193001b3f7c89c1bc68090b152fa0e7c34ce95ae1aa4c87849091",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingOperations.tsx",
+      "w8Sha256": "8fbf54edbdce1a65153a931f12721198dd9dd9027b4e08bf86cbf60851c02a46",
+      "w6Sha256": "8fbf54edbdce1a65153a931f12721198dd9dd9027b4e08bf86cbf60851c02a46",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "w8Sha256": "aa30f489eaf8ee4c1012d337b01db7fdecaac1879086a03a0960b5ffd6cada6e",
+      "w6Sha256": "aa30f489eaf8ee4c1012d337b01db7fdecaac1879086a03a0960b5ffd6cada6e",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+      "w8Sha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+      "w6Sha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingOutcomeHistory.tsx",
+      "w8Sha256": "0676ecdfcd99c6464c4ee59c557c36b3c114c43e99458835d61c18d3c88b0942",
+      "w6Sha256": "0676ecdfcd99c6464c4ee59c557c36b3c114c43e99458835d61c18d3c88b0942",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingTimestamp.tsx",
+      "w8Sha256": "61cff677b97a4145196454cb35a6e7b7cef3c3593ce02152f6c5c28854e72094",
+      "w6Sha256": "61cff677b97a4145196454cb35a6e7b7cef3c3593ce02152f6c5c28854e72094",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+      "w8Sha256": "0203a5fe6cf5091e3d4a918f1998daf186c99c797d29811ceca10b35d52b7373",
+      "w6Sha256": "0203a5fe6cf5091e3d4a918f1998daf186c99c797d29811ceca10b35d52b7373",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "w8Sha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e",
+      "w6Sha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+      "w8Sha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb",
+      "w6Sha256": null,
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+      "w8Sha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f",
+      "w6Sha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+      "w8Sha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+      "w6Sha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java",
+      "w8Sha256": "deea07ccaaef8c0085fb07d8560fc5604f0f17b93294b7df7f393370064d086d",
+      "w6Sha256": "deea07ccaaef8c0085fb07d8560fc5604f0f17b93294b7df7f393370064d086d",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+      "w8Sha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+      "w6Sha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+      "w8Sha256": "eab28112f6a9e30fc20fcb8dbc48eb3cda3b0fc09966101e49e7de6f27d1c708",
+      "w6Sha256": "eab28112f6a9e30fc20fcb8dbc48eb3cda3b0fc09966101e49e7de6f27d1c708",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+      "w8Sha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+      "w6Sha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+      "w8Sha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+      "w6Sha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "w8Sha256": "03d4ad863ee0a24a36b9a03f0385b354b3161325b2d90ab3452749312896c5a6",
+      "w6Sha256": "03d4ad863ee0a24a36b9a03f0385b354b3161325b2d90ab3452749312896c5a6",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "w8Sha256": "72bc072528cd7292f4dc68522d1285dd09076cdaf3f0d3bec7d5640f93aec50c",
+      "w6Sha256": "72bc072528cd7292f4dc68522d1285dd09076cdaf3f0d3bec7d5640f93aec50c",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+      "w8Sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+      "w6Sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdLaneResolverTest.java",
+      "w8Sha256": "6064683ad71c2fb1920cb5b82a255ba9cf6dbde261bdbe04cceadf4d198256f9",
+      "w6Sha256": "6064683ad71c2fb1920cb5b82a255ba9cf6dbde261bdbe04cceadf4d198256f9",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+      "w8Sha256": "2a463e17c6acf58272c14431835013f97a0f1e21c7410338c5b0d42bf716804f",
+      "w6Sha256": "2a463e17c6acf58272c14431835013f97a0f1e21c7410338c5b0d42bf716804f",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+      "w8Sha256": "ee45398e237631a12adaba76d64b9daa1ee3beeed81253d9a7030b7a702eff9f",
+      "w6Sha256": "ee45398e237631a12adaba76d64b9daa1ee3beeed81253d9a7030b7a702eff9f",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+      "w8Sha256": "276049ce3b78d4338895c49016b00fbdd8c371612e71f153963e5be8adfb7f3f",
+      "w6Sha256": "276049ce3b78d4338895c49016b00fbdd8c371612e71f153963e5be8adfb7f3f",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingCommandTimeline.tsx",
+      "w8Sha256": "f02237f0a69248cd31a1e4e6b7a442ded052eff8d789caf8aef766dbccf15a68",
+      "w6Sha256": "f02237f0a69248cd31a1e4e6b7a442ded052eff8d789caf8aef766dbccf15a68",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/api/console.ts",
+      "w8Sha256": "9f629d362ad6c5a24a07a50f2e643baab3be15cca94897c00a3a692c90694ae2",
+      "w6Sha256": "9f629d362ad6c5a24a07a50f2e643baab3be15cca94897c00a3a692c90694ae2",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+      "w8Sha256": "94895201e2d9c297d6461eb7ffb9f8b4cf63e494a497bdab52e167fb3a525f87",
+      "w6Sha256": "94895201e2d9c297d6461eb7ffb9f8b4cf63e494a497bdab52e167fb3a525f87",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+      "w8Sha256": "cfc7f3693b52f857b4d6329cead9ded9f03f5dcb0bb98516fe15e70bd59c2a34",
+      "w6Sha256": "cfc7f3693b52f857b4d6329cead9ded9f03f5dcb0bb98516fe15e70bd59c2a34",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+      "w8Sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+      "w6Sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+      "w8Sha256": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea",
+      "w6Sha256": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+      "w8Sha256": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c",
+      "w6Sha256": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingManualWorkflowService.java",
+      "w8Sha256": "7eb6822cde6033c8a5a4892fe10f99b47a80b46256ac3299edf406695c49f4b5",
+      "w6Sha256": "7eb6822cde6033c8a5a4892fe10f99b47a80b46256ac3299edf406695c49f4b5",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+      "w8Sha256": "ad4e82fb0915f0d2bc3657d615de244e621c95f6e245fd8f5bfc5a8e642bd0b1",
+      "w6Sha256": "ad4e82fb0915f0d2bc3657d615de244e621c95f6e245fd8f5bfc5a8e642bd0b1",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java",
+      "w8Sha256": "fe1a2814e81bf3e693e35be472f78f79dd0fdeba819df39329493e69668dec2e",
+      "w6Sha256": "fe1a2814e81bf3e693e35be472f78f79dd0fdeba819df39329493e69668dec2e",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingManualControls.tsx",
+      "w8Sha256": "d5ff7444e5814db0af631f42bac26416f0ddb97cb1c15b09d84fd07de056f13d",
+      "w6Sha256": "d5ff7444e5814db0af631f42bac26416f0ddb97cb1c15b09d84fd07de056f13d",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "w8Sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+      "w6Sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+      "w8Sha256": "909f3cf74814bf90bf0add6180762b7aa6e85f191a193c24ad3bad9b1a6bdf5b",
+      "w6Sha256": "909f3cf74814bf90bf0add6180762b7aa6e85f191a193c24ad3bad9b1a6bdf5b",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/AdvertisingOutcomeView.java",
+      "w8Sha256": "9565ebaf5bb4a2be731e6ab92dc27d595f4d2f0899a93a2af03de32095767751",
+      "w6Sha256": "9565ebaf5bb4a2be731e6ab92dc27d595f4d2f0899a93a2af03de32095767751",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+      "w8Sha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "w6Sha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+      "w8Sha256": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d",
+      "w6Sha256": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "w8Sha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+      "w6Sha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefService.java",
+      "w8Sha256": "aaa07716102c4c455866929031526b85084e00e8169a7fb1e4d33c3c98a0aa52",
+      "w6Sha256": "aaa07716102c4c455866929031526b85084e00e8169a7fb1e4d33c3c98a0aa52",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
+      "w8Sha256": "938cd6958d37d9729c47743a63f668c04a49b80dda4508b280a35a401f756953",
+      "w6Sha256": "938cd6958d37d9729c47743a63f668c04a49b80dda4508b280a35a401f756953",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "w8Sha256": "338f23bae7d5aadafd05cefd0eaa2d57bf2568934e8e1c4dc37658e231336028",
+      "w6Sha256": "338f23bae7d5aadafd05cefd0eaa2d57bf2568934e8e1c4dc37658e231336028",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "w8Sha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "w6Sha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "w8Sha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "w6Sha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java",
+      "w8Sha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+      "w6Sha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "w8Sha256": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "w6Sha256": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+      "w8Sha256": "b043ba4febdb3b5b9b2e663f64f6a2526b0ef632dbfb25f18cc2b5f78b34fcd1",
+      "w6Sha256": "b043ba4febdb3b5b9b2e663f64f6a2526b0ef632dbfb25f18cc2b5f78b34fcd1",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/SoleAuthorityArchitectureTest.java",
+      "w8Sha256": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f",
+      "w6Sha256": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/IngestionAuthorityArchitectureTest.java",
+      "w8Sha256": "a88856f958e1df3b7387f611a0b4a36d6adb122e401f930f14ebc083a714f008",
+      "w6Sha256": "a88856f958e1df3b7387f611a0b4a36d6adb122e401f930f14ebc083a714f008",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+      "w8Sha256": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5",
+      "w6Sha256": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5",
+      "w6BytesEqualW8": true,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    }
+  ],
+  "sourceChangesFromW6": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+      "w8Sha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "w6Sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "w8Sha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "w6Sha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+      "w8Sha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+      "w6Sha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+      "w8Sha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+      "w6Sha256": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "w8Sha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e",
+      "w6Sha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+      "w8Sha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb",
+      "w6Sha256": null,
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+      "w8Sha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+      "w6Sha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+      "w6BytesEqualW8": false,
+      "currentWorkingBytesEqualW8": true,
+      "committedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "committedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38"
+    }
+  ],
+  "limit": "Current source equality to exact committed W8 was read, not a test execution."
+}

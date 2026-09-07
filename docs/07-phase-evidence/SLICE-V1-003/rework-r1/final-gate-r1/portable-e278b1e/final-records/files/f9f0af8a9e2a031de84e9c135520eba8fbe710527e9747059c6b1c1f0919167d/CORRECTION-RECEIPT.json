@@ -1,0 +1,89 @@
+{
+  "kind": "CURRENT_GOVERNANCE_PHASE_TEST_CORRECTION",
+  "at": "2026-09-06T12:01:55.137848+00:00",
+  "sourceChanges": [
+    {
+      "path": "tests/test_validate_governance.py",
+      "beforeSha256": "6cadc2b0c79df34000d69674cd7d96af110c60bb7c05960ebae7944ebb86f778",
+      "afterSha256": "476a71bf881a6826a80a3306e0862f7c504333fc01ba5d2ce23170036d824be4"
+    }
+  ],
+  "unchangedOriginalInventoryFiles": 1279,
+  "runtimeApplicationAndMigrationSourcesChanged": false,
+  "forbiddenActorAndScopeMutationsRetained": true,
+  "precedingProduct": {
+    "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+    "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+    "inventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+    "conjunctiveManifest": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05/EXECUTION-MANIFEST.json",
+      "sha256": "391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05"
+    },
+    "currentPublicationGatePassed": false
+  },
+  "preservedActualOutputs": [
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json",
+      "preserved": {
+        "path": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/EXECUTION-MANIFEST.json",
+        "sha256": "391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05",
+        "bytes": 9406286
+      },
+      "preservedRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05/EXECUTION-MANIFEST.json"
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md",
+      "preserved": {
+        "path": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/CURRENT-ENGINEERING-HANDOFF.md",
+        "sha256": "922a17d9c8026a8eafe8b8188dca2ee473bfd43e11c3d712de04b5ced86d41f6",
+        "bytes": 9555
+      },
+      "preservedRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/922a17d9c8026a8eafe8b8188dca2ee473bfd43e11c3d712de04b5ced86d41f6/CURRENT-ENGINEERING-HANDOFF.md"
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/FROZEN-CLAUSE-ASSESSMENT.json",
+      "preserved": {
+        "path": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/FROZEN-CLAUSE-ASSESSMENT.json",
+        "sha256": "d5f34c5e2f82fe694ce8f93506bcf29c85fb7f48c0ca2001980d4e75903d5d50",
+        "bytes": 12693212
+      },
+      "preservedRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/d5f34c5e2f82fe694ce8f93506bcf29c85fb7f48c0ca2001980d4e75903d5d50/FROZEN-CLAUSE-ASSESSMENT.json"
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json",
+      "preserved": {
+        "path": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/ENGINEERING_VERIFICATION.json",
+        "sha256": "6cec3cdf35d5a55fbf17cee0cad7d54affc757555f0643824cf70eb8e6d91843",
+        "bytes": 1052860
+      },
+      "preservedRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/6cec3cdf35d5a55fbf17cee0cad7d54affc757555f0643824cf70eb8e6d91843/ENGINEERING_VERIFICATION.json"
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json",
+      "preserved": {
+        "path": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/S3-AC-REWORK-STATUS.json",
+        "sha256": "7a768dccd2523a6367b0c2de1767c8151bc7d13d64cfdfbe3e2a9d1ba1415e33",
+        "bytes": 6223046
+      },
+      "preservedRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/7a768dccd2523a6367b0c2de1767c8151bc7d13d64cfdfbe3e2a9d1ba1415e33/S3-AC-REWORK-STATUS.json"
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json",
+      "preserved": {
+        "path": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/FINDING-CLOSURE-MATRIX.json",
+        "sha256": "defd2844db3848a7ddf0269c6eee2a36af619ea50ad5cafa721b94efa7131490",
+        "bytes": 2464132
+      },
+      "preservedRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/defd2844db3848a7ddf0269c6eee2a36af619ea50ad5cafa721b94efa7131490/FINDING-CLOSURE-MATRIX.json"
+    }
+  ],
+  "fullCompletedFailedDocumentTests": {
+    "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/all-governance-tests.log",
+    "sha256": "118401f9c8f40bf82e092bdd336f315fdcb43c46ea2d4ce4589252b1b19ab642",
+    "bytes": 88355
+  },
+  "failureCount": 2,
+  "testCount": 421,
+  "currentEngineeringClosureClaimMade": false,
+  "productionWriteEnabled": false
+}

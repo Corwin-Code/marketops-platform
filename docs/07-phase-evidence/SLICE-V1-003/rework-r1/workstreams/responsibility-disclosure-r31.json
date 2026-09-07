@@ -1,0 +1,28 @@
+{
+  "kind": "TARGETED_DEVELOPMENT_VERIFICATION",
+  "sourceBinding": "W1 HEAD 60638b1fc1a227b50f4b3ede1ba0bb983407bfdc plus explicitly uncommitted R1 changes; not exact-W1 complete-source evidence",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "argv": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+    "-Dtest=AdvertisingResponsibilityBoundaryIT,AdvertisingDisclosureIT",
+    "test"
+  ],
+  "exitCode": 0,
+  "tests": 14,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "classes": {
+    "AdvertisingResponsibilityBoundaryIT": 8,
+    "AdvertisingDisclosureIT": 6
+  },
+  "elapsedSeconds": 34.787,
+  "finishedAt": "2026-09-05T11:43:47+08:00",
+  "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-responsibility-disclosure-r31.log",
+  "logSha256": "5e876620861daf7358e69e16adb173ff3941191613c6abfc4ddcd2f2438bb695",
+  "scope": "Synthetic isolated PostgreSQL and actual HTTP disclosure/response ownership tests. Full clean immutable checkpoint remains pending.",
+  "productionWriteEnabled": false
+}

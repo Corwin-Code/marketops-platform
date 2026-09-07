@@ -1,0 +1,123 @@
+{
+  "kind": "THREE_EXISTING_CLAUSE_METHODS_ABSENT_ONLY_FROM_359_CRITERION_JOIN",
+  "measuredHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "fullRunReceipt": {
+    "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/run-receipt.json",
+    "sha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0"
+  },
+  "references": [
+    {
+      "id": "EXTRA_03c710e9b2b582330ecd",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+      "method": "coveredPlatformFeesDoNotRequireASecondPromotionFeed",
+      "proofLayer": "W8_BACKEND_NAMED_ASSERTION",
+      "source": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+        "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+        "sha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+        "matchesFrozenBackendManifest": true
+      },
+      "actualCases": [
+        {
+          "reportPath": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+          "reportSha256": "50599eb51c18b426535ffbd88c43f2d3584b442e3f56d6bca828f2c74a516fde",
+          "suiteOrdinal": 0,
+          "testcaseOrdinal": 27,
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+          "rawName": "coveredPlatformFeesDoNotRequireASecondPromotionFeed",
+          "rawClassname": "TC-AD-CALC-006 the deep measures are computed, or refused for a stated reason",
+          "identityRule": "EXACT_REPORT_OUTER_FQCN_SOURCE_NESTED_DISPLAYNAME_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest$DeepMeasures",
+          "declarationLine": 467,
+          "seconds": "0.001",
+          "actualStatus": "PASSED",
+          "nodeSha256": "0ceb9ae5f2e972988c9f550248700bbe67a1e413d15935959f4afae0dbad9496",
+          "nodeHashBoundary": "ElementTree serialization; original XML SHA is the raw-byte authority",
+          "frozenRawBytesIndependentlyRechecked": true
+        }
+      ],
+      "executionStatus": "ALL_EXACT_NAMED_CASES_PASSED",
+      "fullReceipt": {
+        "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/run-receipt.json",
+        "sha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0"
+      },
+      "scope": "Existing accepted-clause assertion absent only from criterion join plan; no new test/run invented."
+    },
+    {
+      "id": "EXTRA_4c9783328cb53842398f",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+      "method": "grantFromDifferentPhysicalApplicationSessionCannotBeReplayed",
+      "proofLayer": "W8_BACKEND_NAMED_ASSERTION",
+      "source": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+        "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+        "matchesFrozenBackendManifest": true
+      },
+      "actualCases": [
+        {
+          "reportPath": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingSealedAuthorityIT.xml",
+          "reportSha256": "c3dae9ce6d89c5e7ba7502001cce2bd00f900957037cb9b2c17ddbe29116ff9b",
+          "suiteOrdinal": 0,
+          "testcaseOrdinal": 2,
+          "suiteName": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "rawName": "grantFromDifferentPhysicalApplicationSessionCannotBeReplayed",
+          "rawClassname": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "declarationLine": 91,
+          "seconds": "0.197",
+          "actualStatus": "PASSED",
+          "nodeSha256": "8f28f686dde75a011f4e53b27c64f2372e35668425901c75b016716f9da4da20",
+          "nodeHashBoundary": "ElementTree serialization; original XML SHA is the raw-byte authority",
+          "frozenRawBytesIndependentlyRechecked": true
+        }
+      ],
+      "executionStatus": "ALL_EXACT_NAMED_CASES_PASSED",
+      "fullReceipt": {
+        "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/run-receipt.json",
+        "sha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0"
+      },
+      "scope": "Existing accepted-clause assertion absent only from criterion join plan; no new test/run invented."
+    },
+    {
+      "id": "EXTRA_7e744e536498cd51c7b2",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+      "method": "arbitraryApplicationGucCannotImpersonateFinalApprover",
+      "proofLayer": "W8_BACKEND_NAMED_ASSERTION",
+      "source": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+        "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+        "matchesFrozenBackendManifest": true
+      },
+      "actualCases": [
+        {
+          "reportPath": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingSealedAuthorityIT.xml",
+          "reportSha256": "c3dae9ce6d89c5e7ba7502001cce2bd00f900957037cb9b2c17ddbe29116ff9b",
+          "suiteOrdinal": 0,
+          "testcaseOrdinal": 12,
+          "suiteName": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "rawName": "arbitraryApplicationGucCannotImpersonateFinalApprover",
+          "rawClassname": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "declarationLine": 80,
+          "seconds": "0.171",
+          "actualStatus": "PASSED",
+          "nodeSha256": "114a9447372e410dbbd0992de2b31b15fc10ba845134482ceac919ed785006ba",
+          "nodeHashBoundary": "ElementTree serialization; original XML SHA is the raw-byte authority",
+          "frozenRawBytesIndependentlyRechecked": true
+        }
+      ],
+      "executionStatus": "ALL_EXACT_NAMED_CASES_PASSED",
+      "fullReceipt": {
+        "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/run-receipt.json",
+        "sha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0"
+      },
+      "scope": "Existing accepted-clause assertion absent only from criterion join plan; no new test/run invented."
+    }
+  ],
+  "assertionLayer": "Existing W8 JUnit cases/source bytes; no new execution/test authored.",
+  "controllerVerdict": null
+}

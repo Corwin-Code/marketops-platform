@@ -1,0 +1,31 @@
+{
+  "kind": "POST_W5_R1_ROLE_AND_SCOPE_FIXTURE_SAME_CLASS_REVIEW",
+  "publishedStartingHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "cause": "The strengthened R1 fixture now creates the Maker role and organizational TASK_ACT needed by real command authorization. Specialized browser/disclosure fixtures must reuse it or explicitly revoke and replace broad scope before testing narrower access.",
+  "reviewedScope": "All Java test sources containing AdvertisingR1Fixture plus role assignment/scope grant insertions; all UserAdministrationService.assignRole call sites in backend test sources.",
+  "changes": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserFixtureApplication.java",
+      "behavior": "Reuse three seeded Maker roles and two seeded TASK_ACT grants; pagination uses real versioned revokeScope to remove broad TASK_ACT and grants only its intended Store/ProductVariant scopes. Historical grant and invalidation controls remain."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+      "behavior": "Reuse three seeded Maker roles and one seeded TASK_ACT grant. Original GraphFixture-only role assignments and every business assertion remain unchanged."
+    }
+  ],
+  "otherReviewedPaths": {
+    "AdvertisingFinanceReviewIT": "Adds a new, separately generated Finance user; no duplicate Maker identity.",
+    "AdvertisingResponsibilityBoundaryIT": "Conflict-preserving seeded role reuse; scoped-negative assignee is verifier, which has no seeded organizational TASK_ACT.",
+    "AdvertisingHumanWorkflowIT": "Existing explicit ON CONFLICT DO NOTHING role/grant fixture reuse.",
+    "AdvertisingManualWorkflowIT": "Existing explicit ON CONFLICT DO NOTHING role/grant fixture reuse.",
+    "AdvertisingOrdinaryApprovalIT": "Existing explicit ON CONFLICT DO NOTHING role/grant fixture reuse.",
+    "AdvertisingVerticalPathIT": "Existing explicit ON CONFLICT DO NOTHING role/grant fixture reuse.",
+    "Other assignRole callers": "Use independent Shared/Graph/new-user fixtures, not the strengthened R1 Maker."
+  },
+  "verification": {
+    "r23": "All 175 actual cases in 15 complete classes pass at exact archived source bytes, including all AdvertisingDisclosureIT cases and affected human/manual/ordinary/vertical classes.",
+    "browser": "Advertising r5 stopped before any page at duplicate role setup. The corrected driver still requires a new exact committed browser run.",
+    "finalFullAndCI": "PENDING"
+  },
+  "production_write_enabled": false
+}

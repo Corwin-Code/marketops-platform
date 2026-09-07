@@ -1,0 +1,173 @@
+{
+  "attempt": "r1",
+  "sourceCommit": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "sourceTree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+  "wrapperSha256": "a56a698c319a8ee8b80f844977af3e5a684f63d6dc88b20369795a89f333bcd1",
+  "startedAt": "2026-09-05T10:25:02.735934+00:00",
+  "isolation": "Exact git archive in an independent /tmp directory; unique Compose project and fresh synthetic database; legacy inputs preserved except the recorded authorized six-axis Exposure fixture upgrade",
+  "realProviderAccess": false,
+  "productionWriteEnabled": false,
+  "sourceInputsSha256": "526dbec1db78da73a73c72f57966145a4aba5d59e2500d3e0b042a955d03f39c",
+  "legacyInputDeltaSha256": "c40db35b5c7822eaa0c6294a2ff3a9c161da3489a63347da3b7f034786c95ca5",
+  "runtimeResources": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/runtime-resources.json",
+    "sha256": "665c99043fbf404d0d726f2ccd0b74824ba778df9e5677560347bfcfa3fcbcd7",
+    "measurement": {
+      "schemaVersion": "1.0",
+      "recordedAt": "2026-09-05T10:25:05.865203+00:00",
+      "host": {
+        "os": "Darwin",
+        "architecture": "arm64",
+        "logicalProcessors": 8,
+        "physicalMemoryBytes": 17179869184,
+        "processAffinityProcessors": null
+      },
+      "docker": {
+        "logicalProcessors": 4,
+        "memoryBytes": 6210576384,
+        "serverVersion": "29.7.2"
+      },
+      "github": {
+        "runId": null,
+        "runAttempt": null,
+        "job": null,
+        "testedCheckout": null
+      },
+      "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+    }
+  },
+  "database": {
+    "composeProject": "slice3-legacy-rwwswr9r",
+    "loopbackPort": 52612,
+    "provider": "isolated PostgreSQL",
+    "image": "a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636"
+  },
+  "packageLockSha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332",
+  "failure": "Command failed; see exact command runtime log",
+  "cleanupExitCode": 0,
+  "runtimeLogSha256": "f54c544d6e9ce354b75089201dcb0146267d90d06ffdb87bae4edbddc0421aff",
+  "finishedAt": "2026-09-05T10:25:34.233955+00:00",
+  "durationSeconds": 31.498,
+  "exitCode": 1,
+  "result": "FAILED",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/validation/collect_slice3_runtime_resources.py",
+        "--output",
+        "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/runtime-resources.json"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source",
+      "startedAt": "2026-09-05T10:25:04.862676+00:00",
+      "finishedAt": "2026-09-05T10:25:05.871985+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/00-command.log",
+      "logSha256": "b208f20263c434c9a04f7275aa7e5d869c94c6b1fa6992becb835836838a3900"
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "slice3-legacy-rwwswr9r",
+        "--env-file",
+        "/tmp/marketops-legacy-browser-rwwswr9r/source/.env.local",
+        "-f",
+        "/tmp/marketops-legacy-browser-rwwswr9r/source/infra/compose/docker-compose.yml",
+        "up",
+        "-d",
+        "--wait",
+        "postgres"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source",
+      "startedAt": "2026-09-05T10:25:05.872403+00:00",
+      "finishedAt": "2026-09-05T10:25:11.975280+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/01-command.log",
+      "logSha256": "a619b29b358ea31439357e892f6d9ec9416c36e99190fa90061480e7bead6282"
+    },
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T10:25:12.229633+00:00",
+      "finishedAt": "2026-09-05T10:25:14.739989+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/02-command.log",
+      "logSha256": "d7774e149cef726cb0c90fc1ade0bbc66e14083160b7125d5bce1c9b7c008657"
+    },
+    {
+      "command": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T10:25:14.740334+00:00",
+      "finishedAt": "2026-09-05T10:25:15.196589+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/03-command.log",
+      "logSha256": "64cf75a4c82ba17e7bb592c2ebf87fc8a2b086c6ab457b2bbae949caba0ffb29"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T10:25:15.199539+00:00",
+      "finishedAt": "2026-09-05T10:25:17.850161+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/04-command.log",
+      "logSha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T10:25:17.850374+00:00",
+      "finishedAt": "2026-09-05T10:25:23.777724+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/05-command.log",
+      "logSha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T10:25:23.777901+00:00",
+      "finishedAt": "2026-09-05T10:25:26.330685+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/06-command.log",
+      "logSha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:ci",
+        "--",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=../../build/supply-chain/frontend-tests.json"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-rwwswr9r/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T10:25:26.330806+00:00",
+      "finishedAt": "2026-09-05T10:25:33.686675+00:00",
+      "exitCode": 1,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/07-command.log",
+      "logSha256": "bbcd2fa4bdc61a3af78e7706eb7b8ab3495026eba5f51687d16653fc5bfbce6b"
+    }
+  ],
+  "artifacts": []
+}

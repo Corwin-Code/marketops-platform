@@ -1,0 +1,46 @@
+{
+  "kind": "IMMUTABLE_CHECKPOINT_INVENTORY_TO_EXACT_REMOTE_TESTED_TREE",
+  "sourceHead": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+  "sourceTree": "d366331b9b0ad7f8eb0f90c8536f46c0d2b9ce5e",
+  "testedMerge": "ddec24ca37d71a61772b6682e633d7536da1cb3e",
+  "testedMergeTree": "d366331b9b0ad7f8eb0f90c8536f46c0d2b9ce5e",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "1381ef78594875a1e1304e4d9a636e49d0fab71f"
+  ],
+  "sourceInventorySha256": "0270adc39585c868a5f6993b8b35324a2bd3b5addf3ebc6c67485269d43a061f",
+  "inventoryFiles": 1278,
+  "directCanonicalGitBytes": 1276,
+  "declaredCRLFConversions": 2,
+  "allInventoryMembersMatchExactRemoteTree": true,
+  "allSelectedReviewSourcesMatchExactRemoteTree": true,
+  "localImmutableGitReadback": {
+    "path": "/tmp/slice3-current-review-c-1381ef7-r1/SOURCE-PIN-RECEIPT.json",
+    "sha256": "ac7a2f1470925d0571767e74e4c8528395fba80e1791fbfb837ae5b4ebad80a0",
+    "bytes": 23658
+  },
+  "perFileGitComparison": {
+    "path": "/tmp/slice3-current-review-c-1381ef7-r1/FULL-INVENTORY-GIT-COMPARISON.json",
+    "sha256": "fb84fe35147fd6bcc94fb8cd9d231fa78841cb1587f8d067dc14ee5063715cf5",
+    "bytes": 619286
+  },
+  "remoteTree": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/source-tree-recursive.json",
+    "sha256": "f22678d0aa63903d77fe0f8a9bed3a34a1dced98d7b3a71761c3e175c437a394",
+    "bytes": 1331165
+  },
+  "sourceCommit": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/source-commit.json",
+    "sha256": "66fcd897f55a07161ad3eeb53305f24b32a9cf5291811c6a59df490501ab3a37",
+    "bytes": 1191
+  },
+  "testedMergeCommit": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/tested-merge-commit-r2.json",
+    "sha256": "2ba1d608ed64404ff4e683a21c25194b9077e1e45e5736af8e9752958a0e84f2",
+    "bytes": 2687
+  },
+  "testedMergeSignatureVerified": true,
+  "sourceCommitSignatureReason": "unsigned",
+  "currentDirtyWorktreeUsed": false,
+  "scope": "Immutable1381 Git blob data and original declared1278 source inventory only. This does not claim complete backend execution or unchanged current worktree."
+}

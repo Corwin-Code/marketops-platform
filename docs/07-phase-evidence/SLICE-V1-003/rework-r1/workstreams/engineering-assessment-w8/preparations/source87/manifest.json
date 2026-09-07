@@ -1,0 +1,45 @@
+{
+  "generatedAtUTC": "2026-09-05T13:29:12.098717+00:00",
+  "files": [
+    {
+      "path": "capacity-proof-boundary.json",
+      "bytes": 2511,
+      "sha256": "a9cd43eb8b240ea8fd73a7584f9603cf22d3f978b10138598813fd87e421d657"
+    },
+    {
+      "path": "current-w8-required-methods.json",
+      "bytes": 79997,
+      "sha256": "7bacdc746b9ba6ad71c7152885aef7f04d7b5b167cc0d09f2883ae1ad4d2d7ae"
+    },
+    {
+      "path": "current-w8-source-identities.json",
+      "bytes": 20621,
+      "sha256": "2c982da738c4acfa0aee7291c5048ae134f8e7fcaab62422f4ccaf72826c9c02"
+    },
+    {
+      "path": "historical-source87-measured-w6-review.json",
+      "bytes": 3155452,
+      "sha256": "42d4ef570c2004a141aa49fc9928697db69a8144937d8fbda42ba7c766c3dd6e"
+    },
+    {
+      "path": "historical-targeted-run-bindings.json",
+      "bytes": 1166,
+      "sha256": "74f2c99e04f671299d2ffe641ed5309cd4f6b524d1cbd93a8b00dd517dae0b79"
+    },
+    {
+      "path": "new-w8-assertion-reference-plan.json",
+      "bytes": 50859,
+      "sha256": "7932aa536fcd5835036301f58d3d9655dc229819bd264a9ec540b7c78730117a"
+    },
+    {
+      "path": "prepare-review.py",
+      "bytes": 23521,
+      "sha256": "6f6a1d3ef663845ebdf89a3203c764c90c22ed4a981a3ed077f5416129fef6c4"
+    },
+    {
+      "path": "source87-w8-prepared-review.json",
+      "bytes": 877254,
+      "sha256": "1b90313669c5a2c7f4f62f09a0cd43356664a8b2f57cc29e7120597a729f23a4"
+    }
+  ]
+}

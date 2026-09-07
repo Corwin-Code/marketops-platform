@@ -1,0 +1,149 @@
+{
+  "kind": "EXACT_RAW_HIT_CLASSIFICATION_NOT_GENERAL_PUBLICATION_AUTHORITY",
+  "sourceHead": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+  "sourceTree": "4fe4ffd46ff408ff97cd59a2b676c575a73982ac",
+  "sourceInventorySha256": "2f0e83ee4c70a445e9e8ac4191ef0bd86629b3639f5d7b6e3bb472939bfc6986",
+  "checkpointDisposition": "COMPLETE_BACKEND_PASS_CHECKPOINT_BEFORE_SECTION_6_24_REPAIR_NOT_FINAL_CLOSURE",
+  "scanSummary": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/7e66cf8-publication-scan/SCAN-SUMMARY.json",
+    "sha256": "a2f513c32813b5d8116bdec4f537f4ca3822edc8f252f86095cee58ea460d200"
+  },
+  "hitRecords": [
+    {
+      "path": "raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451!org/springframework/security/converter/RsaKeyConverters.class#member=275",
+      "memberSha256": "5e29e7be649f5f999f92ec5e7e2ee69833801efbd2f92088af93978c34627144",
+      "rule": 1,
+      "view": "RAW_BYTES",
+      "characterOffset": 1667,
+      "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+      "classification": "DEPENDENCY_PEM_DELIMITER_OR_FORMAT_ERROR_LITERAL",
+      "reason": "The exact dependency class constant is a standard PEM delimiter or parser format-error message; all constant-pool strings contain no complete private-key block. This exception binds only this member SHA, occurrence and matched delimiter SHA.",
+      "constantPoolParseVerified": true,
+      "matchingConstantMetadata": [
+        {
+          "constantPoolIndex": 90,
+          "constantBytes": 27,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        },
+        {
+          "constantPoolIndex": 141,
+          "constantBytes": 109,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        }
+      ],
+      "exactOccurrenceAllowlisted": true,
+      "rawTokenValuePrinted": false,
+      "publishableWithinThisPatternScan": true
+    },
+    {
+      "path": "raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451!org/springframework/security/converter/RsaKeyConverters.class#member=275",
+      "memberSha256": "5e29e7be649f5f999f92ec5e7e2ee69833801efbd2f92088af93978c34627144",
+      "rule": 1,
+      "view": "RAW_BYTES",
+      "characterOffset": 2641,
+      "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+      "classification": "DEPENDENCY_PEM_DELIMITER_OR_FORMAT_ERROR_LITERAL",
+      "reason": "The exact dependency class constant is a standard PEM delimiter or parser format-error message; all constant-pool strings contain no complete private-key block. This exception binds only this member SHA, occurrence and matched delimiter SHA.",
+      "constantPoolParseVerified": true,
+      "matchingConstantMetadata": [
+        {
+          "constantPoolIndex": 90,
+          "constantBytes": 27,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        },
+        {
+          "constantPoolIndex": 141,
+          "constantBytes": 109,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        }
+      ],
+      "exactOccurrenceAllowlisted": true,
+      "rawTokenValuePrinted": false,
+      "publishableWithinThisPatternScan": true
+    },
+    {
+      "path": "raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/catalina/users/MemoryUserDatabase.class#member=635",
+      "memberSha256": "7d7c6eccf34b4e88727c1477972a7fe62e6ae1c1058089eea3b461d5550abff3",
+      "rule": 7,
+      "view": "RAW_BYTES",
+      "characterOffset": 5495,
+      "matchSha256": "39abcd0f51e4adb6579bc07c0990814eeeb3eb7325d8af8fe715995539e517ed",
+      "classification": "BINARY_REGEX_SPANS_DISTINCT_CLASS_CONSTANTS",
+      "reason": "The raw-byte regex spans multiple Java constant-pool entries used to serialize XML. Parsing actual class constants finds no single matching password/token assignment. No credential value is present in this matched sequence; exception binds this exact class SHA and occurrence only.",
+      "constantPoolParseVerified": true,
+      "matchingConstantMetadata": [],
+      "exactOccurrenceAllowlisted": true,
+      "rawTokenValuePrinted": false,
+      "publishableWithinThisPatternScan": true
+    },
+    {
+      "path": "raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/tomcat/util/net/openssl/OpenSSLContext.class#member=1542",
+      "memberSha256": "8a0505d24a30463d1fe0bd717364b4d67987525f95bf5186a8548c2ee7013860",
+      "rule": 1,
+      "view": "RAW_BYTES",
+      "characterOffset": 10606,
+      "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+      "classification": "DEPENDENCY_PEM_DELIMITER_OR_FORMAT_ERROR_LITERAL",
+      "reason": "The exact dependency class constant is a standard PEM delimiter or parser format-error message; all constant-pool strings contain no complete private-key block. This exception binds only this member SHA, occurrence and matched delimiter SHA.",
+      "constantPoolParseVerified": true,
+      "matchingConstantMetadata": [
+        {
+          "constantPoolIndex": 752,
+          "constantBytes": 28,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        },
+        {
+          "constantPoolIndex": 842,
+          "constantBytes": 30,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        }
+      ],
+      "exactOccurrenceAllowlisted": true,
+      "rawTokenValuePrinted": false,
+      "publishableWithinThisPatternScan": true
+    },
+    {
+      "path": "raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/tomcat/util/net/openssl/OpenSSLContext.class#member=1542",
+      "memberSha256": "8a0505d24a30463d1fe0bd717364b4d67987525f95bf5186a8548c2ee7013860",
+      "rule": 1,
+      "view": "RAW_BYTES",
+      "characterOffset": 12530,
+      "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+      "classification": "DEPENDENCY_PEM_DELIMITER_OR_FORMAT_ERROR_LITERAL",
+      "reason": "The exact dependency class constant is a standard PEM delimiter or parser format-error message; all constant-pool strings contain no complete private-key block. This exception binds only this member SHA, occurrence and matched delimiter SHA.",
+      "constantPoolParseVerified": true,
+      "matchingConstantMetadata": [
+        {
+          "constantPoolIndex": 752,
+          "constantBytes": 28,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        },
+        {
+          "constantPoolIndex": 842,
+          "constantBytes": 30,
+          "matchSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+          "matchedCharacters": 27
+        }
+      ],
+      "exactOccurrenceAllowlisted": true,
+      "rawTokenValuePrinted": false,
+      "publishableWithinThisPatternScan": true
+    }
+  ],
+  "totalHits": 5,
+  "exactNonSecretOccurrencesAllowlisted": 5,
+  "unreviewedOrCredentialShapedPrivateHits": 0,
+  "jwtShapedHits": 0,
+  "testTokensPermitted": false,
+  "originalBytesChanged": false,
+  "rawPublicationAuthorized": false,
+  "engineeringClosureClaimMade": false,
+  "boundary": "No blanket file or rule exclusion. Exact immutable third-party parser/serializer constants only. Any JWT/test token or new unknown hit remains private. Pattern scan is not universal PII or credential assurance; Owner publication scope still applies."
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "PRE_W5_GOVERNANCE_ORIGINAL_ARTIFACTS",
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w5-governance/make-governance.log",
+      "sha256": "aeb11cfe5c524918b5b5411630b561259f5b268c9e77506583c4b32feef97228"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w5-governance/named-unittest-results.json",
+      "sha256": "b4a181da932d2c39d1336d23d4f3c1f4902f61cc7cfd8c1bc43b900fdb64d866"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w5-governance/receipt.json",
+      "sha256": "1807375b1732675ca735ebd2e21b10343c73140b94fd81feb82e4f2f54a0d2fe"
+    }
+  ],
+  "limit": "Complete make governance with 410 actual named methods on the explicit frozen pre-W5 worktree. These original outputs are copied after execution; final clean identity and exact-head CI remain separate."
+}

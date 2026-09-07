@@ -1,0 +1,64 @@
+<testsuites id="" name="" tests="25" failures="0" skipped="0" errors="0" time="73.286541">
+<testsuite name="advertising-brief.spec.ts" timestamp="2026-09-06T17:34:18.505Z" hostname="" tests="6" failures="0" skipped="0" time="1.578" errors="0">
+<testcase name="TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token" classname="advertising-brief.spec.ts" time="0.502">
+</testcase>
+<testcase name="TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token" classname="advertising-brief.spec.ts" time="0.131">
+</testcase>
+<testcase name="TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token" classname="advertising-brief.spec.ts" time="0.129">
+</testcase>
+<testcase name="TC-BROWSER-018 the brief renders as published › every section is shown, including the ones that found nothing" classname="advertising-brief.spec.ts" time="0.329">
+</testcase>
+<testcase name="TC-BROWSER-018 the brief renders as published › a restatement keeps the reading somebody acted on" classname="advertising-brief.spec.ts" time="0.271">
+</testcase>
+<testcase name="TC-BROWSER-018 the brief renders as published › nothing published is stated, not shown as a fault" classname="advertising-brief.spec.ts" time="0.216">
+</testcase>
+</testsuite>
+<testsuite name="advertising-execution.spec.ts" timestamp="2026-09-06T17:34:18.505Z" hostname="" tests="7" failures="0" skipped="0" time="1.419" errors="0">
+<testcase name="TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/reservations with no token" classname="advertising-execution.spec.ts" time="0.114">
+</testcase>
+<testcase name="TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/exposure with no token" classname="advertising-execution.spec.ts" time="0.127">
+</testcase>
+<testcase name="TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/containments with no token" classname="advertising-execution.spec.ts" time="0.13">
+</testcase>
+<testcase name="TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses an advertising read carrying a made-up token" classname="advertising-execution.spec.ts" time="0.144">
+</testcase>
+<testcase name="TC-BROWSER-016 the execution surfaces render in a real browser › the envelope is shown axis by axis, with no combined figure" classname="advertising-execution.spec.ts" time="0.356">
+</testcase>
+<testcase name="TC-BROWSER-016 the execution surfaces render in a real browser › a hold names its kind and every condition still outstanding" classname="advertising-execution.spec.ts" time="0.254">
+</testcase>
+<testcase name="TC-BROWSER-016 the execution surfaces render in a real browser › no envelope is presented as no write at all, not as an empty one" classname="advertising-execution.spec.ts" time="0.294">
+</testcase>
+</testsuite>
+<testsuite name="availability-journey.spec.ts" timestamp="2026-09-06T17:34:18.505Z" hostname="" tests="1" failures="0" skipped="0" time="1.567" errors="0">
+<testcase name="TC-BROWSER-014 stockout queue, accountable case and structured action" classname="availability-journey.spec.ts" time="1.567">
+</testcase>
+</testsuite>
+<testsuite name="business-journey.spec.ts" timestamp="2026-09-06T17:34:18.505Z" hostname="" tests="1" failures="0" skipped="0" time="4.232" errors="0">
+<testcase name="TC-BROWSER-013 authenticated evidence, approval, command and readback journey" classname="business-journey.spec.ts" time="4.232">
+</testcase>
+</testsuite>
+<testsuite name="health-shell.spec.ts" timestamp="2026-09-06T17:34:18.505Z" hostname="" tests="1" failures="0" skipped="0" time="10.079" errors="0">
+<testcase name="the built console recovers across a real database outage" classname="health-shell.spec.ts" time="10.079">
+</testcase>
+</testsuite>
+<testsuite name="operating-console.spec.ts" timestamp="2026-09-06T17:34:18.505Z" hostname="" tests="9" failures="0" skipped="0" time="6.956" errors="0">
+<testcase name="TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › shows the platform panel and no operating data" classname="operating-console.spec.ts" time="0.153">
+</testcase>
+<testcase name="TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries no token" classname="operating-console.spec.ts" time="0.119">
+</testcase>
+<testcase name="TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries a made-up token" classname="operating-console.spec.ts" time="0.131">
+</testcase>
+<testcase name="TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the built bundle carries no token, password or secret reference" classname="operating-console.spec.ts" time="0.132">
+</testcase>
+<testcase name="TC-BROWSER-012 asynchronous export presentation and browser download integrity › waits for 202 completion and saves only the verified large export" classname="operating-console.spec.ts" time="2.843">
+</testcase>
+<testcase name="TC-BROWSER-012 asynchronous export presentation and browser download integrity › refuses a corrupt final part without offering a partial file" classname="operating-console.spec.ts" time="2.834">
+</testcase>
+<testcase name="TC-BROWSER-011 the operator journey runs in a real browser › signs in, reaches the work list, and never labels doubt as certainty" classname="operating-console.spec.ts" time="0.297">
+</testcase>
+<testcase name="TC-BROWSER-011 the operator journey runs in a real browser › an ended session takes the operator back to sign-in with no data left on screen" classname="operating-console.spec.ts" time="0.249">
+</testcase>
+<testcase name="TC-BROWSER-011 the operator journey runs in a real browser › a refused sign-in leaves the visitor told rather than blank" classname="operating-console.spec.ts" time="0.198">
+</testcase>
+</testsuite>
+</testsuites>

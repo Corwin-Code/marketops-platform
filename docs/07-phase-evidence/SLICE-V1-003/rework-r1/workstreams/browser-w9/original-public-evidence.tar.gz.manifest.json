@@ -1,0 +1,276 @@
+{
+  "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w9/original-public-evidence.tar.gz",
+  "sha256": "bbd0ded8783e54fa658f36c166b3cfef52784f5521a3c834439d6396eef6609a",
+  "originals": [
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/isolation-after.json",
+      "archiveMember": "isolation-after.json",
+      "sha256": "360674da63ada23a5c6a324509695611d198cb73c18f2aed7c56717e2da08e6e",
+      "bytes": 1087
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/isolation-before.json",
+      "archiveMember": "isolation-before.json",
+      "sha256": "901d9da2dbdac09ea3936856ff4c002f05c849babeb0a0572ebbd3427ed65607",
+      "bytes": 1087
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/isolation-cleanup.json",
+      "archiveMember": "isolation-cleanup.json",
+      "sha256": "54c9afed61139150ab5feeb7263261d48c03d16cf8e2949e6d6b9417a204d793",
+      "bytes": 925
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/named-browser-results.json",
+      "archiveMember": "named-browser-results.json",
+      "sha256": "4cf6d60a4bd91c0d8d562eb2b8069193628516c247c6b7f473bb0c875f9c9e77",
+      "bytes": 8034
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/publication-scan.json",
+      "archiveMember": "publication-scan.json",
+      "sha256": "e5513109d45620deecbff55119080613aada56b7e74728a5dd07bbc2a7df2a55",
+      "bytes": 3865
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/receipt.json",
+      "archiveMember": "receipt.json",
+      "sha256": "35f41246a0d54cd08b3cb971d7eac7769548697b29c7594a2384e275850be282",
+      "bytes": 14612
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/resource-collector-command.json",
+      "archiveMember": "resource-collector-command.json",
+      "sha256": "95a514e63cf1f132262e62d331d1d807697a283504dea06b1559aaf55115634e",
+      "bytes": 675
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/resource-collector.stderr.log",
+      "archiveMember": "resource-collector.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/resource-collector.stdout.log",
+      "archiveMember": "resource-collector.stdout.log",
+      "sha256": "b283a52c99b9a1ecb983349bafda785ba1d69506133ce061a407468a3ad611d4",
+      "bytes": 517
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/runtime-resources.json",
+      "archiveMember": "runtime-resources.json",
+      "sha256": "fdbda371d9507b7a4b110d2e03678f5fffbb9f251bebe068a9a8e631da5c27d5",
+      "bytes": 591
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/runtime.log",
+      "archiveMember": "runtime.log",
+      "sha256": "c15215d10bb1912b61827f5d93b55a56f78ecabdc753f34b70ac4418fff5eac3",
+      "bytes": 504236
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "archiveMember": "screenshots/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "sha256": "34db2493e450ccbc9b3f66cc04ba014f2f8bcf6f618c89fc4264d580a2984dac",
+      "bytes": 679208
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "archiveMember": "screenshots/governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "sha256": "8588e88f534a2950189b56294b4c18dacdcec75fb7e8f0ba9a3507c92cb14033",
+      "bytes": 423952
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "archiveMember": "screenshots/governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "sha256": "835462ff374ae730640384a40f9d0d110207909bda71cf761c74b89ab0bc0534",
+      "bytes": 364896
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "archiveMember": "screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "sha256": "8034f97b9b9969551661ef96244bb168913440fc67438d837af0af1bd43b347b",
+      "bytes": 401111
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "archiveMember": "screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "sha256": "fd6b15d6084be88a050b444aa524f5cb63d34937df3c4cb75a69c79f81e16231",
+      "bytes": 397333
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "archiveMember": "screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "sha256": "27977cc0197e6064c51bc493693900d4c966805dbed5cd79c7440128ae1c9aa0",
+      "bytes": 1778870
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "archiveMember": "screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "sha256": "a4e1fbce2ffa9f395f86fc8e519b749cfaf7d492bdce96f8c385672504d0d8a8",
+      "bytes": 500546
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "archiveMember": "screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "sha256": "81d0e9e9f768650bfc60c34d3936dba940c8b296e27e08c604428b348c434e4e",
+      "bytes": 1140373
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "archiveMember": "screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "sha256": "d26928dbafe19c85914ebda798e62ace82f580d13017f1ad87eae159b93c4c2c",
+      "bytes": 1784808
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "archiveMember": "screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "sha256": "fb5e76e56d12581eff6bf6d81044bd69102a557f550835206d017bc4e533f70b",
+      "bytes": 502906
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "archiveMember": "screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "sha256": "6ec88b8085b3fd3c3790b7222526fda414c51eff391e6122a47185adc88d50f9",
+      "bytes": 1142921
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "archiveMember": "screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "47f8c31cd93d21e65c247595572471b7fdf3feb737fbaa2a67522089dc8de7e4",
+      "bytes": 292254
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "archiveMember": "screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "9d84314350eb4c5ca942b1618950cee65a815a90e8691ef7899598294b5d388c",
+      "bytes": 293232
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "archiveMember": "screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "sha256": "53ef6fbe513416567aa08d07d28e54006ce6e77f40f934015cb357879f41d858",
+      "bytes": 330723
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "archiveMember": "screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "sha256": "197333525999e441bbad322a38851fcf2b3fff4e352672d9123b75f78512d360",
+      "bytes": 264899
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "archiveMember": "screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "sha256": "e97a7d769248759ffe69bcd365ed2a4a39642b53a0aced119a3d953ace7ac8b7",
+      "bytes": 326503
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+      "archiveMember": "screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+      "sha256": "6b1720fc5f29d8a8045689db836b1481b3778d5b744552de0f69c09f8c6885ee",
+      "bytes": 331248
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+      "archiveMember": "screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+      "sha256": "d71b1b799de8a619802236337572e650f5db2b3c1b043c48d124d314732ca8c6",
+      "bytes": 300137
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "archiveMember": "screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "sha256": "8ccf29a6ea326a050de91c8fe26169fc39def35d333253b32401dd1181f03ed4",
+      "bytes": 334370
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "archiveMember": "screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "sha256": "b8cf99fcb7b4f05bcaf17cb859c36917ba4baccd63afda64fbebcef63d64699e",
+      "bytes": 342484
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+      "archiveMember": "screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+      "sha256": "b32ed553cb156b7319ce99044c223b1bba68ed6bba3f3e9d5ba0859b6d94c233",
+      "bytes": 376457
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+      "archiveMember": "screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+      "sha256": "83892578a6f62a2f111f2e1f44db6e057ea3bbb0fac93667168e540c716076d6",
+      "bytes": 4467039
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "archiveMember": "screenshots/governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "sha256": "5d6b34aab6a73ea84215bda37bbf60810cb308ed7460193d7f46adf03a7883b5",
+      "bytes": 346024
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "archiveMember": "screenshots/governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "sha256": "1bab7e128e5b9381dff2f1ea5df85d1df4f589f2e96463ff778eb3003d1640fb",
+      "bytes": 466578
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "archiveMember": "screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "sha256": "3a7640a77e30724518dff9615f6bdb7304a5b1927ddeb5a243516d2426df4c5a",
+      "bytes": 328477
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "archiveMember": "screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "sha256": "8443ec1b29cc03b18dec73d3061c4ded67b90d1205271331bf297dc3cabbbf05",
+      "bytes": 329941
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/source-inputs-after.json",
+      "archiveMember": "source-inputs-after.json",
+      "sha256": "7fded6243d0f67a692698c1d3e4ae9b08619f43fa815f4a6b748a9c9afe81dfc",
+      "bytes": 256259
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/source-inputs.json",
+      "archiveMember": "source-inputs.json",
+      "sha256": "422b88fdc637b19ed7641f62f43df7948f74bdc22e9eaced29b239fd8a4d130d",
+      "bytes": 256634
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/synthetic-data-identities.json",
+      "archiveMember": "synthetic-data-identities.json",
+      "sha256": "2ac163f7eea49aab6a5c3f615c61e31e2ee82ebaee886d95f771c30333baf9fc",
+      "bytes": 38775
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/DATA_REPAIR-actual-http-projection.png",
+      "archiveMember": "visual-review/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "7d75ffd42037ff076923a22100c776a098a11f04d48128e690597d0603d42949",
+      "bytes": 208182
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/OPTIMIZATION-actual-http-projection.png",
+      "archiveMember": "visual-review/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "f5f4b6039cc4fa588e877b8636322e61ee4ac0d0d764905d87c9009130c60b9f",
+      "bytes": 207964
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/inputs.json",
+      "archiveMember": "visual-review/inputs.json",
+      "sha256": "b9c948eeb114c8a7ebfc2af651ba85a3d20d407b4429e325bbd6b61ee9bffc31",
+      "bytes": 1909
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/keyboard-acknowledgement-not-action.png",
+      "archiveMember": "visual-review/keyboard-acknowledgement-not-action.png",
+      "sha256": "3413fa17baa00c158a329cc14079e35dbda6eac8f3905214e791b98ca2d3800c",
+      "bytes": 230646
+    },
+    {
+      "sourcePath": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/report.json",
+      "archiveMember": "visual-review/report.json",
+      "sha256": "ae6f62857efeec4713a21c9fc993cd9724d42dfa40e8ff9420d8f7e99fbdec30",
+      "bytes": 5030
+    }
+  ]
+}

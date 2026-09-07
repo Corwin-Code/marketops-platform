@@ -1,0 +1,3022 @@
+{
+  "handoff_manifest_sha256": "4ab64cd795143c921b0e422b0d8f84cb8a79c6d8b543a0e998701f20ca3fa694",
+  "handoff_members": {
+    "count": 67,
+    "failures": []
+  },
+  "artifacts": [
+    {
+      "id": 9973705852,
+      "bytes": 2316709,
+      "sha256": "36409b08f817d6f4de14af956a8e047e8c732c3751611163ec2cbbfab4e04d77",
+      "live_digest_match": true,
+      "zip_members": 13
+    },
+    {
+      "id": 9973708878,
+      "bytes": 157158,
+      "sha256": "615ec655b7f9aa94209f4009e51d7fad621fe5ef1b25ec949d238228c82867cf",
+      "live_digest_match": true,
+      "zip_members": 4
+    },
+    {
+      "id": 9973760871,
+      "bytes": 13497175,
+      "sha256": "37c47c454c59796f010029fa2cd07616f4eff98001c7fda2bf5cc2e35eca6c18",
+      "live_digest_match": true,
+      "zip_members": 26
+    },
+    {
+      "id": 9973761169,
+      "bytes": 322357,
+      "sha256": "da7efecba15fa1500db7da9f0752714df6c291a49a8937943eec09bdef19ff20",
+      "live_digest_match": true,
+      "zip_members": 67
+    },
+    {
+      "id": 9974095270,
+      "bytes": 50366,
+      "sha256": "7eda64411d9a571ad2393a830f519bb30eddb412643c22f857ebc90326ce1835",
+      "live_digest_match": true,
+      "zip_members": 2
+    },
+    {
+      "id": 9974096071,
+      "bytes": 6083506,
+      "sha256": "de89d479c7132e64324adfab885dacef9fd15edaaea192de3bc4e6f79c7c7caf",
+      "live_digest_match": true,
+      "zip_members": 2346
+    },
+    {
+      "id": 9974152039,
+      "bytes": 1004028,
+      "sha256": "2730c9b8de2ef549397699ccfbe6e831ceeffd1a40765d8eebad95c6735122aa",
+      "live_digest_match": true,
+      "zip_members": 196
+    }
+  ],
+  "xml": {
+    "9974096071": {
+      "reports": 189,
+      "nodes": 2484,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    "9974152039": {
+      "reports": 71,
+      "nodes": 924,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    }
+  },
+  "jacoco": {
+    "INSTRUCTION": {
+      "missed": 22207,
+      "covered": 129396,
+      "ratio": 0.8535187298404385
+    },
+    "BRANCH": {
+      "missed": 3019,
+      "covered": 7440,
+      "ratio": 0.711349077349651
+    },
+    "LINE": {
+      "missed": 3861,
+      "covered": 23805,
+      "ratio": 0.8604424202992843
+    },
+    "COMPLEXITY": {
+      "missed": 3464,
+      "covered": 7016,
+      "ratio": 0.6694656488549618
+    },
+    "METHOD": {
+      "missed": 886,
+      "covered": 4240,
+      "ratio": 0.8271556769410847
+    },
+    "CLASS": {
+      "missed": 109,
+      "covered": 995,
+      "ratio": 0.9012681159420289
+    }
+  },
+  "advertising_capacity": {
+    "dataset": {
+      "sharedProducts": 1,
+      "stores": 1,
+      "nativeObjects": 1000,
+      "completeAffectedSetMembersPerObject": 1,
+      "regressionObjects": 200,
+      "sharedListings": 1,
+      "organizations": 1
+    },
+    "runtime": {
+      "maxJvmMemoryBytes": 4192206848,
+      "os": "Linux",
+      "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+      "arch": "amd64",
+      "availableProcessors": 4,
+      "java": "21.0.12.1"
+    },
+    "identities": {
+      "datasetId": "synthetic-advertising-portfolio-10344d27-6663-4252-8cd7-8cc697c7e3a3",
+      "datasetPath": "target/advertising-capacity-dataset.json",
+      "datasetSha256": "b03c86cc9307591b6aae6ce64b8d2933c0224d72a39da01bfb52bc203924dde0",
+      "sourceInputsPath": "target/advertising-capacity-source-inputs.json",
+      "sourceInputsSha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247",
+      "startedAt": "2026-09-05T17:32:14.453484406Z",
+      "datasetCapturedAt": "2026-09-05T17:32:16.336935491Z",
+      "measuredLocalGitHead": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+      "ciIdentity": {
+        "GITHUB_SHA": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+        "GITHUB_REF": "refs/pull/30/merge",
+        "GITHUB_EVENT_NAME": "pull_request",
+        "GITHUB_RUN_ID": "33980860923",
+        "GITHUB_RUN_ATTEMPT": "1"
+      },
+      "publicationIdentity": {
+        "workflowRunAttempt": "1",
+        "workflowJob": "backend-build",
+        "testedMergeSha": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+        "artifactName": "backend-test-reports",
+        "workflowRunId": "33980860923",
+        "sourceHeadSha": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+      },
+      "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+      "runtimeResourceReceiptSha256": "a64727c33b4058048a95d07937616d71afe56c3b2ede8151c7f44f81b4bd2cac",
+      "resourceScopeNotice": "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+    },
+    "finishedAt": "2026-09-05T17:35:50.963480131Z",
+    "targeted": {
+      "sampleCount": 1000,
+      "criticalSampleCount": 200,
+      "criticalP95Millis": 14340,
+      "maximumMillis": 170587,
+      "hardBreachCount": 0,
+      "clockDefectCount": 0,
+      "pendingRequests": 0,
+      "failedRequests": 0,
+      "oldestFactAcceptedAt": null,
+      "lastSweepState": "NOT_ESTABLISHED",
+      "lastSweepCompletedAt": null,
+      "observedAt": "2026-09-05T17:35:05.530803766Z",
+      "windowHours": 24,
+      "incidents": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "state": "INCIDENT",
+      "distributionState": "MEASURED"
+    },
+    "targetedWallMillis": 169181,
+    "workerPasses": 5,
+    "sweepWallMillis": 45353,
+    "hourlyMarginMillis": 3554647,
+    "responsibilityTasks": 1200,
+    "droppedLateCorrectionRecovered": 1,
+    "productionWriteEnabled": false,
+    "realProviderAccess": false
+  },
+  "finding_counts": {
+    "CLOSED_WITH_EVIDENCE": 22
+  },
+  "named_proof_resolution": {
+    "S3-DR-001": {
+      "matched": [],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-002": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "coveredPlatformFeesDoNotRequireASecondPromotionFeed",
+          "matches": [
+            "coveredPlatformFeesDoNotRequireASecondPromotionFeed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+          "method": "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy",
+          "matches": [
+            "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
+          "matches": [
+            "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+          "matches": [
+            "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+          "matches": [
+            "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+          "method": "concurrentConflictUsesThePersistedIdentityForAllDependentEvidence",
+          "matches": [
+            "concurrentConflictUsesThePersistedIdentityForAllDependentEvidence"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "matches": [
+            "futureAffectedSetRemainsUnknownWithAGovernedRepairTask"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+          "method": "partialMissingMoneyAndTrafficNeverDisappearInsideSqlSum",
+          "matches": [
+            "partialMissingMoneyAndTrafficNeverDisappearInsideSqlSum"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+          "method": "completeSubreportsDoNotInventCoverageOfMissingDays",
+          "matches": [
+            "completeSubreportsDoNotInventCoverageOfMissingDays"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
+          "matches": [
+            "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "matches": [
+            "futureAffectedSetRemainsUnknownWithAGovernedRepairTask"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-003": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+          "method": "unequalQuantitiesUseEveryLineAndEveryVariantCpa",
+          "matches": [
+            "unequalQuantitiesUseEveryLineAndEveryVariantCpa"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+          "method": "retainedCohortDoesNotChargeItsReturnLossTwice",
+          "matches": [
+            "retainedCohortDoesNotChargeItsReturnLossTwice"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+          "method": "mixedCurrenciesFailTheWholeAtomicObject",
+          "matches": [
+            "mixedCurrenciesFailTheWholeAtomicObject"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+          "method": "missingOneVariantCpaDoesNotReuseTheOtherPolicy",
+          "matches": [
+            "missingOneVariantCpaDoesNotReuseTheOtherPolicy"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-004": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+          "method": "oldEffectiveCostIsNotStaleWhenCanonicalMetricReconfirmedItsExactApplicability",
+          "matches": [
+            "oldEffectiveCostIsNotStaleWhenCanonicalMetricReconfirmedItsExactApplicability"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "missingConversionCannotSilenceCauseBoundProtectionAndItsIndependentRepair",
+          "matches": [
+            "missingConversionCannotSilenceCauseBoundProtectionAndItsIndependentRepair"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "productionCalculationKeepsCriticalP1EvenWhenOtherEvidenceIsMissing",
+          "matches": [
+            "productionCalculationKeepsCriticalP1EvenWhenOtherEvidenceIsMissing"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+          "method": "newlyAcceptedOldSourceIsStillStale",
+          "matches": [
+            "newlyAcceptedOldSourceIsStillStale"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+          "method": "taskVisibilityCannotPromoteTheSameFactIntoWriteGrade",
+          "matches": [
+            "taskVisibilityCannotPromoteTheSameFactIntoWriteGrade"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+          "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
+          "matches": [
+            "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "productionCalculationDoesNotPromoteUnknownCriticalGuardToSafeWatch",
+          "matches": [
+            "productionCalculationDoesNotPromoteUnknownCriticalGuardToSafeWatch"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-005": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+          "method": "earlierSloOutranksArbitrarilyLargeLaterCommercialTerms",
+          "matches": [
+            "earlierSloOutranksArbitrarilyLargeLaterCommercialTerms"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+          "method": "criticalExposurePrecedesSpend",
+          "matches": [
+            "criticalExposurePrecedesSpend"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+          "method": "independentProfitAxesRemainOrderedAcrossAllInputPermutations",
+          "matches": [
+            "independentProfitAxesRemainOrderedAcrossAllInputPermutations"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+          "method": "unrelatedWeightsCannotChangeCanonicalOrder",
+          "matches": [
+            "unrelatedWeightsCannotChangeCanonicalOrder"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-006": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists",
+          "matches": [
+            "eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists(AdvertisingCause, AdvertisingLane, ProtectionTier, String)[4]",
+            "eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists(AdvertisingCause, AdvertisingLane, ProtectionTier, String)[1]",
+            "eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists(AdvertisingCause, AdvertisingLane, ProtectionTier, String)[3]",
+            "eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists(AdvertisingCause, AdvertisingLane, ProtectionTier, String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+          "matches": [
+            "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+          "matches": [
+            "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
+          "matches": [
+            "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+          "method": "differentCauseOwnersKeepSeparateTasksWithExplicitCanonicalObjectLinks",
+          "matches": [
+            "differentCauseOwnersKeepSeparateTasksWithExplicitCanonicalObjectLinks"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement",
+          "matches": [
+            "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+          "matches": [
+            "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+          "method": "differentCauseOwnersKeepSeparateTasksWithExplicitCanonicalObjectLinks",
+          "matches": [
+            "differentCauseOwnersKeepSeparateTasksWithExplicitCanonicalObjectLinks"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+          "method": "unstaffedProtectionShowsOngoingHarmAgeAndTheNextStaffedResponseTogether",
+          "matches": [
+            "unstaffedProtectionShowsOngoingHarmAgeAndTheNextStaffedResponseTogether"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
+          "matches": [
+            "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+          "matches": [
+            "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+          "matches": [
+            "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+          "matches": [
+            "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "watchNeverCreatesResponsibilityEvenIfRepeated",
+          "matches": [
+            "watchNeverCreatesResponsibilityEvenIfRepeated"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
+          "matches": [
+            "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+          "matches": [
+            "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement",
+          "matches": [
+            "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+          "method": "noProtectionResponseAxisCanBecomeWeakerThanOptimization",
+          "matches": [
+            "noProtectionResponseAxisCanBecomeWeakerThanOptimization(String)[2]",
+            "noProtectionResponseAxisCanBecomeWeakerThanOptimization(String)[3]",
+            "noProtectionResponseAxisCanBecomeWeakerThanOptimization(String)[5]",
+            "noProtectionResponseAxisCanBecomeWeakerThanOptimization(String)[1]",
+            "noProtectionResponseAxisCanBecomeWeakerThanOptimization(String)[4]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness",
+          "matches": [
+            "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "aMissingServiceLevelNeverInventsAReviewWindow",
+          "matches": [
+            "aMissingServiceLevelNeverInventsAReviewWindow"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+          "matches": [
+            "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+          "matches": [
+            "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens",
+          "matches": [
+            "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask",
+          "matches": [
+            "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+          "matches": [
+            "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+          "matches": [
+            "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-007": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified",
+          "matches": [
+            "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+          "matches": [
+            "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified",
+          "matches": [
+            "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anOtherOrganizationCannotResolveObjectsOrBriefReferences",
+          "matches": [
+            "anOtherOrganizationCannotResolveObjectsOrBriefReferences"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+          "matches": [
+            "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork",
+          "matches": [
+            "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed",
+          "matches": [
+            "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-008": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+          "matches": [
+            "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+          "matches": [
+            "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+          "matches": [
+            "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "makerWithAnAdditionalOperationsRoleCannotEndorseTheirOwnSelection",
+          "matches": [
+            "makerWithAnAdditionalOperationsRoleCannotEndorseTheirOwnSelection"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "makerProofCannotBecomeOwnersFinalApproval",
+          "matches": [
+            "makerProofCannotBecomeOwnersFinalApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection",
+          "matches": [
+            "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "storeOnlyApprovalGrantCannotAuthoriseUndisclosedAffectedProducts",
+          "matches": [
+            "storeOnlyApprovalGrantCannotAuthoriseUndisclosedAffectedProducts"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+          "matches": [
+            "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "finalApprovalCannotSwapInAnUnapprovedBaseline",
+          "matches": [
+            "finalApprovalCannotSwapInAnUnapprovedBaseline"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "changedPolicyAfterEndorsementCannotBeSilentlySealed",
+          "matches": [
+            "changedPolicyAfterEndorsementCannotBeSilentlySealed"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-009": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+          "matches": [
+            "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMinimumExpiryIT.java",
+          "method": "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting",
+          "matches": [
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[15]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[13]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[3]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[11]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[7]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[16]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[2]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[5]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[10]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[1]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[4]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[14]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[9]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[12]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[8]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[6]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[17]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "independentRecoveryAuthoritiesReenableOnlyNewScopeWithoutRevivingPriorApproval",
+          "matches": [
+            "independentRecoveryAuthoritiesReenableOnlyNewScopeWithoutRevivingPriorApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "canonicalPositiveControlAdmitsOneActionWithEveryAggregateAxisAvailable",
+          "matches": [
+            "canonicalPositiveControlAdmitsOneActionWithEveryAggregateAxisAvailable"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "changedPolicyAfterEndorsementCannotBeSilentlySealed",
+          "matches": [
+            "changedPolicyAfterEndorsementCannotBeSilentlySealed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "anExpiredApprovalIsNamedAsItsOwnRefusal",
+          "matches": [
+            "anExpiredApprovalIsNamedAsItsOwnRefusal"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "leasedWorkCannotTransmitAfterTheReservationLapses",
+          "matches": [
+            "leasedWorkCannotTransmitAfterTheReservationLapses"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "containmentPermanentlyInvalidatesPriorApprovalAssets",
+          "matches": [
+            "containmentPermanentlyInvalidatesPriorApprovalAssets"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingActorRevocationIT.java",
+          "method": "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration",
+          "matches": [
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[4]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[11]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[3]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[8]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[1]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[2]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[5]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[10]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[12]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[6]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[9]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[7]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+          "method": "aResolvedEnvelopeCannotRevivePriorAuthority",
+          "matches": [
+            "aResolvedEnvelopeCannotRevivePriorAuthority"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMinimumExpiryIT.java",
+          "method": "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting",
+          "matches": [
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[15]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[13]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[3]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[11]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[7]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[16]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[2]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[5]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[10]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[1]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[4]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[14]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[9]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[12]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[8]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[6]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[17]"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-010": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+          "matches": [
+            "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "explicitFrozenNotAppliedAndCurrentPriorAllowOnlySameCommandAndPayloadRetry",
+          "matches": [
+            "explicitFrozenNotAppliedAndCurrentPriorAllowOnlySameCommandAndPayloadRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "exactNotAppliedBytesAndIndependentPriorDriveTheActualWorkerIntoGovernedRetry",
+          "matches": [
+            "exactNotAppliedBytesAndIndependentPriorDriveTheActualWorkerIntoGovernedRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "knownNativeTaskStatusTimeoutRemainsReadOnlyThenResolvedStatusAndPriorPermitSameKeyRetry",
+          "matches": [
+            "knownNativeTaskStatusTimeoutRemainsReadOnlyThenResolvedStatusAndPriorPermitSameKeyRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "applicationCannotMintProofOrRestoreTheRemovedActorParameterCreator",
+          "matches": [
+            "applicationCannotMintProofOrRestoreTheRemovedActorParameterCreator"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "arbitraryApplicationGucCannotImpersonateFinalApprover",
+          "matches": [
+            "arbitraryApplicationGucCannotImpersonateFinalApprover"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "grantFromDifferentPhysicalApplicationSessionCannotBeReplayed",
+          "matches": [
+            "grantFromDifferentPhysicalApplicationSessionCannotBeReplayed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "makerProofCannotBecomeOwnersFinalApproval",
+          "matches": [
+            "makerProofCannotBecomeOwnersFinalApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "storeOnlyApprovalGrantCannotAuthoriseUndisclosedAffectedProducts",
+          "matches": [
+            "storeOnlyApprovalGrantCannotAuthoriseUndisclosedAffectedProducts"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "finalApprovalCannotSwapInAnUnapprovedBaseline",
+          "matches": [
+            "finalApprovalCannotSwapInAnUnapprovedBaseline"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "matches": [
+            "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "anUnaddressableApplyTimeoutWithoutNativeIdempotencyCannotBeRetriedAfterPriorReadback",
+          "matches": [
+            "anUnaddressableApplyTimeoutWithoutNativeIdempotencyCannotBeRetriedAfterPriorReadback"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "aThirdCurrentBidRoutesTheActualWorkerToInvestigationAndNeverAnotherApply",
+          "matches": [
+            "aThirdCurrentBidRoutesTheActualWorkerToInvestigationAndNeverAnotherApply"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCommandSubstitutionIT.java",
+          "method": "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary",
+          "matches": [
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[1]",
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[4]",
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[2]",
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "unitIsPartOfTheIdentity",
+          "matches": [
+            "unitIsPartOfTheIdentity"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-011": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "theCandidateRecordsTheBasisAndTheCeiling",
+          "matches": [
+            "theCandidateRecordsTheBasisAndTheCeiling"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateTest.java",
+          "method": "headroomKeepsTheTargetBelowTheCeiling",
+          "matches": [
+            "headroomKeepsTheTargetBelowTheCeiling"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "previewUsesPolicyHeadroomRatherThanRawMaxCpc",
+          "matches": [
+            "previewUsesPolicyHeadroomRatherThanRawMaxCpc(String, String, String)[2]",
+            "previewUsesPolicyHeadroomRatherThanRawMaxCpc(String, String, String)[1]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling",
+          "matches": [
+            "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling(String, String, String, String)[1]",
+            "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling(String, String, String, String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing",
+          "matches": [
+            "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
+          "matches": [
+            "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+          "matches": [
+            "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+          "matches": [
+            "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling",
+          "matches": [
+            "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling(String, String, String, String)[1]",
+            "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling(String, String, String, String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "previewUsesPolicyHeadroomRatherThanRawMaxCpc",
+          "matches": [
+            "previewUsesPolicyHeadroomRatherThanRawMaxCpc(String, String, String)[2]",
+            "previewUsesPolicyHeadroomRatherThanRawMaxCpc(String, String, String)[1]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease",
+          "matches": [
+            "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease",
+          "matches": [
+            "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence",
+          "matches": [
+            "causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution",
+          "matches": [
+            "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+          "matches": [
+            "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "anUnresolvedTargetPolicyProposesNothing",
+          "matches": [
+            "anUnresolvedTargetPolicyProposesNothing"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing",
+          "matches": [
+            "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction",
+          "matches": [
+            "anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor",
+          "matches": [
+            "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "unitIsPartOfTheIdentity",
+          "matches": [
+            "unitIsPartOfTheIdentity"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission",
+          "matches": [
+            "intermediateProtectionRequiresExplicitPolicyPermission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "anUnnamedCauseGetsNoCauseBoundStep",
+          "matches": [
+            "anUnnamedCauseGetsNoCauseBoundStep"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis",
+          "matches": [
+            "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "causeBoundStepCannotExceedExactOwnerPolicyRatio",
+          "matches": [
+            "causeBoundStepCannotExceedExactOwnerPolicyRatio"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "causeBoundProtectionCannotTreatMissingDangerAsFreshEvidence",
+          "matches": [
+            "causeBoundProtectionCannotTreatMissingDangerAsFreshEvidence"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+          "matches": [
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[5]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[3]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[6]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[4]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[1]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[9]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[8]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[10]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[2]",
+            "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence(String)[7]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval",
+          "matches": [
+            "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection",
+          "matches": [
+            "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+          "matches": [
+            "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-012": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain",
+          "matches": [
+            "pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "resolvedNativeStatusMustReadBackBeforeSuccess",
+          "matches": [
+            "resolvedNativeStatusMustReadBackBeforeSuccess"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "unitIsPartOfTheIdentity",
+          "matches": [
+            "unitIsPartOfTheIdentity"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+          "matches": [
+            "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "explicitFrozenNotAppliedAndCurrentPriorAllowOnlySameCommandAndPayloadRetry",
+          "matches": [
+            "explicitFrozenNotAppliedAndCurrentPriorAllowOnlySameCommandAndPayloadRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "exactNotAppliedBytesAndIndependentPriorDriveTheActualWorkerIntoGovernedRetry",
+          "matches": [
+            "exactNotAppliedBytesAndIndependentPriorDriveTheActualWorkerIntoGovernedRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "knownNativeTaskStatusTimeoutRemainsReadOnlyThenResolvedStatusAndPriorPermitSameKeyRetry",
+          "matches": [
+            "knownNativeTaskStatusTimeoutRemainsReadOnlyThenResolvedStatusAndPriorPermitSameKeyRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "verifiedNativeKeyRequiresResolvedStatusThenCurrentReadbackBeforeRetry",
+          "matches": [
+            "verifiedNativeKeyRequiresResolvedStatusThenCurrentReadbackBeforeRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "anExpiredFirstApplyLeaseStillReturnsToPendingWithoutRetryAuthority",
+          "matches": [
+            "anExpiredFirstApplyLeaseStillReturnsToPendingWithoutRetryAuthority"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "takingTwiceForOneSealedInterventionIsIdempotent",
+          "matches": [
+            "takingTwiceForOneSealedInterventionIsIdempotent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "acceptedWithATaskWaits",
+          "matches": [
+            "acceptedWithATaskWaits"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "anExactTargetAtTheNewRetryFenceCompletesWithoutAnotherApply",
+          "matches": [
+            "anExactTargetAtTheNewRetryFenceCompletesWithoutAnotherApply"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "aThirdValueRoutesToInvestigation",
+          "matches": [
+            "aThirdValueRoutesToInvestigation"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "anUnknownResultIsNeverRepeated",
+          "matches": [
+            "anUnknownResultIsNeverRepeated"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteRefusalTest.java",
+          "method": "staleAttemptAtTheSocketStopsTheCall",
+          "matches": [
+            "staleAttemptAtTheSocketStopsTheCall"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteDispatchTest.java",
+          "method": "truncatedBytesAreNeverAccepted",
+          "matches": [
+            "truncatedBytesAreNeverAccepted"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "applicationCannotMintProofOrRestoreTheRemovedActorParameterCreator",
+          "matches": [
+            "applicationCannotMintProofOrRestoreTheRemovedActorParameterCreator"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "matches": [
+            "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "anUnaddressableApplyTimeoutWithoutNativeIdempotencyCannotBeRetriedAfterPriorReadback",
+          "matches": [
+            "anUnaddressableApplyTimeoutWithoutNativeIdempotencyCannotBeRetriedAfterPriorReadback"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "aThirdCurrentBidRoutesTheActualWorkerToInvestigationAndNeverAnotherApply",
+          "matches": [
+            "aThirdCurrentBidRoutesTheActualWorkerToInvestigationAndNeverAnotherApply"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCommandSubstitutionIT.java",
+          "method": "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary",
+          "matches": [
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[1]",
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[4]",
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[2]",
+            "writableRecommendationCannotSubstituteCandidateOrObjectAcrossTheSealedBoundary(Substitution)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "unitIsPartOfTheIdentity",
+          "matches": [
+            "unitIsPartOfTheIdentity"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "applicationCannotInventTheReadbackClassificationOrRewriteCompletedProof",
+          "matches": [
+            "applicationCannotInventTheReadbackClassificationOrRewriteCompletedProof"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "aThirdBidObservedAtTheNewRetryFenceCancelsThePreviouslyProvenReentry",
+          "matches": [
+            "aThirdBidObservedAtTheNewRetryFenceCancelsThePreviouslyProvenReentry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "expiredRetryPreflightLeaseBecomesUnknownAndCannotReuseTheOldProof",
+          "matches": [
+            "expiredRetryPreflightLeaseBecomesUnknownAndCannotReuseTheOldProof"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+          "method": "anUnreadableNewRetryFenceCannotReuseThePreviousPriorProof",
+          "matches": [
+            "anUnreadableNewRetryFenceCannotReuseThePreviousPriorProof"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "resolvedStatusWithoutVerifiedNativeKeyStillCannotAuthorizeRetry",
+          "matches": [
+            "resolvedStatusWithoutVerifiedNativeKeyStillCannotAuthorizeRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "noNativeKeyTimeoutAndRepeatedPriorDoNotProveNonApplication",
+          "matches": [
+            "noNativeKeyTimeoutAndRepeatedPriorDoNotProveNonApplication"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "exactReadbackValueCurrencyAndNativeUnitEachRemainNecessary",
+          "matches": [
+            "exactReadbackValueCurrencyAndNativeUnitEachRemainNecessary(int, String, String, String)[2]",
+            "exactReadbackValueCurrencyAndNativeUnitEachRemainNecessary(int, String, String, String)[1]",
+            "exactReadbackValueCurrencyAndNativeUnitEachRemainNecessary(int, String, String, String)[3]",
+            "exactReadbackValueCurrencyAndNativeUnitEachRemainNecessary(int, String, String, String)[4]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "IncompleteOrServerErrorBytesCannotTurnAnExplicitLookingFlagIntoProof",
+          "matches": [
+            "IncompleteOrServerErrorBytesCannotTurnAnExplicitLookingFlagIntoProof(int, boolean)[2]",
+            "IncompleteOrServerErrorBytesCannotTurnAnExplicitLookingFlagIntoProof(int, boolean)[1]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked",
+          "matches": [
+            "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked(String)[1]",
+            "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked(String)[6]",
+            "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked(String)[4]",
+            "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked(String)[5]",
+            "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked(String)[2]",
+            "liveRetryBudgetFenceProfileCredentialGateAndActorAuthorityAreRechecked(String)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "newerThirdValueSupersedesAnEarlierQualifyingPriorObservation",
+          "matches": [
+            "newerThirdValueSupersedesAnEarlierQualifyingPriorObservation"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "twoRealApplicationTransactionsCannotAdmitOverlappingSealedCandidates",
+          "matches": [
+            "twoRealApplicationTransactionsCannotAdmitOverlappingSealedCandidates"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "acceptanceWithoutAResponseIsUnknown",
+          "matches": [
+            "acceptanceWithoutAResponseIsUnknown"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "compensationCannotOverwriteThirdPartyCurrentValue",
+          "matches": [
+            "compensationCannotOverwriteThirdPartyCurrentValue"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-013": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "matches": [
+            "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "compensationKeepsItsLeaseUntilExactPriorReadback",
+          "matches": [
+            "compensationKeepsItsLeaseUntilExactPriorReadback"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "restoreUsesADifferentIdempotencyKey",
+          "matches": [
+            "restoreUsesADifferentIdempotencyKey"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "compensationCannotOverwriteThirdPartyCurrentValue",
+          "matches": [
+            "compensationCannotOverwriteThirdPartyCurrentValue"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "matches": [
+            "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "matches": [
+            "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "restoreUsesADifferentIdempotencyKey",
+          "matches": [
+            "restoreUsesADifferentIdempotencyKey"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-014": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "takingTwiceForOneSealedInterventionIsIdempotent",
+          "matches": [
+            "takingTwiceForOneSealedInterventionIsIdempotent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess",
+          "matches": [
+            "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+          "method": "aReservationNamesWhatItIsWaitingOn",
+          "matches": [
+            "aReservationNamesWhatItIsWaitingOn"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "disjointHistoricalAuthoritiesUseRealSerializedAggregateAdmission",
+          "matches": [
+            "disjointHistoricalAuthoritiesUseRealSerializedAggregateAdmission(int, int)[2]",
+            "disjointHistoricalAuthoritiesUseRealSerializedAggregateAdmission(int, int)[1]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicyTest.java",
+          "method": "protectionSubTiersDoNotCompensate",
+          "matches": [
+            "protectionSubTiersDoNotCompensate"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "pendingCompensationIsP0BeforeFreshCriticalP1",
+          "matches": [
+            "pendingCompensationIsP0BeforeFreshCriticalP1"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "matches": [
+            "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "absentContextRemainsExplicitUnknownWithoutInventingAKnownMaterialChange",
+          "matches": [
+            "absentContextRemainsExplicitUnknownWithoutInventingAKnownMaterialChange"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "anUnexecutedPriceRecommendationDoesNotBecomeAnInventedIntervention",
+          "matches": [
+            "anUnexecutedPriceRecommendationDoesNotBecomeAnInventedIntervention"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "sameStoreDifferentVariantIsIsolatedButAnotherListingForTheAffectedVariantOverlaps",
+          "matches": [
+            "sameStoreDifferentVariantIsIsolatedButAnotherListingForTheAffectedVariantOverlaps"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "anotherOrganizationsActivePriceCommandCannotContaminateThisExactScope",
+          "matches": [
+            "anotherOrganizationsActivePriceCommandCannotContaminateThisExactScope"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "terminalSharedCommandsDoNotRemainPermanentIsolationLocks",
+          "matches": [
+            "terminalSharedCommandsDoNotRemainPermanentIsolationLocks(String)[1]",
+            "terminalSharedCommandsDoNotRemainPermanentIsolationLocks(String)[4]",
+            "terminalSharedCommandsDoNotRemainPermanentIsolationLocks(String)[3]",
+            "terminalSharedCommandsDoNotRemainPermanentIsolationLocks(String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "canonicalPositiveControlAdmitsOneActionWithEveryAggregateAxisAvailable",
+          "matches": [
+            "canonicalPositiveControlAdmitsOneActionWithEveryAggregateAxisAvailable"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "completeAcceptedPrefixCanProveZeroForAListingWithNoRetainedRows",
+          "matches": [
+            "completeAcceptedPrefixCanProveZeroForAListingWithNoRetainedRows"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "wholeOfficialReportCrossingOwnerWindowRemainsAConservativeAmount",
+          "matches": [
+            "wholeOfficialReportCrossingOwnerWindowRemainsAConservativeAmount"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+          "method": "theEnvelopeReadMatchesTheGatesOwnAxes",
+          "matches": [
+            "theEnvelopeReadMatchesTheGatesOwnAxes"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+          "method": "everyApplicableScopeIsReportedOnceAndRetiredAuthorityDoesNotMasqueradeAsCurrent",
+          "matches": [
+            "everyApplicableScopeIsReportedOnceAndRetiredAuthorityDoesNotMasqueradeAsCurrent"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "manualConfigurationUnknownConsumesTheSameUnresolvedAxisUntilIndependentProof",
+          "matches": [
+            "manualConfigurationUnknownConsumesTheSameUnresolvedAxisUntilIndependentProof"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "pendingRecommendationCannotReserve",
+          "matches": [
+            "pendingRecommendationCannotReserve"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "matches": [
+            "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "missingConfigurationAndEarlySafetyEvidenceKeepReservationHeld",
+          "matches": [
+            "missingConfigurationAndEarlySafetyEvidenceKeepReservationHeld"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld",
+          "matches": [
+            "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
+          "matches": [
+            "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "actualControlledAdmissionRollsBackForEachExhaustedMeasuredAxis",
+          "matches": [
+            "actualControlledAdmissionRollsBackForEachExhaustedMeasuredAxis(String, String, String)[2]",
+            "actualControlledAdmissionRollsBackForEachExhaustedMeasuredAxis(String, String, String)[1]",
+            "actualControlledAdmissionRollsBackForEachExhaustedMeasuredAxis(String, String, String)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "twoRealApplicationTransactionsCannotAdmitOverlappingSealedCandidates",
+          "matches": [
+            "twoRealApplicationTransactionsCannotAdmitOverlappingSealedCandidates"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicyTest.java",
+          "method": "dataRepairCannotOutrankProtection",
+          "matches": [
+            "dataRepairCannotOutrankProtection"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "actualOverlappingPriceCommandBlocksPreviewAndFinalApproval",
+          "matches": [
+            "actualOverlappingPriceCommandBlocksPreviewAndFinalApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "commandCommittedAfterApprovalIsRecheckedAtActualReservationAdmission",
+          "matches": [
+            "commandCommittedAfterApprovalIsRecheckedAtActualReservationAdmission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "commandCommittedAfterReservationIsRecheckedByPublicCommandCreator",
+          "matches": [
+            "commandCommittedAfterReservationIsRecheckedByPublicCommandCreator"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "commandCommittedAfterCreationIsRecheckedBeforeApplyWithoutProviderTransport",
+          "matches": [
+            "commandCommittedAfterCreationIsRecheckedBeforeApplyWithoutProviderTransport"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "eachKnownChangedContextFactorIndependentlyPreventsComparableIsolation",
+          "matches": [
+            "eachKnownChangedContextFactorIndependentlyPreventsComparableIsolation(String)[1]",
+            "eachKnownChangedContextFactorIndependentlyPreventsComparableIsolation(String)[4]",
+            "eachKnownChangedContextFactorIndependentlyPreventsComparableIsolation(String)[2]",
+            "eachKnownChangedContextFactorIndependentlyPreventsComparableIsolation(String)[5]",
+            "eachKnownChangedContextFactorIndependentlyPreventsComparableIsolation(String)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "oneUnknownFactorCannotHideADifferentKnownContextChange",
+          "matches": [
+            "oneUnknownFactorCannotHideADifferentKnownContextChange"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+          "method": "lateAcceptedFactsDoNotRewriteFrozenKnowledgeAndFutureFactsCannotLeakIntoCurrentContext",
+          "matches": [
+            "lateAcceptedFactsDoNotRewriteFrozenKnowledgeAndFutureFactsCannotLeakIntoCurrentContext"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "knownSharedPriceCommandBlocksManualEndorsementAfterSelection",
+          "matches": [
+            "knownSharedPriceCommandBlocksManualEndorsementAfterSelection"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "knownSharedPriceCommandCommittedAfterManualApprovalBlocksActualStart",
+          "matches": [
+            "knownSharedPriceCommandCommittedAfterManualApprovalBlocksActualStart"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "eachMeasuredAmountAxisFailsWithoutNettingTheOtherAxes",
+          "matches": [
+            "eachMeasuredAmountAxisFailsWithoutNettingTheOtherAxes(String, String, String)[1]",
+            "eachMeasuredAmountAxisFailsWithoutNettingTheOtherAxes(String, String, String)[2]",
+            "eachMeasuredAmountAxisFailsWithoutNettingTheOtherAxes(String, String, String)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "missingAffectedCoverageIsUnknownAndActualAdmissionRollsBack",
+          "matches": [
+            "missingAffectedCoverageIsUnknownAndActualAdmissionRollsBack"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "anotherStoreWithoutCoverageCannotDisappearFromOrganizationExposure",
+          "matches": [
+            "anotherStoreWithoutCoverageCannotDisappearFromOrganizationExposure"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "completeZeroCompanyDenominatorIsKnownZeroButNeverAKnownRatio",
+          "matches": [
+            "completeZeroCompanyDenominatorIsKnownZeroButNeverAKnownRatio"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "activeCountStillBoundsRecoveryAndCannotBeOffsetByLowSpend",
+          "matches": [
+            "activeCountStillBoundsRecoveryAndCannotBeOffsetByLowSpend"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "manualStartCannotBorrowMissingUnresolvedWriteCapacity",
+          "matches": [
+            "manualStartCannotBorrowMissingUnresolvedWriteCapacity"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "unresolvedWriteConsumesItsOwnAxisAlongsideTheActiveSlot",
+          "matches": [
+            "unresolvedWriteConsumesItsOwnAxisAlongsideTheActiveSlot"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "ordinaryAdmissionCannotBorrowTheReservedRecoverySlot",
+          "matches": [
+            "ordinaryAdmissionCannotBorrowTheReservedRecoverySlot"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMinimumExpiryIT.java",
+          "method": "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting",
+          "matches": [
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[15]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[13]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[3]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[11]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[7]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[16]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[2]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[5]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[10]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[1]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[4]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[14]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[9]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[12]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[8]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[6]",
+            "eachMinimumAuthorityBoundIsFrozenAtFinalApprovalAndCannotRenewWhileWaiting(Bound)[17]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "leasedWorkCannotTransmitAfterTheReservationLapses",
+          "matches": [
+            "leasedWorkCannotTransmitAfterTheReservationLapses"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+          "method": "aResolvedEnvelopeCannotRevivePriorAuthority",
+          "matches": [
+            "aResolvedEnvelopeCannotRevivePriorAuthority"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+          "method": "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue",
+          "matches": [
+            "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue(String)[6]",
+            "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue(String)[2]",
+            "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue(String)[1]",
+            "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue(String)[4]",
+            "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue(String)[5]",
+            "noAxisCanAcquireAnUnknownLimitThroughANullSchemaValue(String)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+          "method": "anUnresolvedEnvelopeIsReportedAsUnresolved",
+          "matches": [
+            "anUnresolvedEnvelopeIsReportedAsUnresolved"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+          "method": "incompleteRetainedCoverageRemainsUnknownInTheActualReaderInsteadOfInventingZeroSpareCapacity",
+          "matches": [
+            "incompleteRetainedCoverageRemainsUnknownInTheActualReaderInsteadOfInventingZeroSpareCapacity"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-015": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess",
+          "matches": [
+            "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+          "method": "healthySuccessRequiresBothAxesAndEverySalesTerm",
+          "matches": [
+            "healthySuccessRequiresBothAxesAndEverySalesTerm"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+          "method": "usesFrozenBaselineWithoutReadingItAgainAndAppendsRevision",
+          "matches": [
+            "usesFrozenBaselineWithoutReadingItAgainAndAppendsRevision"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "applicationCannotInsertOrSelfAttestACanonicalLookingBaseline",
+          "matches": [
+            "applicationCannotInsertOrSelfAttestACanonicalLookingBaseline"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "aPlannerProofRejectsChangedValuesAnotherTransactionAndReplay",
+          "matches": [
+            "aPlannerProofRejectsChangedValuesAnotherTransactionAndReplay"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "evenAnAttestedPayloadCannotOmitAStageOrChangeItsOwnerPolicy",
+          "matches": [
+            "evenAnAttestedPayloadCannotOmitAStageOrChangeItsOwnerPolicy"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "insufficientCompanyHistoryFreezesAnExplicitIncompletePlanAndCannotBeSelected",
+          "matches": [
+            "insufficientCompanyHistoryFreezesAnExplicitIncompletePlanAndCannotBeSelected"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+          "method": "missingCriticalUnitIsUnknownDespiteImprovingTotalAndProfit",
+          "matches": [
+            "missingCriticalUnitIsUnknownDespiteImprovingTotalAndProfit"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+          "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
+          "matches": [
+            "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-016": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "authenticatedOperationsStopCoversTheStoreCapability",
+          "matches": [
+            "authenticatedOperationsStopCoversTheStoreCapability"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "affectedSetStopIntersectsVariantsAcrossDifferentDigests",
+          "matches": [
+            "affectedSetStopIntersectsVariantsAcrossDifferentDigests"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "emptyScopeHasNoContainment",
+          "matches": [
+            "emptyScopeHasNoContainment"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "completeSourceCoverageCanProveZeroCompanyAndCriticalSalesRegression",
+          "matches": [
+            "completeSourceCoverageCanProveZeroCompanyAndCriticalSalesRegression"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
+          "matches": [
+            "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess",
+          "matches": [
+            "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference",
+          "matches": [
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[8]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[3]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[9]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[5]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[1]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[10]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[2]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[12]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[7]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[6]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[4]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[11]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "technicalStoreGrantCannotStopAccountUntilAnExactAccountGrantExists",
+          "matches": [
+            "technicalStoreGrantCannotStopAccountUntilAnExactAccountGrantExists"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "organizationScopedSignedHttpStopQuarantinesEveryConsumerWithoutCrossingOrganizations",
+          "matches": [
+            "organizationScopedSignedHttpStopQuarantinesEveryConsumerWithoutCrossingOrganizations(String)[1]",
+            "organizationScopedSignedHttpStopQuarantinesEveryConsumerWithoutCrossingOrganizations(String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "currentAndFrozenPurposeFreshnessAreExplicitConsumedVersionsRatherThanArbitraryJsonIds",
+          "matches": [
+            "currentAndFrozenPurposeFreshnessAreExplicitConsumedVersionsRatherThanArbitraryJsonIds"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "organizationRecoveryRequiresEveryStoreToReplaceTheVersionBeforeIndependentFinalApproval",
+          "matches": [
+            "organizationRecoveryRequiresEveryStoreToReplaceTheVersionBeforeIndependentFinalApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain",
+          "matches": [
+            "pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "unknownStateObserves",
+          "matches": [
+            "unknownStateObserves"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "scopedStopMakesStartedManualWorkUncertainAndOnlyFactualVerificationCanContinue",
+          "matches": [
+            "scopedStopMakesStartedManualWorkUncertainAndOnlyFactualVerificationCanContinue"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "independentRecoveryAuthoritiesReenableOnlyNewScopeWithoutRevivingPriorApproval",
+          "matches": [
+            "independentRecoveryAuthoritiesReenableOnlyNewScopeWithoutRevivingPriorApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "technicalRecoveryCannotReenableUntilIndependentScopedSecurityAttestationExists",
+          "matches": [
+            "technicalRecoveryCannotReenableUntilIndependentScopedSecurityAttestationExists"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "matches": [
+            "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "stopperCannotEndorseTheirOwnReenablement",
+          "matches": [
+            "stopperCannotEndorseTheirOwnReenablement"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "businessRoleCannotFabricateTechnicalSecurityAttestation",
+          "matches": [
+            "businessRoleCannotFabricateTechnicalSecurityAttestation"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "containmentPermanentlyInvalidatesPriorApprovalAssets",
+          "matches": [
+            "containmentPermanentlyInvalidatesPriorApprovalAssets"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "aKillSwitchThrownMidFlightClosesTheGate",
+          "matches": [
+            "aKillSwitchThrownMidFlightClosesTheGate"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "aStaleFenceOpensNothing",
+          "matches": [
+            "aStaleFenceOpensNothing"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld",
+          "matches": [
+            "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "affectedSetStopIntersectsVariantsAcrossDifferentDigests",
+          "matches": [
+            "affectedSetStopIntersectsVariantsAcrossDifferentDigests"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "operatorAndOperationsLeadCannotPromoteTheirStopToTechnicalAccountScope",
+          "matches": [
+            "operatorAndOperationsLeadCannotPromoteTheirStopToTechnicalAccountScope"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "signedHttpStoreOnlyActorCannotPublishOrganizationWideAuthorityStop",
+          "matches": [
+            "signedHttpStoreOnlyActorCannotPublishOrganizationWideAuthorityStop"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion",
+          "matches": [
+            "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[1]",
+            "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[5]",
+            "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[3]",
+            "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[4]",
+            "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "finalApprovalOrObjectStopProofCannotBeReplayedAsVersionQuarantine",
+          "matches": [
+            "finalApprovalOrObjectStopProofCannotBeReplayedAsVersionQuarantine"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "method": "anExistingIndependentHoldCannotBeAttributedToANewUnconsumedVersionOrBlockItsRecovery",
+          "matches": [
+            "anExistingIndependentHoldCannotBeAttributedToANewUnconsumedVersionOrBlockItsRecovery"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference",
+          "matches": [
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[8]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[3]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[9]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[5]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[1]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[10]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[2]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[12]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[7]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[6]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[4]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[11]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteRefusalTest.java",
+          "method": "staleAttemptAtTheSocketStopsTheCall",
+          "matches": [
+            "staleAttemptAtTheSocketStopsTheCall"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "anUnknownResultIsNeverRepeated",
+          "matches": [
+            "anUnknownResultIsNeverRepeated"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "scopedStopRevokesIssuedManualPacketBeforeAnyExternalStart",
+          "matches": [
+            "scopedStopRevokesIssuedManualPacketBeforeAnyExternalStart"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed",
+          "matches": [
+            "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "stopRequiresAnActualScopedReviewOwnerEvenForAnAuthorizedStopper",
+          "matches": [
+            "stopRequiresAnActualScopedReviewOwnerEvenForAnAuthorizedStopper"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "technicalRecoveryCannotReenableUntilIndependentScopedSecurityAttestationExists",
+          "matches": [
+            "technicalRecoveryCannotReenableUntilIndependentScopedSecurityAttestationExists"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingActorRevocationIT.java",
+          "method": "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration",
+          "matches": [
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[4]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[11]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[3]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[8]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[1]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[2]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[5]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[10]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[12]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[6]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[9]",
+            "eachHumanRevocationPermanentlyInvalidatesOldApprovalEvenAfterRestoration(String, String, String, String)[7]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "compensationCannotOverwriteThirdPartyCurrentValue",
+          "matches": [
+            "compensationCannotOverwriteThirdPartyCurrentValue"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-017": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "newBundleRequiresThreeActorsAndAtomicallyRetiresPriorAuthority",
+          "matches": [
+            "newBundleRequiresThreeActorsAndAtomicallyRetiresPriorAuthority"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java",
+          "method": "explicitFrozenNotAppliedAndCurrentPriorAllowOnlySameCommandAndPayloadRetry",
+          "matches": [
+            "explicitFrozenNotAppliedAndCurrentPriorAllowOnlySameCommandAndPayloadRetry"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "exactSyntheticGateAdmitsOnlyItsCapturedObjectValuesWithoutProductionEnablement",
+          "matches": [
+            "exactSyntheticGateAdmitsOnlyItsCapturedObjectValuesWithoutProductionEnablement"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand",
+          "matches": [
+            "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "aMonotonicGateEWithExactDemonstratedScopeCanBePublishedAsSyntheticOwnerInput",
+          "matches": [
+            "aMonotonicGateEWithExactDemonstratedScopeCanBePublishedAsSyntheticOwnerInput"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "historicalGateEvEvidenceDoesNotImpersonateTheNewOwnersPilotWindow",
+          "matches": [
+            "historicalGateEvEvidenceDoesNotImpersonateTheNewOwnersPilotWindow"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "aTighterSixAxisEnvelopeCanBePublishedWithoutChangingTheOldBundleOrEnablingProduction",
+          "matches": [
+            "aTighterSixAxisEnvelopeCanBePublishedWithoutChangingTheOldBundleOrEnablingProduction"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "matureRetainedAndFavorableActualSettlementPreserveBothStageHistories",
+          "matches": [
+            "matureRetainedAndFavorableActualSettlementPreserveBothStageHistories"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "bundleGateChangedAfterEndorsementCannotBecomeApprovedAuthority",
+          "matches": [
+            "bundleGateChangedAfterEndorsementCannotBecomeApprovedAuthority"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "changedPolicyAfterEndorsementCannotBeSilentlySealed",
+          "matches": [
+            "changedPolicyAfterEndorsementCannotBeSilentlySealed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeIT.java",
+          "method": "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser",
+          "matches": [
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[6]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[7]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[4]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[3]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[2]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[1]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[8]",
+            "anApprovedActionCannotBorrowChangedScopeEvenWhenTheNewLimitIsLooser(Axis)[5]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement",
+          "matches": [
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[4]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[3]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[5]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[7]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[2]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[8]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[6]",
+            "eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(Axis)[1]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "anActiveGateCannotPublishIncompleteNativeValueAuthority",
+          "matches": [
+            "anActiveGateCannotPublishIncompleteNativeValueAuthority(String)[1]",
+            "anActiveGateCannotPublishIncompleteNativeValueAuthority(String)[3]",
+            "anActiveGateCannotPublishIncompleteNativeValueAuthority(String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "method": "inactivePromotionCannotActivateOrDelegateAnOrdinaryBundle",
+          "matches": [
+            "inactivePromotionCannotActivateOrDelegateAnOrdinaryBundle"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "unDemonstratedGateEScopeIsRejectedByTheMonotonicPublicationTrigger",
+          "matches": [
+            "unDemonstratedGateEScopeIsRejectedByTheMonotonicPublicationTrigger(String)[4]",
+            "unDemonstratedGateEScopeIsRejectedByTheMonotonicPublicationTrigger(String)[5]",
+            "unDemonstratedGateEScopeIsRejectedByTheMonotonicPublicationTrigger(String)[2]",
+            "unDemonstratedGateEScopeIsRejectedByTheMonotonicPublicationTrigger(String)[1]",
+            "unDemonstratedGateEScopeIsRejectedByTheMonotonicPublicationTrigger(String)[3]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+          "matches": [
+            "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "anUntestedNativePairOrLargerChangeBoundCannotBorrowPredecessorEvidence",
+          "matches": [
+            "anUntestedNativePairOrLargerChangeBoundCannotBorrowPredecessorEvidence(String)[1]",
+            "anUntestedNativePairOrLargerChangeBoundCannotBorrowPredecessorEvidence(String)[3]",
+            "anUntestedNativePairOrLargerChangeBoundCannotBorrowPredecessorEvidence(String)[4]",
+            "anUntestedNativePairOrLargerChangeBoundCannotBorrowPredecessorEvidence(String)[2]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGateScopeMatrixIT.java",
+          "method": "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis",
+          "matches": [
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[1]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[2]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[5]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[7]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[3]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[4]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[8]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[9]",
+            "aNewEnvelopeCannotBroadenAnyIndependentAxisOrSilentlyChangeItsMeasurementBasis(String)[6]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "method": "immutableBundlePromotionReferenceMustResolveAtTransactionCommit",
+          "matches": [
+            "immutableBundlePromotionReferenceMustResolveAtTransactionCommit"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference",
+          "matches": [
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[8]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[3]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[9]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[5]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[1]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[10]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[2]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[12]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[7]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[6]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[4]",
+            "publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String)[11]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "businessRoleCannotFabricateTechnicalSecurityAttestation",
+          "matches": [
+            "businessRoleCannotFabricateTechnicalSecurityAttestation"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "aReviewedActionCannotSwapItsFrozenBaseline",
+          "matches": [
+            "aReviewedActionCannotSwapItsFrozenBaseline"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-018": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+          "matches": [
+            "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+          "matches": [
+            "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+          "matches": [
+            "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+          "matches": [
+            "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+          "matches": [
+            "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant",
+          "matches": [
+            "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+          "matches": [
+            "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+          "matches": [
+            "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+          "matches": [
+            "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+          "matches": [
+            "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+          "matches": [
+            "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork",
+          "matches": [
+            "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed",
+          "matches": [
+            "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-019": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+          "matches": [
+            "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+          "matches": [
+            "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+          "matches": [
+            "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+          "matches": [
+            "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified",
+          "matches": [
+            "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+          "matches": [
+            "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant",
+          "matches": [
+            "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+          "matches": [
+            "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+          "matches": [
+            "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+          "matches": [
+            "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+          "matches": [
+            "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified",
+          "matches": [
+            "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anOtherOrganizationCannotResolveObjectsOrBriefReferences",
+          "matches": [
+            "anOtherOrganizationCannotResolveObjectsOrBriefReferences"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+          "matches": [
+            "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+          "matches": [
+            "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork",
+          "matches": [
+            "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed",
+          "matches": [
+            "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "matches": [
+            "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-020": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+          "method": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+          "matches": [
+            "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+          "method": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+          "matches": [
+            "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+          "method": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+          "matches": [
+            "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+          "method": "acceptedCanonicalChangesWakeOnlyTheirDependants",
+          "matches": [
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[10]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[8]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[3]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[6]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[2]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[9]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[4]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[5]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[1]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[7]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+          "method": "crossStoreCompanyFactsFollowProductMembershipAndPartialSetsRemainVisible",
+          "matches": [
+            "crossStoreCompanyFactsFollowProductMembershipAndPartialSetsRemainVisible"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+          "method": "outcomeMaturityUsesTheFrozenStageDeadlineAndRetainsItsExactClock",
+          "matches": [
+            "outcomeMaturityUsesTheFrozenStageDeadlineAndRetainsItsExactClock"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+          "method": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+          "matches": [
+            "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+          "method": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+          "matches": [
+            "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+          "method": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+          "matches": [
+            "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+          "method": "acceptedCanonicalChangesWakeOnlyTheirDependants",
+          "matches": [
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[10]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[8]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[3]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[6]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[2]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[9]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[4]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[5]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[1]",
+            "acceptedCanonicalChangesWakeOnlyTheirDependants(String)[7]"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+          "method": "crossStoreCompanyFactsFollowProductMembershipAndPartialSetsRemainVisible",
+          "matches": [
+            "crossStoreCompanyFactsFollowProductMembershipAndPartialSetsRemainVisible"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-021": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+          "matches": [
+            "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+          "matches": [
+            "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+          "matches": [
+            "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+          "matches": [
+            "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant",
+          "matches": [
+            "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+          "matches": [
+            "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+          "matches": [
+            "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+          "matches": [
+            "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+          "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+          "matches": [
+            "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    },
+    "S3-DR-022": {
+      "matched": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+          "matches": [
+            "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+          "matches": [
+            "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+          "matches": [
+            "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+          "matches": [
+            "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+          "matches": [
+            "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+          "matches": [
+            "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges",
+          "matches": [
+            "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges"
+          ]
+        }
+      ],
+      "not_matched_by_method_name": []
+    }
+  },
+  "matrix_statuses": {
+    "S3-AC-REWORK-STATUS.json": {
+      "top_keys": [
+        "document_type",
+        "contract_sha256",
+        "rework_head",
+        "assessed_source_heads",
+        "no_status_inherited_from_maker",
+        "entries",
+        "independent_controller_verdict",
+        "closure_claim_made",
+        "engineering_closure_claim_made",
+        "production_write_enabled",
+        "assessment_boundary"
+      ],
+      "rows": 200,
+      "statuses": {
+        "VERIFIED": 199,
+        "CANDIDATE_PREREQUISITES_PASS_CONTROLLER_PENDING": 1
+      }
+    },
+    "S3-REL-DEFERRED-REGISTER.json": {
+      "top_keys": [
+        "document_type",
+        "contract_sha256",
+        "warning",
+        "entries",
+        "closure_claim_made",
+        "production_write_enabled",
+        "source_contract",
+        "historical_register_sha256",
+        "gates"
+      ],
+      "rows": 24,
+      "statuses": {
+        "null": 24
+      }
+    }
+  }
+}

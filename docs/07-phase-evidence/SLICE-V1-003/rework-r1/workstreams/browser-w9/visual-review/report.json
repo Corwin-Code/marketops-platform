@@ -1,0 +1,71 @@
+{
+  "kind": "W9_ACTUAL_POST_REPAIR_ORIGINAL_SCREENSHOT_REVIEW",
+  "recordedAtUTC": "2026-09-05T14:19:53.036194+00:00",
+  "sourceCommit": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "sourceTree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+  "browserReceipt": {
+    "path": "/tmp/slice3-w9-browser-evidence/w9-r1/receipt.json",
+    "sha256": "35f41246a0d54cd08b3cb971d7eac7769548697b29c7594a2384e275850be282"
+  },
+  "namedResults": {
+    "path": "/tmp/slice3-w9-browser-evidence/w9-r1/named-browser-results.json",
+    "sha256": "4cf6d60a4bd91c0d8d562eb2b8069193628516c247c6b7f473bb0c875f9c9e77"
+  },
+  "originalCount": 26,
+  "actuallyReinspectedOriginalCount": 3,
+  "confirmedW8Defect": "SLO_UNKNOWN_FALSE_NORMAL",
+  "repairObservation": "The actual W9 DataRepair/Optimization images no longer display false normal timing; ACK remains distinct from Action. W8 original failed display evidence is preserved, not rewritten.",
+  "screenshots": [
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "sha256": "e97a7d769248759ffe69bcd365ed2a4a39642b53a0aced119a3d953ace7ac8b7",
+      "bytes": 326503,
+      "currentRunModificationTimeUTC": "2026-09-05T14:16:47.898061+00:00",
+      "width": 1280,
+      "height": 2531,
+      "viewedOriginalY": [
+        981,
+        2531
+      ],
+      "crop": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/keyboard-acknowledgement-not-action.png",
+      "cropSHA256": "3413fa17baa00c158a329cc14079e35dbda6eac8f3905214e791b98ca2d3800c",
+      "actualVisualMethod": "Lossless full-native-width1280 crop of the original current-W9 PNG, emitted with original detail; originalY bounds explicit",
+      "observed": "Actual native-width crop shows ACK recorded at2026-09-05T14:16:47.698Z in UTC and17:16:47 Europe/Moscow, Action-stage not recorded as of response, ACTION_REQUIRED and candidateDRAFT. Both stages are NOT_BREACHED at this established IN_COVERAGE snapshot; Action clock active. ACK was not rendered as attributable Action completion; money/evidence remain MASKED.",
+      "limit": "Only these visible pixels; actual HTTP and keyboard transitions are separate named execution evidence. No Provider or business calculation claim."
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "9d84314350eb4c5ca942b1618950cee65a815a90e8691ef7899598294b5d388c",
+      "bytes": 293232,
+      "currentRunModificationTimeUTC": "2026-09-05T14:16:29.413728+00:00",
+      "width": 1280,
+      "height": 2391,
+      "viewedOriginalY": [
+        841,
+        2391
+      ],
+      "crop": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/OPTIMIZATION-actual-http-projection.png",
+      "cropSHA256": "f5f4b6039cc4fa588e877b8636322e61ee4ac0d0d764905d87c9009130c60b9f",
+      "actualVisualMethod": "Lossless full-native-width1280 crop of the original current-W9 PNG, emitted with original detail; originalY bounds explicit",
+      "observed": "Actual native-width crop shows PROFILE_OR_CALENDAR_MISSING and all unresolved deadlines. ACK completion, Action-stage completion, both timeliness labels and Action clock each explicitly UNRESOLVED. Exposure age38seconds remains visible, Task and allowed acknowledgement remain, no on-time/active replacement. Missing economic values remain not available.",
+      "limit": "Only these visible pixels; actual HTTP and keyboard transitions are separate named execution evidence. No Provider or business calculation claim."
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "47f8c31cd93d21e65c247595572471b7fdf3feb737fbaa2a67522089dc8de7e4",
+      "bytes": 292254,
+      "currentRunModificationTimeUTC": "2026-09-05T14:16:29.081395+00:00",
+      "width": 1280,
+      "height": 2391,
+      "viewedOriginalY": [
+        841,
+        2391
+      ],
+      "crop": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/DATA_REPAIR-actual-http-projection.png",
+      "cropSHA256": "7d75ffd42037ff076923a22100c776a098a11f04d48128e690597d0603d42949",
+      "actualVisualMethod": "Lossless full-native-width1280 crop of the original current-W9 PNG, emitted with original detail; originalY bounds explicit",
+      "observed": "Actual native-width crop shows PROFILE_OR_CALENDAR_MISSING and all unresolved deadlines. ACK completion, Action-stage completion, both timeliness labels and Action clock each explicitly UNRESOLVED. Exposure age38seconds remains visible, Task and allowed acknowledgement remain, no on-time/active replacement. Missing economic values remain not available.",
+      "limit": "Only these visible pixels; actual HTTP and keyboard transitions are separate named execution evidence. No Provider or business calculation claim."
+    }
+  ]
+}

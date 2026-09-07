@@ -1,0 +1,25 @@
+id,text
+S3-REL-001,"real Ozon advertising read capability, native object hierarchy, Spend/traffic/attribution semantics, source maturity and account/store evidence."
+S3-REL-002,equivalent real Wildberries advertising read evidence without assuming Ozon symmetry.
+S3-REL-003,"real Product Mapping, native-object lineage and complete affected-set coverage for the intended operating cohort."
+S3-REL-004,"real company Order/Completed/Retained sales and deterministic ad-linked sale-event evidence, including Provider-to-canonical attribution-gap profile."
+S3-REL-005,real official advertising Spend reconciliation and correction-window evidence.
+S3-REL-006,"real COGS, fee, fulfillment, return-loss, Settlement and Adjustment inputs sufficient for Operational and Settled advertising profit."
+S3-REL-007,"real stage-consistent Conversion, Allowable CPA and Max CPC definitions and approved evidence."
+S3-REL-008,"real source/platform/purpose Freshness Profiles for Queue, Task, Recommendation, Write, Compensation and Outcomes."
+S3-REL-009,"real Optimization qualification, Target, Outcome, Priority, human-SLO, Approval-Lease and aggregate-Exposure Policies with owners and evidence."
+S3-REL-010,"one complete, compatible, scope-bound Advertising Decision Policy Bundle accepted for each intended real operating scope."
+S3-REL-011,"real OIDC/MFA, user disable/revoke, Role/Scope and role-minimal disclosure evidence."
+S3-REL-012,"real Operating Calendar, staffed Coverage, escalation, Daily Brief and Weekly Review ownership."
+S3-REL-013,"real governed Shadow evidence under preaccepted sample, duration, discrepancy, manual-verification and operating-SLO thresholds."
+S3-REL-014,"real Ozon `AD_BID_CHANGE` endpoint, permission, unit, step, quota, idempotency/NOT_APPLIED, error, propagation and Readback evidence for each consumed scope."
+S3-REL-015,real Wildberries `AD_BID_CHANGE` capability evidence if that Provider path is to become reachable; otherwise verified Shadow-only fail-closed state.
+S3-REL-016,exact Gate EV envelope and Human Owner authorization before the first real write for each Platform/Store/Direction/Candidate Basis.
+S3-REL-017,"exact Gate EV Write/Readback evidence and, when API Compensation is claimed, exact prior-value Compensation round-trip evidence."
+S3-REL-018,"layered scope-monotonic Gate E Pilot Evidence Bundle, exact allowlist, aggregate Exposure, recovery headroom and operating ownership."
+S3-REL-019,real Provider-transmission Kill/Quarantine drill and cause-specific multi-party reenablement evidence.
+S3-REL-020,real early Completed-Sales Guard evidence for the Gate E entry scope and continuing 30-day/Settled Outcome obligations.
+S3-REL-021,"real Operational/Settled baseline, critical-sales-unit and settlement-attribution evidence for mature Outcome reporting."
+S3-REL-022,real Ordinary-route promotion evidence before any Owner per-command delegation is activated; absent evidence keeps every nonzero action Material.
+S3-REL-023,"Yandex runtime, managed PostgreSQL, immutable object custody, backup/PITR/restore, monitoring, security and legal/data-localization release evidence."
+S3-REL-024,"Key User training/adoption, runbooks, release traceability and no unresolved release-blocking defect for the exact real scope."

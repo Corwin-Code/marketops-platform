@@ -1,0 +1,1099 @@
+{
+  "kind": "SUPPLEMENTAL_ACTUAL_W6_NAMED_JUNIT_EVIDENCE_WITH_INSPECTED_ASSERTIONS",
+  "createdAtUTC": "2026-09-05T12:15:27.073990+00:00",
+  "measuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "measuredTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "sourceManifest": {
+    "path": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/backend-source-before.json",
+    "sha256": "d76932aa43daea01c0fe29835a89e48533262a5cc6650f527b2b3887e0bc031c"
+  },
+  "preservedArtifactManifest": {
+    "path": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/preserved-artifact-manifest.json",
+    "sha256": "39d1bb21daadfbb7291cfe6437f63da9aea9e3bc686a2083d8885ed08b910660"
+  },
+  "references": [
+    {
+      "id": "8f6df76cb696da42788",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "noCalendarPublishesNothing",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "8f6df76cb696da42788-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 0,
+          "suiteOrdinal": 0,
+          "rawName": "noCalendarPublishesNothing",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.207",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 103,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "8c53c2e26f9400fb271",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "everySectionIsEmitted",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "8c53c2e26f9400fb271-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 1,
+          "suiteOrdinal": 0,
+          "rawName": "everySectionIsEmitted",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.029",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 113,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "f16498b245bed746f69",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "anUnsourcedTopicSaysSo",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "f16498b245bed746f69-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 2,
+          "suiteOrdinal": 0,
+          "rawName": "anUnsourcedTopicSaysSo",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.022",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 134,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "e412b763f533af39c4c",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "anUnchangedPeriodIsNotRestated",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "e412b763f533af39c4c-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 3,
+          "suiteOrdinal": 0,
+          "rawName": "anUnchangedPeriodIsNotRestated",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.022",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 155,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "9ab3692020eaed2ffc4",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "aLateFactProducesARevision",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "9ab3692020eaed2ffc4-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 4,
+          "suiteOrdinal": 0,
+          "rawName": "aLateFactProducesARevision",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.063",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 172,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "f2d40d79175bb808e23",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "everyItemNamesOneCanonicalRow",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "f2d40d79175bb808e23-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 5,
+          "suiteOrdinal": 0,
+          "rawName": "everyItemNamesOneCanonicalRow",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.015",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 220,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "dfb5ed8fe68b544e6b9",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "aPublishedBriefIsPermanent",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "dfb5ed8fe68b544e6b9-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 6,
+          "suiteOrdinal": 0,
+          "rawName": "aPublishedBriefIsPermanent",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.027",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 243,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "2156aae80f1b57dce2d",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "theApplicationRoleCanOnlyAppend",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "2156aae80f1b57dce2d-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 7,
+          "suiteOrdinal": 0,
+          "rawName": "theApplicationRoleCanOnlyAppend",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.089",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 266,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "7c0cc2f1e6757a9c4cb",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "theWeeklyReviewCoversItsTopics",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "7c0cc2f1e6757a9c4cb-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 8,
+          "suiteOrdinal": 0,
+          "rawName": "theWeeklyReviewCoversItsTopics",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.02",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 287,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "dd4ad23ffd32f318ceb",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "method": "aNonOperatingDayPublishesNothing",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentSha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "dd4ad23ffd32f318ceb-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT.xml",
+          "reportSha256": "68308c69c7122bcf7d749ac8cc08382f0a664afef8a3f0400b58e266baefbb99",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "testcaseOrdinal": 9,
+          "suiteOrdinal": 0,
+          "rawName": "aNonOperatingDayPublishesNothing",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "status": "PASSED",
+          "seconds": "0.022",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+          "declarationLine": 325,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "5d1622ce5660c2cfda1",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java",
+      "method": "pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+        "currentSha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "5d1622ce5660c2cfda1-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT.xml",
+          "reportSha256": "e182a3e1c4c1d5faeaa72a18dff9a164e94d915b02ca1d3072fcfaa0beac4c9b",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "testcaseOrdinal": 0,
+          "suiteOrdinal": 0,
+          "rawName": "pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
+          "rawClassname": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "status": "PASSED",
+          "seconds": "11.919",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "declarationLine": 56,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "0cbdc22eef4e7cbb2b1",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java",
+      "method": "managedProfileRejectsRoleDriftBeforeMigration",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+        "currentSha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "0cbdc22eef4e7cbb2b1-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT.xml",
+          "reportSha256": "e182a3e1c4c1d5faeaa72a18dff9a164e94d915b02ca1d3072fcfaa0beac4c9b",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "testcaseOrdinal": 1,
+          "suiteOrdinal": 0,
+          "rawName": "managedProfileRejectsRoleDriftBeforeMigration",
+          "rawClassname": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "status": "PASSED",
+          "seconds": "0.202",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "declarationLine": 261,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "b2e4942f629d181948a",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java",
+      "method": "pg18ManagedProfileFailsBeforeV0003",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+        "currentSha256": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "b2e4942f629d181948a-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT.xml",
+          "reportSha256": "e182a3e1c4c1d5faeaa72a18dff9a164e94d915b02ca1d3072fcfaa0beac4c9b",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "testcaseOrdinal": 2,
+          "suiteOrdinal": 0,
+          "rawName": "pg18ManagedProfileFailsBeforeV0003",
+          "rawClassname": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "status": "PASSED",
+          "seconds": "2.086",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+          "declarationLine": 278,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "bc6b953395105c3089c",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "onlyOfficialInterfacesAppear",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "bc6b953395105c3089c-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 0,
+          "suiteOrdinal": 0,
+          "rawName": "onlyOfficialInterfacesAppear",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.094",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 159,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "886aa546e4721a2795c",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "onlyBidChangeExists",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "886aa546e4721a2795c-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 3,
+          "suiteOrdinal": 0,
+          "rawName": "onlyBidChangeExists",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.233",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 143,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "5750dae111167e86683",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "writeRegistryDescribesExactlyTwoCapabilities",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "5750dae111167e86683-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 5,
+          "suiteOrdinal": 0,
+          "rawName": "writeRegistryDescribesExactlyTwoCapabilities",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.001",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 226,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "e04fc5071111a2d3424",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "budgetAndStatusExistOnlyAsManualInstructions",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "e04fc5071111a2d3424-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 1,
+          "suiteOrdinal": 0,
+          "rawName": "budgetAndStatusExistOnlyAsManualInstructions",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.019",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 187,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "274ac5187521b526d56",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "adjacentInventoryCapabilitiesStayClosed",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "274ac5187521b526d56-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 4,
+          "suiteOrdinal": 0,
+          "rawName": "adjacentInventoryCapabilitiesStayClosed",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.124",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 151,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "ca3cd6e586ae2249d7f",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "exactlyThreeBidDirectionsExist",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "ca3cd6e586ae2249d7f-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 2,
+          "suiteOrdinal": 0,
+          "rawName": "exactlyThreeBidDirectionsExist",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.0",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 167,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "5feaf16ecb3a7e72eb6",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+      "method": "governedManualActionsCannotEnterCommandOrOutbox",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentSha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "5feaf16ecb3a7e72eb6-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+          "reportSha256": "d20bed0c669cd1e9fc000aa2240a3b027b7b1a9b0611a35e28d38a64a98838a4",
+          "phase": "surefire",
+          "suiteName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "testcaseOrdinal": 6,
+          "suiteOrdinal": 0,
+          "rawName": "governedManualActionsCannotEnterCommandOrOutbox",
+          "rawClassname": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "status": "PASSED",
+          "seconds": "0.001",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "declarationLine": 206,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "2eb9b07bedb1626e286",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "method": "anUnresolvedEnvelopeIsReportedAsUnresolved",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "2eb9b07bedb1626e286-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+          "reportSha256": "3612ce9b44d96744a87c28724ac8733b5bd566da4bf0cb98685119010a9eee68",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "testcaseOrdinal": 1,
+          "suiteOrdinal": 0,
+          "rawName": "anUnresolvedEnvelopeIsReportedAsUnresolved",
+          "rawClassname": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "status": "PASSED",
+          "seconds": "0.016",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "declarationLine": 142,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "8cde84cb564bf09bdd5",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "method": "theEnvelopeReadMatchesTheGatesOwnAxes",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "8cde84cb564bf09bdd5-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+          "reportSha256": "3612ce9b44d96744a87c28724ac8733b5bd566da4bf0cb98685119010a9eee68",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "testcaseOrdinal": 8,
+          "suiteOrdinal": 0,
+          "rawName": "theEnvelopeReadMatchesTheGatesOwnAxes",
+          "rawClassname": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "status": "PASSED",
+          "seconds": "0.015",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "declarationLine": 156,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "7f6a86cbdf6d4e7c677",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "method": "incompleteRetainedCoverageRemainsUnknownInTheActualReaderInsteadOfInventingZeroSpareCapacity",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "7f6a86cbdf6d4e7c677-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+          "reportSha256": "3612ce9b44d96744a87c28724ac8733b5bd566da4bf0cb98685119010a9eee68",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "testcaseOrdinal": 2,
+          "suiteOrdinal": 0,
+          "rawName": "incompleteRetainedCoverageRemainsUnknownInTheActualReaderInsteadOfInventingZeroSpareCapacity",
+          "rawClassname": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "status": "PASSED",
+          "seconds": "0.24",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "declarationLine": 179,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "173e5cbef74cb03914a",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "method": "everyApplicableScopeIsReportedOnceAndRetiredAuthorityDoesNotMasqueradeAsCurrent",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "173e5cbef74cb03914a-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+          "reportSha256": "3612ce9b44d96744a87c28724ac8733b5bd566da4bf0cb98685119010a9eee68",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "testcaseOrdinal": 3,
+          "suiteOrdinal": 0,
+          "rawName": "everyApplicableScopeIsReportedOnceAndRetiredAuthorityDoesNotMasqueradeAsCurrent",
+          "rawClassname": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "status": "PASSED",
+          "seconds": "0.442",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "declarationLine": 202,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    },
+    {
+      "id": "0b21853a8e3e83033df",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "method": "anUngrantedStoreReadsNothing",
+      "shardClaims": [],
+      "sourceIdentity": {
+        "measuredSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentSha256": "d1e3a271f99cc77485b6907c059686e0ea4a53c9d063b56b86c30bcfe47be791",
+        "currentMatchesMeasured": true,
+        "sourceReadMode": "CURRENT_BYTES_MATCH_MEASURED_MANIFEST"
+      },
+      "matches": [
+        {
+          "id": "0b21853a8e3e83033df-0",
+          "reportPath": "/tmp/slice3-r1-full-clean-w6-3ed3f4c/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+          "reportSha256": "3612ce9b44d96744a87c28724ac8733b5bd566da4bf0cb98685119010a9eee68",
+          "phase": "failsafe",
+          "suiteName": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "testcaseOrdinal": 7,
+          "suiteOrdinal": 0,
+          "rawName": "anUngrantedStoreReadsNothing",
+          "rawClassname": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "status": "PASSED",
+          "seconds": "0.003",
+          "failureKinds": [],
+          "identityRule": "EXACT_FQCN_AND_METHOD",
+          "declaringBinaryClass": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "declarationLine": 132,
+          "archiveManifestVerified": true
+        }
+      ],
+      "matchStatus": "EXACT_JUNIT_CASES_MATCHED",
+      "observedStatusCounts": {
+        "PASSED": 1
+      },
+      "matchedInvocationCount": 1,
+      "supplementPurpose": "An already executed W6 full-suite method omitted from the four-draft join; read source assertions and archived XML now, without rerunning or changing any source."
+    }
+  ],
+  "criteria": {
+    "S3-AC-182": [
+      "8f6df76cb696da42788",
+      "8c53c2e26f9400fb271",
+      "e412b763f533af39c4c",
+      "dd4ad23ffd32f318ceb"
+    ],
+    "S3-AC-183": [
+      "f16498b245bed746f69",
+      "7c0cc2f1e6757a9c4cb"
+    ],
+    "S3-AC-184": [
+      "f2d40d79175bb808e23",
+      "2156aae80f1b57dce2d",
+      "dfb5ed8fe68b544e6b9"
+    ],
+    "S3-AC-185": [
+      "9ab3692020eaed2ffc4",
+      "e412b763f533af39c4c",
+      "dfb5ed8fe68b544e6b9"
+    ],
+    "S3-AC-186": [
+      "f2d40d79175bb808e23",
+      "2156aae80f1b57dce2d"
+    ],
+    "S3-AC-193": [
+      "5d1622ce5660c2cfda1",
+      "0cbdc22eef4e7cbb2b1",
+      "b2e4942f629d181948a"
+    ],
+    "S3-AC-077": [
+      "bc6b953395105c3089c",
+      "886aa546e4721a2795c",
+      "5750dae111167e86683",
+      "e04fc5071111a2d3424",
+      "274ac5187521b526d56",
+      "ca3cd6e586ae2249d7f",
+      "5feaf16ecb3a7e72eb6"
+    ],
+    "S3-AC-087": [
+      "bc6b953395105c3089c",
+      "886aa546e4721a2795c",
+      "5750dae111167e86683",
+      "e04fc5071111a2d3424",
+      "274ac5187521b526d56",
+      "ca3cd6e586ae2249d7f",
+      "5feaf16ecb3a7e72eb6"
+    ],
+    "S3-AC-088": [
+      "bc6b953395105c3089c",
+      "886aa546e4721a2795c",
+      "5750dae111167e86683",
+      "e04fc5071111a2d3424",
+      "274ac5187521b526d56",
+      "ca3cd6e586ae2249d7f",
+      "5feaf16ecb3a7e72eb6"
+    ],
+    "S3-AC-191": [
+      "bc6b953395105c3089c",
+      "886aa546e4721a2795c",
+      "5750dae111167e86683",
+      "e04fc5071111a2d3424",
+      "274ac5187521b526d56",
+      "ca3cd6e586ae2249d7f",
+      "5feaf16ecb3a7e72eb6"
+    ],
+    "S3-AC-192": [
+      "bc6b953395105c3089c",
+      "886aa546e4721a2795c",
+      "5750dae111167e86683",
+      "e04fc5071111a2d3424",
+      "274ac5187521b526d56",
+      "ca3cd6e586ae2249d7f",
+      "5feaf16ecb3a7e72eb6"
+    ],
+    "S3-AC-019": [
+      "2eb9b07bedb1626e286",
+      "8cde84cb564bf09bdd5",
+      "7f6a86cbdf6d4e7c677",
+      "173e5cbef74cb03914a",
+      "0b21853a8e3e83033df"
+    ],
+    "S3-AC-020": [
+      "2eb9b07bedb1626e286",
+      "8cde84cb564bf09bdd5",
+      "7f6a86cbdf6d4e7c677",
+      "173e5cbef74cb03914a",
+      "0b21853a8e3e83033df"
+    ],
+    "S3-AC-084": [
+      "2eb9b07bedb1626e286",
+      "8cde84cb564bf09bdd5",
+      "7f6a86cbdf6d4e7c677",
+      "173e5cbef74cb03914a",
+      "0b21853a8e3e83033df"
+    ],
+    "S3-AC-187": [
+      "2eb9b07bedb1626e286",
+      "8cde84cb564bf09bdd5",
+      "7f6a86cbdf6d4e7c677",
+      "173e5cbef74cb03914a",
+      "0b21853a8e3e83033df"
+    ],
+    "S3-AC-188": [
+      "2eb9b07bedb1626e286",
+      "8cde84cb564bf09bdd5",
+      "7f6a86cbdf6d4e7c677",
+      "173e5cbef74cb03914a",
+      "0b21853a8e3e83033df"
+    ],
+    "S3-AC-198": [
+      "2eb9b07bedb1626e286",
+      "8cde84cb564bf09bdd5",
+      "7f6a86cbdf6d4e7c677",
+      "173e5cbef74cb03914a",
+      "0b21853a8e3e83033df"
+    ],
+    "S3-AC-190": [
+      "2eb9b07bedb1626e286",
+      "7f6a86cbdf6d4e7c677"
+    ],
+    "S3-AC-195": [
+      "2eb9b07bedb1626e286",
+      "7f6a86cbdf6d4e7c677"
+    ],
+    "S3-AC-196": [
+      "2eb9b07bedb1626e286",
+      "7f6a86cbdf6d4e7c677"
+    ]
+  },
+  "testsExecutedByCollector": false,
+  "sourceModifiedByCollector": false,
+  "reason": "Complete Brief publication, protected migration, non-goal and six-axis read controls already ran in W6 but were omitted from one or more previous individual joins. Their source bytes and raw testcase status were independently matched now."
+}

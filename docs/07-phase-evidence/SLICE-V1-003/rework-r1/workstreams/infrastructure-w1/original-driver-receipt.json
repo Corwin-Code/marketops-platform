@@ -1,0 +1,495 @@
+{
+  "schemaVersion": "1.0",
+  "codeHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+  "sourceArchiveSha256": "19dfdd0aba69c4fb02f991fef083031d1e262c49acd03f15e3844836de38d3a2",
+  "ownedDirectory": "/tmp/marketops-s3-r1-infra-w1-boi0to3r",
+  "scope": "EXACT_W1_SOURCE_COPY_LOCAL_MOCK_PLANS",
+  "terraform": {
+    "version": "1.14.9",
+    "platform": "darwin_arm64",
+    "archiveSha256": "5bc0b11b7a63c8984a41d82523356df46f7833c2e9651a39a7f8919422de5cde",
+    "binarySha256": "e6c2079a84ab7b336a9f8466d58d20fa1adf8a9c9a3bd826917a0c177e85cfaa",
+    "integrity": "Cached ZIP matches preserved SHA256SUMS; its pinned linux_amd64 entry equals infrastructure.yml; extracted binary identity was compared to ZIP bytes."
+  },
+  "provider": {
+    "name": "yandex-cloud/yandex",
+    "version": "0.220.0",
+    "installation": "LOCAL_FILESYSTEM_MIRROR_WITH_REPOSITORY_LOCKFILE_READONLY",
+    "files": [
+      {
+        "name": "CHANGELOG.md",
+        "sha256": "f93bf98d4d6a4d0e2de1530f3fee301043569f9e47f03df9d7d5fe6807b4c067"
+      },
+      {
+        "name": "LICENSE",
+        "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+      },
+      {
+        "name": "README.md",
+        "sha256": "f840a5c1179ed2bb0ee675fb1056e128f0ec97f7f99191207365a1e2e7a6aacc"
+      },
+      {
+        "name": "terraform-provider-yandex_v0.220.0",
+        "sha256": "af84212761887f4d6d155a2877c42b5822044df5a39b51cfed335f8bedfa42be"
+      }
+    ]
+  },
+  "environment": {
+    "retainedNames": [
+      "PATH",
+      "LANG",
+      "TMPDIR",
+      "PYTHONDONTWRITEBYTECODE"
+    ],
+    "HOME": "NOT_PASSED",
+    "cloudCredentialVariables": "NOT_PASSED",
+    "proxyVariables": "NOT_PASSED",
+    "userTerraformCliConfig": "NOT_PASSED; verifier writes explicit CLI config",
+    "localRepositoryTerraformState": "NOT_READ_OR_REUSED"
+  },
+  "steps": [
+    {
+      "name": "terraform-mock-verification",
+      "argv": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "scripts/verify_terraform.py",
+        "--terraform",
+        "/tmp/marketops-s3-r1-infra-w1-boi0to3r/terraform",
+        "--provider-mirror",
+        "/tmp/marketops-s3-r1-infra-w1-boi0to3r/provider-mirror"
+      ],
+      "cwd": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/source",
+      "startedAt": "2026-09-05T03:18:32.224991+00:00",
+      "finishedAt": "2026-09-05T03:18:40.582663+00:00",
+      "durationSeconds": 8.357,
+      "exitCode": 0,
+      "log": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/terraform-mock-verification.log",
+      "logSha256": "91792efdbbb5893f4da5571853016212d9b9db8cf11b9726996c390fcf9322ad"
+    },
+    {
+      "name": "terraform-plan-unit",
+      "argv": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*terraform*.py"
+      ],
+      "cwd": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/source",
+      "startedAt": "2026-09-05T03:18:40.584297+00:00",
+      "finishedAt": "2026-09-05T03:18:41.008092+00:00",
+      "durationSeconds": 0.424,
+      "exitCode": 0,
+      "log": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/terraform-plan-unit.log",
+      "logSha256": "53f7a1fb2d6b73fd8bcd049a4a7109252cd438c14e809c35c12ccd932c438df3"
+    },
+    {
+      "name": "runtime-unit",
+      "argv": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_yandex_runtime.py"
+      ],
+      "cwd": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/source",
+      "startedAt": "2026-09-05T03:18:41.009097+00:00",
+      "finishedAt": "2026-09-05T03:18:41.386484+00:00",
+      "durationSeconds": 0.377,
+      "exitCode": 0,
+      "log": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/runtime-unit.log",
+      "logSha256": "799a1eccbe8913a4214c637ac83fc778cd5caadb315f5f664c645ee44d2a6bc9"
+    },
+    {
+      "name": "telemetry-unit",
+      "argv": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_yandex_telemetry.py"
+      ],
+      "cwd": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/source",
+      "startedAt": "2026-09-05T03:18:41.387294+00:00",
+      "finishedAt": "2026-09-05T03:18:41.704715+00:00",
+      "durationSeconds": 0.317,
+      "exitCode": 0,
+      "log": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/telemetry-unit.log",
+      "logSha256": "670a39115e7523a8984e4842e16547cb2094b03fad392b037b4b9dc8b2656e62"
+    }
+  ],
+  "boundary": {
+    "realProviderApiCalls": false,
+    "realAccount": false,
+    "apply": false,
+    "deployment": false,
+    "sharedOrProductionDatabase": false,
+    "maven": false,
+    "implementationModified": false
+  },
+  "sourceFiles": [
+    {
+      "path": "infra/yandex/.gitignore",
+      "sha256": "8c0707edf06134029e467949105f1d298175821fff0c2c41819c180e60d0e0a9"
+    },
+    {
+      "path": "infra/yandex/README.md",
+      "sha256": "1dbf6c77b2787796a6a27675da2cb3b0d7a610cdf927f2db0702a36e55a26e73"
+    },
+    {
+      "path": "infra/yandex/bootstrap/.terraform.lock.hcl",
+      "sha256": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37"
+    },
+    {
+      "path": "infra/yandex/bootstrap/create-lock-table.json",
+      "sha256": "676b11a89312a72b110d41a755908f8f28e6538d96abed0edf49fd65e5b35667"
+    },
+    {
+      "path": "infra/yandex/bootstrap/main.tf",
+      "sha256": "8530087388b942c9c1bd9e26711659fe1ca35ae9c2fbe732d41a6a35a8e2c595"
+    },
+    {
+      "path": "infra/yandex/bootstrap/outputs.tf",
+      "sha256": "15786da37bb85e4bb3de0700d9326bf040ce95cf19b048008b3f37a9bc59117d"
+    },
+    {
+      "path": "infra/yandex/bootstrap/tests/bootstrap.tftest.hcl",
+      "sha256": "e2d7fbca7a478accbcddd6982e7cd6882637b42f98d4ae4e6a1b2fa2fd0684a0"
+    },
+    {
+      "path": "infra/yandex/bootstrap/variables.tf",
+      "sha256": "e8dccc2cceec1d76acab0d4c0464e6cf2b95af507caa9bd1bb3c8305585d8232"
+    },
+    {
+      "path": "infra/yandex/environments/production/.terraform.lock.hcl",
+      "sha256": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37"
+    },
+    {
+      "path": "infra/yandex/environments/production/backend.hcl.example",
+      "sha256": "669572f7e730f0e6b7da8610170e71efab29b26a021f45b38741c509b46bcd0f"
+    },
+    {
+      "path": "infra/yandex/environments/production/main.tf",
+      "sha256": "17fa5ec2bb38fe2f902d689881f714f185e4e10b7b2257d46597dd50168074e7"
+    },
+    {
+      "path": "infra/yandex/environments/production/outputs.tf",
+      "sha256": "57a807f55bd0af32c1512d0f6852c6ded788fad6fe2b7204341f1655dc1c315f"
+    },
+    {
+      "path": "infra/yandex/environments/production/terraform.tfvars.example",
+      "sha256": "2c187a829ac2c11c16de45c6c08cdbbd911445dd3d32bfcda8643236baf583de"
+    },
+    {
+      "path": "infra/yandex/environments/production/tests/environment.tftest.hcl",
+      "sha256": "4902f4fac690691fb90f00e54b5cbb654860d4b505a98e0b04b629a021051a9b"
+    },
+    {
+      "path": "infra/yandex/environments/production/tests/migration-result.fixture.json",
+      "sha256": "76328491af5f202e8db1cda4902e220076109251517c01a281f239f0d7b35d85"
+    },
+    {
+      "path": "infra/yandex/environments/production/variables.tf",
+      "sha256": "4323beba0c71bdc23bdc015bb7774f2cf217449246db1819630c55e44a3dce4d"
+    },
+    {
+      "path": "infra/yandex/environments/staging/.terraform.lock.hcl",
+      "sha256": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37"
+    },
+    {
+      "path": "infra/yandex/environments/staging/backend.hcl.example",
+      "sha256": "bbd5f01ae80d367c77e1b0e53736ade09b0ab5ed62a6e6d50ec44f44d4cebcf4"
+    },
+    {
+      "path": "infra/yandex/environments/staging/main.tf",
+      "sha256": "68f21db2a14d6a6156b827512043646f244d9720fb5b7c3158beee04623a3342"
+    },
+    {
+      "path": "infra/yandex/environments/staging/outputs.tf",
+      "sha256": "57a807f55bd0af32c1512d0f6852c6ded788fad6fe2b7204341f1655dc1c315f"
+    },
+    {
+      "path": "infra/yandex/environments/staging/terraform.tfvars.example",
+      "sha256": "f408a50fce6526242cfa4a820168960a70a6c0b479f305920aa9b43258082355"
+    },
+    {
+      "path": "infra/yandex/environments/staging/tests/environment.tftest.hcl",
+      "sha256": "4902f4fac690691fb90f00e54b5cbb654860d4b505a98e0b04b629a021051a9b"
+    },
+    {
+      "path": "infra/yandex/environments/staging/tests/migration-result.fixture.json",
+      "sha256": "04d4a1df73941c3479cf298268817c1b36d92c22b1c878e5c56bbfb32ab3bf45"
+    },
+    {
+      "path": "infra/yandex/environments/staging/variables.tf",
+      "sha256": "4323beba0c71bdc23bdc015bb7774f2cf217449246db1819630c55e44a3dce4d"
+    },
+    {
+      "path": "infra/yandex/modules/database/main.tf",
+      "sha256": "3b7200ffeb708b2adffa1c74d567b28cac9df84ae2e44e3b76b412d073ecc4f7"
+    },
+    {
+      "path": "infra/yandex/modules/database/outputs.tf",
+      "sha256": "5346ae04b51ebc75f760077bc103fb001c8f26cfd8b4a1666c48f1fc4cd604ec"
+    },
+    {
+      "path": "infra/yandex/modules/database/variables.tf",
+      "sha256": "cdd6941ff2befef8a8256f19058646ae148e0ea02ac4685f185133a3ef44b45f"
+    },
+    {
+      "path": "infra/yandex/modules/network/main.tf",
+      "sha256": "c85c2f3e26140b8d2015a190346b23bce40286703f9450d19a8fa28b2c3b948f"
+    },
+    {
+      "path": "infra/yandex/modules/network/outputs.tf",
+      "sha256": "62946692948eb4e1ef7b4100bbaba034940e820c8e3f4f8e15a401f250675d56"
+    },
+    {
+      "path": "infra/yandex/modules/network/variables.tf",
+      "sha256": "c655c8cb5ecdf8c2b2c3f82c807d1fb61b6f7a2afdf25680f71dfc0e6811b282"
+    },
+    {
+      "path": "infra/yandex/modules/object-storage/main.tf",
+      "sha256": "1b6aee7e44b8ea33bc84366a6131f2bd185a78b9464d77db20a8d28ce0c2f831"
+    },
+    {
+      "path": "infra/yandex/modules/object-storage/outputs.tf",
+      "sha256": "c78dfd3fe8dbf11bd1989cf0d6111737f6e3a4e76342fb934c79439cc724ce5b"
+    },
+    {
+      "path": "infra/yandex/modules/object-storage/variables.tf",
+      "sha256": "1b0e28b157e864a5f369d53193cd58a269654393be590928a40a075e9d0db3cc"
+    },
+    {
+      "path": "infra/yandex/modules/observability/alert-requirements.json",
+      "sha256": "5694c38151e6ae0cb97c365e46981938f59ec40369fd9d608e471ab64d7c4e2a"
+    },
+    {
+      "path": "infra/yandex/modules/observability/main.tf",
+      "sha256": "f0921189b5e8b5f031b0449c2a56f8bcad6d64b615a986f2560df9d705dcbeda"
+    },
+    {
+      "path": "infra/yandex/modules/observability/outputs.tf",
+      "sha256": "a7ce98d1a3f1ff19de1cc6c2ccda1dc85ab5eaf3c7ef24c2cfe34903af635b1c"
+    },
+    {
+      "path": "infra/yandex/modules/observability/variables.tf",
+      "sha256": "06f5464fc80ec74e243b606daf720690740a4075cd5991a6a0f0553e319303cd"
+    },
+    {
+      "path": "infra/yandex/modules/workload/main.tf",
+      "sha256": "72b60fccda707f20f77a002895228d51135082a349903ec5b61bbdd4916b20a6"
+    },
+    {
+      "path": "infra/yandex/modules/workload/outputs.tf",
+      "sha256": "707c076d162da81b91ee01d5aef42ea9d05153d9810c06b223a570102af9dd5d"
+    },
+    {
+      "path": "infra/yandex/modules/workload/variables.tf",
+      "sha256": "18c56906c7554f7757b8d5371090e23640b9e3a0602235ae5e8fca562f89feff"
+    },
+    {
+      "path": "infra/yandex/modules/workload-identity/main.tf",
+      "sha256": "367d7dbfd3fc3056fd6d65a69d72048ba795e5c193755e43cb21d6f940397a4f"
+    },
+    {
+      "path": "infra/yandex/modules/workload-identity/outputs.tf",
+      "sha256": "8e4f4212d763ccdf96bd8a659d5576fe4ae42c6cfba97d288a8780c5db3f1b90"
+    },
+    {
+      "path": "infra/yandex/modules/workload-identity/variables.tf",
+      "sha256": "751cc4587e47558e6eef8093255e6e9a84dbda8374e5e9a5efd3fcc9b85fc54f"
+    },
+    {
+      "path": "infra/yandex/runtime/backend.Dockerfile",
+      "sha256": "f38bf71bd872639c02e771cc983124cd3c13c5341a1d3b4522b175f1bffb6078"
+    },
+    {
+      "path": "infra/yandex/runtime/bootstrap.py",
+      "sha256": "fb10cf3b1421d2997a9b79475e5f0fda0b6d3ff956ef78a56eacf3d17721ee52"
+    },
+    {
+      "path": "infra/yandex/runtime/certs/README.md",
+      "sha256": "63db406775c4121f8f57beaeb2584d23cda20a94115e576dc3f5712c7f8ef8ae"
+    },
+    {
+      "path": "infra/yandex/runtime/certs/yandex-root.crt",
+      "sha256": "6d148f85b5213445b23ad22ff45e47e1aa2be968f183f9bd6ff39de54d47a8ef"
+    },
+    {
+      "path": "infra/yandex/runtime/console.Dockerfile",
+      "sha256": "0c339af3e6e75b3df25abd6d873790a268628a32ba8a5e3b5a20843be5a46627"
+    },
+    {
+      "path": "infra/yandex/runtime/managed-provider-evidence.json.example",
+      "sha256": "64e852485e4f9011676579a7b7dc212f8bf470d44a52bfeecc3593477db1fabf"
+    },
+    {
+      "path": "infra/yandex/runtime/marketops-telemetry.service",
+      "sha256": "c13b65c363fcb9623d83fa66c68a7081ed1680a99415e9838d48fe822771e00d"
+    },
+    {
+      "path": "infra/yandex/runtime/marketops-telemetry.timer",
+      "sha256": "a4f53ab5af77b980898ca2482cbc9b5fd952c0365eec44880f7ff491f648b966"
+    },
+    {
+      "path": "infra/yandex/runtime/marketops.service",
+      "sha256": "b011295a32501f31184d9425a990175d1afb34d37af09995b0133a07367f2689"
+    },
+    {
+      "path": "infra/yandex/runtime/migration-logback.xml",
+      "sha256": "b3f4a28871d8e186534d90cf0b3c60fe37e8266c904d4ffbffe16d4446ff249e"
+    },
+    {
+      "path": "infra/yandex/runtime/migration-manifest.properties.example",
+      "sha256": "7a7827550996d3d35d10e1ff961b0a847305aca3a0693053f244237ba5a59206"
+    },
+    {
+      "path": "infra/yandex/runtime/migration.Dockerfile",
+      "sha256": "0d0cde7449099adec670a24e15733fdb1269b36a6bf355b84a7cf6cfe505ecc6"
+    },
+    {
+      "path": "infra/yandex/runtime/nginx.conf",
+      "sha256": "38ac89b6b8913d1dce2bfb84be5f157a7b3d6d471b4780a944f20f26a9c77bbd"
+    },
+    {
+      "path": "infra/yandex/runtime/prepare-managed-database.sql",
+      "sha256": "24a1dbae9a6357b4bfdb811b27af6a0e63eb70015d208573d21b3e6025c2ba94"
+    },
+    {
+      "path": "infra/yandex/runtime/telemetry.py",
+      "sha256": "61f221ce07a5f80b84f1a4814c79026aba74cd63f1f0ac780facbe508a5476fd"
+    },
+    {
+      "path": "scripts/bootstrap-repo.ps1",
+      "sha256": "66e99caca1d30218301c6ae195be001045548bcbd2b5452241eb3c35f08d6cdc"
+    },
+    {
+      "path": "scripts/bootstrap-repo.sh",
+      "sha256": "1726c1728e6fe0f2d6388f77fda50daf70d271dc6d87a8792568366177d5736c"
+    },
+    {
+      "path": "scripts/collect_supply_chain.py",
+      "sha256": "a35b7bc07a8fe2109c15e008f30e0769387d586871a1a38e1b4c717cb346ddb7"
+    },
+    {
+      "path": "scripts/dev_doctor.py",
+      "sha256": "4290f50b7dc2609195aa239ac84d31b7e7623603911d8b85d782ff347fbcd526"
+    },
+    {
+      "path": "scripts/fresh_clone_check.sh",
+      "sha256": "bf33038b0e8b9256cd4e5fc78d0f9cd318feb66583215101ee2dbdd22f427be5"
+    },
+    {
+      "path": "scripts/init_local_env.py",
+      "sha256": "d5731bf10ff0b18c588d51bc1d5f07e085653096d52cf2cf63f3c64ae03a37b7"
+    },
+    {
+      "path": "scripts/validate_governance.py",
+      "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+    },
+    {
+      "path": "scripts/validate_production_readiness.py",
+      "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+    },
+    {
+      "path": "scripts/validate_terraform_plan.py",
+      "sha256": "0ab496e4430e0b2826b8eaac7dd73c0d41116fe2f7b64af898431f8d6968481a"
+    },
+    {
+      "path": "scripts/validation/advertising_browser_isolated.sh",
+      "sha256": "1d881d56a841ddf36858f91d24183bbabd1ef9d19a9d676b01d33d42087f440f"
+    },
+    {
+      "path": "scripts/validation/assemble_slice3_rework_evidence.py",
+      "sha256": "0ee8f073ac3f4ac642e9d09ace889bed055de7be479b9dfdc81660f278f1c8a6"
+    },
+    {
+      "path": "scripts/validation/collect_slice3_rework_identity.py",
+      "sha256": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+    },
+    {
+      "path": "scripts/validation/collect_slice3_runtime_resources.py",
+      "sha256": "2b378a05a77b96727f38209c7e268926325afa28c7e1f3a0c46e79990536e559"
+    },
+    {
+      "path": "scripts/verify_coverage_thresholds.sh",
+      "sha256": "695cc78d99d4c0c1b657319b13a36d40b5f0b2c39e204e48bf55a8f7d375b8de"
+    },
+    {
+      "path": "scripts/verify_local_config.sh",
+      "sha256": "abe2ec31a8028545f2ec13d54dc846c7c1c9782ec44b1047e6fdf5817ce9fbed"
+    },
+    {
+      "path": "scripts/verify_migration_artifact.py",
+      "sha256": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191"
+    },
+    {
+      "path": "scripts/verify_terraform.py",
+      "sha256": "94b7ad91e809607cb0984298bd00c77e710498b24950acb5e897d2b99b37c1a9"
+    },
+    {
+      "path": "tests/fixtures/terraform/bootstrap-plan.json",
+      "sha256": "da702424937eba75f529d752876063a6c585d7a8a09e6077434d53b38b9aa950"
+    },
+    {
+      "path": "tests/fixtures/terraform/environment-plan-provenance.json",
+      "sha256": "acf2f1da63c0a1635469f274b99004968a2cb436bc4055476810eec05dd952dc"
+    },
+    {
+      "path": "tests/fixtures/terraform/environment-plan.json",
+      "sha256": "ad5cdb26eab9c2c0271787f9592e3e1d49c2ce447c9474c400345be14eec691b"
+    },
+    {
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "sha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630"
+    },
+    {
+      "path": "tests/test_collect_supply_chain.py",
+      "sha256": "686b8cbe520fd6296ec0ce8387b4507d59f87d6274f079e4edd7e32f6de67d6d"
+    },
+    {
+      "path": "tests/test_init_local_env.py",
+      "sha256": "7310596efe722e158f38fb8135a87828f3e652d5eeca5e9bcfbdf18ed424112f"
+    },
+    {
+      "path": "tests/test_packaged_advertising_authority.py",
+      "sha256": "6caf26006d8880e8d0f334e13e1a054995caf87775df13611ddab05a70332c36"
+    },
+    {
+      "path": "tests/test_required_status_checks.py",
+      "sha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a"
+    },
+    {
+      "path": "tests/test_validate_governance.py",
+      "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+    },
+    {
+      "path": "tests/test_validate_production_readiness.py",
+      "sha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca"
+    },
+    {
+      "path": "tests/test_validate_terraform_plan.py",
+      "sha256": "ab0c60a0c27683abf9f756a0641cd750e79385dde2e22ad79815862e4eb17bcf"
+    },
+    {
+      "path": "tests/test_yandex_runtime.py",
+      "sha256": "397724db7c652b2037021df02d8e43677b724faa440a193792e0dcfd25b243bd"
+    },
+    {
+      "path": "tests/test_yandex_telemetry.py",
+      "sha256": "ac5b88f23db35a25c81fcaac97acc598f1300f284c36f2b686bb5575757204d2"
+    }
+  ],
+  "result": "PASS",
+  "terraformEvidence": "/tmp/marketops-s3-r1-infra-w1-boi0to3r/source/build/terraform-evidence"
+}

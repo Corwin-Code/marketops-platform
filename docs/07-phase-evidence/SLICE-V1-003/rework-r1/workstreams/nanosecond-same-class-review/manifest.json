@@ -1,0 +1,22 @@
+[
+  {
+    "path": "query-1.json",
+    "sha256": "63184b4ac15cb6a91a1448f28b951947aa439d5e5dd0d4d9f97bfd5b516c65c5"
+  },
+  {
+    "path": "query-1.txt",
+    "sha256": "8212719b3fce42c19ab8c8f838489d424a3c8fa480b3bf101663881e4f4bd25c"
+  },
+  {
+    "path": "query-2.json",
+    "sha256": "a569058a02b3a37239d4f3074d6e4f35c385f0f20cda017012f208b2686de631"
+  },
+  {
+    "path": "query-2.txt",
+    "sha256": "a7591c3645670d29b2e52fabd8896bcc496320b7ac99afa63ce39055640dd13d"
+  },
+  {
+    "path": "review.json",
+    "sha256": "0734caca395943defe664d485e23f2c0caed0eedea0e692905583896377c268e"
+  }
+]

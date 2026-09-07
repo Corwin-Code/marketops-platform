@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/tmp/slice3-backend-checkpoint-archives-r1/reconcile_scope.py", line 16, in <module>
+    build=z.read('BOOT-INF/classes/META-INF/build-info.properties').decode();props=dict(line.split('=',1) for line in build.splitlines() if '=' in line and not line.startswith('#'))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/zipfile.py", line 1463, in read
+    with self.open(name, "r", pwd) as fp:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/zipfile.py", line 1502, in open
+    zinfo = self.getinfo(name)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/zipfile.py", line 1429, in getinfo
+    raise KeyError(
+KeyError: "There is no item named 'BOOT-INF/classes/META-INF/build-info.properties' in the archive"

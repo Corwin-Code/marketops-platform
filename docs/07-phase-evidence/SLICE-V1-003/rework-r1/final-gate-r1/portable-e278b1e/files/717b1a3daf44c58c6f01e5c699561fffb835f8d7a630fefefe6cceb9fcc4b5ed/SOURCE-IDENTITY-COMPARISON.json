@@ -1,0 +1,39 @@
+{
+  "kind": "IMMUTABLE_CHECKPOINT_INVENTORY_TO_EXACT_REMOTE_TESTED_TREE",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+  "testedMergeTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+  ],
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "inventoryFiles": 1280,
+  "directCanonicalGitBytes": 1278,
+  "declaredCRLFConversions": 2,
+  "allInventoryMembersMatchExactRemoteTree": true,
+  "allSelectedReviewSourcesMatchExactRemoteTree": true,
+  "currentDirtyWorktreeUsed": false,
+  "perFileGitComparison": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/PRODUCT-TO-FINAL-CI-SOURCE-COMPARISON.json",
+    "sha256": "9087d5c2683eaf0b250350fe2d1b509fb9dd6abf36b8d02b268d024eb8eff739",
+    "bytes": 552762
+  },
+  "remoteTree": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/tested-merge-tree-recursive.json",
+    "sha256": "34e3390954c8a85ddcd6d2712806d742670c0a0d4765f867e15533f7d2710889",
+    "bytes": 1333774
+  },
+  "sourceCommit": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/source-commit.json",
+    "sha256": "f34e56ef7e7a3eade68cde47fe1e8af0d06906a4fca583be5394118afca43264",
+    "bytes": 1193
+  },
+  "testedMergeCommit": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/tested-merge-commit.json",
+    "sha256": "007bf7c57ba9948b1b99badb70106ad733a2046db02725095362a78ac371df5d",
+    "bytes": 2687
+  },
+  "scope": "Currente278b1e product and remote tested merge have the exact1280 runtime source blobs. Additional helper Git bytes are separately present; CI does not claim to rerun106 tools."
+}

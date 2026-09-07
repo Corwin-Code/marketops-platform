@@ -1,0 +1,15 @@
+{
+  "group": "backend-ci-w8",
+  "archive": "original-evidence.tar.gz",
+  "archiveSha256": "c0afd5ccff1f4ea1be725a8b4c5f443f4c5ed39da22c71d0b138e8a2a2d190ba",
+  "originalSources": [
+    "/tmp/slice3-w8-backend-ci-final-review",
+    "/tmp/slice3-w8-backend-ci-provenance",
+    "/tmp/slice3-w8-backend-ci-provenance-r2",
+    "/tmp/slice3-w8-backend-ci-provenance-r3",
+    "/tmp/slice3-w8-provenance-parser-repair",
+    "/tmp/slice3-w8-backend-ci-measured-results",
+    "/tmp/slice3-w8-backend-ci-measured-results-r2"
+  ],
+  "boundary": "Original bytes in tar. Failed attempts and original receipt identities retained; no source path rewriting. Direct review JSON copies only when LF or no newlines."
+}

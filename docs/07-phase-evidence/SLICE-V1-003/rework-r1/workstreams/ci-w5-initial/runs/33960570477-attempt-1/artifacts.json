@@ -1,0 +1,22 @@
+[
+  {
+    "id": 9967795619,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY3Nzk1NjE5",
+    "name": "infrastructure-verification",
+    "size_in_bytes": 2316653,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9967795619",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9967795619/zip",
+    "expired": false,
+    "digest": "sha256:a7206fabe1d1bb089319e68ba1073a8891f8f1a123c994cb2e19eac84a64e105",
+    "created_at": "2026-09-05T10:24:45Z",
+    "updated_at": "2026-09-05T10:24:45Z",
+    "expires_at": "2026-09-19T10:24:44Z",
+    "workflow_run": {
+      "id": 33960570477,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "247ea5ced6cd0ac110314db9fa606d8995c85cac"
+    }
+  }
+]

@@ -1,0 +1,13 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java
+index 2770888..b2264ba 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java
+@@ -60,5 +60,7 @@ public class AdvertisingManualWorkflowRepository {
+                    AND EXISTS (SELECT 1 FROM core.ad_affected_set affected WHERE affected.id=c.affected_set_id
+                        AND affected.resolution_state='COMPLETE')
+-                   AND p.effective_to>statement_timestamp() AND (p.action_kind<>'AD_BID_CHANGE' OR candidate.id IS NOT NULL)
++                   AND p.effective_to>statement_timestamp() AND profile.status='ACTIVE'
++                   AND (profile.effective_to IS NULL OR profile.effective_to>statement_timestamp())
++                   AND (p.action_kind<>'AD_BID_CHANGE' OR candidate.id IS NOT NULL)
+                  ORDER BY p.action_kind,p.policy_version,candidate.ordinal,candidate.id LIMIT 100
+                 """).param("id", caseId).query((rs, n) -> new Option(rs.getObject("id", UUID.class),

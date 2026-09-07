@@ -1,0 +1,184 @@
+{
+  "kind": "NARROW_STATIC_CODEQL_HELP_PUBLICATION_ADJUDICATION",
+  "originalRecursiveRawScan": {
+    "path": "/tmp/slice3-w8-publication-staging/publication-recursive-raw-scan.json",
+    "sha256": "693b65748b41d0f2293ae4894c33a4dca7db31ccef78fcaccb8914fc6c40e546",
+    "bytes": 1769752
+  },
+  "originalSecurityTriage": {
+    "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+    "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+    "bytes": 13191
+  },
+  "originalSecurityScannerFalsePreserved": true,
+  "reviewedStaticRawOccurrences": 8,
+  "expectedRawOccurrences": 8,
+  "reviewed": [
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.json",
+      "fileSha256": "df7d59784d86c78a5fab99e92193cd8bc3604eeeb8d68568eeaf335d0f971533",
+      "patternIndex": 6,
+      "line": 3906,
+      "byteOffset": 717194,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.json",
+      "fileSha256": "df7d59784d86c78a5fab99e92193cd8bc3604eeeb8d68568eeaf335d0f971533",
+      "patternIndex": 6,
+      "line": 3906,
+      "byteOffset": 717920,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.json",
+      "fileSha256": "df7d59784d86c78a5fab99e92193cd8bc3604eeeb8d68568eeaf335d0f971533",
+      "patternIndex": 6,
+      "line": 3907,
+      "byteOffset": 719761,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.json",
+      "fileSha256": "df7d59784d86c78a5fab99e92193cd8bc3604eeeb8d68568eeaf335d0f971533",
+      "patternIndex": 6,
+      "line": 3907,
+      "byteOffset": 720487,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.response.txt",
+      "fileSha256": "1f1fca28b5889f0f94bac9a881d637c14aec819f4fe8e2015de4a2b7768abd83",
+      "patternIndex": 6,
+      "line": 30,
+      "byteOffset": 650833,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.response.txt",
+      "fileSha256": "1f1fca28b5889f0f94bac9a881d637c14aec819f4fe8e2015de4a2b7768abd83",
+      "patternIndex": 6,
+      "line": 30,
+      "byteOffset": 651569,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.response.txt",
+      "fileSha256": "1f1fca28b5889f0f94bac9a881d637c14aec819f4fe8e2015de4a2b7768abd83",
+      "patternIndex": 6,
+      "line": 30,
+      "byteOffset": 653400,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    },
+    {
+      "location": "workstreams/security-w8/original-evidence.tar.gz!typescript-w8.sarif.response.txt",
+      "fileSha256": "1f1fca28b5889f0f94bac9a881d637c14aec819f4fe8e2015de4a2b7768abd83",
+      "patternIndex": 6,
+      "line": 30,
+      "byteOffset": 654136,
+      "matchSha256": "8b2fa1a3654553f91d93e57001d9932592c4d3e2230d9cce57ff63ee542eb4de",
+      "length": 22,
+      "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+      "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+      "sarifRuleId": "js/session-fixation",
+      "exactPriorHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+      "triageSource": {
+        "path": "/tmp/slice3-w8-publication-staging/workstreams/security-w8/secret-shape-triage.json",
+        "sha256": "ab35bda3e27c1d1b494da672f4333f77d847461172059499e55947572ef841f1",
+        "bytes": 13191
+      }
+    }
+  ],
+  "unreviewed": [],
+  "signedQueryMatches": [
+    {
+      "location": "workstreams/frontend-ci-w8/original-evidence.tar.gz!logs.zip.attempt-1.stderr.txt",
+      "fileSha256": "05a147efc88927d7141be5685fd72ac2fabb8538cf65aca1277d7ce740982476",
+      "line": 1,
+      "matchSha256": "1f4ddcd446a31ae560abadbb96e5c3e0de51bf09d23b999a8754e007e8c51208",
+      "length": 86
+    }
+  ],
+  "privateOriginalExcluded": true,
+  "jarBytesExcluded": true,
+  "emptyFailedDownloadHistory": [
+    {
+      "location": "workstreams/gov-infra-ci-w8/original-evidence.tar.gz!raw/run-33967874661-attempt-1-logs.attempt-1.zip",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Retained zero-byte failed read attempt, not counted as a valid CI artifact."
+    }
+  ],
+  "result": "REVIEW_REQUIRED",
+  "noCredentialValuesPrintedOrCopiedIntoReview": true,
+  "notWholeAcceptance": true
+}

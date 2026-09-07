@@ -1,0 +1,512 @@
+{
+  "kind": "EXACT_FINAL_CONTAINING_NONSECURITY_COMPLETED_SCOPE_REVIEW",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+  ],
+  "captureReceipt": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/CI-CAPTURE-RECEIPT.json",
+    "sha256": "602ffa2e70743e6ee29b194e9fb3a628e3a286cf9570eb3263c8cbf19d99d3e1",
+    "bytes": 21928
+  },
+  "sourceBinding": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/LOCAL-CONTAINING-SOURCE-EQUIVALENCE.json",
+    "sha256": "a827fd836fa3ae6544dd995a5c24ece3e8af71c6947197b02b44ba4d790e4cb4",
+    "bytes": 726519
+  },
+  "toolInputs": {
+    "decoder": {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r1/nonsecurity/decode_nonbackend.py",
+      "sha256": "c4732db2fe953c06411f87b58c6b62475ea683152325ead5c53d8928b213b550",
+      "bytes": 6646
+    },
+    "captureHelper": {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r1/nonsecurity/capture_ci.py",
+      "sha256": "bcda72ce07fa363fd4db2f82e3b406cfdc954be40fcb1bfd74ea7c7306a5e4f6",
+      "bytes": 16629
+    }
+  },
+  "completedScopeSummaries": {
+    "frontend": {
+      "unitSourceFiles": 22,
+      "unitTests": 358,
+      "unitEvidence": [
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+            "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+            "bytes": 231707
+          },
+          "member": "frontend-test/6_Run the tests with coverage.txt",
+          "memberSha256": "f1b4bae3e32e2f9e09c25387d50ead757e7486bd7ab4558753caa1f8ac971b33",
+          "workflow": "Frontend",
+          "runId": 34025462660,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 318,
+              "text": "2026-09-06T09:44:28.0763007Z  Test Files  22 passed (22)"
+            }
+          ]
+        },
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+            "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+            "bytes": 231707
+          },
+          "member": "frontend-test/6_Run the tests with coverage.txt",
+          "memberSha256": "f1b4bae3e32e2f9e09c25387d50ead757e7486bd7ab4558753caa1f8ac971b33",
+          "workflow": "Frontend",
+          "runId": 34025462660,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 319,
+              "text": "2026-09-06T09:44:28.0765728Z       Tests  358 passed (358)"
+            }
+          ]
+        }
+      ],
+      "coverageNegative": {
+        "archive": {
+          "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+          "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+          "bytes": 231707
+        },
+        "member": "frontend-test/7_Prove the frontend coverage gate rejects an unmet threshold.txt",
+        "memberSha256": "c1b193cae21bf19bd2628f180d203644a16f4623b6cc65c576798fb768786893",
+        "workflow": "Frontend",
+        "runId": 34025462660,
+        "attempt": 1,
+        "lines": [
+          {
+            "line": 13,
+            "text": "2026-09-06T09:44:42.6235403Z coverage-negative: frontend threshold enforcement PASS"
+          }
+        ]
+      },
+      "bundleIsolation": {
+        "archive": {
+          "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+          "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+          "bytes": 231707
+        },
+        "member": "frontend-build/5_Prove that only prefixed values reached the bundle.txt",
+        "memberSha256": "b17fb04e9c0eeb53910c5370bf1f88690c582afc52d99bae8fdfea8ee0317d22",
+        "workflow": "Frontend",
+        "runId": 34025462660,
+        "attempt": 1,
+        "lines": [
+          {
+            "line": 26,
+            "text": "2026-09-06T09:44:10.6671488Z bundle isolation PASS: only prefixed values reached the bundle"
+          }
+        ]
+      },
+      "browserLegacyTests": 25,
+      "browserGovernedTests": 12,
+      "browserTotalTests": 37,
+      "browserEvidence": [
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+            "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+            "bytes": 231707
+          },
+          "member": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+          "memberSha256": "f268b250eec79e00dfb2013f6f6dc7c381e344fa8e758aeb8808350a54ad8343",
+          "workflow": "Frontend",
+          "runId": 34025462660,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 664,
+              "text": "2026-09-06T09:46:33.2542595Z   25 passed (1.1m)"
+            }
+          ]
+        },
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+            "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+            "bytes": 231707
+          },
+          "member": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+          "memberSha256": "4bc54440a9aa9f79568e4b962eafa1f482fbba72fc1e199bf18a9364cd235bff",
+          "workflow": "Frontend",
+          "runId": 34025462660,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 1410,
+              "text": "2026-09-06T09:48:12.4728362Z   12 passed (1.5m)"
+            }
+          ]
+        }
+      ],
+      "scope": "Distinct actual steps only. The source-equivalent workflow does not upload browser named JUnit; these log totals do not create named nodes."
+    },
+    "governance": {
+      "validatorTests": 421,
+      "evidence": [
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-logs.zip",
+            "sha256": "edf4963a3da4c6cd704b82229db2ac266a7c3c82698d98f5aecafa08de0ff905",
+            "bytes": 12345
+          },
+          "member": "governance/6_Run the validator's own tests.txt",
+          "memberSha256": "a94029bc62a52c9248150cac8f956110d6e45a049798fa1c5f08b49f7ff7ce17",
+          "workflow": "Governance",
+          "runId": 34025462604,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 9,
+              "text": "2026-09-06T09:44:41.8794512Z Ran 421 tests in 9.967s"
+            }
+          ]
+        },
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-logs.zip",
+            "sha256": "edf4963a3da4c6cd704b82229db2ac266a7c3c82698d98f5aecafa08de0ff905",
+            "bytes": 12345
+          },
+          "member": "governance/6_Run the validator's own tests.txt",
+          "memberSha256": "a94029bc62a52c9248150cac8f956110d6e45a049798fa1c5f08b49f7ff7ce17",
+          "workflow": "Governance",
+          "runId": 34025462604,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 11,
+              "text": "2026-09-06T09:44:41.8794972Z OK"
+            }
+          ]
+        }
+      ],
+      "scope": "Actual remote governance validator suite only. Any local additional tool suites retain their own actual run/source identities; remote governance logs are not tool rerun evidence."
+    },
+    "infrastructure": {
+      "networkAndSecretRefusalTests": 9,
+      "ephemeralSecretDeliveryTests": 13,
+      "evidence": [
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip",
+            "sha256": "1af7104ce7ddc386f3f4e763575d6fc5d3ce4089b24ba709e727c020c50d82a0",
+            "bytes": 16917
+          },
+          "member": "infrastructure-validation/5_Test network and secret-delivery refusal controls.txt",
+          "memberSha256": "0ccca88810feed9cc2337220f3b153423ca9f9c09e12d63fdee56f166cd520a1",
+          "workflow": "Infrastructure",
+          "runId": 34025462662,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 7,
+              "text": "2026-09-06T09:44:11.6771781Z Ran 9 tests in 0.112s"
+            }
+          ]
+        },
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip",
+            "sha256": "1af7104ce7ddc386f3f4e763575d6fc5d3ce4089b24ba709e727c020c50d82a0",
+            "bytes": 16917
+          },
+          "member": "infrastructure-validation/5_Test network and secret-delivery refusal controls.txt",
+          "memberSha256": "0ccca88810feed9cc2337220f3b153423ca9f9c09e12d63fdee56f166cd520a1",
+          "workflow": "Infrastructure",
+          "runId": 34025462662,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 9,
+              "text": "2026-09-06T09:44:11.6772140Z OK"
+            }
+          ]
+        },
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip",
+            "sha256": "1af7104ce7ddc386f3f4e763575d6fc5d3ce4089b24ba709e727c020c50d82a0",
+            "bytes": 16917
+          },
+          "member": "infrastructure-validation/6_Test ephemeral runtime secret delivery.txt",
+          "memberSha256": "e57a09b7560d319f9273bd76f232dda1ac79e9b0215636a28e153190e7ffa166",
+          "workflow": "Infrastructure",
+          "runId": 34025462662,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 7,
+              "text": "2026-09-06T09:44:11.8798904Z Ran 13 tests in 0.027s"
+            }
+          ]
+        },
+        {
+          "archive": {
+            "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip",
+            "sha256": "1af7104ce7ddc386f3f4e763575d6fc5d3ce4089b24ba709e727c020c50d82a0",
+            "bytes": 16917
+          },
+          "member": "infrastructure-validation/6_Test ephemeral runtime secret delivery.txt",
+          "memberSha256": "e57a09b7560d319f9273bd76f232dda1ac79e9b0215636a28e153190e7ffa166",
+          "workflow": "Infrastructure",
+          "runId": 34025462662,
+          "attempt": 1,
+          "lines": [
+            {
+              "line": 9,
+              "text": "2026-09-06T09:44:11.8800184Z OK"
+            }
+          ]
+        }
+      ],
+      "actualMockPlanSummary": {
+        "terraform": "1.14.9",
+        "provider": "yandex-cloud/yandex 0.220.0",
+        "plans": [
+          {
+            "environment": "bootstrap",
+            "resource_count": 11,
+            "state_custody": "PASS",
+            "external_verification": "NOT_PERFORMED",
+            "plan_sha256": "1ffeac68fa4e7bd253f298cdd22bc1e592e654ff45b5691f36218e2f7a0d55f7",
+            "apply": "NOT_EXECUTED"
+          },
+          {
+            "environment": "staging",
+            "resource_count": 75,
+            "network": "PASS",
+            "runtime": "PASS",
+            "secret_plan_persistence": "ABSENT",
+            "external_verification": "NOT_PERFORMED",
+            "foundation": {
+              "environment": "staging",
+              "resource_count": 67,
+              "network": "PASS",
+              "runtime": "NOT_CREATED_BEFORE_MIGRATION",
+              "secret_plan_persistence": "ABSENT",
+              "external_verification": "NOT_PERFORMED"
+            },
+            "unproven_runtime": "REFUSED_EXPECTED_MISSING_MIGRATION_EVIDENCE",
+            "plan_sha256": "605b03ee0b216bd5059b55c66544a7367d0a006be24fa1b6a84c5f925e0be3da",
+            "apply": "NOT_EXECUTED"
+          },
+          {
+            "environment": "production",
+            "resource_count": 75,
+            "network": "PASS",
+            "runtime": "PASS",
+            "secret_plan_persistence": "ABSENT",
+            "external_verification": "NOT_PERFORMED",
+            "foundation": {
+              "environment": "production",
+              "resource_count": 67,
+              "network": "PASS",
+              "runtime": "NOT_CREATED_BEFORE_MIGRATION",
+              "secret_plan_persistence": "ABSENT",
+              "external_verification": "NOT_PERFORMED"
+            },
+            "unproven_runtime": "REFUSED_EXPECTED_MISSING_MIGRATION_EVIDENCE",
+            "plan_sha256": "10549f756cea3263e15c1744dbfd2a4df1d75ae45fdbafff9c668336b225be3d",
+            "apply": "NOT_EXECUTED"
+          }
+        ],
+        "provider_installation": "LOCKFILE_VERIFIED_REGISTRY",
+        "lockfiles": {
+          "infra/yandex/bootstrap/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+          "infra/yandex/environments/staging/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+          "infra/yandex/environments/production/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37"
+        },
+        "real_provider_api_calls": "NONE_MOCK_PROVIDER",
+        "deployment": "NOT_AUTHORIZED",
+        "state_inspection_scope": "WRITE_ONLY_SCHEMA_AND_SYNTHETIC_PLAN_VALUES_NO_REAL_STATE"
+      },
+      "summaryEvidence": {
+        "archive": {
+          "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-verification.zip",
+          "sha256": "62c082565df0582e254c4b7c79975af6c12456812be3e2f623c5ec835a733d7a",
+          "bytes": 2316705
+        },
+        "member": {
+          "member": "summary.json",
+          "bytes": 2346,
+          "sha256": "a9d2eb84b966aaf1122b6a8c024b3917611d433fdae500a11027a17fc9a0fd81",
+          "crc32": "0681c726"
+        },
+        "runId": 34025462662,
+        "attempt": 1,
+        "jobId": 101465518555
+      }
+    }
+  },
+  "requiredContexts": [
+    {
+      "id": 101465647962,
+      "name": "CodeQL",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:52Z",
+      "completed_at": "2026-09-06T09:44:55Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/runs/101465647962"
+    },
+    {
+      "id": 101465559204,
+      "name": "backend-build",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:08Z",
+      "completed_at": "2026-09-06T10:22:16Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462661/job/101465559204"
+    },
+    {
+      "id": 101465559043,
+      "name": "architecture-boundary",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:09Z",
+      "completed_at": "2026-09-06T09:45:08Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462661/job/101465559043"
+    },
+    {
+      "id": 101465558950,
+      "name": "backend-integration",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:11Z",
+      "completed_at": "2026-09-06T10:24:24Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462661/job/101465558950"
+    },
+    {
+      "id": 101465518958,
+      "name": "frontend-build",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:18Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518958"
+    },
+    {
+      "id": 101465518950,
+      "name": "frontend-test",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:48:20Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518950"
+    },
+    {
+      "id": 101465518862,
+      "name": "frontend-typecheck",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:14Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518862"
+    },
+    {
+      "id": 101465518817,
+      "name": "frontend-lint",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:27Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518817"
+    },
+    {
+      "id": 101465518582,
+      "name": "dependency-review",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:44:00Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462624/job/101465518582"
+    },
+    {
+      "id": 101465518555,
+      "name": "infrastructure-validation",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:16Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462662/job/101465518555"
+    },
+    {
+      "id": 101465518548,
+      "name": "codeql-java",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:48:05Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462624/job/101465518548"
+    },
+    {
+      "id": 101465518436,
+      "name": "codeql-typescript",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:45:01Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462624/job/101465518436"
+    },
+    {
+      "id": 101465518260,
+      "name": "governance",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:44:44Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462604/job/101465518260"
+    }
+  ],
+  "backendScope": "Original XML/capacity/coverage reviewed by separate decode_backend.py receipt.",
+  "securityScope": "Only original exact run/attempt/job/check metadata is collected here; separate Security evidence remains required.",
+  "rawPublicationSafetyReview": "NOT_PERFORMED",
+  "localProductExecutionPerformed": false,
+  "productionWriteEnabled": false,
+  "proofsCreated": 0,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "expectedCurrentSourceCounts": {
+    "frontendFiles": 22,
+    "frontendTests": 358,
+    "governanceTests": 421
+  },
+  "argv": [
+    "/Library/Developer/CommandLineTools/usr/bin/python3",
+    "/tmp/slice3-post-v73-ci-kit-r1/nonsecurity/decode_nonbackend.py",
+    "--capture-dir",
+    "/tmp/slice3-checkpoint-ci-e278b1e-all-r1",
+    "--frontend-files",
+    "22",
+    "--frontend-tests",
+    "358",
+    "--governance-tests",
+    "421"
+  ],
+  "startedAt": "2026-09-06T10:26:44.959232+00:00",
+  "finishedAt": "2026-09-06T10:26:44.981907+00:00",
+  "elapsedSeconds": 0.022,
+  "exitCode": 0
+}

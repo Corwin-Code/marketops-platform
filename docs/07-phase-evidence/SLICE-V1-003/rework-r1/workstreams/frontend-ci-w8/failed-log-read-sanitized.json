@@ -1,0 +1,9 @@
+{
+  "kind": "SIGNED_DOWNLOAD_ERROR_SANITIZED_PUBLICATION_DERIVATIVE",
+  "originalPrivateSource": "/tmp/slice3-w8-frontend-ci/logs.zip.attempt-1.stderr.txt",
+  "originalBytes": 234,
+  "originalSha256": "05a147efc88927d7141be5685fd72ac2fabb8538cf65aca1277d7ce740982476",
+  "publicStatement": "The first read-only GitHub Actions log download failed and its stderr included a temporary signed URL. The URL-bearing original remains private; this derivative intentionally contains no original URL or credential value. The succeeding attempt, original request metadata and exact original hash remain available for evidence review.",
+  "sanitization": "Entire original stderr omitted; no query-string token, hostname, path or value copied.",
+  "originalEvidenceUnchanged": true
+}

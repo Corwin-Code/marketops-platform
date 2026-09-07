@@ -1,0 +1,29 @@
+{
+  "kind": "TARGETED_POST_FULL_RUN_REPAIR",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=b871d6376f8ab88cd2544ac913e62453e9425475",
+    "-Dtest=ErrorCodeTest,ModuleBoundaryArchitectureTest,AdvertisingDecisionServiceTest,AdvertisingDisclosureIT",
+    "test"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "sourceBinding": "W2 plus four uncommitted source/test repairs; not exact W2 source",
+  "tests": 39,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "exitCode": 0,
+  "elapsedSeconds": 30.668,
+  "finishedAt": "2026-09-05T12:15:18+08:00",
+  "log": "logs/slice3-r1-full-unit-fix-r35.log",
+  "logSha256": "515cd3334262c5ae059dcca50b7655ede8146143a664367b6b34e396b1b3ae76",
+  "repairs": [
+    "Injected Clock in both actual runtime readers, existing ArchUnit rule unchanged",
+    "Added existing public APPROVAL_EVIDENCE_SCOPE_BLOCKED to exact enum snapshot; message-disclosure test unchanged",
+    "Fixture supplies exact already-sealed minimum expiry; later read cannot renew it"
+  ],
+  "completePass": true,
+  "remaining": "Repeat complete clean verify on a newly committed clean source; no Failsafe/JAR/capacity result is inferred from this targeted run."
+}

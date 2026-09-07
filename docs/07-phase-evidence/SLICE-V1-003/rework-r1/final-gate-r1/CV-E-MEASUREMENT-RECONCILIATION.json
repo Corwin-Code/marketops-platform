@@ -1,0 +1,762 @@
+{
+  "kind": "ADDITIVE_CV_E_HISTORICAL_MEASUREMENT_RECONCILIATION",
+  "result": "MEASUREMENT_RECONCILIATION_PASS_REPAIR_CLOSURE_PENDING",
+  "controllerReportSha256": "b7adf80676e5f06000c5e27fa20979958e3717ebeea987cd7e1b857433a1b23b",
+  "scope": "Offline recount of exact archived bytes. No tests were re-executed and no current-candidate regression/CI or independent closure verdict is implied.",
+  "measurements": [
+    {
+      "measurementId": "W10-backend-build",
+      "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "testedMerge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+      "run": {
+        "id": 33980860923,
+        "attempt": 1
+      },
+      "job": {
+        "name": "backend-build",
+        "id": 101345699681,
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33980860923/job/101345699681"
+      },
+      "artifact": {
+        "id": 9974096071,
+        "name": "backend-test-reports",
+        "sha256": "de89d479c7132e64324adfab885dacef9fd15edaaea192de3bc4e6f79c7c7caf",
+        "bytes": 6083506
+      },
+      "container": "historical-w10-raw/artifact-9974096071.zip",
+      "receipt": {
+        "path": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2851,
+        "sha256": "6059eb6e4cd84b378943842ff52e7b0d9f76049175e432f9c87d8a76fe9ac78f"
+      },
+      "dataset": {
+        "path": "backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4077576,
+        "sha256": "b03c86cc9307591b6aae6ce64b8d2933c0224d72a39da01bfb52bc203924dde0",
+        "id": "synthetic-advertising-portfolio-10344d27-6663-4252-8cd7-8cc697c7e3a3",
+        "topology": {
+          "sharedProducts": 1,
+          "stores": 1,
+          "nativeObjects": 1000,
+          "completeAffectedSetMembersPerObject": 1,
+          "regressionObjects": 200,
+          "sharedListings": 1,
+          "organizations": 1
+        }
+      },
+      "sourceInputs": {
+        "path": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247"
+      },
+      "startedAt": "2026-09-05T17:32:14.453484406Z",
+      "finishedAt": "2026-09-05T17:35:50.963480131Z",
+      "runtimeJvm": {
+        "maxJvmMemoryBytes": 4192206848,
+        "os": "Linux",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "arch": "amd64",
+        "availableProcessors": 4,
+        "java": "21.0.12.1"
+      },
+      "resourceReceiptSha256": "a64727c33b4058048a95d07937616d71afe56c3b2ede8151c7f44f81b4bd2cac",
+      "measurements": {
+        "criticalP95Millis": 14340,
+        "maximumMillis": 170587,
+        "targetedWallMillis": 169181,
+        "sweepWallMillis": 45353,
+        "hourlyMarginMillis": 3554647,
+        "samples": 1000,
+        "criticalSamples": 200,
+        "responsibilityTasks": 1200,
+        "droppedCorrectionRecovered": 1
+      },
+      "preservedInitialIncident": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "scope": "1000 UNVERIFIED native objects; 200 synthetic containment objects; 1200 Tasks; one organization/store/product/listing; zero admitted commands and zero mature Outcome load. This PASS remains valid for this scope and does not close CV-D mixed-state load.",
+      "thresholds": {
+        "criticalP95Millis": 300000,
+        "maximumMillis": 900000,
+        "sweepWallMillisExclusive": 1800000
+      },
+      "withinMeasuredThresholds": true,
+      "productionWriteEnabled": false,
+      "realProviderAccess": false,
+      "resourceReceipt": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T17:24:41.550823+00:00",
+        "host": {
+          "os": "Linux",
+          "architecture": "x86_64",
+          "logicalProcessors": 4,
+          "physicalMemoryBytes": 16766414848,
+          "processAffinityProcessors": 4
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 16766414848,
+          "serverVersion": "28.0.4"
+        },
+        "github": {
+          "runId": "33980860923",
+          "runAttempt": "1",
+          "job": "backend-build",
+          "testedCheckout": "dddb7584b7930b833379f2a3ac75875df05cde0c"
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      },
+      "testRecount": {
+        "surefire": {
+          "reports": 118,
+          "actualTestcaseNodes": 1560,
+          "failure": 0,
+          "error": 0,
+          "skipped": 0
+        },
+        "failsafe": {
+          "reports": 71,
+          "actualTestcaseNodes": 924,
+          "failure": 0,
+          "error": 0,
+          "skipped": 0
+        }
+      }
+    },
+    {
+      "measurementId": "W10-backend-integration",
+      "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "testedMerge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+      "run": {
+        "id": 33980860923,
+        "attempt": 1
+      },
+      "job": {
+        "name": "backend-integration",
+        "id": 101345699705,
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33980860923/job/101345699705"
+      },
+      "artifact": {
+        "id": 9974152039,
+        "name": "backend-integration-reports",
+        "sha256": "2730c9b8de2ef549397699ccfbe6e831ceeffd1a40765d8eebad95c6735122aa",
+        "bytes": 1004028
+      },
+      "container": "historical-w10-raw/artifact-9974152039.zip",
+      "receipt": {
+        "path": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2864,
+        "sha256": "c11f13d7572e4288cd6159311e3d971712d29c9dc1bd53a2f039f1ea527569ed"
+      },
+      "dataset": {
+        "path": "backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4077576,
+        "sha256": "6f157e2c74d9e7dc1fb11237239b10b3ef71c27a00244f9fd6e060213ae33ca0",
+        "id": "synthetic-advertising-portfolio-752c5942-b703-4c5d-a51e-d022dd929554",
+        "topology": {
+          "sharedProducts": 1,
+          "stores": 1,
+          "nativeObjects": 1000,
+          "completeAffectedSetMembersPerObject": 1,
+          "regressionObjects": 200,
+          "sharedListings": 1,
+          "organizations": 1
+        }
+      },
+      "sourceInputs": {
+        "path": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247"
+      },
+      "startedAt": "2026-09-05T17:32:56.778446216Z",
+      "finishedAt": "2026-09-05T17:37:21.976670841Z",
+      "runtimeJvm": {
+        "maxJvmMemoryBytes": 4192206848,
+        "os": "Linux",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "arch": "amd64",
+        "availableProcessors": 4,
+        "java": "21.0.12.1"
+      },
+      "resourceReceiptSha256": "8827a0f0f19e5aa5da7407c9bbf076613257cb561f5e62e5a927cff89abe988c",
+      "measurements": {
+        "criticalP95Millis": 20799,
+        "maximumMillis": 194924,
+        "targetedWallMillis": 192914,
+        "sweepWallMillis": 69479,
+        "hourlyMarginMillis": 3530521,
+        "samples": 1000,
+        "criticalSamples": 200,
+        "responsibilityTasks": 1200,
+        "droppedCorrectionRecovered": 1
+      },
+      "preservedInitialIncident": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "scope": "1000 UNVERIFIED native objects; 200 synthetic containment objects; 1200 Tasks; one organization/store/product/listing; zero admitted commands and zero mature Outcome load. This PASS remains valid for this scope and does not close CV-D mixed-state load.",
+      "thresholds": {
+        "criticalP95Millis": 300000,
+        "maximumMillis": 900000,
+        "sweepWallMillisExclusive": 1800000
+      },
+      "withinMeasuredThresholds": true,
+      "productionWriteEnabled": false,
+      "realProviderAccess": false,
+      "resourceReceipt": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T17:24:39.840295+00:00",
+        "host": {
+          "os": "Linux",
+          "architecture": "x86_64",
+          "logicalProcessors": 4,
+          "physicalMemoryBytes": 16766414848,
+          "processAffinityProcessors": 4
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 16766414848,
+          "serverVersion": "28.0.4"
+        },
+        "github": {
+          "runId": "33980860923",
+          "runAttempt": "1",
+          "job": "backend-integration",
+          "testedCheckout": "dddb7584b7930b833379f2a3ac75875df05cde0c"
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      },
+      "testRecount": {
+        "surefire": {
+          "reports": 0,
+          "actualTestcaseNodes": 0,
+          "failure": 0,
+          "error": 0,
+          "skipped": 0
+        },
+        "failsafe": {
+          "reports": 71,
+          "actualTestcaseNodes": 924,
+          "failure": 0,
+          "error": 0,
+          "skipped": 0
+        }
+      }
+    },
+    {
+      "measurementId": "W8-backend-build",
+      "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "testedMerge": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "run": {
+        "id": 33967874662,
+        "attempt": 1
+      },
+      "job": {
+        "id": 101311078532,
+        "name": "backend-build"
+      },
+      "artifact": {
+        "id": 9970453954,
+        "name": "backend-test-reports",
+        "sha256": "99e7c165411ab643fa513567adedf1cee1053565e3613d78d0d39f355a2d2a48",
+        "bytes": 6083758
+      },
+      "container": "../workstreams/ci-w8/original-evidence.tar.gz!runs/33967874662-attempt-1/artifact-9970453954.zip",
+      "receipt": {
+        "path": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2851,
+        "sha256": "d7228eeff5542038c60429f5c37ba633fb010414fc19d28a7dff4d32a8e697fb"
+      },
+      "dataset": {
+        "path": "backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4076976,
+        "sha256": "d672a429307abf47aa4baec091a13d9bbe318217138f70c3fd77feb2044b8254",
+        "id": "synthetic-advertising-portfolio-c8adad8e-f5d6-4f84-8529-360ae3d169e3",
+        "topology": {
+          "regressionObjects": 200,
+          "sharedListings": 1,
+          "organizations": 1,
+          "sharedProducts": 1,
+          "stores": 1,
+          "nativeObjects": 1000,
+          "completeAffectedSetMembersPerObject": 1
+        }
+      },
+      "sourceInputs": {
+        "path": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "23160b8a95d53d248dd0f6fb8cc6f20d10c35d49f63e3b2d712ee6a71267a2ec"
+      },
+      "startedAt": "2026-09-05T13:13:37.426734057Z",
+      "finishedAt": "2026-09-05T13:18:00.224535289Z",
+      "runtimeJvm": {
+        "java": "21.0.12.1",
+        "maxJvmMemoryBytes": 4192206848,
+        "os": "Linux",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "arch": "amd64",
+        "availableProcessors": 4
+      },
+      "resourceReceiptSha256": "a009c137dcb4332ec2e42422f1b2153a72c71c9559d0a6092baeb3ff4d780508",
+      "measurements": {
+        "criticalP95Millis": 20445,
+        "maximumMillis": 194006,
+        "targetedWallMillis": 192008,
+        "sweepWallMillis": 68019,
+        "hourlyMarginMillis": 3531981,
+        "samples": 1000,
+        "criticalSamples": 200,
+        "responsibilityTasks": 1200,
+        "droppedCorrectionRecovered": 1
+      },
+      "preservedInitialIncident": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "scope": "1000 UNVERIFIED native objects; 200 synthetic containment objects; 1200 Tasks; one organization/store/product/listing; zero admitted commands and zero mature Outcome load. This PASS remains valid for this scope and does not close CV-D mixed-state load.",
+      "thresholds": {
+        "criticalP95Millis": 300000,
+        "maximumMillis": 900000,
+        "sweepWallMillisExclusive": 1800000
+      },
+      "withinMeasuredThresholds": true,
+      "productionWriteEnabled": false,
+      "realProviderAccess": false,
+      "resourceReceipt": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T13:05:33.255719+00:00",
+        "host": {
+          "os": "Linux",
+          "architecture": "x86_64",
+          "logicalProcessors": 4,
+          "physicalMemoryBytes": 16766414848,
+          "processAffinityProcessors": 4
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 16766414848,
+          "serverVersion": "28.0.4"
+        },
+        "github": {
+          "runId": "33967874662",
+          "runAttempt": "1",
+          "job": "backend-build",
+          "testedCheckout": "954ff3617402c3ff22fa8eb86d9aa8abaea76941"
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      }
+    },
+    {
+      "measurementId": "W8-backend-integration",
+      "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "testedMerge": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "run": {
+        "id": 33967874662,
+        "attempt": 1
+      },
+      "job": {
+        "id": 101311078650,
+        "name": "backend-integration"
+      },
+      "artifact": {
+        "id": 9970377802,
+        "name": "backend-integration-reports",
+        "sha256": "02a376829616713b34ad5113a905a090e1b60b05d665086d43e44f9608c58c6e",
+        "bytes": 1003640
+      },
+      "container": "../workstreams/ci-w8/original-evidence.tar.gz!runs/33967874662-attempt-1/artifact-9970377802.zip",
+      "receipt": {
+        "path": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2864,
+        "sha256": "a22eb811b98f048126699919fba8b357f8326e764d17fb19bab22c9c92011521"
+      },
+      "dataset": {
+        "path": "backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4077576,
+        "sha256": "dbbf7bd65f6f0a5d3b26c434fb3a995a58cf13e95548860433c1fbeaa5a4ccbf",
+        "id": "synthetic-advertising-portfolio-ebf5857e-3dec-4e52-b99c-d6a0bb43b7e4",
+        "topology": {
+          "sharedListings": 1,
+          "regressionObjects": 200,
+          "completeAffectedSetMembersPerObject": 1,
+          "nativeObjects": 1000,
+          "stores": 1,
+          "sharedProducts": 1,
+          "organizations": 1
+        }
+      },
+      "sourceInputs": {
+        "path": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247"
+      },
+      "startedAt": "2026-09-05T13:12:59.378472379Z",
+      "finishedAt": "2026-09-05T13:16:29.623883040Z",
+      "runtimeJvm": {
+        "availableProcessors": 4,
+        "arch": "amd64",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "os": "Linux",
+        "maxJvmMemoryBytes": 4192206848,
+        "java": "21.0.12.1"
+      },
+      "resourceReceiptSha256": "ab11bbf4235438bf1f077116dad2eac9c1f11d176324b6000085028445b43a9d",
+      "measurements": {
+        "criticalP95Millis": 13068,
+        "maximumMillis": 167174,
+        "targetedWallMillis": 165957,
+        "sweepWallMillis": 42577,
+        "hourlyMarginMillis": 3557423,
+        "samples": 1000,
+        "criticalSamples": 200,
+        "responsibilityTasks": 1200,
+        "droppedCorrectionRecovered": 1
+      },
+      "preservedInitialIncident": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "scope": "1000 UNVERIFIED native objects; 200 synthetic containment objects; 1200 Tasks; one organization/store/product/listing; zero admitted commands and zero mature Outcome load. This PASS remains valid for this scope and does not close CV-D mixed-state load.",
+      "thresholds": {
+        "criticalP95Millis": 300000,
+        "maximumMillis": 900000,
+        "sweepWallMillisExclusive": 1800000
+      },
+      "withinMeasuredThresholds": true,
+      "productionWriteEnabled": false,
+      "realProviderAccess": false,
+      "resourceReceipt": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T13:05:35.113382+00:00",
+        "host": {
+          "os": "Linux",
+          "architecture": "x86_64",
+          "logicalProcessors": 4,
+          "physicalMemoryBytes": 16765378560,
+          "processAffinityProcessors": 4
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 16765378560,
+          "serverVersion": "28.0.4"
+        },
+        "github": {
+          "runId": "33967874662",
+          "runAttempt": "1",
+          "job": "backend-integration",
+          "testedCheckout": "954ff3617402c3ff22fa8eb86d9aa8abaea76941"
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      }
+    },
+    {
+      "measurementId": "W8-local-full-clean",
+      "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "testedMerge": null,
+      "run": {
+        "id": null,
+        "localRun": "slice3-r1-full-clean-w8-9b6e6195"
+      },
+      "job": {
+        "id": null,
+        "name": "local-full-clean-backend"
+      },
+      "artifact": {
+        "id": null,
+        "name": "raw-test-artifacts.tar.gz",
+        "sha256": "bb4377e26239f32d91552b76a44736b4b7acf3071460e1ab5621aa65e7287b8f",
+        "bytes": 3650509
+      },
+      "nonCiIdentityReason": "Local run measured the source commit directly; no tested merge, GitHub run, job or artifact id existed. Those fields must remain null.",
+      "container": "../workstreams/full-clean-w8/raw-test-artifacts.tar.gz",
+      "receipt": {
+        "path": "artifacts/capacity/advertising-capacity-receipt.json",
+        "bytes": 2764,
+        "sha256": "1243a6d86dea5cf7acb418c73506fbba21715faa3275e707eaf08aecb0debeea"
+      },
+      "dataset": {
+        "path": "artifacts/capacity/advertising-capacity-dataset.json",
+        "bytes": 4077576,
+        "sha256": "b5bb962f4ece17bff3e0be2b3a2ee9155af19c7eb14fa2c4219f1238b367f7bc",
+        "id": "synthetic-advertising-portfolio-8c6a4170-ae9a-4f17-b7f0-8b1f63b26d47",
+        "topology": {
+          "sharedListings": 1,
+          "regressionObjects": 200,
+          "completeAffectedSetMembersPerObject": 1,
+          "nativeObjects": 1000,
+          "stores": 1,
+          "sharedProducts": 1,
+          "organizations": 1
+        }
+      },
+      "sourceInputs": {
+        "path": "artifacts/capacity/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247"
+      },
+      "startedAt": "2026-09-05T13:30:28.862282Z",
+      "finishedAt": "2026-09-05T13:36:17.793205Z",
+      "runtimeJvm": {
+        "availableProcessors": 8,
+        "arch": "aarch64",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "os": "Mac OS X",
+        "maxJvmMemoryBytes": 4294967296,
+        "java": "21.0.10"
+      },
+      "resourceReceiptSha256": "4dd8c67ec12f882167fa01a67d041cd3ac85f127b337d001b67a084c4f85d0a7",
+      "measurements": {
+        "criticalP95Millis": 30789,
+        "maximumMillis": 239115,
+        "targetedWallMillis": 237495,
+        "sweepWallMillis": 109169,
+        "hourlyMarginMillis": 3490831,
+        "samples": 1000,
+        "criticalSamples": 200,
+        "responsibilityTasks": 1200,
+        "droppedCorrectionRecovered": 1
+      },
+      "preservedInitialIncident": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "scope": "1000 UNVERIFIED native objects; 200 synthetic containment objects; 1200 Tasks; one organization/store/product/listing; zero admitted commands and zero mature Outcome load. This PASS remains valid for this scope and does not close CV-D mixed-state load.",
+      "thresholds": {
+        "criticalP95Millis": 300000,
+        "maximumMillis": 900000,
+        "sweepWallMillisExclusive": 1800000
+      },
+      "withinMeasuredThresholds": true,
+      "productionWriteEnabled": false,
+      "realProviderAccess": false,
+      "resourceReceipt": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T13:02:07.261072+00:00",
+        "host": {
+          "os": "Darwin",
+          "architecture": "arm64",
+          "logicalProcessors": 8,
+          "physicalMemoryBytes": 17179869184,
+          "processAffinityProcessors": null
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 6210576384,
+          "serverVersion": "29.7.2"
+        },
+        "github": {
+          "runId": null,
+          "runAttempt": null,
+          "job": null,
+          "testedCheckout": null
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "available": true,
+      "measurementId": "W10-backend-build",
+      "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "testedMerge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+      "run": {
+        "id": 33980860923,
+        "attempt": 1
+      },
+      "job": {
+        "name": "backend-build",
+        "id": 101345699681,
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33980860923/job/101345699681"
+      },
+      "artifact": {
+        "id": 9974096071,
+        "name": "backend-test-reports",
+        "sha256": "de89d479c7132e64324adfab885dacef9fd15edaaea192de3bc4e6f79c7c7caf",
+        "bytes": 6083506
+      },
+      "xml": {
+        "path": "backend/marketops-server/target/site/jacoco/jacoco.xml",
+        "bytes": 3830036,
+        "sha256": "4ded1cb781b56ecccb96acaa395c399fbc201dcff3a4e2e631ae51578ec2db64"
+      },
+      "csv": {
+        "path": "backend/marketops-server/target/site/jacoco/jacoco.csv",
+        "bytes": 140838,
+        "sha256": "f4f496003479088c33ba0d2be5a8dceff016dbc6ae7429d458f998cb9c65fbca"
+      },
+      "rootCounters": {
+        "INSTRUCTION": {
+          "covered": 129396,
+          "missed": 22207,
+          "total": 151603,
+          "ratio": 0.8535187298404385
+        },
+        "BRANCH": {
+          "covered": 7440,
+          "missed": 3019,
+          "total": 10459,
+          "ratio": 0.711349077349651
+        },
+        "LINE": {
+          "covered": 23805,
+          "missed": 3861,
+          "total": 27666,
+          "ratio": 0.8604424202992843
+        },
+        "COMPLEXITY": {
+          "covered": 7016,
+          "missed": 3464,
+          "total": 10480,
+          "ratio": 0.6694656488549618
+        },
+        "METHOD": {
+          "covered": 4240,
+          "missed": 886,
+          "total": 5126,
+          "ratio": 0.8271556769410847
+        },
+        "CLASS": {
+          "covered": 995,
+          "missed": 109,
+          "total": 1104,
+          "ratio": 0.9012681159420289
+        }
+      },
+      "classCounters": {
+        "INSTRUCTION": {
+          "covered": 129396,
+          "missed": 22207,
+          "total": 151603,
+          "ratio": 0.8535187298404385
+        },
+        "BRANCH": {
+          "covered": 7440,
+          "missed": 3019,
+          "total": 10459,
+          "ratio": 0.711349077349651
+        },
+        "LINE": {
+          "covered": 23807,
+          "missed": 3861,
+          "total": 27668,
+          "ratio": 0.8604525083128524
+        },
+        "COMPLEXITY": {
+          "covered": 7016,
+          "missed": 3464,
+          "total": 10480,
+          "ratio": 0.6694656488549618
+        },
+        "METHOD": {
+          "covered": 4240,
+          "missed": 886,
+          "total": 5126,
+          "ratio": 0.8271556769410847
+        },
+        "CLASS": {
+          "covered": 995,
+          "missed": 109,
+          "total": 1104,
+          "ratio": 0.9012681159420289
+        }
+      },
+      "csvClassCounters": {
+        "INSTRUCTION": {
+          "covered": 129396,
+          "missed": 22207,
+          "total": 151603,
+          "ratio": 0.8535187298404385
+        },
+        "BRANCH": {
+          "covered": 7440,
+          "missed": 3019,
+          "total": 10459,
+          "ratio": 0.711349077349651
+        },
+        "LINE": {
+          "covered": 23807,
+          "missed": 3861,
+          "total": 27668,
+          "ratio": 0.8604525083128524
+        },
+        "COMPLEXITY": {
+          "covered": 7016,
+          "missed": 3464,
+          "total": 10480,
+          "ratio": 0.6694656488549618
+        },
+        "METHOD": {
+          "covered": 4240,
+          "missed": 886,
+          "total": 5126,
+          "ratio": 0.8271556769410847
+        }
+      },
+      "csvClassRows": 1104,
+      "classMinusRootLineCovered": 2,
+      "classMinusRootLineMissed": 0,
+      "exactSourceLineAggregationDifferences": [
+        {
+          "package": "com/mimococo/marketops/shared/internal/migration",
+          "source": "ManagedMigrationRunner.java",
+          "sourceFileCounter": {
+            "covered": 115,
+            "missed": 30,
+            "total": 145,
+            "ratio": 0.7931034482758621
+          },
+          "classAggregateCounter": {
+            "covered": 116,
+            "missed": 30,
+            "total": 146,
+            "ratio": 0.7945205479452054
+          },
+          "classes": [
+            "com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner",
+            "com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner$1",
+            "com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner$ManagedResult",
+            "com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner$Result"
+          ]
+        },
+        {
+          "package": "com/mimococo/marketops/shared/internal/http",
+          "source": "BoundedOutboundHttp.java",
+          "sourceFileCounter": {
+            "covered": 114,
+            "missed": 6,
+            "total": 120,
+            "ratio": 0.95
+          },
+          "classAggregateCounter": {
+            "covered": 115,
+            "missed": 6,
+            "total": 121,
+            "ratio": 0.9504132231404959
+          },
+          "classes": [
+            "com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp$DnsLookup",
+            "com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp$Prepared",
+            "com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp",
+            "com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp$1"
+          ]
+        }
+      ],
+      "governingAggregation": "JACOCO_REPORT_ROOT_COUNTERS",
+      "explanation": "JaCoCo class aggregation counts a source line more than once when multiple generated/nested classes share it. The report root aggregates source-file lines; CSV is class-based. The scopes must stay labelled separately.",
+      "thresholds": {
+        "LINE": 0.8,
+        "BRANCH": 0.7
+      },
+      "gatePass": true
+    },
+    {
+      "available": false,
+      "boundary": "This job did not upload JaCoCo XML or CSV; do not borrow another job's counters."
+    }
+  ],
+  "historicalSummaryCorrection": "30789 ms P95 and 109169 ms sweep belong exclusively to W8-local-full-clean (source 9b6e6195...). Neither is a W10 CI value.",
+  "countingBoundary": "W10 backend-build has 2484 actual testcase nodes including 924 integration nodes. The separate backend-integration job repeats those 924; do not add them to 2484 as unique coverage.",
+  "newMeasurementsRequired": [
+    "New source-bound CV-A..C full application/isolated PostgreSQL positive and negative tests",
+    "CV-D representative mixed existing Outcome/control states",
+    "Complete affected regression and final exact CI provenance"
+  ],
+  "productionWriteEnabled": false
+}

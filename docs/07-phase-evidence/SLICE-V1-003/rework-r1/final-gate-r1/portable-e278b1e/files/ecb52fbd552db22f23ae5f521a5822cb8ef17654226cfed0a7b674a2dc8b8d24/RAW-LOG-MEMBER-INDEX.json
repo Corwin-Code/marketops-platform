@@ -1,0 +1,962 @@
+{
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+  "archives": [
+    {
+      "workflow": "Backend",
+      "runId": 34025462661,
+      "attempt": 1,
+      "archive": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-logs.zip",
+        "sha256": "d51947286911495f89c34c0aa52c307f906151739379436162a661fd0f49bc9b",
+        "bytes": 1331621
+      },
+      "members": [
+        {
+          "member": "0_backend-build.txt",
+          "bytes": 5103308,
+          "sha256": "e11b40c2a4d5f52614ad365384e375de8d45aef7e09d797efc37642ccf09c723",
+          "crc32": "30a4e096"
+        },
+        {
+          "member": "1_architecture-boundary.txt",
+          "bytes": 48417,
+          "sha256": "63897334c39c7a691ae96ea7ba947797ff642bf9cfca570ba45eb0782422c562",
+          "crc32": "67a7d929"
+        },
+        {
+          "member": "2_backend-integration.txt",
+          "bytes": 5097411,
+          "sha256": "21c8d691f131fee7c877d2be1b9f127dc0ab50bd63ee5e4f881f6e8ff5395cb2",
+          "crc32": "bac3199e"
+        },
+        {
+          "member": "architecture-boundary/1_Set up job.txt",
+          "bytes": 2027,
+          "sha256": "c1649501eb607fd97531f3af3bad4d52ec2dfa7ab91650f09d4d1c4ed583cebd",
+          "crc32": "ec0860b8"
+        },
+        {
+          "member": "architecture-boundary/2_Checkout repository.txt",
+          "bytes": 13207,
+          "sha256": "496d0f9960778774a7aa57457678186c89b1afa19eab3ad634d588e82fec6e8e",
+          "crc32": "8fee1b4b"
+        },
+        {
+          "member": "architecture-boundary/3_Set up Java.txt",
+          "bytes": 3794,
+          "sha256": "d80c61e43859a195c1a3939a61087fa0a30f67da1927cfaf6ca45e0bd0bf2703",
+          "crc32": "d2c2d3b2"
+        },
+        {
+          "member": "architecture-boundary/4_Run the boundary rules, their fixtures and the module verification.txt",
+          "bytes": 27155,
+          "sha256": "932fe045ebe226a98e6275c0dceff74b10e412fb88c8a2969a09b73a0dbe751c",
+          "crc32": "60b18467"
+        },
+        {
+          "member": "architecture-boundary/7_Post Set up Java.txt",
+          "bytes": 428,
+          "sha256": "a9e4e34d941102b856c75501a37d6240e92e0ba66bf4a417cdb118a93f21712a",
+          "crc32": "801e85fd"
+        },
+        {
+          "member": "architecture-boundary/8_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "0005aeaa7777e69831bcf810340617e181635822a9bec4d6ee2bd27f520fbb11",
+          "crc32": "b3509f4f"
+        },
+        {
+          "member": "architecture-boundary/9_Complete job.txt",
+          "bytes": 61,
+          "sha256": "bab510f96b159c7a9651a04512649a891954ac7202583ce55f18ea91f499e974",
+          "crc32": "d4f42913"
+        },
+        {
+          "member": "architecture-boundary/system.txt",
+          "bytes": 602,
+          "sha256": "afb85ba85166b3b09ff6abb543188ff654f75289624c6e05d67eb5c487f0f113",
+          "crc32": "2e904c9d"
+        },
+        {
+          "member": "backend-build/17_Post Set up Java.txt",
+          "bytes": 428,
+          "sha256": "0393e2d0efd51c2fdfe3e38f4175f0ce88765c2de4681367cfbb87cbc848cfbe",
+          "crc32": "4b139b83"
+        },
+        {
+          "member": "backend-build/18_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "2d41eebfa6995517b32cf1b7a3bc8f2b5278048cb0b47dab56e3e5659d552dc7",
+          "crc32": "64450941"
+        },
+        {
+          "member": "backend-build/19_Complete job.txt",
+          "bytes": 61,
+          "sha256": "e40f791d297edae00f9363ebdb0cc0b20b9d0d1aeafb0d49a0a484d3a4e5716a",
+          "crc32": "6f2e14a7"
+        },
+        {
+          "member": "backend-build/1_Set up job.txt",
+          "bytes": 2189,
+          "sha256": "9a0daff6ab791e1085c0fac8c303dcbc1e2b13b244e2d54bd72f0d7f152a8511",
+          "crc32": "38590d0a"
+        },
+        {
+          "member": "backend-build/2_Checkout repository.txt",
+          "bytes": 13145,
+          "sha256": "7ae032909dd5a4fc374a868010ef7862dea9d76d06a1d80c0738bccbc786f6d7",
+          "crc32": "a939417e"
+        },
+        {
+          "member": "backend-build/3_Set up Java.txt",
+          "bytes": 3645,
+          "sha256": "0fc54da45806a4eb98bbc5eceff70c8c861c245c0ac9d7d92ac6d772a9a7ccd9",
+          "crc32": "cd48165e"
+        },
+        {
+          "member": "backend-build/4_Record host and Docker resource limits.txt",
+          "bytes": 1441,
+          "sha256": "de1d6d66a77b18dc629e0ed7ba5644b8988a17fec150b832b42366ff30e36f29",
+          "crc32": "fbabc300"
+        },
+        {
+          "member": "backend-build/5_Run full backend verification and the combined coverage gate.txt",
+          "bytes": 5071758,
+          "sha256": "b09fd805d207ea94776051c1c6c017b34427a7bae94bbace4e01883f900e711f",
+          "crc32": "63090f3a"
+        },
+        {
+          "member": "backend-build/6_Prove the backend coverage gate rejects an unmet threshold.txt",
+          "bytes": 809,
+          "sha256": "ea29cab46d9cf97468828492375724ba414ce71c8f89fa11dc49c99ad9eb4bbf",
+          "crc32": "712977fc"
+        },
+        {
+          "member": "backend-build/7_Verify packaged migration resolver and isolated runtime artifacts.txt",
+          "bytes": 2694,
+          "sha256": "5c47283e54af1555765cc0e000ff924cb42825e0a7468caf4ee32a10f84fa5db",
+          "crc32": "f836a2cc"
+        },
+        {
+          "member": "backend-build/8_Publish the dependency inventory and the software bill of materials.txt",
+          "bytes": 2219,
+          "sha256": "e36571ce4abf1ba1254e494302aa4af9b21fcce1a195495c94147cef47b125fe",
+          "crc32": "331d11de"
+        },
+        {
+          "member": "backend-build/9_Publish the test reports.txt",
+          "bytes": 3189,
+          "sha256": "70287fcc24c10340c5a5156280e2f2375faaa7ef8e0a83b4b83f4e346367ca46",
+          "crc32": "c0be1136"
+        },
+        {
+          "member": "backend-build/system.txt",
+          "bytes": 594,
+          "sha256": "56674949c5408adb88f75669a609d795c0108ce42c779b9ecbf31365d44b8654",
+          "crc32": "55eb8820"
+        },
+        {
+          "member": "backend-integration/11_Post Set up Java.txt",
+          "bytes": 428,
+          "sha256": "a2232233810539dc4e60f92649f5d46a41fb2db7b425bfec73c6583f6c7c42c5",
+          "crc32": "a2afe2d6"
+        },
+        {
+          "member": "backend-integration/12_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "b4f8e93e674cef911899d71c33f9dc0d870e782a39306958097a4444494d9647",
+          "crc32": "71fe9b13"
+        },
+        {
+          "member": "backend-integration/13_Complete job.txt",
+          "bytes": 61,
+          "sha256": "5d4a3d4508e9694e26aa5a1c1d048b6306ea8031e3d2f8abfe82f49ba4052d1e",
+          "crc32": "6a722c7e"
+        },
+        {
+          "member": "backend-integration/1_Set up job.txt",
+          "bytes": 2196,
+          "sha256": "f4d1be6a9f3017aa8d67edead2b6f21fabc78e7a9b4af357412f5c97c90c913e",
+          "crc32": "6ded425f"
+        },
+        {
+          "member": "backend-integration/2_Checkout repository.txt",
+          "bytes": 13207,
+          "sha256": "84e85e05dd4dfef0edabc76f98ce6aa6f7571d87e46f5d5954f3df2698340139",
+          "crc32": "579c4152"
+        },
+        {
+          "member": "backend-integration/3_Set up Java.txt",
+          "bytes": 3725,
+          "sha256": "c6cd4c30928d48be86b4bdded4e336643ecac04f95e8aa90fc0bbe0fca64d463",
+          "crc32": "d698c090"
+        },
+        {
+          "member": "backend-integration/4_Record host and Docker resource limits.txt",
+          "bytes": 1447,
+          "sha256": "9b530314fd5c0280926cd3352971d6ec7d21c08dc05b0018262de5329701d491",
+          "crc32": "db168b07"
+        },
+        {
+          "member": "backend-integration/5_Run the database and application integration tests.txt",
+          "bytes": 5071521,
+          "sha256": "57f8ff954c95c2968823fe91b9f6a40b92a2a30d9507c9feb9b4cbaa6ce7079b",
+          "crc32": "13835b88"
+        },
+        {
+          "member": "backend-integration/6_Publish the integration test reports.txt",
+          "bytes": 3087,
+          "sha256": "04a645d538decc02e1eea22fa7b824ca31565aae063e8d475bc282ed96258d4e",
+          "crc32": "379b33f5"
+        },
+        {
+          "member": "backend-integration/system.txt",
+          "bytes": 600,
+          "sha256": "8e34551496831a793cf606a3672ab02988c46d5aa3393bb999821b5c20a9f92b",
+          "crc32": "0d89eea4"
+        }
+      ],
+      "actualCheckoutEvidence": [
+        {
+          "jobName": "backend-build",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "backend-build/2_Checkout repository.txt",
+            "memberSha256": "7ae032909dd5a4fc374a868010ef7862dea9d76d06a1d80c0738bccbc786f6d7",
+            "lines": [
+              {
+                "line": 72,
+                "text": "2026-09-06T09:44:11.4299473Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 74,
+                "text": "2026-09-06T09:44:15.5730269Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 113,
+                "text": "2026-09-06T09:44:16.6509856Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 116,
+                "text": "2026-09-06T09:44:16.6671337Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        },
+        {
+          "jobName": "backend-integration",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "backend-integration/2_Checkout repository.txt",
+            "memberSha256": "84e85e05dd4dfef0edabc76f98ce6aa6f7571d87e46f5d5954f3df2698340139",
+            "lines": [
+              {
+                "line": 72,
+                "text": "2026-09-06T09:44:14.7448650Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 74,
+                "text": "2026-09-06T09:44:19.0749128Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 114,
+                "text": "2026-09-06T09:44:20.1694488Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 117,
+                "text": "2026-09-06T09:44:20.1831443Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        },
+        {
+          "jobName": "architecture-boundary",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "architecture-boundary/2_Checkout repository.txt",
+            "memberSha256": "496d0f9960778774a7aa57457678186c89b1afa19eab3ad634d588e82fec6e8e",
+            "lines": [
+              {
+                "line": 72,
+                "text": "2026-09-06T09:44:11.6432287Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 74,
+                "text": "2026-09-06T09:44:16.0033110Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 114,
+                "text": "2026-09-06T09:44:17.1027539Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 117,
+                "text": "2026-09-06T09:44:17.1168498Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "workflow": "Frontend",
+      "runId": 34025462660,
+      "attempt": 1,
+      "archive": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+        "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+        "bytes": 231707
+      },
+      "members": [
+        {
+          "member": "0_frontend-build.txt",
+          "bytes": 26148,
+          "sha256": "0318809ad5e8b7494b55df589073ec8a6cb100d45c8e8bb2f966b87efabf2362",
+          "crc32": "2476224a"
+        },
+        {
+          "member": "1_frontend-test.txt",
+          "bytes": 785488,
+          "sha256": "0bca31de915525f1ee4efc2d2a1da9a3ba5a07beab96cf32c0289d8446c0d1b5",
+          "crc32": "1d2bdb0d"
+        },
+        {
+          "member": "2_frontend-lint.txt",
+          "bytes": 22314,
+          "sha256": "2acb3126fd100cad939a037e844552ca026940396d854969974031b698e9ede4",
+          "crc32": "b3b3aa2a"
+        },
+        {
+          "member": "3_frontend-typecheck.txt",
+          "bytes": 22128,
+          "sha256": "e766791691a10c843ee7452571fba026173dbb74860c50699c799337750c4355",
+          "crc32": "417db88c"
+        },
+        {
+          "member": "frontend-build/15_Post Set up Node.txt",
+          "bytes": 226,
+          "sha256": "fa0a9a93108ba338bfb5aaf545ce7695fdd8e27c1a04971863d9b4cd9f06a7b7",
+          "crc32": "7b96b174"
+        },
+        {
+          "member": "frontend-build/16_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "24547e0a6e297d7f298339fc7ecd6d268a15c84d707839673226727b5d8bbc67",
+          "crc32": "255174a1"
+        },
+        {
+          "member": "frontend-build/17_Complete job.txt",
+          "bytes": 61,
+          "sha256": "dc92811375b460410cd005adab6ee8f29b26afacf3eca1638d03b640f3f34e40",
+          "crc32": "b7c10eb0"
+        },
+        {
+          "member": "frontend-build/1_Set up job.txt",
+          "bytes": 2193,
+          "sha256": "5f57f726f4404dc8a08992db7286f148c827103ac0215e214711cbdac53ee22a",
+          "crc32": "8db9c89b"
+        },
+        {
+          "member": "frontend-build/2_Checkout repository.txt",
+          "bytes": 12316,
+          "sha256": "f2008bdb4f6493ed74daf66286f398bfb97ca0f301094aeb37bc40caf3eaa3c1",
+          "crc32": "88345f6c"
+        },
+        {
+          "member": "frontend-build/3_Set up Node.txt",
+          "bytes": 2581,
+          "sha256": "410516e5074afd3dbb7806688a2e40d75322c0982dfb923cb14f149610c9026a",
+          "crc32": "465f8c1e"
+        },
+        {
+          "member": "frontend-build/4_Install from the lockfile.txt",
+          "bytes": 994,
+          "sha256": "9bb510205ea957f71f3d6a76eae0573ca9d0300b8c0ec90bfca77cd5e45e336c",
+          "crc32": "72ec3487"
+        },
+        {
+          "member": "frontend-build/5_Prove that only prefixed values reached the bundle.txt",
+          "bytes": 1417,
+          "sha256": "b17fb04e9c0eeb53910c5370bf1f88690c582afc52d99bae8fdfea8ee0317d22",
+          "crc32": "3dbcf2c3"
+        },
+        {
+          "member": "frontend-build/6_Build the console.txt",
+          "bytes": 1348,
+          "sha256": "1145a1d367926886b4ecc2fc10c83d6dd8e4f90f5837fbee69634040c4d20ed4",
+          "crc32": "0bbc5489"
+        },
+        {
+          "member": "frontend-build/7_Produce the CycloneDX and dependency inventories.txt",
+          "bytes": 979,
+          "sha256": "5fa9fb98f429cb0fc9fa0466334e77a11c23e274cc525ab6b03e85c9167317cc",
+          "crc32": "04cf2d67"
+        },
+        {
+          "member": "frontend-build/8_Publish the console and its inventory.txt",
+          "bytes": 2300,
+          "sha256": "94ef75eced2aa3038a2da728bdfaea38d79ff08630911267c5ca1c001cec7c6f",
+          "crc32": "2ba254f8"
+        },
+        {
+          "member": "frontend-build/system.txt",
+          "bytes": 596,
+          "sha256": "1b7ec8947c5b21fb1c045b28a4d6e71b5161924d5d6af99a70c8dd1bfc4845de",
+          "crc32": "96d4f5c2"
+        },
+        {
+          "member": "frontend-lint/11_Post Set up Node.txt",
+          "bytes": 226,
+          "sha256": "32fbc71ef0fa6f15d7d1d0430538f8243c86ec91218d10eca3e8fe5f7f4aa3f9",
+          "crc32": "9d9f5d39"
+        },
+        {
+          "member": "frontend-lint/12_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "a44acff05e26ae7d84b0e1dbb7f2105d9df8e927a1494a0caa1a1dc5fd32ca67",
+          "crc32": "a827d569"
+        },
+        {
+          "member": "frontend-lint/13_Complete job.txt",
+          "bytes": 61,
+          "sha256": "d888f6d5bab78e3a8bb7557ddda04410c24aaca23772bea370a13fd0e6747d9e",
+          "crc32": "8c3bf415"
+        },
+        {
+          "member": "frontend-lint/1_Set up job.txt",
+          "bytes": 2019,
+          "sha256": "22e130d90666f8c9ea3ac69a5cd1013982812b38353b9b205d1c12d36cf2ffcc",
+          "crc32": "4e9ab6b2"
+        },
+        {
+          "member": "frontend-lint/2_Checkout repository.txt",
+          "bytes": 13253,
+          "sha256": "d44f91cf4b9b1e75365ba11eee7c737febd2397cddbb3ca48cb55ae20626f28c",
+          "crc32": "c6b2845b"
+        },
+        {
+          "member": "frontend-lint/3_Set up Node.txt",
+          "bytes": 2653,
+          "sha256": "46027327986101652a61ca9ee9a1af22666c613ea1225913fd5248ee0b0af3d5",
+          "crc32": "aa7eef5a"
+        },
+        {
+          "member": "frontend-lint/4_Install from the lockfile.txt",
+          "bytes": 994,
+          "sha256": "7007994a6614b3c82586896ea8399d4c7e3851fa093011eabd94dfae2a920b3b",
+          "crc32": "9a1b8dfc"
+        },
+        {
+          "member": "frontend-lint/5_Lint.txt",
+          "bytes": 614,
+          "sha256": "56e84e07f71a7ec6bdd012b5cb02cbe3ad0f11326664d71cdcd239636ea3b9e5",
+          "crc32": "a24f5510"
+        },
+        {
+          "member": "frontend-lint/6_Check formatting.txt",
+          "bytes": 755,
+          "sha256": "591d4a486b16ab02f2bfada34d31d5a8bb9d6a1fd2543c5cd17b247f02bafda0",
+          "crc32": "4598e4b4"
+        },
+        {
+          "member": "frontend-lint/system.txt",
+          "bytes": 595,
+          "sha256": "86758d41abc5acb06922f4e7705eb22de5ccd8d51c8ab9c53a7b5beb1f2d68d9",
+          "crc32": "6b9cce56"
+        },
+        {
+          "member": "frontend-test/10_Start PostgreSQL.txt",
+          "bytes": 15433,
+          "sha256": "5cd9387c9dc758251865a29c5fbba781bb0fa7bf9ea1d178335330750ea838ab",
+          "crc32": "f077edce"
+        },
+        {
+          "member": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+          "bytes": 163431,
+          "sha256": "f268b250eec79e00dfb2013f6f6dc7c381e344fa8e758aeb8808350a54ad8343",
+          "crc32": "1c6285b4"
+        },
+        {
+          "member": "frontend-test/12_Stop the isolated database.txt",
+          "bytes": 1705,
+          "sha256": "986a076d81bc483744291e48d2b58644f40df4d63f62482c3daf915faab0be01",
+          "crc32": "ea43a268"
+        },
+        {
+          "member": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+          "bytes": 522744,
+          "sha256": "4bc54440a9aa9f79568e4b962eafa1f482fbba72fc1e199bf18a9364cd235bff",
+          "crc32": "2e1627ac"
+        },
+        {
+          "member": "frontend-test/14_Publish advertising browser screenshots.txt",
+          "bytes": 2365,
+          "sha256": "853397fb2014af315f50a83b4ed2b93dbb705e5bd262816bbeace26bf60d4493",
+          "crc32": "05f06e1f"
+        },
+        {
+          "member": "frontend-test/15_Publish the coverage report.txt",
+          "bytes": 2176,
+          "sha256": "b012df01c5e98672f2ae7efca25e3c13cfc4d198711f10f2802852a14e19c128",
+          "crc32": "dd8d4939"
+        },
+        {
+          "member": "frontend-test/1_Set up job.txt",
+          "bytes": 2361,
+          "sha256": "2e20653ae346def0f0948c3aaf8ec4bc771da19508fb42b6c23d15fbc4af08cf",
+          "crc32": "9aef28a4"
+        },
+        {
+          "member": "frontend-test/28_Post Set up Java.txt",
+          "bytes": 428,
+          "sha256": "573a9ded356c51706835f1575730c8595f51b4884e022853e8d39ce53826efb3",
+          "crc32": "186527c2"
+        },
+        {
+          "member": "frontend-test/29_Post Set up Node.txt",
+          "bytes": 226,
+          "sha256": "d316ef6ac1a1fc1ccf50ab9f2b0c7dfe35a19cb4c7de8b5676711f5ebb8e4af8",
+          "crc32": "efb3f9e2"
+        },
+        {
+          "member": "frontend-test/2_Checkout repository.txt",
+          "bytes": 13811,
+          "sha256": "f7e9d81740f46e874cd17fb1d64f44da0a0c39713c7d930c3d52dd88c035f29b",
+          "crc32": "0def4995"
+        },
+        {
+          "member": "frontend-test/30_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "9672037d066f9a55c2db9fca39eacd87c312b0dcb1dc08cd45b56b1062933534",
+          "crc32": "b0c5bdfe"
+        },
+        {
+          "member": "frontend-test/31_Complete job.txt",
+          "bytes": 61,
+          "sha256": "7337c41b773942bf6e75f2b85d9b3fddf93f68180b459a84f438246651674676",
+          "crc32": "54e6c3f1"
+        },
+        {
+          "member": "frontend-test/3_Set up Node.txt",
+          "bytes": 2581,
+          "sha256": "2f548d499469fa329c4550de51af308449598fa0f34e5c0e2618d569f64454c8",
+          "crc32": "72fc916e"
+        },
+        {
+          "member": "frontend-test/4_Set up Java.txt",
+          "bytes": 3771,
+          "sha256": "00862672a018eed19bddd52f2cc94332852d958f64c36d5d6b29310ca90aa534",
+          "crc32": "65b8083f"
+        },
+        {
+          "member": "frontend-test/5_Install from the lockfile.txt",
+          "bytes": 1253,
+          "sha256": "8cb998b325572823ff063b346159535535b6b9b793172a9297c61b430a69ba18",
+          "crc32": "d5ce235b"
+        },
+        {
+          "member": "frontend-test/6_Run the tests with coverage.txt",
+          "bytes": 24740,
+          "sha256": "f1b4bae3e32e2f9e09c25387d50ead757e7486bd7ab4558753caa1f8ac971b33",
+          "crc32": "c61b83df"
+        },
+        {
+          "member": "frontend-test/7_Prove the frontend coverage gate rejects an unmet threshold.txt",
+          "bytes": 858,
+          "sha256": "c1b193cae21bf19bd2628f180d203644a16f4623b6cc65c576798fb768786893",
+          "crc32": "c02e54b8"
+        },
+        {
+          "member": "frontend-test/8_Install the Chromium runtime.txt",
+          "bytes": 24103,
+          "sha256": "e54ecc8faa5fb1c438fd75223adea4cb570e1592d5bf2bd05488626fc4020760",
+          "crc32": "fb3790d0"
+        },
+        {
+          "member": "frontend-test/9_Generate isolated local configuration.txt",
+          "bytes": 1732,
+          "sha256": "c6dc69bbb3c9def60143adfec27f0645c03047ffd2c3cea368dc4f52cf255e2f",
+          "crc32": "99d3d7c2"
+        },
+        {
+          "member": "frontend-test/system.txt",
+          "bytes": 595,
+          "sha256": "89fa1bda6f6e43bc0e7671b41e3796e90f0741ca1821435aaa99a3bb5f7065f5",
+          "crc32": "df7e2786"
+        },
+        {
+          "member": "frontend-typecheck/10_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "e2e164a38f13e4b2ce1b32fdd8fae389572b9de3b45c219e2eacafb0c2770615",
+          "crc32": "054e1948"
+        },
+        {
+          "member": "frontend-typecheck/11_Complete job.txt",
+          "bytes": 61,
+          "sha256": "3acf50995eb97a4645ca4901a964d78f5edd2ea35f050a608094797c4c4bf9fc",
+          "crc32": "cf9ab41c"
+        },
+        {
+          "member": "frontend-typecheck/1_Set up job.txt",
+          "bytes": 2025,
+          "sha256": "0de09b9d4196e3cf856ea3cd1eaf63a2f429cb67e6f9e65accb4e1991ae30b0d",
+          "crc32": "3d9446e1"
+        },
+        {
+          "member": "frontend-typecheck/2_Checkout repository.txt",
+          "bytes": 13873,
+          "sha256": "2e9e7f70bfe861e15665ed4dac2e0ce918410f72b08fdb195f9f41ceaf3b3551",
+          "crc32": "23e5704e"
+        },
+        {
+          "member": "frontend-typecheck/3_Set up Node.txt",
+          "bytes": 2582,
+          "sha256": "a75bcaa0e3300c6a892f6d4fbc8d75bbf2f0d08050a5b57158994bb9596cfbf8",
+          "crc32": "a5b61e40"
+        },
+        {
+          "member": "frontend-typecheck/4_Install from the lockfile.txt",
+          "bytes": 994,
+          "sha256": "80ccfb8d7d0cd9e22da6d52a365b1adde4efa0973b687e4272d202cda294f57e",
+          "crc32": "603bb7ca"
+        },
+        {
+          "member": "frontend-typecheck/5_Type-check.txt",
+          "bytes": 625,
+          "sha256": "1bc20149ad5ba84fca9a3924aecc3a3b081734b925cf7ae339fb6a7418d3ec50",
+          "crc32": "966b7581"
+        },
+        {
+          "member": "frontend-typecheck/9_Post Set up Node.txt",
+          "bytes": 226,
+          "sha256": "5a20a9f047f4072623c52e19bedb3bd81214d1a7db9012ab3a9be67ee85d4997",
+          "crc32": "1aa98363"
+        },
+        {
+          "member": "frontend-typecheck/system.txt",
+          "bytes": 600,
+          "sha256": "cd938ff61614480ac5df4a0d87a98693d7949e5f9ff74237509165eeb9744e13",
+          "crc32": "77810e11"
+        }
+      ],
+      "actualCheckoutEvidence": [
+        {
+          "jobName": "frontend-lint",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "frontend-lint/2_Checkout repository.txt",
+            "memberSha256": "d44f91cf4b9b1e75365ba11eee7c737febd2397cddbb3ca48cb55ae20626f28c",
+            "lines": [
+              {
+                "line": 73,
+                "text": "2026-09-06T09:43:51.5899173Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 75,
+                "text": "2026-09-06T09:43:58.4503566Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 115,
+                "text": "2026-09-06T09:43:59.5413305Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 118,
+                "text": "2026-09-06T09:43:59.5553293Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        },
+        {
+          "jobName": "frontend-typecheck",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "frontend-typecheck/2_Checkout repository.txt",
+            "memberSha256": "2e9e7f70bfe861e15665ed4dac2e0ce918410f72b08fdb195f9f41ceaf3b3551",
+            "lines": [
+              {
+                "line": 73,
+                "text": "2026-09-06T09:43:50.9782666Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 75,
+                "text": "2026-09-06T09:43:57.4109623Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 125,
+                "text": "2026-09-06T09:43:58.5843949Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 128,
+                "text": "2026-09-06T09:43:58.6030283Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        },
+        {
+          "jobName": "frontend-test",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "frontend-test/2_Checkout repository.txt",
+            "memberSha256": "f7e9d81740f46e874cd17fb1d64f44da0a0c39713c7d930c3d52dd88c035f29b",
+            "lines": [
+              {
+                "line": 73,
+                "text": "2026-09-06T09:43:52.4602100Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 75,
+                "text": "2026-09-06T09:43:58.1715203Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 124,
+                "text": "2026-09-06T09:43:59.3328702Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 127,
+                "text": "2026-09-06T09:43:59.3468315Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        },
+        {
+          "jobName": "frontend-build",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "frontend-build/2_Checkout repository.txt",
+            "memberSha256": "f2008bdb4f6493ed74daf66286f398bfb97ca0f301094aeb37bc40caf3eaa3c1",
+            "lines": [
+              {
+                "line": 73,
+                "text": "2026-09-06T09:43:51.1625562Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 75,
+                "text": "2026-09-06T09:43:58.4698470Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 100,
+                "text": "2026-09-06T09:43:59.4479881Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 103,
+                "text": "2026-09-06T09:43:59.4577196Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "workflow": "Governance",
+      "runId": 34025462604,
+      "attempt": 1,
+      "archive": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-logs.zip",
+        "sha256": "edf4963a3da4c6cd704b82229db2ac266a7c3c82698d98f5aecafa08de0ff905",
+        "bytes": 12345
+      },
+      "members": [
+        {
+          "member": "0_governance.txt",
+          "bytes": 19629,
+          "sha256": "d105e4cd6a34b2db9229edee846f37b41bad2adca6d1ccb5d173f6663d266da8",
+          "crc32": "f011eef3"
+        },
+        {
+          "member": "governance/12_Post Checkout repository.txt",
+          "bytes": 1763,
+          "sha256": "7beef277126b655f09b5a20c481b25b2869512b5322a822792994c6b8ca138a8",
+          "crc32": "16afa9f4"
+        },
+        {
+          "member": "governance/13_Complete job.txt",
+          "bytes": 61,
+          "sha256": "79ceb49abc921ca4163c3af101294229873e5b6393c40031e1d4dd7366abbef0",
+          "crc32": "00173f9a"
+        },
+        {
+          "member": "governance/1_Set up job.txt",
+          "bytes": 1858,
+          "sha256": "101b112b643f73a33d11b8a90d61fcbdd8b21313676b2835c2551eec0bcc0915",
+          "crc32": "fe8d71e8"
+        },
+        {
+          "member": "governance/2_Checkout repository.txt",
+          "bytes": 12964,
+          "sha256": "3b20508816e7bad902b732cb5f66827814bb61c6e24450421d2ffa260be39ee7",
+          "crc32": "69b218e7"
+        },
+        {
+          "member": "governance/3_Record the identifiers this run is about.txt",
+          "bytes": 569,
+          "sha256": "228992ad2b6e45e45ebf34923c7305be222cc7d48a5822f700c6c1597c5fac7e",
+          "crc32": "1356ed54"
+        },
+        {
+          "member": "governance/4_Validate governance, source integrity and common secret patterns.txt",
+          "bytes": 321,
+          "sha256": "2eb69839af810c8f6baf79f4fbbb71754e1825771cda8655d6ce2b2cdef4e83a",
+          "crc32": "f61e889d"
+        },
+        {
+          "member": "governance/5_Validate the three production readiness rules.txt",
+          "bytes": 743,
+          "sha256": "e5c03730ab03f01d3931672bfbee3c37f3dda2a42d29c4234489f777a9f68b47",
+          "crc32": "50352206"
+        },
+        {
+          "member": "governance/6_Run the validator's own tests.txt",
+          "bytes": 1371,
+          "sha256": "a94029bc62a52c9248150cac8f956110d6e45a049798fa1c5f08b49f7ff7ce17",
+          "crc32": "07890619"
+        },
+        {
+          "member": "governance/system.txt",
+          "bytes": 594,
+          "sha256": "ff9d743d348b3b9f695fdfe9927e708c4dd5dff4906d20016587fa2037800e04",
+          "crc32": "14ef6dcb"
+        }
+      ],
+      "actualCheckoutEvidence": [
+        {
+          "jobName": "governance",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "governance/2_Checkout repository.txt",
+            "memberSha256": "3b20508816e7bad902b732cb5f66827814bb61c6e24450421d2ffa260be39ee7",
+            "lines": [
+              {
+                "line": 68,
+                "text": "2026-09-06T09:43:50.6160140Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 70,
+                "text": "2026-09-06T09:43:57.8333101Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 109,
+                "text": "2026-09-06T09:43:58.9171526Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 112,
+                "text": "2026-09-06T09:43:58.9312572Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "workflow": "Infrastructure",
+      "runId": 34025462662,
+      "attempt": 1,
+      "archive": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip",
+        "sha256": "1af7104ce7ddc386f3f4e763575d6fc5d3ce4089b24ba709e727c020c50d82a0",
+        "bytes": 16917
+      },
+      "members": [
+        {
+          "member": "0_infrastructure-validation.txt",
+          "bytes": 26066,
+          "sha256": "0a52b6b4c2a3ec03267284d9e5a08671ae5d5ee5f1ec50f8d98d9ad22a8ec4a1",
+          "crc32": "609ca5e3"
+        },
+        {
+          "member": "infrastructure-validation/16_Post Checkout exact candidate.txt",
+          "bytes": 1763,
+          "sha256": "5df62fe8533c79596b88424d9bb7c63ee73d5e460d42f38631cb8d72d0abe16b",
+          "crc32": "ae1b8dcd"
+        },
+        {
+          "member": "infrastructure-validation/17_Complete job.txt",
+          "bytes": 61,
+          "sha256": "0b339edbe644d366c2d18bbd75f5a01386a8956b1df1c55e6b0c03df35766e27",
+          "crc32": "3f1ef8cf"
+        },
+        {
+          "member": "infrastructure-validation/1_Set up job.txt",
+          "bytes": 2037,
+          "sha256": "aabb6586208141ce26d22890df8bed362dc24ab7f5cadf7a446aa130c045b86c",
+          "crc32": "0afb0fff"
+        },
+        {
+          "member": "infrastructure-validation/2_Checkout exact candidate.txt",
+          "bytes": 13026,
+          "sha256": "7b6a3336f2a7120b7e7a04369f51cfe2c66072b53bba6cc2f177fe78edc0b473",
+          "crc32": "b257315f"
+        },
+        {
+          "member": "infrastructure-validation/3_Install checksum-pinned Terraform.txt",
+          "bytes": 1270,
+          "sha256": "cced30cf9059384a24cb21308ae7186959435811c8576dabd1d1c13989ea70b3",
+          "crc32": "52bdf032"
+        },
+        {
+          "member": "infrastructure-validation/4_Validate both environments and state bootstrap without credentials or apply.txt",
+          "bytes": 4371,
+          "sha256": "cf3dd0b52b85d925d1363ab8bfa7190f6c9db0e7a17f7386e593e5db4aa80349",
+          "crc32": "2672a979"
+        },
+        {
+          "member": "infrastructure-validation/5_Test network and secret-delivery refusal controls.txt",
+          "bytes": 562,
+          "sha256": "0ccca88810feed9cc2337220f3b153423ca9f9c09e12d63fdee56f166cd520a1",
+          "crc32": "b172047a"
+        },
+        {
+          "member": "infrastructure-validation/6_Test ephemeral runtime secret delivery.txt",
+          "bytes": 573,
+          "sha256": "e57a09b7560d319f9273bd76f232dda1ac79e9b0215636a28e153190e7ffa166",
+          "crc32": "575b3eff"
+        },
+        {
+          "member": "infrastructure-validation/7_Record tested identities.txt",
+          "bytes": 708,
+          "sha256": "2c70c92199104922340587e74f7059a7a035cdeec10ede72a1ea2a74ee3094ba",
+          "crc32": "8aa1e1ad"
+        },
+        {
+          "member": "infrastructure-validation/8_Publish infrastructure verification evidence.txt",
+          "bytes": 1722,
+          "sha256": "b184bb942168df5c231faeed70c99882a5096361b662c6cf7972644b62db8765",
+          "crc32": "e553b124"
+        },
+        {
+          "member": "infrastructure-validation/system.txt",
+          "bytes": 613,
+          "sha256": "819de9a8da26b719fec91e77fd125bcab4b9cf41b899a4a41a3d7367cc1f4452",
+          "crc32": "7e48051c"
+        }
+      ],
+      "actualCheckoutEvidence": [
+        {
+          "jobName": "infrastructure-validation",
+          "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+          "evidence": {
+            "member": "infrastructure-validation/2_Checkout exact candidate.txt",
+            "memberSha256": "7b6a3336f2a7120b7e7a04369f51cfe2c66072b53bba6cc2f177fe78edc0b473",
+            "lines": [
+              {
+                "line": 68,
+                "text": "2026-09-06T09:43:51.4424461Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +196afde14f0d51f88c4b27ac2e7cff7d645b5a1a:refs/remotes/pull/30/merge"
+              },
+              {
+                "line": 70,
+                "text": "2026-09-06T09:43:58.3805276Z  * [new ref]         196afde14f0d51f88c4b27ac2e7cff7d645b5a1a -> pull/30/merge"
+              },
+              {
+                "line": 110,
+                "text": "2026-09-06T09:43:59.4803145Z HEAD is now at 196afde Merge e278b1e3d8541aeb806e41d6cbef4deac8d16d06 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+              },
+              {
+                "line": 113,
+                "text": "2026-09-06T09:43:59.4938684Z 196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

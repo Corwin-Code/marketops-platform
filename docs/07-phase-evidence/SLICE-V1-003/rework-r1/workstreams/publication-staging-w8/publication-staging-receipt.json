@@ -1,0 +1,125 @@
+{
+  "kind": "W8_READ_ONLY_PUBLICATION_STAGING_READY",
+  "finishedAtUTC": "2026-09-05T14:09:14.221147+00:00",
+  "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "sourceTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "groups": [
+    "full-clean-w8",
+    "validation-w8",
+    "ci-w8",
+    "backend-ci-w8",
+    "frontend-ci-w8",
+    "security-w8",
+    "gov-infra-ci-w8"
+  ],
+  "rawArchives": [
+    {
+      "path": "workstreams/backend-ci-w8/original-evidence.tar.gz",
+      "sha256": "c0afd5ccff1f4ea1be725a8b4c5f443f4c5ed39da22c71d0b138e8a2a2d190ba",
+      "bytes": 886691
+    },
+    {
+      "path": "workstreams/ci-w8/original-evidence.tar.gz",
+      "sha256": "661d34321a1ac8d4e8e1a51cb44e04a4d42e50768491dd549aeb099d9686a5b7",
+      "bytes": 23791548
+    },
+    {
+      "path": "workstreams/frontend-ci-w8/original-evidence.tar.gz",
+      "sha256": "affa066f038118bcb7034e74925921ec23b2c1ffeb608ee1adfcbe8a53753692",
+      "bytes": 15672917
+    },
+    {
+      "path": "workstreams/full-clean-w8/raw-test-artifacts.tar.gz",
+      "sha256": "bb4377e26239f32d91552b76a44736b4b7acf3071460e1ab5621aa65e7287b8f",
+      "bytes": 3650509
+    },
+    {
+      "path": "workstreams/full-clean-w8/run-originals.tar.gz",
+      "sha256": "b553edfc139cf9db782df95c6fc8264423cb59c83735cc33748f8812041e0e53",
+      "bytes": 608101
+    },
+    {
+      "path": "workstreams/gov-infra-ci-w8/original-evidence.tar.gz",
+      "sha256": "1b00f948b7d3655bb17e0cf3ff9be21b6e3ffcfecb95c81840b9bd5653792625",
+      "bytes": 2367070
+    },
+    {
+      "path": "workstreams/security-w8/original-evidence.tar.gz",
+      "sha256": "6839f08e43e4811f965251c0eb73e10e21ce3edcee19c2d37e4a0b921da82243",
+      "bytes": 1695210
+    },
+    {
+      "path": "workstreams/validation-w8/original-evidence.tar.gz",
+      "sha256": "61982c251b1fa8fd75490f363b4f74ca147300dfa3329a944e4ba09ed6fbb73a",
+      "bytes": 15092
+    }
+  ],
+  "totalArchiveBytes": 48687138,
+  "rawSourceMapping": {
+    "path": "source-archive-member-manifest.json",
+    "sha256": "fddaed33c0f3c2ca1ece9bcc83a383bc5a9d6e5dfdbcaaaa1507450b47c18f3e",
+    "bytes": 1258836
+  },
+  "byteVerification": {
+    "path": "source-archive-byte-verification.json",
+    "sha256": "008102570b03148c662be60387fec79a4309f9021a8a81355d985044bc3a61e8",
+    "bytes": 1349422
+  },
+  "recursiveScan": {
+    "path": "publication-recursive-raw-scan-r2.json",
+    "sha256": "aff02ddc6b088640886cd817b5fba1b0ad4d76508683010458cbc983bc044629",
+    "bytes": 1770150
+  },
+  "staticHelpAdjudication": {
+    "path": "publication-static-help-adjudication-r2.json",
+    "sha256": "7a629af099c9a7c2e802ffa650ac647ee9b1fc8202944f19cff9e143044c93a8",
+    "bytes": 8741
+  },
+  "originalFirstScanAndRejectedArchiveHistoryPreserved": true,
+  "publicationScanFacts": {
+    "archivesRecursivelyOpened": 27,
+    "textFilesAndMembers": 5344,
+    "decodedBytes": 207086698,
+    "originalSecretPatternRawPass": false,
+    "rawSecretShapeOccurrences": 8,
+    "exactStaticHelpReviewedOccurrences": 8,
+    "unreviewedOccurrences": 0,
+    "signedQueryMatches": 0,
+    "privateOriginalCopies": 0,
+    "jarMembers": 0
+  },
+  "knownExternalExclusions": [
+    {
+      "source": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/jars/marketops-server-0.1.0-SNAPSHOT.jar",
+      "originalSha256": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+      "originalBytes": 42361851,
+      "containsCRLF": true,
+      "reason": "Measured original JAR remains external; preserved-artifact-manifest and verified-jar-identity retain exact SHA/source stamp."
+    },
+    {
+      "source": "/tmp/slice3-w8-gov-infra-provenance/raw/run-33967874661-attempt-1-logs.attempt-1.stderr.txt",
+      "originalSha256": "002a97e92b30e011fca1653d1af049f068058cd178b201ee3798ca2750a366a8",
+      "originalBytes": 234,
+      "containsCRLF": false,
+      "reason": "Private signed-URL stderr; source remains outside publication; known sanitized derivative is published."
+    },
+    {
+      "source": "/tmp/slice3-w8-frontend-ci/logs.zip.attempt-1.stderr.txt",
+      "originalSha256": "05a147efc88927d7141be5685fd72ac2fabb8538cf65aca1277d7ce740982476",
+      "originalBytes": 234,
+      "containsCRLF": false,
+      "reason": "Additional actual signed-URL stderr found by recursive publication scan; remains private, whole stderr omitted in published derivative."
+    }
+  ],
+  "crlfBoundary": "Direct readable text is LF only; original CRLF retained in compressed raw archives. Rehash archive blobs and exact direct JSON after Git filters; no original byte evidence was edited or path-reidentified.",
+  "scope": "Evidence staging only; no source repair, Controller verdict, new W9 acceptance or production enablement. No measured87/other engineering drafts or Parent joins included.",
+  "repositoryMutated": false,
+  "gitOrRemoteWrites": false,
+  "runtimeDatabasesProvidersAccessed": false,
+  "result": "READY_FOR_PARENT_REVIEW_AND_EXACT_BYTE_GIT_PUBLICATION",
+  "finalDerivedMetadataScan": {
+    "path": "publication-final-derived-metadata-scan.json",
+    "sha256": "78c1a51603af06dc2ca835b7550f8602b0834a4ec63905cb1689a331bb23227b",
+    "bytes": 1687
+  }
+}

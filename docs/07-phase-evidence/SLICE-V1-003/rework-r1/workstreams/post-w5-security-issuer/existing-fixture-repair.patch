@@ -1,0 +1,116 @@
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java
+index 848c708..50a671a 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java
+@@ -61,8 +61,8 @@ class AdvertisingAuthorityVersionStopIT {
+             VALUES(gen_random_uuid(),:org,:actor,'ADVERTISING_POLICY_MANAGE',:store,now()-interval '1 day','ACTIVE',
+               'Synthetic Store scope cannot imply organization authority',now(),now())
+             """).param("org",graph.id("organization")).param("actor",graph.id(person)).param("store",graph.id("store")).update();
+-        try(var connection=admin.getConnection();var statement=connection.createStatement()) {
+-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
++        try(var connection=admin.getConnection()) {
++            TestDatabase.enableSyntheticIdentityIssuer(connection,ISSUER_PASSWORD);
+         }
+     }
+     @ParameterizedTest @ValueSource(strings={"ownerUser","verifierUser"})
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java
+index 4c00a59..c0dfe93 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java
+@@ -75,7 +75,7 @@ class AdvertisingHumanWorkflowIT {
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration);
+         try(var admin=DATABASE.createConnection("")) {
+-            try(var statement=admin.createStatement()) { statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
++            TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD);
+         }
+         role("executorUser","MARKETPLACE_OPERATOR");
+         for(String user:List.of("executorUser","verifierUser","ownerUser")) {
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java
+index fdb0270..5ec7156 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java
+@@ -54,8 +54,8 @@ class AdvertisingManualWorkflowIT {
+         admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
+         seed=JdbcClient.create(migration);
+         graph=AdvertisingR1Fixture.seedManual(migration);
+-        try(var connection=admin.getConnection();var statement=connection.createStatement()) {
+-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
++        try(var connection=admin.getConnection()) {
++            TestDatabase.enableSyntheticIdentityIssuer(connection,ISSUER_PASSWORD);
+         }
+         seedOutcomeAuthority();
+         role("executorUser","MARKETPLACE_OPERATOR");
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java
+index 395728b..351fa60 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java
+@@ -61,8 +61,8 @@ class AdvertisingOrdinaryApprovalIT {
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         seed=JdbcClient.create(migration);
+         graph=AdvertisingMaterialityFixture.seedUnapproved(migration);
+-        try(var admin=DATABASE.createConnection("");var statement=admin.createStatement()) {
+-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
++        try(var admin=DATABASE.createConnection("")) {
++            TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD);
+         }
+         role("executorUser","MARKETPLACE_OPERATOR");
+         for(String user:List.of("executorUser","verifierUser")) {
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java
+index 2c97ce9..4a295bc 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java
+@@ -2,6 +2,9 @@ package com.mimococo.marketops;
+ 
+ import java.nio.file.Files;
+ import java.nio.file.Path;
++import java.sql.Connection;
++import java.sql.SQLException;
++import java.util.Objects;
+ import java.util.UUID;
+ import org.testcontainers.postgresql.PostgreSQLContainer;
+ import org.testcontainers.utility.DockerImageName;
+@@ -56,6 +59,30 @@ public final class TestDatabase {
+         return APPLICATION_PASSWORD;
+     }
+ 
++    /**
++     * Activate only the synthetic issuer inside a test's isolated database.
++     * PostgreSQL role DDL cannot bind its password directly, so the server quotes
++     * the bound value as one literal before executing this fixed-role statement.
++     * The caller retains ownership of the administrator connection.
++     */
++    public static void enableSyntheticIdentityIssuer(Connection administrator, String syntheticPassword)
++            throws SQLException {
++        Objects.requireNonNull(syntheticPassword, "synthetic issuer password");
++        try (var query = administrator.prepareStatement("""
++                SELECT format('ALTER ROLE marketops_identity_issuer LOGIN PASSWORD %L', ?::text)
++                """)) {
++            query.setString(1, syntheticPassword);
++            try (var rows = query.executeQuery()) {
++                if (!rows.next()) {
++                    throw new SQLException("Synthetic issuer statement was not produced");
++                }
++                try (var statement = administrator.createStatement()) {
++                    statement.execute(rows.getString(1));
++                }
++            }
++        }
++    }
++
+     private static PostgreSQLContainer build() {
+         Path initDirectory = repositoryRoot().resolve("infra/compose/postgres-init");
+         return new PostgreSQLContainer(DockerImageName.parse(
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
+index 36395e7..a89bb78 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
+@@ -74,7 +74,7 @@ class AdvertisingVerticalPathIT {
+         start=Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS).minusSeconds(2);clock.at=start;provider.calls.clear();
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration,this::authorityOnly);
+-        try(var admin=DATABASE.createConnection("");var s=admin.createStatement()) { s.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
++        try(var admin=DATABASE.createConnection("")) { TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD); }
+         role("executorUser","MARKETPLACE_OPERATOR");
+         for(String user:List.of("executorUser","verifierUser","ownerUser"))
+             for(String action:List.of("ADVERTISING_VIEW","ADVERTISING_TASK_ACT")) scope(user,action);

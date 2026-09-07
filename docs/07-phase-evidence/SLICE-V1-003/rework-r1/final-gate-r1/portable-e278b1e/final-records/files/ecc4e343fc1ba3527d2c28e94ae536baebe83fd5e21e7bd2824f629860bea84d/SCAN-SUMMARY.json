@@ -1,0 +1,18 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_RECURSIVE_PATTERN_SCAN",
+  "status": "COMPLETE",
+  "scope": "Actual final-publication additional bytes, batch 6. No product test is executed.",
+  "originalFiles": 1,
+  "originalBytesUnchanged": true,
+  "scannedRecords": 75,
+  "archiveMembers": 74,
+  "scannedBytesIncludingContainersAndDuplicateCopies": 59519932,
+  "elapsedSeconds": 8.003,
+  "hitCount": 0,
+  "ruleCounts": {},
+  "unreviewedHits": 0,
+  "rawPublicationAuthorized": false,
+  "productExecutions": 0,
+  "closureClaimMade": false,
+  "limits": "Nine bounded patterns; UTF8/raw/entity/JSON strings and actual nested archive members. Images scanned as bytes, no OCR. All hits require exact context review; no generic no-PII claim."
+}

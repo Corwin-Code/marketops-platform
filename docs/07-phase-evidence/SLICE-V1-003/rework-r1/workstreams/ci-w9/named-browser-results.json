@@ -1,0 +1,307 @@
+{
+  "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "testedMerge": "52e393720653197089bd9530a9330216bc15fb2b",
+  "frontendUnitTests": 327,
+  "legacyBrowserCount": 25,
+  "advertisingBrowserCount": 12,
+  "legacy": [
+    {
+      "ordinal": 1,
+      "source": "tests/browser/advertising-brief.spec.ts:155:5",
+      "title": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+      "fullDisplayTitle": "tests/browser/advertising-brief.spec.ts:155:5 › TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+      "duration": "331ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 2,
+      "source": "tests/browser/advertising-brief.spec.ts:155:5",
+      "title": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+      "fullDisplayTitle": "tests/browser/advertising-brief.spec.ts:155:5 › TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+      "duration": "204ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 3,
+      "source": "tests/browser/advertising-brief.spec.ts:155:5",
+      "title": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+      "fullDisplayTitle": "tests/browser/advertising-brief.spec.ts:155:5 › TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+      "duration": "215ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 4,
+      "source": "tests/browser/advertising-brief.spec.ts:173:3",
+      "title": "TC-BROWSER-018 the brief renders as published › every section is shown, including the ones that found nothing",
+      "fullDisplayTitle": "tests/browser/advertising-brief.spec.ts:173:3 › TC-BROWSER-018 the brief renders as published › every section is shown, including the ones that found nothing",
+      "duration": "530ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 5,
+      "source": "tests/browser/advertising-brief.spec.ts:199:3",
+      "title": "TC-BROWSER-018 the brief renders as published › a restatement keeps the reading somebody acted on",
+      "fullDisplayTitle": "tests/browser/advertising-brief.spec.ts:199:3 › TC-BROWSER-018 the brief renders as published › a restatement keeps the reading somebody acted on",
+      "duration": "514ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 6,
+      "source": "tests/browser/advertising-brief.spec.ts:218:3",
+      "title": "TC-BROWSER-018 the brief renders as published › nothing published is stated, not shown as a fault",
+      "fullDisplayTitle": "tests/browser/advertising-brief.spec.ts:218:3 › TC-BROWSER-018 the brief renders as published › nothing published is stated, not shown as a fault",
+      "duration": "498ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 7,
+      "source": "tests/browser/advertising-execution.spec.ts:169:5",
+      "title": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/reservations with no token",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:169:5 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/reservations with no token",
+      "duration": "209ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 8,
+      "source": "tests/browser/advertising-execution.spec.ts:169:5",
+      "title": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/exposure with no token",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:169:5 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/exposure with no token",
+      "duration": "199ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 9,
+      "source": "tests/browser/advertising-execution.spec.ts:169:5",
+      "title": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/containments with no token",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:169:5 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/containments with no token",
+      "duration": "197ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 10,
+      "source": "tests/browser/advertising-execution.spec.ts:185:3",
+      "title": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses an advertising read carrying a made-up token",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:185:3 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses an advertising read carrying a made-up token",
+      "duration": "194ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 11,
+      "source": "tests/browser/advertising-execution.spec.ts:203:3",
+      "title": "TC-BROWSER-016 the execution surfaces render in a real browser › the envelope is shown axis by axis, with no combined figure",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:203:3 › TC-BROWSER-016 the execution surfaces render in a real browser › the envelope is shown axis by axis, with no combined figure",
+      "duration": "710ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 12,
+      "source": "tests/browser/advertising-execution.spec.ts:257:3",
+      "title": "TC-BROWSER-016 the execution surfaces render in a real browser › a hold names its kind and every condition still outstanding",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:257:3 › TC-BROWSER-016 the execution surfaces render in a real browser › a hold names its kind and every condition still outstanding",
+      "duration": "456ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 13,
+      "source": "tests/browser/advertising-execution.spec.ts:280:3",
+      "title": "TC-BROWSER-016 the execution surfaces render in a real browser › no envelope is presented as no write at all, not as an empty one",
+      "fullDisplayTitle": "tests/browser/advertising-execution.spec.ts:280:3 › TC-BROWSER-016 the execution surfaces render in a real browser › no envelope is presented as no write at all, not as an empty one",
+      "duration": "428ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 14,
+      "source": "tests/browser/availability-journey.spec.ts:11:1",
+      "title": "TC-BROWSER-014 stockout queue, accountable case and structured action",
+      "fullDisplayTitle": "tests/browser/availability-journey.spec.ts:11:1 › TC-BROWSER-014 stockout queue, accountable case and structured action",
+      "duration": "2.2s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 15,
+      "source": "tests/browser/business-journey.spec.ts:4:1",
+      "title": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+      "fullDisplayTitle": "tests/browser/business-journey.spec.ts:4:1 › TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+      "duration": "4.8s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 16,
+      "source": "tests/browser/health-shell.spec.ts:63:1",
+      "title": "the built console recovers across a real database outage",
+      "fullDisplayTitle": "tests/browser/health-shell.spec.ts:63:1 › the built console recovers across a real database outage",
+      "duration": "9.6s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 17,
+      "source": "tests/browser/operating-console.spec.ts:34:3",
+      "title": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › shows the platform panel and no operating data",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:34:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › shows the platform panel and no operating data",
+      "duration": "241ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 18,
+      "source": "tests/browser/operating-console.spec.ts:44:3",
+      "title": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries no token",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:44:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries no token",
+      "duration": "226ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 19,
+      "source": "tests/browser/operating-console.spec.ts:58:3",
+      "title": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries a made-up token",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:58:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries a made-up token",
+      "duration": "200ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 20,
+      "source": "tests/browser/operating-console.spec.ts:79:3",
+      "title": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the built bundle carries no token, password or secret reference",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:79:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the built bundle carries no token, password or secret reference",
+      "duration": "236ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 21,
+      "source": "tests/browser/operating-console.spec.ts:164:5",
+      "title": "TC-BROWSER-012 asynchronous export presentation and browser download integrity › waits for 202 completion and saves only the verified large export",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:164:5 › TC-BROWSER-012 asynchronous export presentation and browser download integrity › waits for 202 completion and saves only the verified large export",
+      "duration": "3.2s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 22,
+      "source": "tests/browser/operating-console.spec.ts:164:5",
+      "title": "TC-BROWSER-012 asynchronous export presentation and browser download integrity › refuses a corrupt final part without offering a partial file",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:164:5 › TC-BROWSER-012 asynchronous export presentation and browser download integrity › refuses a corrupt final part without offering a partial file",
+      "duration": "3.2s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 23,
+      "source": "tests/browser/operating-console.spec.ts:316:3",
+      "title": "TC-BROWSER-011 the operator journey runs in a real browser › signs in, reaches the work list, and never labels doubt as certainty",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:316:3 › TC-BROWSER-011 the operator journey runs in a real browser › signs in, reaches the work list, and never labels doubt as certainty",
+      "duration": "502ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 24,
+      "source": "tests/browser/operating-console.spec.ts:402:3",
+      "title": "TC-BROWSER-011 the operator journey runs in a real browser › an ended session takes the operator back to sign-in with no data left on screen",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:402:3 › TC-BROWSER-011 the operator journey runs in a real browser › an ended session takes the operator back to sign-in with no data left on screen",
+      "duration": "458ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 25,
+      "source": "tests/browser/operating-console.spec.ts:418:3",
+      "title": "TC-BROWSER-011 the operator journey runs in a real browser › a refused sign-in leaves the visitor told rather than blank",
+      "fullDisplayTitle": "tests/browser/operating-console.spec.ts:418:3 › TC-BROWSER-011 the operator journey runs in a real browser › a refused sign-in leaves the visitor told rather than blank",
+      "duration": "367ms",
+      "status": "PASSED"
+    }
+  ],
+  "advertising": [
+    {
+      "ordinal": 1,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:97:1",
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:97:1 › real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "duration": "8.1s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 2,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:175:1",
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:175:1 › real backend denies absent and forged credentials before advertising data is disclosed",
+      "duration": "22ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 3,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:185:3",
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:185:3 › OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "duration": "7.1s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 4,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:185:3",
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:185:3 › WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "duration": "7.1s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 5,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:278:1",
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:278:1 › all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "duration": "2.8s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 6,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:361:1",
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:361:1 › three distinct people accept an exact temporary exception, block actions, and end it",
+      "duration": "3.9s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 7,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:420:1",
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:420:1 › scoped emergency hold remains active until independent recovery conditions are established",
+      "duration": "2.6s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 8,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:470:3",
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:470:3 › HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "duration": "1.9s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 9,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:470:3",
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:470:3 › HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "duration": "963ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 10,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:470:3",
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:470:3 › HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "duration": "1.2s",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 11,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:470:3",
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:470:3 › HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "duration": "969ms",
+      "status": "PASSED"
+    },
+    {
+      "ordinal": 12,
+      "source": "tests/advertising-browser/governed-advertising.spec.ts:543:1",
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "fullDisplayTitle": "tests/advertising-browser/governed-advertising.spec.ts:543:1 › real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "duration": "9.3s",
+      "status": "PASSED"
+    }
+  ]
+}

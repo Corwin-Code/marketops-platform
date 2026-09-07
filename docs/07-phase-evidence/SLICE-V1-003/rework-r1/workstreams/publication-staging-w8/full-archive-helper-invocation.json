@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "python3",
+    "/tmp/archive-slice3-full-output.py",
+    "/tmp/slice3-r1-full-clean-w8-9b6e6195",
+    "/tmp/slice3-w8-publication-staging/workstreams/full-clean-w8"
+  ],
+  "exitCode": 0,
+  "stdout": "/tmp/slice3-w8-publication-staging/workstreams/full-clean-w8 3650509 compressed bytes\n",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "helperSha256": "4de4f398ae5feb60393ac4b642297e2afa6e2c09a94d7bc7e94ae130eff139bc"
+}

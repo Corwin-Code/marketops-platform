@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/code-scanning/alerts?state=open&ref=refs%2Fpull%2F30%2Fmerge&per_page=100",
+    "-X",
+    "GET",
+    "--paginate",
+    "--slurp"
+  ],
+  "startedAt": "2026-09-06T17:35:13.633884+00:00",
+  "finishedAt": "2026-09-06T17:35:14.784277+00:00",
+  "elapsedSeconds": 1.1504289579999991,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/open-alerts-pages.json.attempt-1",
+    "sha256": "ae6503da800c20ed06c4f6b09284e65d5a358a6b5afd9b6611b9e9bf73b90460",
+    "bytes": 297121
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/open-alerts-pages.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten."
+}

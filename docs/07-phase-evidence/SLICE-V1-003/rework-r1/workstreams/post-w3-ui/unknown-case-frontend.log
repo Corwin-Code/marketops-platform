@@ -1,0 +1,13 @@
+
+> marketops-console@0.1.0 test
+> vitest run src/__tests__/AdvertisingControl.test.tsx
+
+
+ RUN  v4.1.10 /Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console
+
+
+ Test Files  1 passed (1)
+      Tests  19 passed (19)
+   Start at  13:00:52
+   Duration  1.26s (transform 142ms, setup 136ms, import 150ms, tests 199ms, environment 655ms)
+

@@ -1,0 +1,1387 @@
+{
+  "kind": "EXACT_FINAL_CONTAINING_BACKEND_CI_RAW_VERIFICATION",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+  "run": {
+    "id": 34048388804,
+    "head_sha": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34048388804"
+  },
+  "jobs": [
+    {
+      "id": 101527455457,
+      "name": "architecture-boundary",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T17:22:14Z",
+      "completed_at": "2026-09-06T17:23:35Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34048388804/job/101527455457"
+    },
+    {
+      "id": 101527455617,
+      "name": "backend-integration",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T17:22:14Z",
+      "completed_at": "2026-09-06T17:53:46Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34048388804/job/101527455617"
+    },
+    {
+      "id": 101527455682,
+      "name": "backend-build",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T17:22:14Z",
+      "completed_at": "2026-09-06T17:57:40Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34048388804/job/101527455682"
+    }
+  ],
+  "rawRun": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run.json",
+    "sha256": "0dff93ed456b74980133aeedb23729ee3a648e4e0ddc8859101457b5204c4930",
+    "bytes": 13685
+  },
+  "rawJobs": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-jobs.json",
+    "sha256": "b992219065bf6dd739f0f744a94444661f271420d36d1ce8a2c3afe8ef55d5ca",
+    "bytes": 7691
+  },
+  "rawArtifactApi": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-artifacts.json",
+    "sha256": "dd90bb60d8675503208d2684bfce26b0a55992c8f17d83d10036ba71b1067986",
+    "bytes": 2277
+  },
+  "rawIndex": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/BACKEND-ARTIFACT-MEMBER-INDEX.json",
+    "sha256": "2d644060025453899464a2cdb2b6fc1f9f74cb520e5cf938ac478ad2fd17b296",
+    "bytes": 851998
+  },
+  "actualCheckouts": [
+    {
+      "jobName": "backend-build",
+      "member": "backend-build/2_Checkout repository.txt",
+      "sha256": "69bbc3d236e78e5eff6658f07a284efdae87e4c0d7598b17059242b9106fc5a8",
+      "lines": [
+        {
+          "line": 160,
+          "text": "2026-09-06T17:22:39.5985833Z HEAD is now at f9fe2f5 Merge 32b307c648d16f2ecb7f0074e615e78e95ed4121 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 162,
+          "text": "2026-09-06T17:22:39.6111204Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 163,
+          "text": "2026-09-06T17:22:39.6134576Z f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+        }
+      ],
+      "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+      "originalLogShape": "STEP_LOG"
+    },
+    {
+      "jobName": "backend-integration",
+      "member": "backend-integration/2_Checkout repository.txt",
+      "sha256": "a11db4816e6fe833ca4ae117bfe073b16b7f3484fd81bdf396f9d905024ef350",
+      "lines": [
+        {
+          "line": 158,
+          "text": "2026-09-06T17:22:40.3116873Z HEAD is now at f9fe2f5 Merge 32b307c648d16f2ecb7f0074e615e78e95ed4121 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 160,
+          "text": "2026-09-06T17:22:40.3241335Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 161,
+          "text": "2026-09-06T17:22:40.3264838Z f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+        }
+      ],
+      "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+      "originalLogShape": "STEP_LOG"
+    },
+    {
+      "jobName": "architecture-boundary",
+      "member": "architecture-boundary/2_Checkout repository.txt",
+      "sha256": "b79f648ecc25586ec26c6c694f8019cb6aa50aa2d101cc9ac7659e55016b54ae",
+      "lines": [
+        {
+          "line": 159,
+          "text": "2026-09-06T17:22:43.5232661Z HEAD is now at f9fe2f5 Merge 32b307c648d16f2ecb7f0074e615e78e95ed4121 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 161,
+          "text": "2026-09-06T17:22:43.5417893Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 162,
+          "text": "2026-09-06T17:22:43.5451748Z f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+        }
+      ],
+      "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+      "originalLogShape": "STEP_LOG"
+    }
+  ],
+  "jobResults": [
+    {
+      "artifactId": 9994298701,
+      "artifactName": "backend-test-reports",
+      "jobId": 101527455682,
+      "jobName": "backend-build",
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+      "countsActualUniqueWithinJob": {
+        "surefire": {
+          "PASSED": 1634
+        },
+        "failsafe": {
+          "PASSED": 1145
+        }
+      },
+      "declaredVsActualMismatches": [
+        {
+          "member": "backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+          "declaredTests": 12,
+          "actualTestcaseNodes": 13,
+          "boundary": "Actual leaves retained without silent correction or duplicate-name collapse."
+        }
+      ],
+      "duplicateExactNodes": [],
+      "capacityMeasurements": [
+        {
+          "dataset": {
+            "organizations": 1,
+            "sharedProducts": 1,
+            "stores": 1,
+            "nativeObjects": 1000,
+            "completeAffectedSetMembersPerObject": 1,
+            "regressionObjects": 200,
+            "sharedListings": 1
+          },
+          "targeted": {
+            "sampleCount": 1000,
+            "criticalSampleCount": 200,
+            "criticalP95Millis": 8954,
+            "maximumMillis": 148363,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T17:33:30.174320210Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 146882,
+          "sweepWallMillis": 22472,
+          "hourlyMarginMillis": 3577528,
+          "runtime": {
+            "java": "21.0.12.1",
+            "maxJvmMemoryBytes": 4192206848,
+            "os": "Linux",
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "arch": "amd64",
+            "availableProcessors": 4
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-selected-originals/backend-test-reports/backend/marketops-server/target/advertising-capacity-receipt.json",
+            "sha256": "a6dc773cba47413f48e400787260c9cb72d247962ba11ac88c2cc354a598808f",
+            "bytes": 2850
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-portfolio-61ff2efc-499c-45f6-a61b-f7fbddebba78",
+            "datasetPath": "target/advertising-capacity-dataset.json",
+            "datasetSha256": "cbb5d60ef4eaf6cd5010207f6b6a91c88460c63f4af2cdbd7a1a66f049e1660a",
+            "sourceInputsPath": "target/advertising-capacity-source-inputs.json",
+            "sourceInputsSha256": "197ea58fbec9e12c1354688e877dac7425573adb77d973ea154d04fac70f853b",
+            "startedAt": "2026-09-06T17:31:01.287716793Z",
+            "datasetCapturedAt": "2026-09-06T17:31:03.281899582Z",
+            "measuredLocalGitHead": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+            "ciIdentity": {
+              "GITHUB_SHA": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34048388804",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "publicationIdentity": {
+              "workflowRunAttempt": "1",
+              "workflowJob": "backend-build",
+              "testedMergeSha": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "artifactName": "backend-test-reports",
+              "workflowRunId": "34048388804",
+              "sourceHeadSha": "32b307c648d16f2ecb7f0074e615e78e95ed4121"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "11bcd7544b5c47a2d7f715c1ca79a0475f62366a35336073aaeda85ca2b686ae",
+            "resourceScopeNotice": "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T17:22:46.249897+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16765378560,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16765378560,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34048388804",
+              "runAttempt": "1",
+              "job": "backend-build",
+              "testedCheckout": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true
+        },
+        {
+          "dataset": {
+            "nativeObjects": 1000,
+            "historicalLandedCommands": 40,
+            "exceptionInputs": 20,
+            "stores": 1,
+            "organizations": 1,
+            "syntheticContainmentObjects": 200,
+            "currentUntransmittedCommand": 1,
+            "sharedProducts": 1,
+            "sharedListings": 1
+          },
+          "targeted": {
+            "sampleCount": 1040,
+            "criticalSampleCount": 1040,
+            "criticalP95Millis": 151923,
+            "maximumMillis": 183846,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T17:39:06.766354Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 163162,
+          "sweepWallMillis": 35713,
+          "hourlyMarginMillis": 3564287,
+          "runtime": {
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "java": "21.0.12.1",
+            "availableProcessors": 4,
+            "maxJvmMemoryBytes": 4192206848
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-mixed-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-selected-originals/backend-test-reports/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+            "sha256": "39f2f28bf6712a161b861567aa05cc1f8676ef2d2b2cdb50f196e1398ef2bb56",
+            "bytes": 32249
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-mixed-portfolio-3db0e7a5-7834-4753-9f94-bf450c9b3a26",
+            "datasetPath": "target/advertising-mixed-capacity-dataset.json",
+            "datasetSha256": "82e0a7dda79ba6c974f927f5b6428768fced57426eb3024374c412058af036a6",
+            "sourceInputsPath": "target/advertising-mixed-capacity-source-inputs.json",
+            "sourceInputsSha256": "197ea58fbec9e12c1354688e877dac7425573adb77d973ea154d04fac70f853b",
+            "setupStartedAt": "2026-09-06T17:35:46.478298Z",
+            "acceptedFactMeasuredOrigin": "2026-09-06T17:36:02.767417Z",
+            "datasetCapturedAt": "2026-09-06T17:36:23.511510130Z",
+            "measuredLocalGitHead": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+            "publicationIdentity": {
+              "workflowRunAttempt": "1",
+              "workflowJob": "backend-build",
+              "testedMergeSha": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "artifactName": "backend-test-reports",
+              "workflowRunId": "34048388804",
+              "sourceHeadSha": "32b307c648d16f2ecb7f0074e615e78e95ed4121"
+            },
+            "ciIdentity": {
+              "GITHUB_SHA": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34048388804",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "11bcd7544b5c47a2d7f715c1ca79a0475f62366a35336073aaeda85ca2b686ae",
+            "resourceScopeNotice": "JVM processors/memory describe the host JVM. The outer receipt separately records Docker daemon/VM limits; the final receipt records this test's PostgreSQL container limits.",
+            "clockNotice": "Measured workers use normal advancing application and PostgreSQL clocks; historical stage evaluation timestamps are setup-only."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T17:22:46.249897+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16765378560,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16765378560,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34048388804",
+              "runAttempt": "1",
+              "job": "backend-build",
+              "testedCheckout": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true,
+          "setupOutcomeStages": {
+            "OPERATIONAL": 40,
+            "RETAINED": 40,
+            "SETTLED": 25
+          },
+          "afterTargetedOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 40,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 40,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 25
+          },
+          "afterTargetedRetainedVerdicts": {
+            "IMPROVED": 20,
+            "REGRESSED": 20
+          },
+          "criticalSalesGuardEvidenceAfterTargeted": 80,
+          "afterSweepOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 80,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 80,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 50
+          },
+          "latestRetainedVerdicts": {
+            "REGRESSED": 40
+          },
+          "exceptionStates": {
+            "EXPIRED": 10,
+            "INVALIDATED": 10
+          },
+          "expiredAuthorizations": 40,
+          "expiredAuthorizationsAlreadyInvalidated": 40,
+          "newAuthorizationExpiryJournals": 0,
+          "heldReservations": 1,
+          "releasedHistoricalReservations": 40,
+          "droppedLateCorrectionObjectsRecovered": 40,
+          "sweepRepairedRequestRows": 40,
+          "postgresContainerResources": {
+            "containerId": "c8542b9360740a4b58078c274ab54bf9e0228c11c1cd64b09b153180087c376f",
+            "image": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+            "nanoCpus": 0,
+            "cpuQuota": 0,
+            "cpuPeriod": 0,
+            "cpuSet": "",
+            "memoryBytes": 0,
+            "limitNotice": "Zero or null container limits mean no additional per-container cap; Docker daemon/VM limits still apply. Only this test-owned PostgreSQL container's safe resource fields are recorded."
+          },
+          "historicalGateRefusalEntriesVerified": 40,
+          "currentGlobalSwitchRefusalVerified": true,
+          "diagnosticUploaded": false,
+          "diagnosticBoundary": "Official workflow uploads receipt/dataset/source-inputs only. Do not claim the fourth local diagnostic member exists in CI or substitute these files for the local four-file layer."
+        }
+      ],
+      "coverage": {
+        "artifactMember": {
+          "member": "backend/marketops-server/target/site/jacoco/jacoco.xml",
+          "bytes": 3916595,
+          "sha256": "f3ec237e0af359fda58889a9935147da7feac8422ba4c4aa3713a1366b593dc3",
+          "crc32": "3299fe9b"
+        },
+        "aggregation": "JACOCO_REPORT_ROOT_COUNTERS",
+        "rootCounters": {
+          "INSTRUCTION": {
+            "missed": 21230,
+            "covered": 135185
+          },
+          "BRANCH": {
+            "missed": 3028,
+            "covered": 8031
+          },
+          "LINE": {
+            "missed": 3751,
+            "covered": 24437
+          },
+          "COMPLEXITY": {
+            "missed": 3469,
+            "covered": 7444
+          },
+          "METHOD": {
+            "missed": 850,
+            "covered": 4407
+          },
+          "CLASS": {
+            "missed": 101,
+            "covered": 1018
+          }
+        },
+        "unchangedPomThresholds": {
+          "LINE": 0.8,
+          "BRANCH": 0.7
+        }
+      }
+    },
+    {
+      "artifactId": 9994244693,
+      "artifactName": "backend-integration-reports",
+      "jobId": 101527455617,
+      "jobName": "backend-integration",
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+      "countsActualUniqueWithinJob": {
+        "surefire": {},
+        "failsafe": {
+          "PASSED": 1145
+        }
+      },
+      "declaredVsActualMismatches": [],
+      "duplicateExactNodes": [],
+      "capacityMeasurements": [
+        {
+          "dataset": {
+            "regressionObjects": 200,
+            "completeAffectedSetMembersPerObject": 1,
+            "nativeObjects": 1000,
+            "stores": 1,
+            "sharedProducts": 1,
+            "organizations": 1,
+            "sharedListings": 1
+          },
+          "targeted": {
+            "sampleCount": 1000,
+            "criticalSampleCount": 200,
+            "criticalP95Millis": 8200,
+            "maximumMillis": 145410,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T17:32:16.483849080Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 144021,
+          "sweepWallMillis": 19984,
+          "hourlyMarginMillis": 3580016,
+          "runtime": {
+            "availableProcessors": 4,
+            "arch": "amd64",
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "os": "Linux",
+            "maxJvmMemoryBytes": 4192206848,
+            "java": "21.0.12.1"
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-selected-originals/backend-integration-reports/backend/marketops-server/target/advertising-capacity-receipt.json",
+            "sha256": "aa4f384fd10d4043c8d336cb08779b7cfe0b3ee67c2246ae79c0d7ab74014cad",
+            "bytes": 2863
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-portfolio-28550d58-4ccc-4730-a322-a9318d7a5e47",
+            "datasetPath": "target/advertising-capacity-dataset.json",
+            "datasetSha256": "5a1e39288ce17fd87e78dfdfcfaef4f9660b88fe329a2c07cbcb8c236b02952b",
+            "sourceInputsPath": "target/advertising-capacity-source-inputs.json",
+            "sourceInputsSha256": "197ea58fbec9e12c1354688e877dac7425573adb77d973ea154d04fac70f853b",
+            "startedAt": "2026-09-06T17:29:50.577980811Z",
+            "datasetCapturedAt": "2026-09-06T17:29:52.429063409Z",
+            "measuredLocalGitHead": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+            "ciIdentity": {
+              "GITHUB_SHA": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34048388804",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "publicationIdentity": {
+              "workflowRunId": "34048388804",
+              "artifactName": "backend-integration-reports",
+              "testedMergeSha": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "workflowJob": "backend-integration",
+              "workflowRunAttempt": "1",
+              "sourceHeadSha": "32b307c648d16f2ecb7f0074e615e78e95ed4121"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "02a76d16051cc2145770ec0118cf0b1ee8b088ac830f06de35aa4387318ef07a",
+            "resourceScopeNotice": "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T17:22:44.989344+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16765378560,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16765378560,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34048388804",
+              "runAttempt": "1",
+              "job": "backend-integration",
+              "testedCheckout": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true
+        },
+        {
+          "dataset": {
+            "sharedProducts": 1,
+            "currentUntransmittedCommand": 1,
+            "syntheticContainmentObjects": 200,
+            "organizations": 1,
+            "stores": 1,
+            "exceptionInputs": 20,
+            "historicalLandedCommands": 40,
+            "nativeObjects": 1000,
+            "sharedListings": 1
+          },
+          "targeted": {
+            "sampleCount": 1040,
+            "criticalSampleCount": 1040,
+            "criticalP95Millis": 144327,
+            "maximumMillis": 176009,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T17:37:24.370975Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 158130,
+          "sweepWallMillis": 31673,
+          "hourlyMarginMillis": 3568327,
+          "runtime": {
+            "maxJvmMemoryBytes": 4192206848,
+            "availableProcessors": 4,
+            "java": "21.0.12.1",
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)"
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-mixed-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-selected-originals/backend-integration-reports/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+            "sha256": "3a9657986390243ac5e55df2b7ab829d400ac71484b6315104405d9a7095f3f8",
+            "bytes": 32262
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-mixed-portfolio-09212468-dea0-4e49-a5f2-f54a21ab21ec",
+            "datasetPath": "target/advertising-mixed-capacity-dataset.json",
+            "datasetSha256": "bb8ce2e3b7429b0371b9ecc46f18f37fa19fbef42f6d9ce9db3e7c61e9b72a78",
+            "sourceInputsPath": "target/advertising-mixed-capacity-source-inputs.json",
+            "sourceInputsSha256": "197ea58fbec9e12c1354688e877dac7425573adb77d973ea154d04fac70f853b",
+            "setupStartedAt": "2026-09-06T17:34:14.121852Z",
+            "acceptedFactMeasuredOrigin": "2026-09-06T17:34:28.216944Z",
+            "datasetCapturedAt": "2026-09-06T17:34:46.151261773Z",
+            "measuredLocalGitHead": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+            "publicationIdentity": {
+              "workflowRunId": "34048388804",
+              "artifactName": "backend-integration-reports",
+              "testedMergeSha": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "workflowJob": "backend-integration",
+              "workflowRunAttempt": "1",
+              "sourceHeadSha": "32b307c648d16f2ecb7f0074e615e78e95ed4121"
+            },
+            "ciIdentity": {
+              "GITHUB_SHA": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34048388804",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "02a76d16051cc2145770ec0118cf0b1ee8b088ac830f06de35aa4387318ef07a",
+            "resourceScopeNotice": "JVM processors/memory describe the host JVM. The outer receipt separately records Docker daemon/VM limits; the final receipt records this test's PostgreSQL container limits.",
+            "clockNotice": "Measured workers use normal advancing application and PostgreSQL clocks; historical stage evaluation timestamps are setup-only."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T17:22:44.989344+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16765378560,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16765378560,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34048388804",
+              "runAttempt": "1",
+              "job": "backend-integration",
+              "testedCheckout": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true,
+          "setupOutcomeStages": {
+            "OPERATIONAL": 40,
+            "RETAINED": 40,
+            "SETTLED": 25
+          },
+          "afterTargetedOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 40,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 40,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 25
+          },
+          "afterTargetedRetainedVerdicts": {
+            "IMPROVED": 20,
+            "REGRESSED": 20
+          },
+          "criticalSalesGuardEvidenceAfterTargeted": 80,
+          "afterSweepOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 80,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 80,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 50
+          },
+          "latestRetainedVerdicts": {
+            "REGRESSED": 40
+          },
+          "exceptionStates": {
+            "EXPIRED": 10,
+            "INVALIDATED": 10
+          },
+          "expiredAuthorizations": 40,
+          "expiredAuthorizationsAlreadyInvalidated": 40,
+          "newAuthorizationExpiryJournals": 0,
+          "heldReservations": 1,
+          "releasedHistoricalReservations": 40,
+          "droppedLateCorrectionObjectsRecovered": 40,
+          "sweepRepairedRequestRows": 40,
+          "postgresContainerResources": {
+            "containerId": "b1a4398ad392145e0f61a3ebb9e77f4c4047aba90bf9a8e10fb4c9915ab22f85",
+            "image": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+            "nanoCpus": 0,
+            "cpuQuota": 0,
+            "cpuPeriod": 0,
+            "cpuSet": "",
+            "memoryBytes": 0,
+            "limitNotice": "Zero or null container limits mean no additional per-container cap; Docker daemon/VM limits still apply. Only this test-owned PostgreSQL container's safe resource fields are recorded."
+          },
+          "historicalGateRefusalEntriesVerified": 40,
+          "currentGlobalSwitchRefusalVerified": true,
+          "diagnosticUploaded": false,
+          "diagnosticBoundary": "Official workflow uploads receipt/dataset/source-inputs only. Do not claim the fourth local diagnostic member exists in CI or substitute these files for the local four-file layer."
+        }
+      ],
+      "coverage": null
+    },
+    {
+      "artifactId": 9994297603,
+      "artifactName": "backend-supply-chain",
+      "jobId": 101527455682,
+      "jobName": "backend-build",
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+      "countsActualUniqueWithinJob": {
+        "surefire": {},
+        "failsafe": {}
+      },
+      "declaredVsActualMismatches": [],
+      "duplicateExactNodes": [],
+      "capacityMeasurements": [],
+      "coverage": null
+    }
+  ],
+  "namedTestcaseNodes": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/BACKEND-NAMED-TESTCASE-NODES.json",
+    "sha256": "730037ddb3d30454ec5aab486efbc1f55ba4f996a9368d64cd021f7e41e4e305",
+    "bytes": 2802307
+  },
+  "sourceInputComparison": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/BACKEND-SOURCE-INPUT-COMPARISON.json",
+    "sha256": "f3d62d326c3e08482dae54a6d53446007cb17fb55b585072a6568cbed7be49c5",
+    "bytes": 1237784
+  },
+  "originalGetAttemptObservations": [
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/pr30-before.json.attempt-1.command.json",
+        "sha256": "844b8c5841ae5e5b545a2621b6207fc3e7227f212b6873e621c4e18f2d90e64b",
+        "bytes": 752
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/pr30-before.json",
+        "sha256": "76dc564aad5669522d1b85a03777e35f77a9279ac6df070ddc26f08084080ef6",
+        "bytes": 17936
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/source-commit.json.attempt-1.command.json",
+        "sha256": "f6a641a569914e53908f73b8d842d59d96e466eac179e25e236d296245c1fe77",
+        "bytes": 799
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/source-commit.json",
+        "sha256": "e7c433bf16e6aabd9a55c569b6262aad5433f12397d16a3a6e7090812ff12d79",
+        "bytes": 1190
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/tested-merge-commit.json.attempt-1.command.json",
+        "sha256": "9f113e4481abc665a3b8b57d9f275742ac0c8238034a1f71931fc2622bba541c",
+        "bytes": 811
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/tested-merge-commit.json",
+        "sha256": "2d1a49ee3b2ef97094a49109df51359ef172e5adb46ab17899a7a5eb889b4e64",
+        "bytes": 2687
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/check-runs.json.attempt-1.command.json",
+        "sha256": "d89f592387eae594d4359755cb34b02cf72dc8ee38d71ab809a999cb6d4dea9b",
+        "bytes": 828
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/check-runs.json",
+        "sha256": "21c613c2897ecf07c77f9ccc0d9d6213d47bba4c9fd471bfde91caac825e416c",
+        "bytes": 46781
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/workflow-runs.json.attempt-1.command.json",
+        "sha256": "86632f2919376a7ea6ea722a12886efc65d4c4f16b8dc299ef3fd6c9a3ab8363",
+        "bytes": 842
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/workflow-runs.json",
+        "sha256": "5f58563adb31a561690b34985fd3530b63d1d1205a804e9e683ad2cb8ab59fa4",
+        "bytes": 68488
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run.json.attempt-1.command.json",
+        "sha256": "b1c866d787e596f2495ac4f6e243694ff70be3f41f2bb5e872f29a7b423d3399",
+        "bytes": 768
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run.json",
+        "sha256": "0dff93ed456b74980133aeedb23729ee3a648e4e0ddc8859101457b5204c4930",
+        "bytes": 13685
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-jobs.json.attempt-1.command.json",
+        "sha256": "700300c08548d29e1e9ad754ed5153e83af3702a7a915b53c16b3359d01ce1e7",
+        "bytes": 798
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-jobs.json",
+        "sha256": "b992219065bf6dd739f0f744a94444661f271420d36d1ce8a2c3afe8ef55d5ca",
+        "bytes": 7691
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-logs.zip.attempt-1.command.json",
+        "sha256": "e3457fe306e26b571f393ba60808791340961391b21c5b6666e73cfe79ee75bc",
+        "bytes": 786
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-logs.zip",
+        "sha256": "41df9f6374626500eefd6ad408e827f161f973b6c5eb3e2036257fb126fd604d",
+        "bytes": 1330452
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-artifacts.json.attempt-1.command.json",
+        "sha256": "1d50b83e71ea938451116bdc6b87a827b1c55b9ebde00cfcd4be3b0e8748ba15",
+        "bytes": 802
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-artifacts.json",
+        "sha256": "dd90bb60d8675503208d2684bfce26b0a55992c8f17d83d10036ba71b1067986",
+        "bytes": 2277
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-test-reports.zip.attempt-1.command.json",
+        "sha256": "87952fd7fd757fdc95671b4ab46f4e2a9502afe230dad708fbde3ab7be16040e",
+        "bytes": 790
+      },
+      "originalExitCode": 1,
+      "usedAsSuccessfulResponse": false,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-test-reports.zip",
+        "sha256": "a334e022d07adaec96c951e58195d3fb01c1e3d41126eb27cdc27a957a293e0f",
+        "bytes": 6952322
+      },
+      "laterExactGetSuccess": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-test-reports.zip.attempt-2.command.json",
+        "sha256": "4b3fce8852115779637ba9c0769a1ada543d3c8603cce793318a42151780d3c7",
+        "bytes": 794
+      }
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-test-reports.zip.attempt-2.command.json",
+        "sha256": "4b3fce8852115779637ba9c0769a1ada543d3c8603cce793318a42151780d3c7",
+        "bytes": 794
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-test-reports.zip",
+        "sha256": "a334e022d07adaec96c951e58195d3fb01c1e3d41126eb27cdc27a957a293e0f",
+        "bytes": 6952322
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-integration-reports.zip.attempt-1.command.json",
+        "sha256": "e413b46773a062dd4ae1821d0aad35b39763a7587215c327d58588ebac55f14b",
+        "bytes": 808
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-integration-reports.zip",
+        "sha256": "d44d540c38d8394a8a887068f5bfb1b951d1a16479d6c59ec7c59294141bf804",
+        "bytes": 1785342
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-supply-chain.zip.attempt-1.command.json",
+        "sha256": "ac94ae570655f1da9b7b6d0791d8670213af388bd46e1b0cd4771a0fb2a435f2",
+        "bytes": 792
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-supply-chain.zip",
+        "sha256": "c0856699c63d1b28f4abf03331a9725de8812e99fd6d1f5304f313ef0fc60718",
+        "bytes": 50366
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-run.json.attempt-1.command.json",
+        "sha256": "f838f33814eeebe3261ebed8862bede68a3f690acabd5156cd95dc8ad7a72747",
+        "bytes": 770
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-run.json",
+        "sha256": "77b8c6fd59a35eaca25dd573d7df2411ef1983bd1c7da3c73f0ee5c6b69abd27",
+        "bytes": 13687
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-jobs.json.attempt-1.command.json",
+        "sha256": "331705315271aac626505c783c34b110d909e8470e2ae1de2460c876936252de",
+        "bytes": 801
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-jobs.json",
+        "sha256": "2544e6453678161d2ba16dc8bef769b5bcd244f7d158d042d82cb756b5a36e3a",
+        "bytes": 11645
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-logs.zip.attempt-1.command.json",
+        "sha256": "cf2cddd8a82585c7d822497e69e5909a57d5d5d4379007fc6712dbfc6168145b",
+        "bytes": 787
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-logs.zip",
+        "sha256": "2952493eb4b82083fe0a01ec95514a58bcfdbf982df3f869d01b69bb38260b11",
+        "bytes": 231732
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-artifacts.json.attempt-1.command.json",
+        "sha256": "36d6010732fdfc5ac97f584a66e22d4f13dfc7902954581b9c5a6e637b33b7cb",
+        "bytes": 803
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-artifacts.json",
+        "sha256": "b7fe79af546c199d808aec5f1471401b89dbdb79553a5aded64d97d0d5aaf8cf",
+        "bytes": 2280
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-coverage.zip.attempt-1.command.json",
+        "sha256": "3ea0b223a5351279d2c7e256ee9c0fb40b2823302bc6da63289966508ca2daec",
+        "bytes": 787
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-coverage.zip",
+        "sha256": "9286151bd83b39a9e1c6289ba2b6bb2facfc5ddbddd5351fefaab3465cece526",
+        "bytes": 327955
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/advertising-browser-screenshots.zip.attempt-1.command.json",
+        "sha256": "46403f011ed178f427b5dd37b22a3ee1fe9257860e67530af9e2326e6b2a2133",
+        "bytes": 817
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/advertising-browser-screenshots.zip",
+        "sha256": "5e29911b21584b29419ece8a863fe9358ad4dd808c2f7a15e7558282e7a9bff6",
+        "bytes": 22894251
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-distribution.zip.attempt-1.command.json",
+        "sha256": "f76a47073de004ba637063c55bc30a1b39de753f29bcbf45bb6660d625489518",
+        "bytes": 795
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-distribution.zip",
+        "sha256": "9cba93eb44e2899d9b5c1a43baa893147fa1ce553fe94d8b949766d3ee2d1e28",
+        "bytes": 158837
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-run.json.attempt-1.command.json",
+        "sha256": "bf3f4a54ad356dc2246d89604f9b8b19229b92112bb76cb7a070c0bf99eef6f4",
+        "bytes": 774
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-run.json",
+        "sha256": "0c9a2f39eba53507c1ba83ff63f588fe04b4d0f7fb05128cb889fb7f317ca255",
+        "bytes": 13691
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-jobs.json.attempt-1.command.json",
+        "sha256": "308bc4a83e38c61fb2716ed2717d0452be8336b492d931e4b3207217ecc84782",
+        "bytes": 804
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-jobs.json",
+        "sha256": "44bd407699f99996743015c85b7135c4b2d64b5bb88c2ad351576d5632bb5d86",
+        "bytes": 2372
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-logs.zip.attempt-1.command.json",
+        "sha256": "a17026b3fba3daf23ece38738196525d0a3e129264af21054030015f21fa9d7e",
+        "bytes": 790
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-logs.zip",
+        "sha256": "217c6197a03fc7e63227ecbf65a6a371b0b3bcbae6823efc156432470a32a4e3",
+        "bytes": 13603
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-artifacts.json.attempt-1.command.json",
+        "sha256": "93dbd005af7545721146c8844a3f14697cfb78f009392cf4a585733ee0486811",
+        "bytes": 806
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-artifacts.json",
+        "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+        "bytes": 32
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-run.json.attempt-1.command.json",
+        "sha256": "6220ea1052f02aa9d4df7aeb4bda3a2fd31a2a80bc576b900fe543ffe34302bf",
+        "bytes": 782
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-run.json",
+        "sha256": "b098f87bfbb7102c1dedc5223488efed9a0298194bfcca2307ef19523695c9a6",
+        "bytes": 13698
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-jobs.json.attempt-1.command.json",
+        "sha256": "cef3fe0deb1414023e67f303858b4c813be7567238425427000088049ce8b94b",
+        "bytes": 812
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-jobs.json",
+        "sha256": "f71952ee5b3d05349474a4b2d65ed59839ff8715f08672dff2cf6ecb9142fa0f",
+        "bytes": 2768
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-logs.zip.attempt-1.command.json",
+        "sha256": "06c4a7f241982d88ee48d82382d1720e5d2ee47dbecb5f379f37a1f550bc0689",
+        "bytes": 798
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-logs.zip",
+        "sha256": "ce1d1a0f6c18fc956ce796bd712b0d5f7627ac97c9906c1122b7dadde953dd9a",
+        "bytes": 18138
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-artifacts.json.attempt-1.command.json",
+        "sha256": "d31097977493ebc5af879e5c2593e80e76ecf61d406d37aaeb15779970f48760",
+        "bytes": 815
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-artifacts.json",
+        "sha256": "a7e5f8310a9a4c04ade17391d43263f67c539617efb27ee43169962da2fe313c",
+        "bytes": 785
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-verification.zip.attempt-1.command.json",
+        "sha256": "17f43ff79a509a4941ae40ac05082575d040e7ecbe1a8dd356aa177a41c75c1a",
+        "bytes": 808
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-verification.zip",
+        "sha256": "3dbb9c9acbda70ff8888da4f06d62a37ad6785720762062563647c5d82e55c49",
+        "bytes": 2316709
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/security-run.json.attempt-1.command.json",
+        "sha256": "293bb508ebfadeb4fc158809d7cb44193dc44403cdbd6bd52825b358ad6065f1",
+        "bytes": 770
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/security-run.json",
+        "sha256": "35aa75602e138c2e6923af6650dcfd53b62955f04834b4d263492d7f941abec4",
+        "bytes": 13687
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/security-jobs.json.attempt-1.command.json",
+        "sha256": "00a78b4ad6ba1583fffa41dfa0ba0ae86beaba63366dc22b32294e2b27f6053e",
+        "bytes": 800
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/security-jobs.json",
+        "sha256": "a55ed8450daaf2c61135659a22f1798ebbdf77df60506fbcb5620fc4136d08b3",
+        "bytes": 6756
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run-after.json.attempt-1.command.json",
+        "sha256": "514aa0de3f0dee949ea904ee792f8b392d18b6ff578bd3bbc502b4499c9eacfa",
+        "bytes": 780
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run-after.json",
+        "sha256": "0dff93ed456b74980133aeedb23729ee3a648e4e0ddc8859101457b5204c4930",
+        "bytes": 13685
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-run-after.json.attempt-1.command.json",
+        "sha256": "a6c4840556919399de6880c519e30aa14b71d60f6eb60eabac00d244a30857cb",
+        "bytes": 782
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/frontend-run-after.json",
+        "sha256": "77b8c6fd59a35eaca25dd573d7df2411ef1983bd1c7da3c73f0ee5c6b69abd27",
+        "bytes": 13687
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-run-after.json.attempt-1.command.json",
+        "sha256": "0b1f381daf52f2b11d24abbcc672637b80623fc0848163123a92270105944ae6",
+        "bytes": 786
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/governance-run-after.json",
+        "sha256": "0c9a2f39eba53507c1ba83ff63f588fe04b4d0f7fb05128cb889fb7f317ca255",
+        "bytes": 13691
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-run-after.json.attempt-1.command.json",
+        "sha256": "a9d7376787dabe9a3184d2d681dca3aee19e376d1243cc8d11dee62459b5b585",
+        "bytes": 793
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/infrastructure-run-after.json",
+        "sha256": "b098f87bfbb7102c1dedc5223488efed9a0298194bfcca2307ef19523695c9a6",
+        "bytes": 13698
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/security-run-after.json.attempt-1.command.json",
+        "sha256": "2693c3ea752248d1ba13c593ed7c14d1d30da9093d7bd26eec2f47727ab493a5",
+        "bytes": 782
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/security-run-after.json",
+        "sha256": "35aa75602e138c2e6923af6650dcfd53b62955f04834b4d263492d7f941abec4",
+        "bytes": 13687
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/pr30-after.json.attempt-1.command.json",
+        "sha256": "1409ad1ce7285a25deaa4a454036c1f96cdfedc4cb94d7bf8552e69c8afb97df",
+        "bytes": 750
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/pr30-after.json",
+        "sha256": "76dc564aad5669522d1b85a03777e35f77a9279ac6df070ddc26f08084080ef6",
+        "bytes": 17936
+      },
+      "laterExactGetSuccess": null
+    },
+    {
+      "attemptReceipt": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/check-runs-after.json.attempt-1.command.json",
+        "sha256": "ed76997891de3796a1602b6648db02a35608df1508361cea092a092a78630d77",
+        "bytes": 839
+      },
+      "originalExitCode": 0,
+      "usedAsSuccessfulResponse": true,
+      "successfulCanonicalResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/check-runs-after.json",
+        "sha256": "21c613c2897ecf07c77f9ccc0d9d6213d47bba4c9fd471bfde91caac825e416c",
+        "bytes": 46781
+      },
+      "laterExactGetSuccess": null
+    }
+  ],
+  "sourceBinding": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/LOCAL-CONTAINING-SOURCE-EQUIVALENCE.json",
+    "sha256": "545b2b96f4d0781b4eed945f9877c5dd491926b4969d04619d092b0cdb6cae7d",
+    "bytes": 727729
+  },
+  "captureReceipt": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/CI-CAPTURE-RECEIPT.json",
+    "sha256": "60e19584b6ca8913fc71e6e336cbd38bb7c145a34243609c169434b525463265",
+    "bytes": 21930
+  },
+  "securityReceipt": null,
+  "securityScope": "Separate exact-head Security review still required; the capture only records its status/run/attempt/job metadata.",
+  "publicationReview": "NOT_YET_SCANNED_NEW_BACKEND_RAW; no reuse of Security scan",
+  "productExecutionPerformedLocallyByThisDecoder": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "productionWriteEnabled": false,
+  "decoderInputs": {
+    "decoder": {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r4/nonsecurity/decode_backend_r4.py",
+      "sha256": "2eb6a62d287ec353715cab7806ffc26aa6a6e6e3aa867dc1879c7126638a3408",
+      "bytes": 16594
+    },
+    "captureHelper": {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r4/nonsecurity/capture_ci.py",
+      "sha256": "8d13b4d54df228aa56baa61a648a176b8713da7f8e6eaa81c8f256b2d57e84d7",
+      "bytes": 19504
+    },
+    "actualCapture": {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/CI-CAPTURE-RECEIPT.json",
+      "sha256": "60e19584b6ca8913fc71e6e336cbd38bb7c145a34243609c169434b525463265",
+      "bytes": 21930
+    }
+  },
+  "proofsCreated": 0,
+  "argv": [
+    "/Library/Developer/CommandLineTools/usr/bin/python3",
+    "/tmp/slice3-post-v73-ci-kit-r4/nonsecurity/decode_backend_r4.py",
+    "--capture-dir",
+    "/tmp/slice3-checkpoint-ci-32b307c-all-r1"
+  ],
+  "startedAt": "2026-09-06T18:01:33.667225+00:00",
+  "finishedAt": "2026-09-06T18:01:34.466415+00:00",
+  "elapsedSeconds": 0.799,
+  "exitCode": 0,
+  "limits": [
+    "This is exact actual containing-head remote CI. The explicitly bound product local runs retain their original identity and are not rerun or reassigned by this decoder.",
+    "No CI diagnostic file or executable JAR was uploaded in these three artifacts; supply artifact contains SBOM/dependency inventory. Actual packaged verification remains in successful raw job logs.",
+    "Counts use actual testcase leaves with class and original ordinal. Different nested classes sharing a method name are distinct. Preserve any raw suite declared-count discrepancy."
+  ]
+}

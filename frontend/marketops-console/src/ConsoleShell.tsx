@@ -6,6 +6,11 @@ import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
 import { AvailabilityCases } from './availability/AvailabilityCases';
 import { AvailabilityQueue } from './availability/AvailabilityQueue';
 import { AvailabilityAuthorityPanel } from './availability/AvailabilityAuthorityPanel';
+import { AdvertisingQueue } from './advertising/AdvertisingQueue';
+import { AdvertisingCaseView } from './advertising/AdvertisingCaseView';
+import { AdvertisingOperations } from './advertising/AdvertisingOperations';
+import { AdvertisingOutcomeHistory } from './advertising/AdvertisingOutcomeHistory';
+import { AdvertisingBriefView } from './advertising/AdvertisingBriefView';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
 import type { Session } from './session/session';
@@ -31,7 +36,9 @@ type View =
   | { readonly name: 'queue' }
   | { readonly name: 'diagnosis'; readonly subjectId: string }
   | { readonly name: 'review'; readonly recommendation: Recommendation }
-  | { readonly name: 'command'; readonly commandId: string };
+  | { readonly name: 'command'; readonly commandId: string }
+  | { readonly name: 'advertising-case'; readonly caseId: string }
+  | { readonly name: 'advertising-brief'; readonly briefKind: string };
 
 /**
  * The signed-in console: one journey, in the order the work happens.
@@ -69,10 +76,7 @@ export function ConsoleShell({
     <main aria-labelledby="console-heading">
       <h1 id="console-heading">MarketOps Russia</h1>
       <nav aria-label="Session">
-        <p>
-          Signed in{session.displayName === undefined ? '' : ` as ${session.displayName}`}, working
-          in store {storeId}.
-        </p>
+        <p>Signed in{session.displayName === undefined ? '' : ` as ${session.displayName}`}.</p>
         <button type="button" onClick={onSignOut}>
           Sign out
         </button>
@@ -87,6 +91,62 @@ export function ConsoleShell({
       {view.name === 'queue' && <AvailabilityCases context={context} />}
 
       {view.name === 'queue' && <AvailabilityAuthorityPanel context={context} />}
+
+      {view.name === 'queue' && <AdvertisingOperations context={context} />}
+
+      {/*
+        The published reading, on the page where the work is picked up. Asked
+        for by kind and not by date: the period belongs to the owner's reporting
+        calendar, and a browser naming one from its own clock would be deciding
+        which cut of the facts a person is judged on.
+      */}
+      {view.name === 'queue' && (
+        <>
+          <AdvertisingBriefView context={context} briefKind="DAILY_ACTION_BRIEF" />
+          <button
+            type="button"
+            onClick={() => {
+              setView({ name: 'advertising-brief', briefKind: 'WEEKLY_EVIDENCE_REVIEW' });
+            }}
+          >
+            Open the weekly evidence review
+          </button>
+        </>
+      )}
+
+      {view.name === 'advertising-brief' && (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              setView({ name: 'queue' });
+            }}
+          >
+            Back to the queue
+          </button>
+          <AdvertisingBriefView key={view.briefKind} context={context} briefKind={view.briefKind} />
+        </>
+      )}
+
+      {view.name === 'queue' && (
+        <AdvertisingQueue
+          context={context}
+          onSelect={(caseId) => {
+            setView({ name: 'advertising-case', caseId });
+          }}
+        />
+      )}
+
+      {view.name === 'advertising-case' && (
+        <AdvertisingCaseView
+          key={view.caseId}
+          context={context}
+          caseId={view.caseId}
+          onBack={() => {
+            setView({ name: 'queue' });
+          }}
+        />
+      )}
 
       {view.name === 'queue' && (
         <PriorityQueue
@@ -134,7 +194,17 @@ export function ConsoleShell({
         </>
       )}
 
-      {view.name === 'command' && <CommandTimeline context={context} commandId={view.commandId} />}
+      {view.name === 'command' && (
+        <>
+          <CommandTimeline context={context} commandId={view.commandId} />
+          {/*
+            What the change achieved, beside what it did. Kept separate from the
+            timeline because provider acceptance, readback and outcome are three
+            different facts and the timeline only carries the first two.
+          */}
+          <AdvertisingOutcomeHistory context={context} commandId={view.commandId} />
+        </>
+      )}
     </main>
   );
 }

@@ -1,0 +1,309 @@
+{
+  "kind": "TARGETED_POST_W4_FINAL_CONTROL_PROOF_R23",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "-Dtest=TestDatabaseIssuerIT,AdvertisingAuthorityVersionStopIT,AdvertisingHumanWorkflowIT,AdvertisingManualWorkflowIT,AdvertisingOrdinaryApprovalIT,AdvertisingVerticalPathIT,AdvertisingDisclosureIT,AdvertisingOperationsPrincipalIT,AdvertisingOperationsReadIT,SignedBearerIdentityIT,IngestionAuthorityArchitectureTest,ModuleBoundaryArchitectureTest,ModulithArchitectureTest,RuleSensitivityArchitectureTest,SoleAuthorityArchitectureTest",
+    "test"
+  ],
+  "baseHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "baseTree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+  "workingTreeStatusBefore": "M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserFixtureApplication.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java\n M frontend/marketops-console/package-lock.json\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-startup-r5-legacy-r1-scan.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-issuer/",
+  "sourceBinding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes.",
+  "sourceBeforeSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+  "resourcesSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+  "boundary": "Synthetic isolated PostgreSQL only; no real Provider/shared/production. production_write_enabled=false.",
+  "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+  "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+  "elapsedSeconds": 179.453,
+  "exitCode": 0,
+  "logSha256": "2c68f2aec3656c444f85aba92a695837a79f33b4d99b111d0a3dd424bd6d8c00",
+  "sourceAfterSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+  "sourceStable": true,
+  "reports": [
+    {
+      "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+      "declared": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingAuthorityVersionStopIT.xml",
+      "sha256": "84a2eb5bbca049c0cd68875649fcf1617a4a1e8e85c57037321da376efb55e8a"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "declared": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingDisclosureIT.xml",
+      "sha256": "bf76521397f8b60b96bb5ad25e5a9819c6b393ca455e72db87cf44ac11580cd4"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "declared": {
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "71b6e5a8ea1d1b7e1d0e102b76b322e3a0fd606999b4390f6513fa9dd319bebc"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+      "declared": {
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "sha256": "995a5021591b59bb01581364119039795492916314e6dcc485d997f3c9bf670b"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+      "declared": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingOperationsPrincipalIT.xml",
+      "sha256": "8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+      "declared": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+      "sha256": "79aff5af6ee8f3e2fd6ebd8648fe3068e25c725e909a9a766b9a9c225e3625c3"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+      "declared": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.AdvertisingOrdinaryApprovalIT.xml",
+      "sha256": "ff23542f9d5600e5b6c60e0b85f9b62beb16d72bb71f2cc04d537115f4703a0a"
+    },
+    {
+      "class": "com.mimococo.marketops.TestDatabaseIssuerIT",
+      "declared": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.TestDatabaseIssuerIT.xml",
+      "sha256": "1189ea2882f4a9eafbe96aebff9a1f0324a28ac6a144a16e8f053f4e6e81109c"
+    },
+    {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+      "declared": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+      "sha256": "641d0c042a78e929a38051399bf1571c98b1bbcb893ecc0896dc07756c8579fd"
+    },
+    {
+      "class": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest",
+      "declared": {
+        "tests": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml",
+      "sha256": "dd69b3ebf7df0766b3f21cc4b83bb8881e8b9885aa81982cef22e6a271ee310e"
+    },
+    {
+      "class": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+      "declared": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+      "sha256": "a2fe0182764f06c123edebfdb56bda99caa04c321c13f46b637b5c1f410f0a39"
+    },
+    {
+      "class": "com.mimococo.marketops.architecture.ModulithArchitectureTest",
+      "declared": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml",
+      "sha256": "71b5b88d0a1e619c682a4dc28a1a19139d2a4f12e4e7d961a6264a98b34f1477"
+    },
+    {
+      "class": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest",
+      "declared": {
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml",
+      "sha256": "933e0c09db33c8c1eb8adced8a5167e2619add5f7fdc5f2f53046eeac0e0f194"
+    },
+    {
+      "class": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest",
+      "declared": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+      "sha256": "ff7b5fc8fd83e1a37a77de9e8250b590c4481ce5ad99197ae922864d27dede6c"
+    },
+    {
+      "class": "com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT",
+      "declared": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r23/reports/TEST-com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT.xml",
+      "sha256": "6129dcefb78d84955653916069a17da8c1e3ea48fd4100a68eab48c1310acd14"
+    }
+  ],
+  "counts": {
+    "tests": 175,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "expectedClasses": [
+    "TestDatabaseIssuerIT",
+    "AdvertisingAuthorityVersionStopIT",
+    "AdvertisingHumanWorkflowIT",
+    "AdvertisingManualWorkflowIT",
+    "AdvertisingOrdinaryApprovalIT",
+    "AdvertisingVerticalPathIT",
+    "AdvertisingDisclosureIT",
+    "AdvertisingOperationsPrincipalIT",
+    "AdvertisingOperationsReadIT",
+    "SignedBearerIdentityIT",
+    "IngestionAuthorityArchitectureTest",
+    "ModuleBoundaryArchitectureTest",
+    "ModulithArchitectureTest",
+    "RuleSensitivityArchitectureTest",
+    "SoleAuthorityArchitectureTest"
+  ],
+  "missingClasses": [],
+  "completeSelectedClassesPass": true,
+  "limit": "Complete clean unselected full verify, new-checkpoint browser and latest PR security/CI remain required."
+}

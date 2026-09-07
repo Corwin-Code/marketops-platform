@@ -1,0 +1,304 @@
+{
+  "kind": "ACTUAL_SAME_COMMIT_EVIDENCE_TOOL_EXECUTION_CROSSCHECK",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "registeredExpectedSource": {
+    "path": "/private/tmp/slice3-registered-inputs-e278b1e-r1/EXPECTED-SOURCE.json",
+    "sha256": "4f72d4ab9a9c0b2571cf558a89979a145a5f03a4f9bf1dc418cd1204500bee5a",
+    "bytes": 6217
+  },
+  "registeredSourceCount": 8,
+  "sources": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+      "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "e971aafeadf530cfa8c056fe81bc84e3bc09cf3d"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/check_structured_adapter.py",
+      "sha256": "6c947546f2f31e07f399ed94f057cd8b91e5057b2fb1d5d8cc27ed3a12c8b3b5",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+        "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+        "bytes": 8324
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "2fbcaca8ee19c166e1af73682ee514da0f574ecf"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/reconcile_measurements.py",
+      "sha256": "b2cbf1e75ca98e3e69ab9d5d88efb26312013430d21002717df6d68eac08649c",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+        "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+        "bytes": 8324
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "4f1064bed7b1d701bac73aa3c43b9200b0c7ba39"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+      "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "225e129e5b74abb2842d767a31ad2348d7fc0684"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+      "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "f54a7a7abfa35ed25ada318e9bde4ccc3e4c4e25"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+      "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "0dd3c1d1340dc719b6690e2e74f0cba0258243c7"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+      "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "d711f45241949b2259b66cfbe929e79181e547aa"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+      "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+      "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "scope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "gitBlobOid": "55072ec8c609071aeae4a32fa83354749ea63ffb"
+    }
+  ],
+  "executions": [
+    {
+      "kind": "unittest",
+      "receipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/receipt.json",
+        "sha256": "cee051e16c9b2cf3c955bfcae9240afd3e0743256ae6050614d61c82e40ea626",
+        "bytes": 13425
+      },
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/binder-synthetic-r2/named-tests.json",
+        "sha256": "cd3484ac1314b4e0fdbe761f40c18a015d9c216880bd46ac3e71484bfe46eb7e",
+        "bytes": 170785
+      },
+      "actualCount": 106,
+      "actualInputBindings": [
+        {
+          "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+          "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+          "repositoryInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+            "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+            "bytes": 39215
+          },
+          "copiedInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+            "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+            "bytes": 39215
+          },
+          "gitBlobId": "e971aafeadf530cfa8c056fe81bc84e3bc09cf3d",
+          "gitBlobSha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55"
+        },
+        {
+          "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+          "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+          "repositoryInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+            "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+            "bytes": 41687
+          },
+          "copiedInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+            "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+            "bytes": 41687
+          },
+          "gitBlobId": "225e129e5b74abb2842d767a31ad2348d7fc0684",
+          "gitBlobSha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98"
+        },
+        {
+          "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+          "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+          "repositoryInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+            "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+            "bytes": 22180
+          },
+          "copiedInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+            "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+            "bytes": 22180
+          },
+          "gitBlobId": "0dd3c1d1340dc719b6690e2e74f0cba0258243c7",
+          "gitBlobSha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8"
+        },
+        {
+          "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+          "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+          "repositoryInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+            "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+            "bytes": 15808
+          },
+          "copiedInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+            "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+            "bytes": 15808
+          },
+          "gitBlobId": "d711f45241949b2259b66cfbe929e79181e547aa",
+          "gitBlobSha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f"
+        },
+        {
+          "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+          "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+          "repositoryInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+            "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+            "bytes": 15328
+          },
+          "copiedInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+            "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+            "bytes": 15328
+          },
+          "gitBlobId": "55072ec8c609071aeae4a32fa83354749ea63ffb",
+          "gitBlobSha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f"
+        },
+        {
+          "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+          "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+          "repositoryInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+            "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+            "bytes": 9104
+          },
+          "copiedInput": {
+            "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+            "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+            "bytes": 9104
+          },
+          "gitBlobId": "f54a7a7abfa35ed25ada318e9bde4ccc3e4c4e25",
+          "gitBlobSha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c"
+        }
+      ],
+      "argv": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools",
+        "-p",
+        "test_*.py",
+        "-v"
+      ]
+    },
+    {
+      "kind": "structured",
+      "receipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+        "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+        "bytes": 8324
+      },
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/assessment-tools-checks.json",
+        "sha256": "5756893f550dad39b32774b0bf399b5ecdfa01278988448b68795b120487286d",
+        "bytes": 2545
+      },
+      "actualCount": 24,
+      "argv": [
+        "bash",
+        "--noprofile",
+        "--norc",
+        "-euo",
+        "pipefail",
+        "-c",
+        "\n    mkdir -p \"$SLICE3_PUBLIC/governance-r2\"\n    shasum -a 256 \"$SLICE3_GOV_HOOK/\"*.py > \"$SLICE3_PUBLIC/governance-r2/observer-sha256.txt\"\n    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=\"$SLICE3_GOV_HOOK:$SLICE3_REPO\" SLICE3_NAMED_REPOSITORY=\"$SLICE3_REPO\" SLICE3_NAMED_UNITTEST_OUTPUT=\"$SLICE3_RUNS/governance-named-r2.json\" make governance\n    cp \"$SLICE3_RUNS/governance-named-r2.json\" \"$SLICE3_PUBLIC/governance-r2/named-unittest-results.json\"\n    python3 scripts/validation/finalize_slice3_rework_assessment.py --check > \"$SLICE3_PUBLIC/governance-r2/derivation.json\"\n    python3 docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/reconcile_measurements.py --check > \"$SLICE3_PUBLIC/governance-r2/historical-measurement-check.log\"\n    cp docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CV-E-MEASUREMENT-RECONCILIATION.json \"$SLICE3_PUBLIC/governance-r2/historical-measurement-reconciliation.json\"\n    python3 docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/check_structured_adapter.py --out \"$SLICE3_RUNS/assessment-tools-check-r2\" > \"$SLICE3_PUBLIC/governance-r2/assessment-tools-check.log\"\n    cp \"$SLICE3_RUNS/assessment-tools-check-r2/STRUCTURED-ADAPTER-SAFETY-CHECKS.json\" \"$SLICE3_PUBLIC/governance-r2/assessment-tools-checks.json\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" binder\n    cp -R \"$SLICE3_RUNS/binder-synthetic-r2\" \"$SLICE3_PUBLIC/governance-r2/binder-synthetic-r2\"\n  "
+      ]
+    },
+    {
+      "kind": "reconcile",
+      "receipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+        "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+        "bytes": 8324
+      },
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/historical-measurement-reconciliation.json",
+        "sha256": "879af5b3fff00f88b33a03ed4766608d5f8e2a89d05b90c20ec47b13510eb213",
+        "bytes": 27709
+      },
+      "actualHistoricalMeasurements": 5,
+      "argv": [
+        "bash",
+        "--noprofile",
+        "--norc",
+        "-euo",
+        "pipefail",
+        "-c",
+        "\n    mkdir -p \"$SLICE3_PUBLIC/governance-r2\"\n    shasum -a 256 \"$SLICE3_GOV_HOOK/\"*.py > \"$SLICE3_PUBLIC/governance-r2/observer-sha256.txt\"\n    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=\"$SLICE3_GOV_HOOK:$SLICE3_REPO\" SLICE3_NAMED_REPOSITORY=\"$SLICE3_REPO\" SLICE3_NAMED_UNITTEST_OUTPUT=\"$SLICE3_RUNS/governance-named-r2.json\" make governance\n    cp \"$SLICE3_RUNS/governance-named-r2.json\" \"$SLICE3_PUBLIC/governance-r2/named-unittest-results.json\"\n    python3 scripts/validation/finalize_slice3_rework_assessment.py --check > \"$SLICE3_PUBLIC/governance-r2/derivation.json\"\n    python3 docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/reconcile_measurements.py --check > \"$SLICE3_PUBLIC/governance-r2/historical-measurement-check.log\"\n    cp docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CV-E-MEASUREMENT-RECONCILIATION.json \"$SLICE3_PUBLIC/governance-r2/historical-measurement-reconciliation.json\"\n    python3 docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/check_structured_adapter.py --out \"$SLICE3_RUNS/assessment-tools-check-r2\" > \"$SLICE3_PUBLIC/governance-r2/assessment-tools-check.log\"\n    cp \"$SLICE3_RUNS/assessment-tools-check-r2/STRUCTURED-ADAPTER-SAFETY-CHECKS.json\" \"$SLICE3_PUBLIC/governance-r2/assessment-tools-checks.json\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" binder\n    cp -R \"$SLICE3_RUNS/binder-synthetic-r2\" \"$SLICE3_PUBLIC/governance-r2/binder-synthetic-r2\"\n  "
+      ]
+    }
+  ],
+  "actualReconciliation": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/historical-measurement-reconciliation.json",
+    "sha256": "879af5b3fff00f88b33a03ed4766608d5f8e2a89d05b90c20ec47b13510eb213",
+    "bytes": 27709
+  },
+  "allActualRawMembersRehashed": true,
+  "allEightExactCurrentGitSourceBindingsVerified": true,
+  "noSeparateDerivationIdentityInferred": true,
+  "limits": [
+    "Actual106 named tool tests and24 structured boundary checks add zero product tests.",
+    "Current --check executes the historical reconciliation validator against the same archived five measurements, not new performance measurements.",
+    "Current raw command success and explicit source input identity are required; old D receipts are not relabelled."
+  ],
+  "proofSelections": [],
+  "engineeringClosureClaimMade": false
+}

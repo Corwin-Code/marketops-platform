@@ -1,0 +1,33 @@
+{
+  "kind": "F020_EXACT_DURATION_RECONCILIATION_REPAIR_PREPARED_NOT_EXECUTED",
+  "createdAtUTC": "2026-09-05T12:41:41.362272+00:00",
+  "files": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+      "sha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+      "sha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb"
+    }
+  ],
+  "workerBeforeSha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+  "patchSha256": "ecde13cecfc7f4a613aaa32df7df2a276be4466df5a32582bc64dcccc3278f71",
+  "acceptedContract": {
+    "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+    "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "section": "\u00a711: internal fact-accepted clock; inclusive 15-minute hard bound; missed-trigger recovery preserves incidents"
+  },
+  "frozenFinding": "S3-DR-020: Measure P95/hard bounds from advertising observations and preserve violations through reconciliation.",
+  "rootCause": "Duration.toMillis truncates -1ns to 0 and 900000ms+1ns to 900000, hiding a negative clock and an over-bound observation when booleans compare milliseconds.",
+  "change": "Compare Duration.isNegative and existing AdvertisingSlo.breached before converting nonnegative display/storage milliseconds; negative latency remains null with breached true. Inclusive threshold and targeted worker are unchanged.",
+  "newMethods": [
+    "oneNanosecondClockReversalIsUnknownAndBreachedInsteadOfZeroLatency",
+    "exactZeroLatencyIsMeasuredAndDoesNotBreach",
+    "exactFifteenMinuteLatencyDoesNotBreachTheInclusiveBound",
+    "oneNanosecondBeyondFifteenMinutesBreachesBeforeMillisecondConversion"
+  ],
+  "testProofScope": "Execute actual AdvertisingReconciliationWorker.sweep with mocked repository/refresh/outcome/trace/maintenance/SLO ports. Clock starts at fact acceptance (queue predicate eligible), then observed clock moves by exact tested Duration, including backward 1ns. Verify recorded raw timestamps, latency null/value and breach boolean through actual worker path. This is deterministic worker-unit proof, not PostgreSQL timestamp persistence or performance evidence.",
+  "validation": "NOT_RUN; no Maven, PostgreSQL, browser or Docker started. Parent R25 owns compilation/execution and actual capacity regression.",
+  "sourceFrozen": true
+}

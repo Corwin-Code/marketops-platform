@@ -1,0 +1,11 @@
+{
+  "sourceManifestDeltaSinceR3": [
+    "frontend/marketops-console/package-lock.json"
+  ],
+  "packageLockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+  "installedFastUriVersion": "3.1.6",
+  "installedFastUriPackageJsonSha256": "d62cb9be0a111b42131b264efe1fee4638a5f643ff25fe0bc3627675a9b92a8b",
+  "binding": "Fresh npm ci and complete dependency tree precede every quality check in this same actual run; source/lock remained stable. No code/source/test assertion changed between frontend r3 and r4.",
+  "sourceReceiptSha256": "606c3d19d40c2e26ae186b9aca1472fc765747a5102c50fc7860b0df7ccc6c11",
+  "status": "LOCAL_WORKING_TREE_QUALITY_PASS_FINAL_COMMITTED_BROWSER_FULL_CI_PENDING"
+}

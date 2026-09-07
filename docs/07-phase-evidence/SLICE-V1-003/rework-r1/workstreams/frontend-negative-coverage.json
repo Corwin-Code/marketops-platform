@@ -1,0 +1,19 @@
+{
+  "command": "bash scripts/verify_coverage_thresholds.sh frontend",
+  "working_directory": "/Users/chzhengx/Code/personal/marketops-platform",
+  "criterion_or_finding_id": [
+    "S3-DR-022",
+    "S3-AC-200"
+  ],
+  "base_commit": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+  "frontend_source_unchanged_from_base": true,
+  "result": "PASS_EXPECTED_THRESHOLD_REFUSAL",
+  "exit_code": 0,
+  "negative_control": "Raise all four coverage minima to 100%; unchanged test suite must fail specifically for unmet coverage thresholds. Product thresholds remain unchanged.",
+  "node": "24.19.0",
+  "npm": "11.17.0",
+  "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-frontend-negative-coverage.log",
+  "output_sha256": "f301e9de1ecd14e409558de008d386adf1ec4dd3b32219ca9d7ad9b89c304234",
+  "production_write_enabled": false,
+  "boundary": "Development regression gate proof, not a final-source CI verdict."
+}

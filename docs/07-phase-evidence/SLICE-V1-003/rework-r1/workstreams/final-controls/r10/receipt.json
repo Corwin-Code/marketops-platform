@@ -1,0 +1,165 @@
+{
+  "kind": "TARGETED_POST_W4_FINAL_CONTROL_PROOF_R10",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=4e101ca4386d1cab089a03edc5d461301d5d4559",
+    "-Dtest=AdvertisingReservationIT,AdvertisingManualWorkflowIT,AdvertisingMinimumExpiryIT,AdvertisingCommandSubstitutionIT,AdvertisingRetryProofIT,AdBidWriteGateAdversarialIT,AdvertisingTransmissionBoundaryIT",
+    "test"
+  ],
+  "baseHead": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "baseTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+  "workingTreeStatusBefore": "M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java\n M backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql\n M backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserFixtureApplication.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicyTest.java\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-fault-seeding.json\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-priority.md\n M frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserPaginationSeed.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCommandSubstitutionIT.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingControlProofFixture.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMinimumExpiryIT.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryProofIT.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4-index.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4-publishability-scan.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-named-junit-w4.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w4-identity.json",
+  "sourceBinding": "W4 plus current F003/F005/F009/F010/F012/F014/F016 uncommitted repairs and proof additions; exact source bytes bound in source-before/after, not exact W4 commit source.",
+  "sourceBeforeSha256": "be19cf33bed54a6c03c523f919df03b81ddcf5b1748b7365093b64ac7cd0b6da",
+  "resourcesSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+  "boundary": "Synthetic isolated PostgreSQL only; no real Provider/shared/production. production_write_enabled=false.",
+  "startedAtUTC": "2026-09-05T08:05:20.348437+00:00",
+  "finishedAtUTC": "2026-09-05T08:07:13.779366+00:00",
+  "elapsedSeconds": 113.426,
+  "exitCode": 1,
+  "logSha256": "33e64045acc7f1009c9ea442f2ebde532e9314379966e8db8721dd1a453b343d",
+  "sourceAfterSha256": "be19cf33bed54a6c03c523f919df03b81ddcf5b1748b7365093b64ac7cd0b6da",
+  "sourceStable": true,
+  "reports": [
+    {
+      "class": "com.mimococo.marketops.AdBidWriteGateAdversarialIT",
+      "declared": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdBidWriteGateAdversarialIT.xml",
+      "sha256": "669745680e4675ab5a1ed98a16bd045348b2817e16c78796667a889cdaf7d6ba"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingCommandSubstitutionIT",
+      "declared": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdvertisingCommandSubstitutionIT.xml",
+      "sha256": "437f58770c383832fab231cddefd31f94ce9e31ec3390343647c44b44f6aaaa4"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+      "declared": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "sha256": "a8a56b6d8af22cef371f012806af55361ca40091815b4855b1889bf210a2ec32"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingMinimumExpiryIT",
+      "declared": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 13,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 13,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdvertisingMinimumExpiryIT.xml",
+      "sha256": "c85b03c16e98fa508f2d9820ad4e444e4fab1a3a6730f9cb8035b812a04a8a31"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingReservationIT",
+      "declared": {
+        "tests": 31,
+        "failures": 12,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 31,
+        "failures": 12,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "109ae84a0dd72457475a40af625adf0fb061e6520535611865ace7bbbea7a94f"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingRetryProofIT",
+      "declared": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 18,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 18,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdvertisingRetryProofIT.xml",
+      "sha256": "51df875490fcff1ca53273220af73fcc6d84aa08dd634bedfa75600a2e3f346f"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT",
+      "declared": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r10/reports/TEST-com.mimococo.marketops.AdvertisingTransmissionBoundaryIT.xml",
+      "sha256": "5741e2746aaa7292020e2a07bcccc3a1b97b200915f4471b9cfda71a981486b8"
+    }
+  ],
+  "counts": {
+    "tests": 94,
+    "failures": 12,
+    "errors": 31,
+    "skipped": 0
+  },
+  "expectedClasses": [
+    "AdvertisingReservationIT",
+    "AdvertisingManualWorkflowIT",
+    "AdvertisingMinimumExpiryIT",
+    "AdvertisingCommandSubstitutionIT",
+    "AdvertisingRetryProofIT",
+    "AdBidWriteGateAdversarialIT",
+    "AdvertisingTransmissionBoundaryIT"
+  ],
+  "missingClasses": [],
+  "completeSelectedClassesPass": false,
+  "limit": "Complete clean unselected full verify on a new exact checkpoint remains required."
+}

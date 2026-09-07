@@ -1,0 +1,104 @@
+{
+  "kind": "LOCAL_LAYER_PUBLICATION_PATTERN_SCAN_RECEIPT",
+  "createdAt": "2026-09-06T04:36:59.018950+00:00",
+  "layer": "security-npm-audit-r2",
+  "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "sourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "sourceInventorySha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+  "runId": "security-npm-audit-r2",
+  "originalCommandResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "originalCommandExitCode": 0,
+  "originalCollectorTestcaseCounts": null,
+  "layerReceipt": {
+    "path": "/private/tmp/slice3-final-execution-02e6172-r5/security-npm-audit-r2/receipt.json",
+    "sha256": "4c6c11027b35193fb8a6874592d6a30b3035414de9cebc12fba919f8e0424743"
+  },
+  "boundary": "Original completed local command retained; full project admission and Controller review are separate.",
+  "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE",
+  "scanCommand": {
+    "layer": "security-npm-audit-r2",
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/python3",
+      "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+      "--input",
+      "/tmp/slice3-final-execution-02e6172-r5/security-npm-audit-r2",
+      "--out",
+      "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2",
+      "--receipt",
+      "receipt.json",
+      "--scope",
+      "Completed original 02e local security-npm-audit-r2 command; product nine-layer admission and independent Controller review remain separate.",
+      "--expected-result",
+      "COMMAND_SUCCEEDED_REVIEW_REQUIRED"
+    ],
+    "startedAt": "2026-09-06T04:34:52.729786+00:00",
+    "finishedAt": "2026-09-06T04:34:53.082364+00:00",
+    "exitCode": 0,
+    "log": {
+      "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2-scanner.log",
+      "sha256": "bf49b8d24bb44408f668bd96addf34aac792b87232b781cbd653d058ed584871"
+    },
+    "tool": {
+      "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+      "sha256": "944d60fc07f5ac6635b44c5721fe910f83b465fa60cad4d2f1c61e017510ad77"
+    }
+  },
+  "rulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+    "archivedSource": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-source-02e6172.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patternCount": 9,
+  "patternGroups": [
+    "7 exact original governance patterns",
+    "JWT shape",
+    "signed/token URL shape"
+  ],
+  "scope": "All physical layer files plus actual ZIP/GZIP/TAR nested members; raw UTF-8 bytes and decoded XML/HTML/JSON strings. Image bytes are scanned without OCR or pixel inspection.",
+  "originalPhysicalFiles": 32,
+  "originalPhysicalBytes": 1279145,
+  "archiveMembers": 0,
+  "scannedRecords": 32,
+  "scannedBytesIncludingArchiveContainersAndDuplicatePhysicalCopies": 1279145,
+  "originalEvidenceReferencesVerified": 30,
+  "originalBytesAndFilesetUnchanged": true,
+  "rawArchiveMembersReadWithCrcChecks": true,
+  "hitCount": 0,
+  "triage": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/TRIAGE.json",
+    "sha256": "21a869d568d97a5a3f628c0eeda7d86d376d6b904d2232b1ca628adf2963962f",
+    "size": 589
+  },
+  "originalFileIndex": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/ORIGINAL-FILE-SHA-INDEX.json",
+    "sha256": "ed325270fded0a83acc262bbe8de3f5a2c85cc8324d82c4e9bea062374818caa",
+    "size": 9046
+  },
+  "archiveMemberIndex": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/MEMBERS.jsonl",
+    "sha256": "403f0247870af868be13e3ecb14666f31939b2262fd7dc371bcd2fd157d1c354",
+    "size": 4832
+  },
+  "rawScanInput": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/SCAN-INPUT.json",
+    "sha256": "c5515c18c23d49306afe26b9c01f21cc865194d25c6d5aaea70524bfd3c54ebc",
+    "size": 6966
+  },
+  "rawScanSummary": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/SCAN-SUMMARY.json",
+    "sha256": "9de2c3abdead512b4fcf587477355b834b0bc304061cafe9cbd52be3ea9fd67d",
+    "size": 1481
+  },
+  "rawHits": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/HITS.jsonl",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+  },
+  "noOcrOrPixelInspection": true,
+  "rawContentPrinted": false,
+  "productTestsRun": 0,
+  "rawPublicationAuthorized": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false
+}

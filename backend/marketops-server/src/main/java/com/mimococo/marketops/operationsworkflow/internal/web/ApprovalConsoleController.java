@@ -4,6 +4,9 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.marketplaceintegration.AdBidCommandGateway;
+import com.mimococo.marketops.operationsworkflow.ActionKind;
+import com.mimococo.marketops.operationsworkflow.AdBidImpactPreview;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.ImpactPreview;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
@@ -48,18 +51,27 @@ class ApprovalConsoleController {
     private final GuardrailService guardrails;
     private final ApprovalService approvals;
     private final ExecutionService execution;
+    private final AdBidCommandGateway adCommands;
     private final BusinessAuthorization authorization;
+    private final com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy advertisingDisclosure;
+    private final com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingHumanDecisionService advertisingHumans;
 
     ApprovalConsoleController(RecommendationService recommendations,
                               GuardrailService guardrails,
                               ApprovalService approvals,
                               ExecutionService execution,
-                              BusinessAuthorization authorization) {
+                              AdBidCommandGateway adCommands,
+                              BusinessAuthorization authorization,
+                              com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy advertisingDisclosure,
+                              com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingHumanDecisionService advertisingHumans) {
         this.recommendations = recommendations;
         this.guardrails = guardrails;
         this.approvals = approvals;
         this.execution = execution;
+        this.adCommands = adCommands;
         this.authorization = authorization;
+        this.advertisingDisclosure = advertisingDisclosure;
+        this.advertisingHumans = advertisingHumans;
     }
 
     /**
@@ -72,9 +84,46 @@ class ApprovalConsoleController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     ImpactPreview preview(AuthenticatedActor actor, @PathVariable UUID recommendationId) {
         RecommendationView proposal = recommendations.require(recommendationId);
+        if(proposal.actionKind()==ActionKind.AD_BID_CHANGE) throw com.mimococo.marketops.shared.OperationRejectedException
+                .of(com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(proposal.storeId()));
+        requireAdvertisingDisclosure(actor, proposal);
         return guardrails.preview(proposal, null, GuardrailPurpose.IMPACT_PREVIEW);
+    }
+
+    /**
+     * What changing this bid would do, and whether it is currently allowed.
+     *
+     * <p>A separate route from the price preview rather than a widened one. The
+     * two answer different questions and an operator asking about a bid should
+     * not receive a shape half of which is about margins.
+     *
+     * <p>The gate reasons are only meaningful once a command exists, because the
+     * gate is a question about a command. Before then the list is empty, which
+     * is not the same as "the gate would allow it" — the unresolved reasons and
+     * the verdict are what speak before creation.
+     */
+    @PostMapping(value = "/recommendations/{recommendationId}/ad-bid-impact-preview",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    AdBidImpactPreview previewAdBidChange(AuthenticatedActor actor,
+                                          @PathVariable UUID recommendationId) {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        authorization.require(actor, ActionScopeCode.ADVERTISING_VIEW,
+                ResourceScope.store(proposal.storeId()));
+        if (proposal.actionKind() != ActionKind.AD_BID_CHANGE) {
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        }
+        requireAdvertisingDisclosure(actor, proposal);
+        advertisingHumans.preparePreview(actor,recommendationId);
+        AdBidImpactPreview preview =
+                guardrails.previewAdBidChange(proposal, GuardrailPurpose.IMPACT_PREVIEW);
+        List<String> gateReasons = adCommands.forRecommendation(recommendationId)
+                .map(command -> adCommands.gateReasons(command.id()))
+                .orElseGet(List::of);
+        return new AdBidImpactPreview(preview.recommendationId(), preview.projection(),
+                gateReasons, preview.unresolvedReasons(), preview.verdict(),preview.evidence());
     }
 
     /** A person decides the change may proceed. */
@@ -122,8 +171,10 @@ class ApprovalConsoleController {
     List<ApprovalRepository.DecisionRow> decisions(AuthenticatedActor actor,
                                                    @PathVariable UUID recommendationId) {
         RecommendationView proposal = recommendations.require(recommendationId);
-        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+        authorization.require(actor, proposal.actionKind()==ActionKind.AD_BID_CHANGE
+                        ? ActionScopeCode.ADVERTISING_VIEW : ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(proposal.storeId()));
+        requireAdvertisingDisclosure(actor, proposal);
         return approvals.history(recommendationId);
     }
 
@@ -135,9 +186,24 @@ class ApprovalConsoleController {
             @PathVariable UUID recommendationId,
             @RequestParam(required = false, defaultValue = "20") int limit) {
         RecommendationView proposal = recommendations.require(recommendationId);
-        authorization.require(actor, ActionScopeCode.EVIDENCE_VIEW,
+        authorization.require(actor, proposal.actionKind()==ActionKind.AD_BID_CHANGE
+                        ? ActionScopeCode.ADVERTISING_VIEW : ActionScopeCode.EVIDENCE_VIEW,
                 ResourceScope.store(proposal.storeId()));
+        requireAdvertisingDisclosure(actor, proposal);
         return guardrails.history(recommendationId, limit);
+    }
+
+    @PostMapping(value = "/recommendations/{recommendationId}/endorsement",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    RecommendationView endorse(AuthenticatedActor actor, @PathVariable UUID recommendationId,
+                                @Valid @RequestBody DecisionRequest request) {
+        return advertisingHumans.endorse(actor, recommendationId, request.expectedVersion(), request.reason());
+    }
+
+    private void requireAdvertisingDisclosure(AuthenticatedActor actor, RecommendationView proposal) {
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+            advertisingHumans.requireReviewEvidence(actor,proposal.id());
+        }
     }
 
     record DecisionRequest(@NotBlank String reason, @NotNull Long expectedVersion) {

@@ -1,0 +1,626 @@
+[
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+    "archivedSourceManifestSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+    "archivedSourceManifestSha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "e1a60be847df772012982cfd08a6c010963153b7676bcf141b846b82964488fc",
+    "archivedSourceManifestSha256": "e1a60be847df772012982cfd08a6c010963153b7676bcf141b846b82964488fc",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEvidenceGatherer.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "6ab75da20aa4df2557a8897b09be702d6daa68cc1d478435555f961f726a961c",
+    "archivedSourceManifestSha256": "6ab75da20aa4df2557a8897b09be702d6daa68cc1d478435555f961f726a961c",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingManualWorkflowService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "7eb6822cde6033c8a5a4892fe10f99b47a80b46256ac3299edf406695c49f4b5",
+    "archivedSourceManifestSha256": "7eb6822cde6033c8a5a4892fe10f99b47a80b46256ac3299edf406695c49f4b5",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeAssessment.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "70dd3e7140cb399e63bc931b3dcbc0ca0f6638b58c0e72f93ca2db919bbd95ca",
+    "archivedSourceManifestSha256": "70dd3e7140cb399e63bc931b3dcbc0ca0f6638b58c0e72f93ca2db919bbd95ca",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+    "archivedSourceManifestSha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanAttestor.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "67ab43fcbf30ce7e1641c4f2df4a6c413948420c5a4eaa4f55cac54b60ae3ec7",
+    "archivedSourceManifestSha256": "67ab43fcbf30ce7e1641c4f2df4a6c413948420c5a4eaa4f55cac54b60ae3ec7",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "7c7ba194c4301cd5086c1f64bb2563663d33429441794ab85479e7ce6cfc1ad6",
+    "archivedSourceManifestSha256": "7c7ba194c4301cd5086c1f64bb2563663d33429441794ab85479e7ce6cfc1ad6",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "d33a5bdc7f82f03e8dd9e3978abc0dac1704bf01bf491a03ab23a6ec26cc96d1",
+    "archivedSourceManifestSha256": "d33a5bdc7f82f03e8dd9e3978abc0dac1704bf01bf491a03ab23a6ec26cc96d1",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeWorker.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "6f737e0f0c1203e4dd5213af61f875f7b749879c1960d69552492bd5f48b24fd",
+    "archivedSourceManifestSha256": "6f737e0f0c1203e4dd5213af61f875f7b749879c1960d69552492bd5f48b24fd",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955",
+    "archivedSourceManifestSha256": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+    "archivedSourceManifestSha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshness.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "c4d122ba6ab711f09aa4cd000a0955cca96a5ff56bb75f09597fcf44f4ed510f",
+    "archivedSourceManifestSha256": "c4d122ba6ab711f09aa4cd000a0955cca96a5ff56bb75f09597fcf44f4ed510f",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+    "archivedSourceManifestSha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+    "archivedSourceManifestSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdLaneResolver.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "3e421fdbcdd2e8df8a9996b8f6b8be205b0879ce03c0cb5047841a44b4a6606b",
+    "archivedSourceManifestSha256": "3e421fdbcdd2e8df8a9996b8f6b8be205b0879ce03c0cb5047841a44b4a6606b",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+    "archivedSourceManifestSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+    "archivedSourceManifestSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "d87a13b32d843bf825e0bfab46e3c7c2c66cda7aa732ef52f317488271fe0c3a",
+    "archivedSourceManifestSha256": "d87a13b32d843bf825e0bfab46e3c7c2c66cda7aa732ef52f317488271fe0c3a",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+    "archivedSourceManifestSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+    "archivedSourceManifestSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingPolicyRepository.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "cea59311afbf9dd0c7b3a29e4d32a30499690c98d27c5305caf7dca74f6b3066",
+    "archivedSourceManifestSha256": "cea59311afbf9dd0c7b3a29e4d32a30499690c98d27c5305caf7dca74f6b3066",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingProjectionRepository.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "f53f98a59e2c6c0ad46e2d8964aecdfd613a6ddfec6fbb37900501a16ec05d57",
+    "archivedSourceManifestSha256": "f53f98a59e2c6c0ad46e2d8964aecdfd613a6ddfec6fbb37900501a16ec05d57",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9",
+    "archivedSourceManifestSha256": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0",
+    "archivedSourceManifestSha256": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "d8c71b44d6c959ad669d9324d5c8077ca64d05c74d2a7e2a05cd59f686f09bd2",
+    "archivedSourceManifestSha256": "d8c71b44d6c959ad669d9324d5c8077ca64d05c74d2a7e2a05cd59f686f09bd2",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "0bc89b992a9a9c8e41baa2d57b2e6a83fbc721349e8b106d0a12496289c5fb30",
+    "archivedSourceManifestSha256": "0bc89b992a9a9c8e41baa2d57b2e6a83fbc721349e8b106d0a12496289c5fb30",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingOutcomeReviewService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "b9753e3ddd24bf05a55064b21895ccb48f758528e1c0b7ccd0d75d6c55719a2b",
+    "archivedSourceManifestSha256": "b9753e3ddd24bf05a55064b21895ccb48f758528e1c0b7ccd0d75d6c55719a2b",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+    "archivedSourceManifestSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "914ad07848313cac3ffbd865ee80d6a1c31bcc2b5d8e4edbc256785b35a55f92",
+    "archivedSourceManifestSha256": "914ad07848313cac3ffbd865ee80d6a1c31bcc2b5d8e4edbc256785b35a55f92",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9",
+    "archivedSourceManifestSha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+    "archivedSourceManifestSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d",
+    "archivedSourceManifestSha256": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0037__create_advertising_conversion_freshness_and_qualification.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "530e135f2f94073eea1271b2c0b47d7348dcc06c2c090791ab082b276eec7658",
+    "archivedSourceManifestSha256": "530e135f2f94073eea1271b2c0b47d7348dcc06c2c090791ab082b276eec7658",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "aa9a8b939d5301d42f13c4eb07b933dfeb052aec21d25c0fc0ebe6e2df3e1f27",
+    "archivedSourceManifestSha256": "aa9a8b939d5301d42f13c4eb07b933dfeb052aec21d25c0fc0ebe6e2df3e1f27",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37",
+    "archivedSourceManifestSha256": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398",
+    "archivedSourceManifestSha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5",
+    "archivedSourceManifestSha256": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56",
+    "archivedSourceManifestSha256": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c",
+    "archivedSourceManifestSha256": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "72b3d30ac503a1e7768545703e55520f93197cf2bf3286bdc2d1b294022419c8",
+    "archivedSourceManifestSha256": "72b3d30ac503a1e7768545703e55520f93197cf2bf3286bdc2d1b294022419c8",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f",
+    "archivedSourceManifestSha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/main/resources/db/migration/V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "58811f26e8215fb227655baf1fb006d16d5ff155dcce0751c94ef844c118a3cc",
+    "archivedSourceManifestSha256": "58811f26e8215fb227655baf1fb006d16d5ff155dcce0751c94ef844c118a3cc",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityBindingIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373",
+    "archivedSourceManifestSha256": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+    "archivedSourceManifestSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+    "archivedSourceManifestSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d",
+    "archivedSourceManifestSha256": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+    "archivedSourceManifestSha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+    "archivedSourceManifestSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+    "archivedSourceManifestSha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingRetryWorkerIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "8b8a56235a460805b586256abcb573618d8982e1710ccd3999ee181877a52c26",
+    "archivedSourceManifestSha256": "8b8a56235a460805b586256abcb573618d8982e1710ccd3999ee181877a52c26",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+    "archivedSourceManifestSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "0203a5fe6cf5091e3d4a918f1998daf186c99c797d29811ceca10b35d52b7373",
+    "archivedSourceManifestSha256": "0203a5fe6cf5091e3d4a918f1998daf186c99c797d29811ceca10b35d52b7373",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5",
+    "archivedSourceManifestSha256": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+    "archivedSourceManifestSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "19185459edd96213990890f7c00552683569b1d11aaa7b291d7347061aeb9528",
+    "archivedSourceManifestSha256": "19185459edd96213990890f7c00552683569b1d11aaa7b291d7347061aeb9528",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+    "archivedSourceManifestSha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4",
+    "archivedSourceManifestSha256": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+    "archivedSourceManifestSha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea",
+    "archivedSourceManifestSha256": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+    "archivedSourceManifestSha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "909f3cf74814bf90bf0add6180762b7aa6e85f191a193c24ad3bad9b1a6bdf5b",
+    "archivedSourceManifestSha256": "909f3cf74814bf90bf0add6180762b7aa6e85f191a193c24ad3bad9b1a6bdf5b",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "cfc7f3693b52f857b4d6329cead9ded9f03f5dcb0bb98516fe15e70bd59c2a34",
+    "archivedSourceManifestSha256": "cfc7f3693b52f857b4d6329cead9ded9f03f5dcb0bb98516fe15e70bd59c2a34",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "64f8b5a8fc1ab068e471743654173c8fdcf174c014aa30e66bbec31fcd0c7a4c",
+    "archivedSourceManifestSha256": "64f8b5a8fc1ab068e471743654173c8fdcf174c014aa30e66bbec31fcd0c7a4c",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingQualificationBoundaryTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "2f23903838080c4b6dace960b8976220bd502a55b2f89ae4289b331de4db783f",
+    "archivedSourceManifestSha256": "2f23903838080c4b6dace960b8976220bd502a55b2f89ae4289b331de4db783f",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "a2c89d0f8e1868999332ff5e8f5bf59aedd2c681396d410ca6fc0ef4961bf192",
+    "archivedSourceManifestSha256": "a2c89d0f8e1868999332ff5e8f5bf59aedd2c681396d410ca6fc0ef4961bf192",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdLaneResolverTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "6064683ad71c2fb1920cb5b82a255ba9cf6dbde261bdbe04cceadf4d198256f9",
+    "archivedSourceManifestSha256": "6064683ad71c2fb1920cb5b82a255ba9cf6dbde261bdbe04cceadf4d198256f9",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "eab28112f6a9e30fc20fcb8dbc48eb3cda3b0fc09966101e49e7de6f27d1c708",
+    "archivedSourceManifestSha256": "eab28112f6a9e30fc20fcb8dbc48eb3cda3b0fc09966101e49e7de6f27d1c708",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+    "archivedSourceManifestSha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/ArchitectureRules.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "e5afa938640be79e3c0eae8566bb877e65e2a1b24ef546ec9f9b1801f404c18c",
+    "archivedSourceManifestSha256": "e5afa938640be79e3c0eae8566bb877e65e2a1b24ef546ec9f9b1801f404c18c",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/IngestionAuthorityArchitectureTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "a88856f958e1df3b7387f611a0b4a36d6adb122e401f930f14ebc083a714f008",
+    "archivedSourceManifestSha256": "a88856f958e1df3b7387f611a0b4a36d6adb122e401f930f14ebc083a714f008",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/IngestionAuthorityRules.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "83ec86cf708452c0239a37090f512e5a666381981bbf1894840a2bd53463cc2b",
+    "archivedSourceManifestSha256": "83ec86cf708452c0239a37090f512e5a666381981bbf1894840a2bd53463cc2b",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/ModuleBoundaryArchitectureTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "85e65b9576c4f7fc2cd5f99ca9ab4af401f04eca68a8bffd9eaa541f183d7a3a",
+    "archivedSourceManifestSha256": "85e65b9576c4f7fc2cd5f99ca9ab4af401f04eca68a8bffd9eaa541f183d7a3a",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/ModulithArchitectureTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "210ec2544f249416110f3128361bd264f231c33bfbc720c091ec853de772281e",
+    "archivedSourceManifestSha256": "210ec2544f249416110f3128361bd264f231c33bfbc720c091ec853de772281e",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/SoleAuthorityArchitectureTest.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f",
+    "archivedSourceManifestSha256": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "efa0c4fa4534f590e3acbd78e728a5999919e3d955b0a78f159a51bb9bd71f42",
+    "archivedSourceManifestSha256": "efa0c4fa4534f590e3acbd78e728a5999919e3d955b0a78f159a51bb9bd71f42",
+    "matchesMeasuredSourceManifest": true,
+    "boundary": "Exact W6 Git bytes match completed full-run source manifest."
+  },
+  {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/run-receipt.json",
+    "exactMeasuredHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "gitObjectBytesSha256": "e98d8140331abee0adbdd4710970d969fb2b69cf7cf25cc3eff724383e81c068",
+    "archivedSourceManifestSha256": null,
+    "matchesMeasuredSourceManifest": null,
+    "boundary": "Outside the backend manifest; source/Git hash retained, requires corresponding artifact/governance proof."
+  }
+]

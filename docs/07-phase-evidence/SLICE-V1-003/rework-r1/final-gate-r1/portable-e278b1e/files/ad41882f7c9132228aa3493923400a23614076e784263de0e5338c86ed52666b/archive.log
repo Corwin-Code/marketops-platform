@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/tmp/slice3-backend-checkpoint-archives-r1/archive_backend.py", line 21, in <module>
+    actual=idx[str(Path(e['path']).resolve())];assert all(actual[k]==e[k] for k in ['bytes','sha256'])
+  File "/tmp/slice3-backend-checkpoint-archives-r1/archive_backend.py", line 21, in <genexpr>
+    actual=idx[str(Path(e['path']).resolve())];assert all(actual[k]==e[k] for k in ['bytes','sha256'])
+KeyError: 'bytes'

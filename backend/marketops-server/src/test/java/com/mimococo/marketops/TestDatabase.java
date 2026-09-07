@@ -2,6 +2,9 @@ package com.mimococo.marketops;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Objects;
 import java.util.UUID;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -40,6 +43,13 @@ public final class TestDatabase {
         return container;
     }
 
+    /** Explicit test-only server options, applied before this independent server starts. */
+    public static PostgreSQLContainer isolatedContainer(String... postgresArguments) {
+        var container = build().withCommand(postgresArguments);
+        container.start();
+        return container;
+    }
+
     public static String migrationRole() {
         return MIGRATION_ROLE;
     }
@@ -54,6 +64,30 @@ public final class TestDatabase {
 
     public static String applicationPassword() {
         return APPLICATION_PASSWORD;
+    }
+
+    /**
+     * Activate only the synthetic issuer inside a test's isolated database.
+     * PostgreSQL role DDL cannot bind its password directly, so the server quotes
+     * the bound value as one literal before executing this fixed-role statement.
+     * The caller retains ownership of the administrator connection.
+     */
+    public static void enableSyntheticIdentityIssuer(Connection administrator, String syntheticPassword)
+            throws SQLException {
+        Objects.requireNonNull(syntheticPassword, "synthetic issuer password");
+        try (var query = administrator.prepareStatement("""
+                SELECT format('ALTER ROLE marketops_identity_issuer LOGIN PASSWORD %L', ?::text)
+                """)) {
+            query.setString(1, syntheticPassword);
+            try (var rows = query.executeQuery()) {
+                if (!rows.next()) {
+                    throw new SQLException("Synthetic issuer statement was not produced");
+                }
+                try (var statement = administrator.createStatement()) {
+                    statement.execute(rows.getString(1));
+                }
+            }
+        }
     }
 
     private static PostgreSQLContainer build() {

@@ -198,6 +198,9 @@ class MetaStatusAssemblerTest {
     @Test
     @DisplayName("dependency-probe logs discard operational detail and throwable proxies")
     void probeLogsContainOnlySanitizedFailureCategories() throws SQLException {
+        // Keep safe request metadata distinct from the short redaction canaries.
+        String correlationId = "00000000-0000-4000-8000-000000000002";
+        MDC.put(CorrelationId.LOG_CONTEXT_KEY, correlationId);
         DataSource source = mock(DataSource.class);
         when(source.getConnection()).thenThrow(new SQLException(
                 "FATAL password=credential-value host=10.0.0.7 port=5432 role=marketops_app "
@@ -226,6 +229,7 @@ class MetaStatusAssemblerTest {
                 .map(event -> event.getFormattedMessage() + " " + event.getKeyValuePairs())
                 .reduce("", (left, right) -> left + "\n" + right);
         assertThat(rendered)
+                .contains("correlationId=\"" + correlationId + "\"")
                 .doesNotContain("credential-value", "10.0.0.7", "5432", "marketops_app",
                         "SELECT", "private_table", "jdbc:postgresql", "unreadable");
     }

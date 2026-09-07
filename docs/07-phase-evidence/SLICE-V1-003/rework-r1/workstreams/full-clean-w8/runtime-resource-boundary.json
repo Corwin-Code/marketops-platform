@@ -1,0 +1,24 @@
+{
+  "kind": "W8_DESIGNATED_RUNTIME_RESOURCE_RECEIPT_BOUNDARY",
+  "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "startedAtUTC": "2026-09-05T13:03:11.415047+00:00",
+  "designatedResourceReceipt": "/tmp/slice3-r1-full-clean-w8-9b6e6195/runtime-resources.json",
+  "sha256": "4dd8c67ec12f882167fa01a67d041cd3ac85f127b337d001b67a084c4f85d0a7",
+  "capturedAtUTC": "2026-09-05T13:02:07.261072+00:00",
+  "outerRunnerExport": "SLICE3_RUNTIME_RESOURCE_RECEIPT",
+  "freshReceiptExistedBeforeRun": true,
+  "redundantDirectCpuProbe": {
+    "argv": [
+      "sysctl",
+      "-n",
+      "hw.physicalcpu",
+      "hw.logicalcpu",
+      "hw.memsize"
+    ],
+    "exitCode": 1,
+    "stdout": "",
+    "stderr": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+  },
+  "scope": "The designated actual resource collector succeeded with authorized read-only host/Docker access immediately before the full run. The full collector redundant direct sysctl probe was sandbox-denied; its original error remains. The designated resource file is exported and must match capacity identity after completion; no resource file is changed during the run.",
+  "publicationIdentity": "Final runtime/CI identity remains separately measured; no container/service was reconfigured by the resource query."
+}

@@ -1,0 +1,31 @@
+{
+  "generatedAtUTC": "2026-09-05T12:06:21.412384+00:00",
+  "reviewedCriteria": 51,
+  "reviewedFindings": 7,
+  "uniqueReadXmlReports": 24,
+  "uniqueReadGitSourceFiles": 56,
+  "criterionProofReferences": 254,
+  "frozenTimeTravelWordingPreservedOnlyAsExactFrozenQuotation": true,
+  "w6ActualCounts": {
+    "rawTestcaseNodes": 2472,
+    "declaredTests": 2471,
+    "actualFailures": 0,
+    "actualErrors": 0,
+    "actualSkipped": 0
+  },
+  "publicationGate": "PENDING_FINAL_W7_BACKEND_CI_AND_EXACT_ARTIFACT_PROVENANCE",
+  "outputs": [
+    {
+      "path": "/tmp/slice3-r1-controls-w6-full-assessed/controls-51-engineering-assessed.json",
+      "sha256": "817b70f0126508f53ac7723cba92c04b7d93d7c288c71b886db92a54360ac41d"
+    },
+    {
+      "path": "/tmp/slice3-r1-controls-w6-full-assessed/control-findings-7-engineering-assessed.json",
+      "sha256": "3eb9e65e9406c13985fb89ccbb60c94830f2052443f67b1ebadbff295e97b2f3"
+    }
+  ],
+  "runnerScript": {
+    "path": "/tmp/assess-controls-w6-full-prepublication.py",
+    "sha256": "1fc75a3605c6a777bf3c78bd4bbebe25b1296e4d33a79d8a596de817eb24dbe4"
+  }
+}

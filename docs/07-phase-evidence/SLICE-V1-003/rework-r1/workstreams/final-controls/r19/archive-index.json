@@ -1,0 +1,50 @@
+{
+  "kind": "FINAL_CONTROL_PROOF_ATTEMPT_HISTORY",
+  "sourceDirectory": "/tmp/slice3-r1-final-controls-r19",
+  "files": [
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r19/maven.log",
+      "archive": "maven.log.gz",
+      "originalBytes": 29161,
+      "originalSha256": "7e3a70c42612ffd6a356587eb4b1fbc47b3fc71a5072461789d3c25be9f4bb05",
+      "archiveSha256": "f8e1366abc50ea2eef1c5c9caba1820f28a366e389681effab91137359feaba7"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r19/receipt.json",
+      "archive": "receipt.json",
+      "originalBytes": 9652,
+      "originalSha256": "5080b5c8aea04dd4fc2f342c27976d1aee36d991161b38a93dc23e4f0c01a60c",
+      "archiveSha256": "5080b5c8aea04dd4fc2f342c27976d1aee36d991161b38a93dc23e4f0c01a60c"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r19/runtime-resources.json",
+      "archive": "runtime-resources.json",
+      "originalBytes": 591,
+      "originalSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "archiveSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r19/source-after.json",
+      "archive": "source-after.json",
+      "originalBytes": 198171,
+      "originalSha256": "71d42249b4e3da7eb7caf7fcb705fc88bf51d9f6f4a9992769d930058ad26e40",
+      "archiveSha256": "71d42249b4e3da7eb7caf7fcb705fc88bf51d9f6f4a9992769d930058ad26e40"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r19/source-before.json",
+      "archive": "source-before.json",
+      "originalBytes": 198171,
+      "originalSha256": "71d42249b4e3da7eb7caf7fcb705fc88bf51d9f6f4a9992769d930058ad26e40",
+      "archiveSha256": "71d42249b4e3da7eb7caf7fcb705fc88bf51d9f6f4a9992769d930058ad26e40"
+    }
+  ],
+  "reports": [
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT.xml",
+      "sha256": "cd184b59ca5e7ed66508a3b9059739c7e11d3267fc0c7cae41f13d592fadbde6",
+      "bytes": 54060
+    }
+  ],
+  "reportsTarGzSha256": "8b99f5093d52f46e33a8d0905801ba7db3143da9455e27d650a950ab70abb6d4",
+  "limits": "Original failures remain failures. Current uncommitted-source targeted runs do not establish exact final full verify, CI or Controller closure."
+}

@@ -1,0 +1,353 @@
+[
+  {
+    "runId": 33962619010,
+    "attempt": 1,
+    "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010",
+    "name": "Frontend",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "id": 101297026308,
+        "name": "frontend-typecheck",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026308",
+        "startedAt": "2026-09-05T11:10:38Z",
+        "completedAt": "2026-09-05T11:11:03Z"
+      },
+      {
+        "id": 101297026370,
+        "name": "frontend-test",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026370",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:13:19Z"
+      },
+      {
+        "id": 101297026373,
+        "name": "frontend-build",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026373",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:11:05Z"
+      },
+      {
+        "id": 101297026433,
+        "name": "frontend-lint",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026433",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:11:07Z"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 9968438021,
+        "name": "frontend-coverage",
+        "digest": "sha256:6c55526cdbb547b589fe3a857cd63834f92ae17316e20cfa189d4c5ae090efbc",
+        "expired": false,
+        "sizeBytes": 320604
+      },
+      {
+        "id": 9968407134,
+        "name": "frontend-distribution",
+        "digest": "sha256:7102c68e9f96f52c331534834cc1b51e88d2d62d64c874388f2d042c4488df8d",
+        "expired": false,
+        "sizeBytes": 156698
+      }
+    ],
+    "logArchive": {
+      "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619010-attempt-1/logs.zip",
+      "sha256": "2f9bd11451723acae9ecebaaf6d63b18e9610b1d7a3925475ca7093be74ff132",
+      "bytes": 121851
+    },
+    "checkoutCommitObservations": [
+      {
+        "logMember": "0_frontend-lint.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "frontend-lint/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "1_frontend-build.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "frontend-build/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "2_frontend-typecheck.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "frontend-typecheck/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "3_frontend-test.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "frontend-test/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      }
+    ],
+    "downloadedArtifacts": [
+      {
+        "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619010-attempt-1/artifact-9968438021.zip",
+        "sha256": "6c55526cdbb547b589fe3a857cd63834f92ae17316e20cfa189d4c5ae090efbc",
+        "bytes": 320604,
+        "artifactId": 9968438021,
+        "name": "frontend-coverage",
+        "githubDigest": "sha256:6c55526cdbb547b589fe3a857cd63834f92ae17316e20cfa189d4c5ae090efbc"
+      },
+      {
+        "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619010-attempt-1/artifact-9968407134.zip",
+        "sha256": "7102c68e9f96f52c331534834cc1b51e88d2d62d64c874388f2d042c4488df8d",
+        "bytes": 156698,
+        "artifactId": 9968407134,
+        "name": "frontend-distribution",
+        "githubDigest": "sha256:7102c68e9f96f52c331534834cc1b51e88d2d62d64c874388f2d042c4488df8d"
+      }
+    ]
+  },
+  {
+    "runId": 33962619014,
+    "attempt": 1,
+    "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619014",
+    "name": "Governance",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 101297026216,
+        "name": "governance",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619014/job/101297026216",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:11:03Z"
+      }
+    ],
+    "artifacts": [],
+    "logArchive": {
+      "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619014-attempt-1/logs.zip",
+      "sha256": "e494d2dbdc454d2c7c42c5f06b39ad4e9f0f07bf3fc9a309b43daad008aace4d",
+      "bytes": 11802
+    },
+    "checkoutCommitObservations": [
+      {
+        "logMember": "0_governance.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "governance/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      }
+    ],
+    "downloadedArtifacts": []
+  },
+  {
+    "runId": 33962619020,
+    "attempt": 1,
+    "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619020",
+    "name": "Infrastructure",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 101297026284,
+        "name": "infrastructure-validation",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619020/job/101297026284",
+        "startedAt": "2026-09-05T11:10:38Z",
+        "completedAt": "2026-09-05T11:10:59Z"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 9968405495,
+        "name": "infrastructure-verification",
+        "digest": "sha256:cce26151aa700569eb3943529e3e56ba4b2de478ba87b629cb62f009bf3970ca",
+        "expired": false,
+        "sizeBytes": 2316686
+      }
+    ],
+    "logArchive": {
+      "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/logs.zip",
+      "sha256": "cafe3742bd6e3f9d0b45b042931d79559e77e9e39b01c6a2e63acc88860e7d89",
+      "bytes": 16483
+    },
+    "checkoutCommitObservations": [
+      {
+        "logMember": "0_infrastructure-validation.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "infrastructure-validation/2_Checkout exact candidate.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      }
+    ],
+    "downloadedArtifacts": [
+      {
+        "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/artifact-9968405495.zip",
+        "sha256": "cce26151aa700569eb3943529e3e56ba4b2de478ba87b629cb62f009bf3970ca",
+        "bytes": 2316686,
+        "artifactId": 9968405495,
+        "name": "infrastructure-verification",
+        "githubDigest": "sha256:cce26151aa700569eb3943529e3e56ba4b2de478ba87b629cb62f009bf3970ca"
+      }
+    ]
+  },
+  {
+    "runId": 33962619043,
+    "attempt": 1,
+    "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043",
+    "name": "Backend",
+    "status": "in_progress",
+    "conclusion": null,
+    "jobs": [
+      {
+        "id": 101297026242,
+        "name": "backend-build",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043/job/101297026242",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": null
+      },
+      {
+        "id": 101297026384,
+        "name": "backend-integration",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043/job/101297026384",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": null
+      },
+      {
+        "id": 101297026387,
+        "name": "architecture-boundary",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043/job/101297026387",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:11:26Z"
+      }
+    ],
+    "artifacts": []
+  },
+  {
+    "runId": 33962619117,
+    "attempt": 1,
+    "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117",
+    "name": "Security",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 101297026388,
+        "name": "codeql-java",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117/job/101297026388",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:13:32Z"
+      },
+      {
+        "id": 101297026494,
+        "name": "dependency-review",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117/job/101297026494",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:10:46Z"
+      },
+      {
+        "id": 101297026530,
+        "name": "codeql-typescript",
+        "headSha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117/job/101297026530",
+        "startedAt": "2026-09-05T11:10:37Z",
+        "completedAt": "2026-09-05T11:11:37Z"
+      }
+    ],
+    "artifacts": [],
+    "logArchive": {
+      "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619117-attempt-1/logs.zip",
+      "sha256": "d2fe5364efa9c95322939d48aa6a6ee518ce94c79d390ee3385e57057d20ebb8",
+      "bytes": 231922
+    },
+    "checkoutCommitObservations": [
+      {
+        "logMember": "0_codeql-typescript.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "codeql-typescript/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "1_dependency-review.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "dependency-review/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "2_codeql-java.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      },
+      {
+        "logMember": "codeql-java/2_Checkout repository.txt",
+        "sha": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+        "basis": "Actual checkout git log -1 output"
+      }
+    ],
+    "downloadedArtifacts": []
+  }
+]

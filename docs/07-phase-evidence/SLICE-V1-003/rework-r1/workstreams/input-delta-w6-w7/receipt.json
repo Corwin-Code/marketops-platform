@@ -1,0 +1,57 @@
+{
+  "kind": "MEASURED_W6_TO_W7_EXACT_INPUT_DELTA",
+  "recordedAtUTC": "2026-09-05T11:38:48.054128+00:00",
+  "measuredBackendHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "measuredBackendTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "publishedHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "publishedTree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+  "changedPaths": [
+    "frontend/marketops-console/tests/browser/business-journey.spec.ts"
+  ],
+  "sourceBuildMigrationAndWorkflowInputs": [
+    {
+      "path": "backend/marketops-server",
+      "w6GitObject": "946652fb415dcdb938735f17e90d1ca779fc3173",
+      "w7GitObject": "946652fb415dcdb938735f17e90d1ca779fc3173",
+      "exactBytesUnchanged": true
+    },
+    {
+      "path": "scripts",
+      "w6GitObject": "15ebf819997fdeb09d6738d8e5e207c5941cedc3",
+      "w7GitObject": "15ebf819997fdeb09d6738d8e5e207c5941cedc3",
+      "exactBytesUnchanged": true
+    },
+    {
+      "path": ".github/workflows",
+      "w6GitObject": "693056e13494468a5b2b8b09a48310ead10c591a",
+      "w7GitObject": "693056e13494468a5b2b8b09a48310ead10c591a",
+      "exactBytesUnchanged": true
+    },
+    {
+      "path": "infra",
+      "w6GitObject": "7bec110f54c07579e730a87b931538f19137165a",
+      "w7GitObject": "7bec110f54c07579e730a87b931538f19137165a",
+      "exactBytesUnchanged": true
+    },
+    {
+      "path": "frontend/marketops-console/src",
+      "w6GitObject": "b5dccc2fa0f2717666a2c6e70b5ed3e51653d5bc",
+      "w7GitObject": "b5dccc2fa0f2717666a2c6e70b5ed3e51653d5bc",
+      "exactBytesUnchanged": true
+    },
+    {
+      "path": "frontend/marketops-console/package.json",
+      "w6GitObject": "c22414d79c0575de5bf5d415dc0ca2f31cf5c0f0",
+      "w7GitObject": "c22414d79c0575de5bf5d415dc0ca2f31cf5c0f0",
+      "exactBytesUnchanged": true
+    },
+    {
+      "path": "frontend/marketops-console/package-lock.json",
+      "w6GitObject": "493dd4239383e73416fe230b91a8a0f088cfcc4a",
+      "w7GitObject": "493dd4239383e73416fe230b91a8a0f088cfcc4a",
+      "exactBytesUnchanged": true
+    }
+  ],
+  "patchSha256": "dba8ab1c45ae15728728ec1276149b15ab1825f9bd1987899c6b080961ca4f83",
+  "interpretation": "Only the browser failure assertion changes from ambiguous whole-page alert to exact Priority queue alert text plus unique count; application runtime, backend and build/CI inputs are byte-identical. W6 full backend remains its actual W6 measurement; W7 browser and CI results must be their own actual measurements, never restamped."
+}

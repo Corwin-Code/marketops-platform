@@ -1,0 +1,101 @@
+{
+  "kind": "ACTUAL_HTTP_POSTGRESQL_DISCLOSURE_CLASS_FROM_FAILED_ROOT_SUITE",
+  "result": "CLASS_PASS_ONLY",
+  "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+  "counts": {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "namedTestResults": [
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "nativeCommandReadUsesTheExactProductScopeAndNeverThePriceReader",
+      "durationSeconds": 1.803,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission",
+      "durationSeconds": 0.459,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "makerCannotDiscloseFinancialEvidenceThroughAnyDeliveryChannelEvenWithAResourceGrant",
+      "durationSeconds": 0.246,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "independentWildberriesCampaignAndPlacementStructureRemainsSyntheticAndUnverified",
+      "durationSeconds": 0.413,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "anOtherOrganizationCannotResolveObjectsOrBriefReferences",
+      "durationSeconds": 0.218,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp",
+      "durationSeconds": 0.538,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "checkerNeedsTheStoreAndEveryAffectedVariantAndRevocationTakesEffectImmediately",
+      "durationSeconds": 0.303,
+      "status": "PASS"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "method": "recommendationFinancialScopeComesFromCanonicalCandidateWithoutAddingAParameter",
+      "durationSeconds": 0.385,
+      "status": "PASS"
+    }
+  ],
+  "rootSuiteResult": "FAILED",
+  "rootSuiteCounts": {
+    "tests": 98,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0
+  },
+  "rootReceiptSha256": "7ae5dc6fdd91ec5072fc655cd5289717816605c55ce6ffa4de565c3fef89595d",
+  "originalSurefireXmlSha256": "f9fefdc92dd42bde2d2783eaabc34d0801d5aaa33c5a7de60f35a7ae78822e0c",
+  "sourceStableDuringRootRun": true,
+  "baseCommit": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "baseTree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+  "committedSourceClaim": false,
+  "sourceBinding": "W3 plus current uncommitted repairs; exact source bytes bound in source-before/after, not exact W3 commit source.",
+  "sourceManifest": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/disclosure-r37/source-before.json",
+    "sha256": "79ab860826ad590c858cd2cd935e3e9b20c262d706050b9e8ea8e8d3a0c25a99",
+    "matchesAfterSha256": "79ab860826ad590c858cd2cd935e3e9b20c262d706050b9e8ea8e8d3a0c25a99"
+  },
+  "runtimeResources": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/disclosure-r37/runtime-resources.json",
+    "sha256": "a0a3bb5052d55986142d1f143992045ebfcb82bed30abbc4335e18f732d755f8"
+  },
+  "startedAtUTC": "2026-09-05T05:04:38.172518+00:00",
+  "finishedAtUTC": "2026-09-05T05:06:04.777520+00:00",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+    "-Dtest=WorkTaskJournalIT,ControlEpochTriggerIT,AdvertisingDisclosureIT,AdvertisingEfficiencyFlowIT,AdvertisingCanonicalFactsIT,AdvertisingHumanWorkflowIT,AdvertisingResponsibilityBoundaryIT,ModuleBoundaryArchitectureTest",
+    "test"
+  ],
+  "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "log": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/disclosure-r37/maven.log",
+    "sha256": "f4837017e6868c16826a5a32ddaf01158ce30901a3ac4c73e891f5363656180b"
+  },
+  "boundary": "Synthetic isolated PostgreSQL only; no real Provider/shared/production. production_write_enabled=false.",
+  "evidenceLimit": "This proves the eight named disclosure tests at the measured stable working-tree epoch. The full 98-test run failed four independent queue fixtures. No final clean suite, immutable final commit, browser or remote CI success is implied."
+}

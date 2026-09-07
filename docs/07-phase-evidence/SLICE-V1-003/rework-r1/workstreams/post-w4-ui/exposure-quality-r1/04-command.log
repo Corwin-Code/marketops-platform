@@ -1,0 +1,318 @@
+
+> marketops-console@0.1.0 test:ci
+> vitest run --coverage --reporter=default --reporter=json --outputFile=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/vitest.json
+
+
+ RUN  v4.1.10 /Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console
+      Coverage enabled with v8
+
+ ✓ src/__tests__/AvailabilityQueue.test.tsx (14 tests) 286ms
+ ✓ src/__tests__/AvailabilityCases.test.tsx (14 tests) 321ms
+ ✓ src/__tests__/HealthShell.test.tsx (13 tests) 569ms
+ ✓ src/__tests__/AdvertisingGovernedActions.test.tsx (5 tests) 536ms
+     ✓ selects a system manual option using only its identities and human reason  323ms
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > offers sign-in and the platform panel, and no operating data
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > says the operating console is not configured rather than offering a dead button
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > shows the operating console once a session exists
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingBriefView inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingOperations inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > treats an expired session as no session
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-042 the journey runs in the order the work happens > lets an operator sign out
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingBriefView inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingOperations inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/__tests__/AdvertisingWorkflow.test.tsx (7 tests) 924ms
+     ✓ selects only an exact server candidate with reason and observed version  508ms
+ ✓ src/__tests__/AppSession.test.tsx (14 tests) 589ms
+ ✓ src/__tests__/ConsoleJourney.test.tsx (34 tests) 1223ms
+     ✓ retries a lost submission with the same idempotency key  313ms
+ ✓ src/__tests__/AvailabilityAuthorityPanel.test.tsx (3 tests) 160ms
+ ✓ src/__tests__/AdvertisingRecoveryWorkflow.test.tsx (8 tests) 525ms
+ ✓ src/__tests__/AdvertisingControl.test.tsx (19 tests) 553ms
+ ✓ src/__tests__/AdvertisingBrief.test.tsx (8 tests) 182ms
+ ✓ src/__tests__/AdvertisingExecution.test.tsx (34 tests) 706ms
+ ✓ src/__tests__/App.test.tsx (2 tests) 170ms
+ ✓ src/__tests__/sourceIdentity.test.ts (7 tests) 105ms
+ ✓ src/__tests__/consoleApi.test.ts (67 tests) 174ms
+ ✓ src/__tests__/oidc.test.ts (12 tests) 16ms
+ ✓ src/__tests__/metaStatus.test.ts (10 tests) 17ms
+ ✓ src/__tests__/viteConfig.test.ts (12 tests) 7ms
+ ✓ src/__tests__/healthState.test.ts (9 tests) 6ms
+ ✓ src/__tests__/confidence.test.ts (10 tests) 4ms
+ ✓ src/__tests__/config.test.ts (4 tests) 3ms
+ ✓ src/__tests__/buildInfo.test.ts (2 tests) 4ms
+
+ Test Files  22 passed (22)
+      Tests  308 passed (308)
+   Start at  17:03:28
+   Duration  6.01s (transform 2.87s, setup 4.10s, import 3.59s, tests 7.08s, environment 17.96s)
+
+JSON report written to /Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/vitest.json
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 86.04% ( 1850/2150 )
+Branches     : 78.95% ( 1786/2262 )
+Functions    : 87.3% ( 509/583 )
+Lines        : 86.77% ( 1792/2065 )
+================================================================================

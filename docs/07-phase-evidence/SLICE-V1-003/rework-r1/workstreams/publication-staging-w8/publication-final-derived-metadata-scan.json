@@ -1,0 +1,38 @@
+{
+  "kind": "SUPPLEMENTAL_SCAN_OF_FINAL_DERIVED_METADATA",
+  "baseRecursiveScanSha256": "aff02ddc6b088640886cd817b5fba1b0ad4d76508683010458cbc983bc044629",
+  "scannedFinalDerivedFiles": [
+    {
+      "path": "publication-file-manifest.json",
+      "sha256": "5d3bfa64f3b8490a35be50e43fd342ccc3c94b05330fdb487340e6b52533cce6",
+      "bytes": 11403,
+      "result": "ZERO_NEW_SECRET_JWT_OR_SIGNED_QUERY_MATCHES"
+    },
+    {
+      "path": "publication-recursive-raw-scan-r2.json",
+      "sha256": "aff02ddc6b088640886cd817b5fba1b0ad4d76508683010458cbc983bc044629",
+      "bytes": 1770150,
+      "result": "ZERO_NEW_SECRET_JWT_OR_SIGNED_QUERY_MATCHES"
+    },
+    {
+      "path": "publication-staging-receipt.json",
+      "sha256": "04995b96d7a28b8bd665b60124e20ce4cd4cdcd096a01116273585c828d7ccf0",
+      "bytes": 4941,
+      "result": "ZERO_NEW_SECRET_JWT_OR_SIGNED_QUERY_MATCHES"
+    },
+    {
+      "path": "publication-static-help-adjudication-r2.json",
+      "sha256": "7a629af099c9a7c2e802ffa650ac647ee9b1fc8202944f19cff9e143044c93a8",
+      "bytes": 8741,
+      "result": "ZERO_NEW_SECRET_JWT_OR_SIGNED_QUERY_MATCHES"
+    },
+    {
+      "path": "source-archive-byte-verification.json",
+      "sha256": "008102570b03148c662be60387fec79a4309f9021a8a81355d985044bc3a61e8",
+      "bytes": 1349422,
+      "result": "ZERO_NEW_SECRET_JWT_OR_SIGNED_QUERY_MATCHES"
+    }
+  ],
+  "result": "PASS_ZERO_NEW_MATCHES",
+  "boundary": "All original archives and nested content remain byte-identical to the recursive scan. Newly generated metadata contains paths, hashes and redacted classifications only. Final receipt and file manifest are additionally checked in memory immediately before write."
+}

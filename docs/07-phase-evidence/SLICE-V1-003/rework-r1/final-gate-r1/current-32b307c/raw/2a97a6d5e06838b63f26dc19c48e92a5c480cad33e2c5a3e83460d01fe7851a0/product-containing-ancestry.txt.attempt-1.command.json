@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "git",
+    "--no-replace-objects",
+    "merge-base",
+    "--is-ancestor",
+    "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "32b307c648d16f2ecb7f0074e615e78e95ed4121"
+  ],
+  "startedAt": "2026-09-06T17:34:50.385668+00:00",
+  "finishedAt": "2026-09-06T17:34:50.406533+00:00",
+  "elapsedSeconds": 0.020877208000000008,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/product-containing-ancestry.txt.attempt-1",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/product-containing-ancestry.txt.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten."
+}

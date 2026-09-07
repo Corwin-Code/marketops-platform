@@ -1,0 +1,390 @@
+{
+  "kind": "ORIGINAL_LOCAL_LAYER_RAW_SCAN_INPUT",
+  "files": {
+    "command.log": {
+      "bytes": 16185,
+      "sha256": "ee2d1e981468b955bfd4ccaec81ad8550e700926276728541864ad923cab72f9"
+    },
+    "identity-after.json": {
+      "bytes": 283,
+      "sha256": "883600ccab94d8ec5f01e515f454347e08751e659248d1f486a920fc913901a7"
+    },
+    "identity-before.json": {
+      "bytes": 283,
+      "sha256": "883600ccab94d8ec5f01e515f454347e08751e659248d1f486a920fc913901a7"
+    },
+    "layer-candidate.json": {
+      "bytes": 24095,
+      "sha256": "1c33c205383990ff3479f6be129749fc32b7fd032ce23066322b9e73527a288e"
+    },
+    "named-testcase-nodes.json": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "preserved-reports.json": {
+      "bytes": 31484,
+      "sha256": "29f480c002861d956c5a4ad95b11d847abcc42e134ce06d006e8c4a6b8cfd290"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/coverage-negative.log": {
+      "bytes": 55,
+      "sha256": "f301e9de1ecd14e409558de008d386adf1ec4dd3b32219ca9d7ad9b89c304234"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/base.css": {
+      "bytes": 5394,
+      "sha256": "3f876e51f0a46864ffa7665b4b7a1f5fb5f6f37fb6a28f014e2b12d82962c852"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/block-navigation.js": {
+      "bytes": 2655,
+      "sha256": "cd8db34b1fbeb973354a93f8b4133c7c7eab34cdda9429a0434be91384783b7e"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/favicon.png": {
+      "bytes": 445,
+      "sha256": "5b0cfd52dc0bfbe544f4e1a9c77aa46b8629b0e0aad6c54f95eef457b86c2a89"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/index.html": {
+      "bytes": 11436,
+      "sha256": "c16df16d67d5a8c23221e8011e8899448cbb0d112ee3a2afe2255b4e14e478fc"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/prettify.css": {
+      "bytes": 676,
+      "sha256": "ea3fe433f9450698ca8a230271688e7aeec12f99c8a7ef6c94379abb38f27823"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/prettify.js": {
+      "bytes": 17590,
+      "sha256": "fa1b1e1b906ddcfa08b46f161c0f924f506e1a31b4f3e09b8caaa2463ef52c18"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/sort-arrow-sprite.png": {
+      "bytes": 138,
+      "sha256": "42c895355f9838ede83fdfdca90127d8471aefed5ecf5342374f65ec7c3f10ab"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/sorter.js": {
+      "bytes": 6731,
+      "sha256": "f8cc5d157379d844fd695ad567b6c29b3c1f0812964ddf6f95c26327e434bab5"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/App.tsx.html": {
+      "bytes": 31169,
+      "sha256": "62cd331cdc253bb06d35f78fe9ae0ab1c6e2d727893cdbc2a13281d3738a06ae"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/ConsoleShell.tsx.html": {
+      "bytes": 31955,
+      "sha256": "8ea981f7cbd44f412929e4a03cee056d8ad0ab73f5be68f3b2c22851ac6cda06"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingBriefView.tsx.html": {
+      "bytes": 33457,
+      "sha256": "099c8d2cabc19a6fd32582e0a83a8c4215b4ac6b2434d3365780719eb6c8bb5c"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingCaseView.tsx.html": {
+      "bytes": 39310,
+      "sha256": "1eb9a069353da9b85deabb037d21635e35137128e4e184b331891d3e4b8ac921"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingCommandTimeline.tsx.html": {
+      "bytes": 18563,
+      "sha256": "9c178b678efebd3886b5c7277ffa853b71e6ab3e85ba43a58bc1b0eb5b9fcde7"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingCompensation.tsx.html": {
+      "bytes": 16733,
+      "sha256": "518d0688795f569c264e55281d831de78cd4b04090ac0c95bffa4906241f0bfd"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingContainmentControls.tsx.html": {
+      "bytes": 26019,
+      "sha256": "875b129f29bffedaa7dfded6d9ceae9cba4b2f7a913e3da6661e5ae55cfc603f"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingEvidenceDetails.tsx.html": {
+      "bytes": 10030,
+      "sha256": "c5bc40d68f3abed6f62175789c7b7ef97e27770982bdfd062feddde788afc707"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingManualControls.tsx.html": {
+      "bytes": 29069,
+      "sha256": "2ff6bec11f15ad199f703fcc6de9efebd902039208eed9d89e3a7d1c9b6327ba"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingManualShadow.tsx.html": {
+      "bytes": 27461,
+      "sha256": "9ef79463905605b1ed066a4fdfc7b83289fb529bb647a112abfa4afe7e43bd30"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingOperations.tsx.html": {
+      "bytes": 51473,
+      "sha256": "ec3eb33a116587a13d3fcebbd28a195c8547ce0b6179b7d2a24f60764c250aa9"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingOrchestration.tsx.html": {
+      "bytes": 9668,
+      "sha256": "da106d22c54d1a9ec85dcc565e8ba5eaa8a166a190b5f99ea9065c9b4f4e9ef7"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingOutcomeHistory.tsx.html": {
+      "bytes": 23968,
+      "sha256": "91fe0351b36eb9c4f711f8fa5a00a39af730b792dab42389538eb708381503e7"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingQueue.tsx.html": {
+      "bytes": 33606,
+      "sha256": "7a1d9302b1c0df9b77ae0652fe90fe09dae4943413751b143ec5e4fa166f7ac7"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingResponsibilityControls.tsx.html": {
+      "bytes": 47813,
+      "sha256": "f61cc876cb290d68148413d4a9bec0fe85c4c1ad536c6221d294c624371be1a9"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingTimestamp.tsx.html": {
+      "bytes": 7061,
+      "sha256": "826fed08e09a2224aacea4bf4881f6f89c465e49d78529e89ede348bcad28393"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingWorkflow.tsx.html": {
+      "bytes": 53294,
+      "sha256": "c1f7620cb029f682d4a0ec29f049c60641b7ab3c4e6ca21f8d75adc46e587536"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/EvidenceChip.tsx.html": {
+      "bytes": 8109,
+      "sha256": "141bb6cd0bdbe89fcf17e4037b6b51e589a47b0c0a1bc4812eb71a19ec2e9f0e"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/evidencePresentation.ts.html": {
+      "bytes": 26520,
+      "sha256": "68a64da5cbcd9b44309616cc4580a583d1407e597cacc5de9db7a813464b7407"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/advertising/index.html": {
+      "bytes": 16291,
+      "sha256": "efc8443fa9ac25ffc5f021d07f8d40aef9277027e634cbe685c7255ae0c7fee5"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/api/advertising.ts.html": {
+      "bytes": 135199,
+      "sha256": "497e5f66700fa01f4e185f3f980aaca410616497c5b286bba9333b274d14bcb5"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/api/console.ts.html": {
+      "bytes": 311643,
+      "sha256": "8a8c29641bf03f6338fc458fd244504377790886d7491cddf4f4e793766afe13"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/api/diagnosticExport.ts.html": {
+      "bytes": 45951,
+      "sha256": "8bc17754d3f3dc3f6a544c812b547de053f1387c5b48287044876e77fdb3f247"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/api/index.html": {
+      "bytes": 6607,
+      "sha256": "412a627dc51f44285ada9decad666c057cfb69e601c3e0c5396e3200a6165b85"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/api/metaStatus.ts.html": {
+      "bytes": 27449,
+      "sha256": "9fa82f01b4d82c6a0a16b1ac90515e7df3ca91aa646fddeef215028fe9b6399e"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/availability/AvailabilityAuthorityPanel.tsx.html": {
+      "bytes": 64067,
+      "sha256": "747839e87186aa34a338aad07f4f942107ffd56a46f43b059e99263673da31d5"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/availability/AvailabilityCases.tsx.html": {
+      "bytes": 41620,
+      "sha256": "6e0af7103dcddf4f27f85dc33f7d0c1144a756311cf2524693b878887bb7e28e"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/availability/AvailabilityQueue.tsx.html": {
+      "bytes": 37488,
+      "sha256": "adfbe0ac63b9b747727b4c05194cbd6d477cc55b4a11cb656e3adc1eebb18765"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/availability/casePresentation.ts.html": {
+      "bytes": 24238,
+      "sha256": "881dd41cce65b0b8ede58534298f5e800ff9a8d544f22539b45c5b6453f027c7"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/availability/index.html": {
+      "bytes": 7415,
+      "sha256": "4e8189d94bad5e571490a8fee67025b9296ec70e206c8bac4de1de11ae8034f9"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/availability/riskPresentation.ts.html": {
+      "bytes": 31799,
+      "sha256": "0d45376bdf94f60d37ba3c858e4cab11156c1b09c4f2671e44d139e0d2635adf"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/buildInfo.ts.html": {
+      "bytes": 7887,
+      "sha256": "0e269138bf6dbcbd7bdc5629c4de992eb701df9e9f7e7736ab07f5cfcd715497"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/commands/CommandTimeline.tsx.html": {
+      "bytes": 35386,
+      "sha256": "1c0f1c94f4ed58790245feb3da175a072c070b7afd10766282d94466f0c9fea6"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/commands/index.html": {
+      "bytes": 4512,
+      "sha256": "04f2ca971739904c8da07b35c3d4ba08bf3d08131061f769587234cddbe83553"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/config.ts.html": {
+      "bytes": 17364,
+      "sha256": "358c46745ae1476c4532f4fff9b188751ddc1265b316c6128bfd5dffc7319ec6"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/diagnosis/AiExplanationPanel.tsx.html": {
+      "bytes": 19810,
+      "sha256": "1590d73f0add377dd9857066de67f1d0f90d01f5aa3bf690a713f36bdbcdc317"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/diagnosis/DiagnosticExportPanel.tsx.html": {
+      "bytes": 29379,
+      "sha256": "7096b581a1aae75a8a8775b95a80b5a68e59fb69ed7d7fe65edcca9b4b8054cc"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/diagnosis/MetricEvidencePanel.tsx.html": {
+      "bytes": 16211,
+      "sha256": "825b14197a929285f0f5011884f2f25d3c60df77f602e144f9038f44258de3b4"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/diagnosis/SubjectDiagnosisView.tsx.html": {
+      "bytes": 27318,
+      "sha256": "e451bf78d6c6964719967dd8dcb57e2b78c84153a4e5a1e47ddcfc6bef72a469"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/diagnosis/index.html": {
+      "bytes": 6715,
+      "sha256": "c6eae48cf3219d98c37ac5e709296f67d8bf749e08d280f0ea072c2e9ba58d33"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/health/HealthShell.tsx.html": {
+      "bytes": 27271,
+      "sha256": "6b60aa03465a867456e9c0c89eda4c42c0ce7a537c93c94264c787c0825ccae1"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/health/healthState.ts.html": {
+      "bytes": 18316,
+      "sha256": "db2fe5cea146bb5552d1b85fc1d42d90ee929ac9c222a9b70f7f7358e1054677"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/health/index.html": {
+      "bytes": 5177,
+      "sha256": "fd8aff0fad36ba85bfc99d136871efa4ec3b6e91445019fd6fcd8b6ce1fc571f"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/index.html": {
+      "bytes": 7147,
+      "sha256": "f578b88f6e835d75a9516f4f682d99c065f02146db4d14c5f6b5ee86f270162e"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/queue/PriorityQueue.tsx.html": {
+      "bytes": 23619,
+      "sha256": "3e27dc56b4d3cb6a2c7210b34c2db590324ff5dd539532139a04d0ea928bf726"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/queue/index.html": {
+      "bytes": 4487,
+      "sha256": "717e665c1bf3147a76dd75c4a311948e311eec9404df0c0a5f053984f0095480"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/session/SignIn.tsx.html": {
+      "bytes": 9338,
+      "sha256": "c01ac597e8238067d63305523280c9103875eb852e6ac0194cb648f051e02e18"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/session/index.html": {
+      "bytes": 6485,
+      "sha256": "fb1059795237aa9e855576a5aa2a4b5af92f0708fbe57b5abcf0578add7326e6"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/session/oidc.ts.html": {
+      "bytes": 28627,
+      "sha256": "a094b753a32dae5b8cfbd897e02f31df610f80ceedec387bd6f61bafe5f79d7c"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/session/pkce.ts.html": {
+      "bytes": 9946,
+      "sha256": "61235efd657d8861583196e4b728ee5d6279b6430e4464e04be970730a68d5cf"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/session/session.ts.html": {
+      "bytes": 12764,
+      "sha256": "8fe7e343f99811d509f3dcbf290d99952d4efe534edcccebf206c3ca5775c82f"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/state/ValueCell.tsx.html": {
+      "bytes": 9348,
+      "sha256": "2e547a0eb65c21563afa2a4cb70de59ee1e919eb1fe677557d8f03a6eb8688a0"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/state/confidence.ts.html": {
+      "bytes": 21163,
+      "sha256": "53d4f1a4be8ce6863f2c57aa5055c02aca61fd7ec772e27f1bd4a7158b83a0fb"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/state/index.html": {
+      "bytes": 5141,
+      "sha256": "bc86b5dcdf8dcc798d4066fd9e42c256d372a8042b248c64c73739f5d5d37f0f"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/vite-env.d.ts.html": {
+      "bytes": 5309,
+      "sha256": "516f5a2391a2e223f6508a7aa2fcb543041b59e9d97d737d3ef392560609dfc9"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/workflow/RecommendationReview.tsx.html": {
+      "bytes": 36760,
+      "sha256": "2c3b224d28ad55487eff2b69dd26159c526ac2ae59071d7b78b88a061d45b15d"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/workflow/SubjectRecommendations.tsx.html": {
+      "bytes": 10407,
+      "sha256": "3499bf1a12632914ab007beb510ce1849e06bac0e1c3418852e2286aa3127d8e"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov-report/src/workflow/index.html": {
+      "bytes": 5263,
+      "sha256": "82b23edb930e86e65647bd7ad086c0e4f4d9d7cd1c2ac24e38ec372131915227"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/positive-coverage/lcov.info": {
+      "bytes": 87394,
+      "sha256": "a3e1017a3ebb1652bf7eee347ccfe7533bba326db8d1607c552b1b94d29c7feb"
+    },
+    "raw/build/final-gate-r5-02e6172/frontend/tests.json": {
+      "bytes": 863474,
+      "sha256": "f3c6d5f9245c4caccd0493254f528e86cc3ffe9138ae0e432f931ce2bf6f8fe5"
+    },
+    "raw/frontend/marketops-console/dist/assets/index-CoWM4RvP.js": {
+      "bytes": 345756,
+      "sha256": "15cca3023ce35139d9b8db7ca0afa654d05dae93ae30a62d32dea5407a7e627e"
+    },
+    "raw/frontend/marketops-console/dist/index.html": {
+      "bytes": 1321,
+      "sha256": "6f83244da331f13f64e9780fb033631349d722533d493d209ed3270d300f663b"
+    },
+    "report-state-before.json": {
+      "bytes": 401,
+      "sha256": "80606ff6c2e5083ca2ffbbb3316de16687ca5fb1e6e3a4aa5efdb4bd27a2943d"
+    },
+    "source-after.json": {
+      "bytes": 309596,
+      "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec"
+    },
+    "source-before.json": {
+      "bytes": 309596,
+      "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec"
+    }
+  },
+  "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "sourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "runId": "final-frontend-r5",
+  "sourceInventorySha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+  "checkpointCommandResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "sourceStable": true,
+  "layerReceipt": {
+    "path": "/private/tmp/slice3-final-execution-02e6172-r5/frontend-quality/layer-candidate.json",
+    "sha256": "1c33c205383990ff3479f6be129749fc32b7fd032ce23066322b9e73527a288e"
+  },
+  "allCollectorEvidenceReferencesVerified": 72,
+  "scanner": {
+    "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+    "sha256": "944d60fc07f5ac6635b44c5721fe910f83b465fa60cad4d2f1c61e017510ad77"
+  },
+  "receiptSchema": "layer-candidate.json",
+  "rulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+    "archivedSource": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-source-02e6172.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    {
+      "id": 1,
+      "pattern": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
+    },
+    {
+      "id": 2,
+      "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+    },
+    {
+      "id": 3,
+      "pattern": "\\bghp_[A-Za-z0-9]{30,}\\b"
+    },
+    {
+      "id": 4,
+      "pattern": "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b"
+    },
+    {
+      "id": 5,
+      "pattern": "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b"
+    },
+    {
+      "id": 6,
+      "pattern": "\\bsk-[A-Za-z0-9]{24,}\\b"
+    },
+    {
+      "id": 7,
+      "pattern": "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']"
+    },
+    {
+      "id": 8,
+      "pattern": "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b"
+    },
+    {
+      "id": 9,
+      "pattern": "(?i)https?://[^\\s\\\"<>]*(?:X-Amz-Signature|X-Goog-Signature|[?&]sig=|[?&]signature=|[?&]access_token=|[?&]token=)[^\\s\\\"<>]*"
+    }
+  ],
+  "rawContentPrinted": false,
+  "checkpointBoundary": "Completed original 02e local frontend-quality command; product nine-layer admission and independent Controller review remain separate.",
+  "checkpointExitCode": 0,
+  "originalCollectorTestcaseCounts": null,
+  "sourceReceiptAuthority": "Original immutable local command receipt; scan does not convert command completion into nine-layer admission."
+}

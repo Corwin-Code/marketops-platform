@@ -1,0 +1,258 @@
+{
+  "kind": "INDEPENDENT_ADDITIONAL_INPUT_SYNTHETIC_EXECUTION",
+  "id": "method_binder_synthetic",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "sourceInventorySha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "runId": "binder-synthetic-r2",
+  "startedAt": "2026-09-06T17:31:42.429373+00:00",
+  "finishedAt": "2026-09-06T17:32:42.765814+00:00",
+  "elapsedSeconds": 60.336163,
+  "argv": [
+    "/Library/Developer/CommandLineTools/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "exitCode": 0,
+  "sourceStable": true,
+  "inputsBefore": [
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+      "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+      "bytes": 39215
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+      "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+      "bytes": 41687
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+      "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+      "bytes": 22180
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+      "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+      "bytes": 15808
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+      "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+      "bytes": 15328
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+      "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+      "bytes": 9104
+    }
+  ],
+  "inputsAfter": [
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+      "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+      "bytes": 39215
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+      "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+      "bytes": 41687
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+      "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+      "bytes": 22180
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+      "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+      "bytes": 15808
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+      "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+      "bytes": 15328
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+      "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+      "bytes": 9104
+    }
+  ],
+  "observerInputsBefore": [
+    {
+      "path": "/private/tmp/slice3-final-drivers-32b307c-r1/binder-observer/sitecustomize.py",
+      "sha256": "9b62fac674b8e82dfd3ebaa231130836fe0098b65ad0d6f8fc915cd66b529a6b",
+      "bytes": 657
+    },
+    {
+      "path": "/private/tmp/slice3-final-drivers-32b307c-r1/binder-observer/slice3_unittest_capture.py",
+      "sha256": "9ad5cf522d0b8c446d81335bd1193f58e3703c1e6e0cbaecd46abc1d8587bfd9",
+      "bytes": 7070
+    }
+  ],
+  "observerInputsAfter": [
+    {
+      "path": "/private/tmp/slice3-final-drivers-32b307c-r1/binder-observer/sitecustomize.py",
+      "sha256": "9b62fac674b8e82dfd3ebaa231130836fe0098b65ad0d6f8fc915cd66b529a6b",
+      "bytes": 657
+    },
+    {
+      "path": "/private/tmp/slice3-final-drivers-32b307c-r1/binder-observer/slice3_unittest_capture.py",
+      "sha256": "9ad5cf522d0b8c446d81335bd1193f58e3703c1e6e0cbaecd46abc1d8587bfd9",
+      "bytes": 7070
+    }
+  ],
+  "observerRepositoryGitBinding": {
+    "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w4-governance/slice3_unittest_capture.py",
+    "repositoryInput": {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w4-governance/slice3_unittest_capture.py",
+      "sha256": "9ad5cf522d0b8c446d81335bd1193f58e3703c1e6e0cbaecd46abc1d8587bfd9",
+      "bytes": 7070
+    },
+    "gitBlobId": "6c5b881b84449d9e046bd1f0eab4c611c1a805c9",
+    "gitBlobSha256": "9ad5cf522d0b8c446d81335bd1193f58e3703c1e6e0cbaecd46abc1d8587bfd9",
+    "copiedInput": {
+      "path": "/private/tmp/slice3-final-drivers-32b307c-r1/binder-observer/slice3_unittest_capture.py",
+      "sha256": "9ad5cf522d0b8c446d81335bd1193f58e3703c1e6e0cbaecd46abc1d8587bfd9",
+      "bytes": 7070
+    }
+  },
+  "observerExpectedArgvSuffix": [
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "repositoryGitBindings": [
+    {
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+      "repositoryInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+        "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+        "bytes": 39215
+      },
+      "copiedInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+        "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+        "bytes": 39215
+      },
+      "gitBlobId": "e971aafeadf530cfa8c056fe81bc84e3bc09cf3d",
+      "gitBlobSha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55"
+    },
+    {
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+      "repositoryInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+        "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+        "bytes": 41687
+      },
+      "copiedInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+        "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+        "bytes": 41687
+      },
+      "gitBlobId": "225e129e5b74abb2842d767a31ad2348d7fc0684",
+      "gitBlobSha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98"
+    },
+    {
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+      "repositoryInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+        "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+        "bytes": 22180
+      },
+      "copiedInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+        "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+        "bytes": 22180
+      },
+      "gitBlobId": "0dd3c1d1340dc719b6690e2e74f0cba0258243c7",
+      "gitBlobSha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8"
+    },
+    {
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+      "repositoryInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+        "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+        "bytes": 15808
+      },
+      "copiedInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+        "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+        "bytes": 15808
+      },
+      "gitBlobId": "d711f45241949b2259b66cfbe929e79181e547aa",
+      "gitBlobSha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f"
+    },
+    {
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+      "repositoryInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+        "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+        "bytes": 15328
+      },
+      "copiedInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+        "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+        "bytes": 15328
+      },
+      "gitBlobId": "55072ec8c609071aeae4a32fa83354749ea63ffb",
+      "gitBlobSha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f"
+    },
+    {
+      "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+      "repositoryRelativePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+      "repositoryInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+        "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+        "bytes": 9104
+      },
+      "copiedInput": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+        "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+        "bytes": 9104
+      },
+      "gitBlobId": "f54a7a7abfa35ed25ada318e9bde4ccc3e4c4e25",
+      "gitBlobSha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c"
+    }
+  ],
+  "frameworkCounts": {
+    "testsRun": 106,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "expectedFailures": 0,
+    "unexpectedSuccesses": 0
+  },
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/binder-synthetic-r2/named-tests.json",
+      "sha256": "747ea43406b9b14eb3dd6110bf5954c89002e34008beb7015f19b2a8cc757b3c",
+      "bytes": 170801
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/binder-synthetic-r2/command.log",
+      "sha256": "a1864bfbbdd72345473a735352191021d443886e87be3295553c02a3299f81fd",
+      "bytes": 11836
+    }
+  ],
+  "boundary": "106 evidence-tool synthetic boundary tests only, never product acceptance nodes or automatic proof admission."
+}

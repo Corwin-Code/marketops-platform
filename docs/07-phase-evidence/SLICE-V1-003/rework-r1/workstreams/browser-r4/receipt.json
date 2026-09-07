@@ -1,0 +1,150 @@
+{
+  "attempt": "r4",
+  "startedAt": "2026-09-05T03:02:03.835635+00:00",
+  "finishedAt": "2026-09-05T03:03:27.453001+00:00",
+  "durationSeconds": 83.617,
+  "command": "bash scripts/validation/advertising_browser_isolated.sh",
+  "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+  "exitCode": 1,
+  "result": "FAILED",
+  "sourceInputSha256": "fea3785fc5c40a917f431e7ce8cfc2a571ee2908e56fcd204060f53acb7e4639",
+  "sourceUnchanged": true,
+  "resources": {
+    "os": "macOS-26.6.2-arm64-arm-64bit",
+    "architecture": "arm64",
+    "cpuCount": 8,
+    "physicalMemoryBytes": 17179869184,
+    "postgresImage": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+    "network": "A fresh dedicated Docker bridge network with inter-container communication disabled and one loopback-only non-5432 PostgreSQL endpoint; dedicated namespace cleaned by the script",
+    "realProviderAccess": false,
+    "productionWriteEnabled": false
+  },
+  "dataIdentityCaptured": true,
+  "log": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/runtime.log",
+    "sha256": "8fe7a2134bcc5dc7e72cdb9fa1a5df80641eaa38c61bcd61f3fb5c87cebe7bfd"
+  },
+  "artifacts": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "sha256": "869b9a1207415eb80443133bc6a8da5a5fbd700d49803b9576525ef2552666d9",
+      "bytes": 663761
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "sha256": "77f8feeb8795fd96c00d2b5ba5e537a41a7b8f4f22247a53c916bf96698d02d5",
+      "bytes": 200141
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "sha256": "d431b39412de2c1c2fce5f3d19d60a6a4e1b633da47d377632f461c7d1c17f2f",
+      "bytes": 406332
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "sha256": "34aee77611c6cedd3d00c50afc7601068b835df01a43a3d32bc19d4ca11c4315",
+      "bytes": 305263
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "sha256": "bd51b8f2eb9ce816051418a19a3fa1b2b802b40cc30dfaffd2a6e9eef7838163",
+      "bytes": 316279
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "sha256": "a2ad6400fbcf46cf1f05874a24f55461be767d911265cbc746f139487c443102",
+      "bytes": 387188
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "sha256": "4b8fcabd6b28c1d05f181ca01296303b45d661ed2cf72ae3f24fa94e0692026f",
+      "bytes": 384216
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "sha256": "02262c50f90a83a50b1a25a7a218a04d41b78ccf5b676f185080928e6b04b292",
+      "bytes": 409931
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "sha256": "18043695faa6beb4ebfb2d67da5a8cdc199ec26c311d2fc9c7d48612650665af",
+      "bytes": 1750395
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "sha256": "8e0bedbe6bb91aaff8dc2856d7f9c28ea8165f6001631a98f2a5398355975911",
+      "bytes": 1115706
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "sha256": "0f541a55778785bd31f54f37f4827ca0b518f4a6e4512514dc0b230a3061eb59",
+      "bytes": 485856
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "sha256": "d6043b6cf5cfe8872c1da24f1fcbebef3fa02b8c3593a3cafd161e5b58fcdbe1",
+      "bytes": 350472
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/test-failed-2.png",
+      "sha256": "d24d83025bc0550383557acc662687e26156a65302b2f7854ad817b3d3ed1e1a",
+      "bytes": 122623
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/test-failed-3.png",
+      "sha256": "68472f7a61055501d44f159aec31e9978b8b72c8a5d4dfe20c3a0469c604d432",
+      "bytes": 116463
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/test-failed-1.png",
+      "sha256": "a20ff65709e8d1a758c126134f409fa43b33f06193af86594caeefbc34818e5c",
+      "bytes": 120718
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "sha256": "eacfe018551496ba6410878805d03927495d4efdf0ea8af92932c1c4d2428b0b",
+      "bytes": 317541
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "sha256": "12ad1f0a4f519a26b1ca2f50d5c60dda48627977046993ac7f633d046f59746a",
+      "bytes": 310283
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "sha256": "a6d3c0b48b0d060be6db5d0aa0b5c49fc40c382140092af3baa1836b4775c628",
+      "bytes": 242557
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "7a07000074b49f96501872b65c00501fffd1a3e4a9855d989fba15e66c3e2e85",
+      "bytes": 295698
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "sha256": "b2acd2f88ad5af67215dfca999a4d27a86ed023ec801787a8a5552e36b2e0b41",
+      "bytes": 301122
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "5fd8644e6c51a77ee468ad5ef305340139c2fdf138a6139f91daf6639be16432",
+      "bytes": 293870
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "sha256": "226aae5f1bacc2eef8b2956f6730e8e986c7b1b350358e750b88c64e54947ef2",
+      "bytes": 1117680
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "sha256": "7ad3097caca1406127afec6fe3496b0aa66c565ed020469deb45911f728f8cee",
+      "bytes": 1747594
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "sha256": "6ebfe5433967e6d0d7ecb0f32f717a03604c6625c9e297f9e0921cb3fcff09fd",
+      "bytes": 485823
+    }
+  ],
+  "evidenceLimit": "Browser HTTP/JWT/IAM/SQL/rendering evidence. Explicit synthetic lane and history rows do not establish Provider or canonical outcome computation truth; those have independent PostgreSQL tests. No final remote CI claim."
+}

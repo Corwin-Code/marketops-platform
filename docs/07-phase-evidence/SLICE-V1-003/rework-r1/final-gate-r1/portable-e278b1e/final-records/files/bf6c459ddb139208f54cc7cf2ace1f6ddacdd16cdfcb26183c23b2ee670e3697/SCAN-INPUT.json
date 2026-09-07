@@ -1,0 +1,51 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_MANIFEST_SCAN",
+  "scope": "Actual final-publication additional bytes, batch 8. No product test is executed.",
+  "files": {
+    "/private/tmp/slice3-final-row-audit-e278b1e-r2/ROW-AUDIT.json": {
+      "sha256": "61d1978770acaecdac8de2fbc726f7ee7d1441addc7237b3cb75092fc3f0fe39",
+      "bytes": 18742483
+    },
+    "/private/tmp/slice3-root-admission-e278b1e-r1/FROZEN-CLAUSE-ASSESSMENT.json": {
+      "sha256": "d5f34c5e2f82fe694ce8f93506bcf29c85fb7f48c0ca2001980d4e75903d5d50",
+      "bytes": 12693212
+    },
+    "/private/tmp/slice3-final-assessment-e278b1e-r2/FROZEN-CLAUSE-ASSESSMENT-CANDIDATE.json": {
+      "sha256": "0d8b696d46986e2b8d2e999187f72700bdb220fa30787f8e6d24768b3179c1f8",
+      "bytes": 12685519
+    },
+    "/private/tmp/slice3-backend-publication-scan-e278b1e-r6/MEMBERS.jsonl": {
+      "sha256": "43d5184e66450cd356a147ef9b90cc75a1ece80ad1a799e49149cc95f4b3a85b",
+      "bytes": 12230052
+    },
+    "/private/tmp/slice3-backend-publication-scan-da559bd-r6/MEMBERS.jsonl": {
+      "sha256": "9c0188c68fd68be877fe675cbf71ff7b95e115cef813df187ad7bb1ae5e2b02a",
+      "bytes": 12230052
+    }
+  },
+  "manifest": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/input-08.json",
+    "sha256": "8ad321933a51c3df0aacee3c8fa4552d1363a162c6ff3208f5c1f94c1ddc1467"
+  },
+  "scanner": {
+    "path": "/private/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+    "sha256": "aebf01d82dd3c8845fe538589caf7ccb21d16363422d57f2a2ddad6e93bf76f8"
+  },
+  "rulesSource": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+    "\\bAKIA[0-9A-Z]{16}\\b",
+    "\\bghp_[A-Za-z0-9]{30,}\\b",
+    "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b",
+    "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b",
+    "\\bsk-[A-Za-z0-9]{24,}\\b",
+    "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']",
+    "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b",
+    "(?i)https?://[^\\s\\\"<>]*(?:X-Amz-Signature|X-Goog-Signature|[?&]sig=|[?&]signature=|[?&]access_token=|[?&]token=)[^\\s\\\"<>]*"
+  ],
+  "productExecutions": 0,
+  "closureClaimMade": false
+}

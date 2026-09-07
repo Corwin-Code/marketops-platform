@@ -1,0 +1,9 @@
+{
+  "group": "ci-w8",
+  "archive": "original-evidence.tar.gz",
+  "archiveSha256": "661d34321a1ac8d4e8e1a51cb44e04a4d42e50768491dd549aeb099d9686a5b7",
+  "originalSources": [
+    "/tmp/slice3-pr30-w8-complete-ci"
+  ],
+  "boundary": "Original bytes in tar. Failed attempts and original receipt identities retained; no source path rewriting. Direct review JSON copies only when LF or no newlines."
+}

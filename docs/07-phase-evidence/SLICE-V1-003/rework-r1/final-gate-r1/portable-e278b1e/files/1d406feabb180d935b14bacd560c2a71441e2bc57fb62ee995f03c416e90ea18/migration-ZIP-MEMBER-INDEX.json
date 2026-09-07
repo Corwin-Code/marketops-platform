@@ -1,0 +1,287 @@
+{
+  "kind": "IMMUTABLE_LOCAL_LAYER_ARCHIVE_INDEX",
+  "layer": "migration",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "runId": "final-migration-r6",
+  "originalStartedAt": "2026-09-06T10:35:44.865606+00:00",
+  "originalFinishedAt": "2026-09-06T10:35:52.913578+00:00",
+  "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "originalExitCode": 0,
+  "originalSourceStable": true,
+  "originalCollectorTestcaseCounts": null,
+  "originalReceipt": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/layer-candidate.json",
+    "sha256": "a897775d421123a69914aeda17d841246caea0c7fdd2f6624cc2ac8c12007e1b",
+    "bytes": 7373
+  },
+  "originalReceiptMember": "migration/layer-candidate.json",
+  "archive": {
+    "path": "/private/tmp/slice3-local-layer-archives-e278b1e-r1/migration-e278b1e-immutable.zip",
+    "sha256": "76b99655d0b01ce750f3d4d97b66f8fff14bee1e698a77fc7903203c4b9822ea",
+    "bytes": 172520
+  },
+  "memberCount": 25,
+  "uncompressedBytes": 669541,
+  "allOriginalEvidenceReferencesVerified": 17,
+  "allOriginalBytesAndFilesetUnchanged": true,
+  "allZipCrcAndMemberShaVerified": true,
+  "files": [
+    {
+      "member": "migration/command.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/command.log",
+      "relativeSourcePath": "command.log",
+      "sha256": "ba11821ca6da7fe88721568ba8e461d7a792118453b590b21c3a7dbbaff47dfd",
+      "bytes": 1313,
+      "crc32": "d4d3eba6",
+      "compressedBytes": 728,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/identity-after.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/identity-after.json",
+      "relativeSourcePath": "identity-after.json",
+      "sha256": "da7128317ab06ea7563c25477f0006b11e33734581da9bb60b4fa7a23b37d525",
+      "bytes": 283,
+      "crc32": "96387514",
+      "compressedBytes": 215,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/identity-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/identity-before.json",
+      "relativeSourcePath": "identity-before.json",
+      "sha256": "da7128317ab06ea7563c25477f0006b11e33734581da9bb60b4fa7a23b37d525",
+      "bytes": 283,
+      "crc32": "96387514",
+      "compressedBytes": 215,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/layer-candidate.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/layer-candidate.json",
+      "relativeSourcePath": "layer-candidate.json",
+      "sha256": "a897775d421123a69914aeda17d841246caea0c7fdd2f6624cc2ac8c12007e1b",
+      "bytes": 7373,
+      "crc32": "44d5c221",
+      "compressedBytes": 2051,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/named-testcase-nodes.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/named-testcase-nodes.json",
+      "relativeSourcePath": "named-testcase-nodes.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "crc32": "7068d244",
+      "compressedBytes": 5,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/preserved-reports.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/preserved-reports.json",
+      "relativeSourcePath": "preserved-reports.json",
+      "sha256": "0abcc8f6ae6931c0d50c31c75369834cc5faf55d742ea6caa49026f363bd1fa1",
+      "bytes": 5800,
+      "crc32": "8197f577",
+      "compressedBytes": 1004,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/backend-artifact-label.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-artifact-label.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/backend-artifact-label.log",
+      "sha256": "d9847a50a24eda8ee8cf391f473ef3392d7ae16963cfb94331e64197d14d7f16",
+      "bytes": 65,
+      "crc32": "7202b1a7",
+      "compressedBytes": 54,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/backend-build.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-build.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/backend-build.log",
+      "sha256": "0aa0a516e995bde91a0dc95b21c22db6196d24852a5a6231d7b4fe9a09093f2a",
+      "bytes": 2136,
+      "crc32": "2fbbf5de",
+      "compressedBytes": 887,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/backend-products-after.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-products-after.json",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/backend-products-after.json",
+      "sha256": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37",
+      "bytes": 3291,
+      "crc32": "58ba7928",
+      "compressedBytes": 842,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/backend-products-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-products-before.json",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/backend-products-before.json",
+      "sha256": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37",
+      "bytes": 3291,
+      "crc32": "58ba7928",
+      "compressedBytes": 842,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/backend.image-id",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend.image-id",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/backend.image-id",
+      "sha256": "41bb055baa22608f0c83ffb55838f57813b02b7422b637fb3531f038fc14d617",
+      "bytes": 71,
+      "crc32": "792a432e",
+      "compressedBytes": 60,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/checkout-identity.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/checkout-identity.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/checkout-identity.log",
+      "sha256": "fa725b8edc8a22981f696e7783e2ef73ca6bc3663fc830f76fe1a88696565ee1",
+      "bytes": 82,
+      "crc32": "e889c98f",
+      "compressedBytes": 63,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/checkout-status.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/checkout-status.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/checkout-status.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "crc32": "00000000",
+      "compressedBytes": 2,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/compile-probe.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/compile-probe.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/compile-probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "crc32": "00000000",
+      "compressedBytes": 2,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/docker-endpoint.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/docker-endpoint.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/docker-endpoint.log",
+      "sha256": "b7bc7f05ceabc075a8f3a67ad28e796f5e83f56ba3736ac739f028f7704e21e0",
+      "bytes": 47,
+      "crc32": "3d3afaa7",
+      "compressedBytes": 43,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/migration-artifact-label.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/migration-artifact-label.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/migration-artifact-label.log",
+      "sha256": "d9847a50a24eda8ee8cf391f473ef3392d7ae16963cfb94331e64197d14d7f16",
+      "bytes": 65,
+      "crc32": "7202b1a7",
+      "compressedBytes": 54,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/migration-build.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/migration-build.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/migration-build.log",
+      "sha256": "4b57897baae92942bfbf1de3b32cf386beb6ca0332ca64c229f98fcba0c1394e",
+      "bytes": 2156,
+      "crc32": "d7077948",
+      "compressedBytes": 894,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/migration.image-id",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/migration.image-id",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/migration.image-id",
+      "sha256": "142f063cbb2c2ca040e5c456567fea46209c7bea92a0bdea7d8f2bbaa176fa52",
+      "bytes": 71,
+      "crc32": "67a5fd5f",
+      "compressedBytes": 60,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/missing-envelope-refused.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/missing-envelope-refused.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/missing-envelope-refused.log",
+      "sha256": "6a1471119d91cbdd1ee0b645f0c9e3ef0b2548ba83333db718e636cc7a1d8168",
+      "bytes": 17,
+      "crc32": "8066b7ce",
+      "compressedBytes": 19,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/packaged-resolver.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/packaged-resolver.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/packaged-resolver.log",
+      "sha256": "e57d1f84ad9c9b4e5d4f795ea6f4ff34b0124ca9ebd3bd66b278aaba5009a22f",
+      "bytes": 8835,
+      "crc32": "fb14a7ad",
+      "compressedBytes": 4582,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/summary.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/summary.json",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/summary.json",
+      "sha256": "58882654a2d86279958b8004d2d4d8832b7874f06aa7a05ddcc3cee624fa71c5",
+      "bytes": 11963,
+      "crc32": "b8012fe5",
+      "compressedBytes": 5901,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/raw/build/final-gate-r6-e278b1e/migration/wrong-artifact-build-refused.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/wrong-artifact-build-refused.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/migration/wrong-artifact-build-refused.log",
+      "sha256": "65023f3d58a0a9e9812f735d334e6507522788e35eda3eedb864f06cf9283ef4",
+      "bytes": 2217,
+      "crc32": "259a9525",
+      "compressedBytes": 732,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/report-state-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/report-state-before.json",
+      "relativeSourcePath": "report-state-before.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3,
+      "crc32": "dda1b006",
+      "compressedBytes": 5,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/source-after.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/source-after.json",
+      "relativeSourcePath": "source-after.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088,
+      "crc32": "6e0430d1",
+      "compressedBytes": 74223,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "migration/source-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/source-before.json",
+      "relativeSourcePath": "source-before.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088,
+      "crc32": "6e0430d1",
+      "compressedBytes": 74223,
+      "zipMemberReadShaVerified": true
+    }
+  ],
+  "reexecutionPerformed": false,
+  "publicationScan": "PENDING_SCAN_OF_EXACT_ARCHIVE_AND_METADATA_BYTES",
+  "productPassInferred": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false
+}

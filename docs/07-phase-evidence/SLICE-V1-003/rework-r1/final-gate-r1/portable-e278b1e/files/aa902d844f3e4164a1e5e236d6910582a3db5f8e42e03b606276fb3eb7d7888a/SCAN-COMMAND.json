@@ -1,0 +1,29 @@
+{
+  "kind": "OBSERVED_SCAN_COMMAND_EXECUTION_RECORD",
+  "recordedAt": "2026-09-06T04:47:52.566243+00:00",
+  "argv": [
+    "python3",
+    "/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+    "--input",
+    "/tmp/slice3-final-execution-02e6172-r5/browser-r4",
+    "--out",
+    "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan",
+    "--scope",
+    "Completed browser-r4 original 02e command: 37 actual passing browser nodes. This is a separate current run; previous browser r1/r2/r3 remain failed historical records and are not overwritten. Full engineering admission and Controller review remain separate.",
+    "--expected-result",
+    "COMMAND_SUCCEEDED_REVIEW_REQUIRED"
+  ],
+  "exitCode": 0,
+  "startedAt": null,
+  "timestampBoundary": "Scanner measured elapsed seconds; invocation wall start/end timestamps were not separately captured. Original product run timestamps remain in its receipt.",
+  "elapsedSeconds": 7.697,
+  "tool": {
+    "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+    "sha256": "944d60fc07f5ac6635b44c5721fe910f83b465fa60cad4d2f1c61e017510ad77"
+  },
+  "rawSummary": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/SCAN-SUMMARY.json",
+    "sha256": "29166da2d7643b3cb812484f580dfdea5588c927c401946b5c922de59ae99833",
+    "size": 1587
+  }
+}

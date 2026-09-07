@@ -1,0 +1,80 @@
+[
+  {
+    "originalScreenshot": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+    "originalSha256": "604497146b6b1f8b559361a2c92e82f3980d910f1fb57f39805929c0306b686c",
+    "viewOnlyCrop": "/tmp/slice3-w6-browser-evidence/visual-review/owner-evidence-top.png",
+    "boxXYXY": [
+      1,
+      1,
+      1280,
+      1601
+    ],
+    "derivedSha256": "ad82f3b1246ba60df3c7a8c31e44f2935508f7303de11332a859505a4ec4eecf",
+    "limit": "Read-only viewport derivative for inspection; original browser screenshot bytes retained unchanged."
+  },
+  {
+    "originalScreenshot": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+    "originalSha256": "604497146b6b1f8b559361a2c92e82f3980d910f1fb57f39805929c0306b686c",
+    "viewOnlyCrop": "/tmp/slice3-w6-browser-evidence/visual-review/owner-evidence-bottom.png",
+    "boxXYXY": [
+      1,
+      37094,
+      1280,
+      38694
+    ],
+    "derivedSha256": "af4835ef572eb91d3530336a16855f7a11ac4c7860d4d8915801789b56e21be4",
+    "limit": "Read-only viewport derivative for inspection; original browser screenshot bytes retained unchanged."
+  },
+  {
+    "originalScreenshot": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+    "originalSha256": "91eae1940b3284e7b274318a18dedd87e3a28fce7986a896e1b838c731a64b25",
+    "viewOnlyCrop": "/tmp/slice3-w6-browser-evidence/visual-review/wb-native-profile.png",
+    "boxXYXY": [
+      1,
+      1,
+      1280,
+      1601
+    ],
+    "derivedSha256": "cfb016ab602ff6497c966f7e94ff266ebcca087dd657f5cf4e0b04c1b01f8205",
+    "limit": "Read-only viewport derivative for inspection; original browser screenshot bytes retained unchanged."
+  },
+  {
+    "originalScreenshot": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+    "originalSha256": "91eae1940b3284e7b274318a18dedd87e3a28fce7986a896e1b838c731a64b25",
+    "viewOnlyCrop": "/tmp/slice3-w6-browser-evidence/visual-review/wb-proof-outcome-bottom.png",
+    "boxXYXY": [
+      1,
+      12191,
+      1280,
+      13791
+    ],
+    "derivedSha256": "90ee242f406d4d75b67d8459663d62e2ed43d3cb81327fa881c8cc8ffde53b90",
+    "limit": "Read-only viewport derivative for inspection; original browser screenshot bytes retained unchanged."
+  },
+  {
+    "originalScreenshot": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+    "originalSha256": "e470efc6545d48c5e867b4d7ff0b11cbfdf0e9daa699ed73ad32ee40b6ca45e4",
+    "viewOnlyCrop": "/tmp/slice3-w6-browser-evidence/visual-review/ozon-native-profile.png",
+    "boxXYXY": [
+      1,
+      1,
+      1280,
+      1601
+    ],
+    "derivedSha256": "e9a79c8f3642817bf1c0e7fa2c846c453c980aae45a14dc91a07281cf47b2b56",
+    "limit": "Read-only viewport derivative for inspection; original browser screenshot bytes retained unchanged."
+  },
+  {
+    "originalScreenshot": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+    "originalSha256": "c35edb0b75012ba3ea882fb7970696ea72e7cfa72b3e94404c4dfbf244962fe2",
+    "viewOnlyCrop": "/tmp/slice3-w6-browser-evidence/visual-review/regression-outcome-bottom.png",
+    "boxXYXY": [
+      1,
+      4126,
+      1280,
+      5726
+    ],
+    "derivedSha256": "eb62b88a04eb82ed0764fe3e59cac2609880e10c7eb42e108de17b5f83a5b131",
+    "limit": "Read-only viewport derivative for inspection; original browser screenshot bytes retained unchanged."
+  }
+]

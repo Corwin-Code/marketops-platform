@@ -1,0 +1,20 @@
+{
+  "classification": "LOCAL_MERGED_COVERAGE_EVIDENCE",
+  "source": "backend/marketops-server/target/jacoco.exec \u2014 unit and integration appended to one file",
+  "bundle": "marketops-server",
+  "gate": {
+    "LINE": 0.8,
+    "BRANCH": 0.7
+  },
+  "measured": {
+    "LINE": 0.8589,
+    "BRANCH": 0.7141,
+    "linesCovered": 21619,
+    "linesTotal": 25172,
+    "branchesCovered": 6094,
+    "branchesTotal": 8534
+  },
+  "surefire": "Tests run: 1480, Failures: 0, Errors: 0, Skipped: 0",
+  "failsafe": "Tests run: 604, Failures: 0, Errors: 0, Skipped: 0",
+  "result": "PASS"
+}

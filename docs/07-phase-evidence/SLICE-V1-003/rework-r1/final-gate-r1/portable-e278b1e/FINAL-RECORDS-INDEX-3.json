@@ -1,0 +1,148 @@
+{
+  "kind": "PRESERVED_FINAL_DOCUMENT_TEST_FAILURE_AND_CURRENT_SOURCE_CORRECTION",
+  "files": [
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/all-governance-tests.log",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/118401f9c8f40bf82e092bdd336f315fdcb43c46ea2d4ce4589252b1b19ab642/all-governance-tests.log",
+      "sha256": "118401f9c8f40bf82e092bdd336f315fdcb43c46ea2d4ce4589252b1b19ab642",
+      "bytes": 88355
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/production-readiness-RECEIPT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f1bc95187d3cecdfba2b435a24e90edfb00fb85915c9ccb001db6eaa1b07bdb0/production-readiness-RECEIPT.json",
+      "sha256": "f1bc95187d3cecdfba2b435a24e90edfb00fb85915c9ccb001db6eaa1b07bdb0",
+      "bytes": 640
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/finalizer-check.log",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f8d3faa48e1cdc69769ffa65f9c638a34346e09729a0dd0d2e2f91b53b51f2b1/finalizer-check.log",
+      "sha256": "f8d3faa48e1cdc69769ffa65f9c638a34346e09729a0dd0d2e2f91b53b51f2b1",
+      "bytes": 85
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/production-readiness.log",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/59a665ed133c711c908a5dd8fcc38166a912d16ae25cb8e92e6abd7c855cf7d8/production-readiness.log",
+      "sha256": "59a665ed133c711c908a5dd8fcc38166a912d16ae25cb8e92e6abd7c855cf7d8",
+      "bytes": 287
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/governance.log",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/d16ddd0173e27cf60e9e5642df238396e067ba7c8770d890d56d4ae4b005805d/governance.log",
+      "sha256": "d16ddd0173e27cf60e9e5642df238396e067ba7c8770d890d56d4ae4b005805d",
+      "bytes": 30
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/finalizer-check-RECEIPT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/0f2dae42a7e65056321852b30f477da745787929cef512ea340453cb94f8bbfb/finalizer-check-RECEIPT.json",
+      "sha256": "0f2dae42a7e65056321852b30f477da745787929cef512ea340453cb94f8bbfb",
+      "bytes": 659
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/VERIFICATION-RECEIPTS.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/217eb8358dc0ccce7cafc02fa0ab37d2e41f78e00e07492a6d30f9aea0f1a971/VERIFICATION-RECEIPTS.json",
+      "sha256": "217eb8358dc0ccce7cafc02fa0ab37d2e41f78e00e07492a6d30f9aea0f1a971",
+      "bytes": 2751
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/all-governance-tests-RECEIPT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/10494ce91d1c69531d7631eda551e09f7c5d930b487561bedf2ac92246cf0c12/all-governance-tests-RECEIPT.json",
+      "sha256": "10494ce91d1c69531d7631eda551e09f7c5d930b487561bedf2ac92246cf0c12",
+      "bytes": 686
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/governance-RECEIPT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f2a117d8f09aadf94c31ea92ad46922be44ff5d17d767dc151fe67830ba42580/governance-RECEIPT.json",
+      "sha256": "f2a117d8f09aadf94c31ea92ad46922be44ff5d17d767dc151fe67830ba42580",
+      "bytes": 609
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/FINDING-CLOSURE-MATRIX.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/defd2844db3848a7ddf0269c6eee2a36af619ea50ad5cafa721b94efa7131490/FINDING-CLOSURE-MATRIX.json",
+      "sha256": "defd2844db3848a7ddf0269c6eee2a36af619ea50ad5cafa721b94efa7131490",
+      "bytes": 2464132
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/ENGINEERING_VERIFICATION.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/6cec3cdf35d5a55fbf17cee0cad7d54affc757555f0643824cf70eb8e6d91843/ENGINEERING_VERIFICATION.json",
+      "sha256": "6cec3cdf35d5a55fbf17cee0cad7d54affc757555f0643824cf70eb8e6d91843",
+      "bytes": 1052860
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/CORRECTION-RECEIPT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f9f0af8a9e2a031de84e9c135520eba8fbe710527e9747059c6b1c1f0919167d/CORRECTION-RECEIPT.json",
+      "sha256": "f9f0af8a9e2a031de84e9c135520eba8fbe710527e9747059c6b1c1f0919167d",
+      "bytes": 5327
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/S3-AC-REWORK-STATUS.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/7a768dccd2523a6367b0c2de1767c8151bc7d13d64cfdfbe3e2a9d1ba1415e33/S3-AC-REWORK-STATUS.json",
+      "sha256": "7a768dccd2523a6367b0c2de1767c8151bc7d13d64cfdfbe3e2a9d1ba1415e33",
+      "bytes": 6223046
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/FROZEN-CLAUSE-ASSESSMENT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/d5f34c5e2f82fe694ce8f93506bcf29c85fb7f48c0ca2001980d4e75903d5d50/FROZEN-CLAUSE-ASSESSMENT.json",
+      "sha256": "d5f34c5e2f82fe694ce8f93506bcf29c85fb7f48c0ca2001980d4e75903d5d50",
+      "bytes": 12693212
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/pending-finalizer.log",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c29b3ec8fd608aaeed14d9f93ba3cf2778d53f88fc56e73b4f58395450215ab8/pending-finalizer.log",
+      "sha256": "c29b3ec8fd608aaeed14d9f93ba3cf2778d53f88fc56e73b4f58395450215ab8",
+      "bytes": 86
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/CURRENT-ENGINEERING-HANDOFF.md",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/922a17d9c8026a8eafe8b8188dca2ee473bfd43e11c3d712de04b5ced86d41f6/CURRENT-ENGINEERING-HANDOFF.md",
+      "sha256": "922a17d9c8026a8eafe8b8188dca2ee473bfd43e11c3d712de04b5ced86d41f6",
+      "bytes": 9555
+    },
+    {
+      "originalPath": "/private/tmp/slice3-phase-test-correction-e278b1e-r1/EXECUTION-MANIFEST.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05/EXECUTION-MANIFEST.json",
+      "sha256": "391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05",
+      "bytes": 9406286
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/input-15.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/b246581cb9eb1a0f6421298b513848593501ca0531e940fb1a058f3f397af1b2/input-15.json",
+      "sha256": "b246581cb9eb1a0f6421298b513848593501ca0531e940fb1a058f3f397af1b2",
+      "bytes": 12813
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-15.log",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c251c76e91695a2d27d694ecd04d8ffacc5d6c2cfde6f2096eb2709f4b7a31d4/scan-15.log",
+      "sha256": "c251c76e91695a2d27d694ecd04d8ffacc5d6c2cfde6f2096eb2709f4b7a31d4",
+      "bytes": 754
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-15/MEMBERS.jsonl",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/a5881f332134eb3f95d15fd2456a023c6a8dcb8c3754a0a65cb520f1dfe36e13/MEMBERS.jsonl",
+      "sha256": "a5881f332134eb3f95d15fd2456a023c6a8dcb8c3754a0a65cb520f1dfe36e13",
+      "bytes": 12602
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-15/SCAN-INPUT.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/5226c354b7004c3307d9386e127076800523c140b6c148282042b94756ca921f/SCAN-INPUT.json",
+      "sha256": "5226c354b7004c3307d9386e127076800523c140b6c148282042b94756ca921f",
+      "bytes": 13540
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-15/SCAN-SUMMARY.json",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e03100f99c49c81784c17093ed98f495231375bb35026d63efc5f4dd83bc3a05/SCAN-SUMMARY.json",
+      "sha256": "e03100f99c49c81784c17093ed98f495231375bb35026d63efc5f4dd83bc3a05",
+      "bytes": 788
+    },
+    {
+      "originalPath": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-15/HITS.jsonl",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/HITS.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "fullDocumentRegressionTests": 421,
+  "failures": 2,
+  "historicalOnly": true,
+  "newSourceVerificationPending": true,
+  "productionWriteEnabled": false
+}

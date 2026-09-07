@@ -1,0 +1,107 @@
+{
+  "kind": "W8_CONTROL_PREPARATION_MANIFEST_NOT_FULL_CLOSURE",
+  "createdAtUTC": "2026-09-05T13:27:19.399296+00:00",
+  "authoredW8Head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "authoredW8Tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "historicalW6Inputs": [
+    {
+      "path": "/tmp/slice3-r1-controls-w6-full-assessed/controls-51-engineering-assessed.json",
+      "sha256": "817b70f0126508f53ac7723cba92c04b7d93d7c288c71b886db92a54360ac41d"
+    },
+    {
+      "path": "/tmp/slice3-r1-controls-w6-full-assessed/control-findings-7-engineering-assessed.json",
+      "sha256": "3eb9e65e9406c13985fb89ccbb60c94830f2052443f67b1ebadbff295e97b2f3"
+    }
+  ],
+  "r25CountsVerified": 72,
+  "r25NewScopeCasesVerified": 2,
+  "criteriaCount": 51,
+  "findingCount": 7,
+  "namedMethodPlans": 136,
+  "sourcePathsIndividuallyCompared": 63,
+  "files": [
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/README.md",
+      "sha256": "44c1b22607921dfc73d26e0fa090cec194c3144e0bdee50d9d7fedaada674f3f"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/canonical-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/canonical-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/canonical-patch-review.json",
+      "sha256": "56942802da62e8753e191d4feda6ec36625c9bda33625d60cfc6db11b834d2d8"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/control-findings-7-engineering-prepared-w8.json",
+      "sha256": "c2d2510a0b752b2d9ccf69317958068102674304b82ea2ea3d6cdd4dbf57d1e7"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/controls-51-engineering-prepared-w8.json",
+      "sha256": "13aebb2e9dc4343f883cd1afe064d85f597f52180318cf26eb99f8147a821220"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/fill-after-full.json",
+      "sha256": "e534a46e0608a3d07adc2ccd88927b9fd12b109e399e7c817f39d28bde4e88f9"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/named-proof-plan.json",
+      "sha256": "6771dcada53a1ed9477ff6f19e62a28c26970a5055b2544701e8ddcb56ff23d6"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/r25-actual-proof.json",
+      "sha256": "f4c3d3a4b7d2c686e56bfdaebe6b0b5c11eba6ac79c79c583f8f5ca82dcb5ee9"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingCaseCalculationService.java.diff",
+      "sha256": "af076d82f659322b7821c0fd834a5c2ab6935ab91996d8d88beb682ab62d362e"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingCaseCalculationServiceTest.java.diff",
+      "sha256": "d572e950f7d0fd2399cd58a3adeb73ba988b70d09bc482b0ad5afbca37b6df61"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingHumanWorkflowIT.java.diff",
+      "sha256": "a76df043682359ca81724f538d485dee43b47a8c37cebbe1452810c901ebdac4"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingOrchestrationCapacityIT.java.diff",
+      "sha256": "460e31ed9f9dbc24a8dc4a29815e4558605f8e1f0f53ec119436f849fcd3ea19"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingReconciliationWorker.java.diff",
+      "sha256": "86324eee4ad29c0d1c0d8dfcd81d8ddb283bcf9acad4ad182a4803914e8484b0"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingReconciliationWorkerTest.java.diff",
+      "sha256": "681519a4d17e1fa124b5414a08fd56f5f6e62b23ad71c3699c7aaa574c2b18b0"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingReservationIT.java.diff",
+      "sha256": "b69f9ac8edd22ca21ac8c440393ef63d7e1e1f790e3f283f13184177b0b88868"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/AdvertisingTaskSloService.java.diff",
+      "sha256": "87f7233da3910fbb94dd0d4f8dbb0c03b4746d6b3a4d3c8720c8eefd1191f42e"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta/PriceCommandWorkerIT.java.diff",
+      "sha256": "9c0840ee102ccf973d78603abf445e6089815161b562b2661481c502ebb2a71f"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-final-preparation/source-delta-review.json",
+      "sha256": "e56301dfddfa5e22290a7ab9318119597daf3bdd7e43a90ce27e81f707f58fee"
+    }
+  ],
+  "generator": {
+    "path": "/tmp/prepare-slice3-controls-w8-final.py",
+    "sha256": "7699c8716131a587128e7a04d4cbd3e26637449b2d6d993cacfafc1c5d0b5803"
+  },
+  "w8FullBound": false,
+  "canonicalPatchApplied": false,
+  "controllerVerdict": null
+}

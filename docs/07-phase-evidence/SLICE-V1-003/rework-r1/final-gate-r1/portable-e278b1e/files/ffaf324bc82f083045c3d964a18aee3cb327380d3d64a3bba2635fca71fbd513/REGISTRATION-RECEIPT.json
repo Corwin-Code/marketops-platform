@@ -1,0 +1,69 @@
+{
+  "kind": "ORIGINAL_CURRENT_EXECUTION_REGISTRATION_ONLY",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "inputs": {
+    "path": "/private/tmp/slice3-register-completed-e278b1e-r6-r2.py",
+    "sha256": "ee68afc3a67ec5be670e935d08db25504d084d54dd46c66fb2af4777c7fb7c32"
+  },
+  "sourceMethodPlan": {
+    "path": "/private/tmp/slice3-source-review-e278b1e-r3/SOURCE-METHOD-REVIEW-PLAN.json",
+    "sha256": "56959cc40dac361f79a826f81e863fb261565c16fcca6e870204efe81f988c6f"
+  },
+  "config": {
+    "path": "/private/tmp/slice3-completed-registration-e278b1e-r1/EXECUTION-INPUTS.json",
+    "sha256": "502997d6483b7aa439b6939651595dcc1e8a3f405ed22841dfce90d136c6cc80"
+  },
+  "observations": [
+    {
+      "layer": "frontend_quality",
+      "actualNamedNodes": 358,
+      "sourceFiles": 22
+    },
+    {
+      "layer": "browser",
+      "actualNamedNodes": 37,
+      "originalJsonLeafReferencesAdded": 3,
+      "additionalTestExecutions": 0,
+      "leafReferencesDuplicateExistingExactJunit": false
+    },
+    {
+      "layer": "governance",
+      "report": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/binder-synthetic-r2/named-tests.json",
+        "sha256": "cd3484ac1314b4e0fdbe761f40c18a015d9c216880bd46ac3e71484bfe46eb7e"
+      },
+      "frameworkCounts": {
+        "testsRun": 106,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expectedFailures": 0,
+        "unexpectedSuccesses": 0
+      },
+      "actualNamedNodes": 106
+    },
+    {
+      "layer": "governance",
+      "report": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/named-unittest-results.json",
+        "sha256": "0158ea828b8e75206792ebc16f8e5236ac432ce916119a165c71f26cb3c18131"
+      },
+      "frameworkCounts": {
+        "testsRun": 421,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expectedFailures": 0,
+        "unexpectedSuccesses": 0
+      },
+      "actualNamedNodes": 421
+    }
+  ],
+  "proofSelections": [],
+  "layerAdmissionPerformed": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "productionWriteEnabled": false
+}

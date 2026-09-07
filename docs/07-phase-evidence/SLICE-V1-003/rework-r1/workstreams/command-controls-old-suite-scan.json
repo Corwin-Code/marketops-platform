@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "READ_ONLY_OLD_ADVERTISING_TEST_SCAN",
+  "readAt": "2026-09-05T02:44:06.871313+00:00",
+  "rows": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+      "sha256AtRead": "49f7ec55faae20271111534cedb60aaf2958f48ad866a29c5763cc96a81f3db5",
+      "classification": "CONFIRMED_OBSOLETE_PRECONDITION",
+      "finding": "AdvertisingGraphFixture.seedCommand tries to reserve before exact sealed approval, then constructs command authority through a single approval/direct INSERT. Its restoration assertions contradict permanent invalidation.",
+      "action": "Rewritten 8 original scenarios staged in /tmp/r1-old-control-tests; real issuer→seal→creator, one graph per test, privilege/schema vs actual gate stated explicitly."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+      "sha256AtRead": "e61c40b098713435fa49acf6d218d4bb71c76a6f2e39507a8a29ae1ff2b9b2b8",
+      "classification": "CONFIRMED_OBSOLETE_EXPECTATION_AND_RESIDUAL_INGRESS",
+      "finding": "Positive EXECUTE expectation includes revoked caller-boolean observer. Actual pg_proc also exposed still callable V0050 role-parameter reopen, which must be revoked rather than concealed by test edits.",
+      "action": "Staged 73 exact non-trigger callable signatures, expanded private authority tables and actual old-entry privilege refusals; exact V0058 revoke staged."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+      "sha256AtRead": "73175d7816e5960fc71f3532bfcf5c733bef26912a13b69beb519f37edfa2564",
+      "classification": "CONFIRMED_OBSOLETE_AUTHORITY_GRAPH",
+      "finding": "Direct Case/candidate single-approval graph and old required-policy assumptions do not establish the trusted Planner and three-person Material approval path.",
+      "action": "Source agent owns full real refresh→human→sealed-command→fake-port lifecycle replacement; no skipped tests or bypass of runtime controls authorized."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "sha256AtRead": "30feb13cc086d5c71d932f44d72291a6016fc4cf1f1d934f6a1e662dce51074b",
+      "classification": "REQUIRES_CURRENT_RUNTIME_RESULT",
+      "finding": "No direct sealed-command bypass identified. Ordered one-Case/lane/queue/rank assumptions may differ under independent causes, actual evidence freshness and targeted triggers.",
+      "action": "Keep and run full suite; no failure or PASS inferred from age alone."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityBindingIT.java",
+      "sha256AtRead": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373",
+      "classification": "NO_CONFIRMED_NEW_INGRESS_FAILURE",
+      "finding": "Uses graph+decision authority rather than obsolete seedCommand; identity-only tests may remain valid.",
+      "action": "Keep and run actual suite."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "sha256AtRead": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+      "classification": "REQUIRES_CURRENT_RUNTIME_RESULT",
+      "finding": "No direct old command authority identified. Scoped source-backed brief projection may affect old broad-section assumptions.",
+      "action": "Keep and run actual suite."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDecisionQueryIT.java",
+      "sha256AtRead": "c6beb58c919cd79cf40325d223340b5eef977c067cfb27df18bcb87e0d0d41f5",
+      "classification": "REQUIRES_CURRENT_RUNTIME_RESULT",
+      "finding": "Empty/read-only query coverage has no identified old command creation bypass.",
+      "action": "Keep and run actual suite."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidDispatchAuthorityIT.java",
+      "sha256AtRead": "bdfbcdc1fd82b74f07c9779e7daedfb24016742a81940ac5e20cd2ed21662130",
+      "classification": "NO_CONFIRMED_NEW_INGRESS_FAILURE",
+      "finding": "Default-closed operation-shape checks do not construct approved authority.",
+      "action": "Keep and run actual suite."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdBidWritePathIT.java",
+      "sha256AtRead": "8ef379ea43865bc7f11fe3ddcf8d027fde74244b3d4ba249513d2d2223525478",
+      "classification": "NO_CONFIRMED_NEW_INGRESS_FAILURE",
+      "finding": "Existing structural/privilege constraints and unverified Provider checks remain relevant; no direct old command fixture.",
+      "action": "Keep and run actual suite."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidParameterContractParityIT.java",
+      "sha256AtRead": "60c1163c40cb2941646f73398d4c0433708055dd5563850a0b78c91c93892cd4",
+      "classification": "NO_CONFIRMED_NEW_INGRESS_FAILURE",
+      "finding": "Parameter-contract rejection parity is independent of creator authorization graph.",
+      "action": "Keep and run actual suite."
+    }
+  ],
+  "limits": [
+    "Source age is not a test result. Only exact contradicted prerequisites and actual grants are classified confirmed.",
+    "Staged Java tests are not counted as executed. The isolated SQL probe confirms its named statements only.",
+    "No test deletion, skip, production enablement, accepted Contract change or Frozen Finding edit."
+  ],
+  "probeLogs": [
+    "/tmp/slice3-old-gate-schema-probe.log",
+    "/tmp/slice3-old-gate-positive-probe.log",
+    "/tmp/slice3-old-control-boundary-probe-r3.log"
+  ],
+  "implementationFollowup": "After the UI build window closed, the two replacement suites and exact V0058 revoke were applied. Isolated SQL probe passed; current Maven result pending."
+}

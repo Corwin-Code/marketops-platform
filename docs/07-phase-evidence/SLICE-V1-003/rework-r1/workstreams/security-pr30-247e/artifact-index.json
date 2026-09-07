@@ -1,0 +1,75 @@
+{
+  "generatedAtUTC": "2026-09-05T10:57:40.207196+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2654,
+      "sha256": "1fbaf78956cc92c2c6913ed0ad6f3b40ddc7334a8e99942a77647e97f36bf516"
+    },
+    {
+      "path": "capacity-git-path-repair.json",
+      "bytes": 1315,
+      "sha256": "f7fc33e11c956fd94f9384559943bd8e817b3a32e9f7a6ec0e3c5bcaccce5f38"
+    },
+    {
+      "path": "capacity-git-path.patch",
+      "bytes": 1509,
+      "sha256": "2e609314ff14c259ff1cba49051750af584a0e16789ce985560a237bddda1a37"
+    },
+    {
+      "path": "codeql-99-triage.json",
+      "bytes": 235965,
+      "sha256": "759fcb3d9af9b86e8d9ce782537130afd49d554770359d6706ab7902b257d031"
+    },
+    {
+      "path": "codeql-99-triage.md",
+      "bytes": 2153,
+      "sha256": "40df4d68cb8535dc085d918fcc86f62af98bf8b06d6b2b90ca536208e204876d"
+    },
+    {
+      "path": "fast-uri-lock.patch",
+      "bytes": 824,
+      "sha256": "67766411224d792f0b54cdc1cd7362cf94ad8209e85078a1a0e419ad2e333dea"
+    },
+    {
+      "path": "git-executable-path-evidence.json",
+      "bytes": 1305,
+      "sha256": "b4a2561beb7327f093f3599c9aeeaef24e0e7ff4d9ff9b87f9e934a22fe21e6c"
+    },
+    {
+      "path": "lock-update-scope.json",
+      "bytes": 1755,
+      "sha256": "f63f6feaa64e1e8521693b89626cc2f5c37c7a9c070ecb1c0249e8ecd6c1762a"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 31925,
+      "sha256": "36a3f56802d7ca2efce22ca4d27d64fec9921bcaad9e4c634c721a89cb38a2fb"
+    },
+    {
+      "path": "npm-audit-3.1.6.json",
+      "bytes": 364,
+      "sha256": "44154f671eec2720b8acff37b6e09613d69dfbf5fbede1f9e97cdacb813f3080"
+    },
+    {
+      "path": "publishability-scan.json",
+      "bytes": 655,
+      "sha256": "063d0c4c0117c24d3659f65854d46f86b7dba53a9fe366fbd34bacb2ea439eb9"
+    },
+    {
+      "path": "raw-evidence.tar.gz",
+      "bytes": 961151,
+      "sha256": "0193fd6e05e5adc82134606b59c85f674af2e20db559ec7b71bea724b2a71aa8"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 20723,
+      "sha256": "4cdff95d97a8ff2cbdcdbbd82da25e7b19360fecf880517a71fbfb37c0232db9"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 4228,
+      "sha256": "7f1a3dfabc703408a610bd27037699989cec49f0b96367221a1092d5b2432480"
+    }
+  ]
+}

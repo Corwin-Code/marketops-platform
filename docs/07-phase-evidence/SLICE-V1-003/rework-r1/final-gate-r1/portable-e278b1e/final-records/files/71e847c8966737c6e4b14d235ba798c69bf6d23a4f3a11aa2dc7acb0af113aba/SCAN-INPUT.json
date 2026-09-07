@@ -1,0 +1,35 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_MANIFEST_SCAN",
+  "scope": "Actual final-publication additional bytes, batch 5. No product test is executed.",
+  "files": {
+    "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip": {
+      "sha256": "253492e090cdd9da0a0977d49a030eef6350ad8f0f3114970f0658f6297dabb1",
+      "bytes": 39401052
+    }
+  },
+  "manifest": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/input-05.json",
+    "sha256": "51a4304a61fa6fdee7258db36cbe5ffc581278cca6f90fb99f1b3b72216eb4a3"
+  },
+  "scanner": {
+    "path": "/private/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+    "sha256": "aebf01d82dd3c8845fe538589caf7ccb21d16363422d57f2a2ddad6e93bf76f8"
+  },
+  "rulesSource": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+    "\\bAKIA[0-9A-Z]{16}\\b",
+    "\\bghp_[A-Za-z0-9]{30,}\\b",
+    "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b",
+    "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b",
+    "\\bsk-[A-Za-z0-9]{24,}\\b",
+    "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']",
+    "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b",
+    "(?i)https?://[^\\s\\\"<>]*(?:X-Amz-Signature|X-Goog-Signature|[?&]sig=|[?&]signature=|[?&]access_token=|[?&]token=)[^\\s\\\"<>]*"
+  ],
+  "productExecutions": 0,
+  "closureClaimMade": false
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "method": "unknownWriteOutcome",
+    "class": "com.mimococo.marketops.PriceCommandWorkerIT",
+    "problems": [
+      {
+        "tag": "failure",
+        "type": "org.opentest4j.AssertionFailedError",
+        "message": "\nexpected: 1\n but was: 0",
+        "body": "org.opentest4j.AssertionFailedError: \n\nexpected: 1\n but was: 0\n\tat com.mimococo.marketops.PriceCommandWorkerIT.lambda$seedOneExecutableCommand$0(PriceCommandWorkerIT.java:107)\n\tat com.mimococo.marketops.PriceCommandWorkerIT$ScriptedPlatform.perform(PriceCommandWorkerIT.java:435)\n\tat com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.call(PriceCommandWorker.java:371)\n\tat com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.apply(PriceCommandWorker.java:222)\n\tat com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.advance(PriceCommandWorker.java:147)\n\tat com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.runOnce(PriceCommandWorker.java:112)\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\n\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)\n\tat org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)\n\tat org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)\n\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)\n\tat com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker$$SpringCGLIB$$0.runOnce(<generated>)\n\tat com.mimococo.marketops.PriceCommandWorkerIT.unknownWriteOutcome(PriceCommandWorkerIT.java:180)\n"
+      }
+    ]
+  }
+]

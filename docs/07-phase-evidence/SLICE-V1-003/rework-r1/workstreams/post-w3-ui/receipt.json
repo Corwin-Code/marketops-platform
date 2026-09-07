@@ -1,0 +1,44 @@
+{
+  "kind": "WORKING_TREE_TARGETED_FRONTEND_RECEIPT",
+  "result": "PASS",
+  "baseCommit": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "baseTree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+  "committedSourceClaim": false,
+  "sourceIdentityLimit": "This invocation tested the working tree after the W3 full-run fixes. The following source manifest was measured after the run while the two changed frontend files were frozen; it is not an immutable commit or a pre/post full-source stability proof. Final exact-commit archive quality remains pending.",
+  "command": [
+    "npm",
+    "test",
+    "--",
+    "src/__tests__/AdvertisingControl.test.tsx"
+  ],
+  "workingDirectory": "frontend/marketops-console",
+  "nodeVersion": "v24.19.0",
+  "startedAt": "2026-09-05T05:00:52Z",
+  "startedAtPrecision": "second, from Vitest local 13:00:52 Asia/Taipei output",
+  "finishedAt": "2026-09-05T05:00:53.603772+00:00",
+  "durationSeconds": 1.26,
+  "exitCode": 0,
+  "counts": {
+    "files": 1,
+    "tests": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "newTest": "shows unresolved impact as unknown when the known member list is empty",
+  "sourceManifest": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/frontend-source-inputs.json",
+    "sha256": "5d65b8e368437ab4679f474316771094f9ba371942f22c8e42e283e00683f331"
+  },
+  "log": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/unknown-case-frontend.log",
+    "sha256": "27d32ab03f4de5433d3837ae3d85b37c80fe72b6307d31df77ef90db387ef540"
+  },
+  "evidenceLayer": "Explicit response-fixture React rendering; real HTTP unknown Case test is in separate root r37 after a strict-fixture correction and remains pending here.",
+  "guardBoundaries": {
+    "productionWriteEnabled": false,
+    "realProviderAccess": false,
+    "acceptedContractChanged": false,
+    "frozenFindingSetChanged": false
+  },
+  "formatCheck": "Prettier on the two changed files reported unchanged; git diff --check passed."
+}

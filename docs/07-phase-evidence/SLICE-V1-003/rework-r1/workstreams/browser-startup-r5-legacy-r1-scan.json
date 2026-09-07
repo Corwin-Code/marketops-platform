@@ -1,0 +1,112 @@
+{
+  "kind": "BROWSER_FAILED_ATTEMPT_PUBLICATION_SCAN",
+  "recordedAtUTC": "2026-09-05T10:29:42.169005+00:00",
+  "scannerSource": "scripts/validate_governance.py",
+  "scannerSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+  "scope": "Exact repository SECRET_PATTERNS applied to all textual artifacts, explicitly including ignored .log files; no trace or credential configuration is included. Pattern absence alone is not a general proof of absence of sensitive content.",
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/attempt-interpretation.json",
+      "sha256": "261ec25f9c399029957e9f2d21f5142db92711887fd46fda44cc882ccc486f7d",
+      "bytes": 972
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/named-browser-results.json",
+      "sha256": "909af212df716a7860612b323959c67859fd2de22880b7726623cff8e2f0b1b4",
+      "bytes": 419
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/receipt.json",
+      "sha256": "0f78cdff019e67861150172ff98b57ac2f2f72a2d8a572444e2275383d11806a",
+      "bytes": 2870
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/runtime-resources.json",
+      "sha256": "9020560875e03fa0b4ba1ae65725f9ee64cdbb9b274cad0b7a624ff35ae8d93b",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/runtime.log",
+      "sha256": "eb0b053efd2cd45283565d5ddef2c183fb5b0704f1a30c08a247c5683539dede",
+      "bytes": 27272
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/source-inputs.json",
+      "sha256": "eeb87938fd0d47c7cec1adf6070c929cf0a867eb14f53abbf686a87053dd7953",
+      "bytes": 255415
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/attempt-interpretation.json",
+      "sha256": "d146bdd4ed612c0d3ab23c80985f951b241ec32495972630fbed12ceab18d6cc",
+      "bytes": 1227
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/legacy-test-input-delta.json",
+      "sha256": "c40db35b5c7822eaa0c6294a2ff3a9c161da3489a63347da3b7f034786c95ca5",
+      "bytes": 4975
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/00-command.log",
+      "sha256": "b208f20263c434c9a04f7275aa7e5d869c94c6b1fa6992becb835836838a3900",
+      "bytes": 517
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/01-command.log",
+      "sha256": "a619b29b358ea31439357e892f6d9ec9416c36e99190fa90061480e7bead6282",
+      "bytes": 782
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/02-command.log",
+      "sha256": "d7774e149cef726cb0c90fc1ade0bbc66e14083160b7125d5bce1c9b7c008657",
+      "bytes": 453
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/03-command.log",
+      "sha256": "64cf75a4c82ba17e7bb592c2ebf87fc8a2b086c6ab457b2bbae949caba0ffb29",
+      "bytes": 29353
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/04-command.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/05-command.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "bytes": 61
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/06-command.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/logs/07-command.log",
+      "sha256": "bbcd2fa4bdc61a3af78e7706eb7b8ab3495026eba5f51687d16653fc5bfbce6b",
+      "bytes": 13987
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/receipt.json",
+      "sha256": "bfc0bddd0cc2daa7cca277f120f0b53c72b73bb8bbc6cf245426b35cd539861b",
+      "bytes": 7070
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/runtime-resources.json",
+      "sha256": "665c99043fbf404d0d726f2ccd0b74824ba778df9e5677560347bfcfa3fcbcd7",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/runtime.log",
+      "sha256": "f54c544d6e9ce354b75089201dcb0146267d90d06ffdb87bae4edbddc0421aff",
+      "bytes": 45789
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/legacy-browser-r1/source-inputs.json",
+      "sha256": "526dbec1db78da73a73c72f57966145a4aba5d59e2500d3e0b042a955d03f39c",
+      "bytes": 571382
+    }
+  ],
+  "violations": [],
+  "result": "PASS",
+  "gitPublication": "Root must explicitly add listed ignored runtime/command logs; references are retained and no historical output is dropped."
+}

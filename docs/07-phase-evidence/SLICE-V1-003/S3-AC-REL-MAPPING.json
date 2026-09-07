@@ -1,0 +1,1825 @@
+{
+  "slice": "SLICE-V1-003",
+  "head": "77faa37",
+  "purpose": "A derived index joining the two registers, so a reviewer can ask which acceptance criteria a deferred obligation is standing in front of without reading both files in full.",
+  "method": "Derived, not asserted. A criterion \"waits on\" an obligation when one of that obligation's published phrases appears in the criterion's own recorded note or evidence, and the criterion is not VERIFIED. The phrase table is published below so the derivation can be checked rather than trusted. A criterion with an empty waits_on list is engineering work rather than an external dependency; a criterion may wait on more than one obligation.",
+  "authoritative_sources": {
+    "acceptance_criteria": "docs/07-phase-evidence/SLICE-V1-003/S3-AC-STATUS.json",
+    "deferred_release_obligations": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json"
+  },
+  "phrase_table": {
+    "S3-REL-001": [
+      "real ozon",
+      "ozon profile",
+      "verified advertising capability",
+      "no real provider"
+    ],
+    "S3-REL-002": [
+      "wildberries"
+    ],
+    "S3-REL-003": [
+      "real product mapping",
+      "affected-set coverage",
+      "native-object lineage"
+    ],
+    "S3-REL-004": [
+      "ad_linked_sale_event",
+      "retained sale",
+      "completed sale",
+      "ad-linked sale"
+    ],
+    "S3-REL-005": [
+      "official spend",
+      "correction window"
+    ],
+    "S3-REL-006": [
+      "cogs",
+      "return loss",
+      "settlement",
+      "contribution profit"
+    ],
+    "S3-REL-007": [
+      "allowable cpa",
+      "max cpc",
+      "conversion definition"
+    ],
+    "S3-REL-008": [
+      "freshness"
+    ],
+    "S3-REL-009": [
+      "qualification",
+      "priority policy",
+      "human slo",
+      "approval lease",
+      "exposure envelope"
+    ],
+    "S3-REL-010": [
+      "policy bundle",
+      "decision policy bundle"
+    ],
+    "S3-REL-011": [
+      "oidc",
+      "mfa",
+      "role-minimal"
+    ],
+    "S3-REL-012": [
+      "operating calendar",
+      "coverage window",
+      "staffed coverage",
+      "out_of_coverage"
+    ],
+    "S3-REL-013": [
+      "shadow"
+    ],
+    "S3-REL-014": [
+      "ad_bid_change endpoint",
+      "provider idempotency",
+      "not_applied",
+      "real provider call"
+    ],
+    "S3-REL-015": [
+      "wildberries capability"
+    ],
+    "S3-REL-016": [
+      "gate ev"
+    ],
+    "S3-REL-017": [
+      "gate ev",
+      "compensation round-trip"
+    ],
+    "S3-REL-018": [
+      "gate e",
+      "pilot"
+    ],
+    "S3-REL-019": [
+      "kill switch drill",
+      "reenablement evidence"
+    ],
+    "S3-REL-020": [
+      "completed-sales guard",
+      "settled outcome obligation"
+    ],
+    "S3-REL-021": [
+      "settlement attribution",
+      "critical-sales unit",
+      "operational baseline"
+    ],
+    "S3-REL-022": [
+      "ordinary route",
+      "ordinary promotion",
+      "per-command delegation"
+    ],
+    "S3-REL-023": [
+      "representative hardware",
+      "declared capacity",
+      "yandex",
+      "managed postgres"
+    ],
+    "S3-REL-024": [
+      "training",
+      "adoption",
+      "release traceability"
+    ]
+  },
+  "counts": {
+    "acceptance_criteria": 200,
+    "verified": 55,
+    "waiting_on_at_least_one_obligation": 62,
+    "engineering_only": 83,
+    "deferred_release_obligations": 24
+  },
+  "acceptance_criteria": [
+    {
+      "id": "S3-AC-001",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-002",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-003",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-004",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-005",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-006",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-007",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-008",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-009",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-010",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-011",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-012",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-013",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-001",
+        "S3-REL-002"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-014",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-015",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-016",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-017",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-018",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-010"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-019",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-020",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-021",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-022",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-023",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-024",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-025",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-026",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-027",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-028",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-004",
+        "S3-REL-006"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-029",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-030",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-031",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-032",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-005",
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-033",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-034",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-035",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-036",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-006",
+        "S3-REL-008"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-037",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-004",
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-038",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-039",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-003"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-040",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-041",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-007"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-042",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-043",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-044",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-045",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-046",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-047",
+      "status": "NOT_YET",
+      "waits_on": [
+        "S3-REL-008"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-048",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-049",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-003",
+        "S3-REL-004",
+        "S3-REL-005",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-050",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-051",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-052",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-053",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-054",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-055",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-056",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-057",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-058",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-059",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-060",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-061",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-062",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-063",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-064",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-065",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-066",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-067",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-068",
+      "status": "NOT_YET",
+      "waits_on": [
+        "S3-REL-012"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-069",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-070",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-071",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-072",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-073",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-074",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-075",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-002",
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-076",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-077",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-078",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-079",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-080",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-081",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-082",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-083",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013",
+        "S3-REL-014"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-084",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-085",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-086",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-087",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-088",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-089",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-090",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-004",
+        "S3-REL-005",
+        "S3-REL-007",
+        "S3-REL-008",
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-091",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-092",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-093",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-094",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-095",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-096",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-097",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-098",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-099",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-100",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-007"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-101",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-102",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-103",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-104",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-105",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-006"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-106",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-107",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-108",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013",
+        "S3-REL-016",
+        "S3-REL-017",
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-109",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-022"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-110",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-111",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-112",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-113",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-114",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-014"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-115",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-116",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-117",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-014"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-118",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-119",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-120",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-121",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-122",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-123",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-124",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-125",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-126",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-127",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-128",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-129",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-130",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-131",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-132",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-133",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-134",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-135",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-136",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-009"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-137",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-138",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-139",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-140",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-141",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-142",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-143",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-144",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-145",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-146",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-147",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-148",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-149",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-150",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-151",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-152",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-006"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-153",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-154",
+      "status": "NOT_YET",
+      "waits_on": [
+        "S3-REL-020"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-155",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-156",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-157",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-158",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-159",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-160",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-161",
+      "status": "NOT_YET",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-162",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-163",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-164",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-165",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-166",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-167",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-004",
+        "S3-REL-006",
+        "S3-REL-021"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-168",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-169",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-001",
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-170",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-002",
+        "S3-REL-013"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-171",
+      "status": "NOT_YET",
+      "waits_on": [
+        "S3-REL-016",
+        "S3-REL-017",
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-172",
+      "status": "NOT_YET",
+      "waits_on": [
+        "S3-REL-013",
+        "S3-REL-016",
+        "S3-REL-017",
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-173",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-018",
+        "S3-REL-022"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-174",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-006",
+        "S3-REL-018",
+        "S3-REL-020"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-175",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-176",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-177",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-008",
+        "S3-REL-009",
+        "S3-REL-016",
+        "S3-REL-017",
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-178",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-179",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-180",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-181",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-009",
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-182",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-183",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-184",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-185",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-186",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-018"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-187",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-188",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-189",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-190",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-191",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-192",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-193",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-194",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-195",
+      "status": "VERIFIED",
+      "waits_on": [],
+      "engineering_remaining": false
+    },
+    {
+      "id": "S3-AC-196",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-197",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-198",
+      "status": "PARTIAL",
+      "waits_on": [
+        "S3-REL-011"
+      ],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-199",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    },
+    {
+      "id": "S3-AC-200",
+      "status": "PARTIAL",
+      "waits_on": [],
+      "engineering_remaining": true
+    }
+  ],
+  "deferred_release_obligations": [
+    {
+      "id": "S3-REL-001",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-013",
+        "S3-AC-111",
+        "S3-AC-169"
+      ]
+    },
+    {
+      "id": "S3-REL-002",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-013",
+        "S3-AC-075",
+        "S3-AC-170"
+      ]
+    },
+    {
+      "id": "S3-REL-003",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-039",
+        "S3-AC-049"
+      ]
+    },
+    {
+      "id": "S3-REL-004",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-025",
+        "S3-AC-028",
+        "S3-AC-037",
+        "S3-AC-038",
+        "S3-AC-049",
+        "S3-AC-090",
+        "S3-AC-164",
+        "S3-AC-167"
+      ]
+    },
+    {
+      "id": "S3-REL-005",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-022",
+        "S3-AC-032",
+        "S3-AC-049",
+        "S3-AC-090"
+      ]
+    },
+    {
+      "id": "S3-REL-006",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-028",
+        "S3-AC-036",
+        "S3-AC-105",
+        "S3-AC-152",
+        "S3-AC-167",
+        "S3-AC-174"
+      ]
+    },
+    {
+      "id": "S3-REL-007",
+      "state": "DEFERRED",
+      "deferral_kind": "OWNER_POLICY",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-025",
+        "S3-AC-041",
+        "S3-AC-042",
+        "S3-AC-090",
+        "S3-AC-100",
+        "S3-AC-176"
+      ]
+    },
+    {
+      "id": "S3-REL-008",
+      "state": "DEFERRED",
+      "deferral_kind": "OWNER_POLICY",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-027",
+        "S3-AC-032",
+        "S3-AC-036",
+        "S3-AC-037",
+        "S3-AC-038",
+        "S3-AC-040",
+        "S3-AC-043",
+        "S3-AC-044",
+        "S3-AC-045",
+        "S3-AC-046",
+        "S3-AC-047",
+        "S3-AC-048",
+        "S3-AC-054",
+        "S3-AC-090",
+        "S3-AC-177"
+      ]
+    },
+    {
+      "id": "S3-REL-009",
+      "state": "DEFERRED",
+      "deferral_kind": "OWNER_POLICY",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-027",
+        "S3-AC-032",
+        "S3-AC-037",
+        "S3-AC-038",
+        "S3-AC-040",
+        "S3-AC-043",
+        "S3-AC-044",
+        "S3-AC-045",
+        "S3-AC-046",
+        "S3-AC-048",
+        "S3-AC-049",
+        "S3-AC-052",
+        "S3-AC-089",
+        "S3-AC-090",
+        "S3-AC-136",
+        "S3-AC-176",
+        "S3-AC-177",
+        "S3-AC-181"
+      ]
+    },
+    {
+      "id": "S3-REL-010",
+      "state": "DEFERRED",
+      "deferral_kind": "OWNER_POLICY",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-018",
+        "S3-AC-183"
+      ]
+    },
+    {
+      "id": "S3-REL-011",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-198"
+      ]
+    },
+    {
+      "id": "S3-REL-012",
+      "state": "DEFERRED",
+      "deferral_kind": "OWNER_POLICY",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-068"
+      ]
+    },
+    {
+      "id": "S3-REL-013",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-011",
+        "S3-AC-023",
+        "S3-AC-075",
+        "S3-AC-076",
+        "S3-AC-077",
+        "S3-AC-078",
+        "S3-AC-079",
+        "S3-AC-080",
+        "S3-AC-081",
+        "S3-AC-082",
+        "S3-AC-083",
+        "S3-AC-085",
+        "S3-AC-088",
+        "S3-AC-089",
+        "S3-AC-092",
+        "S3-AC-093",
+        "S3-AC-096",
+        "S3-AC-097",
+        "S3-AC-099",
+        "S3-AC-102",
+        "S3-AC-104",
+        "S3-AC-108",
+        "S3-AC-110",
+        "S3-AC-143",
+        "S3-AC-170",
+        "S3-AC-172",
+        "S3-AC-183",
+        "S3-AC-191"
+      ]
+    },
+    {
+      "id": "S3-REL-014",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-083",
+        "S3-AC-114",
+        "S3-AC-117"
+      ]
+    },
+    {
+      "id": "S3-REL-015",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": []
+    },
+    {
+      "id": "S3-REL-016",
+      "state": "DEFERRED",
+      "deferral_kind": "GATE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-106",
+        "S3-AC-108",
+        "S3-AC-171",
+        "S3-AC-172",
+        "S3-AC-177",
+        "S3-AC-183"
+      ]
+    },
+    {
+      "id": "S3-REL-017",
+      "state": "DEFERRED",
+      "deferral_kind": "GATE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-106",
+        "S3-AC-108",
+        "S3-AC-171",
+        "S3-AC-172",
+        "S3-AC-177",
+        "S3-AC-183"
+      ]
+    },
+    {
+      "id": "S3-REL-018",
+      "state": "DEFERRED",
+      "deferral_kind": "GATE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-008",
+        "S3-AC-020",
+        "S3-AC-060",
+        "S3-AC-106",
+        "S3-AC-108",
+        "S3-AC-118",
+        "S3-AC-129",
+        "S3-AC-132",
+        "S3-AC-169",
+        "S3-AC-171",
+        "S3-AC-172",
+        "S3-AC-173",
+        "S3-AC-174",
+        "S3-AC-177",
+        "S3-AC-181",
+        "S3-AC-183",
+        "S3-AC-186",
+        "S3-AC-192"
+      ]
+    },
+    {
+      "id": "S3-REL-019",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": []
+    },
+    {
+      "id": "S3-REL-020",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-154",
+        "S3-AC-174"
+      ]
+    },
+    {
+      "id": "S3-REL-021",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-167"
+      ]
+    },
+    {
+      "id": "S3-REL-022",
+      "state": "DEFERRED",
+      "deferral_kind": "OWNER_POLICY",
+      "blocking_production": true,
+      "stands_in_front_of": [
+        "S3-AC-109",
+        "S3-AC-173"
+      ]
+    },
+    {
+      "id": "S3-REL-023",
+      "state": "DEFERRED",
+      "deferral_kind": "EXTERNAL_EVIDENCE",
+      "blocking_production": true,
+      "stands_in_front_of": []
+    },
+    {
+      "id": "S3-REL-024",
+      "state": "DEFERRED",
+      "deferral_kind": "DELIVERABLE",
+      "blocking_production": true,
+      "stands_in_front_of": []
+    }
+  ]
+}

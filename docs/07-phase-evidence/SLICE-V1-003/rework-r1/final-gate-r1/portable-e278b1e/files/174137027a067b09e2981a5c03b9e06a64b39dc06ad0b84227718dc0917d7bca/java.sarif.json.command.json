@@ -1,0 +1,24 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "-H",
+    "Accept: application/sarif+json",
+    "repos/Corwin-Code/marketops-platform/code-scanning/analyses/1730792964"
+  ],
+  "startedAt": "2026-09-06T03:03:58.630991+00:00",
+  "finishedAt": "2026-09-06T03:04:01.247173+00:00",
+  "elapsedSeconds": 2.617,
+  "exitCode": 0,
+  "artifact": {
+    "path": "java.sarif.json",
+    "bytes": 1532899,
+    "sha256": "1711669abb8887f8ec4ccf014555fbb722942d2c37e5b78c293ac44739b9f851"
+  },
+  "stderr": {
+    "path": "java.sarif.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 1381ef7; historical Security scope only. Overall checkpoint has failed backend/frontend; no independent Controller or product completion."
+}

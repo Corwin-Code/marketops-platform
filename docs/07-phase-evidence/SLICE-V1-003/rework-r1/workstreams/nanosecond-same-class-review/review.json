@@ -1,0 +1,117 @@
+{
+  "reviewedAtUTC": "2026-09-05T12:37:36.235263+00:00",
+  "mode": "bounded read-only same-class review; no tests executed by this review",
+  "scope": "Advertising persisted timestamp age/rank/SLO conversion and exact DB timestamp test oracles. Shared Price cooldown is outside Advertising and was not changed.",
+  "files": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "sha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "assessment": "Known W7 negative fractional second repaired by exact persisted-microsecond equivalence only; 4 new unit boundaries actually passed R24. Qualification/loss-window uses two logical calculation inputs, not a new persisted origin."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+      "sha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "assessment": "Definite same-class defect in both Status return paths. Newly prepared and saved patch filters both direct and case lookup by firstRaised/recorded cutoff, returns no genuinely future Task, and recognizes only exact rounded origin as age zero. New actual PG tests pending R25."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+      "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829",
+      "assessment": "Forward staffed-time integration advances to the next minute/Exception boundary and uses positive available nanoseconds; no persisted-origin minus earlier asOf age division. Preserve DST, pause and deadline semantics."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+      "sha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+      "assessment": "Checks Duration.isNegative before conversion; negative internal clock disagreement records unknown latency and incident, never zero. Unchanged."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+      "sha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+      "assessment": "Existing milliseconds conversion precedes sign and hard-bound checks. This loses a -1ns unknown clock interval and +1ns excess beyond 900000ms. Root independently confirmed and assigned UI the narrow existing AdvertisingSlo exact-Duration alignment plus deterministic boundary tests. No threshold change; repair and actual targeted proof are pending. Source reviewer did not change this file."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+      "sha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+      "assessment": "Backlog/run age compared as Duration against positive hard thresholds; no -1 second scalar rank or exact Java/PG equality. Thresholds unchanged."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshness.java",
+      "sha256": "c4d122ba6ab711f09aa4cd000a0955cca96a5ff56bb75f09597fcf44f4ed510f",
+      "assessment": "Explicit future time rejection precedes positive Duration freshness threshold. Preserve this fact eligibility boundary; not globally normalize future official facts."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+      "sha256": "7c7ba194c4301cd5086c1f64bb2563663d33429441794ab85479e7ce6cfc1ad6",
+      "assessment": "window_hours derived from same logical snapshot from/to interval. No newly persisted origin subtracted from original nanosecond asOf in this conversion."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+      "sha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+      "assessment": "Case lookup binds first-created cutoff at PG precision, explaining original replay boundary; true earlier Case identities remain excluded. rank earliest deadline epoch-second scalar is not elapsed negative age."
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java",
+      "sha256": "deea07ccaaef8c0085fb07d8560fc5604f0f17b93294b7df7f393370064d086d",
+      "assessment": "Queue accepted timestamps persist at PG precision; replay oracle corrected to take DB clock. Unanswered facts limited by latest accepted asOf; no suppression or lease semantics changed."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "sha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e",
+      "assessment": "Known W7 exact-ns replay oracle repaired; R24 replay and 1000-object workload passed. Forced-roundup test initially selected unrelated preseeded Case; corrected after R24 to actual written Case IDs and exact origins, preserving full calculation equality. Pending R25."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "sha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+      "assessment": "Exact coalesced acceptance oracle uses queueNow truncated to microseconds; whole-second lease offsets are not asserted equal to DB-returned nanosecond values. All24 passed R24."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+      "sha256": "a2c89d0f8e1868999332ff5e8f5bf59aedd2c681396d410ca6fc0ef4961bf192",
+      "assessment": "start explicitly microsecond precision. Dynamic Instant.now used for dispatch observation/state assertions, not exact original-nanosecond DB roundtrip equality."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+      "sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+      "assessment": "raisedAt explicitly milliseconds; exact Task identity/firstRaised equality is representable. Other due timestamp assertions compare two DB reads."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingBriefPublicationIT.java",
+      "sha256": "328d8e88c60e7d70926fea265fb2c0e9813f5c6eb5545d896dc59e446476912f",
+      "assessment": "AS_OF fixed whole-second value, safe exact persisted equality; history comparisons use DB-derived snapshots."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+      "sha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+      "assessment": "FROM fixed whole-second anchor; no Instant.now exact-roundtrip time oracle."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+      "sha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+      "assessment": "Existing firstRaised and due comparisons are DB-to-DB; historical beforeBinding/beforeRepair queries intentionally enforce cutoff. Two new forced-PG tests exercise valid and missing-profile Task ages with public/direct entry points, true earlier absence and retained positive age."
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+      "sha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "assessment": "executionStartedAt equality compares prior/current persisted reads; dynamic planner prepare calls compare baseline UUID, not raw timestamp equality."
+    }
+  ],
+  "definiteRelatedHoles": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "status": "Prepared source plus four R24 passing unit tests; exact full integration replay pending R25 after correct Case-ID oracle selection"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+      "status": "Prepared source and two actual-PG oracle tests saved under explicit parent authorization after R24; not yet executed"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+      "status": "Exact-Duration negative and hard-bound semantics delegated to UI by Root after independent confirmation; pending implementation/test. Not a measured W7 failure and not closed by old full PASS."
+    }
+  ],
+  "otherExactOracleDefectsFound": [],
+  "limits": [
+    "Source review is not proof across all platform clocks or a substitute for exact-source full and CI execution.",
+    "No blanket clamp, future-fact admission relaxation, age reset, SLO threshold reduction or workload reduction was proposed.",
+    "Reconciliation +/-1ns loss is an independently confirmed same-class source defect, assigned to UI for the same repair cycle; it is not represented as an original measured W7 failure or already closed."
+  ]
+}

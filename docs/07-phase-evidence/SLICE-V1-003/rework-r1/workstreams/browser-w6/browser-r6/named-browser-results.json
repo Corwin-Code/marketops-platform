@@ -1,0 +1,230 @@
+{
+  "rawReporterSha256": "21ca5615ab58a97f94aeda58392ec43d04efa820cd0416f58826f4164d2bf197",
+  "stats": {
+    "startTime": "2026-09-05T11:09:38.589Z",
+    "duration": 73416.15800000001,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 97,
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-9443041678ce26b8dcca",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:10.902Z",
+          "durationMs": 8868
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 175,
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-61a0f95ad10ec5c7332c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:20.183Z",
+          "durationMs": 15
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 185,
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-87fb1433deeb78155e88",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:20.205Z",
+          "durationMs": 6628
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 185,
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-ebb96133c16052ef10f5",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:26.838Z",
+          "durationMs": 6054
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 278,
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-66cbfdce33bdb82fbdbe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:32.901Z",
+          "durationMs": 2006
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 311,
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-72c7d2eb2022f0f46ac5",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:34.915Z",
+          "durationMs": 3648
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 370,
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-af288b87bf5c722c6ffe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:38.568Z",
+          "durationMs": 2189
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 420,
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-18f9a9535ca3b987c8e7",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:40.767Z",
+          "durationMs": 1436
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 420,
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-8053fc9ea853c749b00c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:42.211Z",
+          "durationMs": 661
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 420,
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-5ccbf40f996f61d6054c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:42.877Z",
+          "durationMs": 969
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 420,
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-6492854d67c8bd0dd8c1",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:43.862Z",
+          "durationMs": 720
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 493,
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-5649881f60c39e36dbad",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:44.588Z",
+          "durationMs": 7239
+        }
+      ]
+    }
+  ],
+  "limit": "Named outcomes only; no trace, request headers, fixture tokens, error attachment bodies or reporter environment are copied."
+}

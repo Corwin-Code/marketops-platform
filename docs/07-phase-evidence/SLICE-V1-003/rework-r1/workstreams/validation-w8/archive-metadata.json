@@ -1,0 +1,12 @@
+{
+  "group": "validation-w8",
+  "archive": "original-evidence.tar.gz",
+  "archiveSha256": "61982c251b1fa8fd75490f363b4f74ca147300dfa3329a944e4ba09ed6fbb73a",
+  "originalSources": [
+    "/tmp/slice3-r1-w8-negative-coverage",
+    "/tmp/slice3-r1-w8-packaged-migration",
+    "/tmp/slice3-r1-w8-environment-clone",
+    "/tmp/slice3-r1-w8-environment-clone-r2"
+  ],
+  "boundary": "Original bytes in tar. Failed attempts and original receipt identities retained; no source path rewriting. Direct review JSON copies only when LF or no newlines."
+}

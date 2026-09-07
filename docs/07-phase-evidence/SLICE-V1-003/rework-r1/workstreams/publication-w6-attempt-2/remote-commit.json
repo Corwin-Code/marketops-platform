@@ -1,0 +1,35 @@
+{
+  "sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "node_id": "C_kwDOTwsbvNoAKDNlZDNmNGM4N2MzMzZjYjA3MTg4ZTQ3MDUyOGYzMjgzNThmYjI3OWY",
+  "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/commits/3ed3f4c87c336cb07188e470528f328358fb279f",
+  "html_url": "https://github.com/Corwin-Code/marketops-platform/commit/3ed3f4c87c336cb07188e470528f328358fb279f",
+  "author": {
+    "name": "Corwin",
+    "email": "superagi.ai@gmail.com",
+    "date": "2026-09-05T11:07:53Z"
+  },
+  "committer": {
+    "name": "Corwin",
+    "email": "superagi.ai@gmail.com",
+    "date": "2026-09-05T11:07:53Z"
+  },
+  "tree": {
+    "sha": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/trees/4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1"
+  },
+  "message": "fix(advertising): harden principal and verification boundaries",
+  "parents": [
+    {
+      "sha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/commits/247ea5ced6cd0ac110314db9fa606d8995c85cac",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/commit/247ea5ced6cd0ac110314db9fa606d8995c85cac"
+    }
+  ],
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

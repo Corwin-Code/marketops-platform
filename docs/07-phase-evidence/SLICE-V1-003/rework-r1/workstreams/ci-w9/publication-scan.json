@@ -1,0 +1,12 @@
+{
+  "kind": "W9_CI_ORIGINAL_BYTES_PUBLICATION_SCAN",
+  "patternCount": 8,
+  "jwtPatternIndex": 7,
+  "textFilesAndMembers": 2650,
+  "decodedBytes": 84982346,
+  "archiveMembers": 2678,
+  "matchesWithoutValues": [],
+  "signedQueryMatchesWithoutValues": [],
+  "result": "PASS",
+  "noMatchedValuesCopied": true
+}

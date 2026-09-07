@@ -51,19 +51,22 @@ class WorkQueueConsoleController {
     private final RecommendationService recommendations;
     private final WorkTaskService tasks;
     private final BusinessAuthorization authorization;
+    private final com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy disclosure;
 
     WorkQueueConsoleController(RecommendationService recommendations,
                                WorkTaskService tasks,
-                               BusinessAuthorization authorization) {
+                               BusinessAuthorization authorization,
+                               com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy disclosure) {
         this.recommendations = recommendations;
         this.tasks = tasks;
         this.authorization = authorization;
+        this.disclosure = disclosure;
     }
 
     /** The store's open proposals, most urgent first. */
     @GetMapping(value = "/stores/{storeId}/recommendations",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    List<RecommendationView> queue(AuthenticatedActor actor,
+    List<tools.jackson.databind.node.ObjectNode> queue(AuthenticatedActor actor,
                                    @PathVariable UUID storeId,
                                    @RequestParam(required = false) UUID subjectId,
                                    @RequestParam(required = false, defaultValue = "50")
@@ -73,9 +76,15 @@ class WorkQueueConsoleController {
         if (subjectId != null) {
             authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                     new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, subjectId, storeId));
-            return recommendations.queueForSubject(storeId, subjectId, OPEN_STATES, limit);
+            return recommendations.queueForSubject(storeId, subjectId, OPEN_STATES, limit).stream()
+                    .filter(view -> view.subjectKind() != com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
+                        || disclosure.mayReadNativeRecommendation(actor, view.id()))
+                .map(view -> disclosure.discloseRecommendation(actor, view)).toList();
         }
-        return recommendations.queue(storeId, OPEN_STATES, limit);
+        return recommendations.queue(storeId, OPEN_STATES, limit).stream()
+                .filter(view -> view.subjectKind() != com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
+                        || disclosure.mayReadNativeRecommendation(actor, view.id()))
+                .map(view -> disclosure.discloseRecommendation(actor, view)).toList();
     }
 
     /** How much of each kind of work the store has. */
@@ -91,12 +100,13 @@ class WorkQueueConsoleController {
     /** One proposal with the evidence its case rests on. */
     @GetMapping(value = "/recommendations/{recommendationId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    RecommendationView recommendation(AuthenticatedActor actor,
+    tools.jackson.databind.node.ObjectNode recommendation(AuthenticatedActor actor,
                                       @PathVariable UUID recommendationId) {
         RecommendationView proposal = recommendations.require(recommendationId);
-        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+        authorization.require(actor, proposal.subjectKind()==com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
+                        ? ActionScopeCode.ADVERTISING_VIEW : ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(proposal.storeId()));
-        return proposal;
+        return disclosure.discloseRecommendation(actor, proposal);
     }
 
     /** Move a proposal along its lifecycle. */
@@ -107,6 +117,10 @@ class WorkQueueConsoleController {
                     @PathVariable UUID recommendationId,
                     @Valid @RequestBody TransitionRequest request) {
         RecommendationView proposal = recommendations.require(recommendationId);
+        if (proposal.subjectKind() == com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT) {
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
+        }
         authorization.require(actor, ActionScopeCode.RECOMMENDATION_MANAGE,
                 ResourceScope.store(proposal.storeId()));
         recommendations.transition(actor.userId().toString(), recommendationId,
@@ -121,7 +135,8 @@ class WorkQueueConsoleController {
                                  int limit) {
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.organization(actor.organizationId()));
-        return tasks.openTasks(actor.organizationId(), assigneeUserId, limit);
+        return tasks.openTasks(actor.organizationId(), assigneeUserId, limit).stream()
+                .filter(task->tasks.mayRead(actor,task.id())).toList();
     }
 
     /** Every task raised from one proposal. */
@@ -130,9 +145,11 @@ class WorkQueueConsoleController {
     List<WorkTaskView> tasksOf(AuthenticatedActor actor,
                                @PathVariable UUID recommendationId) {
         RecommendationView proposal = recommendations.require(recommendationId);
-        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+        authorization.require(actor, proposal.subjectKind()==com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
+                        ? ActionScopeCode.ADVERTISING_VIEW : ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(proposal.storeId()));
-        return tasks.forRecommendation(recommendationId);
+        return tasks.forRecommendation(recommendationId).stream()
+                .filter(task->tasks.mayRead(actor,task.id())).toList();
     }
 
     /** Give a task an owner. */
@@ -142,8 +159,6 @@ class WorkQueueConsoleController {
     void assign(AuthenticatedActor actor,
                 @PathVariable UUID taskId,
                 @Valid @RequestBody AssignRequest request) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
         tasks.assign(actor, taskId, request.assigneeUserId(),
                 request.expectedVersion());
     }
@@ -154,8 +169,6 @@ class WorkQueueConsoleController {
     void start(AuthenticatedActor actor,
                @PathVariable UUID taskId,
                @Valid @RequestBody VersionedRequest request) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
         tasks.start(actor, taskId, request.expectedVersion());
     }
 
@@ -165,8 +178,6 @@ class WorkQueueConsoleController {
     void close(AuthenticatedActor actor,
                @PathVariable UUID taskId,
                @Valid @RequestBody CloseRequest request) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
         tasks.close(actor, taskId, request.done(),
                 request.closureReason(), request.expectedVersion());
     }

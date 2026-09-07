@@ -1,0 +1,333 @@
+{
+ "slice": "SLICE-V1-003",
+ "head": "384e34e",
+ "closure_claim_permitted": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+ "closure_claim_made": false,
+ "closure_claim_withheld_because": "S3-AC-001..200 are not all executably verified; the frontend, browser end-to-end, mutation, coverage and runbook obligations remain.",
+ "gates": {
+  "gate_ev": "NOT_AUTHORIZED",
+  "gate_e": "NOT_AUTHORIZED",
+  "pilot": "NOT_AUTHORIZED",
+  "production_write_enabled": false
+ },
+ "deferral_kinds": {
+  "EXTERNAL_EVIDENCE": "needs a fact about the real world this product must not invent",
+  "OWNER_POLICY": "needs a versioned, owner-attributed policy decision",
+  "GATE": "needs an exact Human Owner gate authorization",
+  "DELIVERABLE": "in-scope engineering work that is not finished"
+ },
+ "counts": {
+  "EXTERNAL_EVIDENCE": 14,
+  "OWNER_POLICY": 6,
+  "GATE": 3,
+  "DELIVERABLE": 1
+ },
+ "register": [
+  {
+   "id": "S3-REL-001",
+   "obligation": "real Ozon advertising read capability, native object hierarchy, Spend/traffic/attribution semantics, source maturity and account/store evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Owner / Marketplace Operations",
+   "fails_closed_because": "No real Ozon call is made or reachable. platform.ad_semantic_profile carries a SYNTHETIC_FIXTURE profile that the schema forbids promoting to VERIFIED, and PlatformHttpAdBidWriteAdapter refuses before any socket when no verified operation exists.",
+   "fail_closed_evidence": [
+    "V0036: ad_semantic_profile_synthetic_ck",
+    "AdBidWriteRefusalTest#TC-AD-ADAPTER-001",
+    "AdvertisingTransmissionBoundaryIT#TC-AD-BOUNDARY-002 (CAPABILITY_NOT_VERIFIED)"
+   ]
+  },
+  {
+   "id": "S3-REL-002",
+   "obligation": "equivalent real Wildberries advertising read evidence without assuming Ozon symmetry.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Owner / Marketplace Operations",
+   "fails_closed_because": "Wildberries is a separate platform_code with its own capability, profile and endpoint rows. Nothing in the code branches on platform, so absence of Wildberries evidence is absence of rows rather than a disabled branch.",
+   "fail_closed_evidence": [
+    "PlatformHttpAdBidWriteAdapter: no Ozon or Wildberries branch exists",
+    "SoleAuthorityArchitectureTest#TC-AUTHORITY-002"
+   ]
+  },
+  {
+   "id": "S3-REL-003",
+   "obligation": "real Product Mapping, native-object lineage and complete affected-set coverage for the intended operating cohort.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Tech Data",
+   "fails_closed_because": "core.ad_affected_set records resolution_state and unresolved_reason_codes; a set that did not resolve COMPLETE cannot be reserved against and therefore cannot produce a command.",
+   "fail_closed_evidence": [
+    "V0036: ad_affected_set_incomplete_ck",
+    "AdvertisingCandidateRepository.resolvedAffectedSet requires resolution_state = 'COMPLETE'"
+   ]
+  },
+  {
+   "id": "S3-REL-004",
+   "obligation": "real company Order/Completed/Retained sales and deterministic ad-linked sale-event evidence, including Provider-to-canonical attribution-gap profile.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Finance Analyst / Tech Data",
+   "fails_closed_because": "ledger.ad_linked_sale_event is empty. Every measure derived from it is NOT_AVAILABLE rather than zero, and the outcome path reports INDETERMINATE with a named reason.",
+   "fail_closed_evidence": [
+    "OutcomeEvaluationTest#TC-AD-OUTCOME-004",
+    "ADR-0011 value states throughout AdMeasure"
+   ]
+  },
+  {
+   "id": "S3-REL-005",
+   "obligation": "real official advertising Spend reconciliation and correction-window evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Tech Data",
+   "fails_closed_because": "ledger.ad_object_fact carries report_window_complete and correction_window_open; an open correction window downgrades evidence to PROVISIONAL_OR_ESTIMATED, which is not write-grade.",
+   "fail_closed_evidence": [
+    "AdvertisingOutcomeService.evidenceOf",
+    "AdMeasure.sufficientForWrite"
+   ]
+  },
+  {
+   "id": "S3-REL-006",
+   "obligation": "real COGS, fee, fulfillment, return-loss, Settlement and Adjustment inputs sufficient for Operational and Settled advertising profit.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Finance Analyst",
+   "fails_closed_because": "No promotion-cost feed exists, so AdvertisingContributionProfit blocks on PROMOTION_COST_PER_UNIT and both profit axes stay absent rather than becoming a profit with a component missing.",
+   "fail_closed_evidence": [
+    "AdvertisingCaseCalculationService: promotionCostPerUnit is notAvailable by construction",
+    "AdvertisingOutcomeService.windowFacts uses the same components"
+   ]
+  },
+  {
+   "id": "S3-REL-007",
+   "obligation": "real stage-consistent Conversion, Allowable CPA and Max CPC definitions and approved evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "OWNER_POLICY",
+   "accountable": "Owner / Finance Analyst",
+   "fails_closed_because": "core.ad_conversion_definition and core.ad_allowable_cpa_definition are empty in every environment. MaxCpc.compute returns ALLOWABLE_CPA_UNRESOLVED, and a candidate cannot be generated without a write-grade ceiling unless a cause-bound policy names the cause.",
+   "fail_closed_evidence": [
+    "MaxCpcTest",
+    "BidCandidateTest#TC-AD-BID-009",
+    "AdvertisingEfficiencyFlowIT"
+   ]
+  },
+  {
+   "id": "S3-REL-008",
+   "obligation": "real source/platform/purpose Freshness Profiles for Queue, Task, Recommendation, Write, Compensation and Outcomes.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "OWNER_POLICY",
+   "accountable": "Owner / Tech Data",
+   "fails_closed_because": "core.ad_freshness_profile is purpose-scoped and empty; core.ad_freshness_purpose_violations reports every purpose that cannot be satisfied.",
+   "fail_closed_evidence": [
+    "V0037: ad_freshness_purpose_violations"
+   ]
+  },
+  {
+   "id": "S3-REL-009",
+   "obligation": "real Optimization qualification, Target, Outcome, Priority, human-SLO, Approval-Lease and aggregate-Exposure Policies with owners and evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "OWNER_POLICY",
+   "accountable": "Owner",
+   "fails_closed_because": "Seven policy families, each versioned, owner-attributed and evidence-referenced. Absent rows resolve to nothing rather than to a default; a missing human-SLO profile falls back to the tightest window so the gap is visible as urgency.",
+   "fail_closed_evidence": [
+    "AdvertisingProposalService.humanReviewWindow",
+    "AdvertisingPolicyRepository: every resolve* returns Optional"
+   ]
+  },
+  {
+   "id": "S3-REL-010",
+   "obligation": "one complete, compatible, scope-bound Advertising Decision Policy Bundle accepted for each intended real operating scope.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "OWNER_POLICY",
+   "accountable": "Owner",
+   "fails_closed_because": "No ACTIVE bundle can exist: whole-combination validation requires a VERIFIED, non-SYNTHETIC_FIXTURE semantic profile, which this Slice deliberately does not have. The gate therefore reports BUNDLE_UNRESOLVED for every command.",
+   "fail_closed_evidence": [
+    "V0041: ad_bundle_validation_failures and the activation trigger",
+    "AdvertisingTransmissionBoundaryIT#TC-AD-BOUNDARY-002",
+    "AdvertisingAuthorityBindingIT#TC-AD-AUTH-006"
+   ]
+  },
+  {
+   "id": "S3-REL-011",
+   "obligation": "real OIDC/MFA, user disable/revoke, Role/Scope and role-minimal disclosure evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Owner / Security",
+   "fails_closed_because": "iam.identity_provider cannot be ACTIVE without VERIFIED state and an MFA claim vocabulary; AD_BID_CHANGE_APPROVE is a step-up action scope.",
+   "fail_closed_evidence": [
+    "V0011: identity_provider_active_readiness_ck",
+    "ActionScopeCode.AD_BID_CHANGE_APPROVE"
+   ]
+  },
+  {
+   "id": "S3-REL-012",
+   "obligation": "real Operating Calendar, staffed Coverage, escalation, Daily Brief and Weekly Review ownership.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "OWNER_POLICY",
+   "accountable": "Ops Lead",
+   "fails_closed_because": "core.ad_human_slo_profile carries staffed coverage and escalation minutes. The Daily Brief and Weekly Review console surfaces are not built.",
+   "fail_closed_evidence": [
+    "V0038: core.ad_human_slo_profile"
+   ]
+  },
+  {
+   "id": "S3-REL-013",
+   "obligation": "real governed Shadow evidence under preaccepted sample, duration, discrepancy, manual-verification and operating-SLO thresholds.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Ops Lead",
+   "fails_closed_because": "The Manual Shadow records and never routes. What is deferred is the accepted sample size, duration and discrepancy thresholds, not the mechanism.",
+   "fail_closed_evidence": [
+    "AdvertisingManualShadowIT (eight cases)",
+    "AdvertisingManualShadowIT#TC-AD-MANUAL-001 proves no command path exists"
+   ]
+  },
+  {
+   "id": "S3-REL-014",
+   "obligation": "real Ozon `AD_BID_CHANGE` endpoint, permission, unit, step, quota, idempotency/NOT_APPLIED, error, propagation and Readback evidence for each consumed scope.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Owner / Marketplace Operations",
+   "fails_closed_because": "The endpoint, quota, idempotency and readback semantics are registry rows this product does not have. Five refusals happen before any socket, and the attempt-opening function refuses before an attempt row exists.",
+   "fail_closed_evidence": [
+    "AdBidWriteRefusalTest (seven cases)",
+    "V0043: ops.open_ad_bid_command_attempt MO093"
+   ]
+  },
+  {
+   "id": "S3-REL-015",
+   "obligation": "real Wildberries `AD_BID_CHANGE` capability evidence if that Provider path is to become reachable; otherwise verified Shadow-only fail-closed state.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Owner",
+   "fails_closed_because": "Absent Wildberries evidence leaves that path Shadow-only and fail-closed by the same mechanism as Ozon: no verified capability, no command.",
+   "fail_closed_evidence": [
+    "V0045: ops.create_ad_bid_command raises MO092 without a VERIFIED capability"
+   ]
+  },
+  {
+   "id": "S3-REL-016",
+   "obligation": "exact Gate EV envelope and Human Owner authorization before the first real write for each Platform/Store/Direction/Candidate Basis.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "GATE",
+   "accountable": "Human Owner",
+   "fails_closed_because": "Gate EV is NOT_AUTHORIZED. Full-Scope Implementation and merge do not authorize a real verification write; that needs an exact Gate-EV envelope per Platform, Store, Direction and Candidate Basis.",
+   "fail_closed_evidence": [
+    "docs/00-governance/CURRENT_STATE.md",
+    "scripts/validate_production_readiness.py"
+   ]
+  },
+  {
+   "id": "S3-REL-017",
+   "obligation": "exact Gate EV Write/Readback evidence and, when API Compensation is claimed, exact prior-value Compensation round-trip evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "GATE",
+   "accountable": "Human Owner",
+   "fails_closed_because": "No write has been transmitted, so no readback or compensation round-trip evidence exists. The compensation path refuses without a current readback proving this command still owns the bid.",
+   "fail_closed_evidence": [
+    "V0043: ops.open_ad_bid_command_attempt MO094"
+   ]
+  },
+  {
+   "id": "S3-REL-018",
+   "obligation": "layered scope-monotonic Gate E Pilot Evidence Bundle, exact allowlist, aggregate Exposure, recovery headroom and operating ownership.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "GATE",
+   "accountable": "Human Owner",
+   "fails_closed_because": "Gate E is NOT_AUTHORIZED and no Pilot is enabled. The allowlist, aggregate exposure and reserved recovery headroom exist as data and are read by the gate.",
+   "fail_closed_evidence": [
+    "V0040: pilot_allowlist_entry widened for AD_BID_CHANGE",
+    "V0053 gate: ENTITY_NOT_ALLOWLISTED, AGGREGATE_ENVELOPE_BLOCKED"
+   ]
+  },
+  {
+   "id": "S3-REL-019",
+   "obligation": "real Provider-transmission Kill/Quarantine drill and cause-specific multi-party reenablement evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Ops Lead / Security",
+   "fails_closed_because": "The kill and quarantine mechanism is exercised against a real server; what is deferred is a drill against a real provider transmission. Reenablement already requires five conditions, two different people, and an attestation for a technical or security cause.",
+   "fail_closed_evidence": [
+    "AdvertisingReservationIT#TC-AD-CONTAIN-001..003",
+    "AdvertisingTransmissionBoundaryIT#TC-AD-BOUNDARY-003"
+   ]
+  },
+  {
+   "id": "S3-REL-020",
+   "obligation": "real early Completed-Sales Guard evidence for the Gate E entry scope and continuing 30-day/Settled Outcome obligations.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Finance Analyst",
+   "fails_closed_because": "The early Completed-Sales Guard is a check constraint, so a settled claim that outruns it cannot be written. What is deferred is real sales data to guard.",
+   "fail_closed_evidence": [
+    "V0049: ad_outcome_observation_settled_guard_ck",
+    "OutcomeEvaluationTest#TC-AD-OUTCOME-007..009"
+   ]
+  },
+  {
+   "id": "S3-REL-021",
+   "obligation": "real Operational/Settled baseline, critical-sales-unit and settlement-attribution evidence for mature Outcome reporting.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Finance Analyst",
+   "fails_closed_because": "Baselines are computed from the same tables and the same window length as the observation. What is deferred is the data, and the critical-sales-unit register.",
+   "fail_closed_evidence": [
+    "AdvertisingOutcomeService.windowFacts reads both windows identically"
+   ]
+  },
+  {
+   "id": "S3-REL-022",
+   "obligation": "real Ordinary-route promotion evidence before any Owner per-command delegation is activated; absent evidence keeps every nonzero action Material.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "OWNER_POLICY",
+   "accountable": "Human Owner",
+   "fails_closed_because": "ops.ad_decision_policy_bundle.ordinary_promotion_id is null everywhere and the gate refuses an ordinary-routed command outright, so every nonzero action stays Material.",
+   "fail_closed_evidence": [
+    "V0053 gate: ORDINARY_ROUTE_NOT_PROMOTED",
+    "V0045: materiality resolved from policy, never assumed"
+   ]
+  },
+  {
+   "id": "S3-REL-023",
+   "obligation": "Yandex runtime, managed PostgreSQL, immutable object custody, backup/PITR/restore, monitoring, security and legal/data-localization release evidence.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "EXTERNAL_EVIDENCE",
+   "accountable": "Platform / Security",
+   "fails_closed_because": "No deployment, shared environment or production runtime is touched by this Slice. Migrations are proven on PostgreSQL 18.4 and 17.6 in disposable containers only.",
+   "fail_closed_evidence": [
+    "docs/07-phase-evidence/SLICE-V1-003/MIGRATION-INVENTORY.json"
+   ]
+  },
+  {
+   "id": "S3-REL-024",
+   "obligation": "Key User training/adoption, runbooks, release traceability and no unresolved release-blocking defect for the exact real scope.",
+   "state": "DEFERRED",
+   "blocking_production": true,
+   "deferral_kind": "DELIVERABLE",
+   "accountable": "Ops Lead",
+   "fails_closed_because": "The eleven required runbooks are not written and Key User training has not happened. This is in-scope engineering work that remains, not an external dependency.",
+   "fail_closed_evidence": []
+  }
+ ]
+}

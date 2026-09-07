@@ -1,0 +1,486 @@
+{
+  "rawReporterSha256": "d5a12d8d9c3c0092f7d886fe04abff555fe18e29b636e6d602fc3121dd4efe3b",
+  "stats": {
+    "startTime": "2026-09-05T11:12:14.070Z",
+    "duration": 54707.207,
+    "expected": 25,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "advertising-brief.spec.ts",
+      "line": 155,
+      "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+      "suiteTitles": [
+        "advertising-brief.spec.ts",
+        "TC-BROWSER-017 the brief reads are refused without an authenticated caller"
+      ],
+      "testId": "b2129eafa76f0ab72cdd-834cf626de67a948c7be",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:39.292Z",
+          "durationMs": 468
+        }
+      ]
+    },
+    {
+      "file": "advertising-brief.spec.ts",
+      "line": 155,
+      "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+      "suiteTitles": [
+        "advertising-brief.spec.ts",
+        "TC-BROWSER-017 the brief reads are refused without an authenticated caller"
+      ],
+      "testId": "b2129eafa76f0ab72cdd-0200d39685823d98ffe2",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:40.059Z",
+          "durationMs": 132
+        }
+      ]
+    },
+    {
+      "file": "advertising-brief.spec.ts",
+      "line": 155,
+      "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+      "suiteTitles": [
+        "advertising-brief.spec.ts",
+        "TC-BROWSER-017 the brief reads are refused without an authenticated caller"
+      ],
+      "testId": "b2129eafa76f0ab72cdd-e9db6321842407364e52",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:40.198Z",
+          "durationMs": 130
+        }
+      ]
+    },
+    {
+      "file": "advertising-brief.spec.ts",
+      "line": 173,
+      "title": "every section is shown, including the ones that found nothing",
+      "suiteTitles": [
+        "advertising-brief.spec.ts",
+        "TC-BROWSER-018 the brief renders as published"
+      ],
+      "testId": "b2129eafa76f0ab72cdd-61148485f461f1fe913a",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:40.334Z",
+          "durationMs": 297
+        }
+      ]
+    },
+    {
+      "file": "advertising-brief.spec.ts",
+      "line": 199,
+      "title": "a restatement keeps the reading somebody acted on",
+      "suiteTitles": [
+        "advertising-brief.spec.ts",
+        "TC-BROWSER-018 the brief renders as published"
+      ],
+      "testId": "b2129eafa76f0ab72cdd-dfef58bf6ed82d1e764c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:40.637Z",
+          "durationMs": 276
+        }
+      ]
+    },
+    {
+      "file": "advertising-brief.spec.ts",
+      "line": 218,
+      "title": "nothing published is stated, not shown as a fault",
+      "suiteTitles": [
+        "advertising-brief.spec.ts",
+        "TC-BROWSER-018 the brief renders as published"
+      ],
+      "testId": "b2129eafa76f0ab72cdd-587205b00a0d73497a87",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:40.919Z",
+          "durationMs": 317
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 169,
+      "title": "the backend refuses /api/v1/console/advertising/reservations with no token",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "testId": "19c1e201ddc4cda8645f-671e86fea03161e7cb94",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:41.248Z",
+          "durationMs": 119
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 169,
+      "title": "the backend refuses /api/v1/console/advertising/exposure with no token",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "testId": "19c1e201ddc4cda8645f-6064079b32f1e5dcc9bc",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:41.373Z",
+          "durationMs": 119
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 169,
+      "title": "the backend refuses /api/v1/console/advertising/containments with no token",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "testId": "19c1e201ddc4cda8645f-1017d807d867589086f0",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:41.498Z",
+          "durationMs": 119
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 185,
+      "title": "the backend refuses an advertising read carrying a made-up token",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "testId": "19c1e201ddc4cda8645f-1bd1c79d91af6311e3d0",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:41.623Z",
+          "durationMs": 127
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 203,
+      "title": "the envelope is shown axis by axis, with no combined figure",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-016 the execution surfaces render in a real browser"
+      ],
+      "testId": "19c1e201ddc4cda8645f-a82ed021637272fd07ab",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:41.755Z",
+          "durationMs": 348
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 257,
+      "title": "a hold names its kind and every condition still outstanding",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-016 the execution surfaces render in a real browser"
+      ],
+      "testId": "19c1e201ddc4cda8645f-3008675572bb2f37acc1",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:42.108Z",
+          "durationMs": 259
+        }
+      ]
+    },
+    {
+      "file": "advertising-execution.spec.ts",
+      "line": 280,
+      "title": "no envelope is presented as no write at all, not as an empty one",
+      "suiteTitles": [
+        "advertising-execution.spec.ts",
+        "TC-BROWSER-016 the execution surfaces render in a real browser"
+      ],
+      "testId": "19c1e201ddc4cda8645f-e0035ceb94a3469941fe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:42.372Z",
+          "durationMs": 229
+        }
+      ]
+    },
+    {
+      "file": "availability-journey.spec.ts",
+      "line": 11,
+      "title": "TC-BROWSER-014 stockout queue, accountable case and structured action",
+      "suiteTitles": [
+        "availability-journey.spec.ts"
+      ],
+      "testId": "8036133013e1e991dd02-a81b1fb72aea1e364e9c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:42.610Z",
+          "durationMs": 1598
+        }
+      ]
+    },
+    {
+      "file": "business-journey.spec.ts",
+      "line": 4,
+      "title": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+      "suiteTitles": [
+        "business-journey.spec.ts"
+      ],
+      "testId": "874e36fd9948a1c4403c-fef50962fd7fbb441ebe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:44.217Z",
+          "durationMs": 4327
+        }
+      ]
+    },
+    {
+      "file": "health-shell.spec.ts",
+      "line": 63,
+      "title": "the built console recovers across a real database outage",
+      "suiteTitles": [
+        "health-shell.spec.ts"
+      ],
+      "testId": "450496b15120cced346a-2475c0c6a6fa75f0355a",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:48.558Z",
+          "durationMs": 11400
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 34,
+      "title": "shows the platform panel and no operating data",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "testId": "5c235735b01437bc871d-665847065225436c23ea",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:12:59.976Z",
+          "durationMs": 213
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 44,
+      "title": "the backend refuses an operating request that carries no token",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "testId": "5c235735b01437bc871d-b555e58592d753701cec",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:00.196Z",
+          "durationMs": 131
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 58,
+      "title": "the backend refuses an operating request that carries a made-up token",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "testId": "5c235735b01437bc871d-2bf9cfb6949947a1538d",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:00.334Z",
+          "durationMs": 131
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 79,
+      "title": "the built bundle carries no token, password or secret reference",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "testId": "5c235735b01437bc871d-3e6c3e29246ffb20d2fa",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:00.473Z",
+          "durationMs": 175
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 164,
+      "title": "waits for 202 completion and saves only the verified large export",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-012 asynchronous export presentation and browser download integrity"
+      ],
+      "testId": "5c235735b01437bc871d-e38eed2cec0a85c1b449",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:00.657Z",
+          "durationMs": 2876
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 164,
+      "title": "refuses a corrupt final part without offering a partial file",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-012 asynchronous export presentation and browser download integrity"
+      ],
+      "testId": "5c235735b01437bc871d-80c9636fb2a74ec8f707",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:03.539Z",
+          "durationMs": 2854
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 316,
+      "title": "signs in, reaches the work list, and never labels doubt as certainty",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-011 the operator journey runs in a real browser"
+      ],
+      "testId": "5c235735b01437bc871d-14d48cd6683dde2d841e",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:06.397Z",
+          "durationMs": 366
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 402,
+      "title": "an ended session takes the operator back to sign-in with no data left on screen",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-011 the operator journey runs in a real browser"
+      ],
+      "testId": "5c235735b01437bc871d-d69730a23e91fea74e55",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:06.769Z",
+          "durationMs": 306
+        }
+      ]
+    },
+    {
+      "file": "operating-console.spec.ts",
+      "line": 418,
+      "title": "a refused sign-in leaves the visitor told rather than blank",
+      "suiteTitles": [
+        "operating-console.spec.ts",
+        "TC-BROWSER-011 the operator journey runs in a real browser"
+      ],
+      "testId": "5c235735b01437bc871d-3be80c8b3abd4e447bcf",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:13:07.081Z",
+          "durationMs": 194
+        }
+      ]
+    }
+  ],
+  "limit": "Only names, statuses, timing and source locations are retained; no trace, fixture token, headers or reporter environment."
+}

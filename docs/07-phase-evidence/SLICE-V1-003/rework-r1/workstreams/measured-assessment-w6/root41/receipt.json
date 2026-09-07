@@ -1,0 +1,10 @@
+{
+  "status": "INDIVIDUAL_LOCAL_BINDINGS_VERIFIED_GLOBAL_CI_PENDING",
+  "count": 41,
+  "uniqueReferences": 86,
+  "rawXmlReportCount": 15,
+  "outputSha256": "f855cb1acdfb28744d3752f46c2431039376fe97c3dae8ce9e9606a3b96c1add",
+  "scriptSha256": "6a0f43b6ebe7a9848b92ef6d0840bdb99d1d17d5429623bc9e6ff513cffc257a",
+  "preparedBytesUnchanged": true,
+  "closureClaim": false
+}

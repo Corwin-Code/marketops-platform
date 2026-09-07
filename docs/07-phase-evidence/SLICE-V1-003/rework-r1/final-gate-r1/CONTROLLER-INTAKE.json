@@ -1,0 +1,331 @@
+{
+  "kind": "CONTROLLER_FINAL_GATE_R1_PACKAGE_INTAKE",
+  "controllerVerdict": "NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+  "reviewedSourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "reviewedTestedMerge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+  "manifest": {
+    "path": "controller-package/PACKAGE-MANIFEST.json",
+    "bytes": 2274,
+    "sha256": "bc648a72c6240030844e691482692583a5ef8e6685a5dbf7a821719910db5260"
+  },
+  "manifestMembers": [
+    {
+      "path": "EVIDENCE-INTEGRITY-AND-TEST-RECOUNT.json",
+      "bytes": 153521,
+      "sha256": "11e0a795f01c7bfdd8e53fda6d55a2d90feffe796fa1ec27b3851aaa2652f284",
+      "verified": true
+    },
+    {
+      "path": "FINAL-CLOSURE-VERIFICATION.md",
+      "bytes": 13713,
+      "sha256": "b7adf80676e5f06000c5e27fa20979958e3717ebeea987cd7e1b857433a1b23b",
+      "verified": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 1128,
+      "sha256": "d4eb5f30b0e92dda6c9589f8ca88b2b5f45a53374d6f439cb8ab4cb096b9a095",
+      "verified": true
+    },
+    {
+      "path": "SOURCE-EXCERPTS.md",
+      "bytes": 28460,
+      "sha256": "7859eb124661d197751be0d20d416b63b68d614bd8beb88c9681c74bf54c8f56",
+      "verified": true
+    },
+    {
+      "path": "SOURCE-PINS.json",
+      "bytes": 2510,
+      "sha256": "e379a07040a9aa510972c1f8de7e4800452813bf39413ce39bfea6d42b88e839",
+      "verified": true
+    },
+    {
+      "path": "VERIFICATION-RESULT.json",
+      "bytes": 36779,
+      "sha256": "6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/CauseBoundProbe.java",
+      "bytes": 2999,
+      "sha256": "71fa476de2cc42a7809b06c496e98729620d7286eea97d3734b1c60506b0c678",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/CauseBoundProbe.out",
+      "bytes": 462,
+      "sha256": "fba62990b8fd6de5491edcdd4e80fc469b0eada1b8500abf14a1554b2442b856",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.java",
+      "bytes": 2961,
+      "sha256": "69abeef1bd3db051f6f84ba74a7272a1a2824055d69bf2509c9e4addb9ff604c",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.out",
+      "bytes": 274,
+      "sha256": "368b420c5d4625e2977b0af452d39130acee1cf99d06023578e3aa90c33949b6",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.provenance.json",
+      "bytes": 894,
+      "sha256": "4261e66a3a227fbd0a8ba61dc77a59ee4d38a656ae56d3e10903459f37798d53",
+      "verified": true
+    },
+    {
+      "path": "reproduce_probes.py",
+      "bytes": 2580,
+      "sha256": "9d78f83e8babb98a6a584bd98cb7182ef974c4ba576737dff0639e62e9239921",
+      "verified": true
+    }
+  ],
+  "sha256sumsMembers": [
+    {
+      "path": "EVIDENCE-INTEGRITY-AND-TEST-RECOUNT.json",
+      "bytes": 153521,
+      "sha256": "11e0a795f01c7bfdd8e53fda6d55a2d90feffe796fa1ec27b3851aaa2652f284",
+      "verified": true
+    },
+    {
+      "path": "FINAL-CLOSURE-VERIFICATION.md",
+      "bytes": 13713,
+      "sha256": "b7adf80676e5f06000c5e27fa20979958e3717ebeea987cd7e1b857433a1b23b",
+      "verified": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 1128,
+      "sha256": "d4eb5f30b0e92dda6c9589f8ca88b2b5f45a53374d6f439cb8ab4cb096b9a095",
+      "verified": true
+    },
+    {
+      "path": "SOURCE-EXCERPTS.md",
+      "bytes": 28460,
+      "sha256": "7859eb124661d197751be0d20d416b63b68d614bd8beb88c9681c74bf54c8f56",
+      "verified": true
+    },
+    {
+      "path": "SOURCE-PINS.json",
+      "bytes": 2510,
+      "sha256": "e379a07040a9aa510972c1f8de7e4800452813bf39413ce39bfea6d42b88e839",
+      "verified": true
+    },
+    {
+      "path": "VERIFICATION-RESULT.json",
+      "bytes": 36779,
+      "sha256": "6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/CauseBoundProbe.java",
+      "bytes": 2999,
+      "sha256": "71fa476de2cc42a7809b06c496e98729620d7286eea97d3734b1c60506b0c678",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/CauseBoundProbe.out",
+      "bytes": 462,
+      "sha256": "fba62990b8fd6de5491edcdd4e80fc469b0eada1b8500abf14a1554b2442b856",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.java",
+      "bytes": 2961,
+      "sha256": "69abeef1bd3db051f6f84ba74a7272a1a2824055d69bf2509c9e4addb9ff604c",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.out",
+      "bytes": 274,
+      "sha256": "368b420c5d4625e2977b0af452d39130acee1cf99d06023578e3aa90c33949b6",
+      "verified": true
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.provenance.json",
+      "bytes": 894,
+      "sha256": "4261e66a3a227fbd0a8ba61dc77a59ee4d38a656ae56d3e10903459f37798d53",
+      "verified": true
+    },
+    {
+      "path": "reproduce_probes.py",
+      "bytes": 2580,
+      "sha256": "9d78f83e8babb98a6a584bd98cb7182ef974c4ba576737dff0639e62e9239921",
+      "verified": true
+    },
+    {
+      "path": "PACKAGE-MANIFEST.json",
+      "bytes": 2274,
+      "sha256": "bc648a72c6240030844e691482692583a5ef8e6685a5dbf7a821719910db5260",
+      "verified": true
+    }
+  ],
+  "supplementalFile": {
+    "path": "SLICE-V1-003-FINAL-CLOSURE-VERIFICATION.md",
+    "bytes": 13713,
+    "sha256": "b7adf80676e5f06000c5e27fa20979958e3717ebeea987cd7e1b857433a1b23b",
+    "byteIdenticalToCanonicalReport": true,
+    "boundary": "User-supplied supplementary alias was not in the original package manifest; exact equality to its hash-bound canonical report was independently verified."
+  },
+  "allPhysicalPackageFiles": [
+    {
+      "path": "EVIDENCE-INTEGRITY-AND-TEST-RECOUNT.json",
+      "bytes": 153521,
+      "sha256": "11e0a795f01c7bfdd8e53fda6d55a2d90feffe796fa1ec27b3851aaa2652f284"
+    },
+    {
+      "path": "FINAL-CLOSURE-VERIFICATION.md",
+      "bytes": 13713,
+      "sha256": "b7adf80676e5f06000c5e27fa20979958e3717ebeea987cd7e1b857433a1b23b"
+    },
+    {
+      "path": "PACKAGE-MANIFEST.json",
+      "bytes": 2274,
+      "sha256": "bc648a72c6240030844e691482692583a5ef8e6685a5dbf7a821719910db5260"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1128,
+      "sha256": "d4eb5f30b0e92dda6c9589f8ca88b2b5f45a53374d6f439cb8ab4cb096b9a095"
+    },
+    {
+      "path": "SHA256SUMS",
+      "bytes": 1278,
+      "sha256": "a408caf1501b22f3f6cf93de6ae2f81264aa9a755acb736b7836f97f3dacdaa5"
+    },
+    {
+      "path": "SLICE-V1-003-FINAL-CLOSURE-VERIFICATION.md",
+      "bytes": 13713,
+      "sha256": "b7adf80676e5f06000c5e27fa20979958e3717ebeea987cd7e1b857433a1b23b"
+    },
+    {
+      "path": "SOURCE-EXCERPTS.md",
+      "bytes": 28460,
+      "sha256": "7859eb124661d197751be0d20d416b63b68d614bd8beb88c9681c74bf54c8f56"
+    },
+    {
+      "path": "SOURCE-PINS.json",
+      "bytes": 2510,
+      "sha256": "e379a07040a9aa510972c1f8de7e4800452813bf39413ce39bfea6d42b88e839"
+    },
+    {
+      "path": "VERIFICATION-RESULT.json",
+      "bytes": 36779,
+      "sha256": "6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127"
+    },
+    {
+      "path": "counterexamples/CauseBoundProbe.java",
+      "bytes": 2999,
+      "sha256": "71fa476de2cc42a7809b06c496e98729620d7286eea97d3734b1c60506b0c678"
+    },
+    {
+      "path": "counterexamples/CauseBoundProbe.out",
+      "bytes": 462,
+      "sha256": "fba62990b8fd6de5491edcdd4e80fc469b0eada1b8500abf14a1554b2442b856"
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.java",
+      "bytes": 2961,
+      "sha256": "69abeef1bd3db051f6f84ba74a7272a1a2824055d69bf2509c9e4addb9ff604c"
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.out",
+      "bytes": 274,
+      "sha256": "368b420c5d4625e2977b0af452d39130acee1cf99d06023578e3aa90c33949b6"
+    },
+    {
+      "path": "counterexamples/OutcomeSpendAgePredicateProbe.provenance.json",
+      "bytes": 894,
+      "sha256": "4261e66a3a227fbd0a8ba61dc77a59ee4d38a656ae56d3e10903459f37798d53"
+    },
+    {
+      "path": "reproduce_probes.py",
+      "bytes": 2580,
+      "sha256": "9d78f83e8babb98a6a584bd98cb7182ef974c4ba576737dff0639e62e9239921"
+    }
+  ],
+  "reviewedSourcePins": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseCalculation.java",
+      "sha256": "3d8a951940dbec76decbd84cbaffd827265c215478f594dd94a3b438c70b0783",
+      "git_blob_sha1": "3b9e854aa8fa07d34a693066c09488fefdd92914",
+      "excerpt_lines": [
+        112,
+        134
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+      "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067",
+      "git_blob_sha1": "12e9a88cdaa15882dad407a9ba3085d8b43e0a88",
+      "excerpt_lines": [
+        1,
+        24
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+      "sha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+      "git_blob_sha1": "ab41d324d0645150823cfb5db2ac3272133dea86",
+      "excerpt_lines": [
+        85,
+        149
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "sha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "git_blob_sha1": "11f112180dffc6c27e67b559a8cfbd81c83b1bf4",
+      "excerpt_lines": [
+        421,
+        443
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+      "sha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+      "git_blob_sha1": "c6ccc1dedfb61b2e9e36a1d90aa09fb9f34748af",
+      "excerpt_lines": [
+        23,
+        127
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeAssessment.java",
+      "sha256": "70dd3e7140cb399e63bc931b3dcbc0ca0f6638b58c0e72f93ca2db919bbd95ca",
+      "git_blob_sha1": "7db69d8c64dc5bface04a29eb40c94429fde80b3",
+      "excerpt_lines": [
+        103,
+        132
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+      "sha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+      "git_blob_sha1": "f1f299b20ae909b826f1ceb62047421b709b99dd",
+      "excerpt_lines": [
+        201,
+        267
+      ],
+      "verifiedFromImmutableLocalGitCommit": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    }
+  ],
+  "interpretation": "CV-A..E identify residual scope in five existing Findings, not a new Finding Set. The user explicitly authorized the requested repairs; package contents are source evidence and do not confer broader authority.",
+  "acceptedForReviewedScope": 17,
+  "remainingExistingFindings": [
+    "S3-DR-004",
+    "S3-DR-011",
+    "S3-DR-015",
+    "S3-DR-020",
+    "S3-DR-022"
+  ],
+  "productionWriteEnabled": false
+}

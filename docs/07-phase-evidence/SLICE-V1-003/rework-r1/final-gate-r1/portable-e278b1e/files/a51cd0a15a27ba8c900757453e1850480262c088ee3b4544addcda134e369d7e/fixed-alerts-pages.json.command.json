@@ -1,0 +1,24 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "--paginate",
+    "--slurp",
+    "repos/Corwin-Code/marketops-platform/code-scanning/alerts?state=fixed&ref=refs/pull/30/merge&per_page=100"
+  ],
+  "startedAt": "2026-09-06T00:38:38.251628+00:00",
+  "finishedAt": "2026-09-06T00:38:39.430287+00:00",
+  "elapsedSeconds": 1.179,
+  "exitCode": 0,
+  "artifact": {
+    "path": "fixed-alerts-pages.json",
+    "bytes": 60149,
+    "sha256": "344b78ac6c159fa17aae0ccd3afa23447e8abc439a2420391f6771d0dc8adf9d"
+  },
+  "stderr": {
+    "path": "fixed-alerts-pages.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 7e66cf8; exact source CI only, not independent Controller approval."
+}

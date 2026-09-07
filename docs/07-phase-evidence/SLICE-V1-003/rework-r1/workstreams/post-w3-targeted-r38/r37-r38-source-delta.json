@@ -1,0 +1,13 @@
+{
+  "kind": "TARGETED_RUN_SOURCE_DELTA_NOT_ONE_COMBINED_RUN",
+  "r37SourceAfterSha256": "79ab860826ad590c858cd2cd935e3e9b20c262d706050b9e8ea8e8d3a0c25a99",
+  "r38SourceBeforeSha256": "460b4bb10c84244186011ba17a33d5a0aa6f25d0615ae66369d263d4a60cb6cb",
+  "changedFiles": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "r37AfterSha256": "96eeb818f810eb64aea9364abd16cc5e7fa5021aaa6fc50193e9d707fe520dfd",
+      "r38BeforeSha256": "6dc7703192abc958666d68a48244c3d31cbdaeb7ad18d4f586d4bf7310b040b5"
+    }
+  ],
+  "boundary": "R37 is a failed 98-case run. Its other seven classes (74 cases) passed. Only the EfficiencyFlowIT source changed, and its complete 24 cases pass separately in R38. These are separate targeted observations; a new clean unselected full verify remains required."
+}

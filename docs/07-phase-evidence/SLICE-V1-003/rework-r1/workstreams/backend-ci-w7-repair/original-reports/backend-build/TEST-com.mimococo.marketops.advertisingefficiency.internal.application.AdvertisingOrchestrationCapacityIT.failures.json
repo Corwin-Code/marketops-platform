@@ -1,0 +1,14 @@
+[
+  {
+    "method": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+    "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+    "problems": [
+      {
+        "tag": "failure",
+        "type": "org.opentest4j.AssertionFailedError",
+        "message": "\nexpected: 2026-09-05T11:35:15.905951416Z\n but was: 2026-09-05T11:35:15.905951Z",
+        "body": "org.opentest4j.AssertionFailedError: \n\nexpected: 2026-09-05T11:35:15.905951416Z\n but was: 2026-09-05T11:35:15.905951Z\n\tat com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach(AdvertisingOrchestrationCapacityIT.java:147)\n"
+      }
+    ]
+  }
+]

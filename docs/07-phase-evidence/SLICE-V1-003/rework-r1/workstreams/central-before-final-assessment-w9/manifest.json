@@ -1,0 +1,34 @@
+{
+  "kind": "EXACT_W9_CENTRAL_PRE_FINAL_HISTORY",
+  "archiveSha256": "cc3c2ec95872cc925c7f66a2bc8301ca3f0b3bd632ed7cc4c1a5654e804502dc",
+  "rows": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json",
+      "archiveMember": "S3-AC-REWORK-STATUS.json",
+      "sourceHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "03b0d8489b262141829b1943098c9af5a411b9a05c91546526a23864b2d6fdda",
+      "bytes": 1229702
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json",
+      "archiveMember": "FINDING-CLOSURE-MATRIX.json",
+      "sourceHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "2b4e5845aa661f217b3d71e1949af32339671fbf9f09ebdb0bb856eec618cd25",
+      "bytes": 1254634
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/MIGRATION-INVENTORY.json",
+      "archiveMember": "MIGRATION-INVENTORY.json",
+      "sourceHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "f897da98c27d39b845586860caec44090165b069378d71c6f9794ee9e1f94f1b",
+      "bytes": 36478
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md",
+      "archiveMember": "README.md",
+      "sourceHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "sha256": "3f19c9e6cc5501e938cc71bf9ac626f0bf71129a3790526166f0c4f5ba8159b0",
+      "bytes": 21512
+    }
+  ]
+}

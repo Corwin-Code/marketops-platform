@@ -1,0 +1,6 @@
+{"layer": "frontend-quality", "archiveSha256": "0222c6b762003eac70867db83174a1541997129cae45004e546cf097a1ff7d08", "archiveBytes": 725359, "members": 80, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "governance-r2", "archiveSha256": "63d873943d40dd74abc5b4439c20b699a870928be9ce6c2ecc6ae2c566043d30", "archiveBytes": 249823, "members": 19, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+Traceback (most recent call last):
+  File "/tmp/slice3-local-layer-archives-02e6172-r1/archive_local_layers.py", line 24, in <module>
+    assert [p.relative_to(root).as_posix() for p in paths]==[r['relativePath'] for r in inv['files']]
+AssertionError

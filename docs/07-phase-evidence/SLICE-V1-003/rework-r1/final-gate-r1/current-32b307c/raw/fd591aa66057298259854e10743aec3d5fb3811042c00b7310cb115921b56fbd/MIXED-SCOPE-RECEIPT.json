@@ -1,0 +1,52 @@
+{
+  "id": "mixed_capacity",
+  "kind": "EXPLICIT_SCOPE_OF_THE_SAME_COMPLETED_BACKEND_RUN",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "sourceInventorySha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "runId": "34048388804/attempt-1/backend-build",
+  "command": "./mvnw -B -ntp clean -Dmarketops.build.gitCommit=\"${SOURCE_HEAD_SHA}\" verify; bash scripts/verify_coverage_thresholds.sh backend (separate original CI steps)",
+  "startedAt": "2026-09-06T17:22:14Z",
+  "finishedAt": "2026-09-06T17:57:40Z",
+  "sourceStable": true,
+  "exitCode": 0,
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-test-reports/backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+      "sha256": "82e0a7dda79ba6c974f927f5b6428768fced57426eb3024374c412058af036a6",
+      "bytes": 9793893
+    },
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-test-reports/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+      "sha256": "39f2f28bf6712a161b861567aa05cc1f8676ef2d2b2cdb50f196e1398ef2bb56",
+      "bytes": 32249
+    },
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-test-reports/backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+      "sha256": "197ea58fbec9e12c1354688e877dac7425573adb77d973ea154d04fac70f853b",
+      "bytes": 206877
+    },
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-test-reports/build/slice3-runtime-resources.json",
+      "sha256": "11bcd7544b5c47a2d7f715c1ca79a0475f62366a35336073aaeda85ca2b686ae",
+      "bytes": 646
+    },
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-test-reports/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+      "sha256": "96665f29a1f71a1b1215a9a8c43433c7f0fc0fa50a4fd34c47094f0b4dfe242c",
+      "bytes": 39676
+    }
+  ],
+  "parentExecution": {
+    "path": "/private/tmp/slice3-final-execution-32b307c-r1/backend-full/layer-candidate.json",
+    "sha256": "538fffc9a1a51572102869f8953434627853968e1b1149dd85c845ff6c3f5d66"
+  },
+  "scopeReviewInput": {
+    "path": "/private/tmp/slice3-final-execution-32b307c-r1/mixed-capacity/original-backend-run-reference.json",
+    "sha256": "14f20f13227ab16e85e621f33e9b09b94a3091ef84dbf14a44620a3641fecbb3"
+  },
+  "newExecutionPerformed": false,
+  "countAddedToBackendTotal": 0,
+  "engineeringClosureClaimMade": false
+}

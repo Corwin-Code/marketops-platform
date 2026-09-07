@@ -1,0 +1,262 @@
+{
+  "kind": "FINAL_CONTROL_PROOF_HISTORY",
+  "status": "WORK_IN_PROGRESS_FULL_AND_EXACT_CI_PENDING",
+  "runs": [
+    {
+      "run": "r10",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r10/receipt.json",
+      "receiptSha256": "73dd0d2c6f8bb44edb9659017be0cbdef7248b2dd87ed4094e3aea6cb0d0654f",
+      "counts": {
+        "tests": 94,
+        "failures": 12,
+        "errors": 31,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T08:05:20.348437+00:00",
+      "finishedAtUTC": "2026-09-05T08:07:13.779366+00:00",
+      "logSha256": "33e64045acc7f1009c9ea442f2ebde532e9314379966e8db8721dd1a453b343d"
+    },
+    {
+      "run": "r11",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r11/receipt.json",
+      "receiptSha256": "a0d2c7f77803c790851cb0bcc032c5c880b1ce39c56d13749e330f15e338fc17",
+      "counts": {
+        "tests": 110,
+        "failures": 12,
+        "errors": 40,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T08:11:49.967597+00:00",
+      "finishedAtUTC": "2026-09-05T08:13:47.874522+00:00",
+      "logSha256": "f7e1eb8d9555f2262c35269156d8bc594c797224bd82b9cef08b9eba427898d6"
+    },
+    {
+      "run": "r12",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r12/receipt.json",
+      "receiptSha256": "30cc235a64555e4b696c346c9bcbdf7d8ac26043507568fbd7d1ce18fb871484",
+      "counts": {
+        "tests": 110,
+        "failures": 9,
+        "errors": 18,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T08:16:50.002117+00:00",
+      "finishedAtUTC": "2026-09-05T08:21:48.561403+00:00",
+      "logSha256": "d2394003612fc3296d9abeb940f81a18a287e2da8b28a7d29521cac8966bec37"
+    },
+    {
+      "run": "r13",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r13/receipt.json",
+      "receiptSha256": "a2371379b83f5e32fe645524da808038ee9d77997bbf197388fcdda68a3ec2aa",
+      "counts": {
+        "tests": 118,
+        "failures": 0,
+        "errors": 4,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T08:24:31.586416+00:00",
+      "finishedAtUTC": "2026-09-05T08:29:46.719783+00:00",
+      "logSha256": "b19d580fa6701592044a0bd4f9d47f1d71a58c85838720a574d0a9cc69d69a43"
+    },
+    {
+      "run": "r14",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r14/receipt.json",
+      "receiptSha256": "42db12a1a1effe00d18443f5ac7862416ff31303a2c3cc53789ccfd166a31cfe",
+      "counts": {
+        "tests": 106,
+        "failures": 2,
+        "errors": 1,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T08:32:14.217741+00:00",
+      "finishedAtUTC": "2026-09-05T08:34:01.812407+00:00",
+      "logSha256": "2499460b8d1b1e524913c9911e2c88573c7bd013673ae5cc9df2e74f4312893c"
+    },
+    {
+      "run": "r15",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r15/receipt.json",
+      "receiptSha256": "8dba9fd77cc6e03a33de8bc1cbed3c3508843f0ef8bb26629e46f1716713f3d1",
+      "counts": {
+        "tests": 137,
+        "failures": 0,
+        "errors": 40,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T08:43:59.389887+00:00",
+      "finishedAtUTC": "2026-09-05T08:50:36.345265+00:00",
+      "logSha256": "4a1d29dde723e8aab0e8571b6a19c482507c80eff25829b66ed39b2f5c89801a"
+    },
+    {
+      "run": "r16",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r16/receipt.json",
+      "receiptSha256": "369d1c10d6cea01f24051e37a0c38784b52bcface6b39da4e8906be624849381",
+      "counts": {
+        "tests": 48,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T08:56:13.613361+00:00",
+      "finishedAtUTC": "2026-09-05T08:57:07.583188+00:00",
+      "logSha256": "4383edbf3708f77d05c3dba12c1dab3c8e92e42c7966947c9650feef5c396036"
+    },
+    {
+      "run": "r17",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r17/receipt.json",
+      "receiptSha256": "2a05d03136117642c29e15e7b346c7d86726df9bb608aac7c121617f3a35166f",
+      "counts": {
+        "tests": 118,
+        "failures": 0,
+        "errors": 81,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T09:35:34.617930+00:00",
+      "finishedAtUTC": "2026-09-05T09:36:24.101999+00:00",
+      "logSha256": "ad5c933ce27a4fc01d231b56f0493b90e80006e75873c6c9b37094cdc20fe8d8"
+    },
+    {
+      "run": "r18",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r18/receipt.json",
+      "receiptSha256": "8f033631a1cd708404a2ed1d111f448047418df1a8f5016fdb37cc27cf205798",
+      "counts": {
+        "tests": 133,
+        "failures": 0,
+        "errors": 96,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T09:38:04.605986+00:00",
+      "finishedAtUTC": "2026-09-05T09:39:49.066148+00:00",
+      "logSha256": "63af60841f31894c20c795bff1cb01c6639faf40ee3e312b40d8aa2f898fcf99"
+    },
+    {
+      "run": "r19",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r19/receipt.json",
+      "receiptSha256": "5080b5c8aea04dd4fc2f342c27976d1aee36d991161b38a93dc23e4f0c01a60c",
+      "counts": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T09:41:17.882674+00:00",
+      "finishedAtUTC": "2026-09-05T09:41:38.401036+00:00",
+      "logSha256": "7e3a70c42612ffd6a356587eb4b1fbc47b3fc71a5072461789d3c25be9f4bb05"
+    },
+    {
+      "run": "r20",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r20/receipt.json",
+      "receiptSha256": "1c20c7f5461441d16819986e7c397391550fa46a7295d3cbda283e2718592086",
+      "counts": {
+        "tests": 262,
+        "failures": 7,
+        "errors": 14,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T09:43:06.589943+00:00",
+      "finishedAtUTC": "2026-09-05T09:47:30.734896+00:00",
+      "logSha256": "265777d96bcbd631e40ce24d98afe210eeeef3bc4bc9fa8f4234b20b3c66c29f"
+    },
+    {
+      "run": "r21",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r21/receipt.json",
+      "receiptSha256": "3da1c8e3add28f576d69a30b31b99a6ccbc5bee9ba38043c75db916d8830438f",
+      "counts": {
+        "tests": 289,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T10:04:26.040562+00:00",
+      "finishedAtUTC": "2026-09-05T10:08:33.814745+00:00",
+      "logSha256": "e59b91e961e86d88bf638252aede411f282f99247eaca0708b83108b44817ed3"
+    },
+    {
+      "run": "r22",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r22/receipt.json",
+      "receiptSha256": "0ab169c7fc5cc727cb8a7dd0b9cf176572cfc74f5e810d2be57036e3a082a5a4",
+      "counts": {
+        "tests": 83,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T10:09:16.992573+00:00",
+      "finishedAtUTC": "2026-09-05T10:10:23.646008+00:00",
+      "logSha256": "696b5e1c981060b0365751d066d6ec3d5e978eff69cd57fb1bd6abc677215053"
+    },
+    {
+      "run": "r23",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+      "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+      "counts": {
+        "tests": 175,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+      "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+      "logSha256": "2c68f2aec3656c444f85aba92a695837a79f33b4d99b111d0a3dd424bd6d8c00"
+    },
+    {
+      "run": "r24",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/receipt.json",
+      "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "counts": {
+        "tests": 130,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T12:24:50.935811+00:00",
+      "finishedAtUTC": "2026-09-05T12:32:40.085682+00:00",
+      "logSha256": "4d7dbbee52d2a8fe6b948b173811d4bb665958e599502ee49458baf68264ae76"
+    },
+    {
+      "run": "r25",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "counts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T12:42:37.294063+00:00",
+      "finishedAtUTC": "2026-09-05T12:50:12.037347+00:00",
+      "logSha256": "ad22dd8a992c14b45fb930a8fb75887a18c9f2a5a6d156d6ef6bc536bd27351c"
+    }
+  ]
+}

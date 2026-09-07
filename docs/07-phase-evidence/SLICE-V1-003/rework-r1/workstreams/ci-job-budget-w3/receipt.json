@@ -1,0 +1,140 @@
+{
+  "kind": "APPLIED_CI_JOB_BUDGET_ADJUSTMENT_WITH_FAILED_W3_MEASUREMENT",
+  "generatedAtUTC": "2026-09-05T04:44:59.328977+00:00",
+  "head": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "inputs": [
+    {
+      "path": ".github/workflows/backend.yml",
+      "sha256": "75a089bfed130919f31ce67b06db58965308c2133e8b8781aa7ba1aaf1676fd7"
+    },
+    {
+      "path": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
+      "sha256": "99a02f2b21efa5f265199ed81d3d9826604fbb066b48c35ab00d81cb23dbc5c2"
+    },
+    {
+      "path": "docs/01-requirements/baseline-v1.0-cn.md",
+      "sha256": "63400dc18aa690a1a627424256fac92f34f8af55cf54f321711dda259faccb64"
+    },
+    {
+      "path": "docs/02-architecture/V1_SHARED_SPINE.md",
+      "sha256": "d857ccc197f5f7d2b6dd90a0b61c4f849a2793b809c7e94b608d140dfd61b8b3"
+    },
+    {
+      "path": "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
+      "sha256": "df14e88abb9a1f276930c3a363492c963f829f59309d3e9f0722408f7fe80930"
+    },
+    {
+      "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java",
+      "sha256": "ea34b99e6a66488f3b4f2540a5d0e0598a5bef6995d9b417ee85981dea7d5e01"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "sha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259"
+    },
+    {
+      "path": "backend/marketops-server/pom.xml",
+      "sha256": "02dd0836c54bbc3298ce326bee0f61077acea4366c734ba82c6710ffafb6079b"
+    },
+    {
+      "path": "scripts/verify_coverage_thresholds.sh",
+      "sha256": "695cc78d99d4c0c1b657319b13a36d40b5f0b2c39e204e48bf55a8f7d375b8de"
+    },
+    {
+      "path": "scripts/verify_migration_artifact.py",
+      "sha256": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191"
+    }
+  ],
+  "normativeNumericCIJobCapFound": false,
+  "currentJobBudgetsMinutes": {
+    "backend-build": 60,
+    "backend-integration": 60,
+    "architecture-boundary": 20
+  },
+  "provisionalRecommendedBudgetsMinutes": null,
+  "individualTimeoutsAndBusinessAssertionsChange": "NONE",
+  "recommendationConditionalOnFinalFullRunTiming": false,
+  "w3CompletePassClaim": false,
+  "repositoryWrites": [
+    ".github/workflows/backend.yml",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-job-budget-w3"
+  ],
+  "testExecution": "NONE",
+  "realProviderAccess": false,
+  "productionWriteEnabled": false,
+  "reviewPath": "README.md",
+  "reviewSha256": "eb215f06ec72102eeec0c731f06c8909e0420c77c7c0b2bd271f08e92ed71eba",
+  "updatedAtUTC": "2026-09-05T04:50:38.188800+00:00",
+  "priorJobBudgetsMinutes": {
+    "backend-build": 25,
+    "backend-integration": 30
+  },
+  "appliedChange": {
+    "path": ".github/workflows/backend.yml",
+    "sha256": "94865631f81b41850a40c19d124093b4c676051bddbff2abb015250895f3b224",
+    "changedValuesOnly": [
+      "backend-build.timeout-minutes: 25 -> 60",
+      "backend-integration.timeout-minutes: 30 -> 60"
+    ],
+    "testedRemote": "PENDING_FINAL_EXACT_HEAD"
+  },
+  "measuredRun": {
+    "head": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+    "sourceStable": true,
+    "startedAtUTC": "2026-09-05T04:18:27.389559+00:00",
+    "finishedAtUTC": "2026-09-05T04:46:51.962903+00:00",
+    "elapsedSeconds": 1704.575,
+    "completePass": false,
+    "mavenExitCode": 1,
+    "suiteDeclaredCounts": {
+      "tests": 2261,
+      "failures": 11,
+      "errors": 6,
+      "skipped": 0,
+      "suites": 175
+    },
+    "actualTestcaseNodeCounts": {
+      "tests": 2262,
+      "unit": 1546,
+      "integration": 716,
+      "failures": 11,
+      "errors": 6,
+      "skipped": 0
+    },
+    "sourceRunReceipt": "measured-run-receipt.json",
+    "sourceRunReceiptSha256": "cb31738a38c60b9551fd40f84802aa883bf6f81fe73d96de216ba7bae36b5960",
+    "mavenLogSha256": "b404dd75038055c9c171ef70bd98ce3355dfb7a822005caa67bc823ab597be03",
+    "countReconciliationPath": "/tmp/slice3-r1-full-clean-w3-fd3e00e3/testcase-count-reconciliation.json",
+    "countReconciliationSha256": "fe4e2d1cf47a33a9d19f0e0865e899ae98468750eb24ddd621a875bdf2e656da",
+    "performanceSuites": [
+      {
+        "phase": "failsafe",
+        "name": "com.mimococo.marketops.RepresentativePerformanceIT",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": "787.269",
+        "path": "/tmp/slice3-r1-full-clean-w3-fd3e00e3/artifacts/failsafe-reports/TEST-com.mimococo.marketops.RepresentativePerformanceIT.xml",
+        "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.RepresentativePerformanceIT.xml",
+        "sha256": "203f40884815ec9c5ca79ab834e9fe877b04dcde57397cacbd11b01600a6e360"
+      },
+      {
+        "phase": "failsafe",
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": "378.379",
+        "path": "/tmp/slice3-r1-full-clean-w3-fd3e00e3/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+        "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+        "sha256": "ccbce69065efda959f38caea36976e81832b451cfef9c15c2d0bc493102570be"
+      }
+    ]
+  },
+  "limit": "Only CI job wall-clock budget changes; no AC/finding engineering or Controller verdict is promoted and no complete W3 or remote CI pass is claimed."
+}

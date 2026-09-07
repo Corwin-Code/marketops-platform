@@ -1,0 +1,260 @@
+{
+  "attempt": "r2",
+  "sourceCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "sourceTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "wrapperSha256": "68e84803794cc701501e6a79f91aaec288cc29ec97043bb538be1556aa793c9b",
+  "startedAt": "2026-09-05T11:11:27.562113+00:00",
+  "isolation": "Exact git archive in an independent /tmp directory; unique Compose project and fresh synthetic database; legacy inputs preserved except the recorded authorized six-axis Exposure fixture upgrade",
+  "realProviderAccess": false,
+  "productionWriteEnabled": false,
+  "sourceInputsSha256": "0c16c94bdc1eefb10ec38bb4ecd86b724e8e4fd36ec38207697b76f2814718c8",
+  "archiveGitIdentity": {
+    "head": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+    "metadata": "Private generated HEAD/index with read-only access to immutable local Git objects; original source/test bytes remain archive-exact"
+  },
+  "legacyInputDeltaSha256": "5c84937cbca7f6de70e54e9f0aac65f9313dd4fd4057b79e3d63b7bf798dee48",
+  "runtimeResources": {
+    "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/runtime-resources.json",
+    "sha256": "dbd880ea5dd7ff1c8916521357b8d7427377fd3924894036e0ea811e66bee856",
+    "measurement": {
+      "schemaVersion": "1.0",
+      "recordedAt": "2026-09-05T11:11:30.649917+00:00",
+      "host": {
+        "os": "Darwin",
+        "architecture": "arm64",
+        "logicalProcessors": 8,
+        "physicalMemoryBytes": 17179869184,
+        "processAffinityProcessors": null
+      },
+      "docker": {
+        "logicalProcessors": 4,
+        "memoryBytes": 6210576384,
+        "serverVersion": "29.7.2"
+      },
+      "github": {
+        "runId": null,
+        "runAttempt": null,
+        "job": null,
+        "testedCheckout": null
+      },
+      "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+    }
+  },
+  "database": {
+    "composeProject": "slice3-legacy-8nrjjc2z",
+    "loopbackPort": 56079,
+    "provider": "isolated PostgreSQL",
+    "image": "a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636"
+  },
+  "packageLockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+  "frontendQuality": {
+    "result": "PASS",
+    "sourceCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "sourceTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "sourceManifestSha256": "0c16c94bdc1eefb10ec38bb4ecd86b724e8e4fd36ec38207697b76f2814718c8",
+    "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+    "tests": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-tests.json",
+      "sha256": "42177abf643d91082873c895cc5aee970a7a11becc678c8956696a80293bac7f",
+      "total": 308,
+      "passed": 308,
+      "failed": 0,
+      "pending": 0
+    },
+    "sbom": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-sbom.json",
+      "sha256": "0b04d09a9ff034df3d7d202b4ec9aa7fcdb3626e6a233a296e7502c736087273"
+    }
+  },
+  "derivedConfigSha256": "c431ddd77a45cdc8c769912afe102bbcc18b683bb9f74b19c5ed996bf3d356ba",
+  "namedBrowserResults": {
+    "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/named-browser-results.json",
+    "sha256": "9f885aeb600047dac5979ee9d9ce3ebb7e0456eb1cf25269fc8a953e3c1327ef",
+    "testCount": 25
+  },
+  "sourceHeadAfter": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "originalTrackedInputsUnchanged": true,
+  "cleanupExitCode": 0,
+  "runtimeLogSha256": "f2a476b9fff57287d4b5f07e75534d7ad6601a876b38da430b6eea252f3d73c2",
+  "finishedAt": "2026-09-05T11:13:09.954107+00:00",
+  "durationSeconds": 102.392,
+  "exitCode": 0,
+  "result": "PASS",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/validation/collect_slice3_runtime_resources.py",
+        "--output",
+        "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/runtime-resources.json"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source",
+      "startedAt": "2026-09-05T11:11:29.751501+00:00",
+      "finishedAt": "2026-09-05T11:11:30.657184+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/00-command.log",
+      "logSha256": "fc6c36fd9f3a9043765f00433b75717d6364f7c50b64bdde48950c2e20301965"
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "slice3-legacy-8nrjjc2z",
+        "--env-file",
+        "/tmp/marketops-legacy-browser-8nrjjc2z/source/.env.local",
+        "-f",
+        "/tmp/marketops-legacy-browser-8nrjjc2z/source/infra/compose/docker-compose.yml",
+        "up",
+        "-d",
+        "--wait",
+        "postgres"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source",
+      "startedAt": "2026-09-05T11:11:30.657461+00:00",
+      "finishedAt": "2026-09-05T11:11:36.724470+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/01-command.log",
+      "logSha256": "991ebb2157d252d4cf337cfb4e799f4751f1374f78e7f28454783b13b6e7d6bd"
+    },
+    {
+      "command": [
+        "npm",
+        "ci",
+        "--include=dev",
+        "--include=optional"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:11:36.949307+00:00",
+      "finishedAt": "2026-09-05T11:11:47.611118+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/02-command.log",
+      "logSha256": "92d4b2f8e1977a642be7f4b374625ab91cc1dfbbd7c53b94718ba216337e1276"
+    },
+    {
+      "command": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:11:47.611629+00:00",
+      "finishedAt": "2026-09-05T11:11:48.062303+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/03-command.log",
+      "logSha256": "c650b6f135370dbadac7f1182a1804a338d446d4394090767191b52957e14d7c"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:11:48.062566+00:00",
+      "finishedAt": "2026-09-05T11:11:50.181848+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/04-command.log",
+      "logSha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:11:50.182194+00:00",
+      "finishedAt": "2026-09-05T11:11:55.607892+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/05-command.log",
+      "logSha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:11:55.608035+00:00",
+      "finishedAt": "2026-09-05T11:11:58.145406+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/06-command.log",
+      "logSha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:ci",
+        "--",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=../../build/supply-chain/frontend-tests.json"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:11:58.145502+00:00",
+      "finishedAt": "2026-09-05T11:12:05.399893+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/07-command.log",
+      "logSha256": "b91cca118cd3f9bc48a1727271fe70b62c708b6a62018c35f90ecfb861dd2882"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:12:05.400049+00:00",
+      "finishedAt": "2026-09-05T11:12:08.122367+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/08-command.log",
+      "logSha256": "1053965fb5a3be5cbf18379cb6f25bba3b7575628e93a7b1a7ec56947fc2b0b0"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "verify:bundle"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:12:08.122501+00:00",
+      "finishedAt": "2026-09-05T11:12:10.615523+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/09-command.log",
+      "logSha256": "d2c5f13ead6290e08cf9399ae43012c0c9fe2b1b215149356512f91475e6c917"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "sbom"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:12:10.615622+00:00",
+      "finishedAt": "2026-09-05T11:12:12.384802+00:00",
+      "exitCode": 0,
+      "log": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/10-command.log",
+      "logSha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3"
+    },
+    {
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "--config=playwright.legacy-isolated.config.ts",
+        "--reporter=list,json"
+      ],
+      "workingDirectory": "/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:12:12.500025+00:00",
+      "finishedAt": "2026-09-05T11:13:08.971726+00:00",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": []
+}

@@ -1,0 +1,57 @@
+{
+  "kind": "TARGETED_POST_W4_F014_ROOT_CAUSE_REPAIR",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=4e101ca4386d1cab089a03edc5d461301d5d4559",
+    "-Dtest=AdvertisingAggregateExposureIT",
+    "test"
+  ],
+  "baseHead": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "baseTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+  "workingTreeStatusBefore": "M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java\n M backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserFixtureApplication.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicyTest.java\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md\n M frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserPaginationSeed.java\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4-publishability-scan.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-named-junit-w4.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w4-identity.json",
+  "sourceBinding": "W4 plus current F014/F003/F005 uncommitted repairs; exact source bytes bound in source-before/after, not exact W4 commit source.",
+  "sourceBeforeSha256": "cf72068fa0fefdfad93318b25ed9446a195beed698612264d5f9821c4888198e",
+  "resourcesSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+  "boundary": "Synthetic isolated PostgreSQL only; no real Provider/shared/production. production_write_enabled=false.",
+  "startedAtUTC": "2026-09-05T06:04:29.927985+00:00",
+  "finishedAtUTC": "2026-09-05T06:05:02.596453+00:00",
+  "elapsedSeconds": 32.665,
+  "exitCode": 1,
+  "logSha256": "6f2bcb3a3b6b4248c2c4706aa1db4ad2bf861d61afb8232e1962643cc6a54f21",
+  "sourceAfterSha256": "cf72068fa0fefdfad93318b25ed9446a195beed698612264d5f9821c4888198e",
+  "sourceStable": true,
+  "reports": [
+    {
+      "class": "com.mimococo.marketops.AdvertisingAggregateExposureIT",
+      "declared": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 4,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 4,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-f014-r1/reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "sha256": "905db682e4a04205d99785b13bc7c82e75cbcdaf8d2d7453ee07981461f5460e"
+    }
+  ],
+  "counts": {
+    "tests": 27,
+    "failures": 0,
+    "errors": 4,
+    "skipped": 0
+  },
+  "expectedClasses": [
+    "AdvertisingAggregateExposureIT"
+  ],
+  "missingClasses": [],
+  "completeSelectedClassesPass": false,
+  "limit": "Complete clean unselected full verify on a new exact checkpoint remains required."
+}

@@ -1,0 +1,185 @@
+{
+  "privateRoot": "/tmp/slice3-final-browser-evidence.CVif9R/advertising",
+  "files": [
+    {
+      "path": "backend-build-info.properties",
+      "sha256": "afa038bb5c3dcf2597ae30809b63c34cf197e8e18d21c5b049cf5c52c58b3ad0",
+      "bytes": 215
+    },
+    {
+      "path": "command.log",
+      "sha256": "9af87dbbbc27161f5825f1670dc2f417e84827c27a4fc1f8f6fbf519b17005bb",
+      "bytes": 477758
+    },
+    {
+      "path": "frontend-dist/assets/index-DzyR0AvL.js",
+      "sha256": "3c9aeefe8579da11669f13d9f1540201fb9c8d096b59f7ea535fc80f7908d870",
+      "bytes": 351214
+    },
+    {
+      "path": "frontend-dist/index.html",
+      "sha256": "e1d5a79e6915e64d70afd59bc531022e98251d86ae5c5d33cf8ab5ccb41a8043",
+      "bytes": 1345
+    },
+    {
+      "path": "html/index.html",
+      "sha256": "e73b4d39c847bebfde28c9f0c0f39735a60b22606fdd629637c18699693ec1ed",
+      "bytes": 585631
+    },
+    {
+      "path": "report.json",
+      "sha256": "d43c3894649c980e648b1fe2958a2c074056be6608472e4a1cc36befe6eb414f",
+      "bytes": 16036
+    },
+    {
+      "path": "report.xml",
+      "sha256": "61f5ef4c557cecbb868b5c4fec43909019d0a4b66f63dc77c0c33077cdd9a3fb",
+      "bytes": 2378
+    },
+    {
+      "path": "test-results/.last-run.json",
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+      "bytes": 45
+    },
+    {
+      "path": "test-results/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "sha256": "79cb4c69470d7f1bee95531ee56c87ea93a0fb8bd64789c6d889a6325d3251a5",
+      "bytes": 688466
+    },
+    {
+      "path": "test-results/governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "sha256": "93a347988bb050f52bc6a60896a13ea17871c52a8b8e5159746821fb78e91fb6",
+      "bytes": 424142
+    },
+    {
+      "path": "test-results/governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "sha256": "2d004a11b50dc8b910bcfbaeb0ca36af2a28a1cdf241b038182f34160bcead7e",
+      "bytes": 356893
+    },
+    {
+      "path": "test-results/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "sha256": "3dfb10470328a4a326ba8a3505996eab0b58f6a8f9ca338ab8f8411115008a5e",
+      "bytes": 401039
+    },
+    {
+      "path": "test-results/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "sha256": "bdaa48270e93ebb949c22de4200aa0069b23d8a0b3be847bfacbf55da75cb082",
+      "bytes": 396977
+    },
+    {
+      "path": "test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "sha256": "c6670e2be754b51a4eab23305e1bf7bc2705e6f40e730c64a22f913b0f15d8ef",
+      "bytes": 4439300
+    },
+    {
+      "path": "test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "sha256": "90bc195deea7900f07660a1ca16a3218a26cbc54b751244e49442d264565b381",
+      "bytes": 512345
+    },
+    {
+      "path": "test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "sha256": "0ad253ad65979a1b39f03e949f78f681dde66cbca354cac2108b93a15be5d7a7",
+      "bytes": 1149761
+    },
+    {
+      "path": "test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-partial-screenshot-remains-unverified-held.png",
+      "sha256": "ddf3a453bf600fafad0ee27644cbc63ec4b2f8c764cb9129ade300f067d40175",
+      "bytes": 1235222
+    },
+    {
+      "path": "test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "sha256": "83b7604ee1790d6e60bc1d6d123ba6fd2de0058bcdf5bd37371337e669950f85",
+      "bytes": 4429083
+    },
+    {
+      "path": "test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "sha256": "49c7d6ab98c33eb434850f8ac77e7afd23856f4c329474feb6614e987b2c7ff6",
+      "bytes": 514126
+    },
+    {
+      "path": "test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "sha256": "cdc53a1d1b957931c5f404bd854da4e94c1ab06a9728729beb3853790f059829",
+      "bytes": 1156106
+    },
+    {
+      "path": "test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-partial-screenshot-remains-unverified-held.png",
+      "sha256": "0bf4c789d32d6927d6e4b73b9382324959ffa61f828e1a3405dea177860c9bad",
+      "bytes": 1240625
+    },
+    {
+      "path": "test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "716b25fdfd191385cc6cce935b3f7f027ba7fb97f41552fa096930c0ba17c4a7",
+      "bytes": 291142
+    },
+    {
+      "path": "test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "220b73c1568b39d6677542fd5e4f64fbbaa0dc387eeff170afcc10d1bbe8b95e",
+      "bytes": 292711
+    },
+    {
+      "path": "test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "sha256": "4eb4729d3a469968234516a0cd34eadeff5c019a38e46dab2a4b68ce42fbbd07",
+      "bytes": 197974
+    },
+    {
+      "path": "test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "sha256": "e38d6512e17781e6e0c0396fa518b9d2cb38646b5039fb1819c5ea53f73d24ff",
+      "bytes": 264282
+    },
+    {
+      "path": "test-results/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "sha256": "79234b324bf88dc7111a114816da8ed63dbf0ccec92184d9e333174ff8a2d276",
+      "bytes": 325930
+    },
+    {
+      "path": "test-results/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+      "sha256": "2d76275342fa1159c6f4f30fb1b4cdd0d649664b8560707604f62163063c4493",
+      "bytes": 331468
+    },
+    {
+      "path": "test-results/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+      "sha256": "7cc8bb902b69a0acebfa55a98b5ee9da6a40c9b0876010efded0025970c6b7d7",
+      "bytes": 300349
+    },
+    {
+      "path": "test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "sha256": "42c8e6df508f8cf3bbcf7d3ed9388a7e68000239fc2bee0806b7130e1ae449cc",
+      "bytes": 333908
+    },
+    {
+      "path": "test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "sha256": "494c84c26fe6e46ef5925a70c3a24e125b90e2650ba0089b4ab3863fc5b82985",
+      "bytes": 342104
+    },
+    {
+      "path": "test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+      "sha256": "840242f0680269e0c85fb7520f3c9ed532431c80e26d445fdeba78c8b3820d75",
+      "bytes": 376077
+    },
+    {
+      "path": "test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+      "sha256": "6565d9e48c44f6f7350c2e3169f41d3e64e84d9049e0a14e58d9653ef1bf52d1",
+      "bytes": 9682525
+    },
+    {
+      "path": "test-results/governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "sha256": "3865554773b9216727e7db88ffb9d4c1f04d2f55b22d5f915ecba7dbee5de81b",
+      "bytes": 346016
+    },
+    {
+      "path": "test-results/governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "sha256": "372c539f2118814cb5e417a3e25581a78c87f4db644bda5979ed8edef41cca79",
+      "bytes": 466811
+    },
+    {
+      "path": "test-results/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "sha256": "0157aa24f95f48fe8a23cd9df11ecea4825a8d946f7800eb9ef6f8e5d962b519",
+      "bytes": 327234
+    },
+    {
+      "path": "test-results/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "sha256": "5ac2a15b9af37565ae59cdac7425fa5d33cdeeaab4adf7c2fb255b5e273b2e26",
+      "bytes": 329608
+    }
+  ]
+}

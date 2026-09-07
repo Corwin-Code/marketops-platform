@@ -1,0 +1,36 @@
+{
+  "kind": "CURRENT_ALERT_WHOLE_SOURCE_AND_EXPRESSION_COMPARISON",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+  "priorRootTriage": {
+    "path": "/private/tmp/slice3-security-admission-e278b1e-r1/ALERT-DELTA-TRIAGE.json",
+    "sha256": "ad31968952e1852977416f03d60be303047395dff1bc7d22a433e4b21ee3309b",
+    "bytes": 156766
+  },
+  "currentRawReview": {
+    "path": "/private/tmp/slice3-security-review-32b307c-r1/SECURITY-RAW-REVIEW-CANDIDATE.json",
+    "sha256": "7169aa3ca8adfecbb9e3d6fe4521118095de275cd28f99c6afcd880565a20341",
+    "bytes": 153251
+  },
+  "exactWholeFilesAndExpressions": 91,
+  "exactExpressions": 95,
+  "changedOrNewComparedToSpecificRootReview": [
+    {
+      "number": 181,
+      "engineeringAssessment": "Existing cause-bound integration assertion still requires NOT_AVAILABLE economicMaxCpc. The new native-clock issuer tests were inserted before this unchanged method; its JsonNode.asText expression and complete method bytes are unchanged. This deprecated-call quality note remains open."
+    },
+    {
+      "number": 182,
+      "engineeringAssessment": "Existing cause-bound integration assertion still requires CAUSE_BOUND_PROTECTION_STEP. Only two independent issuer regression methods were inserted earlier in this file; this method and flagged expression remain byte-identical. The quality note stays open."
+    },
+    {
+      "number": 183,
+      "engineeringAssessment": "Existing integration assertion still requires EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH, preventing a profitability or health claim from the protection exception. The complete method and flagged expression remain unchanged after native-clock tests were added earlier. The quality note stays open."
+    },
+    {
+      "number": 213,
+      "engineeringAssessment": "The unused scored parameter belongs to writeEvidence, whose complete method remains byte-identical. The purpose-evidence batch change is at its caller earlier in the class; authoritative policy and evidence IDs continue to come from calculation and persisted IDs. This unused-parameter note remains open; no SQL control or evidence filtering is bypassed."
+    }
+  ],
+  "scope": "Current official raw alerts, SARIF locations, checkout and source identities are newly read. All 95 flagged expressions and 91 whole files match the explicitly reviewed e278b1e root triage. Four changed whole-file contexts are freshly reviewed and recorded; their flagged complete methods remain unchanged. No old execution result is promoted."
+}

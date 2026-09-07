@@ -1,0 +1,20 @@
+{
+  "project": "slice3-fg-legacy-slice3-final-browser-work-7tia4q",
+  "containerId": "ba43847d3a9addf3f27ef4c3c3c3bce2ebfb640052499d997b80272e3c9df064",
+  "ports": {
+    "5432/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "64732"
+      }
+    ]
+  },
+  "imageReference": "postgres:18.4",
+  "imageId": "sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636",
+  "networks": [
+    "d035c4702185ff39410e491e83f9361e199c61f781e9c327b766ac0412056c10\tslice3-fg-legacy-slice3-final-browser-work-7tia4q_default"
+  ],
+  "volumes": [
+    "slice3-fg-legacy-slice3-final-browser-work-7tia4q_marketops-postgres-data"
+  ]
+}

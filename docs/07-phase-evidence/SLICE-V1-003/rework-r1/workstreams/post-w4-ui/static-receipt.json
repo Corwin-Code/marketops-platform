@@ -1,0 +1,82 @@
+{
+  "kind": "POST_W4_TEST_ONLY_STATIC_CHECKS",
+  "baseCommit": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "runs": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "startedAtUTC": "2026-09-05T06:02:06.675409+00:00",
+      "finishedAtUTC": "2026-09-05T06:02:07.932134+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-format-check.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAtUTC": "2026-09-05T06:02:07.932466+00:00",
+      "finishedAtUTC": "2026-09-05T06:02:13.270283+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-lint.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAtUTC": "2026-09-05T06:02:13.270746+00:00",
+      "finishedAtUTC": "2026-09-05T06:02:15.273646+00:00",
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-typecheck.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    }
+  ],
+  "runtimeTestsExecuted": false,
+  "databaseBrowserMavenUsed": false,
+  "committedSourceClaim": false,
+  "baseTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+  "measuredAtUTC": "2026-09-05T06:04:09.402857+00:00",
+  "scope": "Three test-only keyboard/pagination input files after W4. Formatting/lint/TypeScript only; no browser, PostgreSQL, Java compilation or final current-source runtime PASS is implied.",
+  "sourceInputs": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserPaginationSeed.java",
+      "sha256": "6e4cda25eb220ab69afff4f49e44a31f9a082bf44267a78d6ce1ee966273317d"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingBrowserFixtureApplication.java",
+      "sha256": "bc08f57cc3c47d86be855f266e231b1cb24b427017002c4b1690e8d06e8c5071"
+    },
+    {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814"
+    },
+    {
+      "path": "frontend/marketops-console/package-lock.json",
+      "sha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332"
+    },
+    {
+      "path": "frontend/marketops-console/package.json",
+      "sha256": "05567a1f945b783ae8f6d28e15816f2cfee414706c21982b7c1afe4f4539e8d2"
+    },
+    {
+      "path": "frontend/marketops-console/playwright.advertising.config.ts",
+      "sha256": "65f51fffe04a5c23c09613ecf4e2b008995e6b18af41ea5ae4821137fc37a0a9"
+    }
+  ],
+  "futureRuntimeScope": {
+    "originalJourneys": 11,
+    "newKeyboardPagingJourney": 1,
+    "totalJourneys": 12,
+    "dataset": "Dedicated PAGINATION org: 56 permitted Cases / 5 ungranted same-org Store Cases, plus existing foreign-org Case negative. Independent lane/key expected order, no tested-query oracle.",
+    "keyboard": "Tab traversal + activeElement and focused assertion + Enter; ACK remains distinct from Action-stage.",
+    "pending": "Coherent final checkpoint, full backend, real12browser, original browser regression, fresh lock installation/full frontend quality and exact CI."
+  }
+}

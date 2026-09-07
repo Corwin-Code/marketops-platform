@@ -1,0 +1,39 @@
+{
+  "kind": "ARCHIVE_COMMAND_EXECUTION_RECEIPT",
+  "argv": [
+    "python3",
+    "/tmp/slice3-local-layer-archives-02e6172-r1/archive_local_layers_r2.py"
+  ],
+  "startedAt": "2026-09-06T04:40:34.047542+00:00",
+  "finishedAt": "2026-09-06T04:40:34.843925+00:00",
+  "exitCode": 0,
+  "tool": {
+    "path": "/tmp/slice3-local-layer-archives-02e6172-r1/archive_local_layers_r2.py",
+    "packageRelativePath": "archive_local_layers_r2.py",
+    "sha256": "231c3766e605b25280d36311811f18133980c16ddb1e241da0086859568cdfdf",
+    "bytes": 8468
+  },
+  "rawCommandLog": {
+    "path": "/tmp/slice3-local-layer-archives-02e6172-r1/archive-command-r2.log",
+    "packageRelativePath": "archive-command-r2.log",
+    "sha256": "dea1f2d221ddbd18e82fded33923c277e2269de7be836c2cec4744068a5dd62b",
+    "bytes": 1794
+  },
+  "outputReceipt": {
+    "path": "/tmp/slice3-local-layer-archives-02e6172-r1/ARCHIVING-RECEIPT.json",
+    "packageRelativePath": "ARCHIVING-RECEIPT.json",
+    "sha256": "dad9f666049c9e47c5a1d9f3498eda1083db6a8f1f8f91158f79e4c2f0fc17d2",
+    "bytes": 10921
+  },
+  "initialPreparationDisposition": {
+    "path": "/tmp/slice3-local-layer-archives-02e6172-r1/PREPARATION-DISPOSITION.json",
+    "packageRelativePath": "PREPARATION-DISPOSITION.json",
+    "sha256": "75b568978205fd9d58e31a3601a761502b29b19c0b62aa38dda2612145ba6444",
+    "bytes": 1505
+  },
+  "archivesCompleted": 9,
+  "originalBytesUnchanged": true,
+  "productTestsRun": 0,
+  "publicationPerformed": false,
+  "boundary": "Initial file-order assertion stopped after two valid ZIPs; resumed command revalidated those exact unchanged ZIPs and created seven remaining archives. Both command/source records preserved. No product tests failed or ran."
+}

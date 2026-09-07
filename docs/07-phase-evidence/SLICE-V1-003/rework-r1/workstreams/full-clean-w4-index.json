@@ -1,0 +1,109 @@
+{
+  "kind": "W4_ARCHIVED_BACKEND_MEASUREMENT_INDEX",
+  "measuredHead": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "measuredTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+  "result": "ALL_2264_ACTUAL_BACKEND_CASES_PASS",
+  "currentConclusion": "Historical exact source measurement; subsequent F014/F005 runtime and F003/F021 proofs require a new final source execution.",
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/README.md",
+      "sha256": "0c8ecb483a61abc11aff0a1a7f053eb0e4af43f13e2402dd581c57b920ce7600",
+      "bytes": 682
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/archive-artifact-index.json",
+      "sha256": "293b5f097771b967802c28d6f86dce7387c4f05605808453f670e484289143b2",
+      "bytes": 1473829
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/backend-source-after.json",
+      "sha256": "d18fa19e3fc50cd8c0ceb39190145767c9c746034e41d79955c385eacd3f2f64",
+      "bytes": 196070
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/backend-source-before.json",
+      "sha256": "d18fa19e3fc50cd8c0ceb39190145767c9c746034e41d79955c385eacd3f2f64",
+      "bytes": 196070
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/collector.py",
+      "sha256": "03188a6214e10e3326128a72e07fdee37b641fb770733d2fd235ef4e7a875d76",
+      "bytes": 13026
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/fixture-datasets.json",
+      "sha256": "5e5f5d07ef0a418bb04ae4d7cb501b5abedadbdd9e770abfeadaaf55ef8efe13",
+      "bytes": 4773
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/maven-clean-verify.log",
+      "sha256": "6091827e1ec739e784dd55256f22f39c503cfb2d7e7586db79b0305ebe7cc85c",
+      "bytes": 4542499
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/postgres-test-image-inventory.json",
+      "sha256": "3095ae950e14bba3fc5a8b3419a6eca110ab33583fab5187b19c93ea36f1f926",
+      "bytes": 2460
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/preserved-artifact-manifest.json",
+      "sha256": "273a2010a6dfa5342617589143331f26a12353f3a50791ef0fd3d539eeb32d23",
+      "bytes": 990976
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/raw-test-artifacts.tar.gz",
+      "sha256": "88a4545e5de2f1c3602a906dd66d73005cc835551c4af4a95168002c444f0f1b",
+      "bytes": 3604577
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/reconcile-full-testcase-counts.py",
+      "sha256": "560586f6d8d710048f1f5905e049ec158c5625217bdd96ff93126355c61f476c",
+      "bytes": 3173
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/run-receipt.json",
+      "sha256": "e98d8140331abee0adbdd4710970d969fb2b69cf7cf25cc3eff724383e81c068",
+      "bytes": 12515
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/runtime-resources.json",
+      "sha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/test-report-inventory.json",
+      "sha256": "fa068097837c1a3d95429e0e431643be3e40bef3cf2f694205de93a4a56a818f",
+      "bytes": 117417
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/testcase-count-reconciliation.json",
+      "sha256": "4b9e5cefbd5419ddef2643a97d8b070942cec45fa91386a05eeb714e26a9303c",
+      "bytes": 1547420
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/testcase-count-reconciliation.log",
+      "sha256": "9f1f42b775eb11b513c59d483f5b3ab80edc65c25441f59ed7de68f173c348a5",
+      "bytes": 898
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/verified-jar-identity.json",
+      "sha256": "25ee6710781b629f451a2ddefdd97dc5258f1005d7a188ec6d62a14cb55fab5e",
+      "bytes": 1345
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w4-identity.json",
+      "sha256": "ba42fa37e9ae1cd7848369f9d9b8db38be0115923a4db004347a5c931493fcd2",
+      "bytes": 33151
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-named-junit-w4.json",
+      "sha256": "2b5ca1dd93c12531ed6377138873ffaba287403d9f14ad03d820daa2563d6dac",
+      "bytes": 3142594
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4-publishability-scan.json",
+      "sha256": "d15b96ee8ab4f066e1d8e16e1a9ea26c4c460507fd3b9b42aff7d51fe794eddc",
+      "bytes": 717176
+    }
+  ]
+}

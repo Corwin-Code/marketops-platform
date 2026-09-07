@@ -1,0 +1,35 @@
+{
+  "kind": "READ_ONLY_GITHUB_API_COMMAND",
+  "argv": [
+    "gh",
+    "api",
+    "--method",
+    "GET",
+    "repos/Corwin-Code/marketops-platform/actions/runs/34025462624/attempts/1/jobs?per_page=100"
+  ],
+  "attempt": 1,
+  "startedAt": "2026-09-06T10:25:58.351035+00:00",
+  "finishedAt": "2026-09-06T10:25:59.467542+00:00",
+  "elapsedSeconds": 1.117,
+  "exitCode": 0,
+  "response": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-jobs.json.attempt-1",
+    "sha256": "5dc695def0f03c74f9cd9583391395078c7dc2474c241bd05f79bb02fc563d4f",
+    "bytes": 6756
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-jobs.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "selectedOriginalAttempt": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-jobs.json.attempt-1.command.json",
+    "sha256": "5b37c5263e884a9a09054e82ffb7a7726e2eef4ca251cbb084a8397313929437",
+    "bytes": 800
+  },
+  "canonicalResponse": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-jobs.json",
+    "sha256": "5dc695def0f03c74f9cd9583391395078c7dc2474c241bd05f79bb02fc563d4f",
+    "bytes": 6756
+  }
+}

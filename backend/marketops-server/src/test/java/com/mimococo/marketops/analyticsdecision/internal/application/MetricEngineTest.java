@@ -131,6 +131,116 @@ class MetricEngineTest {
                 digest(afterLateFact, first.listingId));
     }
 
+    @Test
+    void aStillEffectiveCostVersionDoesNotAgeLikeASourceObservation() {
+        Fixture fixture = new Fixture();
+        CostSnapshot original = fixture.cost.orElseThrow();
+        Instant effectiveFrom = END.minus(Duration.ofDays(180));
+        fixture.cost = Optional.of(new CostSnapshot(original.costVersionId(),
+                original.unitCost(), effectiveFrom, original.provenanceId()));
+
+        Map<MetricCode, ComputedMetric> metrics = fixture.compute();
+        ComputedMetric cost = metrics.get(MetricCode.UNIT_COST);
+
+        verify(fixture.facts).unitCost(fixture.variantId, END);
+        assertThat(cost.numericValue()).isEqualByComparingTo("60.0000");
+        assertThat(cost.confidenceState()).isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(cost.oldestSourceTime()).isNull();
+        assertThat(cost.inputs()).extracting(input -> input.referenceId())
+                .contains(original.costVersionId(), original.provenanceId());
+        assertThat(cost.identityComponents()).contains("costEffectiveFrom=" + effectiveFrom);
+        assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).numericValue())
+                .isEqualByComparingTo("250.0000");
+        assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).confidenceState())
+                .isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).oldestSourceTime())
+                .isEqualTo(END.minus(Duration.ofHours(1)));
+        assertThat(metrics.get(MetricCode.MINIMUM_PRICE).numericValue())
+                .isEqualByComparingTo("82.0000");
+        assertThat(metrics.get(MetricCode.MINIMUM_PRICE).confidenceState())
+                .isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(digest(cost, fixture.listingId))
+                .isEqualTo(digest(fixture.compute().get(MetricCode.UNIT_COST), fixture.listingId));
+    }
+
+    @Test
+    void expiredOrWithdrawnCostAuthorityCannotReuseAPreviousCanonicalAnswer() {
+        Fixture fixture = new Fixture();
+        ComputedMetric before = fixture.compute().get(MetricCode.UNIT_COST);
+        // The existing fact authority returns no version for an expired or
+        // cancelled interval. The engine must consume that fresh resolution.
+        fixture.cost = Optional.empty();
+
+        Map<MetricCode, ComputedMetric> after = fixture.compute();
+
+        assertThat(after.get(MetricCode.UNIT_COST).valueState()).isEqualTo(ValueState.NOT_AVAILABLE);
+        assertThat(after.get(MetricCode.UNIT_COST).confidenceState()).isEqualTo(ConfidenceState.INCOMPLETE);
+        assertThat(after.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).valueState()).isEqualTo(ValueState.NOT_AVAILABLE);
+        assertThat(digest(after.get(MetricCode.UNIT_COST), fixture.listingId))
+                .isNotEqualTo(digest(before, fixture.listingId));
+        assertThat(before.numericValue()).isEqualByComparingTo("60.0000");
+    }
+
+    @Test
+    void costValidityRequiresPastEffectiveTimeAndExactVersionProvenance() {
+        for (String invalid : List.of("effectiveAtEnd", "futureEffective", "missingEffective",
+                "missingVersion", "missingProvenance")) {
+            Fixture fixture = new Fixture();
+            CostSnapshot valid = fixture.cost.orElseThrow();
+            fixture.cost = Optional.of(new CostSnapshot(
+                    invalid.equals("missingVersion") ? null : valid.costVersionId(), valid.unitCost(),
+                    switch (invalid) {
+                        case "effectiveAtEnd" -> END;
+                        case "futureEffective" -> END.plusSeconds(1);
+                        case "missingEffective" -> null;
+                        default -> valid.effectiveFrom();
+                    }, invalid.equals("missingProvenance") ? null : valid.provenanceId()));
+
+            Map<MetricCode, ComputedMetric> metrics = fixture.compute();
+
+            assertThat(metrics.get(MetricCode.UNIT_COST).valueState()).as(invalid)
+                    .isEqualTo(ValueState.NOT_AVAILABLE);
+            assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).valueState()).as(invalid)
+                    .isEqualTo(ValueState.NOT_AVAILABLE);
+        }
+    }
+
+    @Test
+    void aValidOldCostVersionDoesNotRefreshStaleFeeObservations() {
+        Fixture fixture = new Fixture();
+        CostSnapshot original = fixture.cost.orElseThrow();
+        fixture.cost = Optional.of(new CostSnapshot(original.costVersionId(), original.unitCost(),
+                END.minus(Duration.ofDays(180)), original.provenanceId()));
+        FeeTotals fees = fixture.fees;
+        FactEvidence stale = FactEvidence.of(fees.evidence().provenanceIds(), END.minus(Duration.ofDays(8)));
+        fixture.fees = new FeeTotals(fees.total(), fees.advertising(), fees.variableTax(),
+                fees.byCategory(), fees.settledOnly(), stale);
+
+        Map<MetricCode, ComputedMetric> metrics = fixture.compute();
+
+        assertThat(metrics.get(MetricCode.UNIT_COST).confidenceState()).isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(metrics.get(MetricCode.PLATFORM_FEES_PER_UNIT).confidenceState()).isEqualTo(ConfidenceState.STALE);
+        assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).confidenceState()).isEqualTo(ConfidenceState.STALE);
+        assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).oldestSourceTime()).isEqualTo(stale.oldestSourceTime());
+    }
+
+    @Test
+    void aValidOldCostVersionCannotUpgradeUnsettledFees() {
+        Fixture fixture = new Fixture();
+        CostSnapshot original = fixture.cost.orElseThrow();
+        fixture.cost = Optional.of(new CostSnapshot(original.costVersionId(), original.unitCost(),
+                END.minus(Duration.ofDays(180)), original.provenanceId()));
+        FeeTotals fees = fixture.fees;
+        fixture.fees = new FeeTotals(fees.total(), fees.advertising(), fees.variableTax(),
+                fees.byCategory(), false, fees.evidence());
+
+        Map<MetricCode, ComputedMetric> metrics = fixture.compute();
+
+        assertThat(metrics.get(MetricCode.UNIT_COST).confidenceState()).isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(metrics.get(MetricCode.PLATFORM_FEES_PER_UNIT).confidenceState()).isEqualTo(ConfidenceState.CANONICAL_PENDING_SETTLEMENT);
+        assertThat(metrics.get(MetricCode.SETTLED_CONTRIBUTION_PROFIT).confidenceState()).isEqualTo(ConfidenceState.CANONICAL_PENDING_SETTLEMENT);
+    }
+
     private static String digest(ComputedMetric metric, UUID subjectId) {
         return metric.inputDigest(2, SubjectKind.PLATFORM_LISTING_VARIANT.name(), subjectId,
                 MetricWindow.D30.name(), WINDOW.periodStart(), WINDOW.periodEnd());

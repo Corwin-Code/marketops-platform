@@ -1,0 +1,94 @@
+{
+  "scannerSource": "scripts/validate_governance.py",
+  "scannerSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+  "scope": "Exact repository secret patterns over every textual r4 artifact, including .log and LCOV; no secrets/configuration/trace copied. Pattern scan is a limited publication check.",
+  "result": "PASS",
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/00-command.log",
+      "sha256": "02918b4036bfc0f9e9eb134564e650f9d50029fa6511a50cba23ffba36664c42",
+      "bytes": 83170
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/01-command.log",
+      "sha256": "1dd59f2816d9e3bf9dea9020fe4f0ca3c4665284f879eb056a0069f1223fa45e",
+      "bytes": 29348
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/02-command.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/03-command.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "bytes": 61
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/04-command.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/05-command.log",
+      "sha256": "48abf48d5f54bc04b48ea4774078f5f125b55ad94ff74e7059c9e16b6ef43e33",
+      "bytes": 12992
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/06-command.log",
+      "sha256": "3dd43eb8a7bf44b2780e3777d964dcdacee297372f940e150d52af4e941ba077",
+      "bytes": 290
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/07-command.log",
+      "sha256": "d33636a3bd249a755bad39effe0efd7ca1e2c6c503c25dbb4429bef19efa4905",
+      "bytes": 438
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/08-command.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3",
+      "bytes": 234
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/frontend-sbom.json",
+      "sha256": "0b04d09a9ff034df3d7d202b4ec9aa7fcdb3626e6a233a296e7502c736087273",
+      "bytes": 619664
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/lcov.info",
+      "sha256": "2088455e1905ea7859204f973259a6c078e45cd93756dda8428401e859d78cd8",
+      "bytes": 85780
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/receipt.json",
+      "sha256": "606c3d19d40c2e26ae186b9aca1472fc765747a5102c50fc7860b0df7ccc6c11",
+      "bytes": 8122
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/runtime-resources-reference.json",
+      "sha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/security-lock-binding.json",
+      "sha256": "a5958f38426698d3a216c69914491d38deab1fdbd47624297e602141387a8893",
+      "bytes": 715
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/source-after.json",
+      "sha256": "596a83c12ff7ce62888eacb63a3e3d31343a7f943920f33da9f5ba3edb6f01f1",
+      "bytes": 15764
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/source-before.json",
+      "sha256": "596a83c12ff7ce62888eacb63a3e3d31343a7f943920f33da9f5ba3edb6f01f1",
+      "bytes": 15764
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/vitest.json",
+      "sha256": "14233b46b8835d22c6d32ddfa6bdd28cd03163347d390722132adcf035fded46",
+      "bytes": 838258
+    }
+  ],
+  "violations": []
+}

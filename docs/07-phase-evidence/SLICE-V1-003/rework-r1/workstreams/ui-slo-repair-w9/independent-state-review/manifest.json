@@ -1,0 +1,17 @@
+{
+  "kind": "INDEPENDENT_READ_ONLY_REVIEW_MANIFEST",
+  "files": [
+    {
+      "path": "/tmp/slice3-ui-slo-unknown-independent-review/review.json",
+      "sha256": "87d81f30b1636780bfb045dcca9809c82bb2175afdb2ded24a1457bf00140ef0"
+    },
+    {
+      "path": "/tmp/slice3-ui-slo-unknown-independent-review/README.md",
+      "sha256": "2567601d25718ed7df18f2eb133fef9004cd9d22aeafa18282677118525873bc"
+    }
+  ],
+  "generator": {
+    "path": "/tmp/write-slice3-ui-slo-independent-review.py",
+    "sha256": "7ef08281a4851870be6e8c871fe6b85febda3026bfec9281d5907a79f0bdcebe"
+  }
+}

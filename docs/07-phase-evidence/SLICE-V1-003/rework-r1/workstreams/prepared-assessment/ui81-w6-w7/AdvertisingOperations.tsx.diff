@@ -1,0 +1,216 @@
+diff --git a/frontend/marketops-console/src/advertising/AdvertisingOperations.tsx b/frontend/marketops-console/src/advertising/AdvertisingOperations.tsx
+index 8e80eb1..da7d066 100644
+--- a/frontend/marketops-console/src/advertising/AdvertisingOperations.tsx
++++ b/frontend/marketops-console/src/advertising/AdvertisingOperations.tsx
+@@ -12,4 +12,5 @@ import type {
+   AdvertisingReservation,
+ } from '../api/advertising';
++import { ADVERTISING_EXPOSURE_AXES } from '../api/advertising';
+ import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+ import { AdvertisingProblem } from './AdvertisingQueue';
+@@ -21,13 +22,4 @@ export interface AdvertisingOperationsProps {
+ }
+ 
+-/** One envelope axis, as this surface renders it. */
+-interface Axis {
+-  readonly code: string;
+-  readonly label: string;
+-  readonly used: number | undefined;
+-  readonly limit: number | undefined;
+-  readonly note: string | undefined;
+-}
+-
+ /**
+  * What advertising is currently doing, and what is stopping it.
+@@ -139,90 +131,107 @@ function ExposurePanel({
+     );
+   }
+-  if (!exposure.resolved) {
+-    return (
+-      <section aria-label="Exposure envelope" data-state="unresolved">
+-        <h3>Exposure envelope</h3>
+-        <p role="alert">
+-          No exposure envelope is in force. No advertising write may be made at all until one is
+-          written, whatever else is otherwise ready.
+-        </p>
+-        <p>
+-          {exposure.activeInterventions ?? 'Unresolved'} interventions are standing and{' '}
+-          {exposure.unresolvedTransmittedWrites ?? 'Unresolved'} transmitted writes are unresolved.
+-        </p>
+-      </section>
+-    );
+-  }
+-  const headroom = exposure.reservedRecoveryHeadroom;
+-  const axes: readonly Axis[] = [
+-    {
+-      code: 'ACTIVE_INTERVENTIONS',
+-      label: 'Active interventions',
+-      used: exposure.activeInterventions,
+-      limit:
+-        exposure.maxActiveInterventions === undefined || headroom === undefined
+-          ? undefined
+-          : exposure.maxActiveInterventions - headroom,
+-      note:
+-        headroom !== undefined && headroom > 0
+-          ? `${String(headroom)} of ${String(exposure.maxActiveInterventions)} reserved for recovery`
+-          : undefined,
+-    },
+-    {
+-      code: 'UNRESOLVED_TRANSMITTED_WRITES',
+-      label: 'Unresolved transmitted writes',
+-      used: exposure.unresolvedTransmittedWrites,
+-      limit: exposure.maxUnresolvedTransmittedWrites,
+-      note: 'Writes whose outcome nobody has established',
+-    },
+-    {
+-      code: 'CUMULATIVE_BID_CHANGE',
+-      label: 'Cumulative bid movement',
+-      used: exposure.cumulativeBidChangeAmount,
+-      limit: exposure.maxCumulativeBidChangeAmount,
+-      note:
+-        exposure.cumulativeWindowHours === undefined
+-          ? undefined
+-          : `over ${String(exposure.cumulativeWindowHours)} hours, in ${
+-              exposure.currencyCode ?? 'the envelope currency'
+-            }`,
+-    },
+-  ];
++  const labels = {
++    activeInterventions: 'Active interventions',
++    associatedOfficialSpend: 'Associated official spend',
++    affectedRetainedSalesShare: 'Affected Retained Sales share',
++    cumulativeBidChangeMajor: 'Cumulative bid movement',
++    unresolvedTransmittedWrites: 'Unresolved transmitted writes',
++    reservedRecoveryHeadroom: 'Reserved recovery headroom',
++  };
+   return (
+-    <section aria-label="Exposure envelope" data-state="resolved">
++    <section
++      aria-label="Exposure envelope"
++      data-state={exposure.resolved ? 'resolved' : 'unresolved'}
++    >
+       <h3>Exposure envelope</h3>
+-      <p>
+-        Version {exposure.policyVersion ?? '—'} at {exposure.scopeKind ?? '—'} scope
+-        {exposure.status === 'RETIRED' ? '. This envelope is retired and still binding.' : '.'}
+-      </p>
+-      <table>
+-        <caption>
+-          Each axis against its own limit. The product has no combined figure, so this page does not
+-          show one.
+-        </caption>
+-        <thead>
+-          <tr>
+-            <th scope="col">Axis</th>
+-            <th scope="col">Consumed</th>
+-            <th scope="col">Limit</th>
+-            <th scope="col">State</th>
+-          </tr>
+-        </thead>
+-        <tbody>
+-          {axes.map((axis) => (
+-            <tr key={axis.code} data-axis={axis.code}>
+-              <th scope="row">
+-                {axis.label}
+-                {axis.note === undefined ? null : <small> — {axis.note}</small>}
+-              </th>
+-              <td>{axis.used ?? 'not measured'}</td>
+-              <td>{axis.limit ?? 'not stated'}</td>
+-              <td data-exhausted={exposure.exhaustedAxes.includes(axis.code)}>
+-                {exposure.exhaustedAxes.includes(axis.code) ? 'at limit' : 'within limit'}
+-              </td>
+-            </tr>
+-          ))}
+-        </tbody>
+-      </table>
++      <p>Measured at {exposure.measuredAt ?? 'unavailable'}.</p>
++      {!exposure.resolved ? (
++        <p role="alert">
++          No exposure envelope is in force for every required Store. A Store without current
++          authority cannot admit a new advertising action.
++        </p>
++      ) : null}
++      {exposure.unresolvedStoreIds.length > 0 ? (
++        <p>Unresolved Stores: {exposure.unresolvedStoreIds.join(', ')}</p>
++      ) : null}
++      {exposure.envelopes.map((envelope) => (
++        <div key={envelope.envelopeId} data-envelope={envelope.envelopeId}>
++          <p>
++            Version {envelope.policyVersion} at {envelope.scopeKind} scope
++            {envelope.platformCode === undefined ? '' : ` / ${envelope.platformCode}`}
++            {envelope.storeId === undefined ? '' : ` / Store ${envelope.storeId}`}. Measurement
++            window: {envelope.measurementWindowHours ?? 'unknown'} hours; Retained cohort:{' '}
++            {envelope.retainedWindowDays ?? 'unknown'} days.
++          </p>
++          <table>
++            <caption>Each axis has its own limit. These values describe current usage.</caption>
++            <thead>
++              <tr>
++                <th scope="col">Axis</th>
++                <th scope="col">Measured</th>
++                <th scope="col">Limit / reserve</th>
++                <th scope="col">State</th>
++              </tr>
++            </thead>
++            <tbody>
++              {ADVERTISING_EXPOSURE_AXES.map((code) => {
++                const axis = envelope.axes[code];
++                const headroom = code === 'reservedRecoveryHeadroom';
++                const measurement = headroom ? axis.available : axis.usage;
++                const limit = headroom ? axis.reserved : axis.limit;
++                return (
++                  <tr key={code} data-axis={code}>
++                    <th scope="row">
++                      {labels[code]}
++                      {code === 'activeInterventions' ? (
++                        <small>
++                          {' '}
++                          — {envelope.axes.reservedRecoveryHeadroom.reserved ?? 'unknown'} of{' '}
++                          {axis.limit ?? 'unknown'} reserved for recovery
++                        </small>
++                      ) : null}
++                      {headroom ? (
++                        <small> — remaining intervention capacity / reserved capacity</small>
++                      ) : null}
++                      {code === 'affectedRetainedSalesShare' ? (
++                        <small>
++                          {' '}
++                          — affected sales {axis.affectedSales ?? 'not measured'} / company sales{' '}
++                          {axis.companySales ?? 'not measured'}
++                        </small>
++                      ) : null}
++                      {code === 'associatedOfficialSpend' &&
++                      axis.aggregationBasis === 'COMPLETE_INTERSECTING_OFFICIAL_REPORT_AMOUNTS' ? (
++                        <small>
++                          {' '}
++                          — complete intersecting official reports;{' '}
++                          {axis.conservativeBoundaryReportCount ?? 'unknown count of'} reports
++                          crossed the start of this window and are counted in full
++                        </small>
++                      ) : null}
++                      {axis.unit === undefined ? null : <small> — {axis.unit}</small>}
++                      {axis.windowHours === undefined ? null : (
++                        <small> over {axis.windowHours} hours</small>
++                      )}
++                    </th>
++                    <td>{measurement ?? 'not measured'}</td>
++                    <td>{limit ?? 'not stated'}</td>
++                    <td data-state={axis.state}>
++                      {axis.state === 'UNKNOWN'
++                        ? 'unknown; capacity unproven'
++                        : axis.state === 'EXCEEDED'
++                          ? 'exceeded'
++                          : 'within current limit'}
++                    </td>
++                  </tr>
++                );
++              })}
++            </tbody>
++          </table>
++          {envelope.reasons.length > 0 ? (
++            <p>Unresolved or exceeded controls: {envelope.reasons.join(', ')}</p>
++          ) : null}
++        </div>
++      ))}
+     </section>
+   );

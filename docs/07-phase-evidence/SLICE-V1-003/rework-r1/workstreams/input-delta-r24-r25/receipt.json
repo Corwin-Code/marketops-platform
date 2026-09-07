@@ -1,0 +1,39 @@
+{
+  "kind": "EXACT_SELECTED_RUN_SOURCE_DELTA",
+  "r24ReceiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+  "r25ReceiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+  "changedSourceFiles": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+      "r24Sha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+      "r25Sha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+      "r24Sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "r25Sha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+      "r24Sha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+      "r25Sha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+      "r24Sha256": "95cd6f6f711e186c685667233523812082c42a99c488d2f16772f4b553d5d676",
+      "r25Sha256": "07bc7b9df95537bb09d6feae44716103f889f644152124a3372414a783221df3"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "r24Sha256": "4219099c5e847e8512e5d5b9a421d89f44a119f32881247a90ef76cac23c5b97",
+      "r25Sha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+      "r24Sha256": null,
+      "r25Sha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb"
+    }
+  ],
+  "unchanged": 1024,
+  "boundary": "R24 four complete passing classes retain actual R24 execution; R25 runs all five affected classes on six changed/new inputs. The complete clean full checkpoint remains required. No original failed result is relabeled."
+}

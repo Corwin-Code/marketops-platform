@@ -33,7 +33,21 @@ public class CredentialLookupRepository {
         this.jdbc = jdbc;
     }
 
-    /** The credential a write capability may be exercised with for one store. */
+    /**
+     * The credential a write capability may be exercised with for one store.
+     *
+     * <p>The purpose comes from the capability rather than from a literal here.
+     * It used to be {@code 'PRICE_WRITE'}, which was right when there was one
+     * write capability and silently wrong the moment there were two: every
+     * advertising command resolved a price credential, which the attempt gate
+     * then refused because it demands {@code ADS_WRITE}. The command died at
+     * FAILED_FINAL naming a stale lease, and the actual cause — the wrong
+     * credential purpose — appeared nowhere.
+     *
+     * <p>{@code platform.capability_credential_purpose} already existed to make
+     * that choice. Asking it here means a third write capability cannot
+     * reintroduce the same bug by forgetting to add a branch.
+     */
     public Optional<UUID> writeCredential(UUID storeId, UUID capabilityId, Instant at) {
         return jdbc.sql("""
                         SELECT credential.id
@@ -46,7 +60,8 @@ public class CredentialLookupRepository {
                             ON capability.platform_code = account.platform_code
                          WHERE store.id = :storeId
                            AND capability.id = :capabilityId
-                           AND credential.purpose_code = 'PRICE_WRITE'
+                           AND credential.purpose_code = platform.capability_credential_purpose(
+                                   capability.capability_code, capability.read_write_class)
                            AND credential.status = 'ACTIVE'
                            AND credential.effective_from <= :at
                            AND credential.expires_at > :at

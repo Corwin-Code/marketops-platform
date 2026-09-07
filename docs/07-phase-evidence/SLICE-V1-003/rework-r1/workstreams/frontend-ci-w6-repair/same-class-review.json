@@ -1,0 +1,85 @@
+{
+  "kind": "W7_BROWSER_ALERT_SAME_CLASS_AND_TRANSITIVE_REVIEW",
+  "utc": "2026-09-05T11:50:21.322968+00:00",
+  "head": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "scope": "All browser .ts and src/__tests__ .tsx alert lookups; actual render boundaries inspected for every unscoped lookup.",
+  "reviewedFiles": [
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "sha256": "98ca03d95da591ffedafc691e7b61a9b91cb3ec00792cf70090250c8f33928e6",
+      "alertLookupLines": [
+        162
+      ],
+      "review": "Direct single-component jsdom render isolates the alert; App test stops at missing-configuration render and explicitly forbids fetch. No concurrent full-dashboard advertising requests share this query."
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "sha256": "aa30f489eaf8ee4c1012d337b01db7fdecaac1879086a03a0960b5ffd6cada6e",
+      "alertLookupLines": [
+        181,
+        317,
+        484
+      ],
+      "review": "Direct single-component jsdom render isolates the alert; App test stops at missing-configuration render and explicitly forbids fetch. No concurrent full-dashboard advertising requests share this query."
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "sha256": "03d4ad863ee0a24a36b9a03f0385b354b3161325b2d90ab3452749312896c5a6",
+      "alertLookupLines": [
+        114
+      ],
+      "review": "Direct single-component jsdom render isolates the alert; App test stops at missing-configuration render and explicitly forbids fetch. No concurrent full-dashboard advertising requests share this query."
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/App.test.tsx",
+      "sha256": "75896080df69b887e9be6c01302b221430dd4e2f388493e57b0b356e1b3b3c84",
+      "alertLookupLines": [
+        16
+      ],
+      "review": "Direct single-component jsdom render isolates the alert; App test stops at missing-configuration render and explicitly forbids fetch. No concurrent full-dashboard advertising requests share this query."
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AvailabilityCases.test.tsx",
+      "sha256": "77c6025061bfe5325930726e448876ae05e817885ea1c7f6622828696b906e64",
+      "alertLookupLines": [
+        206
+      ],
+      "review": "Direct single-component jsdom render isolates the alert; App test stops at missing-configuration render and explicitly forbids fetch. No concurrent full-dashboard advertising requests share this query."
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AvailabilityQueue.test.tsx",
+      "sha256": "e698c4a9817a90bee2f77c723821ff4aec6098088f8bfc7db76af4c105756243",
+      "alertLookupLines": [
+        198
+      ],
+      "review": "Direct single-component jsdom render isolates the alert; App test stops at missing-configuration render and explicitly forbids fetch. No concurrent full-dashboard advertising requests share this query."
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "alertLookupLines": [
+        298
+      ],
+      "review": "Actual browser lookup is scoped to Exposure or Diagnostic export; repaired business journey scopes to Priority queue and exact network-error text with unique count."
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+      "sha256": "c6cc081b0a99a8c0a40feefcfa620509b450dd8d09e1ed01f10261eb9cea561f",
+      "alertLookupLines": [
+        45
+      ],
+      "review": "Actual browser lookup is scoped to Exposure or Diagnostic export; repaired business journey scopes to Priority queue and exact network-error text with unique count."
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "alertLookupLines": [
+        289
+      ],
+      "review": "Actual browser lookup is scoped to Exposure or Diagnostic export; repaired business journey scopes to Priority queue and exact network-error text with unique count."
+    }
+  ],
+  "additionalRuntimeRepairRequired": false,
+  "result": "The only unscoped alert lookup in the full browser dashboard was the repaired business journey. Other real-browser reads are panel scoped; unit lookups render a single component or configuration boundary.",
+  "verification": "Actual W7 CI 25 legacy +12 advertising journeys PASS; original W6 24/25 CI failure and current stricter locator patch retained separately."
+}

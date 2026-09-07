@@ -1,0 +1,8 @@
+{
+  "scope": "EXACT_PRODUCTION_SPEND_GRADING_EXPRESSION_REPLAY_ONLY_NOT_FULL_APPLICATION",
+  "source_path": "com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+  "source_sha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+  "expression": "        AdMeasure spend = facts.filter(value -> value.spendAmount() != null && value.everyWindowComplete() && !value.anyCorrectionWindowOpen())\n                .map(value -> AdMeasure.available(value.spendAmount(), AdEvidenceState.CANONICAL_CONFIRMED))\n                .orElseGet(() -> AdMeasure.notAvailable(AdEvidenceState.INCOMPLETE));",
+  "record_source_path": "com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+  "record_source_sha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f"
+}

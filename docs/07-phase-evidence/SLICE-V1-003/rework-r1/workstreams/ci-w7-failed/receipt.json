@@ -1,0 +1,147 @@
+{
+  "kind": "READ_ONLY_EXACT_DRAFT_PR_CI_SNAPSHOT",
+  "startedAt": "2026-09-05T12:08:40.328149+00:00",
+  "finishedAt": "2026-09-05T12:09:06.375091+00:00",
+  "repository": "Corwin-Code/marketops-platform",
+  "pr": 30,
+  "prUrl": "https://github.com/Corwin-Code/marketops-platform/pull/30",
+  "sourceHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "boundaries": {
+    "sameRepository": true,
+    "sameBranch": true,
+    "exactHead": true,
+    "exactBase": true,
+    "draft": true,
+    "open": true,
+    "unmerged": true,
+    "noAutoMerge": true
+  },
+  "headAndDraftStable": true,
+  "finalBoundaries": {
+    "sameRepository": true,
+    "sameBranch": true,
+    "exactHead": true,
+    "exactBase": true,
+    "draft": true,
+    "open": true,
+    "unmerged": true,
+    "noAutoMerge": true
+  },
+  "provenanceReview": "Raw collection only. Every latest-attempt job, actual tested checkout commit and parents/tree, artifact attempt/source binding, downloaded bytes and publicationIdentity must be assessed separately. Check-context success is not that assessment.",
+  "requiredContexts": {
+    "governance": {
+      "id": 101298991021,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350078/job/101298991021"
+    },
+    "backend-build": {
+      "id": 101299023501,
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350093/job/101299023501"
+    },
+    "architecture-boundary": {
+      "id": 101299023386,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350093/job/101299023386"
+    },
+    "backend-integration": {
+      "id": 101299023481,
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350093/job/101299023481"
+    },
+    "frontend-lint": {
+      "id": 101298991143,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350083/job/101298991143"
+    },
+    "frontend-typecheck": {
+      "id": 101298991221,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350083/job/101298991221"
+    },
+    "frontend-test": {
+      "id": 101298991243,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350083/job/101298991243"
+    },
+    "frontend-build": {
+      "id": 101298991227,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350083/job/101298991227"
+    },
+    "dependency-review": {
+      "id": 101298991105,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077/job/101298991105"
+    },
+    "codeql-java": {
+      "id": 101298991340,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077/job/101298991340"
+    },
+    "codeql-typescript": {
+      "id": 101298991284,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077/job/101298991284"
+    },
+    "infrastructure-validation": {
+      "id": 101298991149,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350053/job/101298991149"
+    }
+  },
+  "allTwelveRequiredChecksSuccess": false,
+  "additionalCurrentChecks": [
+    {
+      "name": "CodeQL",
+      "id": 101299099534,
+      "appId": 57789,
+      "appSlug": "github-advanced-security",
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/runs/101299099534",
+      "title": "87 new alerts"
+    }
+  ],
+  "aggregateCodeQLCheckSuccess": true,
+  "allObservedAdditionalChecksSuccess": true,
+  "currentPrMerge": {
+    "sha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+    "tree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+    "parents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    ]
+  },
+  "mergeParentsMatchExactBaseAndHead": true,
+  "runCount": 5,
+  "downloadRequested": true,
+  "controllerVerdict": "NOT_ISSUED_BY_CODEX",
+  "productionWriteEnabled": false,
+  "result": "PENDING_OR_FAILED"
+}

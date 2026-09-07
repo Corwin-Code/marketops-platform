@@ -1,0 +1,31 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java
+index f0b9403..669cd6e 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java
+@@ -351,6 +351,26 @@ public class AdvertisingDecisionRepository {
+                 .optional().orElse("MATERIALITY_UNRESOLVED");
+     }
+ 
++    /** Read the same committed cross-domain authority as reservation and transmission. */
++    public List<String> isolationFailures(UUID recommendationId, Instant at) {
++        return jdbc.sql("""
++                SELECT unnest(ops.ad_action_isolation_failures(c.affected_set_id,baseline.id,:at))
++                FROM ops.recommendation r JOIN ops.ad_bid_candidate candidate
++                  ON candidate.id=CASE WHEN ops.ad_bid_parameter_contract_is_valid(r.proposed_parameters)
++                     THEN (r.proposed_parameters->>'candidateId')::uuid END
++                JOIN mart.ad_case c ON c.id=candidate.case_id
++                LEFT JOIN ops.ad_candidate_selection selected ON selected.recommendation_id=r.id
++                LEFT JOIN LATERAL (SELECT b.id FROM ops.ad_outcome_baseline b
++                  WHERE b.candidate_id=candidate.id
++                    AND (selected.id IS NULL OR b.id=selected.outcome_baseline_id)
++                    AND b.case_calculation_id=c.calculation_id AND b.policy_version_digest=c.policy_version_digest
++                    AND b.prepared_at<=:at AND b.valid_until>:at
++                  ORDER BY b.prepared_at DESC,b.id DESC LIMIT 1) baseline ON true
++                WHERE r.id=:recommendation AND r.action_kind='AD_BID_CHANGE'
++                """).param("recommendation",recommendationId).param("at",Timestamp.from(at))
++                .query(String.class).list();
++    }
++
+     /** One case's view of a proposed bid change, with unresolved parts null. */
+     public record ProjectionRow(
+             UUID recommendationId, UUID organizationId, UUID storeId, UUID adNativeObjectId,

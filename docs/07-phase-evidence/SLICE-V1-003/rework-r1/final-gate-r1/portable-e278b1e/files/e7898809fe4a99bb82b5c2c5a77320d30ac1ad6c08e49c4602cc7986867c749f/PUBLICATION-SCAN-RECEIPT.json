@@ -1,0 +1,104 @@
+{
+  "kind": "LOCAL_LAYER_PUBLICATION_PATTERN_SCAN_RECEIPT",
+  "createdAt": "2026-09-06T04:36:59.012985+00:00",
+  "layer": "governance-r2",
+  "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "sourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "sourceInventorySha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+  "runId": "final-governance-r5-r2",
+  "originalCommandResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "originalCommandExitCode": 0,
+  "originalCollectorTestcaseCounts": null,
+  "layerReceipt": {
+    "path": "/private/tmp/slice3-final-execution-02e6172-r5/governance-r2/layer-candidate.json",
+    "sha256": "9e25375399185d4e7ac8fc5f3001b52c984c8405c4b31fe78c0e51ffa3e6b285"
+  },
+  "boundary": "Original completed local command retained; full project admission and Controller review are separate.",
+  "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE",
+  "scanCommand": {
+    "layer": "governance-r2",
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/python3",
+      "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+      "--input",
+      "/tmp/slice3-final-execution-02e6172-r5/governance-r2",
+      "--out",
+      "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2",
+      "--receipt",
+      "layer-candidate.json",
+      "--scope",
+      "Completed original 02e local governance-r2 command; product nine-layer admission and independent Controller review remain separate.",
+      "--expected-result",
+      "COMMAND_SUCCEEDED_REVIEW_REQUIRED"
+    ],
+    "startedAt": "2026-09-06T04:34:48.695450+00:00",
+    "finishedAt": "2026-09-06T04:34:49.069009+00:00",
+    "exitCode": 0,
+    "log": {
+      "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2-scanner.log",
+      "sha256": "d043b815b22991f8bbf45d2398a42e5a544e44d24472c7a03aa201fec15afd49"
+    },
+    "tool": {
+      "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+      "sha256": "944d60fc07f5ac6635b44c5721fe910f83b465fa60cad4d2f1c61e017510ad77"
+    }
+  },
+  "rulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+    "archivedSource": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-source-02e6172.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patternCount": 9,
+  "patternGroups": [
+    "7 exact original governance patterns",
+    "JWT shape",
+    "signed/token URL shape"
+  ],
+  "scope": "All physical layer files plus actual ZIP/GZIP/TAR nested members; raw UTF-8 bytes and decoded XML/HTML/JSON strings. Image bytes are scanned without OCR or pixel inspection.",
+  "originalPhysicalFiles": 19,
+  "originalPhysicalBytes": 1450467,
+  "archiveMembers": 0,
+  "scannedRecords": 19,
+  "scannedBytesIncludingArchiveContainersAndDuplicatePhysicalCopies": 1450467,
+  "originalEvidenceReferencesVerified": 11,
+  "originalBytesAndFilesetUnchanged": true,
+  "rawArchiveMembersReadWithCrcChecks": true,
+  "hitCount": 0,
+  "triage": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/TRIAGE.json",
+    "sha256": "bdc61960a70a7716823e19ff477ec5e4704a1cdf1213503dbc83564b1eddabae",
+    "size": 581
+  },
+  "originalFileIndex": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/ORIGINAL-FILE-SHA-INDEX.json",
+    "sha256": "02ad522fa433cdf2a37ca514a65633229b3dde9fa4067a493c32709361c7da2c",
+    "size": 6696
+  },
+  "archiveMemberIndex": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/MEMBERS.jsonl",
+    "sha256": "d5a492fd889b46555787a3b17a92d8ec154037777ec3ea862a9b652165829ea5",
+    "size": 3464
+  },
+  "rawScanInput": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/SCAN-INPUT.json",
+    "sha256": "1995e02da06b950ba01d637694b0d38c4f44727990750b45e127f17ceb6cba16",
+    "size": 5768
+  },
+  "rawScanSummary": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/SCAN-SUMMARY.json",
+    "sha256": "94eea067be556bab25f5de19475de89c94d84fd57407cfd68cc2579ea1bd9545",
+    "size": 1466
+  },
+  "rawHits": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/HITS.jsonl",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+  },
+  "noOcrOrPixelInspection": true,
+  "rawContentPrinted": false,
+  "productTestsRun": 0,
+  "rawPublicationAuthorized": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false
+}

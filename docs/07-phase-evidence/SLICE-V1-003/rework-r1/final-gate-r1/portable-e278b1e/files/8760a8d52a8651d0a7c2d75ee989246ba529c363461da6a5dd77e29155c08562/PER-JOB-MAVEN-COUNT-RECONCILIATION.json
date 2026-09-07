@@ -1,0 +1,5316 @@
+{
+  "kind": "PER_JOB_ACTUAL_MAVEN_SUITE_SUMS_AND_AGGREGATES",
+  "sourceHead": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+  "testedMerge": "f9a1d73f324323d13ea72db3890090c9b9d85450",
+  "runId": 34001582148,
+  "jobs": [
+    {
+      "job": "backend-build",
+      "jobId": 101401317918,
+      "runId": 34001582148,
+      "attempt": 1,
+      "sourceHead": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+      "testedMerge": "f9a1d73f324323d13ea72db3890090c9b9d85450",
+      "stepLogEvidence": {
+        "archive": "run-logs.zip",
+        "artifactId": null,
+        "member": "backend-build/5_Run full backend verification and the combined coverage gate.txt",
+        "bytes": 5014546,
+        "sha256": "c2b2f59c1af4c17ee4e20ddd6570a1897108bde106526e81209a86bb5d907b65",
+        "crc32": "37ad53d2",
+        "archiveReference": {
+          "path": "/tmp/slice3-checkpoint-backend-ci-7e66cf8/run-logs.zip",
+          "bytes": 1311899,
+          "sha256": "45271be79e39985b87abcf8a075d5208eae0b89cc3fa58f625a4becf82c53df5"
+        }
+      },
+      "families": {
+        "unit": {
+          "actualSuiteSummaryCount": 215,
+          "uniqueCompleteDisplayLabels": 215,
+          "repeatedDisplayLabels": {},
+          "summedActualSuiteCounts": {
+            "tests": 1588,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "aggregateLine": {
+            "line": 892,
+            "tests": 1588,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "suiteLabel": null
+          },
+          "suiteSummaryLines": [
+            {
+              "line": 132,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-202 bounded free text"
+            },
+            {
+              "line": 134,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-204 opaque secret references"
+            },
+            {
+              "line": 136,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-203 reference-data formats"
+            },
+            {
+              "line": 138,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-201 business and registry codes"
+            },
+            {
+              "line": 139,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.MetadataFieldPolicyTest"
+            },
+            {
+              "line": 141,
+              "tests": 46,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest"
+            },
+            {
+              "line": 151,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest"
+            },
+            {
+              "line": 156,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.config.WriteGateBindingTest"
+            },
+            {
+              "line": 174,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.config.CorsContractTest"
+            },
+            {
+              "line": 206,
+              "tests": 36,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest"
+            },
+            {
+              "line": 208,
+              "tests": 23,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest"
+            },
+            {
+              "line": 210,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.ErrorCodeTest"
+            },
+            {
+              "line": 212,
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.CorrelationIdTest"
+            },
+            {
+              "line": 223,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.SecretMaterialGuardTest"
+            },
+            {
+              "line": 225,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest"
+            },
+            {
+              "line": 227,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest"
+            },
+            {
+              "line": 229,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest"
+            },
+            {
+              "line": 231,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.LoggingContractTest"
+            },
+            {
+              "line": 234,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a response is evidence or it is not recorded"
+            },
+            {
+              "line": 236,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a request names exactly one call"
+            },
+            {
+              "line": 237,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest"
+            },
+            {
+              "line": 239,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest"
+            },
+            {
+              "line": 241,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest"
+            },
+            {
+              "line": 243,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest"
+            },
+            {
+              "line": 245,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest"
+            },
+            {
+              "line": 247,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest"
+            },
+            {
+              "line": 250,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-002 evidence that names no call is not evidence about it"
+            },
+            {
+              "line": 252,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-003 no credential means no attempt and no call"
+            },
+            {
+              "line": 254,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-001 each answer moves the command somewhere different"
+            },
+            {
+              "line": 256,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-004 an unknown result is observed, never repeated"
+            },
+            {
+              "line": 259,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-005 a refusal from the database is not a failure of the pass"
+            },
+            {
+              "line": 260,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest"
+            },
+            {
+              "line": 263,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest"
+            },
+            {
+              "line": 266,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest"
+            },
+            {
+              "line": 269,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest"
+            },
+            {
+              "line": 278,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest"
+            },
+            {
+              "line": 289,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest"
+            },
+            {
+              "line": 291,
+              "tests": 33,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest"
+            },
+            {
+              "line": 293,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest"
+            },
+            {
+              "line": 295,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest"
+            },
+            {
+              "line": 319,
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest"
+            },
+            {
+              "line": 360,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest"
+            },
+            {
+              "line": 380,
+              "tests": 22,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-005 a pointer reads only what it names"
+            },
+            {
+              "line": 383,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-002 an apply is read through the recorded task pointer"
+            },
+            {
+              "line": 385,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-001 an unanswered write is not the same as an unanswered read"
+            },
+            {
+              "line": 388,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-003 a task's fate is read in the platform's own words"
+            },
+            {
+              "line": 392,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-004 an observed price is read from where it was recorded"
+            },
+            {
+              "line": 393,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest"
+            },
+            {
+              "line": 395,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest"
+            },
+            {
+              "line": 397,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest"
+            },
+            {
+              "line": 399,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest"
+            },
+            {
+              "line": 402,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CMD-003 a claim and a wait are different things"
+            },
+            {
+              "line": 404,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CMD-001 not knowing is its own outcome"
+            },
+            {
+              "line": 406,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CMD-002 a finished command is finished"
+            },
+            {
+              "line": 407,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest"
+            },
+            {
+              "line": 409,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest"
+            },
+            {
+              "line": 412,
+              "tests": 50,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SHEET-002 a file that is not a file is refused"
+            },
+            {
+              "line": 414,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SHEET-001 a separated-values file is read the way tools write them"
+            },
+            {
+              "line": 415,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest"
+            },
+            {
+              "line": 417,
+              "tests": 39,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest"
+            },
+            {
+              "line": 426,
+              "tests": 14,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest"
+            },
+            {
+              "line": 428,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest"
+            },
+            {
+              "line": 430,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest"
+            },
+            {
+              "line": 432,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest"
+            },
+            {
+              "line": 434,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest"
+            },
+            {
+              "line": 436,
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest"
+            },
+            {
+              "line": 438,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest"
+            },
+            {
+              "line": 440,
+              "tests": 14,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest"
+            },
+            {
+              "line": 442,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest"
+            },
+            {
+              "line": 444,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest"
+            },
+            {
+              "line": 446,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest"
+            },
+            {
+              "line": 448,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest"
+            },
+            {
+              "line": 450,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest"
+            },
+            {
+              "line": 452,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest"
+            },
+            {
+              "line": 541,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest"
+            },
+            {
+              "line": 543,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest"
+            },
+            {
+              "line": 545,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest"
+            },
+            {
+              "line": 547,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ApplicationConfigurationTest"
+            },
+            {
+              "line": 550,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ApplicationEnvironmentFailClosedTest"
+            },
+            {
+              "line": 552,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest"
+            },
+            {
+              "line": 554,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest"
+            },
+            {
+              "line": 557,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-002 each refusal appears on its own"
+            },
+            {
+              "line": 559,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-001 a clean decision passes and names its authority"
+            },
+            {
+              "line": 561,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-004 evaluate dispatches on the action"
+            },
+            {
+              "line": 563,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-003 the module's reasons are translated, not echoed"
+            },
+            {
+              "line": 564,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest"
+            },
+            {
+              "line": 567,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-004 a listing is not disrupted by accumulation"
+            },
+            {
+              "line": 569,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-002 absence never becomes an acceptable default"
+            },
+            {
+              "line": 571,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-005 the case must still be about this listing, now"
+            },
+            {
+              "line": 573,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-001 a proposal is only decided under rules that exist"
+            },
+            {
+              "line": 575,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-003 a price may not be taken below what it costs"
+            },
+            {
+              "line": 577,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-006 a standing authorization bounds what it can be spent on"
+            },
+            {
+              "line": 579,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-007 every blocking condition is reported at once"
+            },
+            {
+              "line": 580,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest"
+            },
+            {
+              "line": 582,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest"
+            },
+            {
+              "line": 584,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest"
+            },
+            {
+              "line": 586,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest"
+            },
+            {
+              "line": 589,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-004 exactly two actions have a platform write behind them"
+            },
+            {
+              "line": 591,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-002 a finished proposal stays finished"
+            },
+            {
+              "line": 593,
+              "tests": 27,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-003 every state is reachable and self-consistent"
+            },
+            {
+              "line": 595,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-001 a write is only ever authorized deliberately"
+            },
+            {
+              "line": 596,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.RecommendationStateTest"
+            },
+            {
+              "line": 598,
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest"
+            },
+            {
+              "line": 601,
+              "tests": 47,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an event is one kind of thing, never two"
+            },
+            {
+              "line": 603,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a verdict names every reason it was built from"
+            },
+            {
+              "line": 605,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an action stage needs its action, its evidence and its actor"
+            },
+            {
+              "line": 607,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the internal response bounds are ordered and strict at the edge"
+            },
+            {
+              "line": 608,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest"
+            },
+            {
+              "line": 611,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a scope is complete or it does not exist"
+            },
+            {
+              "line": 613,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a preview tells an operator everything that stands in the way"
+            },
+            {
+              "line": 615,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a proposal carries its own service level"
+            },
+            {
+              "line": 617,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a projection says what a bid change would reach"
+            },
+            {
+              "line": 618,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest"
+            },
+            {
+              "line": 621,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AUTHORITY-003 owner-published policy has no writer in this product"
+            },
+            {
+              "line": 623,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AUTHORITY-002 command creation has exactly one route"
+            },
+            {
+              "line": 625,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns"
+            },
+            {
+              "line": 626,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest"
+            },
+            {
+              "line": 630,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "Additional code-quality architecture safeguards"
+            },
+            {
+              "line": 631,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest"
+            },
+            {
+              "line": 633,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.ModulithArchitectureTest"
+            },
+            {
+              "line": 636,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "Additional code-quality rule sensitivity"
+            },
+            {
+              "line": 637,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest"
+            },
+            {
+              "line": 640,
+              "tests": 34,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "rule sensitivity"
+            },
+            {
+              "line": 641,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest"
+            },
+            {
+              "line": 643,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest"
+            },
+            {
+              "line": 645,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest"
+            },
+            {
+              "line": 648,
+              "tests": 22,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "no insufficient evidence state can produce a write-grade conversion"
+            },
+            {
+              "line": 649,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest"
+            },
+            {
+              "line": 652,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "evidence is checked before arithmetic"
+            },
+            {
+              "line": 654,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a settled claim cannot outrun the completed-sales guard"
+            },
+            {
+              "line": 656,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the thresholds a plan fixed beforehand decide the verdict"
+            },
+            {
+              "line": 658,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an incoherent outcome is unrepresentable"
+            },
+            {
+              "line": 659,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest"
+            },
+            {
+              "line": 661,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest"
+            },
+            {
+              "line": 664,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a calculation is a pure value the two schedules both produce"
+            },
+            {
+              "line": 666,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a case is identified by its cause and its object generation"
+            },
+            {
+              "line": 668,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the policy set says what was in force, including what was not"
+            },
+            {
+              "line": 669,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest"
+            },
+            {
+              "line": 672,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the platform's grid decides where a value may land"
+            },
+            {
+              "line": 674,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a limit that permits nothing coherent is unrepresentable"
+            },
+            {
+              "line": 676,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a cause may bound a decrease when no ceiling exists"
+            },
+            {
+              "line": 678,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a candidate that changes nothing is not a candidate"
+            },
+            {
+              "line": 680,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an increase approaches what a click is worth and stops"
+            },
+            {
+              "line": 682,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a decrease protects and never overshoots"
+            },
+            {
+              "line": 683,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest"
+            },
+            {
+              "line": 685,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest"
+            },
+            {
+              "line": 687,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest"
+            },
+            {
+              "line": 690,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "only a cause that justifies a bid move produces one"
+            },
+            {
+              "line": 692,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the same inputs always produce the same answer"
+            },
+            {
+              "line": 694,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a critical sales unit cannot be paid for out of another one's growth"
+            },
+            {
+              "line": 696,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a ceiling prices one sale event or it prices nothing"
+            },
+            {
+              "line": 698,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "every candidate that exists is one the platform would accept unchanged"
+            },
+            {
+              "line": 700,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "no amount of money moves a case across a band"
+            },
+            {
+              "line": 702,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an absent number is never quietly a zero"
+            },
+            {
+              "line": 704,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a profit is whole or it is not a profit"
+            },
+            {
+              "line": 705,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest"
+            },
+            {
+              "line": 707,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest"
+            },
+            {
+              "line": 709,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest"
+            },
+            {
+              "line": 712,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the workflow scale keeps the ordering the band score guarantees"
+            },
+            {
+              "line": 713,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest"
+            },
+            {
+              "line": 715,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest"
+            },
+            {
+              "line": 718,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a measure carries a value exactly when it is available"
+            },
+            {
+              "line": 720,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the affected set is an identity, not a list"
+            },
+            {
+              "line": 722,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a one-sided danger proof is a proof"
+            },
+            {
+              "line": 723,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest"
+            },
+            {
+              "line": 725,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest"
+            },
+            {
+              "line": 727,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest"
+            },
+            {
+              "line": 729,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest"
+            },
+            {
+              "line": 731,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest"
+            },
+            {
+              "line": 733,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest"
+            },
+            {
+              "line": 735,
+              "tests": 29,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest"
+            },
+            {
+              "line": 737,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest"
+            },
+            {
+              "line": 739,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest"
+            },
+            {
+              "line": 741,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest"
+            },
+            {
+              "line": 744,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-DECIDE-003 the reservation is taken only at the action stage"
+            },
+            {
+              "line": 746,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-DECIDE-002 every refusal names itself"
+            },
+            {
+              "line": 748,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-DECIDE-001 a complete decision resolves to a usable scope"
+            },
+            {
+              "line": 749,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest"
+            },
+            {
+              "line": 751,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest"
+            },
+            {
+              "line": 754,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-005 the result describes the object it was computed for"
+            },
+            {
+              "line": 756,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-003 a data defect owns its own case"
+            },
+            {
+              "line": 758,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-004 every measure is absent rather than zero"
+            },
+            {
+              "line": 760,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-002 execution integrity outranks everything"
+            },
+            {
+              "line": 762,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-001 an object nobody may write to says so above everything else"
+            },
+            {
+              "line": 764,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-006 the deep measures are computed, or refused for a stated reason"
+            },
+            {
+              "line": 765,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest"
+            },
+            {
+              "line": 767,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPhysicalPurposeFreshnessTest"
+            },
+            {
+              "line": 769,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingSegmentPurposeFreshnessTest"
+            },
+            {
+              "line": 771,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.AdvertisingRankFactorSerializationTest"
+            },
+            {
+              "line": 774,
+              "tests": 26,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-004 marketplace content may not come back out as a directive"
+            },
+            {
+              "line": 776,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-001 the answer must match the output contract"
+            },
+            {
+              "line": 778,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-003 a recommendation may only name an action there is a gate for"
+            },
+            {
+              "line": 780,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-002 a factual claim must be grounded in what was shown"
+            },
+            {
+              "line": 782,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-005 the digest identifies what was sent without keeping it"
+            },
+            {
+              "line": 783,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest"
+            },
+            {
+              "line": 795,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest"
+            },
+            {
+              "line": 797,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest"
+            },
+            {
+              "line": 801,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest"
+            },
+            {
+              "line": 804,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-005 the same values produce the same answer"
+            },
+            {
+              "line": 806,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-004 a rule declines rather than guessing"
+            },
+            {
+              "line": 808,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-003 the rules find what they are for"
+            },
+            {
+              "line": 810,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-002 a blocked subject is not assessed, and says so"
+            },
+            {
+              "line": 812,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-001 every rule answers, in the same order, every time"
+            },
+            {
+              "line": 813,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest"
+            },
+            {
+              "line": 815,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest"
+            },
+            {
+              "line": 817,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest"
+            },
+            {
+              "line": 853,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.adminobservability.MetaStatusControllerTest"
+            },
+            {
+              "line": 862,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest"
+            },
+            {
+              "line": 875,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest"
+            },
+            {
+              "line": 877,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest"
+            },
+            {
+              "line": 879,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest"
+            },
+            {
+              "line": 881,
+              "tests": 26,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest"
+            },
+            {
+              "line": 883,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest"
+            },
+            {
+              "line": 885,
+              "tests": 42,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest"
+            },
+            {
+              "line": 888,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest"
+            }
+          ]
+        },
+        "integration": {
+          "actualSuiteSummaryCount": 101,
+          "uniqueCompleteDisplayLabels": 101,
+          "repeatedDisplayLabels": {},
+          "summedActualSuiteCounts": {
+            "tests": 1056,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "aggregateLine": {
+            "line": 8435,
+            "tests": 1056,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "suiteLabel": null
+          },
+          "suiteSummaryLines": [
+            {
+              "line": 1062,
+              "tests": 33,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingAggregateExposureIT"
+            },
+            {
+              "line": 1080,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.secret.MountedSecretFilesystemIT"
+            },
+            {
+              "line": 1407,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT"
+            },
+            {
+              "line": 1417,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ApplicationSmokeIT"
+            },
+            {
+              "line": 1419,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.TestDatabaseIssuerIT"
+            },
+            {
+              "line": 1421,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingProtectedBaseUpgradeIT"
+            },
+            {
+              "line": 1423,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdBidWriteGateAdversarialIT"
+            },
+            {
+              "line": 1431,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingFinanceReviewIT"
+            },
+            {
+              "line": 1442,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityRiskFlowIT"
+            },
+            {
+              "line": 1544,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingDisclosureIT"
+            },
+            {
+              "line": 1548,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.FlywayMigrationIT"
+            },
+            {
+              "line": 1551,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-101 nothing in the advertising schema may be deleted"
+            },
+            {
+              "line": 1553,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-104 the migration role owns everything and the application owns none"
+            },
+            {
+              "line": 1555,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-102 the controlled-write lineage is read-only to the application"
+            },
+            {
+              "line": 1557,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-103 every sanctioned route is a function, and only those"
+            },
+            {
+              "line": 1558,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT"
+            },
+            {
+              "line": 1560,
+              "tests": 45,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.IngestionAuthorityAndEvidenceIT"
+            },
+            {
+              "line": 1562,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.MetadataConstraintIT"
+            },
+            {
+              "line": 1564,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.ControlBoundaryCompletenessIT"
+            },
+            {
+              "line": 1566,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.CallAuthorityExclusivityIT"
+            },
+            {
+              "line": 1568,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.MetadataPrivilegeIT"
+            },
+            {
+              "line": 1570,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AvailabilityRiskSchemaIT"
+            },
+            {
+              "line": 1572,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.ControlEpochTriggerIT"
+            },
+            {
+              "line": 1575,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-104 an unknown result is never repeated"
+            },
+            {
+              "line": 1577,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-107 an attempt records the call that was started"
+            },
+            {
+              "line": 1579,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-103 platform acceptance is not success"
+            },
+            {
+              "line": 1581,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-108 a bounded authorization is bounded in every dimension"
+            },
+            {
+              "line": 1583,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-R2-FRESH-DB command authority ages at transaction time"
+            },
+            {
+              "line": 1585,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-102 only the worker that holds a command may move it"
+            },
+            {
+              "line": 1587,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-105 a restore may not overwrite a later change"
+            },
+            {
+              "line": 1589,
+              "tests": 35,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-101 the gate is a conjunction and every part is real"
+            },
+            {
+              "line": 1591,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-106 a worker that vanished hands its work back"
+            },
+            {
+              "line": 1592,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.PriceWritePathIT"
+            },
+            {
+              "line": 1600,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.StoredRawReplayIT"
+            },
+            {
+              "line": 1602,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.DatabasePrivilegeIT"
+            },
+            {
+              "line": 1604,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AuthorizedAcquisitionFlowIT"
+            },
+            {
+              "line": 1606,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.MembershipGuardIT"
+            },
+            {
+              "line": 1609,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-103 an unverified provider path cannot be dispatched"
+            },
+            {
+              "line": 1611,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-107 an independent verification needs a second person"
+            },
+            {
+              "line": 1613,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-101 the application role cannot move a command itself"
+            },
+            {
+              "line": 1615,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-105 a bid change is about an advertising object and nothing else"
+            },
+            {
+              "line": 1617,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-104 the registry cannot describe a bid write it does not understand"
+            },
+            {
+              "line": 1619,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-102 the transition graph is data, and its shape is the safety property"
+            },
+            {
+              "line": 1621,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-106 a policy bundle becomes authority only when it is coherent"
+            },
+            {
+              "line": 1622,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AdBidWritePathIT"
+            },
+            {
+              "line": 1631,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT"
+            },
+            {
+              "line": 1769,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.OperatingFlowIT"
+            },
+            {
+              "line": 1787,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.MaintenanceWriteGateApiIT"
+            },
+            {
+              "line": 1789,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingRetryProofIT"
+            },
+            {
+              "line": 1791,
+              "tests": 42,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingReservationIT"
+            },
+            {
+              "line": 1798,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT"
+            },
+            {
+              "line": 1803,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidParameterContractParityIT"
+            },
+            {
+              "line": 1805,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingGateScopeMatrixIT"
+            },
+            {
+              "line": 1810,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingCrossDomainIsolationIT"
+            },
+            {
+              "line": 1812,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingSealedAuthorityIT"
+            },
+            {
+              "line": 1817,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingRetryWorkerIT"
+            },
+            {
+              "line": 2120,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.MetadataMaintenanceApiIT"
+            },
+            {
+              "line": 2122,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ManagedMigrationRunnerIT"
+            },
+            {
+              "line": 2127,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingDecisionQueryIT"
+            },
+            {
+              "line": 2233,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.DiagnosticExportIT"
+            },
+            {
+              "line": 2235,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingGateScopeIT"
+            },
+            {
+              "line": 2237,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingMaterialityIT"
+            },
+            {
+              "line": 2249,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.PriceCommandWorkerIT"
+            },
+            {
+              "line": 2257,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityRecalculationLoopIT"
+            },
+            {
+              "line": 2274,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT"
+            },
+            {
+              "line": 2279,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT"
+            },
+            {
+              "line": 2284,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT"
+            },
+            {
+              "line": 2289,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFreshnessBulkResolutionIT"
+            },
+            {
+              "line": 2294,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT"
+            },
+            {
+              "line": 2299,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInputIntegrityIT"
+            },
+            {
+              "line": 2304,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInferenceScopeIT"
+            },
+            {
+              "line": 2309,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT"
+            },
+            {
+              "line": 2314,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedPreparationIT"
+            },
+            {
+              "line": 2319,
+              "tests": 31,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT"
+            },
+            {
+              "line": 2345,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AnalyticsMetricReevaluationIT"
+            },
+            {
+              "line": 2444,
+              "tests": 34,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT"
+            },
+            {
+              "line": 2449,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT"
+            },
+            {
+              "line": 2477,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"
+            },
+            {
+              "line": 2482,
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT"
+            },
+            {
+              "line": 2487,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT"
+            },
+            {
+              "line": 2554,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityConsoleAuthorizationIT"
+            },
+            {
+              "line": 2559,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdBidDispatchAuthorityIT"
+            },
+            {
+              "line": 2564,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingManualWorkflowIT"
+            },
+            {
+              "line": 2566,
+              "tests": 14,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingActorRevocationIT"
+            },
+            {
+              "line": 2598,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.FileIntakeFlowIT"
+            },
+            {
+              "line": 2600,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingMinimumExpiryIT"
+            },
+            {
+              "line": 2637,
+              "tests": 35,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.RegistryVerificationFlowIT"
+            },
+            {
+              "line": 2642,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingOperationsReadIT"
+            },
+            {
+              "line": 2647,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingAuthorityBindingIT"
+            },
+            {
+              "line": 2737,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT"
+            },
+            {
+              "line": 2739,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingCommandSubstitutionIT"
+            },
+            {
+              "line": 8194,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.RepresentativePerformanceIT"
+            },
+            {
+              "line": 8203,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT"
+            },
+            {
+              "line": 8234,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingHumanWorkflowIT"
+            },
+            {
+              "line": 8385,
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT"
+            },
+            {
+              "line": 8412,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityCaseLifecycleIT"
+            },
+            {
+              "line": 8414,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingBrowserHistoryIT"
+            },
+            {
+              "line": 8419,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT"
+            },
+            {
+              "line": 8424,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingTargetedTriggerIT"
+            },
+            {
+              "line": 8426,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingFreshnessScopeSealIT"
+            },
+            {
+              "line": 8431,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingManualShadowIT"
+            }
+          ]
+        }
+      },
+      "unitRawXmlAvailable": true,
+      "integrationRawXmlAvailable": true,
+      "boundary": "Counts directly reconciled from one actual Maven step log and its complete suite display labels. No duplicate combined job-log copies included. Display labels are not fabricated Java class/method identities; unuploaded unit XML/named nodes are not fabricated."
+    },
+    {
+      "job": "backend-integration",
+      "jobId": 101401317798,
+      "runId": 34001582148,
+      "attempt": 1,
+      "sourceHead": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+      "testedMerge": "f9a1d73f324323d13ea72db3890090c9b9d85450",
+      "stepLogEvidence": {
+        "archive": "run-logs.zip",
+        "artifactId": null,
+        "member": "backend-integration/5_Run the database and application integration tests.txt",
+        "bytes": 5014220,
+        "sha256": "32cc0ea40190f69cb08b9bd4f6bf8908811e757570fc456a95942260f8c7c402",
+        "crc32": "653e8b6d",
+        "archiveReference": {
+          "path": "/tmp/slice3-checkpoint-backend-ci-7e66cf8/run-logs.zip",
+          "bytes": 1311899,
+          "sha256": "45271be79e39985b87abcf8a075d5208eae0b89cc3fa58f625a4becf82c53df5"
+        }
+      },
+      "families": {
+        "unit": {
+          "actualSuiteSummaryCount": 215,
+          "uniqueCompleteDisplayLabels": 215,
+          "repeatedDisplayLabels": {},
+          "summedActualSuiteCounts": {
+            "tests": 1588,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "aggregateLine": {
+            "line": 889,
+            "tests": 1588,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "suiteLabel": null
+          },
+          "suiteSummaryLines": [
+            {
+              "line": 129,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-202 bounded free text"
+            },
+            {
+              "line": 131,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-204 opaque secret references"
+            },
+            {
+              "line": 133,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-203 reference-data formats"
+            },
+            {
+              "line": 135,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SEC-201 business and registry codes"
+            },
+            {
+              "line": 136,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.MetadataFieldPolicyTest"
+            },
+            {
+              "line": 138,
+              "tests": 46,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest"
+            },
+            {
+              "line": 148,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest"
+            },
+            {
+              "line": 153,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.config.WriteGateBindingTest"
+            },
+            {
+              "line": 171,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.config.CorsContractTest"
+            },
+            {
+              "line": 203,
+              "tests": 36,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest"
+            },
+            {
+              "line": 205,
+              "tests": 23,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest"
+            },
+            {
+              "line": 207,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.ErrorCodeTest"
+            },
+            {
+              "line": 209,
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.CorrelationIdTest"
+            },
+            {
+              "line": 220,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.SecretMaterialGuardTest"
+            },
+            {
+              "line": 222,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest"
+            },
+            {
+              "line": 224,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest"
+            },
+            {
+              "line": 226,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest"
+            },
+            {
+              "line": 228,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.LoggingContractTest"
+            },
+            {
+              "line": 231,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a response is evidence or it is not recorded"
+            },
+            {
+              "line": 233,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a request names exactly one call"
+            },
+            {
+              "line": 234,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest"
+            },
+            {
+              "line": 236,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest"
+            },
+            {
+              "line": 238,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest"
+            },
+            {
+              "line": 240,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest"
+            },
+            {
+              "line": 242,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest"
+            },
+            {
+              "line": 244,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest"
+            },
+            {
+              "line": 247,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-002 evidence that names no call is not evidence about it"
+            },
+            {
+              "line": 249,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-003 no credential means no attempt and no call"
+            },
+            {
+              "line": 251,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-001 each answer moves the command somewhere different"
+            },
+            {
+              "line": 253,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-004 an unknown result is observed, never repeated"
+            },
+            {
+              "line": 256,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WORKER-005 a refusal from the database is not a failure of the pass"
+            },
+            {
+              "line": 257,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest"
+            },
+            {
+              "line": 260,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest"
+            },
+            {
+              "line": 263,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest"
+            },
+            {
+              "line": 266,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest"
+            },
+            {
+              "line": 275,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest"
+            },
+            {
+              "line": 286,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest"
+            },
+            {
+              "line": 288,
+              "tests": 33,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest"
+            },
+            {
+              "line": 290,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest"
+            },
+            {
+              "line": 292,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest"
+            },
+            {
+              "line": 316,
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest"
+            },
+            {
+              "line": 357,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest"
+            },
+            {
+              "line": 377,
+              "tests": 22,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-005 a pointer reads only what it names"
+            },
+            {
+              "line": 380,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-002 an apply is read through the recorded task pointer"
+            },
+            {
+              "line": 382,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-001 an unanswered write is not the same as an unanswered read"
+            },
+            {
+              "line": 385,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-003 a task's fate is read in the platform's own words"
+            },
+            {
+              "line": 389,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CLASSIFY-004 an observed price is read from where it was recorded"
+            },
+            {
+              "line": 390,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest"
+            },
+            {
+              "line": 392,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest"
+            },
+            {
+              "line": 394,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest"
+            },
+            {
+              "line": 396,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest"
+            },
+            {
+              "line": 399,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CMD-003 a claim and a wait are different things"
+            },
+            {
+              "line": 401,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CMD-001 not knowing is its own outcome"
+            },
+            {
+              "line": 403,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-CMD-002 a finished command is finished"
+            },
+            {
+              "line": 404,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest"
+            },
+            {
+              "line": 406,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest"
+            },
+            {
+              "line": 409,
+              "tests": 50,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SHEET-002 a file that is not a file is refused"
+            },
+            {
+              "line": 411,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-SHEET-001 a separated-values file is read the way tools write them"
+            },
+            {
+              "line": 412,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest"
+            },
+            {
+              "line": 414,
+              "tests": 39,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest"
+            },
+            {
+              "line": 423,
+              "tests": 14,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest"
+            },
+            {
+              "line": 425,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest"
+            },
+            {
+              "line": 427,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest"
+            },
+            {
+              "line": 429,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest"
+            },
+            {
+              "line": 431,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest"
+            },
+            {
+              "line": 433,
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest"
+            },
+            {
+              "line": 435,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest"
+            },
+            {
+              "line": 437,
+              "tests": 14,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest"
+            },
+            {
+              "line": 439,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest"
+            },
+            {
+              "line": 441,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest"
+            },
+            {
+              "line": 443,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest"
+            },
+            {
+              "line": 445,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest"
+            },
+            {
+              "line": 447,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest"
+            },
+            {
+              "line": 449,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest"
+            },
+            {
+              "line": 538,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest"
+            },
+            {
+              "line": 540,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest"
+            },
+            {
+              "line": 542,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest"
+            },
+            {
+              "line": 544,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ApplicationConfigurationTest"
+            },
+            {
+              "line": 547,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ApplicationEnvironmentFailClosedTest"
+            },
+            {
+              "line": 549,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest"
+            },
+            {
+              "line": 551,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest"
+            },
+            {
+              "line": 554,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-002 each refusal appears on its own"
+            },
+            {
+              "line": 556,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-001 a clean decision passes and names its authority"
+            },
+            {
+              "line": 558,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-004 evaluate dispatches on the action"
+            },
+            {
+              "line": 560,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-GUARD-003 the module's reasons are translated, not echoed"
+            },
+            {
+              "line": 561,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest"
+            },
+            {
+              "line": 564,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-004 a listing is not disrupted by accumulation"
+            },
+            {
+              "line": 566,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-002 absence never becomes an acceptable default"
+            },
+            {
+              "line": 568,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-005 the case must still be about this listing, now"
+            },
+            {
+              "line": 570,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-001 a proposal is only decided under rules that exist"
+            },
+            {
+              "line": 572,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-003 a price may not be taken below what it costs"
+            },
+            {
+              "line": 574,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-006 a standing authorization bounds what it can be spent on"
+            },
+            {
+              "line": 576,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-GUARD-007 every blocking condition is reported at once"
+            },
+            {
+              "line": 577,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest"
+            },
+            {
+              "line": 579,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest"
+            },
+            {
+              "line": 581,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest"
+            },
+            {
+              "line": 583,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest"
+            },
+            {
+              "line": 586,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-004 exactly two actions have a platform write behind them"
+            },
+            {
+              "line": 588,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-002 a finished proposal stays finished"
+            },
+            {
+              "line": 590,
+              "tests": 27,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-003 every state is reachable and self-consistent"
+            },
+            {
+              "line": 592,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WF-001 a write is only ever authorized deliberately"
+            },
+            {
+              "line": 593,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.RecommendationStateTest"
+            },
+            {
+              "line": 595,
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest"
+            },
+            {
+              "line": 598,
+              "tests": 47,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an event is one kind of thing, never two"
+            },
+            {
+              "line": 600,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a verdict names every reason it was built from"
+            },
+            {
+              "line": 602,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an action stage needs its action, its evidence and its actor"
+            },
+            {
+              "line": 604,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the internal response bounds are ordered and strict at the edge"
+            },
+            {
+              "line": 605,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest"
+            },
+            {
+              "line": 608,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a scope is complete or it does not exist"
+            },
+            {
+              "line": 610,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a preview tells an operator everything that stands in the way"
+            },
+            {
+              "line": 612,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a proposal carries its own service level"
+            },
+            {
+              "line": 614,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a projection says what a bid change would reach"
+            },
+            {
+              "line": 615,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest"
+            },
+            {
+              "line": 618,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AUTHORITY-003 owner-published policy has no writer in this product"
+            },
+            {
+              "line": 620,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AUTHORITY-002 command creation has exactly one route"
+            },
+            {
+              "line": 622,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns"
+            },
+            {
+              "line": 623,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest"
+            },
+            {
+              "line": 627,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "Additional code-quality architecture safeguards"
+            },
+            {
+              "line": 628,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest"
+            },
+            {
+              "line": 630,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.ModulithArchitectureTest"
+            },
+            {
+              "line": 633,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "Additional code-quality rule sensitivity"
+            },
+            {
+              "line": 634,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest"
+            },
+            {
+              "line": 637,
+              "tests": 34,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "rule sensitivity"
+            },
+            {
+              "line": 638,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest"
+            },
+            {
+              "line": 640,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest"
+            },
+            {
+              "line": 642,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest"
+            },
+            {
+              "line": 645,
+              "tests": 22,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "no insufficient evidence state can produce a write-grade conversion"
+            },
+            {
+              "line": 646,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest"
+            },
+            {
+              "line": 649,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "evidence is checked before arithmetic"
+            },
+            {
+              "line": 651,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a settled claim cannot outrun the completed-sales guard"
+            },
+            {
+              "line": 653,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the thresholds a plan fixed beforehand decide the verdict"
+            },
+            {
+              "line": 655,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an incoherent outcome is unrepresentable"
+            },
+            {
+              "line": 656,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest"
+            },
+            {
+              "line": 658,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest"
+            },
+            {
+              "line": 661,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a calculation is a pure value the two schedules both produce"
+            },
+            {
+              "line": 663,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a case is identified by its cause and its object generation"
+            },
+            {
+              "line": 665,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the policy set says what was in force, including what was not"
+            },
+            {
+              "line": 666,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest"
+            },
+            {
+              "line": 669,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the platform's grid decides where a value may land"
+            },
+            {
+              "line": 671,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a limit that permits nothing coherent is unrepresentable"
+            },
+            {
+              "line": 673,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a cause may bound a decrease when no ceiling exists"
+            },
+            {
+              "line": 675,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a candidate that changes nothing is not a candidate"
+            },
+            {
+              "line": 677,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an increase approaches what a click is worth and stops"
+            },
+            {
+              "line": 679,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a decrease protects and never overshoots"
+            },
+            {
+              "line": 680,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest"
+            },
+            {
+              "line": 682,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest"
+            },
+            {
+              "line": 684,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest"
+            },
+            {
+              "line": 687,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "only a cause that justifies a bid move produces one"
+            },
+            {
+              "line": 689,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the same inputs always produce the same answer"
+            },
+            {
+              "line": 691,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a critical sales unit cannot be paid for out of another one's growth"
+            },
+            {
+              "line": 693,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a ceiling prices one sale event or it prices nothing"
+            },
+            {
+              "line": 695,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "every candidate that exists is one the platform would accept unchanged"
+            },
+            {
+              "line": 697,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "no amount of money moves a case across a band"
+            },
+            {
+              "line": 699,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "an absent number is never quietly a zero"
+            },
+            {
+              "line": 701,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a profit is whole or it is not a profit"
+            },
+            {
+              "line": 702,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest"
+            },
+            {
+              "line": 704,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest"
+            },
+            {
+              "line": 706,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest"
+            },
+            {
+              "line": 709,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the workflow scale keeps the ordering the band score guarantees"
+            },
+            {
+              "line": 710,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest"
+            },
+            {
+              "line": 712,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest"
+            },
+            {
+              "line": 715,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a measure carries a value exactly when it is available"
+            },
+            {
+              "line": 717,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "the affected set is an identity, not a list"
+            },
+            {
+              "line": 719,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "a one-sided danger proof is a proof"
+            },
+            {
+              "line": 720,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest"
+            },
+            {
+              "line": 722,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest"
+            },
+            {
+              "line": 724,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest"
+            },
+            {
+              "line": 726,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest"
+            },
+            {
+              "line": 728,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest"
+            },
+            {
+              "line": 730,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest"
+            },
+            {
+              "line": 732,
+              "tests": 29,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest"
+            },
+            {
+              "line": 734,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest"
+            },
+            {
+              "line": 736,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest"
+            },
+            {
+              "line": 738,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest"
+            },
+            {
+              "line": 741,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-DECIDE-003 the reservation is taken only at the action stage"
+            },
+            {
+              "line": 743,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-DECIDE-002 every refusal names itself"
+            },
+            {
+              "line": 745,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-DECIDE-001 a complete decision resolves to a usable scope"
+            },
+            {
+              "line": 746,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest"
+            },
+            {
+              "line": 748,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest"
+            },
+            {
+              "line": 751,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-005 the result describes the object it was computed for"
+            },
+            {
+              "line": 753,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-003 a data defect owns its own case"
+            },
+            {
+              "line": 755,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-004 every measure is absent rather than zero"
+            },
+            {
+              "line": 757,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-002 execution integrity outranks everything"
+            },
+            {
+              "line": 759,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-001 an object nobody may write to says so above everything else"
+            },
+            {
+              "line": 761,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-CALC-006 the deep measures are computed, or refused for a stated reason"
+            },
+            {
+              "line": 762,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest"
+            },
+            {
+              "line": 764,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPhysicalPurposeFreshnessTest"
+            },
+            {
+              "line": 766,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingSegmentPurposeFreshnessTest"
+            },
+            {
+              "line": 768,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.AdvertisingRankFactorSerializationTest"
+            },
+            {
+              "line": 771,
+              "tests": 26,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-004 marketplace content may not come back out as a directive"
+            },
+            {
+              "line": 773,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-001 the answer must match the output contract"
+            },
+            {
+              "line": 775,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-003 a recommendation may only name an action there is a gate for"
+            },
+            {
+              "line": 777,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-002 a factual claim must be grounded in what was shown"
+            },
+            {
+              "line": 779,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AI-005 the digest identifies what was sent without keeping it"
+            },
+            {
+              "line": 780,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest"
+            },
+            {
+              "line": 792,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest"
+            },
+            {
+              "line": 794,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest"
+            },
+            {
+              "line": 798,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest"
+            },
+            {
+              "line": 801,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-005 the same values produce the same answer"
+            },
+            {
+              "line": 803,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-004 a rule declines rather than guessing"
+            },
+            {
+              "line": 805,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-003 the rules find what they are for"
+            },
+            {
+              "line": 807,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-002 a blocked subject is not assessed, and says so"
+            },
+            {
+              "line": 809,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-RULE-001 every rule answers, in the same order, every time"
+            },
+            {
+              "line": 810,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest"
+            },
+            {
+              "line": 812,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest"
+            },
+            {
+              "line": 814,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest"
+            },
+            {
+              "line": 850,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.adminobservability.MetaStatusControllerTest"
+            },
+            {
+              "line": 859,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest"
+            },
+            {
+              "line": 872,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest"
+            },
+            {
+              "line": 874,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest"
+            },
+            {
+              "line": 876,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest"
+            },
+            {
+              "line": 878,
+              "tests": 26,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest"
+            },
+            {
+              "line": 880,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest"
+            },
+            {
+              "line": 882,
+              "tests": 42,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest"
+            },
+            {
+              "line": 885,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest"
+            }
+          ]
+        },
+        "integration": {
+          "actualSuiteSummaryCount": 101,
+          "uniqueCompleteDisplayLabels": 101,
+          "repeatedDisplayLabels": {},
+          "summedActualSuiteCounts": {
+            "tests": 1056,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "aggregateLine": {
+            "line": 8431,
+            "tests": 1056,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "suiteLabel": null
+          },
+          "suiteSummaryLines": [
+            {
+              "line": 1058,
+              "tests": 33,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingAggregateExposureIT"
+            },
+            {
+              "line": 1076,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.secret.MountedSecretFilesystemIT"
+            },
+            {
+              "line": 1403,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT"
+            },
+            {
+              "line": 1413,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ApplicationSmokeIT"
+            },
+            {
+              "line": 1415,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.TestDatabaseIssuerIT"
+            },
+            {
+              "line": 1417,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingProtectedBaseUpgradeIT"
+            },
+            {
+              "line": 1419,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdBidWriteGateAdversarialIT"
+            },
+            {
+              "line": 1427,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingFinanceReviewIT"
+            },
+            {
+              "line": 1438,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityRiskFlowIT"
+            },
+            {
+              "line": 1540,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingDisclosureIT"
+            },
+            {
+              "line": 1544,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.FlywayMigrationIT"
+            },
+            {
+              "line": 1547,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-101 nothing in the advertising schema may be deleted"
+            },
+            {
+              "line": 1549,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-104 the migration role owns everything and the application owns none"
+            },
+            {
+              "line": 1551,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-102 the controlled-write lineage is read-only to the application"
+            },
+            {
+              "line": 1553,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-PRIV-103 every sanctioned route is a function, and only those"
+            },
+            {
+              "line": 1554,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT"
+            },
+            {
+              "line": 1556,
+              "tests": 45,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.IngestionAuthorityAndEvidenceIT"
+            },
+            {
+              "line": 1558,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.MetadataConstraintIT"
+            },
+            {
+              "line": 1560,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.ControlBoundaryCompletenessIT"
+            },
+            {
+              "line": 1562,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.CallAuthorityExclusivityIT"
+            },
+            {
+              "line": 1564,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.MetadataPrivilegeIT"
+            },
+            {
+              "line": 1566,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AvailabilityRiskSchemaIT"
+            },
+            {
+              "line": 1568,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.ControlEpochTriggerIT"
+            },
+            {
+              "line": 1571,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-104 an unknown result is never repeated"
+            },
+            {
+              "line": 1573,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-107 an attempt records the call that was started"
+            },
+            {
+              "line": 1575,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-103 platform acceptance is not success"
+            },
+            {
+              "line": 1577,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-108 a bounded authorization is bounded in every dimension"
+            },
+            {
+              "line": 1579,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-R2-FRESH-DB command authority ages at transaction time"
+            },
+            {
+              "line": 1581,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-102 only the worker that holds a command may move it"
+            },
+            {
+              "line": 1583,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-105 a restore may not overwrite a later change"
+            },
+            {
+              "line": 1585,
+              "tests": 35,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-101 the gate is a conjunction and every part is real"
+            },
+            {
+              "line": 1587,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-WRITE-106 a worker that vanished hands its work back"
+            },
+            {
+              "line": 1588,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.PriceWritePathIT"
+            },
+            {
+              "line": 1596,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.StoredRawReplayIT"
+            },
+            {
+              "line": 1598,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.DatabasePrivilegeIT"
+            },
+            {
+              "line": 1600,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AuthorizedAcquisitionFlowIT"
+            },
+            {
+              "line": 1602,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.MembershipGuardIT"
+            },
+            {
+              "line": 1605,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-103 an unverified provider path cannot be dispatched"
+            },
+            {
+              "line": 1607,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-107 an independent verification needs a second person"
+            },
+            {
+              "line": 1609,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-101 the application role cannot move a command itself"
+            },
+            {
+              "line": 1611,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-105 a bid change is about an advertising object and nothing else"
+            },
+            {
+              "line": 1613,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-104 the registry cannot describe a bid write it does not understand"
+            },
+            {
+              "line": 1615,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-102 the transition graph is data, and its shape is the safety property"
+            },
+            {
+              "line": 1617,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "TC-AD-WRITE-106 a policy bundle becomes authority only when it is coherent"
+            },
+            {
+              "line": 1618,
+              "tests": 0,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.database.AdBidWritePathIT"
+            },
+            {
+              "line": 1627,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT"
+            },
+            {
+              "line": 1765,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.OperatingFlowIT"
+            },
+            {
+              "line": 1783,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.MaintenanceWriteGateApiIT"
+            },
+            {
+              "line": 1785,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingRetryProofIT"
+            },
+            {
+              "line": 1787,
+              "tests": 42,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingReservationIT"
+            },
+            {
+              "line": 1794,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT"
+            },
+            {
+              "line": 1799,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidParameterContractParityIT"
+            },
+            {
+              "line": 1801,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingGateScopeMatrixIT"
+            },
+            {
+              "line": 1806,
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingCrossDomainIsolationIT"
+            },
+            {
+              "line": 1808,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingSealedAuthorityIT"
+            },
+            {
+              "line": 1813,
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingRetryWorkerIT"
+            },
+            {
+              "line": 2116,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.MetadataMaintenanceApiIT"
+            },
+            {
+              "line": 2118,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.ManagedMigrationRunnerIT"
+            },
+            {
+              "line": 2123,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingDecisionQueryIT"
+            },
+            {
+              "line": 2229,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.DiagnosticExportIT"
+            },
+            {
+              "line": 2231,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingGateScopeIT"
+            },
+            {
+              "line": 2233,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingMaterialityIT"
+            },
+            {
+              "line": 2245,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.PriceCommandWorkerIT"
+            },
+            {
+              "line": 2253,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityRecalculationLoopIT"
+            },
+            {
+              "line": 2270,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT"
+            },
+            {
+              "line": 2275,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT"
+            },
+            {
+              "line": 2280,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT"
+            },
+            {
+              "line": 2285,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFreshnessBulkResolutionIT"
+            },
+            {
+              "line": 2290,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT"
+            },
+            {
+              "line": 2295,
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInputIntegrityIT"
+            },
+            {
+              "line": 2300,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInferenceScopeIT"
+            },
+            {
+              "line": 2305,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT"
+            },
+            {
+              "line": 2310,
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedPreparationIT"
+            },
+            {
+              "line": 2315,
+              "tests": 31,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT"
+            },
+            {
+              "line": 2341,
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AnalyticsMetricReevaluationIT"
+            },
+            {
+              "line": 2440,
+              "tests": 34,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT"
+            },
+            {
+              "line": 2445,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT"
+            },
+            {
+              "line": 2473,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"
+            },
+            {
+              "line": 2478,
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT"
+            },
+            {
+              "line": 2483,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT"
+            },
+            {
+              "line": 2550,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityConsoleAuthorizationIT"
+            },
+            {
+              "line": 2555,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdBidDispatchAuthorityIT"
+            },
+            {
+              "line": 2560,
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingManualWorkflowIT"
+            },
+            {
+              "line": 2562,
+              "tests": 14,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingActorRevocationIT"
+            },
+            {
+              "line": 2594,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.FileIntakeFlowIT"
+            },
+            {
+              "line": 2596,
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingMinimumExpiryIT"
+            },
+            {
+              "line": 2633,
+              "tests": 35,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.RegistryVerificationFlowIT"
+            },
+            {
+              "line": 2638,
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingOperationsReadIT"
+            },
+            {
+              "line": 2643,
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingAuthorityBindingIT"
+            },
+            {
+              "line": 2733,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT"
+            },
+            {
+              "line": 2735,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingCommandSubstitutionIT"
+            },
+            {
+              "line": 8190,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.RepresentativePerformanceIT"
+            },
+            {
+              "line": 8199,
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT"
+            },
+            {
+              "line": 8230,
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingHumanWorkflowIT"
+            },
+            {
+              "line": 8381,
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT"
+            },
+            {
+              "line": 8408,
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AvailabilityCaseLifecycleIT"
+            },
+            {
+              "line": 8410,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingBrowserHistoryIT"
+            },
+            {
+              "line": 8415,
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT"
+            },
+            {
+              "line": 8420,
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingTargetedTriggerIT"
+            },
+            {
+              "line": 8422,
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingFreshnessScopeSealIT"
+            },
+            {
+              "line": 8427,
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "suiteLabel": "com.mimococo.marketops.AdvertisingManualShadowIT"
+            }
+          ]
+        }
+      },
+      "unitRawXmlAvailable": false,
+      "integrationRawXmlAvailable": true,
+      "boundary": "Counts directly reconciled from one actual Maven step log and its complete suite display labels. No duplicate combined job-log copies included. Display labels are not fabricated Java class/method identities; unuploaded unit XML/named nodes are not fabricated."
+    }
+  ],
+  "architecture": {
+    "jobId": 101401318022,
+    "rawStep": {
+      "archive": "run-logs.zip",
+      "artifactId": null,
+      "member": "architecture-boundary/4_Run the boundary rules, their fixtures and the module verification.txt",
+      "bytes": 27155,
+      "sha256": "f83359a27890ae254f4f998fafab225086b385ecab627c13be81ee2fa1e31cf1",
+      "crc32": "50d17244",
+      "archiveReference": {
+        "path": "/tmp/slice3-checkpoint-backend-ci-7e66cf8/run-logs.zip",
+        "bytes": 1311899,
+        "sha256": "45271be79e39985b87abcf8a075d5208eae0b89cc3fa58f625a4becf82c53df5"
+      }
+    },
+    "suiteRows": [
+      {
+        "line": 119,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "TC-AUTHORITY-003 owner-published policy has no writer in this product"
+      },
+      {
+        "line": 121,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "TC-AUTHORITY-002 command creation has exactly one route"
+      },
+      {
+        "line": 123,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns"
+      },
+      {
+        "line": 124,
+        "tests": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest"
+      },
+      {
+        "line": 128,
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "Additional code-quality architecture safeguards"
+      },
+      {
+        "line": 129,
+        "tests": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest"
+      },
+      {
+        "line": 131,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "com.mimococo.marketops.architecture.ModulithArchitectureTest"
+      },
+      {
+        "line": 134,
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "Additional code-quality rule sensitivity"
+      },
+      {
+        "line": 135,
+        "tests": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest"
+      },
+      {
+        "line": 138,
+        "tests": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "rule sensitivity"
+      },
+      {
+        "line": 139,
+        "tests": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suiteLabel": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest"
+      }
+    ],
+    "aggregate": {
+      "line": 143,
+      "tests": 72,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suiteLabel": null
+    },
+    "boundary": "72 subset architecture tests executed in separate successful job; no raw XML artifact from this job."
+  },
+  "crossJobRepeatBoundary": "Build and Integration each execute 1,588 unit+1,056 integration tests. Architecture executes a 72-test subset. These are repeated execution evidence, not 5,360 distinct tests."
+}

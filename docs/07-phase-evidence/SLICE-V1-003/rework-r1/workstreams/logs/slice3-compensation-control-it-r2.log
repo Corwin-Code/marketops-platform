@@ -1,0 +1,94 @@
+08:55:33.508 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+08:55:33.511 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+08:55:33.517 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 2.0.5
+08:55:33.692 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+08:55:34.012 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+08:55:34.012 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+08:55:34.027 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.7.2
+  API Version: 1.55
+  Operating System: Docker Desktop
+  Total Memory: 5922 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/chzhengx/Library/Containers/com.docker.docker/Data/docker-cli.sock
+08:55:34.336 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Creating container for image: testcontainers/ryuk:0.14.0
+08:55:34.512 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Credential helper/store (docker-credential-desktop) does not have credentials for https://index.docker.io/v1/
+08:55:34.651 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 is starting: 1dbe35bb794b5f34109379bf56d3f21e7db6cd440727bd5a4a2c12800a0bcc8a
+08:55:34.888 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 started in PT0.551817S
+08:55:34.894 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+08:55:34.895 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+08:55:34.895 [main] INFO org.testcontainers.DockerClientFactory -- ✔︎ Docker server version should be at least 1.6.0
+08:55:34.929 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+08:55:35.059 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: aed2d37b67bbde2707f4b6a6ee65286ed8352f24e478a02106c41ae5bb927302
+08:55:36.141 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.212376S
+08:55:36.143 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:49972/marketops?loggerLevel=OFF)
+08:55:36.561 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:49972/marketops?loggerLevel=OFF (PostgreSQL 17.6)
+08:55:36.670 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+08:55:36.674 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 64 migrations (execution time 00:00.070s)
+08:55:36.688 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+08:55:36.757 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+08:55:36.766 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+08:55:36.787 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+08:55:36.824 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+08:55:36.847 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+08:55:36.898 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+08:55:36.930 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+08:55:36.989 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+08:55:37.023 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+08:55:37.050 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+08:55:37.078 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+08:55:37.119 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+08:55:37.160 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+08:55:37.202 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+08:55:37.244 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+08:55:37.287 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+08:55:37.310 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+08:55:37.342 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+08:55:37.381 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+08:55:37.414 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+08:55:37.475 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+08:55:37.541 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+08:55:37.568 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+08:55:37.608 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+08:55:37.639 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+08:55:37.661 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+08:55:37.693 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+08:55:37.715 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+08:55:37.758 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+08:55:37.813 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+08:55:37.870 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+08:55:37.971 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+08:55:37.983 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+08:55:37.993 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+08:55:38.008 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+08:55:38.064 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+08:55:38.111 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+08:55:38.170 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+08:55:38.219 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+08:55:38.290 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+08:55:38.331 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+08:55:38.365 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+08:55:38.410 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+08:55:38.464 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+08:55:38.488 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+08:55:38.500 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+08:55:38.511 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+08:55:38.520 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+08:55:38.530 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+08:55:38.543 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+08:55:38.574 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+08:55:38.607 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+08:55:38.626 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+08:55:38.640 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+08:55:38.652 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+08:55:38.662 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+08:55:38.686 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+08:55:38.737 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+08:55:38.783 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+08:55:38.898 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+08:55:38.944 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+08:55:38.982 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+08:55:39.007 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+08:55:39.022 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+08:55:39.050 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+08:55:39.067 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 64 migrations to schema "public", now at version v0064 (execution time 00:01.656s)

@@ -104,6 +104,9 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("public-boundary logs discard exception messages and throwable proxies")
     void logsContainOnlySanitizedFailureCategories() throws NoSuchMethodException {
+        // Random UUIDs can contain a short redaction canary such as the port 5432.
+        String correlationId = "00000000-0000-4000-8000-000000000001";
+        MDC.put(CorrelationId.LOG_CONTEXT_KEY, correlationId);
         Logger logger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
         ListAppender<ILoggingEvent> appender = new ListAppender<>();
         appender.start();
@@ -139,7 +142,7 @@ class GlobalExceptionHandlerTest {
                         "errorCode=\"RESOURCE_NOT_FOUND\"",
                         "event=\"request_unhandled_failure\"",
                         "errorCode=\"INTERNAL_ERROR\"",
-                        "correlationId=",
+                        "correlationId=\"" + correlationId + "\"",
                         "exceptionClass=")
                 .doesNotContain("password", "marketops_app", "10.0.0.7", "5432", "SELECT",
                         "secretRule", "/private/");

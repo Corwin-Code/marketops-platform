@@ -1,0 +1,16 @@
+{
+  "kind": "R15_R16_EXACT_BACKEND_SOURCE_DELTA",
+  "boundary": "Only the two duplicate fixture inputs changed. R15 40 errors remain; R16 48 actual cases pass. Subsequent source changes are outside this comparison. No full-run or acceptance claim.",
+  "changedFiles": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+      "r15Sha256": "327456da72f8ad5f7ce3b51a69c7ef9f2015b9d0d1bb2cfaf956db316f8d70eb",
+      "r16Sha256": "b2521ed40c8743e5e987653b521b5c6749351d26c79e50a9b3725290e33076eb"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+      "r15Sha256": "f1669f75b439d6c161d234c0e54e18f5e12633cdf196c0e8e577903002218f43",
+      "r16Sha256": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+    }
+  ]
+}

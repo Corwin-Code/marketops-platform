@@ -1,0 +1,41 @@
+{
+  "createdAtUTC": "2026-09-05T11:22:42.942200+00:00",
+  "testedHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "runId": 33962619010,
+  "jobId": 101297026370,
+  "jobUrl": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026370",
+  "failedStepNumber": 11,
+  "failedStepName": "Exercise authenticated business flow and dependency recovery in Chromium",
+  "legacyActual": {
+    "passed": 24,
+    "failed": 1,
+    "failingMethod": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey"
+  },
+  "advertisingStep": {
+    "number": 13,
+    "state": "SKIPPED",
+    "journeysRun": 0
+  },
+  "rawLog": {
+    "archive": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619010-attempt-1/logs.zip",
+    "archiveSha256": "2f9bd11451723acae9ecebaaf6d63b18e9610b1d7a3925475ca7093be74ff132",
+    "member": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+    "memberSha256": "997f6193bde9e9ece770965f08ffd07ade7e87d2c0cf98c1a085cf072fa46962"
+  },
+  "rootCause": "The page-level alert locator assumes a unique alert. Three independently rendered, legitimate advertising permission failures race with the intentionally aborted Priority queue request. The intended network-error alert is present, but Playwright strict mode rejects all four matches. Local W6 passed before those parallel alerts rendered; no evidence supports changing the authorization behavior.",
+  "patch": {
+    "path": "/tmp/slice3-w6-frontend-ci-repair/queue-alert-scope.patch",
+    "sha256": "316d83a0ec69aa68deeaa14f63f67d1c240e1a474e727374a2cf0549672cbcd1",
+    "target": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+    "beforeSha256": "cf1bb00fff867470634e6bca683dbd2c9371d6a38abd9a0c3fcc0a153fca4adf",
+    "preparedAfterSha256": "c6cc081b0a99a8c0a40feefcfa620509b450dd8d09e1ed01f10261eb9cea561f",
+    "scope": "Only the network-failure assertion; select the Priority queue alert with exact full error text, assert unique count and unchanged full text. No arbitrary first()/nth(), retries, timeout or excluded test.",
+    "runtimeChanges": false,
+    "applied": false,
+    "execution": "PENDING_NEXT_CHECKPOINT_FULL_LEGACY_AND_REMOTE_FRONTEND_JOB"
+  },
+  "artifactLimit": "The run uploaded coverage and distribution only. The failed legacy screenshot/error-context/trace paths appear in the raw log but were not uploaded as artifacts; none is claimed downloaded or visually inspected. Trace must not be broadly uploaded because it may contain synthetic credentials.",
+  "sameClassScan": "The only unscoped page.getByRole(alert) in actual tests/browser is the failing line; other browser alert lookups are already region-scoped. Production alert semantics stay intact.",
+  "legacyBytesDelta": "The existing one-file six-axis Exposure compatibility delta remains. This newly authorized test-only locator fix adds business-journey.spec.ts to the explicit old-baseline delta, with all other bytes unchanged.",
+  "wrapperFollowup": "Before next legacy run, extend the exact allowed-delta checker to verify this single assertion replacement against old baseline; never disable its file identity assertion."
+}

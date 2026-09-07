@@ -1,0 +1,52 @@
+{
+  "kind": "HISTORICAL_ANCESTOR_SECURITY_COMPARISON_ONLY",
+  "baselineReceipt": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-schema-adapter-r1/SCHEMA-ADAPTER-RECEIPT.json",
+    "sha256": "1db1ad54fb7a0bf7d64d7acf4d8076084ff946acd016324802be277af95b7c60",
+    "bytes": 20088
+  },
+  "baselineSourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "baselineSourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "productSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "currentCiHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "baselineAncestorCommand": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/historical-baseline-product-ancestry.txt.command.json",
+    "sha256": "fda3b8db2c0434866e128036f32fd03abcbbbc62b2651fddbc0c24af8ea0ff4c",
+    "bytes": 1696
+  },
+  "productAncestorCommand": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/product-containing-ancestry.txt.command.json",
+    "sha256": "a6c7a4ffaa696db6864071c772d4775b5f14c80e8e34dd3fc38e6c23416b0342",
+    "bytes": 1651
+  },
+  "baselineReferences": [
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/ALERT-DELTA-TRIAGE.json",
+      "sha256": "adada57576a31472f203613c9ba831e90df93f956934469bfeb1898fa0a427c4",
+      "bytes": 173430
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/HISTORICAL-DISMISSED-HIGH-RECONCILIATION.json",
+      "sha256": "0e225fbcf370539e68ec6eaf5ab48d70b111dc4f9eb57728d619a6d5f9f0232f",
+      "bytes": 7693
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/SOURCE-IDENTITY-COMPARISON.json",
+      "sha256": "c33108bac35e7bb10bce8774bb1a4542e85f7267eb7ba695629729d6fb77e84c",
+      "bytes": 2098
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/actual-source-before.json",
+      "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+      "bytes": 309596
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/security-job-logs.zip",
+      "sha256": "8ab7f2358b228161fa33ee9d7c391174cf0a6f030e70c1819664b3c2479575b1",
+      "bytes": 237998
+    }
+  ],
+  "historicalResultPromoted": false,
+  "currentSourceSecurityReviewRequired": true
+}

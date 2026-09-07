@@ -1,0 +1,25 @@
+{
+  "kind": "READ_ONLY_GITHUB_API_COMMAND",
+  "argv": [
+    "gh",
+    "api",
+    "--method",
+    "GET",
+    "repos/Corwin-Code/marketops-platform/actions/artifacts/9987467925/zip"
+  ],
+  "attempt": 1,
+  "startedAt": "2026-09-06T10:25:20.625460+00:00",
+  "finishedAt": "2026-09-06T10:25:23.716613+00:00",
+  "elapsedSeconds": 3.091,
+  "exitCode": 0,
+  "response": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-integration-reports.zip.attempt-1",
+    "sha256": "eb37b4a04ed0f8a179fdd58b39bfbd37400606605726d715c128c349d4fa2344",
+    "bytes": 1769392
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-integration-reports.zip.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

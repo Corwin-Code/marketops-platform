@@ -4,6 +4,7 @@ import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -77,18 +78,24 @@ public class AvailabilityRiskRefreshService {
         String correlationId = calculationKind + ':'
                 + (reconciliationRunId == null
                 ? ids.newId() : reconciliationRunId + ":" + productVariantId);
-        trace.record(organizationId, productVariantId, calculationKind,
-                "CALCULATION_STARTED", "STARTED", correlationId, parentCorrelationId,
-                productVariantId.toString(), "{}", asOf);
+        // The five stage spans are collected and appended once. They share this
+        // method's transaction, so they became visible together at commit
+        // already; writing them together changes only how many times the
+        // database is asked, which at portfolio scale is five round trips per
+        // variant that bought nothing.
+        List<AvailabilityTraceRepository.Span> spans = new ArrayList<>(5);
+        spans.add(new AvailabilityTraceRepository.Span(organizationId, productVariantId,
+                calculationKind, "CALCULATION_STARTED", "STARTED", correlationId,
+                parentCorrelationId, productVariantId.toString(), "{}", asOf));
         VariantRisk risk = calculation.calculate(organizationId, productVariantId, asOf);
-        trace.record(organizationId, productVariantId, calculationKind,
-                "EVIDENCE_AND_RISK_CALCULATED", "COMPLETED", correlationId,
-                parentCorrelationId, productVariantId.toString(), "{}", asOf);
+        spans.add(new AvailabilityTraceRepository.Span(organizationId, productVariantId,
+                calculationKind, "EVIDENCE_AND_RISK_CALCULATED", "COMPLETED", correlationId,
+                parentCorrelationId, productVariantId.toString(), "{}", asOf));
         AvailabilityProjectionWriter.WrittenCard written =
                 writer.write(risk, calculationKind, reconciliationRunId);
-        trace.record(organizationId, productVariantId, calculationKind,
-                "PROJECTION_WRITTEN", "COMPLETED", correlationId, parentCorrelationId,
-                written.cardId().toString(), "{}", asOf);
+        spans.add(new AvailabilityTraceRepository.Span(organizationId, productVariantId,
+                calculationKind, "PROJECTION_WRITTEN", "COMPLETED", correlationId,
+                parentCorrelationId, written.cardId().toString(), "{}", asOf));
 
         // The calculation run gets its own identity, distinct from any case's.
         // A case that carried a run identity would appear to be a different
@@ -96,19 +103,22 @@ public class AvailabilityRiskRefreshService {
         // cause key exists to prevent.
         AvailabilityCaseActivationService.ActivationResult raised =
                 activation.activate(risk, written, correlationId);
-        trace.record(organizationId, productVariantId, calculationKind,
-                "CASE_SYNCHRONIZED", "COMPLETED", correlationId, parentCorrelationId,
-                written.cardId().toString(), "{\"raised\":" + raised.raised().size()
-                        + ",\"refreshed\":" + raised.refreshed().size() + "}", asOf);
+        spans.add(new AvailabilityTraceRepository.Span(organizationId, productVariantId,
+                calculationKind, "CASE_SYNCHRONIZED", "COMPLETED", correlationId,
+                parentCorrelationId, written.cardId().toString(),
+                "{\"raised\":" + raised.raised().size()
+                        + ",\"refreshed\":" + raised.refreshed().size() + "}", asOf));
 
         // Verification runs after activation and on the same calculation, so a
         // case raised a moment ago and a case waiting on an outcome are both
         // answered by one reading of the evidence rather than by two that could
         // disagree.
         var verified = verification.observe(risk, written);
-        trace.record(organizationId, productVariantId, calculationKind,
-                "AUTO_VERIFICATION", "COMPLETED", correlationId, parentCorrelationId,
-                written.cardId().toString(), "{\"observed\":" + verified.size() + "}", asOf);
+        spans.add(new AvailabilityTraceRepository.Span(organizationId, productVariantId,
+                calculationKind, "AUTO_VERIFICATION", "COMPLETED", correlationId,
+                parentCorrelationId, written.cardId().toString(),
+                "{\"observed\":" + verified.size() + "}", asOf));
+        trace.record(spans);
         return new RefreshOutcome(risk, written, raised, verified, correlationId);
     }
 

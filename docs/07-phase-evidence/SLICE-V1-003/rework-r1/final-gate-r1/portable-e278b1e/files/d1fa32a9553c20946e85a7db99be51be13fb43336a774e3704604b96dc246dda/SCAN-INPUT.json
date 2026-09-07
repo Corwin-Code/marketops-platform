@@ -1,0 +1,167 @@
+{
+  "kind": "ORIGINAL_OFFICIAL_CI_RAW_SCAN_INPUT",
+  "files": {
+    "CHECKPOINT-SUMMARY.json": {
+      "bytes": 853997,
+      "sha256": "049443aa8c13fab293ac0486acdf64582a7fde72eb599a7b09e235dd2800e363"
+    },
+    "SHA256-MANIFEST.json": {
+      "bytes": 4840,
+      "sha256": "c8e7a04d6226cfc6e2a12b553bfcb42264870137d55c23ef8652d84bde15a894"
+    },
+    "artifacts.json": {
+      "bytes": 1531,
+      "sha256": "94fd767342fd79ba24510ccdb48d760ba06a8a1afe385498ea06906504f25315"
+    },
+    "backend-build.log": {
+      "bytes": 4995460,
+      "sha256": "70a59cb713638622f6270ccb8892c71cd1b1561884b9094e6fc2f47089e63f0b"
+    },
+    "backend-integration-reports/backend/marketops-server/target/advertising-capacity-dataset.json": {
+      "bytes": 4077576,
+      "sha256": "fb8951bd458056739cb49f4aa4eb6598b9d0fca85051de061d9c43159580666c"
+    },
+    "backend-integration-reports/backend/marketops-server/target/advertising-capacity-receipt.json": {
+      "bytes": 2865,
+      "sha256": "85b35dd3073b5d58b312cde874ea1eb9607e5447db867a3c85cd2a71da4f67f5"
+    },
+    "backend-integration-reports/backend/marketops-server/target/advertising-capacity-source-inputs.json": {
+      "bytes": 203396,
+      "sha256": "94720db56642721a2c59c1b0abd76ab886441139ecab9b8f411c96d985497620"
+    },
+    "backend-integration-reports/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml": {
+      "bytes": 40200,
+      "sha256": "6a7a676febbd9b3c377c813dd1c8d0f8e270ade2f0121c2e85624ef6571506db"
+    },
+    "backend-integration-reports/backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.txt": {
+      "bytes": 1112,
+      "sha256": "dcc791dbccd90687fc1adc89d82066a6ce8ca34d2014a301ef5f7c2b6cb37815"
+    },
+    "backend-integration-reports/build/slice3-runtime-resources.json": {
+      "bytes": 652,
+      "sha256": "f14b6da0aabb1033726691ef40a903bc5684500a77a4fdf50a46158ee08e95b9"
+    },
+    "backend-integration-reports-mixed.xml": {
+      "bytes": 40200,
+      "sha256": "6a7a676febbd9b3c377c813dd1c8d0f8e270ade2f0121c2e85624ef6571506db"
+    },
+    "backend-integration-reports.zip": {
+      "bytes": 955259,
+      "sha256": "80ade2c60372cb9147b2fefb242fc569e654260d193423297673c196127a4902"
+    },
+    "backend-integration.log": {
+      "bytes": 4995511,
+      "sha256": "c4c70b1a106bcb1b40b94753411a9e087b29ded5c56db591c22ac26901c63ed5"
+    },
+    "backend-test-reports/backend/marketops-server/target/advertising-capacity-dataset.json": {
+      "bytes": 4077576,
+      "sha256": "c497f0ff1d75821c68b44f624e80f2fa5f25a7618b219db99946879221afe9a0"
+    },
+    "backend-test-reports/backend/marketops-server/target/advertising-capacity-receipt.json": {
+      "bytes": 2852,
+      "sha256": "0f13749835acbe837a518ef64088561183fc5f880e2bf204658ae4484a0da00d"
+    },
+    "backend-test-reports/backend/marketops-server/target/advertising-capacity-source-inputs.json": {
+      "bytes": 203396,
+      "sha256": "feb6d901b24c6cc273aaa23337a6400e32d3fd89375a78766b1bc72537df7aa1"
+    },
+    "backend-test-reports/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml": {
+      "bytes": 40296,
+      "sha256": "fe8ec63f9ead3b9d57ba44715841f9861bb19ad98edacd9560bb825ab7de62d6"
+    },
+    "backend-test-reports/backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.txt": {
+      "bytes": 1112,
+      "sha256": "9b6e92aa9095461eb8405cbec06a59373478733f23440668f6c4b0ce261b0212"
+    },
+    "backend-test-reports/build/slice3-runtime-resources.json": {
+      "bytes": 646,
+      "sha256": "8b65e214799060bf7765cccd6dad54dfbce9a235a3e60a8ca501a730bef27748"
+    },
+    "backend-test-reports-mixed.xml": {
+      "bytes": 40296,
+      "sha256": "fe8ec63f9ead3b9d57ba44715841f9861bb19ad98edacd9560bb825ab7de62d6"
+    },
+    "backend-test-reports.zip": {
+      "bytes": 6071456,
+      "sha256": "0ebac9cc8a7d33677001586f7730b002247af5138859a272932857ddd5546b3b"
+    },
+    "jobs.json": {
+      "bytes": 7691,
+      "sha256": "ad45ec6cde63029cd60fe4383ffba362ba93bc4b3d6e852821053198d842eef7"
+    },
+    "run-logs.zip": {
+      "bytes": 1319104,
+      "sha256": "44fb1fbc1764d37b94c0d07fee0463b5a9f4585753b82e71a83722f9e5ea6373"
+    },
+    "run.json": {
+      "bytes": 13695,
+      "sha256": "b19e15aefc9054a3f4883317f2aafa3d11891bd12fac12ab2338e698fc0a7967"
+    },
+    "source-head-commit.json": {
+      "bytes": 1201,
+      "sha256": "9b7ba2074891fe395505872e300b65341e99d2a577937a95d9491c2c66a797dd"
+    },
+    "tested-merge-commit.json": {
+      "bytes": 2687,
+      "sha256": "41bdc292a2e6d45947c59bf48f115acace02891f2473b3bcbffcf474540665fd"
+    }
+  },
+  "sourceHead": "5fd53c0959ad50d949ee92c7477f1fef9954f2a2",
+  "runId": 33994962312,
+  "runAttempt": 1,
+  "checkpointResult": "FAILED_NON_ADMISSIBLE_FOR_CURRENT_CLOSURE",
+  "originalManifestVerified": true,
+  "officialArtifacts": [
+    {
+      "id": 9978260875,
+      "name": "backend-test-reports",
+      "bytes": 6071456,
+      "digest": "sha256:0ebac9cc8a7d33677001586f7730b002247af5138859a272932857ddd5546b3b"
+    },
+    {
+      "id": 9978260575,
+      "name": "backend-integration-reports",
+      "bytes": 955259,
+      "digest": "sha256:80ade2c60372cb9147b2fefb242fc569e654260d193423297673c196127a4902"
+    }
+  ],
+  "rulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    {
+      "id": 1,
+      "pattern": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
+    },
+    {
+      "id": 2,
+      "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+    },
+    {
+      "id": 3,
+      "pattern": "\\bghp_[A-Za-z0-9]{30,}\\b"
+    },
+    {
+      "id": 4,
+      "pattern": "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b"
+    },
+    {
+      "id": 5,
+      "pattern": "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b"
+    },
+    {
+      "id": 6,
+      "pattern": "\\bsk-[A-Za-z0-9]{24,}\\b"
+    },
+    {
+      "id": 7,
+      "pattern": "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']"
+    },
+    {
+      "id": 8,
+      "pattern": "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b"
+    }
+  ],
+  "rawContentPrinted": false
+}

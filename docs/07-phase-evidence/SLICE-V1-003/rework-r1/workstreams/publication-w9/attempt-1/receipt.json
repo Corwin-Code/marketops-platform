@@ -1,0 +1,15 @@
+{
+  "kind": "W9_ORDINARY_APPEND_ONLY_PUBLICATION",
+  "startedAtUTC": "2026-09-05T14:15:39.075564+00:00",
+  "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "parent": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "pushExecuted": true,
+  "production_write_enabled": false,
+  "pushStartedAtUTC": "2026-09-05T14:15:40.327837+00:00",
+  "pushFinishedAtUTC": "2026-09-05T14:15:43.866304+00:00",
+  "result": "FAILED_OR_PENDING",
+  "errorType": "AssertionError",
+  "safeError": "",
+  "finishedAtUTC": "2026-09-05T14:15:44.830873+00:00"
+}

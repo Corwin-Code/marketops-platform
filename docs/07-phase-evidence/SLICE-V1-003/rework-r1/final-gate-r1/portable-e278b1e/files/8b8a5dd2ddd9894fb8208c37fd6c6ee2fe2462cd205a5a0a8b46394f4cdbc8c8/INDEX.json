@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "path": "/private/tmp/slice3-capacity-review-e278b1e-r6/CAPACITY-REVIEW.json",
+      "sha256": "0284ce2bb788f4e4a91385a5bfea023903f244c2d24c6d512255ac98c002f154",
+      "bytes": 37756
+    },
+    {
+      "path": "/private/tmp/slice3-audit-capacity-e278b1e-r6.py",
+      "sha256": "461f28e8d102efb8650248c7d6741d2e732a61cff71a4f536e50c27a3c32525e",
+      "bytes": 20077
+    }
+  ],
+  "rawEvidenceCopiedOrChanged": false,
+  "productCommandExecuted": false
+}

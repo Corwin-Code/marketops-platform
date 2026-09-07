@@ -1,0 +1,38 @@
+{
+  "kind": "INDEPENDENT_EXACT_ATOMIC_REEXPANSION_AND_NEGATIVE_VALIDATOR_OBSERVATION",
+  "input": {
+    "path": "/private/tmp/slice3-conjunction-admission-e278b1e-r2/EXECUTION-MANIFEST.json",
+    "sha256": "391760d31890db06ac1dc380ab4a259985ef29441fe9c0c2288fc67e66a13b05",
+    "bytes": 9406286
+  },
+  "original": {
+    "path": "/private/tmp/slice3-root-admission-e278b1e-r1/EXECUTION-MANIFEST.json",
+    "sha256": "bf9ee6bd8bf5b9ba930d48b1b4cd77320a06a04751e3d5530b009b42f4d57f43",
+    "bytes": 8769661
+  },
+  "reexpandedOriginalUses": 5118,
+  "all227RowsAndAllOtherFieldsIdentical": true,
+  "layersAndSourceIdentical": true,
+  "deliberatelyWrongTypedAssertionRejected": true,
+  "negativeResult": "Structured execution assertion did not match: /methodsAndFrameworkEvents/183/status",
+  "rawFilesMutatedForNegativeProbe": false,
+  "finalizerCommand": [
+    "python3",
+    "scripts/validation/finalize_slice3_rework_assessment.py"
+  ],
+  "finalizerStartedAt": "2026-09-06T11:49:39.434499+00:00",
+  "finalizerFinishedAt": "2026-09-06T11:49:42.676011+00:00",
+  "finalizerExitCode": 0,
+  "finalizerLog": {
+    "path": "/private/tmp/slice3-conjunction-validation-e278b1e-r1/finalizer.log",
+    "sha256": "5067a3f87a8792d445c1187dcd46e49e720000ed52918609cc812489a44b33e4",
+    "bytes": 85
+  },
+  "originalActualGeneratedViews": {
+    "path": "/private/tmp/slice3-atomic-current-view-snapshot-e278b1e-r1/INDEX.json",
+    "sha256": "86def85760c76574b176be504daf737f25b454603d02332bcfc974baee8e606d",
+    "bytes": 1879
+  },
+  "productTestExecutions": 0,
+  "productionWriteEnabled": false
+}

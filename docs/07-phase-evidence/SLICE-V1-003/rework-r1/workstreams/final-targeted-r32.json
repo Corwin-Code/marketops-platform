@@ -1,0 +1,36 @@
+{
+  "kind": "TARGETED_DEVELOPMENT_VERIFICATION",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+    "-Dtest=AdvertisingProjectionWriterTest,AdvertisingVerticalPathIT,AdvertisingHumanWorkflowIT,AdvertisingResponsibilityBoundaryIT,AdvertisingDisclosureIT,AdvertisingProposalServiceTest,AdvertisingSealedAuthorityIT",
+    "test"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "sourceBinding": "W1 plus uncommitted R1 changes, not exact-W1 source",
+  "exitCode": 1,
+  "tests": 97,
+  "failures": 3,
+  "errors": 2,
+  "skipped": 0,
+  "finishedAt": "2026-09-05T11:56:44+08:00",
+  "result": "FAILED",
+  "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-final-targeted-r32.log",
+  "logSha256": "c863dc916a4e399911e292a71a40e0e3b9254bb26428663f39f10c1470413a6f",
+  "passingCompleteClasses": {
+    "AdvertisingResponsibilityBoundaryIT": 9,
+    "AdvertisingSealedAuthorityIT": 15,
+    "AdvertisingProposalServiceTest": 29
+  },
+  "failureBoundaries": [
+    "Disclosure synthetic identity issuer uniqueness before new business assertions",
+    "Human preview asserted a critical unit without seeding an explicit critical-unit rule",
+    "Human exception asserted the fixture bundle while the initial Case bundle was absent",
+    "Concurrent no-qualification refresh produced two causes rather than the assumed one; exact cause set still being assessed",
+    "Mockito re-stubbing called the prior answer with null before conflict behavior ran"
+  ],
+  "followUp": "Repair test fixtures/assertions according to actual intended authority, rerun complete selected classes, then clean immutable full verification.",
+  "productionWriteEnabled": false
+}

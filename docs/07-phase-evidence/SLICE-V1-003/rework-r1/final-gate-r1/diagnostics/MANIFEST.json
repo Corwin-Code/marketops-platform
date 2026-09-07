@@ -1,0 +1,122 @@
+{
+  "kind": "PRESERVED_PRECHECKPOINT_DIAGNOSTICS",
+  "reviewedHistoricalHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "boundary": "Original local logs preserved without relabeling their dirty source as a later commit. Final complete source-bound verification remains required.",
+  "runs": [
+    {
+      "id": "root-focused-r1",
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/slice3-finalgate-focused-r1.log",
+      "sha256": "90c0a987dab752b1d23eb30d75282fc328e864a7d75f55d4c7c89e7ea1b02c23",
+      "bytes": 105791,
+      "commandExitOutcome": "FAILURE",
+      "mavenTestSummaries": [
+        "[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.090 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPhysicalPurposeFreshnessTest",
+        "[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.408 s -- in TC-AD-DECIDE-003 the reservation is taken only at the action stage",
+        "[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in TC-AD-DECIDE-002 every refusal names itself",
+        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in TC-AD-DECIDE-001 a complete decision resolves to a usable scope",
+        "[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.464 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest",
+        "[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest",
+        "[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in TC-AD-CALC-005 the result describes the object it was computed for",
+        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-AD-CALC-003 a data defect owns its own case",
+        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-AD-CALC-004 every measure is absent rather than zero",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-AD-CALC-002 execution integrity outranks everything",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in TC-AD-CALC-001 an object nobody may write to says so above everything else",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in TC-AD-CALC-006 the deep measures are computed, or refused for a stated reason",
+        "[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.106 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+        "[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingSegmentPurposeFreshnessTest",
+        "[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.133 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest",
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.356 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+        "[INFO] Tests run: 117, Failures: 0, Errors: 0, Skipped: 0",
+        "[ERROR] Tests run: 17, Failures: 3, Errors: 1, Skipped: 0, Time elapsed: 15.97 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+        "[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 46.54 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT",
+        "[ERROR] Tests run: 12, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 7.094 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT",
+        "[ERROR] Tests run: 10, Failures: 2, Errors: 1, Skipped: 0, Time elapsed: 6.430 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+        "[ERROR] Tests run: 73, Failures: 8, Errors: 2, Skipped: 0"
+      ],
+      "sourceIdentity": "UNCOMMITTED_DIAGNOSTIC_NO_COMPLETE_PREEXECUTION_SOURCE_INVENTORY",
+      "admittedForFinalClosure": false
+    },
+    {
+      "id": "root-focused-r2",
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/slice3-finalgate-focused-r2.log",
+      "sha256": "34ac068859d5abfa19799187343f386515540d2de1660c059481eed906c2b09c",
+      "bytes": 27250,
+      "commandExitOutcome": "FAILURE",
+      "mavenTestSummaries": [
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.735 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.57 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.122 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT",
+        "[ERROR] Tests run: 10, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 5.759 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+        "[ERROR] Tests run: 40, Failures: 1, Errors: 0, Skipped: 0"
+      ],
+      "sourceIdentity": "UNCOMMITTED_DIAGNOSTIC_NO_COMPLETE_PREEXECUTION_SOURCE_INVENTORY",
+      "admittedForFinalClosure": false
+    },
+    {
+      "id": "root-focused-r3",
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/slice3-finalgate-focused-r3.log",
+      "sha256": "5851726703ec7cca13cac245606933b707b3d9a84a5be3137eaa82de14ddd305",
+      "bytes": 31244,
+      "commandExitOutcome": "FAILURE",
+      "mavenTestSummaries": [
+        "[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPhysicalPurposeFreshnessTest",
+        "[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest",
+        "[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingSegmentPurposeFreshnessTest",
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.719 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+        "[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0",
+        "[ERROR] Tests run: 21, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 17.63 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.182 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT",
+        "[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.258 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInputIntegrityIT",
+        "[ERROR] Tests run: 10, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 5.596 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+        "[ERROR] Tests run: 52, Failures: 1, Errors: 1, Skipped: 0"
+      ],
+      "sourceIdentity": "UNCOMMITTED_DIAGNOSTIC_NO_COMPLETE_PREEXECUTION_SOURCE_INVENTORY",
+      "admittedForFinalClosure": false
+    },
+    {
+      "id": "root-focused-r4",
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/slice3-finalgate-focused-r4.log",
+      "sha256": "58662f700a5fd513454f3a523ffa378120ffce9c03da7ea2b81f10b50c4cf173",
+      "bytes": 20047,
+      "commandExitOutcome": "SUCCESS",
+      "mavenTestSummaries": [
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.738 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.06 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+        "[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.006 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+        "[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0"
+      ],
+      "sourceIdentity": "UNCOMMITTED_DIAGNOSTIC_NO_COMPLETE_PREEXECUTION_SOURCE_INVENTORY",
+      "admittedForFinalClosure": false
+    },
+    {
+      "id": "root-focused-r5",
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/slice3-finalgate-focused-r5.log",
+      "sha256": "dfd961de4e37e6a5b3ef453631282bf58c4713c20b77f3a44f13c49cb5599994",
+      "bytes": 126526,
+      "commandExitOutcome": "FAILURE",
+      "mavenTestSummaries": [
+        "[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.107 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPhysicalPurposeFreshnessTest",
+        "[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest",
+        "[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingSegmentPurposeFreshnessTest",
+        "[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.769 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+        "[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.077 s -- in TC-AD-PRIV-101 nothing in the advertising schema may be deleted",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in TC-AD-PRIV-104 the migration role owns everything and the application owns none",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in TC-AD-PRIV-102 the controlled-write lineage is read-only to the application",
+        "[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.064 s -- in TC-AD-PRIV-103 every sanctioned route is a function, and only those",
+        "[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.866 s -- in com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT",
+        "[ERROR] Tests run: 31, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 21.17 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+        "[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 46.15 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT",
+        "[ERROR] Tests run: 7, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 10.82 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+        "[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.516 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT",
+        "[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.493 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInputIntegrityIT",
+        "[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.008 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+        "[ERROR] Tests run: 113, Failures: 2, Errors: 0, Skipped: 0"
+      ],
+      "sourceIdentity": "UNCOMMITTED_DIAGNOSTIC_NO_COMPLETE_PREEXECUTION_SOURCE_INVENTORY",
+      "admittedForFinalClosure": false
+    }
+  ]
+}

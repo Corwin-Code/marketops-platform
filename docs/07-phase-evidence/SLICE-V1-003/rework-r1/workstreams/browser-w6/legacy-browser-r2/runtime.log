@@ -1,0 +1,1578 @@
+{"schemaVersion": "1.0", "recordedAt": "2026-09-05T11:11:30.649917+00:00", "host": {"os": "Darwin", "architecture": "arm64", "logicalProcessors": 8, "physicalMemoryBytes": 17179869184, "processAffinityProcessors": null}, "docker": {"logicalProcessors": 4, "memoryBytes": 6210576384, "serverVersion": "29.7.2"}, "github": {"runId": null, "runAttempt": null, "job": null, "testedCheckout": null}, "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."}
+ Network slice3-legacy-8nrjjc2z_default Creating 
+ Volume slice3-legacy-8nrjjc2z_marketops-postgres-data Creating 
+ Volume slice3-legacy-8nrjjc2z_marketops-postgres-data Creating 
+ Network slice3-legacy-8nrjjc2z_default Creating 
+ Volume slice3-legacy-8nrjjc2z_marketops-postgres-data Created 
+ Volume slice3-legacy-8nrjjc2z_marketops-postgres-data Created 
+ Network slice3-legacy-8nrjjc2z_default Created 
+ Network slice3-legacy-8nrjjc2z_default Created 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Creating 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Created 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Starting 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Started 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Waiting 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Healthy 
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 375 packages in 10s
+npm notice
+npm notice New major version of npm available! 11.17.0 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+marketops-console@0.1.0 /private/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console
+├─┬ @cyclonedx/cyclonedx-npm@6.0.1
+│ ├─┬ @cyclonedx/cyclonedx-library@10.1.1
+│ │ ├── ajv-formats-draft2019@1.6.1 deduped
+│ │ ├── ajv-formats@3.0.1 deduped
+│ │ ├── ajv@8.20.0 deduped
+│ │ ├── libxmljs2@0.37.0 deduped
+│ │ ├── packageurl-js@2.0.1 deduped
+│ │ ├── spdx-expression-parse@4.0.0 deduped
+│ │ └── xmlbuilder2@4.0.3 deduped
+│ ├─┬ ajv-formats-draft2019@1.6.1
+│ │ ├── ajv@8.20.0 deduped
+│ │ ├── punycode@2.3.1
+│ │ ├─┬ schemes@1.4.0
+│ │ │ └── extend@3.0.2
+│ │ ├─┬ smtp-address-parser@1.1.0
+│ │ │ └─┬ nearley@2.20.1
+│ │ │   ├── commander@2.20.3
+│ │ │   ├── moo@0.5.3
+│ │ │   ├── railroad-diagrams@1.0.0
+│ │ │   └─┬ randexp@0.4.6
+│ │ │     ├── discontinuous-range@1.0.0
+│ │ │     └── ret@0.1.15
+│ │ └─┬ uri-js@4.4.1
+│ │   └── punycode@2.3.1 deduped
+│ ├─┬ ajv-formats@3.0.1
+│ │ └── ajv@8.20.0 deduped
+│ ├─┬ ajv@8.20.0
+│ │ ├── fast-deep-equal@3.1.3 deduped
+│ │ ├── fast-uri@3.1.6
+│ │ ├── json-schema-traverse@1.0.0
+│ │ └── require-from-string@2.0.2
+│ ├── commander@14.0.3
+│ ├─┬ libxmljs2@0.37.0
+│ │ ├─┬ bindings@1.5.0
+│ │ │ └── file-uri-to-path@1.0.0
+│ │ ├── nan@2.22.2
+│ │ ├─┬ node-gyp@11.5.0
+│ │ │ ├── env-paths@2.2.1
+│ │ │ ├── exponential-backoff@3.1.3
+│ │ │ ├── graceful-fs@4.2.11
+│ │ │ ├─┬ make-fetch-happen@14.0.3
+│ │ │ │ ├─┬ @npmcli/agent@3.0.0
+│ │ │ │ │ ├── agent-base@7.1.4
+│ │ │ │ │ ├─┬ http-proxy-agent@7.0.2
+│ │ │ │ │ │ ├── agent-base@7.1.4 deduped
+│ │ │ │ │ │ └── debug@4.4.3 deduped
+│ │ │ │ │ ├─┬ https-proxy-agent@7.0.6
+│ │ │ │ │ │ ├── agent-base@7.1.4 deduped
+│ │ │ │ │ │ └── debug@4.4.3 deduped
+│ │ │ │ │ ├── lru-cache@10.4.3
+│ │ │ │ │ └─┬ socks-proxy-agent@8.0.5
+│ │ │ │ │   ├── agent-base@7.1.4 deduped
+│ │ │ │ │   ├── debug@4.4.3 deduped
+│ │ │ │ │   └─┬ socks@2.8.9
+│ │ │ │ │     ├── ip-address@10.5.0
+│ │ │ │ │     └── smart-buffer@4.2.0
+│ │ │ │ ├─┬ cacache@19.0.1
+│ │ │ │ │ ├─┬ @npmcli/fs@4.0.0
+│ │ │ │ │ │ └── semver@7.8.5 deduped
+│ │ │ │ │ ├─┬ fs-minipass@3.0.3
+│ │ │ │ │ │ └── minipass@7.1.3 deduped
+│ │ │ │ │ ├─┬ glob@10.5.0
+│ │ │ │ │ │ ├─┬ foreground-child@3.3.1
+│ │ │ │ │ │ │ ├── cross-spawn@7.0.6 deduped
+│ │ │ │ │ │ │ └── signal-exit@4.1.0
+│ │ │ │ │ │ ├─┬ jackspeak@3.4.3
+│ │ │ │ │ │ │ ├─┬ @isaacs/cliui@8.0.2
+│ │ │ │ │ │ │ │ ├─┬ string-width-cjs@npm:string-width@4.2.3
+│ │ │ │ │ │ │ │ │ ├── emoji-regex@8.0.0
+│ │ │ │ │ │ │ │ │ ├── is-fullwidth-code-point@3.0.0
+│ │ │ │ │ │ │ │ │ └─┬ strip-ansi@6.0.1
+│ │ │ │ │ │ │ │ │   └── ansi-regex@5.0.1 deduped
+│ │ │ │ │ │ │ │ ├─┬ string-width@5.1.2
+│ │ │ │ │ │ │ │ │ ├── eastasianwidth@0.2.0
+│ │ │ │ │ │ │ │ │ ├── emoji-regex@9.2.2
+│ │ │ │ │ │ │ │ │ └── strip-ansi@7.2.0 deduped
+│ │ │ │ │ │ │ │ ├─┬ strip-ansi-cjs@npm:strip-ansi@6.0.1
+│ │ │ │ │ │ │ │ │ └── ansi-regex@5.0.1 deduped
+│ │ │ │ │ │ │ │ ├─┬ strip-ansi@7.2.0
+│ │ │ │ │ │ │ │ │ └── ansi-regex@6.3.0
+│ │ │ │ │ │ │ │ ├─┬ wrap-ansi-cjs@npm:wrap-ansi@7.0.0
+│ │ │ │ │ │ │ │ │ ├─┬ ansi-styles@4.3.0
+│ │ │ │ │ │ │ │ │ │ └─┬ color-convert@2.0.1
+│ │ │ │ │ │ │ │ │ │   └── color-name@1.1.4
+│ │ │ │ │ │ │ │ │ ├─┬ string-width@4.2.3
+│ │ │ │ │ │ │ │ │ │ ├── emoji-regex@8.0.0
+│ │ │ │ │ │ │ │ │ │ ├── is-fullwidth-code-point@3.0.0 deduped
+│ │ │ │ │ │ │ │ │ │ └── strip-ansi@6.0.1 deduped
+│ │ │ │ │ │ │ │ │ └─┬ strip-ansi@6.0.1
+│ │ │ │ │ │ │ │ │   └── ansi-regex@5.0.1 deduped
+│ │ │ │ │ │ │ │ └─┬ wrap-ansi@8.1.0
+│ │ │ │ │ │ │ │   ├── ansi-styles@6.2.3
+│ │ │ │ │ │ │ │   ├── string-width@5.1.2 deduped
+│ │ │ │ │ │ │ │   └── strip-ansi@7.2.0 deduped
+│ │ │ │ │ │ │ └── @pkgjs/parseargs@0.11.0
+│ │ │ │ │ │ ├─┬ minimatch@9.0.9
+│ │ │ │ │ │ │ └─┬ brace-expansion@2.1.4
+│ │ │ │ │ │ │   └── balanced-match@1.0.2
+│ │ │ │ │ │ ├── minipass@7.1.3 deduped
+│ │ │ │ │ │ ├── package-json-from-dist@1.0.1
+│ │ │ │ │ │ └─┬ path-scurry@1.11.1
+│ │ │ │ │ │   ├── lru-cache@10.4.3
+│ │ │ │ │ │   └── minipass@7.1.3 deduped
+│ │ │ │ │ ├── lru-cache@10.4.3
+│ │ │ │ │ ├─┬ minipass-collect@2.0.1
+│ │ │ │ │ │ └── minipass@7.1.3 deduped
+│ │ │ │ │ ├── minipass-flush@1.0.7 deduped
+│ │ │ │ │ ├── minipass-pipeline@1.2.4 deduped
+│ │ │ │ │ ├── minipass@7.1.3 deduped
+│ │ │ │ │ ├── p-map@7.0.6
+│ │ │ │ │ ├── ssri@12.0.0 deduped
+│ │ │ │ │ ├── tar@7.5.22 deduped
+│ │ │ │ │ └─┬ unique-filename@4.0.0
+│ │ │ │ │   └─┬ unique-slug@5.0.0
+│ │ │ │ │     └── imurmurhash@0.1.4 deduped
+│ │ │ │ ├── http-cache-semantics@4.2.0
+│ │ │ │ ├─┬ minipass-fetch@4.0.1
+│ │ │ │ │ ├─┬ encoding@0.1.13
+│ │ │ │ │ │ └─┬ iconv-lite@0.6.3
+│ │ │ │ │ │   └── safer-buffer@2.1.2
+│ │ │ │ │ ├─┬ minipass-sized@1.0.3
+│ │ │ │ │ │ └─┬ minipass@3.3.6
+│ │ │ │ │ │   └── yallist@4.0.0
+│ │ │ │ │ ├── minipass@7.1.3 deduped
+│ │ │ │ │ └── minizlib@3.1.0 deduped
+│ │ │ │ ├─┬ minipass-flush@1.0.7
+│ │ │ │ │ └─┬ minipass@3.3.6
+│ │ │ │ │   └── yallist@4.0.0
+│ │ │ │ ├─┬ minipass-pipeline@1.2.4
+│ │ │ │ │ └─┬ minipass@3.3.6
+│ │ │ │ │   └── yallist@4.0.0
+│ │ │ │ ├── minipass@7.1.3
+│ │ │ │ ├── negotiator@1.0.0
+│ │ │ │ ├── proc-log@5.0.0 deduped
+│ │ │ │ ├─┬ promise-retry@2.0.1
+│ │ │ │ │ ├── err-code@2.0.3
+│ │ │ │ │ └── retry@0.12.0
+│ │ │ │ └─┬ ssri@12.0.0
+│ │ │ │   └── minipass@7.1.3 deduped
+│ │ │ ├─┬ nopt@8.1.0
+│ │ │ │ └── abbrev@3.0.1
+│ │ │ ├── proc-log@5.0.0
+│ │ │ ├── semver@7.8.5 deduped
+│ │ │ ├─┬ tar@7.5.22
+│ │ │ │ ├─┬ @isaacs/fs-minipass@4.0.1
+│ │ │ │ │ └── minipass@7.1.3 deduped
+│ │ │ │ ├── chownr@3.0.0
+│ │ │ │ ├── minipass@7.1.3 deduped
+│ │ │ │ ├─┬ minizlib@3.1.0
+│ │ │ │ │ └── minipass@7.1.3 deduped
+│ │ │ │ └── yallist@5.0.0
+│ │ │ ├── tinyglobby@0.2.17 deduped
+│ │ │ └─┬ which@5.0.0
+│ │ │   └── isexe@3.1.5
+│ │ └─┬ prebuild-install@7.1.3
+│ │   ├── detect-libc@2.1.2 deduped
+│ │   ├── expand-template@2.0.3
+│ │   ├── github-from-package@0.0.0
+│ │   ├── minimist@1.2.8
+│ │   ├── mkdirp-classic@0.5.3
+│ │   ├── napi-build-utils@2.0.0
+│ │   ├─┬ node-abi@3.94.0
+│ │   │ └── semver@7.8.5 deduped
+│ │   ├─┬ pump@3.0.4
+│ │   │ ├─┬ end-of-stream@1.4.5
+│ │   │ │ └── once@1.4.0 deduped
+│ │   │ └─┬ once@1.4.0
+│ │   │   └── wrappy@1.0.2
+│ │   ├─┬ rc@1.2.8
+│ │   │ ├── deep-extend@0.6.0
+│ │   │ ├── ini@1.3.8
+│ │   │ ├── minimist@1.2.8 deduped
+│ │   │ └── strip-json-comments@2.0.1
+│ │   ├─┬ simple-get@4.0.1
+│ │   │ ├─┬ decompress-response@6.0.0
+│ │   │ │ └── mimic-response@3.1.0
+│ │   │ ├── once@1.4.0 deduped
+│ │   │ └── simple-concat@1.0.1
+│ │   ├─┬ tar-fs@2.1.5
+│ │   │ ├── chownr@1.1.4
+│ │   │ ├── mkdirp-classic@0.5.3 deduped
+│ │   │ ├── pump@3.0.4 deduped
+│ │   │ └─┬ tar-stream@2.2.0
+│ │   │   ├─┬ bl@4.1.0
+│ │   │   │ ├─┬ buffer@5.7.1
+│ │   │   │ │ ├── base64-js@1.5.1
+│ │   │   │ │ └── ieee754@1.2.1
+│ │   │   │ ├── inherits@2.0.4 deduped
+│ │   │   │ └── readable-stream@3.6.2 deduped
+│ │   │   ├── end-of-stream@1.4.5 deduped
+│ │   │   ├── fs-constants@1.0.0
+│ │   │   ├── inherits@2.0.4
+│ │   │   └─┬ readable-stream@3.6.2
+│ │   │     ├── inherits@2.0.4 deduped
+│ │   │     ├─┬ string_decoder@1.3.0
+│ │   │     │ └── safe-buffer@5.2.1 deduped
+│ │   │     └── util-deprecate@1.0.2
+│ │   └─┬ tunnel-agent@0.6.0
+│ │     └── safe-buffer@5.2.1
+│ ├─┬ normalize-package-data@8.0.0
+│ │ ├─┬ hosted-git-info@9.0.3
+│ │ │ └── lru-cache@11.5.2 deduped
+│ │ ├── semver@7.8.5
+│ │ └─┬ validate-npm-package-license@3.0.4
+│ │   ├─┬ spdx-correct@3.2.0
+│ │   │ ├─┬ spdx-expression-parse@3.0.1
+│ │   │ │ ├── spdx-exceptions@2.5.0 deduped
+│ │   │ │ └── spdx-license-ids@3.0.23 deduped
+│ │   │ └── spdx-license-ids@3.0.23 deduped
+│ │   └─┬ spdx-expression-parse@3.0.1
+│ │     ├── spdx-exceptions@2.5.0 deduped
+│ │     └── spdx-license-ids@3.0.23 deduped
+│ ├── packageurl-js@2.0.1
+│ ├─┬ spdx-expression-parse@4.0.0
+│ │ ├── spdx-exceptions@2.5.0
+│ │ └── spdx-license-ids@3.0.23
+│ └─┬ xmlbuilder2@4.0.3
+│   ├─┬ @oozcitak/dom@2.0.2
+│   │ ├── @oozcitak/infra@2.0.2 deduped
+│   │ ├─┬ @oozcitak/url@3.0.0
+│   │ │ ├── @oozcitak/infra@2.0.2 deduped
+│   │ │ └── @oozcitak/util@10.0.0 deduped
+│   │ └── @oozcitak/util@10.0.0 deduped
+│   ├─┬ @oozcitak/infra@2.0.2
+│   │ └── @oozcitak/util@10.0.0 deduped
+│   ├── @oozcitak/util@10.0.0
+│   └─┬ js-yaml@4.3.1
+│     └── argparse@2.0.1
+├─┬ @eslint/js@10.0.1
+│ └── eslint@10.8.1 deduped
+├─┬ @playwright/test@1.62.1
+│ └─┬ playwright@1.62.1
+│   ├── fsevents@2.3.2
+│   └── playwright-core@1.62.1
+├─┬ @testing-library/dom@10.4.1
+│ ├─┬ @babel/code-frame@7.29.7
+│ │ ├── @babel/helper-validator-identifier@7.29.7
+│ │ ├── js-tokens@4.0.0
+│ │ └── picocolors@1.1.1 deduped
+│ ├── @babel/runtime@7.29.7
+│ ├── @types/aria-query@5.0.4
+│ ├─┬ aria-query@5.3.0
+│ │ └── dequal@2.0.3
+│ ├── dom-accessibility-api@0.5.16
+│ ├── lz-string@1.5.0
+│ ├── picocolors@1.1.1
+│ └─┬ pretty-format@27.5.1
+│   ├── ansi-regex@5.0.1
+│   ├── ansi-styles@5.2.0
+│   └── react-is@17.0.2
+├─┬ @testing-library/jest-dom@7.0.1
+│ ├── @adobe/css-tools@4.5.0
+│ ├── @testing-library/dom@10.4.1 deduped
+│ ├── aria-query@5.3.0 deduped
+│ ├── css.escape@1.5.1
+│ ├── dom-accessibility-api@0.6.3
+│ ├── picocolors@1.1.1 deduped
+│ ├─┬ redent@3.0.0
+│ │ ├── indent-string@4.0.0
+│ │ └─┬ strip-indent@3.0.0
+│ │   └── min-indent@1.0.1
+│ └── vitest@4.1.10 deduped
+├─┬ @testing-library/react@16.3.2
+│ ├── @babel/runtime@7.29.7 deduped
+│ ├── @testing-library/dom@10.4.1 deduped
+│ ├── @types/react-dom@19.2.4 deduped
+│ ├── @types/react@19.2.18 deduped
+│ ├── react-dom@19.2.8 deduped
+│ └── react@19.2.8 deduped
+├─┬ @types/node@24.10.1
+│ └── undici-types@7.16.0
+├─┬ @types/react-dom@19.2.4
+│ └── @types/react@19.2.18 deduped
+├─┬ @types/react@19.2.18
+│ └── csstype@3.2.3
+├─┬ @vitejs/plugin-react@6.0.5
+│ ├── UNMET OPTIONAL DEPENDENCY @rolldown/plugin-babel@^0.1.7 || ^0.2.0
+│ ├── @rolldown/pluginutils@1.0.1
+│ ├── UNMET OPTIONAL DEPENDENCY babel-plugin-react-compiler@^1.0.0
+│ └── vite@8.2.1 deduped
+├─┬ @vitest/coverage-v8@4.1.10
+│ ├── @bcoe/v8-coverage@1.0.2
+│ ├── UNMET OPTIONAL DEPENDENCY @vitest/browser@4.1.10
+│ ├─┬ @vitest/utils@4.1.10
+│ │ ├── @vitest/pretty-format@4.1.10 deduped
+│ │ ├── convert-source-map@2.0.0
+│ │ └── tinyrainbow@3.1.1 deduped
+│ ├─┬ ast-v8-to-istanbul@1.0.5
+│ │ ├─┬ @jridgewell/trace-mapping@0.3.31
+│ │ │ ├── @jridgewell/resolve-uri@3.1.2
+│ │ │ └── @jridgewell/sourcemap-codec@1.5.5 deduped
+│ │ ├─┬ estree-walker@3.0.3
+│ │ │ └── @types/estree@1.0.9 deduped
+│ │ └── js-tokens@10.0.0
+│ ├── istanbul-lib-coverage@3.2.2
+│ ├─┬ istanbul-lib-report@3.0.1
+│ │ ├── istanbul-lib-coverage@3.2.2 deduped
+│ │ ├─┬ make-dir@4.0.0
+│ │ │ └── semver@7.8.5 deduped
+│ │ └─┬ supports-color@7.2.0
+│ │   └── has-flag@4.0.0
+│ ├─┬ istanbul-reports@3.2.0
+│ │ ├── html-escaper@2.0.2
+│ │ └── istanbul-lib-report@3.0.1 deduped
+│ ├─┬ magicast@0.5.4
+│ │ ├─┬ @babel/parser@7.29.8
+│ │ │ └── @babel/types@7.29.8 deduped
+│ │ ├─┬ @babel/types@7.29.8
+│ │ │ ├── @babel/helper-string-parser@7.29.7
+│ │ │ └── @babel/helper-validator-identifier@7.29.7 deduped
+│ │ └── source-map-js@1.2.1
+│ ├── obug@2.1.4
+│ ├── std-env@4.2.0
+│ ├── tinyrainbow@3.1.1
+│ └── vitest@4.1.10 deduped
+├─┬ eslint-config-prettier@10.1.8
+│ └── eslint@10.8.1 deduped
+├─┬ eslint@10.8.1
+│ ├─┬ @eslint-community/eslint-utils@4.10.1
+│ │ ├── eslint-visitor-keys@3.4.3
+│ │ └── eslint@10.8.1 deduped
+│ ├── @eslint-community/regexpp@4.12.2
+│ ├─┬ @eslint/config-array@0.23.5
+│ │ ├── @eslint/object-schema@3.0.5
+│ │ ├── debug@4.4.3 deduped
+│ │ └── minimatch@10.2.6 deduped
+│ ├─┬ @eslint/config-helpers@0.7.0
+│ │ └── @eslint/core@1.2.1 deduped
+│ ├─┬ @eslint/core@1.2.1
+│ │ └── @types/json-schema@7.0.15
+│ ├─┬ @eslint/plugin-kit@0.7.2
+│ │ ├── @eslint/core@1.2.1 deduped
+│ │ └─┬ levn@0.4.1
+│ │   ├── prelude-ls@1.2.1 deduped
+│ │   └── type-check@0.4.0 deduped
+│ ├─┬ @humanfs/node@0.16.8
+│ │ ├─┬ @humanfs/core@0.19.2
+│ │ │ └── @humanfs/types@0.15.0 deduped
+│ │ ├── @humanfs/types@0.15.0
+│ │ └── @humanwhocodes/retry@0.4.3 deduped
+│ ├── @humanwhocodes/module-importer@1.0.1
+│ ├── @humanwhocodes/retry@0.4.3
+│ ├── @types/estree@1.0.9
+│ ├─┬ ajv@6.15.0
+│ │ ├── fast-deep-equal@3.1.3 deduped
+│ │ ├── fast-json-stable-stringify@2.1.0
+│ │ ├── json-schema-traverse@0.4.1
+│ │ └── uri-js@4.4.1 deduped
+│ ├─┬ cross-spawn@7.0.6
+│ │ ├── path-key@3.1.1
+│ │ ├─┬ shebang-command@2.0.0
+│ │ │ └── shebang-regex@3.0.0
+│ │ └─┬ which@2.0.2
+│ │   └── isexe@2.0.0
+│ ├─┬ debug@4.4.3
+│ │ └── ms@2.1.3
+│ ├── escape-string-regexp@4.0.0
+│ ├─┬ eslint-scope@9.1.2
+│ │ ├── @types/esrecurse@4.3.1
+│ │ ├── @types/estree@1.0.9 deduped
+│ │ ├─┬ esrecurse@4.3.0
+│ │ │ └── estraverse@5.3.0 deduped
+│ │ └── estraverse@5.3.0
+│ ├── eslint-visitor-keys@5.0.1
+│ ├─┬ espree@11.2.0
+│ │ ├─┬ acorn-jsx@5.3.2
+│ │ │ └── acorn@8.18.0 deduped
+│ │ ├── acorn@8.18.0
+│ │ └── eslint-visitor-keys@5.0.1 deduped
+│ ├─┬ esquery@1.7.0
+│ │ └── estraverse@5.3.0 deduped
+│ ├── esutils@2.0.3
+│ ├── fast-deep-equal@3.1.3
+│ ├─┬ file-entry-cache@8.0.0
+│ │ └─┬ flat-cache@4.0.1
+│ │   ├── flatted@3.4.4
+│ │   └─┬ keyv@4.5.4
+│ │     └── json-buffer@3.0.1
+│ ├─┬ find-up@5.0.0
+│ │ ├─┬ locate-path@6.0.0
+│ │ │ └─┬ p-locate@5.0.0
+│ │ │   └─┬ p-limit@3.1.0
+│ │ │     └── yocto-queue@0.1.0
+│ │ └── path-exists@4.0.0
+│ ├─┬ glob-parent@6.0.2
+│ │ └── is-glob@4.0.3 deduped
+│ ├── ignore@5.3.2
+│ ├── imurmurhash@0.1.4
+│ ├─┬ is-glob@4.0.3
+│ │ └── is-extglob@2.1.1
+│ ├── UNMET OPTIONAL DEPENDENCY jiti@*
+│ ├── json-stable-stringify-without-jsonify@1.0.1
+│ ├─┬ minimatch@10.2.6
+│ │ └─┬ brace-expansion@5.0.9
+│ │   └── balanced-match@4.0.4
+│ ├── natural-compare@1.4.0
+│ └─┬ optionator@0.9.4
+│   ├── deep-is@0.1.4
+│   ├── fast-levenshtein@2.0.6
+│   ├── levn@0.4.1 deduped
+│   ├── prelude-ls@1.2.1
+│   ├─┬ type-check@0.4.0
+│   │ └── prelude-ls@1.2.1 deduped
+│   └── word-wrap@1.2.5
+├─┬ jsdom@30.0.1
+│ ├─┬ @asamuzakjp/css-color@6.0.7
+│ │ ├─┬ @csstools/css-calc@3.3.0
+│ │ │ ├── @csstools/css-parser-algorithms@4.0.0 deduped
+│ │ │ └── @csstools/css-tokenizer@4.0.0 deduped
+│ │ ├─┬ @csstools/css-color-parser@4.1.10
+│ │ │ ├── @csstools/color-helpers@6.1.0
+│ │ │ ├── @csstools/css-calc@3.3.0 deduped
+│ │ │ ├── @csstools/css-parser-algorithms@4.0.0 deduped
+│ │ │ └── @csstools/css-tokenizer@4.0.0 deduped
+│ │ ├─┬ @csstools/css-parser-algorithms@4.0.0
+│ │ │ └── @csstools/css-tokenizer@4.0.0 deduped
+│ │ ├── @csstools/css-tokenizer@4.0.0
+│ │ └── lru-cache@11.5.2 deduped
+│ ├─┬ @asamuzakjp/dom-selector@8.3.2
+│ │ ├─┬ bidi-js@1.0.3
+│ │ │ └── require-from-string@2.0.2 deduped
+│ │ ├── css-tree@3.2.1 deduped
+│ │ ├── is-potential-custom-element-name@1.0.1 deduped
+│ │ └── lru-cache@11.5.2 deduped
+│ ├─┬ @bramus/specificity@2.4.2
+│ │ └── css-tree@3.2.1 deduped
+│ ├─┬ @csstools/css-syntax-patches-for-csstree@1.1.7
+│ │ └── css-tree@3.2.1 deduped
+│ ├─┬ @exodus/bytes@1.15.1
+│ │ └── UNMET OPTIONAL DEPENDENCY @noble/hashes@^1.8.0 || ^2.0.0
+│ ├── UNMET OPTIONAL DEPENDENCY canvas@^3.2.3
+│ ├─┬ css-tree@3.2.1
+│ │ ├── mdn-data@2.27.1
+│ │ └── source-map-js@1.2.1 deduped
+│ ├─┬ data-urls@7.0.0
+│ │ ├── whatwg-mimetype@5.0.0 deduped
+│ │ └─┬ whatwg-url@16.0.1
+│ │   ├── @exodus/bytes@1.15.1 deduped
+│ │   ├── tr46@6.0.0 deduped
+│ │   └── webidl-conversions@8.0.1 deduped
+│ ├── decimal.js@10.6.0
+│ ├─┬ html-encoding-sniffer@6.0.0
+│ │ └── @exodus/bytes@1.15.1 deduped
+│ ├── is-potential-custom-element-name@1.0.1
+│ ├── lru-cache@11.5.2
+│ ├─┬ parse5@8.0.1
+│ │ └── entities@8.0.0
+│ ├─┬ saxes@6.0.0
+│ │ └── xmlchars@2.2.0
+│ ├── symbol-tree@3.2.4
+│ ├─┬ tough-cookie@6.0.2
+│ │ └─┬ tldts@7.4.10
+│ │   └── tldts-core@7.4.10
+│ ├── undici@8.10.0
+│ ├─┬ w3c-xmlserializer@5.0.0
+│ │ └── xml-name-validator@5.0.0 deduped
+│ ├── webidl-conversions@8.0.1
+│ ├── whatwg-mimetype@5.0.0
+│ ├─┬ whatwg-url@17.1.0
+│ │ ├── @exodus/bytes@1.15.1 deduped
+│ │ ├─┬ tr46@6.0.0
+│ │ │ └── punycode@2.3.1 deduped
+│ │ └── webidl-conversions@8.0.1 deduped
+│ └── xml-name-validator@5.0.0
+├── prettier@3.9.6
+├─┬ react-dom@19.2.8
+│ ├── react@19.2.8 deduped
+│ └── scheduler@0.27.0
+├── react@19.2.8
+├─┬ typescript-eslint@8.67.0
+│ ├─┬ @typescript-eslint/eslint-plugin@8.67.0
+│ │ ├── @eslint-community/regexpp@4.12.2 deduped
+│ │ ├── @typescript-eslint/parser@8.67.0 deduped
+│ │ ├─┬ @typescript-eslint/scope-manager@8.67.0
+│ │ │ ├── @typescript-eslint/types@8.67.0 deduped
+│ │ │ └── @typescript-eslint/visitor-keys@8.67.0 deduped
+│ │ ├─┬ @typescript-eslint/type-utils@8.67.0
+│ │ │ ├── @typescript-eslint/types@8.67.0 deduped
+│ │ │ ├── @typescript-eslint/typescript-estree@8.67.0 deduped
+│ │ │ ├── @typescript-eslint/utils@8.67.0 deduped
+│ │ │ ├── debug@4.4.3 deduped
+│ │ │ ├── eslint@10.8.1 deduped
+│ │ │ ├── ts-api-utils@2.5.0 deduped
+│ │ │ └── typescript@6.0.3 deduped
+│ │ ├── @typescript-eslint/utils@8.67.0 deduped
+│ │ ├─┬ @typescript-eslint/visitor-keys@8.67.0
+│ │ │ ├── @typescript-eslint/types@8.67.0 deduped
+│ │ │ └── eslint-visitor-keys@5.0.1 deduped
+│ │ ├── eslint@10.8.1 deduped
+│ │ ├── ignore@7.0.6
+│ │ ├── natural-compare@1.4.0 deduped
+│ │ ├─┬ ts-api-utils@2.5.0
+│ │ │ └── typescript@6.0.3 deduped
+│ │ └── typescript@6.0.3 deduped
+│ ├─┬ @typescript-eslint/parser@8.67.0
+│ │ ├── @typescript-eslint/scope-manager@8.67.0 deduped
+│ │ ├── @typescript-eslint/types@8.67.0
+│ │ ├── @typescript-eslint/typescript-estree@8.67.0 deduped
+│ │ ├── @typescript-eslint/visitor-keys@8.67.0 deduped
+│ │ ├── debug@4.4.3 deduped
+│ │ ├── eslint@10.8.1 deduped
+│ │ └── typescript@6.0.3 deduped
+│ ├─┬ @typescript-eslint/typescript-estree@8.67.0
+│ │ ├─┬ @typescript-eslint/project-service@8.67.0
+│ │ │ ├── @typescript-eslint/tsconfig-utils@8.67.0 deduped
+│ │ │ ├── @typescript-eslint/types@8.67.0 deduped
+│ │ │ ├── debug@4.4.3 deduped
+│ │ │ └── typescript@6.0.3 deduped
+│ │ ├─┬ @typescript-eslint/tsconfig-utils@8.67.0
+│ │ │ └── typescript@6.0.3 deduped
+│ │ ├── @typescript-eslint/types@8.67.0 deduped
+│ │ ├── @typescript-eslint/visitor-keys@8.67.0 deduped
+│ │ ├── debug@4.4.3 deduped
+│ │ ├── minimatch@10.2.6 deduped
+│ │ ├── semver@7.8.5 deduped
+│ │ ├── tinyglobby@0.2.17 deduped
+│ │ ├── ts-api-utils@2.5.0 deduped
+│ │ └── typescript@6.0.3 deduped
+│ ├─┬ @typescript-eslint/utils@8.67.0
+│ │ ├── @eslint-community/eslint-utils@4.10.1 deduped
+│ │ ├── @typescript-eslint/scope-manager@8.67.0 deduped
+│ │ ├── @typescript-eslint/types@8.67.0 deduped
+│ │ ├── @typescript-eslint/typescript-estree@8.67.0 deduped
+│ │ ├── eslint@10.8.1 deduped
+│ │ └── typescript@6.0.3 deduped
+│ ├── eslint@10.8.1 deduped
+│ └── typescript@6.0.3 deduped
+├── typescript@6.0.3
+├─┬ vite@8.2.1
+│ ├── @types/node@24.10.1 deduped
+│ ├── UNMET OPTIONAL DEPENDENCY @vitejs/devtools@^0.4.0
+│ ├── UNMET OPTIONAL DEPENDENCY esbuild@^0.27.0 || ^0.28.0
+│ ├── fsevents@2.3.3
+│ ├── UNMET OPTIONAL DEPENDENCY jiti@>=1.21.0
+│ ├── UNMET OPTIONAL DEPENDENCY less@^4.0.0
+│ ├─┬ lightningcss@1.33.0
+│ │ ├── detect-libc@2.1.2
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-android-arm64@1.33.0
+│ │ ├── lightningcss-darwin-arm64@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-darwin-x64@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-freebsd-x64@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-linux-arm-gnueabihf@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-linux-arm64-gnu@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-linux-arm64-musl@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-linux-x64-gnu@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-linux-x64-musl@1.33.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY lightningcss-win32-arm64-msvc@1.33.0
+│ │ └── UNMET OPTIONAL DEPENDENCY lightningcss-win32-x64-msvc@1.33.0
+│ ├── picomatch@4.0.5
+│ ├─┬ postcss@8.5.26
+│ │ ├── nanoid@3.3.18
+│ │ ├── picocolors@1.1.1 deduped
+│ │ └── source-map-js@1.2.1 deduped
+│ ├─┬ rolldown@1.2.4
+│ │ ├── @oxc-project/types@0.144.0
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-android-arm64@1.2.4
+│ │ ├── @rolldown/binding-darwin-arm64@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-darwin-x64@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-freebsd-x64@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-arm-gnueabihf@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-arm64-gnu@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-arm64-musl@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-ppc64-gnu@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-s390x-gnu@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-x64-gnu@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-linux-x64-musl@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-openharmony-arm64@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-win32-arm64-msvc@1.2.4
+│ │ ├── UNMET OPTIONAL DEPENDENCY @rolldown/binding-win32-x64-msvc@1.2.4
+│ │ └── @rolldown/pluginutils@1.0.1 deduped
+│ ├── UNMET OPTIONAL DEPENDENCY sass-embedded@^1.70.0
+│ ├── UNMET OPTIONAL DEPENDENCY sass@^1.70.0
+│ ├── UNMET OPTIONAL DEPENDENCY stylus@>=0.54.8
+│ ├── UNMET OPTIONAL DEPENDENCY sugarss@^5.0.0
+│ ├── UNMET OPTIONAL DEPENDENCY terser@^5.16.0
+│ ├─┬ tinyglobby@0.2.17
+│ │ ├─┬ fdir@6.5.0
+│ │ │ └── picomatch@4.0.5 deduped
+│ │ └── picomatch@4.0.5 deduped
+│ ├── UNMET OPTIONAL DEPENDENCY tsx@^4.8.1
+│ └── UNMET OPTIONAL DEPENDENCY yaml@^2.4.2
+└─┬ vitest@4.1.10
+  ├── UNMET OPTIONAL DEPENDENCY @edge-runtime/vm@*
+  ├── UNMET OPTIONAL DEPENDENCY @opentelemetry/api@^1.9.0
+  ├── @types/node@24.10.1 deduped
+  ├── UNMET OPTIONAL DEPENDENCY @vitest/browser-playwright@4.1.10
+  ├── UNMET OPTIONAL DEPENDENCY @vitest/browser-preview@4.1.10
+  ├── UNMET OPTIONAL DEPENDENCY @vitest/browser-webdriverio@4.1.10
+  ├── UNMET OPTIONAL DEPENDENCY @vitest/coverage-istanbul@4.1.10
+  ├── @vitest/coverage-v8@4.1.10 deduped
+  ├─┬ @vitest/expect@4.1.10
+  │ ├── @standard-schema/spec@1.1.0
+  │ ├─┬ @types/chai@5.2.3
+  │ │ ├── @types/deep-eql@4.0.2
+  │ │ └── assertion-error@2.0.1
+  │ ├── @vitest/spy@4.1.10 deduped
+  │ ├── @vitest/utils@4.1.10 deduped
+  │ ├── chai@6.2.2
+  │ └── tinyrainbow@3.1.1 deduped
+  ├─┬ @vitest/mocker@4.1.10
+  │ ├── @vitest/spy@4.1.10 deduped
+  │ ├── estree-walker@3.0.3 deduped
+  │ ├── magic-string@0.30.21 deduped
+  │ ├── UNMET OPTIONAL DEPENDENCY msw@^2.4.9
+  │ └── vite@8.2.1 deduped
+  ├─┬ @vitest/pretty-format@4.1.10
+  │ └── tinyrainbow@3.1.1 deduped
+  ├─┬ @vitest/runner@4.1.10
+  │ ├── @vitest/utils@4.1.10 deduped
+  │ └── pathe@2.0.3 deduped
+  ├─┬ @vitest/snapshot@4.1.10
+  │ ├── @vitest/pretty-format@4.1.10 deduped
+  │ ├── @vitest/utils@4.1.10 deduped
+  │ ├── magic-string@0.30.21 deduped
+  │ └── pathe@2.0.3 deduped
+  ├── @vitest/spy@4.1.10
+  ├── UNMET OPTIONAL DEPENDENCY @vitest/ui@4.1.10
+  ├── @vitest/utils@4.1.10 deduped
+  ├── es-module-lexer@2.3.1
+  ├── expect-type@1.4.0
+  ├── UNMET OPTIONAL DEPENDENCY happy-dom@*
+  ├── jsdom@30.0.1 deduped
+  ├─┬ magic-string@0.30.21
+  │ └── @jridgewell/sourcemap-codec@1.5.5
+  ├── obug@2.1.4 deduped
+  ├── pathe@2.0.3
+  ├── picomatch@4.0.5 deduped
+  ├── std-env@4.2.0 deduped
+  ├── tinybench@2.9.0
+  ├── tinyexec@1.3.0
+  ├── tinyglobby@0.2.17 deduped
+  ├── tinyrainbow@3.1.1 deduped
+  ├── vite@8.2.1 deduped
+  └─┬ why-is-node-running@2.3.0
+    ├── siginfo@2.0.0
+    └── stackback@0.0.2
+
+
+> marketops-console@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> marketops-console@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> marketops-console@0.1.0 typecheck
+> tsc --noEmit --pretty
+
+
+> marketops-console@0.1.0 test:ci
+> vitest run --coverage --reporter=default --reporter=json --outputFile=../../build/supply-chain/frontend-tests.json
+
+
+ RUN  v4.1.10 /private/tmp/marketops-legacy-browser-8nrjjc2z/source/frontend/marketops-console
+      Coverage enabled with v8
+
+ ✓ src/__tests__/consoleApi.test.ts (67 tests) 52ms
+ ✓ src/__tests__/HealthShell.test.tsx (13 tests) 217ms
+ ✓ src/__tests__/AvailabilityCases.test.tsx (14 tests) 299ms
+ ✓ src/__tests__/AdvertisingControl.test.tsx (19 tests) 450ms
+ ✓ src/__tests__/AdvertisingExecution.test.tsx (34 tests) 504ms
+ ✓ src/__tests__/AdvertisingWorkflow.test.tsx (7 tests) 532ms
+ ✓ src/__tests__/ConsoleJourney.test.tsx (34 tests) 1057ms
+ ✓ src/__tests__/AdvertisingGovernedActions.test.tsx (5 tests) 299ms
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > offers sign-in and the platform panel, and no operating data
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/__tests__/oidc.test.ts (12 tests) 22ms
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > says the operating console is not configured rather than offering a dead button
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > shows the operating console once a session exists
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingBriefView inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingOperations inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-040 nothing operational is shown before a session exists > treats an expired session as no session
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HealthShell inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/__tests__/AdvertisingRecoveryWorkflow.test.tsx (8 tests) 590ms
+ ✓ src/__tests__/AdvertisingBrief.test.tsx (8 tests) 446ms
+stderr | src/__tests__/AppSession.test.tsx > TC-UI-042 the journey runs in the order the work happens > lets an operator sign out
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AvailabilityCases inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingBriefView inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to PriorityQueue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to AdvertisingOperations inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/__tests__/AvailabilityQueue.test.tsx (14 tests) 437ms
+ ✓ src/__tests__/AppSession.test.tsx (14 tests) 535ms
+ ✓ src/__tests__/metaStatus.test.ts (10 tests) 19ms
+ ✓ src/__tests__/AvailabilityAuthorityPanel.test.tsx (3 tests) 138ms
+ ✓ src/__tests__/viteConfig.test.ts (12 tests) 6ms
+ ✓ src/__tests__/healthState.test.ts (9 tests) 5ms
+ ✓ src/__tests__/confidence.test.ts (10 tests) 8ms
+ ✓ src/__tests__/config.test.ts (4 tests) 3ms
+ ✓ src/__tests__/sourceIdentity.test.ts (7 tests) 53ms
+ ✓ src/__tests__/buildInfo.test.ts (2 tests) 3ms
+ ✓ src/__tests__/App.test.tsx (2 tests) 79ms
+
+ Test Files  22 passed (22)
+      Tests  308 passed (308)
+   Start at  19:12:00
+   Duration  5.07s (transform 2.39s, setup 3.71s, import 3.10s, tests 5.75s, environment 14.90s)
+
+JSON report written to /private/tmp/marketops-legacy-browser-8nrjjc2z/source/build/supply-chain/frontend-tests.json
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 86.04% ( 1850/2150 )
+Branches     : 78.95% ( 1786/2262 )
+Functions    : 87.3% ( 509/583 )
+Lines        : 86.77% ( 1792/2065 )
+================================================================================
+
+> marketops-console@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.2.1 building client environment for production...
+[2Ktransforming...✓ 60 modules transformed.
+rendering chunks...
+dist/index.html                  1.32 kB
+dist/assets/index-B3mEHIUd.js  343.21 kB
+
+✓ built in 73ms
+
+> marketops-console@0.1.0 verify:bundle
+> node scripts/verify-bundle-isolation.mjs
+
+
+> marketops-console@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.2.1 building client environment for production...
+[2Ktransforming...✓ 60 modules transformed.
+rendering chunks...
+dist/index.html                  1.32 kB
+dist/assets/index-5vTxNhkg.js  343.25 kB
+
+✓ built in 69ms
+bundle isolation PASS: only prefixed values reached the bundle
+
+> marketops-console@0.1.0 presbom
+> node scripts/prepare-sbom-output.mjs
+
+
+> marketops-console@0.1.0 sbom
+> cyclonedx-npm --output-file ../../build/supply-chain/frontend-sbom.json --spec-version 1.6 --output-reproducible --validate
+
+[WebServer] Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp/marketops-legacy-browser-8nrjjc2z/jvm-tmp
+[WebServer] [INFO] Scanning for projects...
+[WebServer] [INFO] 
+[WebServer] [INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[WebServer] [INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[WebServer] [INFO]   from pom.xml
+[WebServer] [INFO] --------------------------------[ jar ]---------------------------------
+[WebServer] [INFO] 
+[WebServer] [INFO] >>> spring-boot:4.1.0:test-run (browser-fixture) > test-compile @ marketops-server >>>
+[WebServer] [INFO] 
+[WebServer] [INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---[WebServer] 
+[WebServer] [INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[WebServer] [INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[WebServer] [INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[WebServer] [INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[WebServer] [INFO] 
+[WebServer] [INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[WebServer] [INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/target/jacoco.exec
+[WebServer] [INFO] 
+[WebServer] [INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[WebServer] [INFO] 
+[WebServer] [INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[WebServer] [INFO] Copying 5 resources from src/main/resources to target/classes
+[WebServer] [INFO] Copying 66 resources from src/main/resources to target/classes
+[WebServer] [INFO] 
+[WebServer] [INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[WebServer] [INFO] Recompiling the module because of changed source code.
+[WebServer] [INFO] Compiling 666 source files with javac [debug deprecation parameters release 21] to target/classes
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java:[118,25] trailing white space will be removed
+[WebServer] [INFO] Extracting Javadoc into /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/./target/generated-spring-modulith/javadoc.json.
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[46,42] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[47,78] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[51,82] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,82] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,123] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[58,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[56,61] PAYLOAD_TOO_LARGE in org.springframework.http.HttpStatus has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[77,66] UNPROCESSABLE_ENTITY in org.springframework.http.HttpStatus has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationEvidence.java:[22,7] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[84,18] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[260,22] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WebServer] [INFO] 
+[WebServer] [INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[WebServer] [INFO] Copying 4 resources from src/test/resources to target/test-classes
+[WebServer] [INFO] 
+[WebServer] [INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[WebServer] [INFO] Recompiling the module because of changed dependency.
+[WebServer] [INFO] Compiling 288 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[49,81] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[108,68] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[162,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[168,65] asText() in tools.jackson.databind.JsonNode has been deprecated[WebServer] 
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[171,76] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[250,146] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java:[78,94] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java:[104,64] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[60,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[64,60] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[74,95] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[104,95] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[219,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[229,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[244,47] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[83,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[86,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[95,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[118,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[167,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[211,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[287,75] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[288,79] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[291,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[293,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[352,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[354,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[405,37] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[406,54] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[410,48] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[428,35] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[428,55] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[429,88] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[136,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[141,85] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[181,60] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[382,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[172,64] asText() in tools.jackson.databind.JsonNode has been deprecated[WebServer] 
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[176,72] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[177,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java:[18,42] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java:[20,43] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String[WebServer] 
+[WebServer] [WARNING] /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[WebServer] [INFO] 
+[WebServer] [INFO] <<< spring-boot:4.1.0:test-run (browser-fixture) < test-compile @ marketops-server <<<
+[WebServer] [INFO] [WebServer] 
+[WebServer] [INFO] 
+[WebServer] [INFO] --- spring-boot:4.1.0:test-run (browser-fixture) @ marketops-server ---
+[WebServer] [INFO] Attaching agents: []
+[WebServer] Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp/marketops-legacy-browser-8nrjjc2z/jvm-tmp
+[WebServer] 2026-09-05T19:12:27.114+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.BrowserFixtureApplication - Starting BrowserFixtureApplication v0.1.0-SNAPSHOT using Java 21.0.10 with PID 49731 (/private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server/target/test-classes started by chzhengx in /private/tmp/marketops-legacy-browser-8nrjjc2z/source/backend/marketops-server) 
+[WebServer] 2026-09-05T19:12:27.116+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.BrowserFixtureApplication - The following 1 profile is active: "local" 
+[WebServer] 2026-09-05T19:12:28.387+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http) 
+[WebServer] 2026-09-05T19:12:28.397+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.a.catalina.core.StandardService - Starting service [Tomcat] 
+[WebServer] 2026-09-05T19:12:28.397+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22] 
+[WebServer] 2026-09-05T19:12:28.419+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1272 ms 
+[WebServer] 2026-09-05T19:12:34.423+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator' 
+[WebServer] 2026-09-05T19:12:34.465+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/' 
+[WebServer] 2026-09-05T19:12:34.473+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.BrowserFixtureApplication - Started BrowserFixtureApplication in 7.781 seconds (process running for 7.992) 
+[WebServer] 2026-09-05T19:12:35.278+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-role-assignment" entityId="c46755f8-9709-436a-9593-cc32d894851a" action="GRANT" actorId="synthetic-browser" correlationId="2c733b09-642b-4861-aba0-ad86a0a4f195"
+[WebServer] 2026-09-05T19:12:35.288+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="31f49dc8-dd24-4d06-b405-6b69d2c0c0a0" action="GRANT" actorId="synthetic-browser" correlationId="7b7eb7ee-e55e-4bd2-8c66-c7bbb22c9f71"
+[WebServer] 2026-09-05T19:12:35.292+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="9171da20-7ece-4e14-a74c-1131a63d19c1" action="GRANT" actorId="synthetic-browser" correlationId="1afa5d84-3def-4550-b4d3-852f35e1d2e1"
+[WebServer] 2026-09-05T19:12:35.295+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="72b82cc7-a031-413e-b2c4-ca158397638e" action="GRANT" actorId="synthetic-browser" correlationId="ddccb93d-457d-4ede-92d1-55f18e8b1e75"
+[WebServer] 2026-09-05T19:12:35.298+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="81662301-d484-405d-ac29-e2a0e7935393" action="GRANT" actorId="synthetic-browser" correlationId="5fb1418e-100d-4404-ad97-d5cbb22b301c"
+[WebServer] 2026-09-05T19:12:35.301+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="5187341a-1fa4-42c0-9e06-f854bab1949b" action="GRANT" actorId="synthetic-browser" correlationId="24967eea-9071-41f5-9ec7-e31cf8873fe7"
+[WebServer] 2026-09-05T19:12:35.304+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="f0446e53-4eac-484b-8f5d-fc5dac09c7a3" action="GRANT" actorId="synthetic-browser" correlationId="f5810c53-773f-48f6-a431-d16f37820b4e"
+[WebServer] 2026-09-05T19:12:35.307+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="52e3cd49-fae4-4c81-a5e3-ea8f06d18d84" action="GRANT" actorId="synthetic-browser" correlationId="3f356f7a-b463-4525-8ba4-ec23a47bc16c"
+[WebServer] 2026-09-05T19:12:35.309+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="30766805-3ec7-4caa-b430-3330d6e34982" action="GRANT" actorId="synthetic-browser" correlationId="9500b613-28a0-49e5-952e-722942fafe82"
+[WebServer] 2026-09-05T19:12:35.312+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="d804fd3e-eb49-4441-863b-438118fa9ea2" action="GRANT" actorId="synthetic-browser" correlationId="aaf5a8f1-7af7-4b44-adba-e5c7418e65b3"
+[WebServer] 2026-09-05T19:12:35.780+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="CREATE" actorId="availability-risk-calculation" correlationId="871b0b6e-9f45-434c-bebf-bb69305b06c7"
+[WebServer] 2026-09-05T19:12:35.786+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case" entityId="c9182683-34ee-4571-aa74-6bf343e766ab" action="CREATE" actorId="availability-risk-calculation" correlationId="a76b7865-166b-4a2f-9a66-e19a1561c39d"
+[WebServer] 2026-09-05T19:12:35.811+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="commercial-policy" entityId="a71a9b9d-62e0-4076-8967-563b1c6a2f57" action="POLICY_CHANGE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="0e2c137f-54e2-4484-814d-6b41cf8f5211"
+[WebServer] 2026-09-05T19:12:35.837+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="recommendation" entityId="003299ba-cf46-4fc5-a504-3b7778359f42" action="CREATE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="7ce6bd3e-5f96-427d-b8f8-9c91f7081167"
+[WebServer] 2026-09-05T19:12:35.847+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="recommendation" entityId="003299ba-cf46-4fc5-a504-3b7778359f42" action="STATUS_CHANGE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="2fd1121a-cb25-45fb-a174-2361117b0081"
+[WebServer] 2026-09-05T19:12:35.851+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="recommendation" entityId="003299ba-cf46-4fc5-a504-3b7778359f42" action="STATUS_CHANGE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="13a9a3b8-4e0e-43e8-a507-3af36f903135"
+[WebServer] 2026-09-05T19:12:35.859+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="pilot-allowlist-entry" entityId="00edcff4-79c0-43bc-b541-bc91661110fd" action="GRANT" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="0e371e9c-304c-4d5c-a7d9-ed9c1cd2a18d"
+[WebServer] (node:49768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49790) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 25 tests using 1 worker
+
+(node:49794) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 2026-09-05T19:12:39.967+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet' 
+[WebServer] 2026-09-05T19:12:39.967+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet' 
+[WebServer] 2026-09-05T19:12:39.971+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms 
+[WebServer] 2026-09-05T19:12:40.010+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1fcb20a7-e1e8-4653-9bfe-a8d976ad15ae c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="1fcb20a7-e1e8-4653-9bfe-a8d976ad15ae" status="401"
+  ✓   1 tests/browser/advertising-brief.spec.ts:155:5 › TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token (468ms)
+[WebServer] 2026-09-05T19:12:40.162+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=19988022-3036-4d5c-8dfd-f2b7bc2eca07 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="19988022-3036-4d5c-8dfd-f2b7bc2eca07" status="200"
+[WebServer] 2026-09-05T19:12:40.168+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=9184c68a-6e86-4a2c-9159-8356e803d9f8 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="9184c68a-6e86-4a2c-9159-8356e803d9f8" status="401"
+  ✓   2 tests/browser/advertising-brief.spec.ts:155:5 › TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token (132ms)
+[WebServer] 2026-09-05T19:12:40.257+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=718ced81-892c-4f44-8014-43ad7d11be1c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="718ced81-892c-4f44-8014-43ad7d11be1c" status="200"
+[WebServer] 2026-09-05T19:12:40.296+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dc9e324c-6eb6-40eb-8a20-372d2fec7670 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="dc9e324c-6eb6-40eb-8a20-372d2fec7670" status="401"
+  ✓   3 tests/browser/advertising-brief.spec.ts:155:5 › TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token (130ms)
+[WebServer] 2026-09-05T19:12:40.398+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b1eee20b-668e-4d2a-a9d2-63e97e6127b5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="b1eee20b-668e-4d2a-a9d2-63e97e6127b5" status="200"
+[WebServer] 2026-09-05T19:12:40.534+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e2adfbcb-4756-4065-b27a-b9dec072cad3 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e2adfbcb-4756-4065-b27a-b9dec072cad3" status="200"
+[WebServer] 2026-09-05T19:12:40.578+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb87407f-3dd3-4106-ba38-efd04ace7f6b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cb87407f-3dd3-4106-ba38-efd04ace7f6b" status="401"
+[WebServer] 2026-09-05T19:12:40.578+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2d766200-10db-4aec-b52a-8ea8c41ed908 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2d766200-10db-4aec-b52a-8ea8c41ed908" status="401"
+[WebServer] 2026-09-05T19:12:40.578+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6093e223-3dd0-40c4-89ee-eda4d50847fc c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6093e223-3dd0-40c4-89ee-eda4d50847fc" status="401"
+  ✓   4 tests/browser/advertising-brief.spec.ts:173:3 › TC-BROWSER-018 the brief renders as published › every section is shown, including the ones that found nothing (297ms)
+[WebServer] 2026-09-05T19:12:40.642+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a20f5125-1b29-4b68-8736-136cad38e541 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a20f5125-1b29-4b68-8736-136cad38e541" status="200"
+[WebServer] 2026-09-05T19:12:40.820+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ac7c8eec-3d89-4d09-bbb7-a946172e014a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ac7c8eec-3d89-4d09-bbb7-a946172e014a" status="401"
+[WebServer] 2026-09-05T19:12:40.820+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=036d7ad7-9738-48fd-8c45-69954bd5fb03 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="036d7ad7-9738-48fd-8c45-69954bd5fb03" status="401"
+[WebServer] 2026-09-05T19:12:40.828+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=03a04034-fbe2-4d2e-a7c8-475036536a0a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="03a04034-fbe2-4d2e-a7c8-475036536a0a" status="401"
+[WebServer] 2026-09-05T19:12:40.832+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=29d861c6-c982-4475-83cc-69b81d702a21 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="29d861c6-c982-4475-83cc-69b81d702a21" status="200"
+[WebServer] 2026-09-05T19:12:40.905+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=31d987cc-b18e-47b6-87d1-62041b499a39 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="31d987cc-b18e-47b6-87d1-62041b499a39" status="200"
+  ✓   5 tests/browser/advertising-brief.spec.ts:199:3 › TC-BROWSER-018 the brief renders as published › a restatement keeps the reading somebody acted on (276ms)
+[WebServer] 2026-09-05T19:12:41.137+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cf85e88d-35d1-4581-be4f-ed720292da5d c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cf85e88d-35d1-4581-be4f-ed720292da5d" status="401"
+[WebServer] 2026-09-05T19:12:41.141+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=700228ec-93fe-43f4-8fc8-c4fd1cdc22d5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="700228ec-93fe-43f4-8fc8-c4fd1cdc22d5" status="401"
+[WebServer] 2026-09-05T19:12:41.143+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2c25192c-86fb-4173-878c-37ced261ebf0 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2c25192c-86fb-4173-878c-37ced261ebf0" status="401"
+[WebServer] 2026-09-05T19:12:41.177+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6330f23d-5f7b-4fe3-bc9c-299ccf2f8d9c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6330f23d-5f7b-4fe3-bc9c-299ccf2f8d9c" status="200"
+  ✓   6 tests/browser/advertising-brief.spec.ts:218:3 › TC-BROWSER-018 the brief renders as published › nothing published is stated, not shown as a fault (317ms)
+[WebServer] 2026-09-05T19:12:41.262+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dd8c6098-c15b-4dd0-b705-f413110b8f93 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="dd8c6098-c15b-4dd0-b705-f413110b8f93" status="200"
+[WebServer] 2026-09-05T19:12:41.345+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=32873b85-d4c4-49e4-96f6-e4c1138cdc7b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="32873b85-d4c4-49e4-96f6-e4c1138cdc7b" status="401"
+  ✓   7 tests/browser/advertising-execution.spec.ts:169:5 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/reservations with no token (119ms)
+[WebServer] 2026-09-05T19:12:41.428+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dc819aff-fc44-48de-b75f-a95a020c1394 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="dc819aff-fc44-48de-b75f-a95a020c1394" status="200"
+[WebServer] 2026-09-05T19:12:41.473+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=8344853e-0439-4e25-a30d-2c26a2376772 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="8344853e-0439-4e25-a30d-2c26a2376772" status="401"
+  ✓   8 tests/browser/advertising-execution.spec.ts:169:5 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/exposure with no token (119ms)
+[WebServer] 2026-09-05T19:12:41.557+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=771b1bf1-c877-4603-962e-2c11afa4337e c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="771b1bf1-c877-4603-962e-2c11afa4337e" status="200"
+[WebServer] 2026-09-05T19:12:41.594+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=bb070bc8-cb7a-4fe1-85c6-3a788fc8cfe2 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="bb070bc8-cb7a-4fe1-85c6-3a788fc8cfe2" status="401"
+  ✓   9 tests/browser/advertising-execution.spec.ts:169:5 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/containments with no token (119ms)
+[WebServer] 2026-09-05T19:12:41.684+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f78aa371-8eae-4f40-b239-50b213a19930 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f78aa371-8eae-4f40-b239-50b213a19930" status="200"
+[WebServer] 2026-09-05T19:12:41.723+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f97f2b9c-6268-4735-8590-35e64bd0be53 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f97f2b9c-6268-4735-8590-35e64bd0be53" status="401"
+  ✓  10 tests/browser/advertising-execution.spec.ts:185:3 › TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses an advertising read carrying a made-up token (127ms)
+[WebServer] 2026-09-05T19:12:41.802+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0caf7f0c-da64-4e55-9f58-18709afc9192 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="0caf7f0c-da64-4e55-9f58-18709afc9192" status="200"
+[WebServer] 2026-09-05T19:12:41.936+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=03eb124a-bbbc-4395-96cb-48b37074a32c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="03eb124a-bbbc-4395-96cb-48b37074a32c" status="200"
+[WebServer] 2026-09-05T19:12:41.942+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ffc867fb-f31a-4f4a-bc8e-14192dcf7693 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ffc867fb-f31a-4f4a-bc8e-14192dcf7693" status="401"
+[WebServer] 2026-09-05T19:12:41.943+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=58a99087-1a9f-40a9-ad43-fd95f1e3fc61 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="58a99087-1a9f-40a9-ad43-fd95f1e3fc61" status="401"
+[WebServer] 2026-09-05T19:12:41.944+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2f4a5aa9-1d85-4226-b59f-cee88d60ec76 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2f4a5aa9-1d85-4226-b59f-cee88d60ec76" status="401"
+[WebServer] 2026-09-05T19:12:41.951+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=513ef11c-8239-4cde-a32e-c0f6eeb44774 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="513ef11c-8239-4cde-a32e-c0f6eeb44774" status="401"
+[WebServer] 2026-09-05T19:12:41.953+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1fa2bb59-1156-4aa5-ad94-9d281328227b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="1fa2bb59-1156-4aa5-ad94-9d281328227b" status="401"
+[WebServer] 2026-09-05T19:12:42.019+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=4b235fa6-acff-41bd-a6c3-a5f44d7e3c51 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="4b235fa6-acff-41bd-a6c3-a5f44d7e3c51" status="200"
+  ✓  11 tests/browser/advertising-execution.spec.ts:203:3 › TC-BROWSER-016 the execution surfaces render in a real browser › the envelope is shown axis by axis, with no combined figure (348ms)
+[WebServer] 2026-09-05T19:12:42.275+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=30c493a6-09e6-4e40-b80f-a4c24eb505fd c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="30c493a6-09e6-4e40-b80f-a4c24eb505fd" status="401"
+[WebServer] 2026-09-05T19:12:42.275+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=39763768-4a25-4ccf-afb0-f8ef4173f6b0 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="39763768-4a25-4ccf-afb0-f8ef4173f6b0" status="401"
+[WebServer] 2026-09-05T19:12:42.282+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5a08800c-2f2c-4699-80a4-3b5562bbae73 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5a08800c-2f2c-4699-80a4-3b5562bbae73" status="401"
+[WebServer] 2026-09-05T19:12:42.285+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e3a1d343-2608-47ac-9e38-0be9ef2be529 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e3a1d343-2608-47ac-9e38-0be9ef2be529" status="401"
+[WebServer] 2026-09-05T19:12:42.289+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e99f704c-e9bd-4a87-96bc-17ae5a7ab485 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e99f704c-e9bd-4a87-96bc-17ae5a7ab485" status="401"
+[WebServer] 2026-09-05T19:12:42.301+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e3a8298e-37b7-4b40-a22e-93224a36e724 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e3a8298e-37b7-4b40-a22e-93224a36e724" status="200"
+[WebServer] 2026-09-05T19:12:42.363+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5be6a5f9-a149-4a77-bb97-1ab7e4b4a5a8 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5be6a5f9-a149-4a77-bb97-1ab7e4b4a5a8" status="200"
+  ✓  12 tests/browser/advertising-execution.spec.ts:257:3 › TC-BROWSER-016 the execution surfaces render in a real browser › a hold names its kind and every condition still outstanding (259ms)
+[WebServer] 2026-09-05T19:12:42.553+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e514cd20-6413-465f-854f-b656c299e117 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e514cd20-6413-465f-854f-b656c299e117" status="401"
+[WebServer] 2026-09-05T19:12:42.553+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ec64a184-f830-4564-a752-91d0ebf809c9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ec64a184-f830-4564-a752-91d0ebf809c9" status="401"
+[WebServer] 2026-09-05T19:12:42.556+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d6c644ab-8371-40a1-b837-c28f3fc304f9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d6c644ab-8371-40a1-b837-c28f3fc304f9" status="401"
+[WebServer] 2026-09-05T19:12:42.558+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=952219f9-3de3-4eee-96c1-88dbbd18f897 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="952219f9-3de3-4eee-96c1-88dbbd18f897" status="401"
+[WebServer] 2026-09-05T19:12:42.565+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=671b6e4f-403f-46da-8711-0839690164be c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="671b6e4f-403f-46da-8711-0839690164be" status="401"
+[WebServer] 2026-09-05T19:12:42.566+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d4a1f723-0d48-4186-872e-5a07fe64aa22 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d4a1f723-0d48-4186-872e-5a07fe64aa22" status="200"
+  ✓  13 tests/browser/advertising-execution.spec.ts:280:3 › TC-BROWSER-016 the execution surfaces render in a real browser › no envelope is presented as no write at all, not as an empty one (229ms)
+[WebServer] 2026-09-05T19:12:42.641+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=522fe4f5-765d-4235-a259-4079c5ee08b9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="522fe4f5-765d-4235-a259-4079c5ee08b9" status="200"
+[WebServer] 2026-09-05T19:12:42.857+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=75b9da3b-a948-4bd4-b292-a215bb48dac1 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="75b9da3b-a948-4bd4-b292-a215bb48dac1" status="200"
+[WebServer] 2026-09-05T19:12:42.901+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f309fd89-c139-4c2b-abad-1bc8668aa326 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f309fd89-c139-4c2b-abad-1bc8668aa326" status="200"
+[WebServer] 2026-09-05T19:12:43.107+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=3789fedb-6158-4f9f-9a19-c4cb535d2702 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="3789fedb-6158-4f9f-9a19-c4cb535d2702"
+[WebServer] 2026-09-05T19:12:43.110+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=3789fedb-6158-4f9f-9a19-c4cb535d2702 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="3789fedb-6158-4f9f-9a19-c4cb535d2702" status="403"
+[WebServer] 2026-09-05T19:12:43.114+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7bc57401-e178-46ce-b3fe-0682097ec615 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="7bc57401-e178-46ce-b3fe-0682097ec615"
+[WebServer] 2026-09-05T19:12:43.115+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7bc57401-e178-46ce-b3fe-0682097ec615 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="7bc57401-e178-46ce-b3fe-0682097ec615" status="403"
+[WebServer] 2026-09-05T19:12:43.120+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=26d439ec-65a7-4ea3-b15a-6db371e1658b c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="26d439ec-65a7-4ea3-b15a-6db371e1658b"
+[WebServer] 2026-09-05T19:12:43.122+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=26d439ec-65a7-4ea3-b15a-6db371e1658b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="26d439ec-65a7-4ea3-b15a-6db371e1658b" status="403"
+[WebServer] 2026-09-05T19:12:43.129+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=83558422-b463-426a-a126-e4ab3622238a c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="83558422-b463-426a-a126-e4ab3622238a"
+[WebServer] 2026-09-05T19:12:43.130+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=83558422-b463-426a-a126-e4ab3622238a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="83558422-b463-426a-a126-e4ab3622238a" status="403"
+[WebServer] 2026-09-05T19:12:43.137+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=84578e3a-dd08-4a49-8d72-14ea6f3b51e5 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="84578e3a-dd08-4a49-8d72-14ea6f3b51e5"
+[WebServer] 2026-09-05T19:12:43.138+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=84578e3a-dd08-4a49-8d72-14ea6f3b51e5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="84578e3a-dd08-4a49-8d72-14ea6f3b51e5" status="403"
+[WebServer] 2026-09-05T19:12:43.150+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=82546909-1521-4b9b-8abf-9cf79d2586d9 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="82546909-1521-4b9b-8abf-9cf79d2586d9"
+[WebServer] 2026-09-05T19:12:43.155+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=82546909-1521-4b9b-8abf-9cf79d2586d9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="82546909-1521-4b9b-8abf-9cf79d2586d9" status="200"
+[WebServer] 2026-09-05T19:12:43.160+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=fb76a196-229c-486b-9cd3-6bd6ceb6890b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="fb76a196-229c-486b-9cd3-6bd6ceb6890b" status="200"
+[WebServer] 2026-09-05T19:12:43.163+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b51e3045-fece-473f-a17b-03230e167089 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="availabilityrisk" entityType="availability_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="b51e3045-fece-473f-a17b-03230e167089"
+[WebServer] 2026-09-05T19:12:43.173+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b51e3045-fece-473f-a17b-03230e167089 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="b51e3045-fece-473f-a17b-03230e167089" status="200"
+[WebServer] 2026-09-05T19:12:43.787+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb2303a8-0317-4faa-ae8e-a9c2a7c8028f c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="STATUS_CHANGE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="cb2303a8-0317-4faa-ae8e-a9c2a7c8028f"
+[WebServer] 2026-09-05T19:12:43.789+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb2303a8-0317-4faa-ae8e-a9c2a7c8028f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cb2303a8-0317-4faa-ae8e-a9c2a7c8028f" status="200"
+[WebServer] 2026-09-05T19:12:43.805+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=fd955afd-449f-4293-863f-761b2ffd162a c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="fd955afd-449f-4293-863f-761b2ffd162a"
+[WebServer] 2026-09-05T19:12:43.806+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=fd955afd-449f-4293-863f-761b2ffd162a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="fd955afd-449f-4293-863f-761b2ffd162a" status="200"
+[WebServer] 2026-09-05T19:12:43.853+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=9b49e1b7-23ae-477a-9422-468055f5544c c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_journal" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="9b49e1b7-23ae-477a-9422-468055f5544c"
+[WebServer] 2026-09-05T19:12:43.855+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb2239d1-c3b8-441e-9e0a-fefeb05db331 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_exception" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="cb2239d1-c3b8-441e-9e0a-fefeb05db331"
+[WebServer] 2026-09-05T19:12:43.855+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=9b49e1b7-23ae-477a-9422-468055f5544c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="9b49e1b7-23ae-477a-9422-468055f5544c" status="200"
+[WebServer] 2026-09-05T19:12:43.859+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb2239d1-c3b8-441e-9e0a-fefeb05db331 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cb2239d1-c3b8-441e-9e0a-fefeb05db331" status="200"
+[WebServer] 2026-09-05T19:12:43.900+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="STATUS_CHANGE" actorId="availability-outcome-verification" correlationId="25685944-2dfd-4f2f-b1d6-0be5c78b74bc"
+[WebServer] 2026-09-05T19:12:43.910+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_accepted_exception" entityId="d711f467-ed46-483b-b113-81be7f569777" action="CREATE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="a15fd064-7c79-4a10-87d6-5369f8f25745"
+[WebServer] 2026-09-05T19:12:44.062+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=92956cc0-41ec-4f07-9e2c-08e4fa33945e c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="92956cc0-41ec-4f07-9e2c-08e4fa33945e"
+[WebServer] 2026-09-05T19:12:44.062+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=8b431ef7-a1a7-4f9c-b41f-b60df52fefce c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="8b431ef7-a1a7-4f9c-b41f-b60df52fefce"
+[WebServer] 2026-09-05T19:12:44.063+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=92956cc0-41ec-4f07-9e2c-08e4fa33945e c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="92956cc0-41ec-4f07-9e2c-08e4fa33945e" status="403"
+[WebServer] 2026-09-05T19:12:44.064+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=4aa49027-49cb-45d9-a91d-087db9c3d37b c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="4aa49027-49cb-45d9-a91d-087db9c3d37b"
+[WebServer] 2026-09-05T19:12:44.064+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=8b431ef7-a1a7-4f9c-b41f-b60df52fefce c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="8b431ef7-a1a7-4f9c-b41f-b60df52fefce" status="403"
+[WebServer] 2026-09-05T19:12:44.068+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=4aa49027-49cb-45d9-a91d-087db9c3d37b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="4aa49027-49cb-45d9-a91d-087db9c3d37b" status="403"
+[WebServer] 2026-09-05T19:12:44.071+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7d7bbefa-bb37-4b98-8f64-c95d0c104c76 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="7d7bbefa-bb37-4b98-8f64-c95d0c104c76"
+[WebServer] 2026-09-05T19:12:44.077+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7d7bbefa-bb37-4b98-8f64-c95d0c104c76 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="7d7bbefa-bb37-4b98-8f64-c95d0c104c76" status="403"
+[WebServer] 2026-09-05T19:12:44.086+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6980e39a-00da-4823-8122-fe9ecc045574 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="6980e39a-00da-4823-8122-fe9ecc045574"
+[WebServer] 2026-09-05T19:12:44.088+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6980e39a-00da-4823-8122-fe9ecc045574 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6980e39a-00da-4823-8122-fe9ecc045574" status="200"
+[WebServer] 2026-09-05T19:12:44.090+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dabdbf44-fed5-4de1-b249-95cfa087689a c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="availabilityrisk" entityType="availability_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="dabdbf44-fed5-4de1-b249-95cfa087689a"
+[WebServer] 2026-09-05T19:12:44.093+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dabdbf44-fed5-4de1-b249-95cfa087689a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="dabdbf44-fed5-4de1-b249-95cfa087689a" status="200"
+[WebServer] 2026-09-05T19:12:44.093+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=8a4acb0c-d90e-4019-8ec8-decba5030c15 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="8a4acb0c-d90e-4019-8ec8-decba5030c15" status="200"
+[WebServer] 2026-09-05T19:12:44.099+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b164d8db-1e88-4df8-b349-216b71c21a8a c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="b164d8db-1e88-4df8-b349-216b71c21a8a"
+[WebServer] 2026-09-05T19:12:44.100+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b164d8db-1e88-4df8-b349-216b71c21a8a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="b164d8db-1e88-4df8-b349-216b71c21a8a" status="403"
+[WebServer] 2026-09-05T19:12:44.102+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cfc62bd6-f1f2-4cc0-836b-722db3846c9c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cfc62bd6-f1f2-4cc0-836b-722db3846c9c" status="200"
+[WebServer] 2026-09-05T19:12:44.157+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a9113fc3-1406-4c0c-801f-cdaaa0568b9e c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_journal" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="a9113fc3-1406-4c0c-801f-cdaaa0568b9e"
+[WebServer] 2026-09-05T19:12:44.159+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a9113fc3-1406-4c0c-801f-cdaaa0568b9e c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a9113fc3-1406-4c0c-801f-cdaaa0568b9e" status="200"
+[WebServer] 2026-09-05T19:12:44.160+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f54433c8-d082-438b-adc5-e574d4e8682b c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_exception" entityId="c1f657da-3268-4dc4-9a4f-ff6d0c3c928d" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="f54433c8-d082-438b-adc5-e574d4e8682b"
+[WebServer] 2026-09-05T19:12:44.163+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f54433c8-d082-438b-adc5-e574d4e8682b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f54433c8-d082-438b-adc5-e574d4e8682b" status="200"
+[WebServer] 2026-09-05T19:12:44.166+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ec505f3e-5beb-4166-bb8b-284690916910 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ec505f3e-5beb-4166-bb8b-284690916910" status="200"
+  ✓  14 tests/browser/availability-journey.spec.ts:11:1 › TC-BROWSER-014 stockout queue, accountable case and structured action (1.6s)
+[WebServer] 2026-09-05T19:12:44.398+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6383d434-4b64-4654-abcf-f6945854d43d c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6383d434-4b64-4654-abcf-f6945854d43d" status="200"
+[WebServer] 2026-09-05T19:12:44.413+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=61a0feb5-f338-465f-afb3-d912898b463c c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="61a0feb5-f338-465f-afb3-d912898b463c"
+[WebServer] 2026-09-05T19:12:44.414+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cc11dd75-3100-4c6d-8028-bbc4ba730455 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="cc11dd75-3100-4c6d-8028-bbc4ba730455"
+[WebServer] 2026-09-05T19:12:44.414+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=61a0feb5-f338-465f-afb3-d912898b463c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="61a0feb5-f338-465f-afb3-d912898b463c" status="403"
+[WebServer] 2026-09-05T19:12:44.414+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cc11dd75-3100-4c6d-8028-bbc4ba730455 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cc11dd75-3100-4c6d-8028-bbc4ba730455" status="403"
+[WebServer] 2026-09-05T19:12:44.417+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=08937c8b-c920-4e8e-b32b-947293619ae5 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="08937c8b-c920-4e8e-b32b-947293619ae5"
+[WebServer] 2026-09-05T19:12:44.417+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=08937c8b-c920-4e8e-b32b-947293619ae5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="08937c8b-c920-4e8e-b32b-947293619ae5" status="403"
+[WebServer] 2026-09-05T19:12:44.418+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f6041035-56e9-47b1-a969-a190d1230d83 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="f6041035-56e9-47b1-a969-a190d1230d83"
+[WebServer] 2026-09-05T19:12:44.418+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f6041035-56e9-47b1-a969-a190d1230d83 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f6041035-56e9-47b1-a969-a190d1230d83" status="403"
+[WebServer] 2026-09-05T19:12:44.422+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=209cf9b5-d7f1-4ec5-a07e-801c9570b677 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="209cf9b5-d7f1-4ec5-a07e-801c9570b677"
+[WebServer] 2026-09-05T19:12:44.423+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=209cf9b5-d7f1-4ec5-a07e-801c9570b677 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="209cf9b5-d7f1-4ec5-a07e-801c9570b677" status="200"
+[WebServer] 2026-09-05T19:12:44.425+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=bc501ea0-9b35-48f8-a6bb-5723331434dc c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="availabilityrisk" entityType="availability_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="bc501ea0-9b35-48f8-a6bb-5723331434dc"
+[WebServer] 2026-09-05T19:12:44.427+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=bc501ea0-9b35-48f8-a6bb-5723331434dc c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="bc501ea0-9b35-48f8-a6bb-5723331434dc" status="200"
+[WebServer] 2026-09-05T19:12:44.431+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=392b1aed-1e85-4ad2-8fd7-aea86e2c35b2 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="392b1aed-1e85-4ad2-8fd7-aea86e2c35b2"
+[WebServer] 2026-09-05T19:12:44.431+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=392b1aed-1e85-4ad2-8fd7-aea86e2c35b2 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="392b1aed-1e85-4ad2-8fd7-aea86e2c35b2" status="403"
+[WebServer] 2026-09-05T19:12:44.521+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2dc1f9c9-ec99-4a90-ac24-6d3bd918a292 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2dc1f9c9-ec99-4a90-ac24-6d3bd918a292" status="200"
+[WebServer] 2026-09-05T19:12:44.584+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=af0e7648-a06c-4204-aa71-b4d6700d1f95 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="af0e7648-a06c-4204-aa71-b4d6700d1f95"
+[WebServer] 2026-09-05T19:12:44.585+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=af0e7648-a06c-4204-aa71-b4d6700d1f95 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="af0e7648-a06c-4204-aa71-b4d6700d1f95" status="403"
+[WebServer] 2026-09-05T19:12:44.587+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=53da4bbb-0338-41b7-aad4-68686066488f c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="53da4bbb-0338-41b7-aad4-68686066488f"
+[WebServer] 2026-09-05T19:12:44.587+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=77978669-7022-4435-9036-0fd42b6f4199 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="77978669-7022-4435-9036-0fd42b6f4199"
+[WebServer] 2026-09-05T19:12:44.588+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=53da4bbb-0338-41b7-aad4-68686066488f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="53da4bbb-0338-41b7-aad4-68686066488f" status="403"
+[WebServer] 2026-09-05T19:12:44.588+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=77978669-7022-4435-9036-0fd42b6f4199 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="77978669-7022-4435-9036-0fd42b6f4199" status="403"
+[WebServer] 2026-09-05T19:12:44.590+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cd05547b-6289-4a6e-9503-5341e528527e c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="cd05547b-6289-4a6e-9503-5341e528527e"
+[WebServer] 2026-09-05T19:12:44.591+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cd05547b-6289-4a6e-9503-5341e528527e c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cd05547b-6289-4a6e-9503-5341e528527e" status="403"
+[WebServer] 2026-09-05T19:12:44.597+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f983764f-6c7a-4d69-a05b-03893031b60c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f983764f-6c7a-4d69-a05b-03893031b60c" status="200"
+[WebServer] 2026-09-05T19:12:44.599+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=061b3b7e-5881-4a73-9249-fe501135125c c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="061b3b7e-5881-4a73-9249-fe501135125c"
+[WebServer] 2026-09-05T19:12:44.608+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=061b3b7e-5881-4a73-9249-fe501135125c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="061b3b7e-5881-4a73-9249-fe501135125c" status="200"
+[WebServer] 2026-09-05T19:12:44.625+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2f491700-8a6e-4e4f-9b42-f9a13e491de0 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="availabilityrisk" entityType="availability_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="2f491700-8a6e-4e4f-9b42-f9a13e491de0"
+[WebServer] 2026-09-05T19:12:44.627+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2f491700-8a6e-4e4f-9b42-f9a13e491de0 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2f491700-8a6e-4e4f-9b42-f9a13e491de0" status="200"
+[WebServer] 2026-09-05T19:12:44.642+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=663f7fd6-9bb1-4161-b8cf-970b02026e56 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="663f7fd6-9bb1-4161-b8cf-970b02026e56"
+[WebServer] 2026-09-05T19:12:44.644+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=663f7fd6-9bb1-4161-b8cf-970b02026e56 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="663f7fd6-9bb1-4161-b8cf-970b02026e56" status="403"
+[WebServer] 2026-09-05T19:12:44.652+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=64c3bba0-1864-4c29-a458-d5a3383b3abf c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="64c3bba0-1864-4c29-a458-d5a3383b3abf" status="200"
+[WebServer] 2026-09-05T19:12:44.684+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a141ae35-548b-4beb-9ba4-1ce2df1152d9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a141ae35-548b-4beb-9ba4-1ce2df1152d9" status="200"
+[WebServer] 2026-09-05T19:12:44.693+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a5fa954f-f784-41d0-8f54-157ed042eb75 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a5fa954f-f784-41d0-8f54-157ed042eb75" status="202"
+[WebServer] 2026-09-05T19:12:46.729+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2e2100be-592f-4c89-b9f6-72ca8207f78d c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2e2100be-592f-4c89-b9f6-72ca8207f78d" status="200"
+[WebServer] 2026-09-05T19:12:47.103+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=8572e315-22c8-4ee5-baa5-94033cca8249 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="8572e315-22c8-4ee5-baa5-94033cca8249" status="200"
+[WebServer] 2026-09-05T19:12:47.128+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e045076e-39d5-4341-a6ac-e74e05c49208 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e045076e-39d5-4341-a6ac-e74e05c49208" status="200"
+[WebServer] 2026-09-05T19:12:47.194+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1b50ac14-9e87-4ec2-83c0-7bcbbd2a617f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="1b50ac14-9e87-4ec2-83c0-7bcbbd2a617f" status="200"
+[WebServer] 2026-09-05T19:12:47.230+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ab93bfd5-d23f-440a-a7c7-e6d7fc25f300 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ab93bfd5-d23f-440a-a7c7-e6d7fc25f300" status="200"
+[WebServer] 2026-09-05T19:12:47.273+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0cba4180-1d27-4597-9fcf-3f2d09a3f2c2 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="0cba4180-1d27-4597-9fcf-3f2d09a3f2c2" status="200"
+[WebServer] 2026-09-05T19:12:47.328+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=41b15508-dfa3-4bfa-a016-2dc78bc6a335 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="41b15508-dfa3-4bfa-a016-2dc78bc6a335" status="200"
+[WebServer] 2026-09-05T19:12:47.523+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a3b93fa1-45d5-400e-9fb8-7521bcc968c3 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a3b93fa1-45d5-400e-9fb8-7521bcc968c3" status="200"
+[WebServer] 2026-09-05T19:12:47.697+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2eb08aaa-6b12-4cd6-abf7-3e6aac1fc720 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="approval-decision" entityId="b6e35aae-3e1e-4bea-b5a2-98cb0c1f5ab7" action="APPROVAL_DECISION" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="2eb08aaa-6b12-4cd6-abf7-3e6aac1fc720"
+[WebServer] 2026-09-05T19:12:47.700+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2eb08aaa-6b12-4cd6-abf7-3e6aac1fc720 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="recommendation" entityId="003299ba-cf46-4fc5-a504-3b7778359f42" action="STATUS_CHANGE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="2eb08aaa-6b12-4cd6-abf7-3e6aac1fc720"
+[WebServer] 2026-09-05T19:12:47.702+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2eb08aaa-6b12-4cd6-abf7-3e6aac1fc720 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2eb08aaa-6b12-4cd6-abf7-3e6aac1fc720" status="200"
+[WebServer] 2026-09-05T19:12:47.820+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=c0f953b0-765e-4a68-ba3a-1c70438572d5 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="recommendation" entityId="003299ba-cf46-4fc5-a504-3b7778359f42" action="STATUS_CHANGE" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="c0f953b0-765e-4a68-ba3a-1c70438572d5"
+[WebServer] 2026-09-05T19:12:47.821+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=c0f953b0-765e-4a68-ba3a-1c70438572d5 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="recommendation" entityId="003299ba-cf46-4fc5-a504-3b7778359f42" action="COMMAND_TRANSITION" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="c0f953b0-765e-4a68-ba3a-1c70438572d5"
+[WebServer] 2026-09-05T19:12:47.824+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=c0f953b0-765e-4a68-ba3a-1c70438572d5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="c0f953b0-765e-4a68-ba3a-1c70438572d5" status="200"
+[WebServer] 2026-09-05T19:12:47.842+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=02d58376-56cd-4f1d-bb77-b0dedd5faa1d c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="02d58376-56cd-4f1d-bb77-b0dedd5faa1d"
+[WebServer] 2026-09-05T19:12:47.843+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=02d58376-56cd-4f1d-bb77-b0dedd5faa1d c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="02d58376-56cd-4f1d-bb77-b0dedd5faa1d" status="403"
+[WebServer] 2026-09-05T19:12:47.850+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d5eb71b8-deff-4821-9aca-8eca3220f272 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d5eb71b8-deff-4821-9aca-8eca3220f272" status="200"
+[WebServer] 2026-09-05T19:12:47.883+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2717adb8-19f6-4c0a-966d-09e8e8343d2a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2717adb8-19f6-4c0a-966d-09e8e8343d2a" status="200"
+[WebServer] 2026-09-05T19:12:48.104+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=30568d8c-42c6-40cd-8caa-7e3081eecb09 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="30568d8c-42c6-40cd-8caa-7e3081eecb09" status="200"
+[WebServer] 2026-09-05T19:12:48.137+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f66735bb-7d10-4a7f-a0cc-558db7c6e4d4 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f66735bb-7d10-4a7f-a0cc-558db7c6e4d4" status="200"
+[WebServer] 2026-09-05T19:12:48.141+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5eb96f18-d258-41d1-8f4c-51ceefd6eb44 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="5eb96f18-d258-41d1-8f4c-51ceefd6eb44"
+[WebServer] 2026-09-05T19:12:48.142+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5eb96f18-d258-41d1-8f4c-51ceefd6eb44 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5eb96f18-d258-41d1-8f4c-51ceefd6eb44" status="403"
+[WebServer] 2026-09-05T19:12:48.263+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0bf50bc5-f240-4f75-ae37-b8c7dc524ad6 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="0bf50bc5-f240-4f75-ae37-b8c7dc524ad6"
+[WebServer] 2026-09-05T19:12:48.263+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0bf50bc5-f240-4f75-ae37-b8c7dc524ad6 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="0bf50bc5-f240-4f75-ae37-b8c7dc524ad6" status="403"
+[WebServer] 2026-09-05T19:12:48.263+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7704163d-5014-4272-8170-2ba72a7098bb c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="7704163d-5014-4272-8170-2ba72a7098bb"
+[WebServer] 2026-09-05T19:12:48.263+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2ee23565-dfd7-420d-a58e-a83b243bb7c6 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="2ee23565-dfd7-420d-a58e-a83b243bb7c6"
+[WebServer] 2026-09-05T19:12:48.264+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ee8fea5c-30ad-4da5-83d9-c2d2959299a0 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="ee8fea5c-30ad-4da5-83d9-c2d2959299a0"
+[WebServer] 2026-09-05T19:12:48.264+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7704163d-5014-4272-8170-2ba72a7098bb c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="7704163d-5014-4272-8170-2ba72a7098bb" status="403"
+[WebServer] 2026-09-05T19:12:48.264+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=2ee23565-dfd7-420d-a58e-a83b243bb7c6 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="2ee23565-dfd7-420d-a58e-a83b243bb7c6" status="403"
+[WebServer] 2026-09-05T19:12:48.264+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ee8fea5c-30ad-4da5-83d9-c2d2959299a0 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ee8fea5c-30ad-4da5-83d9-c2d2959299a0" status="403"
+[WebServer] 2026-09-05T19:12:48.273+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb3f5b06-af67-4ebc-ae7f-ce4c665e2324 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="operationsworkflow" entityType="availability_case_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="cb3f5b06-af67-4ebc-ae7f-ce4c665e2324"
+[WebServer] 2026-09-05T19:12:48.274+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=cb3f5b06-af67-4ebc-ae7f-ce4c665e2324 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="cb3f5b06-af67-4ebc-ae7f-ce4c665e2324" status="200"
+[WebServer] 2026-09-05T19:12:48.279+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1e300c42-4be7-450b-89c4-b25ec91c1b28 c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="availabilityrisk" entityType="availability_queue" entityId="0d1878c1-09c3-4651-9967-fcc005a25bd0" action="READ" actorId="c0c20204-84f8-41e7-b8f7-d881ac995c7a" correlationId="1e300c42-4be7-450b-89c4-b25ec91c1b28"
+[WebServer] 2026-09-05T19:12:48.279+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=758290d9-7eb0-42ae-bf66-2e6ba1f729c4 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="758290d9-7eb0-42ae-bf66-2e6ba1f729c4" status="200"
+[WebServer] 2026-09-05T19:12:48.281+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1e300c42-4be7-450b-89c4-b25ec91c1b28 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="1e300c42-4be7-450b-89c4-b25ec91c1b28" status="200"
+[WebServer] 2026-09-05T19:12:48.285+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=75c3ef10-64c0-4c48-bb29-7fb1d9ba4cb0 c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="75c3ef10-64c0-4c48-bb29-7fb1d9ba4cb0"
+[WebServer] 2026-09-05T19:12:48.285+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=bce8003d-39fb-46b6-8cf5-f60494bbc03e c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="bce8003d-39fb-46b6-8cf5-f60494bbc03e" status="200"
+[WebServer] 2026-09-05T19:12:48.285+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=75c3ef10-64c0-4c48-bb29-7fb1d9ba4cb0 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="75c3ef10-64c0-4c48-bb29-7fb1d9ba4cb0" status="403"
+[WebServer] 2026-09-05T19:12:48.332+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5310ca71-b0f4-4d24-8877-c918fe5cf8cc c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5310ca71-b0f4-4d24-8877-c918fe5cf8cc" status="200"
+[WebServer] 2026-09-05T19:12:48.337+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=7605fc61-8d71-44b6-a8b1-9fc62cc0b28c c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="7605fc61-8d71-44b6-a8b1-9fc62cc0b28c" status="200"
+[WebServer] 2026-09-05T19:12:48.349+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=aafcb081-64b6-4d2e-8dec-5e893b8e288a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="aafcb081-64b6-4d2e-8dec-5e893b8e288a" status="200"
+[WebServer] 2026-09-05T19:12:48.430+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=63c03af8-448d-4490-91c6-01a9972913d9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="63c03af8-448d-4490-91c6-01a9972913d9" status="200"
+[WebServer] 2026-09-05T19:12:48.442+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f165ec4c-c5e9-4508-ace4-47d8191b24bf c.m.m.s.i.e.ConsoleProblemAdvice - Console request refused event="console_request_refused" errorCode="RESOURCE_SCOPE_DENIED" correlationId="f165ec4c-c5e9-4508-ace4-47d8191b24bf"
+[WebServer] 2026-09-05T19:12:48.442+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f165ec4c-c5e9-4508-ace4-47d8191b24bf c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f165ec4c-c5e9-4508-ace4-47d8191b24bf" status="403"
+[WebServer] 2026-09-05T19:12:48.448+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d51fd83b-f56b-43c2-bc94-d2543f40d25b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d51fd83b-f56b-43c2-bc94-d2543f40d25b" status="200"
+[WebServer] 2026-09-05T19:12:48.471+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=41e65b1b-2e77-49a2-b1ce-3c2c51949e4b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="41e65b1b-2e77-49a2-b1ce-3c2c51949e4b" status="200"
+  ✓  15 tests/browser/business-journey.spec.ts:4:1 › TC-BROWSER-013 authenticated evidence, approval, command and readback journey (4.3s)
+[WebServer] 2026-09-05T19:12:48.622+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d6b8fffd-09d6-4894-8d05-2ea845527175 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d6b8fffd-09d6-4894-8d05-2ea845527175" status="200"
+[WebServer] 2026-09-05T19:12:48.748+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a7f95a21-785b-45da-b470-e2ab99175fe9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a7f95a21-785b-45da-b470-e2ab99175fe9" status="200"
+[WebServer] 2026-09-05T19:12:49.770+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@23c2c545 (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.771+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@5ffffbdd (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.772+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@6a22e58a (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.772+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@4fe9206c (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.772+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@25bda5fd (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.772+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@5bc9384 (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.772+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@784f280c (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:49.772+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none com.zaxxer.hikari.pool.PoolBase - marketops-app-pool - Failed to validate connection org.postgresql.jdbc.PgConnection@7e239d29 (This connection has been closed.). Possibly consider using a shorter maxLifetime value. 
+[WebServer] 2026-09-05T19:12:50.772+08:00 ERROR application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.s.s.TaskUtils$LoggingErrorHandler - Unexpected error occurred in scheduled task 
+[WebServer] org.springframework.transaction.CannotCreateTransactionException: Could not open JDBC Connection for transaction
+[WebServer] 	at org.springframework.jdbc.datasource.DataSourceTransactionManager.doBegin(DataSourceTransactionManager.java:319)
+[WebServer] 	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:532)
+[WebServer] 	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:405)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:628)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:365)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+[WebServer] 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.infrastructure.jdbc.DiagnosticExportRepository$$SpringCGLIB$$0.expire(<generated>)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker.runOnce(DiagnosticExportWorker.java:32)
+[WebServer] 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[WebServer] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[WebServer] 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+[WebServer] 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker$$SpringCGLIB$$0.runOnce(<generated>)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportScheduling.advance(DiagnosticExportScheduling.java:22)
+[WebServer] 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[WebServer] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[WebServer] 	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:128)
+[WebServer] 	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$1(ScheduledMethodRunnable.java:122)
+[WebServer] 	at io.micrometer.observation.Observation.observe(Observation.java:569)
+[WebServer] 	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:122)
+[WebServer] 	at org.springframework.scheduling.config.Task$OutcomeTrackingRunnable.run(Task.java:88)
+[WebServer] 	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54)
+[WebServer] 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+[WebServer] 	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+[WebServer] 	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+[WebServer] 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+[WebServer] 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+[WebServer] 	at java.base/java.lang.Thread.run(Thread.java:1583)
+[WebServer] Caused by: java.sql.SQLTransientConnectionException: marketops-app-pool - Connection is not available, request timed out after 1001ms (total=0, active=0, idle=0, waiting=0)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:714)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:184)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:142)
+[WebServer] 	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:127)
+[WebServer] 	at org.springframework.jdbc.datasource.DataSourceTransactionManager.doBegin(DataSourceTransactionManager.java:270)
+[WebServer] 	... 35 common frames omitted
+[WebServer] Caused by: org.postgresql.util.PSQLException: Connection to 127.0.0.1:56079 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:425)
+[WebServer] 	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:52)
+[WebServer] 	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:290)
+[WebServer] 	at org.postgresql.Driver.makeConnection(Driver.java:448)
+[WebServer] 	at org.postgresql.Driver.connect(Driver.java:298)
+[WebServer] 	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144)
+[WebServer] 	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:373)
+[WebServer] 	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:210)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:752)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:731)
+[WebServer] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+[WebServer] 	... 3 common frames omitted
+[WebServer] Caused by: java.net.ConnectException: Connection refused
+[WebServer] 	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+[WebServer] 	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694)
+[WebServer] 	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+[WebServer] 	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+[WebServer] 	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+[WebServer] 	at java.base/java.net.Socket.connect(Socket.java:757)
+[WebServer] 	at org.postgresql.core.PGStream.createSocket(PGStream.java:271)
+[WebServer] 	at org.postgresql.core.PGStream.<init>(PGStream.java:132)
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:219)
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:365)
+[WebServer] 	... 14 common frames omitted
+[WebServer] 2026-09-05T19:12:51.779+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=c82f6b33-9fcd-4b1b-9174-93e38ad10f2e c.m.m.a.internal.MetaStatusAssembler - Metadata dependency probe degraded event="database_probe_failed" correlationId="c82f6b33-9fcd-4b1b-9174-93e38ad10f2e" exceptionClass="java.sql.SQLTransientConnectionException"
+[WebServer] 2026-09-05T19:12:51.790+08:00 WARN  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=c82f6b33-9fcd-4b1b-9174-93e38ad10f2e c.m.m.a.internal.MetaStatusAssembler - Metadata dependency probe degraded event="migration_version_probe_failed" correlationId="c82f6b33-9fcd-4b1b-9174-93e38ad10f2e" exceptionClass="org.flywaydb.core.internal.exception.sqlExceptions.FlywaySqlUnableToConnectToDbException"
+[WebServer] 2026-09-05T19:12:51.792+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=c82f6b33-9fcd-4b1b-9174-93e38ad10f2e c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="c82f6b33-9fcd-4b1b-9174-93e38ad10f2e" status="200"
+[WebServer] 2026-09-05T19:12:53.802+08:00 ERROR application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.s.s.TaskUtils$LoggingErrorHandler - Unexpected error occurred in scheduled task 
+[WebServer] org.springframework.transaction.CannotCreateTransactionException: Could not open JDBC Connection for transaction
+[WebServer] 	at org.springframework.jdbc.datasource.DataSourceTransactionManager.doBegin(DataSourceTransactionManager.java:319)
+[WebServer] 	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:532)
+[WebServer] 	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:405)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:628)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:365)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+[WebServer] 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.infrastructure.jdbc.DiagnosticExportRepository$$SpringCGLIB$$0.expire(<generated>)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker.runOnce(DiagnosticExportWorker.java:32)
+[WebServer] 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[WebServer] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[WebServer] 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+[WebServer] 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker$$SpringCGLIB$$0.runOnce(<generated>)
+[WebServer] 	at com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportScheduling.advance(DiagnosticExportScheduling.java:22)
+[WebServer] 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[WebServer] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[WebServer] 	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:128)
+[WebServer] 	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$1(ScheduledMethodRunnable.java:122)
+[WebServer] 	at io.micrometer.observation.Observation.observe(Observation.java:569)
+[WebServer] 	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:122)
+[WebServer] 	at org.springframework.scheduling.config.Task$OutcomeTrackingRunnable.run(Task.java:88)
+[WebServer] 	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54)
+[WebServer] 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+[WebServer] 	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+[WebServer] 	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+[WebServer] 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+[WebServer] 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+[WebServer] 	at java.base/java.lang.Thread.run(Thread.java:1583)
+[WebServer] Caused by: java.sql.SQLTransientConnectionException: marketops-app-pool - Connection is not available, request timed out after 1010ms (total=0, active=0, idle=0, waiting=0)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:714)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:184)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:142)
+[WebServer] 	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:127)
+[WebServer] 	at org.springframework.jdbc.datasource.DataSourceTransactionManager.doBegin(DataSourceTransactionManager.java:270)
+[WebServer] 	... 35 common frames omitted
+[WebServer] Caused by: org.postgresql.util.PSQLException: 嘗試連線已失敗。
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:437)
+[WebServer] 	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:52)
+[WebServer] 	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:290)
+[WebServer] 	at org.postgresql.Driver.makeConnection(Driver.java:448)
+[WebServer] 	at org.postgresql.Driver.connect(Driver.java:298)
+[WebServer] 	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144)
+[WebServer] 	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:373)
+[WebServer] 	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:210)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:752)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:731)
+[WebServer] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+[WebServer] 	... 3 common frames omitted
+[WebServer] Caused by: java.io.EOFException
+[WebServer] 	at org.postgresql.core.PGStream.receiveChar(PGStream.java:489)
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.enableSSL(ConnectionFactoryImpl.java:680)
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:280)
+[WebServer] 	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:365)
+[WebServer] 	... 14 common frames omitted
+[WebServer] 2026-09-05T19:12:54.959+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1f56cc91-e475-425b-82a5-baf7123852cf c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="1f56cc91-e475-425b-82a5-baf7123852cf" status="200"
+[WebServer] 2026-09-05T19:12:57.103+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=612c81cd-e371-41db-9027-7bf60e909140 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="612c81cd-e371-41db-9027-7bf60e909140" status="200"
+[WebServer] 2026-09-05T19:12:59.230+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5a5016f0-ebdb-4fe5-9b99-19d85916b8ce c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5a5016f0-ebdb-4fe5-9b99-19d85916b8ce" status="200"
+  ✓  16 tests/browser/health-shell.spec.ts:63:1 › the built console recovers across a real database outage (11.4s)
+  ✓  17 tests/browser/operating-console.spec.ts:34:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › shows the platform panel and no operating data (213ms)
+[WebServer] 2026-09-05T19:13:00.270+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=4ab14bf4-00f3-47ae-8a96-90d2d2608b02 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="4ab14bf4-00f3-47ae-8a96-90d2d2608b02" status="200"
+[WebServer] 2026-09-05T19:13:00.299+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=baf4b322-cf50-4834-8cf4-8f0c2ebc556b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="baf4b322-cf50-4834-8cf4-8f0c2ebc556b" status="401"
+  ✓  18 tests/browser/operating-console.spec.ts:44:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries no token (131ms)
+[WebServer] 2026-09-05T19:13:00.383+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0a159313-024e-4a0b-89f9-91f23165b0ee c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="0a159313-024e-4a0b-89f9-91f23165b0ee" status="200"
+[WebServer] 2026-09-05T19:13:00.446+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=395a753f-fafe-44f1-8294-4d4777971b8f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="395a753f-fafe-44f1-8294-4d4777971b8f" status="401"
+  ✓  19 tests/browser/operating-console.spec.ts:58:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries a made-up token (131ms)
+[WebServer] 2026-09-05T19:13:00.576+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=836d13e8-ae56-4fa3-9cbb-8a5a61f873e0 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="836d13e8-ae56-4fa3-9cbb-8a5a61f873e0" status="200"
+  ✓  20 tests/browser/operating-console.spec.ts:79:3 › TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the built bundle carries no token, password or secret reference (175ms)
+[WebServer] 2026-09-05T19:13:00.703+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0c854deb-d76c-4605-991d-651a129be144 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="0c854deb-d76c-4605-991d-651a129be144" status="200"
+[WebServer] 2026-09-05T19:13:00.861+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a89d3786-688b-41fb-bd52-860bfd49cab3 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a89d3786-688b-41fb-bd52-860bfd49cab3" status="401"
+[WebServer] 2026-09-05T19:13:00.862+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f2a0e74d-fc33-40a6-a630-cdac10cfa503 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f2a0e74d-fc33-40a6-a630-cdac10cfa503" status="401"
+[WebServer] 2026-09-05T19:13:00.864+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=877d8f67-ca03-4890-8723-215c611ac6d7 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="877d8f67-ca03-4890-8723-215c611ac6d7" status="401"
+[WebServer] 2026-09-05T19:13:00.865+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=886265a0-8a46-4215-b547-d55d5485da79 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="886265a0-8a46-4215-b547-d55d5485da79" status="401"
+[WebServer] 2026-09-05T19:13:00.865+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=0e03511d-bd7f-4b23-88c2-93dcb19b8124 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="0e03511d-bd7f-4b23-88c2-93dcb19b8124" status="401"
+[WebServer] 2026-09-05T19:13:00.866+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=452a8d7b-27dd-4b64-b298-e63cc37cec8f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="452a8d7b-27dd-4b64-b298-e63cc37cec8f" status="401"
+[WebServer] 2026-09-05T19:13:00.866+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=333cd8d8-883c-47a6-a33e-d858730f4bd9 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="333cd8d8-883c-47a6-a33e-d858730f4bd9" status="401"
+[WebServer] 2026-09-05T19:13:00.879+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6388c0cc-a302-41e1-9a1d-566282ff00a8 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6388c0cc-a302-41e1-9a1d-566282ff00a8" status="200"
+[WebServer] 2026-09-05T19:13:00.966+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dd8f9220-65cb-4788-8de2-a2a5a07c6f24 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="dd8f9220-65cb-4788-8de2-a2a5a07c6f24" status="200"
+  ✓  21 tests/browser/operating-console.spec.ts:164:5 › TC-BROWSER-012 asynchronous export presentation and browser download integrity › waits for 202 completion and saves only the verified large export (2.9s)
+[WebServer] 2026-09-05T19:13:03.725+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=511617cf-11ee-4914-8114-95e8a3f4d4fa c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="511617cf-11ee-4914-8114-95e8a3f4d4fa" status="401"
+[WebServer] 2026-09-05T19:13:03.727+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=89d2e042-bbbc-4458-8cc8-2e68ed68d829 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="89d2e042-bbbc-4458-8cc8-2e68ed68d829" status="401"
+[WebServer] 2026-09-05T19:13:03.725+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=3dcc69e9-ac36-4784-9680-b04abf0c1e48 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="3dcc69e9-ac36-4784-9680-b04abf0c1e48" status="401"
+[WebServer] 2026-09-05T19:13:03.727+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6c569a69-1339-4317-8548-1beaa33df041 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6c569a69-1339-4317-8548-1beaa33df041" status="401"
+[WebServer] 2026-09-05T19:13:03.725+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=447a372d-a68f-4e64-9b53-0e4e1306e010 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="447a372d-a68f-4e64-9b53-0e4e1306e010" status="401"
+[WebServer] 2026-09-05T19:13:03.727+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d0a84b55-ff3a-4f18-8359-b5fb44d79fda c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d0a84b55-ff3a-4f18-8359-b5fb44d79fda" status="401"
+[WebServer] 2026-09-05T19:13:03.728+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=45ed36eb-8ff7-4df7-b816-41592fafd360 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="45ed36eb-8ff7-4df7-b816-41592fafd360" status="401"
+[WebServer] 2026-09-05T19:13:03.746+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=9897a541-5035-4fd3-9dbb-dd10b084a0d5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="9897a541-5035-4fd3-9dbb-dd10b084a0d5" status="200"
+[WebServer] 2026-09-05T19:13:03.797+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=87e08e2f-a5b4-4193-8071-d62af06b101f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="87e08e2f-a5b4-4193-8071-d62af06b101f" status="200"
+  ✓  22 tests/browser/operating-console.spec.ts:164:5 › TC-BROWSER-012 asynchronous export presentation and browser download integrity › refuses a corrupt final part without offering a partial file (2.9s)
+[WebServer] 2026-09-05T19:13:06.607+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=dad94339-f280-4098-9888-fd5a67d7a927 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="dad94339-f280-4098-9888-fd5a67d7a927" status="401"
+[WebServer] 2026-09-05T19:13:06.612+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=51c996cc-3779-4f47-865f-3b8f9f97d4f5 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="51c996cc-3779-4f47-865f-3b8f9f97d4f5" status="401"
+[WebServer] 2026-09-05T19:13:06.612+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b6e8787c-8bef-451f-8916-cde659371f9b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="b6e8787c-8bef-451f-8916-cde659371f9b" status="401"
+[WebServer] 2026-09-05T19:13:06.613+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5623a31e-5e65-49f3-952a-fab0ddb3672b c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5623a31e-5e65-49f3-952a-fab0ddb3672b" status="401"
+[WebServer] 2026-09-05T19:13:06.616+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=6b6b44ae-61c9-47ab-8391-22c71ff20299 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="6b6b44ae-61c9-47ab-8391-22c71ff20299" status="401"
+[WebServer] 2026-09-05T19:13:06.617+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=f7173aef-bbab-41cc-a4bf-7f11f6b3aefc c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="f7173aef-bbab-41cc-a4bf-7f11f6b3aefc" status="401"
+[WebServer] 2026-09-05T19:13:06.628+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=4dfc00e6-da37-42f1-8837-15ee833fc168 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="4dfc00e6-da37-42f1-8837-15ee833fc168" status="401"
+[WebServer] 2026-09-05T19:13:06.641+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=d092e64c-f82f-4ec7-9493-9fc6cb7fc840 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="d092e64c-f82f-4ec7-9493-9fc6cb7fc840" status="200"
+[WebServer] 2026-09-05T19:13:06.715+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=ffc88b4c-b2b2-40e6-b9ee-401f30f5d784 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="ffc88b4c-b2b2-40e6-b9ee-401f30f5d784" status="401"
+[WebServer] 2026-09-05T19:13:06.751+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=5d37d8f5-2f71-4b37-a9bd-3c598ec25280 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="5d37d8f5-2f71-4b37-a9bd-3c598ec25280" status="200"
+  ✓  23 tests/browser/operating-console.spec.ts:316:3 › TC-BROWSER-011 the operator journey runs in a real browser › signs in, reaches the work list, and never labels doubt as certainty (366ms)
+[WebServer] 2026-09-05T19:13:06.985+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=a99493e9-059d-490d-8d34-95fef33163e2 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="a99493e9-059d-490d-8d34-95fef33163e2" status="401"
+[WebServer] 2026-09-05T19:13:06.985+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=4696ddd4-7228-4be4-af83-4c9bedf556e4 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="4696ddd4-7228-4be4-af83-4c9bedf556e4" status="401"
+[WebServer] 2026-09-05T19:13:06.986+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=32f66769-f8fc-4b25-a635-01388de2436d c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="32f66769-f8fc-4b25-a635-01388de2436d" status="401"
+[WebServer] 2026-09-05T19:13:06.986+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=eb52cbb5-2e0a-4012-9e14-2f1f7aceba1f c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="eb52cbb5-2e0a-4012-9e14-2f1f7aceba1f" status="401"
+[WebServer] 2026-09-05T19:13:06.987+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=e6dbc2bb-9127-4f4f-8f8c-3e7d52de2032 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="e6dbc2bb-9127-4f4f-8f8c-3e7d52de2032" status="401"
+[WebServer] 2026-09-05T19:13:06.988+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=666eb87e-999a-4a8c-a9a9-b9549afea462 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="666eb87e-999a-4a8c-a9a9-b9549afea462" status="401"
+[WebServer] 2026-09-05T19:13:06.990+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=8f07d18a-2a74-4706-a04d-d4f439e74608 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="8f07d18a-2a74-4706-a04d-d4f439e74608" status="401"
+[WebServer] 2026-09-05T19:13:07.033+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=1ce84335-606c-4b68-84ec-71d47fc0d85a c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="1ce84335-606c-4b68-84ec-71d47fc0d85a" status="200"
+[WebServer] 2026-09-05T19:13:07.074+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=3875b479-d720-4b36-840c-813588ba2006 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="3875b479-d720-4b36-840c-813588ba2006" status="200"
+  ✓  24 tests/browser/operating-console.spec.ts:402:3 › TC-BROWSER-011 the operator journey runs in a real browser › an ended session takes the operator back to sign-in with no data left on screen (306ms)
+[WebServer] 2026-09-05T19:13:07.101+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=74311596-9c74-48b9-80e8-0103961e9524 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="74311596-9c74-48b9-80e8-0103961e9524" status="200"
+[WebServer] 2026-09-05T19:13:07.265+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=b651cef3-2fd9-4e12-9737-e9e017a5b4ce c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="b651cef3-2fd9-4e12-9737-e9e017a5b4ce" status="200"
+  ✓  25 tests/browser/operating-console.spec.ts:418:3 › TC-BROWSER-011 the operator journey runs in a real browser › a refused sign-in leaves the visitor told rather than blank (194ms)
+[WebServer] 2026-09-05T19:13:07.325+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=44c2d39d-24ac-4946-9372-bf77dac18b92 c.m.m.s.i.c.CorrelationIdFilter - Request completed event="request_completed" correlationId="44c2d39d-24ac-4946-9372-bf77dac18b92" status="200"
+
+  25 passed (54.7s)
+ Container slice3-legacy-8nrjjc2z-postgres-1 Stopping 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Stopped 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Removing 
+ Container slice3-legacy-8nrjjc2z-postgres-1 Removed 
+ Volume slice3-legacy-8nrjjc2z_marketops-postgres-data Removing 
+ Network slice3-legacy-8nrjjc2z_default Removing 
+ Volume slice3-legacy-8nrjjc2z_marketops-postgres-data Removed 
+ Network slice3-legacy-8nrjjc2z_default Removed 

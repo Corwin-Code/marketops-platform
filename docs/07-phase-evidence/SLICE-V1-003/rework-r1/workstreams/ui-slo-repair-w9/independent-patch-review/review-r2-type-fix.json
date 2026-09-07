@@ -1,0 +1,310 @@
+{
+  "kind": "BOUNDED_STATIC_REVIEW_OF_THREE_FILE_FRONTEND_SLO_REPAIR",
+  "reviewedAtUTC": "2026-09-05T13:57:38.826755+00:00",
+  "reviewedBaseHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "patch": {
+    "path": "/tmp/slice3-w8-ui-slo-unknown-repair/repair.patch",
+    "sha256": "00e969ff3da249c62e787c23d3d5b9b511ca8d14121077fbad8c2d4001094fa0"
+  },
+  "priorIndependentStateTable": {
+    "path": "/tmp/slice3-ui-slo-unknown-independent-review/review.json",
+    "sha256": "87d81f30b1636780bfb045dcca9809c82bb2175afdb2ded24a1457bf00140ef0"
+  },
+  "scope": "Accepted AC064–069/F006/F021 UI state repair only. No backend, migrations, policy, role, permissions, threshold or Provider changes.",
+  "conclusion": "NO_SUBSTANTIVE_DISPLAY_LOGIC_DEFECT_IDENTIFIED; ORIGINAL_TEST_TYPE_ANNOTATION_FAILED_LINT_AND_HAS_A_NARROW_ROOT_FIX",
+  "runtimeResult": "R1_ACTUAL_LINT_FAILURE_RETAINED; CURRENT_INFERRED_TYPE_SOURCE_AWAITS_SEPARATE_R2_QUALITY_AND_NEW_BROWSER_RESULT",
+  "files": [
+    {
+      "repoPath": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+      "prepared": {
+        "path": "/tmp/slice3-w8-ui-slo-unknown-repair/files/frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+        "sha256": "92fca22ffad7fb58273d50d7338291dada0c67ca3f250643628a81933dd363bf"
+      },
+      "currentAfterRootFormattingAndTypeFix": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+        "sha256": "efd840099b850831db7d01462e9c9121bbd3f356a882572df8280cfd10c98b86"
+      }
+    },
+    {
+      "repoPath": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "prepared": {
+        "path": "/tmp/slice3-w8-ui-slo-unknown-repair/files/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "sha256": "fa6290dff15663c5469dfcf88280230e3c1b24d72038666252d4a0b6167c50c1"
+      },
+      "currentAfterRootFormattingAndTypeFix": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "sha256": "c414ff4b23cad028b0dcdb01d0465c9e4b38f3dac752d9d44612dc49eb27f57c"
+      }
+    },
+    {
+      "repoPath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "prepared": {
+        "path": "/tmp/slice3-w8-ui-slo-unknown-repair/files/frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "2d906347e3b742b74711f40592e180fa669744d5366cae35e321e1f0b3f530ba"
+      },
+      "currentAfterRootFormattingAndTypeFix": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "d7775956248a3cd59e3c8b35a649a8f0ecfed43d5df7bb00ab857d11e79d80e0"
+      }
+    }
+  ],
+  "actualChangedPathsAtRead": [
+    "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+    "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+    "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts"
+  ],
+  "changeClassification": "FRONTEND_RUNTIME_PRESENTATION_AND_ITS_UNIT_BROWSER_ASSERTIONS; not documentation-only and not a backend change",
+  "stateRuleReview": [
+    {
+      "ruleOrdinal": 1,
+      "input": "No live/malformed/array/unrecognized SLO",
+      "actualImplementationReason": "Array normalized to undefined; optional field access; coverage allowlist; undefined fields remain unknown. Component now always renders response timing rather than removing Task.",
+      "namedPreparedUnitTitle": "preserves the Task when the live SLO is %s instead of inventing a running clock",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 2,
+      "input": "Missing Profile false flags + null deadlines",
+      "actualImplementationReason": "knownCoverage=false makes false flags unknown, completion null unknown and active guard unsatisfied; age42 and Task independent.",
+      "namedPreparedUnitTitle": "keeps missing-profile false flags unresolved without hiding the Task or borrowing legacy dates",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 3,
+      "input": "Known coverage, missing/invalid own deadline",
+      "actualImplementationReason": "responseInstant requires nonempty parsable date. timeliness and pending clock use own stage due, never sibling due.",
+      "namedPreparedUnitTitle": "does not use the ACK deadline to resolve a missing or invalid Action deadline %s",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 4,
+      "input": "ACK complete only",
+      "actualImplementationReason": "acknowledgedAt and firstAttributableActionAt independently passed to completion; Action clock reads only actedAt/raw Action null.",
+      "namedPreparedUnitTitle": "does not turn an acknowledgement into an attributable Action-stage completion",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 5,
+      "input": "Completed and breached",
+      "actualImplementationReason": "true breach evaluated first independent of completion; valid actedAt sets completed instead of active.",
+      "namedPreparedUnitTitle": "preserves historical late completion and a reported pause without restarting the completed stage",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 6,
+      "input": "Completed and known false breach",
+      "actualImplementationReason": "Completion fact independent; timeliness false with valid due and known coverage reports only NOT_BREACHED as of response. No browser now comparison.",
+      "namedPreparedUnitTitle": "preserves historical late completion and a reported pause without restarting the completed stage",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 7,
+      "input": "Completed with unknown timeliness",
+      "actualImplementationReason": "Valid completion returns recorded regardless of missing Profile/due; timeliness remains unknown.",
+      "namedPreparedUnitTitle": "keeps a supplied completion fact separate from unknown timeliness and a missing age",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 8,
+      "input": "Established pending in coverage",
+      "actualImplementationReason": "Active branch requires known coverage, own valid Action due, exact boolean breach, exact false pause and exact null Action event, then exact IN_COVERAGE.",
+      "namedPreparedUnitTitle": "shows an active staffed clock only for an established pending server response",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 9,
+      "input": "Unknown breach/pause or malformed event",
+      "actualImplementationReason": "Unknown pause is not false, breach must be boolean and raw Action must exactly null; fail closed to unknown clock.",
+      "namedPreparedUnitTitle": "does not turn %s into an active clock",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 10,
+      "input": "Outside coverage with false pause",
+      "actualImplementationReason": "Exact outside states select awaiting staffed coverage; existing coverage/nextStaffed/age display retained, no 24x7 inference.",
+      "namedPreparedUnitTitle": "keeps %s exposure visible while waiting for staffing instead of claiming active coverage",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 11,
+      "input": "Current Action pause",
+      "actualImplementationReason": "True pause sets paused unless Action already completed; separate current-pause paragraph always preserves fact. ACK completion/timeliness are not paused.",
+      "namedPreparedUnitTitle": "preserves reported breaches and a current pause even when deadline authority is unresolved",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 12,
+      "input": "Breach and pause simultaneously",
+      "actualImplementationReason": "Breach and clock are separate DOM rows; true breach branch is not masked by paused/completed. Completed-stage precedence preserves separate true-pause paragraph.",
+      "namedPreparedUnitTitle": "preserves historical late completion and a reported pause without restarting the completed stage",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    },
+    {
+      "ruleOrdinal": 13,
+      "input": "Missing/negative/nonfinite exposure vs valid0",
+      "actualImplementationReason": "Finite safe integer >=0 only; null/negative unknown, explicit0 visible. NaN/Infinity cannot enter ordinary JSON, remain defensively rejected by Number.isSafeInteger.",
+      "namedPreparedUnitTitle": "does not conflate negative exposure age %s with an established zero",
+      "staticJudgment": "COHERENT_WITH_INDEPENDENT_STATE_TABLE",
+      "executionStatus": "PENDING_SEPARATE_ACTUAL_RUN"
+    }
+  ],
+  "unitPreparedDeclarations": [
+    {
+      "title": "keeps missing-profile false flags unresolved without hiding the Task or borrowing legacy dates",
+      "expandedCases": 1,
+      "specificAssertionsRead": "Actual backend missing-profile payload, both completions and timeliness unresolved, clock unresolved, no NOT_BREACHED/not-recorded/active, Task/ACK/age42 preserved and legacy due absent.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "preserves the Task when the live SLO is %s instead of inventing a running clock",
+      "expandedCases": 3,
+      "specificAssertionsRead": "undefined payload, array payload and unrecognized STAFFED coverage each retain Task and unknown stage timeliness/clock.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "shows an active staffed clock only for an established pending server response",
+      "expandedCases": 1,
+      "specificAssertionsRead": "Complete known IN_COVERAGE payload with both null stage events, exact false flags and own valid due: separate not-recorded stages, NOT_BREACHED-as-response and active Action positive.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "does not use the ACK deadline to resolve a missing or invalid Action deadline %s",
+      "expandedCases": 3,
+      "specificAssertionsRead": "Action deadline null/empty/unparsable all leave Action unknown while valid ACK is NOT_BREACHED; Action clock unknown.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "does not turn %s into an active clock",
+      "expandedCases": 3,
+      "specificAssertionsRead": "Null Action breach, null Action pause, invalid completion evidence each directly assert unknown clock.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "keeps %s exposure visible while waiting for staffing instead of claiming active coverage",
+      "expandedCases": 2,
+      "specificAssertionsRead": "OUT_OF_COVERAGE and OUT_OF_COVERAGE_ACTIVE_HARM with actual false-pause semantics retain state/nextStaffed/7200age, return awaiting coverage, use bounded NOT_BREACHED-as-response.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "preserves reported breaches and a current pause even when deadline authority is unresolved",
+      "expandedCases": 1,
+      "specificAssertionsRead": "True ACK+Action breach survive missing Profile/due and true Action pause. Pause and continuing exposure remain visible.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "preserves historical late completion and a reported pause without restarting the completed stage",
+      "expandedCases": 1,
+      "specificAssertionsRead": "Recorded timely ACK separate from recorded late Action; Action true breach, stage completed, current true pause separate; no restart.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "does not turn an acknowledgement into an attributable Action-stage completion",
+      "expandedCases": 1,
+      "specificAssertionsRead": "Valid ACK timestamp records only ACK; Action null remains not-recorded and pending active under established coverage.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "keeps a supplied completion fact separate from unknown timeliness and a missing age",
+      "expandedCases": 1,
+      "specificAssertionsRead": "Missing Profile/due cannot erase valid Action event; Action completed, timeliness unknown and missing exposure unknown.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    },
+    {
+      "title": "does not conflate negative exposure age %s with an established zero",
+      "expandedCases": 2,
+      "specificAssertionsRead": "Negative age shows unknown; explicit zero shows0, neither inferred fallback.",
+      "executionStatus": "NOT_ASSERTED_BY_STATIC_REVIEW"
+    }
+  ],
+  "unitPreparedTotal": 19,
+  "browserPreparedSteps": [
+    {
+      "step": "DATA_REPAIR: missing staffed authority remains unresolved despite false breach flags",
+      "proof": "Existing signed Owner scenario reads actual workflow HTTP and asserts PROFILE_OR_CALENDAR_MISSING, null own due/events and false flags, then live DOM exact unknown state and no positive fallback before screenshot. No route mock or supplied SLO fixture replaces this HTTP assertion.",
+      "executionStatus": "PENDING_NEW_SOURCE_BROWSER_RUN"
+    },
+    {
+      "step": "OPTIMIZATION: missing staffed authority remains unresolved despite false breach flags",
+      "proof": "Same shared display negative on distinct existing real lane projection; covers second observed screenshot symptom without inventing action.",
+      "executionStatus": "PENDING_NEW_SOURCE_BROWSER_RUN"
+    },
+    {
+      "step": "keyboard ACK renders its own completion without completing Action",
+      "proof": "Existing real Tab/Enter ACK waits for HTTP204 and actual workflow ACK timestamp nonnull/Action null; new DOM assertions wait for reloaded ACK recorded and Action not recorded/no completed clock before screenshot. Assertions use Playwright retries for async reload, not a fixed sleep.",
+      "executionStatus": "PENDING_NEW_SOURCE_BROWSER_RUN"
+    }
+  ],
+  "deterministicAndTypeBoundaryReview": [
+    "showResponseTiming passes unknown through real workflow parser using JSON serialization; undefined omission, null preservation and array behavior correspond to HTTP-visible shapes.",
+    "Helper reads only returned snapshot; hardcoded date examples do not depend on wall time or current timezone to calculate breach. Store time display stays delegated to existing AdvertisingTimestamp.",
+    "Record fields remain unknown; Array.isArray guard, typeof checks, explicit true/false/null and responseInstant prevent truthy/falsy coercion from creating positive state. No unsafe actor or mutation change.",
+    "Current liveTime retains the original no-legacy fallback when a live slo object exists with a missing due. An entirely absent slo may leave a historical timestamp visible, but new timing evaluation remains unknown and never uses it as authority.",
+    "A valid completion remains visible even when Profile is missing. A null event under missing Profile remains unknown because backend returns before event query; UI does not claim no journal event exists.",
+    "Body setup also services exception GET with a non-list in unit tests; existing parser ignores unavailable exceptions. These new tests assert display state only and do not pretend to validate exception service authority.",
+    "getByLabel/Text queries target explicit aria-label p rows; role group bounds the response summary. Added browser steps assert actual HTTP values before DOM and screenshot; no selector relies on transient timing values."
+  ],
+  "proofLimits": [
+    "This is a static review of prepared 19 expanded cases; it is not a result for 19 running tests. Actual quality and browser reports must bind current formatted source hashes.",
+    "Null breach and null pause dedicated unit parameters directly assert clock unknown. The timeliness false/null branch is read in source; not every malformed-field cross-product has a separate DOM assertion, and none is claimed.",
+    "Nonfinite/unsafe-integer age branches are defensive; the new explicit cases cover missing, negative and zero. No exhaustive arbitrary-object parser claim is made.",
+    "No standalone completed-on-time Action positive parameter is added; the same source completion branch is covered by late Action, completion with unknown authority and timely ACK. Required completion-versus-timeliness distinction is directly asserted.",
+    "Browser additions cover the two actual unknown lane payloads and ACK versus Action. Paused/late/completed combinations are the prepared component tests, not new real-Provider operating scenarios.",
+    "W8 backend full remains its exact old measured identity. New frontend runtime must receive its own quality/browser/CI; subsequent canonical governance-only changes still require their separate actual gate evidence."
+  ],
+  "remainingRequiredEvidence": [
+    "Root full frontend format/type/lint/unit/build/visual/size checks on current three-file formatted source",
+    "Existing complete12 actual signed-browser scenarios on the new source, including3addedsteps and reviewed screenshots",
+    "Exact latest authored/merge CI and artifact provenance; do not relabel old W8 screenshots as repaired"
+  ],
+  "repoWritesByReviewer": false,
+  "testsOrRuntimeExecutedByReviewer": false,
+  "databaseOrProviderAccess": false,
+  "controllerVerdict": null,
+  "originalStaticReview": {
+    "path": "/tmp/slice3-ui-slo-unknown-patch-independent-review/review.json",
+    "sha256": "3ee8634d32eaed678e5792765f29fb6b5061666c3299c9998fb02b6f73a0cd96"
+  },
+  "rootTestTypeCorrection": {
+    "actualR1Receipt": {
+      "path": "/tmp/slice3-ui-slo-repair-quality-r1/receipt.json",
+      "sha256": "9949a4a10424448b7683cd48e8b1556dbaeacd1f22ac98095d85bdbf61b45976"
+    },
+    "actualR1LintLog": {
+      "path": "/tmp/slice3-ui-slo-repair-quality-r1/lint.log",
+      "sha256": "d149b1d71a94b720935491e170117c366baae9336000dbb90c0111142970f75f"
+    },
+    "actualResult": "80 no-unsafe-* lint errors; exit1 before unit/build. Original sourceStable=true.",
+    "cause": "Promise<ReturnType<typeof within>> extracts the return of a generic query binder and loses the concrete default queries. The installed declarations make within an alias of generic getQueriesForElement<T> returning BoundFunctions<T>.",
+    "minimalCorrection": "Remove only the redundant explicit async helper return annotation and retain inference from the real within(await screen.findByRole(...)) call. No assertion, rendering rule, payload, lint rule or threshold is changed.",
+    "originalMeasuredTestSha256": "016a5985c10ddb8fa725f6f4108c2c1955901535e59733f245d1523d370d32c6",
+    "currentCorrectedTest": {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "sha256": "c414ff4b23cad028b0dcdb01d0465c9e4b38f3dac752d9d44612dc49eb27f57c"
+    },
+    "correctedLine": "async function showResponseTiming(slo: unknown) {",
+    "localTypeDeclarations": [
+      {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/node_modules/@testing-library/dom/types/index.d.ts",
+        "sha256": "b4966c503c08bbd9e834037a8ab60e5f53c5fd1092e8873c4a1c344806acdab2"
+      },
+      {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/node_modules/@testing-library/dom/types/get-queries-for-element.d.ts",
+        "sha256": "e3c5ad476eb2fca8505aee5bdfdf9bf11760df5d0f9545db23f12a5c4d72a718"
+      }
+    ],
+    "reviewLimit": "The first static read did not identify this generic type-erasure failure. R1 actual lint established it; this amendment explicitly supersedes any implication that the originally annotated test patch was type-clean. No R1 failure is removed or reclassified."
+  },
+  "preparedPatchIdentityLimit": "repair.patch SHA is the original prepared patch, not current formatted/fixed source and not a future W9 commit. Use the current three-file hashes plus actual run manifests."
+}

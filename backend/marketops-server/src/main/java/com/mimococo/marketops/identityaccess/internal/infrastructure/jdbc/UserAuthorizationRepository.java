@@ -276,6 +276,29 @@ public class UserAuthorizationRepository {
                 .single());
     }
 
+    public Instant grantValidUntil(UUID userId,ActionScopeCode action,ScopeChain chain,Instant at,Instant upperBound) {
+        return jdbc.sql("""
+                SELECT max(least(coalesce(grant_row.effective_to,:bound),:bound)) AS valid_until
+                FROM iam.user_scope_grant grant_row WHERE grant_row.user_id=:userId AND grant_row.action_code=:action
+                  AND grant_row.status='ACTIVE' AND grant_row.effective_from<=:at
+                  AND (grant_row.effective_to IS NULL OR grant_row.effective_to>:at) AND %s
+                """.formatted(CHAIN_MATCH))
+                .param("userId",userId).param("action",action.name()).param("at",Timestamp.from(at)).param("bound",Timestamp.from(upperBound))
+                .param("organizationId",chain.organizationId()).param("legalEntityId",chain.legalEntityId())
+                .param("accountId",chain.marketplaceAccountId()).param("storeId",chain.storeId())
+                .param("warehouseId",chain.warehouseId()).param("productVariantId",chain.productVariantId())
+                .query((rs,n)->rs.getTimestamp("valid_until")==null?at:rs.getTimestamp("valid_until").toInstant()).single();
+    }
+
+    public Instant roleValidUntil(UUID userId,BusinessRoleCode role,Instant at,Instant upperBound) {
+        return jdbc.sql("""
+                SELECT max(least(coalesce(effective_to,:bound),:bound)) AS valid_until FROM iam.user_role_assignment
+                WHERE user_id=:user AND role_code=:role AND status='ACTIVE' AND effective_from<=:at
+                  AND (effective_to IS NULL OR effective_to>:at)
+                """).param("user",userId).param("role",role.name()).param("at",Timestamp.from(at)).param("bound",Timestamp.from(upperBound))
+                .query((rs,n)->rs.getTimestamp("valid_until")==null?at:rs.getTimestamp("valid_until").toInstant()).single();
+    }
+
     /**
      * The live stores this action is granted on, expanded down the chain.
      *

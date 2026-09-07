@@ -1,0 +1,23 @@
+{
+  "scope": "LOCAL_PACKAGED_ARTIFACT_AND_ISOLATED_CONTAINER_VERIFICATION",
+  "artifactSha256": "152a07b021a7480ce5fc65ef06e3a6269685084c265e82ea50642f5a96553317",
+  "testedCheckoutCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "testedCheckoutTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "uncommittedWorktree": false,
+  "buildContextInputs": {
+    "backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar": "152a07b021a7480ce5fc65ef06e3a6269685084c265e82ea50642f5a96553317",
+    "infra/yandex/runtime/backend.Dockerfile": "f38bf71bd872639c02e771cc983124cd3c13c5341a1d3b4522b175f1bffb6078",
+    "infra/yandex/runtime/migration.Dockerfile": "0d0cde7449099adec670a24e15733fdb1269b36a6bf355b84a7cf6cfe505ecc6",
+    "infra/yandex/runtime/migration-logback.xml": "b3f4a28871d8e186534d90cf0b3c60fe37e8266c904d4ffbffe16d4446ff249e",
+    "infra/yandex/runtime/certs/yandex-root.crt": "6d148f85b5213445b23ad22ff45e47e1aa2be968f183f9bd6ff39de54d47a8ef"
+  },
+  "images": {
+    "backend": "sha256:9040a142df3b80a567b0dd7792544edad77997c9e166ec410de19c8ec37adf80",
+    "migration": "sha256:b0e65393cb9ceb55c28eba5c43928155c27bceae0c66c6124960b7ea895f8e5d"
+  },
+  "result": "PASS",
+  "databaseConnections": "NONE",
+  "providerCalls": "NONE",
+  "credentials": "NONE",
+  "deployment": "NOT_EXECUTED"
+}

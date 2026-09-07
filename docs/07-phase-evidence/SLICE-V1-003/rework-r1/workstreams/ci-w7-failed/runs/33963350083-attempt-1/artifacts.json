@@ -1,0 +1,62 @@
+[
+  {
+    "id": 9968689812,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY4Njg5ODEy",
+    "name": "frontend-coverage",
+    "size_in_bytes": 320647,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968689812",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968689812/zip",
+    "expired": false,
+    "digest": "sha256:2b48e281110197cc7e08a7b1686145ee54bec9485782f0eea29e3d13d5d7c7f8",
+    "created_at": "2026-09-05T11:30:58Z",
+    "updated_at": "2026-09-05T11:30:58Z",
+    "expires_at": "2026-09-19T11:30:57Z",
+    "workflow_run": {
+      "id": 33963350083,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    }
+  },
+  {
+    "id": 9968689438,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY4Njg5NDM4",
+    "name": "advertising-browser-screenshots",
+    "size_in_bytes": 13165072,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968689438",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968689438/zip",
+    "expired": false,
+    "digest": "sha256:c7236cae7a78734cf29383a810d2b4f992609d8a8c54465f15c136d7279796d5",
+    "created_at": "2026-09-05T11:30:56Z",
+    "updated_at": "2026-09-05T11:30:56Z",
+    "expires_at": "2026-09-19T11:30:54Z",
+    "workflow_run": {
+      "id": 33963350083,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    }
+  },
+  {
+    "id": 9968637524,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY4NjM3NTI0",
+    "name": "frontend-distribution",
+    "size_in_bytes": 156699,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968637524",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968637524/zip",
+    "expired": false,
+    "digest": "sha256:0a3101dac2999c35d02ee4ea852877377ef3d1b68c8c350b34e02b88300c27ec",
+    "created_at": "2026-09-05T11:27:11Z",
+    "updated_at": "2026-09-05T11:27:11Z",
+    "expires_at": "2026-10-05T11:27:11Z",
+    "workflow_run": {
+      "id": 33963350083,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    }
+  }
+]

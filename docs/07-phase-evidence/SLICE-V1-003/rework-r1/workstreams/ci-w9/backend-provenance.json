@@ -1,0 +1,17 @@
+{
+  "kind": "W9_REMOTE_NAMED_BACKEND_PROVENANCE_RECHECK",
+  "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "testedMerge": "52e393720653197089bd9530a9330216bc15fb2b",
+  "catalog": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/current-named-backend/current-named-backend-evidence.json",
+    "sha256": "d92ab91ebb31722b1557c8a552cdcf30b31e244ae307640079e68dadee50e0a1"
+  },
+  "uniqueMethods": 390,
+  "expandedNamedNodes": 522,
+  "sourceIdentityChecks": 390,
+  "remoteXmlNodeChecks": 522,
+  "allSourceBytesMatched": true,
+  "allRemoteNamedNodesPassed": true,
+  "missing": [],
+  "controllerVerdict": "PENDING_INDEPENDENT_REVIEW"
+}

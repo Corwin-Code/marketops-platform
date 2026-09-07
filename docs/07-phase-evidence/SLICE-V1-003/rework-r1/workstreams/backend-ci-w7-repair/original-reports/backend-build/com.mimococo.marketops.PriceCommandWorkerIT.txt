@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.PriceCommandWorkerIT
+-------------------------------------------------------------------------------
+Tests run: 18, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 8.760 s <<< FAILURE! -- in com.mimococo.marketops.PriceCommandWorkerIT
+com.mimococo.marketops.PriceCommandWorkerIT.unknownWriteOutcome -- Time elapsed: 0.477 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: 1
+ but was: 0
+	at com.mimococo.marketops.PriceCommandWorkerIT.lambda$seedOneExecutableCommand$0(PriceCommandWorkerIT.java:107)
+	at com.mimococo.marketops.PriceCommandWorkerIT$ScriptedPlatform.perform(PriceCommandWorkerIT.java:435)
+	at com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.call(PriceCommandWorker.java:371)
+	at com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.apply(PriceCommandWorker.java:222)
+	at com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.advance(PriceCommandWorker.java:147)
+	at com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker.runOnce(PriceCommandWorker.java:112)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker$$SpringCGLIB$$0.runOnce(<generated>)
+	at com.mimococo.marketops.PriceCommandWorkerIT.unknownWriteOutcome(PriceCommandWorkerIT.java:180)
+

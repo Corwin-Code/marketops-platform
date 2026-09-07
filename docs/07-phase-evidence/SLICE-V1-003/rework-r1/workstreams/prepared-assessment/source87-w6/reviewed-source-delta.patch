@@ -1,0 +1,467 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java
+index c37f329..ad7d330 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java
+@@ -21,6 +21,7 @@ import java.time.Clock;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.UUID;
++import org.springframework.security.core.Authentication;
+ import org.springframework.transaction.annotation.Transactional;
+ import org.springframework.web.bind.annotation.GetMapping;
+ import org.springframework.web.bind.annotation.PathVariable;
+@@ -74,7 +75,8 @@ class AdvertisingOperationsConsoleController {
+ 
+     @GetMapping("/orchestration")
+     @Transactional
+-    Map<String,Object> orchestration(AuthenticatedActor actor) {
++    Map<String,Object> orchestration(Authentication authentication) {
++        AuthenticatedActor actor = requireActor(authentication);
+         var result=slo.snapshot(actor.organizationId(),permittedStores(actor),clock.instant());
+         auditRead(actor,"advertising_orchestration",actor.organizationId(),"orchestration");return result;
+     }
+@@ -82,9 +84,10 @@ class AdvertisingOperationsConsoleController {
+     @GetMapping("/reservations")
+     @Transactional
+     List<ObjectNode> reservations(
+-            AuthenticatedActor actor,
++            Authentication authentication,
+             @RequestParam(defaultValue = "true") boolean holdingOnly,
+             @RequestParam(defaultValue = "50") int limit) {
++        AuthenticatedActor actor = requireActor(authentication);
+         List<UUID> stores = permittedStores(actor);
+         List<AdvertisingReservationView> result =
+                 operations.reservations(actor.organizationId(), stores, holdingOnly, limit);
+@@ -94,7 +97,8 @@ class AdvertisingOperationsConsoleController {
+ 
+     @GetMapping("/exposure")
+     @Transactional
+-    ObjectNode exposure(AuthenticatedActor actor) {
++    ObjectNode exposure(Authentication authentication) {
++        AuthenticatedActor actor = requireActor(authentication);
+         permittedStores(actor);
+         ObjectNode result = disclosure.organizationView(actor) && disclosure.organizationEvidence(actor)
+                 ? disclosure.full(operations.exposure(actor.organizationId())) : disclosure.maskedExposure();
+@@ -105,9 +109,10 @@ class AdvertisingOperationsConsoleController {
+     @GetMapping("/containments")
+     @Transactional
+     List<ObjectNode> containments(
+-            AuthenticatedActor actor,
++            Authentication authentication,
+             @RequestParam(defaultValue = "true") boolean holdingOnly,
+             @RequestParam(defaultValue = "50") int limit) {
++        AuthenticatedActor actor = requireActor(authentication);
+         List<UUID> stores = permittedStores(actor);
+         List<AdvertisingContainment> result =
+                 operations.scopedContainments(actor.organizationId(), stores, holdingOnly, limit);
+@@ -118,9 +123,10 @@ class AdvertisingOperationsConsoleController {
+     @GetMapping("/objects/{objectId}/manual-packets")
+     @Transactional
+     List<ObjectNode> manualPackets(
+-            AuthenticatedActor actor,
++            Authentication authentication,
+             @PathVariable UUID objectId,
+             @RequestParam(defaultValue = "20") int limit) {
++        AuthenticatedActor actor = requireActor(authentication);
+         List<UUID> stores = permittedStores(actor);
+         List<ManualExecutionPacketView> result =
+                 operations.manualPackets(actor.organizationId(), objectId, stores, limit);
+@@ -131,7 +137,8 @@ class AdvertisingOperationsConsoleController {
+ 
+     @GetMapping("/commands/{commandId}")
+     @Transactional
+-    ObjectNode command(AuthenticatedActor actor,@PathVariable UUID commandId) {
++    ObjectNode command(Authentication authentication,@PathVariable UUID commandId) {
++        AuthenticatedActor actor = requireActor(authentication);
+         disclosure.requireCommandRead(actor,commandId);
+         var command=commands.command(commandId).orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+         auditRead(actor,"advertising_command",commandId,"command_timeline");
+@@ -140,7 +147,8 @@ class AdvertisingOperationsConsoleController {
+ 
+     @GetMapping("/commands/{commandId}/outcomes")
+     @Transactional
+-    List<ObjectNode> outcomes(AuthenticatedActor actor, @PathVariable UUID commandId) {
++    List<ObjectNode> outcomes(Authentication authentication, @PathVariable UUID commandId) {
++        AuthenticatedActor actor = requireActor(authentication);
+         disclosure.requireCommandRead(actor,commandId);
+         List<UUID> stores = permittedStores(actor);
+         List<AdvertisingOutcomeView> result =
+@@ -149,6 +157,15 @@ class AdvertisingOperationsConsoleController {
+         return result.stream().map(view -> disclosure.outcome(actor, view)).toList();
+     }
+ 
++    /** The servlet principal is supplied by Spring Security, never by request binding. */
++    private static AuthenticatedActor requireActor(Authentication authentication) {
++        if (authentication != null && authentication.isAuthenticated()
++                && authentication.getPrincipal() instanceof AuthenticatedActor actor) {
++            return actor;
++        }
++        throw OperationRejectedException.of(ErrorCode.AUTHENTICATION_REQUIRED);
++    }
++
+     /**
+      * The caller's actual advertising store scope, or a refusal.
+      *
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java
+index 99e68f2..dd3f457 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java
+@@ -194,7 +194,6 @@ class AdvertisingDisclosureIT {
+         users.grantScope("disclosure-fixture", reviewer, ActionScopeCode.ADVERTISING_VIEW,
+                 ResourceScopeType.ORGANIZATION, candidateGraph.id("organization"), null);
+         UUID candidateMaker=candidateGraph.id("executorUser");
+-        users.assignRole("disclosure-fixture",candidateMaker,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+         users.grantScope("disclosure-fixture",candidateMaker,ActionScopeCode.ADVERTISING_VIEW,
+                 ResourceScopeType.ORGANIZATION,candidateGraph.id("organization"),null);
+         users.grantScope("disclosure-fixture", reviewer, ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW,
+@@ -224,7 +223,7 @@ class AdvertisingDisclosureIT {
+             String proof=AdvertisingR1Fixture.proof(admin,connection,actual,actual.id("ownerUser"),null,actual.id("recommendation"),actual.id("approval"));
+             AdvertisingR1Fixture.seal(connection,actual,proof);command=AdvertisingR1Fixture.createCommand(connection,actual);connection.commit();
+         }
+-        UUID user=actual.id("executorUser");users.assignRole("disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
++        UUID user=actual.id("executorUser");
+         users.grantScope("disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,ResourceScopeType.STORE,actual.id("store"),null);
+         var actor=new AuthenticatedActor(user,actual.id("organization"),actual.id("provider"),"https://fixture.invalid/issuer",
+                 "Synthetic native reader","0".repeat(64),null,Instant.now(),Instant.now().plusSeconds(3600),true,Set.of(BusinessRoleCode.MARKETPLACE_OPERATOR));
+@@ -318,11 +317,8 @@ class AdvertisingDisclosureIT {
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         var manual=AdvertisingR1Fixture.seedManual(migration);
+         UUID user=manual.id("executorUser");
+-        users.assignRole("manual-disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+         users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
+                 ResourceScopeType.STORE,manual.id("store"),null);
+-        users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_TASK_ACT,
+-                ResourceScopeType.ORGANIZATION,manual.id("organization"),null);
+         String jwt=browserToken(manual.id("provider"),user);
+         // Native option read oracles only: no proposal, packet, approval, command or action authority.
+         for(String kind:List.of("AD_BID_CHANGE","AD_BUDGET_CHANGE","AD_STATUS_CHANGE")) {
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java
+index 4c00a59..c0dfe93 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java
+@@ -75,7 +75,7 @@ class AdvertisingHumanWorkflowIT {
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration);
+         try(var admin=DATABASE.createConnection("")) {
+-            try(var statement=admin.createStatement()) { statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
++            TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD);
+         }
+         role("executorUser","MARKETPLACE_OPERATOR");
+         for(String user:List.of("executorUser","verifierUser","ownerUser")) {
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java
+index fdb0270..5ec7156 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java
+@@ -54,8 +54,8 @@ class AdvertisingManualWorkflowIT {
+         admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
+         seed=JdbcClient.create(migration);
+         graph=AdvertisingR1Fixture.seedManual(migration);
+-        try(var connection=admin.getConnection();var statement=connection.createStatement()) {
+-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
++        try(var connection=admin.getConnection()) {
++            TestDatabase.enableSyntheticIdentityIssuer(connection,ISSUER_PASSWORD);
+         }
+         seedOutcomeAuthority();
+         role("executorUser","MARKETPLACE_OPERATOR");
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java
+new file mode 100644
+index 0000000..47beda4
+--- /dev/null
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java
+@@ -0,0 +1,150 @@
++package com.mimococo.marketops;
++
++import static org.assertj.core.api.Assertions.assertThat;
++
++import com.mimococo.marketops.identityaccess.ActionScopeCode;
++import com.mimococo.marketops.identityaccess.ResourceScopeType;
++import com.mimococo.marketops.identityaccess.internal.application.UserAdministrationService;
++import com.mimococo.marketops.identityaccess.internal.domain.UserScopeGrantRecord;
++import com.mimococo.marketops.identityaccess.internal.web.BrowserSigningFixture;
++import java.net.URI;
++import java.net.http.HttpClient;
++import java.net.http.HttpRequest;
++import java.net.http.HttpResponse;
++import java.util.List;
++import java.util.UUID;
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import org.springframework.boot.test.web.server.LocalServerPort;
++import org.springframework.context.annotation.Import;
++import org.springframework.jdbc.core.simple.JdbcClient;
++import org.springframework.jdbc.datasource.DriverManagerDataSource;
++import org.springframework.test.context.ActiveProfiles;
++import org.springframework.test.context.DynamicPropertyRegistry;
++import org.springframework.test.context.DynamicPropertySource;
++
++/** Signed loopback HTTP exercises the real principal resolver and live PostgreSQL grants. */
++@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
++        "server.address=127.0.0.1", "marketops.identity.oidc.issuer-uri=https://id.example.test/browser",
++        "marketops.identity.oidc.jwk-set-uri=https://127.0.0.1/unused-secondary-decoder",
++        "marketops.identity.oidc.audience=marketops"})
++@Import(BrowserSigningFixture.class)
++@ActiveProfiles("ci")
++class AdvertisingOperationsPrincipalIT {
++    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
++            TestDatabase.isolatedContainer();
++    @LocalServerPort private int port;
++    @Autowired private UserAdministrationService users;
++    private JdbcClient seed;
++    private AdvertisingR1Fixture.Graph graph;
++    private UUID commandId;
++    private String ownerToken;
++    private String makerToken;
++    private UserScopeGrantRecord viewGrant;
++
++    @DynamicPropertySource
++    static void databaseProperties(DynamicPropertyRegistry registry) {
++        registry.add("spring.datasource.url", DATABASE::getJdbcUrl);
++        registry.add("spring.datasource.username", TestDatabase::applicationRole);
++        registry.add("spring.datasource.password", TestDatabase::applicationPassword);
++        registry.add("spring.flyway.user", TestDatabase::migrationRole);
++        registry.add("spring.flyway.password", TestDatabase::migrationPassword);
++    }
++
++    @BeforeEach
++    void fixture() throws Exception {
++        var migration = new DriverManagerDataSource(DATABASE.getJdbcUrl(),
++                TestDatabase.migrationRole(), TestDatabase.migrationPassword());
++        seed = JdbcClient.create(migration);
++        graph = AdvertisingR1Fixture.seed(migration);
++        var administrator = new DriverManagerDataSource(DATABASE.getJdbcUrl(),
++                DATABASE.getUsername(), DATABASE.getPassword());
++        var application = new DriverManagerDataSource(DATABASE.getJdbcUrl(),
++                TestDatabase.applicationRole(), TestDatabase.applicationPassword());
++        try (var connection = application.getConnection()) {
++            connection.setAutoCommit(false);
++            String proof = AdvertisingR1Fixture.proof(administrator, connection, graph,
++                    graph.id("ownerUser"), null, graph.id("recommendation"), graph.id("approval"));
++            AdvertisingR1Fixture.seal(connection, graph, proof);
++            commandId = AdvertisingR1Fixture.createCommand(connection, graph);
++            connection.commit();
++        }
++        // R1 supplies the actual Owner and Maker roles. Only this read grant is added.
++        viewGrant = users.grantScope("principal-fixture", graph.id("ownerUser"),
++                ActionScopeCode.ADVERTISING_VIEW, ResourceScopeType.ORGANIZATION,
++                graph.id("organization"), null);
++        ownerToken = token(graph.id("ownerUser"));
++        makerToken = token(graph.id("executorUser"));
++    }
++
++    @Test
++    void eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields() throws Exception {
++        for (String path : paths()) {
++            assertThat(http(ownerToken, path).statusCode()).as("accepted principal: %s", path).isEqualTo(200);
++            assertThat(http(null, path + spoofedIdentity()).statusCode())
++                    .as("anonymous query cannot create a principal: %s", path).isEqualTo(401);
++        }
++        assertThat(http(ownerToken, "/commands/" + commandId).body()).contains(commandId.toString());
++        assertThat(http(ownerToken, "/reservations").body()).contains(graph.id("reservation").toString());
++    }
++
++    @Test
++    void requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant() throws Exception {
++        for (String path : paths()) {
++            assertThat(http(ownerToken, path).statusCode()).as("positive grant control: %s", path).isEqualTo(200);
++            var denied = http(makerToken, path + spoofedIdentity());
++            assertThat(denied.statusCode()).as("signed Maker cannot become Owner: %s", path).isEqualTo(403);
++            assertThat(denied.body()).doesNotContain(graph.id("reservation").toString());
++        }
++    }
++
++    @Test
++    void theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation() throws Exception {
++        for (String path : paths()) {
++            assertThat(http(ownerToken, path).statusCode()).as("live grant: %s", path).isEqualTo(200);
++        }
++        users.revokeScope("principal-fixture", viewGrant.id(), "Read scope withdrawn", viewGrant.version());
++        for (String path : paths()) {
++            assertThat(http(ownerToken, path + spoofedIdentity()).statusCode())
++                    .as("same token and spoofed fields cannot revive the grant: %s", path).isEqualTo(403);
++        }
++    }
++
++    private List<String> paths() {
++        return List.of("/orchestration", "/reservations", "/exposure", "/containments",
++                "/objects/" + graph.id("object") + "/manual-packets",
++                "/commands/" + commandId, "/commands/" + commandId + "/outcomes");
++    }
++
++    private String spoofedIdentity() {
++        return "?userId=" + graph.id("ownerUser") + "&organizationId=" + graph.id("organization")
++                + "&identityProviderId=" + graph.id("provider") + "&roles=OWNER&multiFactorPresent=true"
++                + "&actor.userId=" + graph.id("ownerUser") + "&actor.organizationId=" + graph.id("organization")
++                + "&authentication.name=" + graph.id("ownerUser") + "&authentication.authenticated=true"
++                + "&authentication.principal.userId=" + graph.id("ownerUser");
++    }
++
++    private String token(UUID user) throws Exception {
++        UUID provider = seed.sql("SELECT id FROM iam.identity_provider WHERE issuer=:issuer")
++                .param("issuer", BrowserSigningFixture.ISSUER).query(UUID.class).optional().orElseGet(() -> {
++                    seed.sql("UPDATE iam.identity_provider SET issuer=:issuer WHERE id=:id")
++                            .param("issuer", BrowserSigningFixture.ISSUER).param("id", graph.id("provider")).update();
++                    return graph.id("provider");
++                });
++        String subject = "principal-fixture-" + user;
++        seed.sql("""
++                UPDATE iam.user_account SET identity_provider_id=:provider, external_subject=:subject,
++                  credentials_valid_from=now()-interval '1 day' WHERE id=:id
++                """).param("provider", provider).param("subject", subject).param("id", user).update();
++        return BrowserSigningFixture.token(subject);
++    }
++
++    private HttpResponse<String> http(String token, String path) throws Exception {
++        var request = HttpRequest.newBuilder(URI.create(
++                "http://127.0.0.1:" + port + "/api/v1/console/advertising" + path)).GET();
++        if (token != null) request.header("Authorization", "Bearer " + token);
++        return HttpClient.newHttpClient().send(request.build(), HttpResponse.BodyHandlers.ofString());
++    }
++}
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java
+index 2c97ce9..4a295bc 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java
+@@ -2,6 +2,9 @@ package com.mimococo.marketops;
+ 
+ import java.nio.file.Files;
+ import java.nio.file.Path;
++import java.sql.Connection;
++import java.sql.SQLException;
++import java.util.Objects;
+ import java.util.UUID;
+ import org.testcontainers.postgresql.PostgreSQLContainer;
+ import org.testcontainers.utility.DockerImageName;
+@@ -56,6 +59,30 @@ public final class TestDatabase {
+         return APPLICATION_PASSWORD;
+     }
+ 
++    /**
++     * Activate only the synthetic issuer inside a test's isolated database.
++     * PostgreSQL role DDL cannot bind its password directly, so the server quotes
++     * the bound value as one literal before executing this fixed-role statement.
++     * The caller retains ownership of the administrator connection.
++     */
++    public static void enableSyntheticIdentityIssuer(Connection administrator, String syntheticPassword)
++            throws SQLException {
++        Objects.requireNonNull(syntheticPassword, "synthetic issuer password");
++        try (var query = administrator.prepareStatement("""
++                SELECT format('ALTER ROLE marketops_identity_issuer LOGIN PASSWORD %L', ?::text)
++                """)) {
++            query.setString(1, syntheticPassword);
++            try (var rows = query.executeQuery()) {
++                if (!rows.next()) {
++                    throw new SQLException("Synthetic issuer statement was not produced");
++                }
++                try (var statement = administrator.createStatement()) {
++                    statement.execute(rows.getString(1));
++                }
++            }
++        }
++    }
++
+     private static PostgreSQLContainer build() {
+         Path initDirectory = repositoryRoot().resolve("infra/compose/postgres-init");
+         return new PostgreSQLContainer(DockerImageName.parse(
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java
+new file mode 100644
+index 0000000..e3df0d2
+--- /dev/null
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java
+@@ -0,0 +1,69 @@
++package com.mimococo.marketops;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.assertj.core.api.Assertions.assertThatThrownBy;
++
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.util.UUID;
++import org.junit.jupiter.api.Test;
++
++/** Actual isolated PostgreSQL controls for the shared test-only issuer setup. */
++class TestDatabaseIssuerIT {
++
++    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
++            TestDatabase.isolatedContainer();
++
++    @Test
++    void quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents() throws Exception {
++        String syntheticPassword = UUID.randomUUID()
++                + "'; ALTER ROLE marketops_identity_issuer SUPERUSER; --";
++        try (var administrator = DATABASE.createConnection("")) {
++            TestDatabase.enableSyntheticIdentityIssuer(administrator, syntheticPassword);
++        }
++
++        try (var issuer = DriverManager.getConnection(DATABASE.getJdbcUrl(),
++                "marketops_identity_issuer", syntheticPassword);
++                var statement = issuer.createStatement();
++                var rows = statement.executeQuery("""
++                        SELECT current_user, rolsuper, rolcreaterole, rolcreatedb,
++                               rolreplication, rolbypassrls, rolinherit
++                        FROM pg_roles WHERE rolname = current_user
++                        """)) {
++            assertThat(rows.next()).isTrue();
++            assertThat(rows.getString(1)).isEqualTo("marketops_identity_issuer");
++            for (int column = 2; column <= 7; column++) {
++                assertThat(rows.getBoolean(column)).isFalse();
++            }
++            assertThat(rows.next()).isFalse();
++        }
++    }
++
++    @Test
++    void applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges() throws Exception {
++        String originalPassword = UUID.randomUUID().toString();
++        try (var administrator = DATABASE.createConnection("")) {
++            TestDatabase.enableSyntheticIdentityIssuer(administrator, originalPassword);
++        }
++        try (var application = DriverManager.getConnection(DATABASE.getJdbcUrl(),
++                TestDatabase.applicationRole(), TestDatabase.applicationPassword())) {
++            assertThatThrownBy(() -> TestDatabase.enableSyntheticIdentityIssuer(
++                    application, UUID.randomUUID().toString()))
++                    .isInstanceOfSatisfying(SQLException.class,
++                            failure -> assertThat(failure.getSQLState()).isEqualTo("42501"));
++        }
++
++        // A refused change neither rotates the legitimate value nor grants privileges.
++        try (var issuer = DriverManager.getConnection(DATABASE.getJdbcUrl(),
++                "marketops_identity_issuer", originalPassword);
++                var statement = issuer.createStatement();
++                var rows = statement.executeQuery("""
++                        SELECT rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication
++                               OR rolbypassrls OR rolinherit
++                        FROM pg_roles WHERE rolname = current_user
++                        """)) {
++            assertThat(rows.next()).isTrue();
++            assertThat(rows.getBoolean(1)).isFalse();
++        }
++    }
++}
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java
+index 053a64f..aab7a77 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java
+@@ -51,7 +51,7 @@ final class AdvertisingCapacityEvidence {
+         result.put("datasetPath",datasetPath.toString());result.put("datasetSha256",sha(datasetPath));
+         result.put("sourceInputsPath",sourcesPath.toString());result.put("sourceInputsSha256",sha(sourcesPath));
+         result.put("startedAt",startedAt.toString());result.put("datasetCapturedAt",Instant.now().toString());
+-        Process git=new ProcessBuilder("git","rev-parse","HEAD").redirectErrorStream(true).start();
++        Process git=new ProcessBuilder("/usr/bin/git","rev-parse","HEAD").redirectErrorStream(true).start();
+         if(git.waitFor(5,TimeUnit.SECONDS) && git.exitValue()==0)
+             result.put("measuredLocalGitHead",new String(git.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).trim());
+         else {git.destroyForcibly();result.put("measuredLocalGitHead","UNAVAILABLE");}
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
+index 36395e7..a89bb78 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
+@@ -74,7 +74,7 @@ class AdvertisingVerticalPathIT {
+         start=Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS).minusSeconds(2);clock.at=start;provider.calls.clear();
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration,this::authorityOnly);
+-        try(var admin=DATABASE.createConnection("");var s=admin.createStatement()) { s.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
++        try(var admin=DATABASE.createConnection("")) { TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD); }
+         role("executorUser","MARKETPLACE_OPERATOR");
+         for(String user:List.of("executorUser","verifierUser","ownerUser"))
+             for(String action:List.of("ADVERTISING_VIEW","ADVERTISING_TASK_ACT")) scope(user,action);

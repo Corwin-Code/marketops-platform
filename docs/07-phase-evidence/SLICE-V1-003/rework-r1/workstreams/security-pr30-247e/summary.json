@@ -1,0 +1,497 @@
+{
+  "kind": "DEFAULT_BRANCH_DEPENDABOT_PR30_READONLY_REVIEW_AND_AUTHORIZED_MINIMAL_LOCK_REPAIR",
+  "generatedAtUTC": "2026-09-05T10:39:06.596887+00:00",
+  "repository": "Corwin-Code/marketops-platform",
+  "pullRequest": {
+    "number": 30,
+    "url": "https://github.com/Corwin-Code/marketops-platform/pull/30",
+    "draft": true,
+    "state": "open",
+    "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "baseSha": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "testMergeSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+    "testMergeTreeSha": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+    "testMergeParents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "247ea5ced6cd0ac110314db9fa606d8995c85cac"
+    ]
+  },
+  "originalReviewBoundary": "Read-only gh API; no workflow start/stop, no alert dismissal or state mutation, no Provider. The later lock-only patch was separately authorized by root as the existing F022/AC200 security prerequisite. No Maven or browser was run by source.",
+  "alerts": [
+    {
+      "number": 4,
+      "url": "https://github.com/Corwin-Code/marketops-platform/security/dependabot/4",
+      "ghsaId": "GHSA-jqff-g426-hqxp",
+      "cveId": "CVE-2026-76172",
+      "severity": "high",
+      "summary": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
+      "package": "fast-uri",
+      "manifest": "frontend/marketops-console/package-lock.json",
+      "dependencyScope": "development",
+      "relationship": "transitive",
+      "vulnerableRange": ">= 3.0.0, < 3.1.6",
+      "firstPatchedVersion": "3.1.6",
+      "baseVersion": "3.1.5",
+      "candidate247eVersion": "3.1.5",
+      "introducedByPr30": false,
+      "removedBy247eCandidate": false,
+      "defaultAlertStateAtRead": "open",
+      "alertCreatedAt": "2026-09-03T22:34:00Z",
+      "localAuthorizedPatchedVersion": "3.1.6",
+      "localPatchOutsideThisVulnerableRange": true,
+      "withdrawnAt": null
+    },
+    {
+      "number": 3,
+      "url": "https://github.com/Corwin-Code/marketops-platform/security/dependabot/3",
+      "ghsaId": "GHSA-f65p-4m7j-42xc",
+      "cveId": "CVE-2026-75975",
+      "severity": "high",
+      "summary": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+      "package": "fast-uri",
+      "manifest": "frontend/marketops-console/package-lock.json",
+      "dependencyScope": "development",
+      "relationship": "transitive",
+      "vulnerableRange": ">= 3.0.0, < 3.1.6",
+      "firstPatchedVersion": "3.1.6",
+      "baseVersion": "3.1.5",
+      "candidate247eVersion": "3.1.5",
+      "introducedByPr30": false,
+      "removedBy247eCandidate": false,
+      "defaultAlertStateAtRead": "open",
+      "alertCreatedAt": "2026-09-03T21:24:10Z",
+      "localAuthorizedPatchedVersion": "3.1.6",
+      "localPatchOutsideThisVulnerableRange": true,
+      "withdrawnAt": null
+    },
+    {
+      "number": 2,
+      "url": "https://github.com/Corwin-Code/marketops-platform/security/dependabot/2",
+      "ghsaId": "GHSA-fph4-wmhf-6fwf",
+      "cveId": "CVE-2026-75899",
+      "severity": "high",
+      "summary": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding",
+      "package": "fast-uri",
+      "manifest": "frontend/marketops-console/package-lock.json",
+      "dependencyScope": "development",
+      "relationship": "transitive",
+      "vulnerableRange": ">= 3.1.2, < 3.1.6",
+      "firstPatchedVersion": "3.1.6",
+      "baseVersion": "3.1.5",
+      "candidate247eVersion": "3.1.5",
+      "introducedByPr30": false,
+      "removedBy247eCandidate": false,
+      "defaultAlertStateAtRead": "open",
+      "alertCreatedAt": "2026-09-03T07:45:11Z",
+      "localAuthorizedPatchedVersion": "3.1.6",
+      "localPatchOutsideThisVulnerableRange": true,
+      "withdrawnAt": null
+    },
+    {
+      "number": 1,
+      "url": "https://github.com/Corwin-Code/marketops-platform/security/dependabot/1",
+      "ghsaId": "GHSA-5jgf-p345-68v8",
+      "cveId": "CVE-2026-75931",
+      "severity": "high",
+      "summary": "fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references",
+      "package": "fast-uri",
+      "manifest": "frontend/marketops-console/package-lock.json",
+      "dependencyScope": "development",
+      "relationship": "transitive",
+      "vulnerableRange": ">= 3.1.3, < 3.1.6",
+      "firstPatchedVersion": "3.1.6",
+      "baseVersion": "3.1.5",
+      "candidate247eVersion": "3.1.5",
+      "introducedByPr30": false,
+      "removedBy247eCandidate": false,
+      "defaultAlertStateAtRead": "open",
+      "alertCreatedAt": "2026-09-03T04:29:06Z",
+      "localAuthorizedPatchedVersion": "3.1.6",
+      "localPatchOutsideThisVulnerableRange": true,
+      "withdrawnAt": null
+    }
+  ],
+  "sameLockProof": {
+    "baseGitBlob": "96d6c912433b6ccb260160f2ac5d757ab204bcc0",
+    "headGitBlob": "96d6c912433b6ccb260160f2ac5d757ab204bcc0",
+    "baseAndHeadLockSha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332",
+    "allBytesEqual": true,
+    "directParent": "ajv@8.20.0",
+    "allowedChildRange": "^3.0.1",
+    "resolvedNode": "node_modules/fast-uri",
+    "dev": true,
+    "optional": true,
+    "dependencyGraphCompareResult": []
+  },
+  "securityWorkflow": {
+    "runId": 33960570489,
+    "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33960570489",
+    "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "event": "pull_request",
+    "runAttempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 101291630635,
+        "name": "codeql-java",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+        "startedAt": "2026-09-05T10:24:27Z",
+        "completedAt": "2026-09-05T10:28:34Z",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33960570489/job/101291630635"
+      },
+      {
+        "id": 101291630738,
+        "name": "dependency-review",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+        "startedAt": "2026-09-05T10:24:28Z",
+        "completedAt": "2026-09-05T10:24:40Z",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33960570489/job/101291630738"
+      },
+      {
+        "id": 101291630812,
+        "name": "codeql-typescript",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+        "startedAt": "2026-09-05T10:24:28Z",
+        "completedAt": "2026-09-05T10:25:20Z",
+        "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33960570489/job/101291630812"
+      }
+    ],
+    "dependencyReviewBoundary": "security.yml fail-on-severity is moderate, but the action compares introduced dependencies only; identical lock and empty dependency diff can pass with pre-existing vulnerable packages.",
+    "codeqlAnalyses": [
+      {
+        "ref": "refs/pull/30/merge",
+        "commit_sha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "analysis_key": ".github/workflows/security.yml:codeql-java",
+        "environment": "{}",
+        "category": "/language:java-kotlin",
+        "error": "",
+        "created_at": "2026-09-05T10:28:26Z",
+        "results_count": 103,
+        "rules_count": 240,
+        "id": 1729021395,
+        "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1729021395",
+        "sarif_id": "87131e50-a914-11f1-9aaa-f8fe1753c318",
+        "tool": {
+          "name": "CodeQL",
+          "guid": null,
+          "version": "2.26.4"
+        },
+        "deletable": true,
+        "warning": ""
+      },
+      {
+        "ref": "refs/pull/30/merge",
+        "commit_sha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+        "environment": "{}",
+        "category": "/language:javascript-typescript",
+        "error": "",
+        "created_at": "2026-09-05T10:25:13Z",
+        "results_count": 1,
+        "rules_count": 201,
+        "id": 1729015234,
+        "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1729015234",
+        "sarif_id": "13d766a8-a914-11f1-929e-2bf091036e8d",
+        "tool": {
+          "name": "CodeQL",
+          "guid": null,
+          "version": "2.26.4"
+        },
+        "deletable": true,
+        "warning": ""
+      }
+    ],
+    "aggregateCodeqlCheck": {
+      "id": 101291728824,
+      "headSha": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+      "status": "completed",
+      "conclusion": "failure",
+      "title": "99 new alerts including 11 high severity security vulnerabilities",
+      "summary": "### New alerts in code changed by this pull request\n\nSecurity Alerts:\n * 11 high\n * 1 medium\n\nOther Alerts:\n * 11 warnings\n * 76 notes\n\n_Alerts not introduced by this pull request might have been detected because the code changes were too large._\n\nSee annotations below for details.\n\n[View all branch alerts](/Corwin-Code/marketops-platform/security/code-scanning?query=pr%3A30+tool%3ACodeQL+is%3Aopen).",
+      "url": "https://github.com/Corwin-Code/marketops-platform/runs/101291728824"
+    },
+    "openCodeqlHighAlerts": [
+      {
+        "number": 128,
+        "ruleId": "java/concatenated-sql-query",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "start_line": 77,
+          "end_line": 77,
+          "start_column": 96,
+          "end_column": 171
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/128"
+      },
+      {
+        "number": 127,
+        "ruleId": "java/concatenated-sql-query",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "start_line": 65,
+          "end_line": 65,
+          "start_column": 31,
+          "end_column": 106
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/127"
+      },
+      {
+        "number": 126,
+        "ruleId": "java/concatenated-sql-query",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "start_line": 58,
+          "end_line": 58,
+          "start_column": 31,
+          "end_column": 106
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/126"
+      },
+      {
+        "number": 125,
+        "ruleId": "java/concatenated-sql-query",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "start_line": 78,
+          "end_line": 78,
+          "start_column": 76,
+          "end_column": 151
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/125"
+      },
+      {
+        "number": 124,
+        "ruleId": "java/concatenated-sql-query",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+          "start_line": 65,
+          "end_line": 65,
+          "start_column": 31,
+          "end_column": 106
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/124"
+      },
+      {
+        "number": 123,
+        "ruleId": "java/tainted-permissions-check",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "start_line": 145,
+          "end_line": 145,
+          "start_column": 29,
+          "end_column": 51
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/123"
+      },
+      {
+        "number": 122,
+        "ruleId": "java/tainted-permissions-check",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "start_line": 124,
+          "end_line": 124,
+          "start_column": 29,
+          "end_column": 51
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/122"
+      },
+      {
+        "number": 121,
+        "ruleId": "java/tainted-permissions-check",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "start_line": 111,
+          "end_line": 111,
+          "start_column": 29,
+          "end_column": 51
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/121"
+      },
+      {
+        "number": 120,
+        "ruleId": "java/tainted-permissions-check",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "start_line": 98,
+          "end_line": 98,
+          "start_column": 9,
+          "end_column": 31
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/120"
+      },
+      {
+        "number": 119,
+        "ruleId": "java/tainted-permissions-check",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "start_line": 88,
+          "end_line": 88,
+          "start_column": 29,
+          "end_column": 51
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/119"
+      },
+      {
+        "number": 118,
+        "ruleId": "java/tainted-permissions-check",
+        "severity": "high",
+        "ref": "refs/pull/30/merge",
+        "commitSha": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+        "location": {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "start_line": 78,
+          "end_line": 78,
+          "start_column": 56,
+          "end_column": 78
+        },
+        "url": "https://github.com/Corwin-Code/marketops-platform/security/code-scanning/118"
+      }
+    ]
+  },
+  "ac200Assessment": {
+    "acceptedSource": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md:2540",
+    "acceptedCriterion": "full repository regression, governance/production-readiness validation and security scans pass with no threshold weakening and no unresolved BLOCKER/MAJOR finding.",
+    "at247e": "NOT_SATISFIED: four existing HIGH dependency advisories remain version-applicable, despite dependency-review success; aggregate CodeQL actually fails with 11 HIGH alerts on the exact PR merge. Workflow job success alone does not prove a clean security result. No new Frozen Finding or formal Controller severity is invented.",
+    "afterLocalLockRepair": "The four reported fast-uri advisories are addressed at the local lock level and npm audit reports zero known vulnerabilities for that exact current lock. New checkpoint source/CI, CodeQL repairs and clean/full/browser evidence remain pending. Default-main alert state has not been changed or claimed closed.",
+    "productionExposureLimit": "fast-uri is marked transitive development/optional, reached by ajv. Version applicability is proven; runtime exploitability in a deployed product is not assessed or claimed."
+  },
+  "authorizedLockRepair": {
+    "beforeSha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332",
+    "afterSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+    "packageJsonUnchanged": true,
+    "changedPackageNodes": [
+      "node_modules/fast-uri"
+    ],
+    "changedFields": [
+      "version",
+      "resolved",
+      "integrity"
+    ],
+    "oldNode": {
+      "version": "3.1.5",
+      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.5.tgz",
+      "integrity": "sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/fastify"
+        },
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/fastify"
+        }
+      ],
+      "license": "BSD-3-Clause",
+      "optional": true
+    },
+    "newNode": {
+      "version": "3.1.6",
+      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.6.tgz",
+      "integrity": "sha512-7Ical1vFEMr0onbVzEDIreM22I4khW+fzyQPwvAFWBp1iwdshSZRsL4jjRvPG9JP1uiqMHRto+YU6R2/CzDz5Q==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/fastify"
+        },
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/fastify"
+        }
+      ],
+      "license": "BSD-3-Clause",
+      "optional": true
+    },
+    "matchesPrimaryRegistryIntegrityAndTarball": true,
+    "method": "npm update selected newer compatible 3.1.7; exact-version scope assertion rejected that result. Preserved it as intermediate evidence, then replaced only the same node version/resolved/integrity with primary npm metadata for the explicitly authorized 3.1.6. No override or package.json change."
+  },
+  "npmAudit": {
+    "request": {
+      "argv": [
+        "npm",
+        "audit",
+        "--package-lock-only",
+        "--ignore-scripts",
+        "--json",
+        "--audit-level=moderate",
+        "--registry=https://registry.npmjs.org",
+        "--cache=/tmp/slice3-security-default-alert-review/npm-cache"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:35:27.250822+00:00",
+      "finishedAtUTC": "2026-09-05T10:35:28.737143+00:00",
+      "exitCode": 0,
+      "runtime": {
+        "node": "v24.19.0",
+        "npm": "11.17.0"
+      },
+      "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+      "lockUnchanged": true
+    },
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "dependencies": {
+        "prod": 4,
+        "dev": 395,
+        "optional": 162,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 398
+      }
+    },
+    "rawReport": "npm-audit-3.1.6.json",
+    "rawReportSha256": "44154f671eec2720b8acff37b6e09613d69dfbf5fbede1f9e97cdacb813f3080"
+  },
+  "apiPermissionFailures": [],
+  "pending": [
+    "Root W6 checkpoint identity and append-only publication",
+    "Fresh frontend install/quality/browser using the updated lock",
+    "Exact new-Head dependency-review, both CodeQL analyses and aggregate check/alert readback",
+    "Final AC200 engineering/Controller decision; no self-approval or Ready/merge"
+  ]
+}

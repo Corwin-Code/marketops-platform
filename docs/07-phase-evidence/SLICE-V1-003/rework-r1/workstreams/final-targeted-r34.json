@@ -1,0 +1,33 @@
+{
+  "kind": "TARGETED_DEVELOPMENT_VERIFICATION",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+    "-Dtest=AdvertisingProjectionWriterTest,AdvertisingVerticalPathIT,AdvertisingHumanWorkflowIT,AdvertisingResponsibilityBoundaryIT,AdvertisingDisclosureIT,AdvertisingProposalServiceTest,AdvertisingSealedAuthorityIT",
+    "test"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "sourceBinding": "W1 plus uncommitted R1 changes, not exact-W1 source",
+  "exitCode": 0,
+  "tests": 97,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "finishedAt": "2026-09-05T12:03:06+08:00",
+  "result": "PASS",
+  "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-final-targeted-r34.log",
+  "logSha256": "99d23ed4863889787405f870116cb33dc40877aa433adeee2b58a1c75cc2c77c",
+  "completeClasses": {
+    "AdvertisingResponsibilityBoundaryIT": 9,
+    "AdvertisingSealedAuthorityIT": 15,
+    "AdvertisingProposalServiceTest": 29,
+    "AdvertisingHumanWorkflowIT": 16,
+    "AdvertisingVerticalPathIT": 4,
+    "AdvertisingProjectionWriterTest": 17,
+    "AdvertisingDisclosureIT": 7
+  },
+  "followUp": "Full clean committed-source verification, exact browser and remote CI remain pending.",
+  "productionWriteEnabled": false
+}

@@ -1,0 +1,183 @@
+diff --git a/frontend/marketops-console/src/api/advertising.ts b/frontend/marketops-console/src/api/advertising.ts
+index 6d8bcf3..32ef7df 100644
+--- a/frontend/marketops-console/src/api/advertising.ts
++++ b/frontend/marketops-console/src/api/advertising.ts
+@@ -320,20 +320,44 @@ export interface AdvertisingReservation {
+  * never adds one axis's slack to another's.
+  */
+-export interface AdvertisingExposure {
+-  readonly envelopeId: string | undefined;
+-  readonly policyVersion: number | undefined;
+-  readonly scopeKind: string | undefined;
++export const ADVERTISING_EXPOSURE_AXES = [
++  'activeInterventions',
++  'associatedOfficialSpend',
++  'affectedRetainedSalesShare',
++  'cumulativeBidChangeMajor',
++  'unresolvedTransmittedWrites',
++  'reservedRecoveryHeadroom',
++] as const;
++export type AdvertisingExposureAxisCode = (typeof ADVERTISING_EXPOSURE_AXES)[number];
++export interface AdvertisingExposureAxis {
++  readonly usage: number | undefined;
++  readonly limit: number | undefined;
++  readonly available: number | undefined;
++  readonly reserved: number | undefined;
++  readonly state: string;
++  readonly unit: string | undefined;
++  readonly windowHours: number | undefined;
++  readonly companySales: number | undefined;
++  readonly affectedSales: number | undefined;
++  readonly aggregationBasis: string | undefined;
++  readonly conservativeBoundaryReportCount: number | undefined;
++}
++export interface AdvertisingExposureEnvelope {
++  readonly envelopeId: string;
++  readonly policyVersion: number;
++  readonly scopeKind: string;
++  readonly platformCode: string | undefined;
++  readonly storeId: string | undefined;
+   readonly currencyCode: string | undefined;
+-  readonly activeInterventions: number | undefined;
+-  readonly maxActiveInterventions: number | undefined;
+-  readonly reservedRecoveryHeadroom: number | undefined;
+-  readonly unresolvedTransmittedWrites: number | undefined;
+-  readonly maxUnresolvedTransmittedWrites: number | undefined;
+-  readonly cumulativeBidChangeAmount: number | undefined;
+-  readonly maxCumulativeBidChangeAmount: number | undefined;
+-  readonly cumulativeWindowHours: number | undefined;
++  readonly measurementWindowHours: number | undefined;
++  readonly retainedWindowDays: number | undefined;
++  readonly axes: Readonly<Record<AdvertisingExposureAxisCode, AdvertisingExposureAxis>>;
++  readonly reasons: readonly string[];
++}
++export interface AdvertisingExposure {
++  readonly measuredAt: string | undefined;
++  readonly envelopes: readonly AdvertisingExposureEnvelope[];
++  readonly unresolvedStoreIds: readonly string[];
+   readonly resolved: boolean;
+-  readonly exhaustedAxes: readonly string[];
+-  readonly status: string | undefined;
++  readonly status: string;
+ }
+ 
+@@ -437,27 +461,100 @@ export function parseAdvertisingReservation(body: unknown): AdvertisingReservati
+  */
+ export function parseAdvertisingExposure(body: unknown): AdvertisingExposure | undefined {
+-  if (typeof body !== 'object' || body === null) {
+-    return undefined;
+-  }
++  if (typeof body !== 'object' || body === null) return undefined;
+   const record = body as Record<string, unknown>;
+-  if (typeof record.activeInterventions !== 'number' && record.disclosureState !== 'MASKED') {
++  if (record.disclosureState === 'MASKED') {
++    return {
++      measuredAt: undefined,
++      envelopes: [],
++      unresolvedStoreIds: [],
++      resolved: false,
++      status: 'MASKED',
++    };
++  }
++  if (
++    !Array.isArray(record.envelopes) ||
++    !Array.isArray(record.unresolvedStoreIds) ||
++    !record.unresolvedStoreIds.every((id) => typeof id === 'string' && id.trim().length > 0) ||
++    typeof record.resolved !== 'boolean' ||
++    !['MEASURED', 'UNRESOLVED'].includes(String(record.status)) ||
++    text(record.measuredAt) === undefined
++  )
+     return undefined;
++  // Whitespace carries no measurement. Number(' ') would otherwise invent a zero.
++  const number = (value: unknown): number | undefined =>
++    typeof value === 'string' && value.trim().length === 0 ? undefined : decimal(value);
++  const envelopes: AdvertisingExposureEnvelope[] = [];
++  for (const value of record.envelopes as unknown[]) {
++    if (typeof value !== 'object' || value === null) return undefined;
++    const entry = value as Record<string, unknown>;
++    const envelopeId = text(entry.envelopeId),
++      policyVersion = number(entry.policyVersion),
++      scopeKind = text(entry.scopeKind);
++    if (
++      envelopeId === undefined ||
++      policyVersion === undefined ||
++      !Number.isInteger(policyVersion) ||
++      policyVersion < 1 ||
++      scopeKind === undefined ||
++      typeof entry.axes !== 'object' ||
++      entry.axes === null
++    )
++      return undefined;
++    const rawAxes = entry.axes as Record<string, unknown>;
++    const axes = {} as Record<AdvertisingExposureAxisCode, AdvertisingExposureAxis>;
++    for (const code of ADVERTISING_EXPOSURE_AXES) {
++      const raw = rawAxes[code];
++      if (typeof raw !== 'object' || raw === null) return undefined;
++      const axis = raw as Record<string, unknown>;
++      const state = text(axis.state);
++      if (state === undefined || !['AVAILABLE', 'EXCEEDED', 'UNKNOWN'].includes(state))
++        return undefined;
++      const usage = number(axis.usage),
++        limit = number(axis.limit);
++      const available = number(axis.available),
++        reserved = number(axis.reserved);
++      const measured =
++        code === 'reservedRecoveryHeadroom'
++          ? available !== undefined && reserved !== undefined
++          : usage !== undefined && limit !== undefined;
++      axes[code] = {
++        usage,
++        limit,
++        available,
++        reserved,
++        state: measured ? state : 'UNKNOWN',
++        unit: text(axis.unit),
++        windowHours: number(axis.windowHours),
++        companySales: number(axis.companySales),
++        affectedSales: number(axis.affectedSales),
++        aggregationBasis: text(axis.aggregationBasis),
++        conservativeBoundaryReportCount: number(axis.conservativeBoundaryReportCount),
++      };
++    }
++    envelopes.push({
++      envelopeId,
++      policyVersion,
++      scopeKind,
++      platformCode: text(entry.platformCode),
++      storeId: text(entry.storeId),
++      currencyCode: text(entry.currencyCode),
++      measurementWindowHours: number(entry.measurementWindowHours),
++      retainedWindowDays: number(entry.retainedWindowDays),
++      axes,
++      reasons: strings(entry.reasons),
++    });
+   }
++  const unresolvedStoreIds = strings(record.unresolvedStoreIds);
++  const resolved =
++    envelopes.length > 0 &&
++    unresolvedStoreIds.length === 0 &&
++    record.resolved &&
++    record.status === 'MEASURED';
+   return {
+-    envelopeId: text(record.envelopeId),
+-    policyVersion: decimal(record.policyVersion),
+-    scopeKind: text(record.scopeKind),
+-    currencyCode: text(record.currencyCode),
+-    activeInterventions: decimal(record.activeInterventions),
+-    maxActiveInterventions: decimal(record.maxActiveInterventions),
+-    reservedRecoveryHeadroom: decimal(record.reservedRecoveryHeadroom),
+-    unresolvedTransmittedWrites: decimal(record.unresolvedTransmittedWrites),
+-    maxUnresolvedTransmittedWrites: decimal(record.maxUnresolvedTransmittedWrites),
+-    cumulativeBidChangeAmount: decimal(record.cumulativeBidChangeAmount),
+-    maxCumulativeBidChangeAmount: decimal(record.maxCumulativeBidChangeAmount),
+-    cumulativeWindowHours: decimal(record.cumulativeWindowHours),
+-    resolved: record.resolved === true,
+-    exhaustedAxes: strings(record.exhaustedAxes),
+-    status: text(record.status),
++    measuredAt: text(record.measuredAt),
++    envelopes,
++    unresolvedStoreIds,
++    resolved,
++    status: resolved ? 'MEASURED' : 'UNRESOLVED',
+   };
+ }

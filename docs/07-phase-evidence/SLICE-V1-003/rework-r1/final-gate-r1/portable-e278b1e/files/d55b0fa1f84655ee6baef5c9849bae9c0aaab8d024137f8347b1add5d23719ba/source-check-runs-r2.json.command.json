@@ -1,0 +1,22 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/commits/7e66cf87afc15773d4f6e6e6717a86e7b8336ae5/check-runs?per_page=100"
+  ],
+  "startedAt": "2026-09-06T00:38:05.590162+00:00",
+  "finishedAt": "2026-09-06T00:38:06.897235+00:00",
+  "elapsedSeconds": 1.307,
+  "exitCode": 0,
+  "artifact": {
+    "path": "source-check-runs-r2.json",
+    "bytes": 46737,
+    "sha256": "bb46b2dc67910c2c0ebb172c3ee7ec0b75aa05ac0a44f13c1f0b9250b4b24d96"
+  },
+  "stderr": {
+    "path": "source-check-runs-r2.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 7e66cf8; exact source CI only, not independent Controller approval."
+}

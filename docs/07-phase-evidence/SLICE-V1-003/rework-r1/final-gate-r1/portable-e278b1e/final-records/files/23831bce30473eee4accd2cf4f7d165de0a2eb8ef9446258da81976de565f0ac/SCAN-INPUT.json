@@ -1,0 +1,79 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_MANIFEST_SCAN",
+  "scope": "Actual final-publication additional bytes, batch 10. No product test is executed.",
+  "files": {
+    "/private/tmp/slice3-backend-checkpoint-archives-r1/98344bb-publication-scan/MEMBERS.jsonl": {
+      "sha256": "3c1ee3e7596344166f506d204fab2f41c0eb49e14f009444f936a6ef541efdd2",
+      "bytes": 8360145
+    },
+    "/private/tmp/slice3-final-assessment-e278b1e-r2/ASSESSMENT-SLOTS.json": {
+      "sha256": "9a40efe1bb796c333722d043506130127b051ac3c69b5c02ef24119ad949a2ce",
+      "bytes": 8337480
+    },
+    "/private/tmp/slice3-root-selected-evidence-e278b1e-r3/ROOT-PROOF-SELECTIONS.json": {
+      "sha256": "e61cd898d6bd705da39a228ca6077ff5caca18392c4bdf3d24d07b29747a074d",
+      "bytes": 7087128
+    },
+    "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-test-reports.zip": {
+      "sha256": "eb2bc8195bd3f3007d608a1a183ef8cbfd7004dc14483c06bcb9cd74cd04a5f3",
+      "bytes": 6912005
+    },
+    "/private/tmp/slice3-checkpoint-backend-ci-7e66cf8/backend-test-reports.zip": {
+      "sha256": "aa828dc67af9e61ef1147b7ecc6ebc50aff0f2631be53bf1b608588c6bf2f361",
+      "bytes": 6869683
+    },
+    "/private/tmp/slice3-checkpoint-backend-ci-5fd53c0/backend-test-reports.zip": {
+      "sha256": "0ebac9cc8a7d33677001586f7730b002247af5138859a272932857ddd5546b3b",
+      "bytes": 6071456
+    },
+    "/private/tmp/slice3-structured-proposals-e278b1e-r4/PROPOSED-STRUCTURED-BINDINGS.json": {
+      "sha256": "9192260274e6174ccaa0d4a859a8526371d6adfaeaa7c74dec9bf10b9953dd8c",
+      "bytes": 5964256
+    },
+    "/private/tmp/slice3-publication-observation-e278b1e-r2/SOURCE-METHOD-REVIEW-PLAN.json": {
+      "sha256": "5d41e1aa1507bc1acbe6201bbd89964d244561cd4df2d8a800a5ef56d358ce63",
+      "bytes": 5745634
+    },
+    "/private/tmp/slice3-publication-observation-e278b1e-r2/EXECUTION-INPUTS.json": {
+      "sha256": "274a428e674fb87c2613611b5aba070521c4b78c382cd57c1f5a0f8bcbec36d0",
+      "bytes": 5535200
+    },
+    "/private/tmp/slice3-checkpoint-backend-ci-5fd53c0/backend-integration.log": {
+      "sha256": "c4c70b1a106bcb1b40b94753411a9e087b29ded5c56db591c22ac26901c63ed5",
+      "bytes": 4995511
+    },
+    "/private/tmp/slice3-checkpoint-backend-ci-5fd53c0/backend-build.log": {
+      "sha256": "70a59cb713638622f6270ccb8892c71cd1b1561884b9094e6fc2f47089e63f0b",
+      "bytes": 4995460
+    },
+    "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/command.log": {
+      "sha256": "3e53db69879cd4d9662185512cb59a6a9a2acec0521917fe64655078dc058195",
+      "bytes": 4781580
+    }
+  },
+  "manifest": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/input-10.json",
+    "sha256": "606b63a62dcaa2a95133731c6127241f7203bdb90b995f5050c84b313941ef27"
+  },
+  "scanner": {
+    "path": "/private/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+    "sha256": "aebf01d82dd3c8845fe538589caf7ccb21d16363422d57f2a2ddad6e93bf76f8"
+  },
+  "rulesSource": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+    "\\bAKIA[0-9A-Z]{16}\\b",
+    "\\bghp_[A-Za-z0-9]{30,}\\b",
+    "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b",
+    "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b",
+    "\\bsk-[A-Za-z0-9]{24,}\\b",
+    "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']",
+    "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b",
+    "(?i)https?://[^\\s\\\"<>]*(?:X-Amz-Signature|X-Goog-Signature|[?&]sig=|[?&]signature=|[?&]access_token=|[?&]token=)[^\\s\\\"<>]*"
+  ],
+  "productExecutions": 0,
+  "closureClaimMade": false
+}

@@ -1,0 +1,9 @@
+{
+  "file": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+  "baseSha256": "95cd6f6f711e186c685667233523812082c42a99c488d2f16772f4b553d5d676",
+  "proposedSha256": "07bc7b9df95537bb09d6feae44716103f889f644152124a3372414a783221df3",
+  "cause": "All three fixture invocations intentionally have identical exact response bytes but inserted new raw_content UUIDs against global immutable hash uniqueness. Prior single positive had concealed this fixture defect.",
+  "scope": "Test helper only; retain constraint, exact bytes, separate attempts and observations. Follow actual RawContentRepository INSERT ON CONFLICT DO NOTHING + hash lookup, additionally require matching byte length.",
+  "runtimeChanges": false,
+  "testsExecuted": false
+}

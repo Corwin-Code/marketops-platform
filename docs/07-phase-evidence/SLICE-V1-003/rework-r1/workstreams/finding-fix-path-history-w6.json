@@ -1,0 +1,506 @@
+{
+  "kind": "FROZEN_FINDING_CHANGED_PATH_APPEND_HISTORY_NO_CLOSURE",
+  "rows": [
+    {
+      "id": "S3-DR-001",
+      "changedPaths": [
+        "scripts/validation/collect_slice3_rework_identity.py",
+        "scripts/validation/assemble_slice3_rework_evidence.py",
+        "scripts/validate_governance.py",
+        "docs/00-governance/CURRENT_STATE.md"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+        "8dd7719326955a8ed10eac021e502874a7ce79b6"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-002",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshness.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEvidenceGatherer.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingPolicyRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingProjectionRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-003",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEvidenceGatherer.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanAttestor.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-004",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEvidenceGatherer.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshness.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingPolicyRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0037__create_advertising_conversion_freshness_and_qualification.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseCalculation.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-005",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-006",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/AdvertisingCause.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0057__bind_advertising_responsibility_and_human_decisions.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-007",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+        "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingR1Fixture.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingManualWorkflowService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java",
+        "frontend/marketops-console/src/advertising/AdvertisingManualControls.tsx",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingCommandTimeline.tsx",
+        "frontend/marketops-console/src/api/console.ts",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-008",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AdvertisingDisclosurePolicy.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-009",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/AdBidCommandRequest.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandService.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-010",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/AuthenticatedInvocationIssuer.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidApprovalAuthorityService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/AdBidCommandRequest.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-011",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingCandidateRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidate.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/AdBidCommandRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AdvertisingDisclosurePolicy.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-012",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/AdBidCommandRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdBidWriteAdapter.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteRequest.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-013",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCompensationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/AdBidCompensationController.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-014",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0040__widen_write_registry_for_ad_bid_capability.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0041__create_advertising_containment_and_decision_bundle.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-015",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanAttestor.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeAssessment.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEvidenceGatherer.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/DualAxisVerdict.java"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-016",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdContainmentControlService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdContainmentControlRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingContainmentRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-017",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0048__serialize_advertising_reservations_against_overlap.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdBundleControlService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdBundleControlRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-018",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingManualWorkflowService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java",
+        "frontend/marketops-console/src/advertising/AdvertisingManualControls.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingOutcomeHistory.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingTimestamp.tsx",
+        "frontend/marketops-console/src/api/advertising.ts",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingOperations.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-019",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingR1Fixture.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingManualWorkflowService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java",
+        "frontend/marketops-console/src/advertising/AdvertisingManualControls.tsx",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingCommandTimeline.tsx",
+        "frontend/marketops-console/src/api/console.ts",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-020",
+      "changedPaths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingCommandTimeline.tsx",
+        "frontend/marketops-console/src/api/console.ts",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsReadIT.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-021",
+      "changedPaths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+        "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingCommandTimeline.tsx",
+        "frontend/marketops-console/src/api/console.ts",
+        "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingOutcomeHistory.tsx",
+        "frontend/marketops-console/src/advertising/AdvertisingTimestamp.tsx",
+        "frontend/marketops-console/src/api/advertising.ts",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "frontend/marketops-console/src/advertising/AdvertisingOperations.tsx",
+        "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "f221bdb155a70cd942ad7074e0cb69bc02521903",
+        "4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    },
+    {
+      "id": "S3-DR-022",
+      "changedPaths": [
+        "scripts/validation/collect_slice3_rework_identity.py",
+        "scripts/validation/assemble_slice3_rework_evidence.py",
+        "scripts/validate_governance.py",
+        "docs/00-governance/CURRENT_STATE.md",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java",
+        "frontend/marketops-console/package-lock.json"
+      ],
+      "actualAppendCommitsTouchingThesePaths": [
+        "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "b871d6376f8ab88cd2544ac913e62453e9425475",
+        "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+        "8dd7719326955a8ed10eac021e502874a7ce79b6"
+      ],
+      "scope": "Actual path history, not an independent claim that every commit fixes this entire finding. Positive/negative named evidence and per-finding interpretation remain required."
+    }
+  ],
+  "count": 22
+}

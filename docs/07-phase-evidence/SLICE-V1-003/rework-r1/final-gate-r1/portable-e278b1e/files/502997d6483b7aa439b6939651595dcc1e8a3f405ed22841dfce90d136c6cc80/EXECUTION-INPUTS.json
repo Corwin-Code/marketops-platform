@@ -1,0 +1,487 @@
+{
+  "kind": "ROOT_REGISTERED_CURRENT_EXECUTION_INPUTS",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "layers": [
+    {
+      "id": "backend_full",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/layer-candidate.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "frontend_quality",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/layer-candidate.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/0/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/1/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/2/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/3/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/4/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/5/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/6/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/App.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/App.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/7/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AppSession.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AppSession.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/8/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AvailabilityAuthorityPanel.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AvailabilityAuthorityPanel.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/9/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AvailabilityCases.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AvailabilityCases.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/10/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/AvailabilityQueue.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/AvailabilityQueue.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/11/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/ConsoleJourney.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/ConsoleJourney.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/12/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/HealthShell.test.tsx",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/HealthShell.test.tsx"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/13/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/buildInfo.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/buildInfo.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/14/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/confidence.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/confidence.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/15/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/config.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/config.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/16/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/consoleApi.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/consoleApi.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/17/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/healthState.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/healthState.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/18/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/metaStatus.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/metaStatus.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/19/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/oidc.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/oidc.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/20/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/sourceIdentity.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/sourceIdentity.test.ts"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/frontend-quality/raw/build/final-gate-r6-e278b1e/frontend/tests.json",
+            "sha256": "ace95963ea0c8f4e6de7364490616b96822511a92b25f9db8ccf95d7d2553c2c"
+          },
+          "recordsPointer": "/testResults/21/assertionResults",
+          "namePointer": "/title",
+          "statusPointer": "/status",
+          "passedValue": "passed",
+          "sourcePath": "frontend/marketops-console/src/__tests__/viteConfig.test.ts",
+          "class": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/src/__tests__/viteConfig.test.ts"
+        }
+      ],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "browser",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/layer-candidate.json",
+      "junitSourceByClass": {
+        "governed-advertising.spec.ts": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "advertising-brief.spec.ts": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+        "advertising-execution.spec.ts": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+        "availability-journey.spec.ts": "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+        "business-journey.spec.ts": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+        "health-shell.spec.ts": "frontend/marketops-console/tests/browser/health-shell.spec.ts",
+        "operating-console.spec.ts": "frontend/marketops-console/tests/browser/operating-console.spec.ts"
+      },
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": [
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.json",
+            "sha256": "0d64c1ad49f7a3a84e64ef6549276a7c3e9c652056d8a0dac981f2b0316ce741"
+          },
+          "name": "a restatement keeps the reading somebody acted on",
+          "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+          "assertions": [
+            {
+              "pointer": "/suites/0/suites/1/specs/1/title",
+              "expected": "a restatement keeps the reading somebody acted on"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/1/file",
+              "expected": "advertising-brief.spec.ts"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/1/ok",
+              "expected": true
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/1/tests/0/expectedStatus",
+              "expected": "passed"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/1/tests/0/status",
+              "expected": "expected"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/1/tests/0/results/0/status",
+              "expected": "passed"
+            }
+          ]
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.json",
+            "sha256": "0d64c1ad49f7a3a84e64ef6549276a7c3e9c652056d8a0dac981f2b0316ce741"
+          },
+          "name": "every section is shown, including the ones that found nothing",
+          "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+          "assertions": [
+            {
+              "pointer": "/suites/0/suites/1/specs/0/title",
+              "expected": "every section is shown, including the ones that found nothing"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/0/file",
+              "expected": "advertising-brief.spec.ts"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/0/ok",
+              "expected": true
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/0/tests/0/expectedStatus",
+              "expected": "passed"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/0/tests/0/status",
+              "expected": "expected"
+            },
+            {
+              "pointer": "/suites/0/suites/1/specs/0/tests/0/results/0/status",
+              "expected": "passed"
+            }
+          ]
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.json",
+            "sha256": "0d64c1ad49f7a3a84e64ef6549276a7c3e9c652056d8a0dac981f2b0316ce741"
+          },
+          "name": "the built bundle carries no token, password or secret reference",
+          "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+          "assertions": [
+            {
+              "pointer": "/suites/5/suites/0/specs/3/title",
+              "expected": "the built bundle carries no token, password or secret reference"
+            },
+            {
+              "pointer": "/suites/5/suites/0/specs/3/file",
+              "expected": "operating-console.spec.ts"
+            },
+            {
+              "pointer": "/suites/5/suites/0/specs/3/ok",
+              "expected": true
+            },
+            {
+              "pointer": "/suites/5/suites/0/specs/3/tests/0/expectedStatus",
+              "expected": "passed"
+            },
+            {
+              "pointer": "/suites/5/suites/0/specs/3/tests/0/status",
+              "expected": "expected"
+            },
+            {
+              "pointer": "/suites/5/suites/0/specs/3/tests/0/results/0/status",
+              "expected": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "governance",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/binder-synthetic-r2/named-tests.json",
+            "sha256": "cd3484ac1314b4e0fdbe761f40c18a015d9c216880bd46ac3e71484bfe46eb7e"
+          },
+          "recordsPointer": "/methodsAndFrameworkEvents",
+          "namePointer": "/method",
+          "statusPointer": "/status",
+          "passedValue": "PASSED",
+          "sourcePathPointer": "/sourcePath"
+        },
+        {
+          "evidence": {
+            "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/raw/build/final-gate-r6-e278b1e/governance-r2/named-unittest-results.json",
+            "sha256": "0158ea828b8e75206792ebc16f8e5236ac432ce916119a165c71f26cb3c18131"
+          },
+          "recordsPointer": "/methodsAndFrameworkEvents",
+          "namePointer": "/method",
+          "statusPointer": "/status",
+          "passedValue": "PASSED",
+          "sourcePathPointer": "/sourcePath"
+        }
+      ],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "infrastructure",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/layer-candidate.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "migration",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/layer-candidate.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "supply_chain",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/layer-candidate.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "mixed_capacity",
+      "adapter": "collector",
+      "receipt": "/private/tmp/slice3-completed-registration-e278b1e-r1/MIXED-SCOPE-RECEIPT.json",
+      "junitSourceByClass": {
+        "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedOrchestrationCapacityIT.java"
+      },
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": []
+    },
+    {
+      "id": "security",
+      "adapter": "security",
+      "receipt": "/private/tmp/slice3-security-schema-e278b1e-r1/SCHEMA-ADAPTER-RECEIPT.json",
+      "junitSourceByClass": {},
+      "jsonRecordAdapters": [],
+      "structuredRecordAdapters": []
+    }
+  ],
+  "sourcePrefixToRepository": {
+    "test_propose_method_bindings.py": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+    "test_composite_execution_scopes.py": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+    "test_derivation_source_identity.py": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+    "test_nested_junit_source.py": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py"
+  },
+  "artifactDestinations": {}
+}

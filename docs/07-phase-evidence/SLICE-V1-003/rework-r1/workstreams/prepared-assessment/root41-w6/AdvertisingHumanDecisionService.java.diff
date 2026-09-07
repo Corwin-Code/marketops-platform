@@ -1,0 +1,14 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java
+index 6267f4c..c5a823f 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java
+@@ -158,6 +158,9 @@ public class AdvertisingHumanDecisionService {
+         }
+         var projection = advertising.bidProjection(proposal.id())
+                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED));
++        if (!projection.actionBlockerCodes().isEmpty()) {
++            throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
++        }
+         if ("ORDINARY_IMPACT".equals(projection.materialityRoute())) {
+             requireRole(actor, BusinessRoleCode.OPS_LEAD);
+             if (!actor.userId().equals(selected.endorser())) throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);

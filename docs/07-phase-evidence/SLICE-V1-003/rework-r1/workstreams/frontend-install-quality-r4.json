@@ -1,0 +1,133 @@
+{
+  "kind": "LOCAL_FRONTEND_INSTALL_AND_QUALITY",
+  "recordedAt": "2026-09-05T02:56:58.340050+00:00",
+  "node": "v24.19.0",
+  "npm": "11.17.0",
+  "packageLockSha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332",
+  "lockUnchanged": true,
+  "commands": [
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "startedAt": "2026-09-05T02:56:25.413889+00:00",
+      "finishedAt": "2026-09-05T02:56:29.400005+00:00",
+      "durationSeconds": 3.986,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-npm-ci.log",
+      "sha256": "076c793bd62f6dc22cf55ac3a69282a53fc9173c11e3ab69e6861e23c86ff656"
+    },
+    {
+      "command": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "startedAt": "2026-09-05T02:56:29.400232+00:00",
+      "finishedAt": "2026-09-05T02:56:29.946077+00:00",
+      "durationSeconds": 0.546,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-npm-ls.log",
+      "sha256": "4c57de53a649428fd3a0f7c30da5b41f25521aaa8e501506ac4d1a229d9d38a6"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "startedAt": "2026-09-05T02:56:29.946235+00:00",
+      "finishedAt": "2026-09-05T02:56:33.808954+00:00",
+      "durationSeconds": 3.863,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-format-check.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-09-05T02:56:33.809153+00:00",
+      "finishedAt": "2026-09-05T02:56:40.325176+00:00",
+      "durationSeconds": 6.516,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-lint.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-09-05T02:56:40.325476+00:00",
+      "finishedAt": "2026-09-05T02:56:42.832556+00:00",
+      "durationSeconds": 2.507,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-typecheck.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:ci"
+      ],
+      "startedAt": "2026-09-05T02:56:42.832681+00:00",
+      "finishedAt": "2026-09-05T02:56:51.623786+00:00",
+      "durationSeconds": 8.791,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-test-ci.log",
+      "sha256": "1303f3e9f7d93d4bb3944d93f3d6d7c253b4152071dd69e9a92c947da8a02b83"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "startedAt": "2026-09-05T02:56:51.624005+00:00",
+      "finishedAt": "2026-09-05T02:56:54.253361+00:00",
+      "durationSeconds": 2.629,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-bundle.log",
+      "sha256": "eeaf6ee5c37a1c831f24a0e7982e9efd575f8514518a34200650ceae129c748d"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "verify:bundle"
+      ],
+      "startedAt": "2026-09-05T02:56:54.253513+00:00",
+      "finishedAt": "2026-09-05T02:56:56.615568+00:00",
+      "durationSeconds": 2.362,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-bundle-isolation.log",
+      "sha256": "8585ed9dee846ba2000d9cdaf5302f35a92a16da5a427b4b2627cfd27fb56761"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "sbom"
+      ],
+      "startedAt": "2026-09-05T02:56:56.615684+00:00",
+      "finishedAt": "2026-09-05T02:56:58.339930+00:00",
+      "durationSeconds": 1.724,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-ui-final-r4-sbom.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3"
+    }
+  ],
+  "sourceNotice": "Local working tree only; final source and remote CI binding is separate.",
+  "sbom": {
+    "path": "build/supply-chain/frontend-sbom.json",
+    "sha256": "91d3a0c5bad2e38e52e1e47b8cb4897cebb389b44f0acb039eeee473459e07c8",
+    "format": "CycloneDX 1.6",
+    "validation": "npm run sbom exit 0"
+  }
+}

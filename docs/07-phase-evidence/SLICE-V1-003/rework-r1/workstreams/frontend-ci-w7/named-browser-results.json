@@ -1,0 +1,979 @@
+{
+  "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+  "testedCheckoutTree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+  "runId": 33963350083,
+  "jobId": 101298991243,
+  "tests": [
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+      "suiteTitles": [
+        "TC-BROWSER-017 the brief reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sourceSha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "sourceLine": 155,
+      "sourceColumn": 5,
+      "ordinal": 1,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:51.0817148Z",
+      "durationDisplay": "357ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 153,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+      "suiteTitles": [
+        "TC-BROWSER-017 the brief reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sourceSha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "sourceLine": 155,
+      "sourceColumn": 5,
+      "ordinal": 2,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:51.3402686Z",
+      "durationDisplay": "243ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 156,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+      "suiteTitles": [
+        "TC-BROWSER-017 the brief reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sourceSha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "sourceLine": 155,
+      "sourceColumn": 5,
+      "ordinal": 3,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:51.5768543Z",
+      "durationDisplay": "217ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 159,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "every section is shown, including the ones that found nothing",
+      "suiteTitles": [
+        "TC-BROWSER-018 the brief renders as published"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-018 the brief renders as published › every section is shown, including the ones that found nothing",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sourceSha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "sourceLine": 173,
+      "sourceColumn": 3,
+      "ordinal": 4,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:52.1562361Z",
+      "durationDisplay": "567ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 166,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "a restatement keeps the reading somebody acted on",
+      "suiteTitles": [
+        "TC-BROWSER-018 the brief renders as published"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-018 the brief renders as published › a restatement keeps the reading somebody acted on",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sourceSha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "sourceLine": 199,
+      "sourceColumn": 3,
+      "ordinal": 5,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:52.6846921Z",
+      "durationDisplay": "515ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 172,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "nothing published is stated, not shown as a fault",
+      "suiteTitles": [
+        "TC-BROWSER-018 the brief renders as published"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-018 the brief renders as published › nothing published is stated, not shown as a fault",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sourceSha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd",
+      "sourceLine": 218,
+      "sourceColumn": 3,
+      "ordinal": 6,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:53.1936958Z",
+      "durationDisplay": "495ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 178,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses /api/v1/console/advertising/reservations with no token",
+      "suiteTitles": [
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/reservations with no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 169,
+      "sourceColumn": 5,
+      "ordinal": 7,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:53.4174285Z",
+      "durationDisplay": "201ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 180,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses /api/v1/console/advertising/exposure with no token",
+      "suiteTitles": [
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/exposure with no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 169,
+      "sourceColumn": 5,
+      "ordinal": 8,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:53.6494781Z",
+      "durationDisplay": "201ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 183,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses /api/v1/console/advertising/containments with no token",
+      "suiteTitles": [
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/containments with no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 169,
+      "sourceColumn": 5,
+      "ordinal": 9,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:53.8733418Z",
+      "durationDisplay": "207ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 186,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses an advertising read carrying a made-up token",
+      "suiteTitles": [
+        "TC-BROWSER-015 the advertising reads are refused without an authenticated caller"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses an advertising read carrying a made-up token",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 185,
+      "sourceColumn": 3,
+      "ordinal": 10,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:54.0894161Z",
+      "durationDisplay": "198ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 189,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the envelope is shown axis by axis, with no combined figure",
+      "suiteTitles": [
+        "TC-BROWSER-016 the execution surfaces render in a real browser"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-016 the execution surfaces render in a real browser › the envelope is shown axis by axis, with no combined figure",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 203,
+      "sourceColumn": 3,
+      "ordinal": 11,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:54.8204072Z",
+      "durationDisplay": "708ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 198,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "a hold names its kind and every condition still outstanding",
+      "suiteTitles": [
+        "TC-BROWSER-016 the execution surfaces render in a real browser"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-016 the execution surfaces render in a real browser › a hold names its kind and every condition still outstanding",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 257,
+      "sourceColumn": 3,
+      "ordinal": 12,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:55.3613910Z",
+      "durationDisplay": "531ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 206,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "no envelope is presented as no write at all, not as an empty one",
+      "suiteTitles": [
+        "TC-BROWSER-016 the execution surfaces render in a real browser"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-016 the execution surfaces render in a real browser › no envelope is presented as no write at all, not as an empty one",
+      "sourcePath": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sourceSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+      "sourceLine": 280,
+      "sourceColumn": 3,
+      "ordinal": 13,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:55.7981562Z",
+      "durationDisplay": "426ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 214,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "TC-BROWSER-014 stockout queue, accountable case and structured action",
+      "suiteTitles": [],
+      "fullDisplayTitle": "TC-BROWSER-014 stockout queue, accountable case and structured action",
+      "sourcePath": "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+      "sourceSha256": "5b5d7841e53ce28a44e75273b88391d1d175fc56c536b1227f063362e0b1a66d",
+      "sourceLine": 11,
+      "sourceColumn": 1,
+      "ordinal": 14,
+      "observedCompletionTimeUTC": "2026-09-05T11:28:57.3082459Z",
+      "durationDisplay": "1.5s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 263,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+      "suiteTitles": [],
+      "fullDisplayTitle": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+      "sourcePath": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+      "sourceSha256": "c6cc081b0a99a8c0a40feefcfa620509b450dd8d09e1ed01f10261eb9cea561f",
+      "sourceLine": 4,
+      "sourceColumn": 1,
+      "ordinal": 15,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:02.1723881Z",
+      "durationDisplay": "4.8s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 344,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the built console recovers across a real database outage",
+      "suiteTitles": [],
+      "fullDisplayTitle": "the built console recovers across a real database outage",
+      "sourcePath": "frontend/marketops-console/tests/browser/health-shell.spec.ts",
+      "sourceSha256": "913648b162fb0527fe0ee99831add3c5abdb986456309e59965aa1dfb07a0059",
+      "sourceLine": 63,
+      "sourceColumn": 1,
+      "ordinal": 16,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:11.7862489Z",
+      "durationDisplay": "9.6s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 431,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "shows the platform panel and no operating data",
+      "suiteTitles": [
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › shows the platform panel and no operating data",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 34,
+      "sourceColumn": 3,
+      "ordinal": 17,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:12.0356483Z",
+      "durationDisplay": "233ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 433,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses an operating request that carries no token",
+      "suiteTitles": [
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries no token",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 44,
+      "sourceColumn": 3,
+      "ordinal": 18,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:12.2290765Z",
+      "durationDisplay": "180ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 435,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the backend refuses an operating request that carries a made-up token",
+      "suiteTitles": [
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries a made-up token",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 58,
+      "sourceColumn": 3,
+      "ordinal": 19,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:12.4380834Z",
+      "durationDisplay": "196ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 438,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "the built bundle carries no token, password or secret reference",
+      "suiteTitles": [
+        "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the built bundle carries no token, password or secret reference",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 79,
+      "sourceColumn": 3,
+      "ordinal": 20,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:12.6983673Z",
+      "durationDisplay": "246ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 440,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "waits for 202 completion and saves only the verified large export",
+      "suiteTitles": [
+        "TC-BROWSER-012 asynchronous export presentation and browser download integrity"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-012 asynchronous export presentation and browser download integrity › waits for 202 completion and saves only the verified large export",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 164,
+      "sourceColumn": 5,
+      "ordinal": 21,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:15.9523307Z",
+      "durationDisplay": "3.2s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 451,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "refuses a corrupt final part without offering a partial file",
+      "suiteTitles": [
+        "TC-BROWSER-012 asynchronous export presentation and browser download integrity"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-012 asynchronous export presentation and browser download integrity › refuses a corrupt final part without offering a partial file",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 164,
+      "sourceColumn": 5,
+      "ordinal": 22,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:19.1728595Z",
+      "durationDisplay": "3.2s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 461,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "signs in, reaches the work list, and never labels doubt as certainty",
+      "suiteTitles": [
+        "TC-BROWSER-011 the operator journey runs in a real browser"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-011 the operator journey runs in a real browser › signs in, reaches the work list, and never labels doubt as certainty",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 316,
+      "sourceColumn": 3,
+      "ordinal": 23,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:19.7116616Z",
+      "durationDisplay": "525ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 472,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "an ended session takes the operator back to sign-in with no data left on screen",
+      "suiteTitles": [
+        "TC-BROWSER-011 the operator journey runs in a real browser"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-011 the operator journey runs in a real browser › an ended session takes the operator back to sign-in with no data left on screen",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 402,
+      "sourceColumn": 3,
+      "ordinal": 24,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:20.2034123Z",
+      "durationDisplay": "476ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 482,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "LEGACY_BROWSER",
+      "title": "a refused sign-in leaves the visitor told rather than blank",
+      "suiteTitles": [
+        "TC-BROWSER-011 the operator journey runs in a real browser"
+      ],
+      "fullDisplayTitle": "TC-BROWSER-011 the operator journey runs in a real browser › a refused sign-in leaves the visitor told rather than blank",
+      "sourcePath": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sourceSha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d",
+      "sourceLine": 418,
+      "sourceColumn": 3,
+      "ordinal": 25,
+      "observedCompletionTimeUTC": "2026-09-05T11:29:20.5533694Z",
+      "durationDisplay": "338ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "logMemberSha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "logLine": 485,
+      "jobId": 101298991243,
+      "step": 11
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "suiteTitles": [],
+      "fullDisplayTitle": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 97,
+      "sourceColumn": 1,
+      "ordinal": 1,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:16.4987904Z",
+      "durationDisplay": "8.1s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 429,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "suiteTitles": [],
+      "fullDisplayTitle": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 175,
+      "sourceColumn": 1,
+      "ordinal": 2,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:16.5295921Z",
+      "durationDisplay": "19ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 434,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [],
+      "fullDisplayTitle": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 185,
+      "sourceColumn": 3,
+      "ordinal": 3,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:23.8586552Z",
+      "durationDisplay": "7.3s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 596,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [],
+      "fullDisplayTitle": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 185,
+      "sourceColumn": 3,
+      "ordinal": 4,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:30.7739725Z",
+      "durationDisplay": "6.9s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 758,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "suiteTitles": [],
+      "fullDisplayTitle": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 278,
+      "sourceColumn": 1,
+      "ordinal": 5,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:33.3339649Z",
+      "durationDisplay": "2.5s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 915,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "suiteTitles": [],
+      "fullDisplayTitle": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 311,
+      "sourceColumn": 1,
+      "ordinal": 6,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:37.1678279Z",
+      "durationDisplay": "3.8s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1011,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "suiteTitles": [],
+      "fullDisplayTitle": "scoped emergency hold remains active until independent recovery conditions are established",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 370,
+      "sourceColumn": 1,
+      "ordinal": 7,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:39.8301486Z",
+      "durationDisplay": "2.6s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1120,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 8,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:41.7055776Z",
+      "durationDisplay": "1.9s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1188,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 9,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:42.7012908Z",
+      "durationDisplay": "985ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1221,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 10,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:43.9021539Z",
+      "durationDisplay": "1.2s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1254,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 11,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:44.9198641Z",
+      "durationDisplay": "1.0s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1292,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "suiteTitles": [],
+      "fullDisplayTitle": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 493,
+      "sourceColumn": 1,
+      "ordinal": 12,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:54.0664344Z",
+      "durationDisplay": "9.1s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1376,
+      "jobId": 101298991243,
+      "step": 13
+    }
+  ],
+  "limit": "Parsed actual successful Playwright lines from unmodified GitHub job logs. No local result substitution. No raw trace/headers copied."
+}

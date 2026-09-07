@@ -1,0 +1,223 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "POST_W5_PRINCIPAL_SECURITY_REVIEW",
+  "status": "TARGETED_RUNTIME_PASS_FINAL_CLEAN_FULL_AND_LATEST_CI_PENDING",
+  "scope": "F022 security verification; six original HIGH java/tainted-permissions-check alerts. Supplementary read identity assurance for F010, not replacement of command creator authorization proof.",
+  "originalCi": {
+    "pullRequest": 30,
+    "head": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "testMerge": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+    "securityRunId": 33960570489,
+    "javaAnalysisId": 1729021395,
+    "toolVersion": "2.26.4",
+    "ruleId": "java/tainted-permissions-check",
+    "alerts": [
+      {
+        "number": 118,
+        "file": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "line": 78,
+        "capturedState": "OPEN"
+      },
+      {
+        "number": 119,
+        "file": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "line": 88,
+        "capturedState": "OPEN"
+      },
+      {
+        "number": 120,
+        "file": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "line": 98,
+        "capturedState": "OPEN"
+      },
+      {
+        "number": 121,
+        "file": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "line": 111,
+        "capturedState": "OPEN"
+      },
+      {
+        "number": 122,
+        "file": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "line": 124,
+        "capturedState": "OPEN"
+      },
+      {
+        "number": 123,
+        "file": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+        "line": 145,
+        "capturedState": "OPEN"
+      }
+    ],
+    "originalWorkflowConclusion": "SUCCESS",
+    "limitation": "Workflow success did not mean these six alerts were closed."
+  },
+  "archivedPrimaryEvidence": [
+    {
+      "originalName": "slice3-codeql-java-1729021395.sarif",
+      "rawBytes": 1546196,
+      "rawSha256": "88ff88fb2d5b89acbb72c5669f88baa3186f1c6d804a0348fd1082dce1a6b2eb",
+      "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/java-analysis-1729021395.sarif.gz",
+      "archiveSha256": "389021fdc3c4397e5a1162d85a829c544e6c1c5059c15f0b36d6735cf3dfe5b3"
+    },
+    {
+      "originalName": "slice3-codeql-SpringController.qll",
+      "rawBytes": 15245,
+      "rawSha256": "1031e1ab151b2b235f5286eae143487ef437dd787f8444f4228ad3a4dcbf8d3c",
+      "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/codeql-2.26.4-SpringController.qll.gz",
+      "archiveSha256": "c6d7f35d56074e25123b16df2dff350c09ed53ed2304ecaccdf71eb1ee55f4e8"
+    }
+  ],
+  "rootCause": {
+    "classification": "STRUCTURAL_SOURCE_MODEL_MISMATCH",
+    "observedFlow": "Every SARIF path begins with the unannotated AuthenticatedActor handler parameter and terminates in permittedStores(actor). There is no flow from a path/query identifier into the permission code.",
+    "runtimeBoundary": "The registered custom argument resolver reads only an authenticated SecurityContext principal of AuthenticatedActor type and runs before catch-all model binding. JWT signature, issuer, audience and expiry validation precede live profile/role resolution; ADVERTISING_VIEW remains a fixed permission evaluated against live database grants. No request-controlled identity enlargement was found in these six flows.",
+    "modelBoundary": "CodeQL 2.26.4 SpringRequestMappingParameter.isTaintedInput treats unmatched controller types as request input; its isNotDirectlyTaintedInput explicitly exempts java.security.Principal subtypes. AuthenticationPrincipal annotation is not an exemption in this model.",
+    "modelSource": "https://github.com/github/codeql/blob/codeql-cli/v2.26.4/java/ql/lib/semmle/code/java/frameworks/spring/SpringController.qll"
+  },
+  "repair": {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+    "sourceSha256AtR23": "b3ba3341fa2920a16e6341af1f1caf082675ec9e4afdc0f381d55e95c5b52b13",
+    "behavior": "All seven handlers of this one controller receive Spring Authentication, a Principal subtype resolved from servlet request.getUserPrincipal before request model binding. A private requireActor preserves null/authenticated/type checks; all business authorization, Store/Product SQL filters and masking are unchanged.",
+    "unchangedAuthorities": [
+      "Global actor resolver and JWT validators",
+      "Fixed action codes and all business roles",
+      "Live database grants and exact object scope",
+      "CodeQL rules, severity and alert state",
+      "Provider and production enablement"
+    ]
+  },
+  "runtimeProof": {
+    "receipt": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+      "sha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8"
+    },
+    "baseHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "sourceBefore": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/source-before.json",
+      "sha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd"
+    },
+    "sourceAfter": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/source-after.json",
+      "sha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd"
+    },
+    "sourceStable": true,
+    "command": [
+      "./mvnw",
+      "-B",
+      "-ntp",
+      "-Dmarketops.build.gitCommit=247ea5ced6cd0ac110314db9fa606d8995c85cac",
+      "-Dtest=TestDatabaseIssuerIT,AdvertisingAuthorityVersionStopIT,AdvertisingHumanWorkflowIT,AdvertisingManualWorkflowIT,AdvertisingOrdinaryApprovalIT,AdvertisingVerticalPathIT,AdvertisingDisclosureIT,AdvertisingOperationsPrincipalIT,AdvertisingOperationsReadIT,SignedBearerIdentityIT,IngestionAuthorityArchitectureTest,ModuleBoundaryArchitectureTest,ModulithArchitectureTest,RuleSensitivityArchitectureTest,SoleAuthorityArchitectureTest",
+      "test"
+    ],
+    "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+    "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+    "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+    "elapsedSeconds": 179.453,
+    "wholeRunCounts": {
+      "tests": 175,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "selectedClasses": [
+      "TestDatabaseIssuerIT",
+      "AdvertisingAuthorityVersionStopIT",
+      "AdvertisingHumanWorkflowIT",
+      "AdvertisingManualWorkflowIT",
+      "AdvertisingOrdinaryApprovalIT",
+      "AdvertisingVerticalPathIT",
+      "AdvertisingDisclosureIT",
+      "AdvertisingOperationsPrincipalIT",
+      "AdvertisingOperationsReadIT",
+      "SignedBearerIdentityIT",
+      "IngestionAuthorityArchitectureTest",
+      "ModuleBoundaryArchitectureTest",
+      "ModulithArchitectureTest",
+      "RuleSensitivityArchitectureTest",
+      "SoleAuthorityArchitectureTest"
+    ],
+    "reportsArchive": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+      "sha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55"
+    },
+    "principalReportMember": "reports/TEST-com.mimococo.marketops.AdvertisingOperationsPrincipalIT.xml",
+    "principalReportSha256": "8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100",
+    "cases": [
+      {
+        "classname": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "name": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+        "status": "PASS",
+        "seconds": "0.906"
+      },
+      {
+        "classname": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "name": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+        "status": "PASS",
+        "seconds": "0.772"
+      },
+      {
+        "classname": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "name": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+        "status": "PASS",
+        "seconds": "0.506"
+      }
+    ],
+    "assertionBoundary": [
+      "Each of seven routes accepts a signed authorized Owner; exact returned command and reservation IDs validate meaningful positive reads.",
+      "Anonymous identity/role/principal query fields cannot authenticate: all seven routes return 401.",
+      "A signed Maker with no advertising VIEW grant cannot borrow Owner identifiers, roles or authentication fields: all seven routes return 403.",
+      "The same bearer token loses all seven reads after the real VIEW grant is revoked, despite spoofed fields: all seven routes return 403."
+    ],
+    "supportingCompleteSuites": [
+      "AdvertisingDisclosureIT: 8",
+      "AdvertisingOperationsReadIT: 10",
+      "SignedBearerIdentityIT: 24",
+      "IngestionAuthorityArchitectureTest: 34",
+      "ModuleBoundaryArchitectureTest: 12",
+      "ModulithArchitectureTest: 2",
+      "RuleSensitivityArchitectureTest: 17",
+      "SoleAuthorityArchitectureTest: 6"
+    ]
+  },
+  "testReferences": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+      "sourceSha256AtRun": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "r23Case": {
+        "classname": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "name": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+        "status": "PASS",
+        "seconds": "0.906"
+      }
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+      "sourceSha256AtRun": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "r23Case": {
+        "classname": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "name": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+        "status": "PASS",
+        "seconds": "0.772"
+      }
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+      "sourceSha256AtRun": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "r23Case": {
+        "classname": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "name": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+        "status": "PASS",
+        "seconds": "0.506"
+      }
+    }
+  ],
+  "limits": [
+    "R23 is the exact manifest-bound W5-plus-repairs working tree, not unchanged published W5 source.",
+    "New-checkpoint clean unselected full verification and latest exact PR CodeQL reanalysis remain pending.",
+    "No rule suppression, security alert dismissal, Controller verdict, Ready, merge or production authorization is asserted."
+  ]
+}

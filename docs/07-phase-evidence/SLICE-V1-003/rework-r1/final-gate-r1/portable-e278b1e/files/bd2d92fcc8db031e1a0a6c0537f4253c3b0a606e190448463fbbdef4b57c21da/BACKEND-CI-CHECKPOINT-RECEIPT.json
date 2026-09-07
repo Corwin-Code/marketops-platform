@@ -1,0 +1,783 @@
+{
+  "kind": "EXACT_COMPLETED_CHECKPOINT_BACKEND_CI_RAW_VERIFICATION",
+  "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "sourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+  "run": {
+    "id": 34008254541,
+    "head_sha": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34008254541"
+  },
+  "jobs": [
+    {
+      "id": 101419354463,
+      "name": "backend-build",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T03:09:06Z",
+      "completed_at": "2026-09-06T03:41:09Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34008254541/job/101419354463"
+    },
+    {
+      "id": 101419354593,
+      "name": "backend-integration",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T03:09:06Z",
+      "completed_at": "2026-09-06T03:48:58Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34008254541/job/101419354593"
+    },
+    {
+      "id": 101419354623,
+      "name": "architecture-boundary",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T03:09:06Z",
+      "completed_at": "2026-09-06T03:10:09Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34008254541/job/101419354623"
+    }
+  ],
+  "rawRun": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-run-r3.json",
+    "sha256": "2a9748909d1dfa7ebb47243e45a525d0f3b5bf8ffa1c6e788c88ea1073b2a227",
+    "bytes": 13685
+  },
+  "rawJobs": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-jobs-r3.json",
+    "sha256": "7fdfeeee8263544f51a621605daaf0cbebdd8136fe78c0b056f32b9940384578",
+    "bytes": 7691
+  },
+  "rawArtifactApi": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-artifacts-r2.json",
+    "sha256": "1c7ca1d508c480d7804c0ca8e25bd317fec83066f0b45c24ba3b5376a0f922e4",
+    "bytes": 2277
+  },
+  "rawIndex": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/BACKEND-ARTIFACT-MEMBER-INDEX.json",
+    "sha256": "fe1665673137683d731d4a392fb43f50f2bcd754f00841081488e6bc8a025c14",
+    "bytes": 847295
+  },
+  "actualCheckouts": [
+    {
+      "member": "architecture-boundary/2_Checkout repository.txt",
+      "sha256": "80b99dc7f9e8f33a937123b5e22e5357aeed49c2fe061a71161bc2180ebd83a0",
+      "lines": [
+        {
+          "line": 72,
+          "text": "2026-09-06T03:09:07.9407564Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2b3e8e4b60f4d7a22afe1616f205e218d29a178c:refs/remotes/pull/30/merge"
+        },
+        {
+          "line": 74,
+          "text": "2026-09-06T03:09:25.6655942Z  * [new ref]         2b3e8e4b60f4d7a22afe1616f205e218d29a178c -> pull/30/merge"
+        },
+        {
+          "line": 99,
+          "text": "2026-09-06T03:09:26.7382218Z HEAD is now at 2b3e8e4 Merge 02e617278793b4458dfb7cac74c2a937f1dfcb00 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 102,
+          "text": "2026-09-06T03:09:26.7520849Z 2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+        }
+      ],
+      "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+    },
+    {
+      "member": "backend-build/2_Checkout repository.txt",
+      "sha256": "8900732cbc803c095ba185864a87c619e3af741ffac2477fed38a2f01efd564e",
+      "lines": [
+        {
+          "line": 72,
+          "text": "2026-09-06T03:09:08.8198947Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2b3e8e4b60f4d7a22afe1616f205e218d29a178c:refs/remotes/pull/30/merge"
+        },
+        {
+          "line": 74,
+          "text": "2026-09-06T03:09:15.9550335Z  * [new ref]         2b3e8e4b60f4d7a22afe1616f205e218d29a178c -> pull/30/merge"
+        },
+        {
+          "line": 102,
+          "text": "2026-09-06T03:09:16.9757818Z HEAD is now at 2b3e8e4 Merge 02e617278793b4458dfb7cac74c2a937f1dfcb00 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 105,
+          "text": "2026-09-06T03:09:16.9822724Z 2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+        }
+      ],
+      "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+    },
+    {
+      "member": "backend-integration/2_Checkout repository.txt",
+      "sha256": "c66c748749f230a43c74779850275023c2de8b20967bde94d97f1d4d5b8a7676",
+      "lines": [
+        {
+          "line": 72,
+          "text": "2026-09-06T03:09:08.2838614Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2b3e8e4b60f4d7a22afe1616f205e218d29a178c:refs/remotes/pull/30/merge"
+        },
+        {
+          "line": 74,
+          "text": "2026-09-06T03:09:11.6150974Z  * [new ref]         2b3e8e4b60f4d7a22afe1616f205e218d29a178c -> pull/30/merge"
+        },
+        {
+          "line": 124,
+          "text": "2026-09-06T03:09:12.7809723Z HEAD is now at 2b3e8e4 Merge 02e617278793b4458dfb7cac74c2a937f1dfcb00 into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+        },
+        {
+          "line": 127,
+          "text": "2026-09-06T03:09:12.7962971Z 2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+        }
+      ],
+      "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+    }
+  ],
+  "jobResults": [
+    {
+      "artifactId": 9982138447,
+      "artifactName": "backend-integration-reports",
+      "jobId": 101419354593,
+      "jobName": "backend-integration",
+      "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+      "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+      "countsActualUniqueWithinJob": {
+        "surefire": {},
+        "failsafe": {
+          "PASSED": 1101
+        }
+      },
+      "declaredVsActualMismatches": [],
+      "duplicateExactNodes": [],
+      "capacityMeasurements": [
+        {
+          "dataset": {
+            "stores": 1,
+            "sharedProducts": 1,
+            "organizations": 1,
+            "sharedListings": 1,
+            "regressionObjects": 200,
+            "completeAffectedSetMembersPerObject": 1,
+            "nativeObjects": 1000
+          },
+          "targeted": {
+            "sampleCount": 1000,
+            "criticalSampleCount": 200,
+            "criticalP95Millis": 14640,
+            "maximumMillis": 165815,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T03:20:24.655245856Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 163962,
+          "sweepWallMillis": 38351,
+          "hourlyMarginMillis": 3561649,
+          "runtime": {
+            "maxJvmMemoryBytes": 4192206848,
+            "java": "21.0.12.1",
+            "availableProcessors": 4,
+            "arch": "amd64",
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "os": "Linux"
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-selected-originals/backend-integration-reports/backend/marketops-server/target/advertising-capacity-receipt.json",
+            "sha256": "07400f1fe33094b1cfe8115d0426b225ca7d3870d481c8218903d9d1bababe8d",
+            "bytes": 2864
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-portfolio-6dfbe628-21de-47bc-8ef5-fbafa7b4f285",
+            "datasetPath": "target/advertising-capacity-dataset.json",
+            "datasetSha256": "8e1de77a1c347319adf55affc4dd58f14517610cd54a83e7bcb1863ed0b12427",
+            "sourceInputsPath": "target/advertising-capacity-source-inputs.json",
+            "sourceInputsSha256": "9e4b6a9be87c8a84a2fbe8c764dd1a3f27faf5d499a62571bba53a5d7a838a26",
+            "startedAt": "2026-09-06T03:17:38.177318683Z",
+            "datasetCapturedAt": "2026-09-06T03:17:40.675568385Z",
+            "measuredLocalGitHead": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+            "ciIdentity": {
+              "GITHUB_SHA": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34008254541",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "publicationIdentity": {
+              "workflowJob": "backend-integration",
+              "workflowRunAttempt": "1",
+              "sourceHeadSha": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+              "workflowRunId": "34008254541",
+              "artifactName": "backend-integration-reports",
+              "testedMergeSha": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "936cfacc1ed2f944478507f111bcaf528369a8a3eb4bcf36b77c37d04d22bb5a",
+            "resourceScopeNotice": "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T03:09:14.918262+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16766414848,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16766414848,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34008254541",
+              "runAttempt": "1",
+              "job": "backend-integration",
+              "testedCheckout": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true
+        },
+        {
+          "dataset": {
+            "organizations": 1,
+            "stores": 1,
+            "exceptionInputs": 20,
+            "historicalLandedCommands": 40,
+            "nativeObjects": 1000,
+            "sharedListings": 1,
+            "sharedProducts": 1,
+            "currentUntransmittedCommand": 1,
+            "syntheticContainmentObjects": 200
+          },
+          "targeted": {
+            "sampleCount": 1040,
+            "criticalSampleCount": 1040,
+            "criticalP95Millis": 178358,
+            "maximumMillis": 211408,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T03:27:01.443921Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 187360,
+          "sweepWallMillis": 59834,
+          "hourlyMarginMillis": 3540166,
+          "runtime": {
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "maxJvmMemoryBytes": 4192206848,
+            "availableProcessors": 4,
+            "java": "21.0.12.1"
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-mixed-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-selected-originals/backend-integration-reports/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+            "sha256": "339661a64d4452b9491f587b95c9aca97947f5169f7b75c6a2334838988654e2",
+            "bytes": 32262
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-mixed-portfolio-29c602cc-2f82-4c98-b48c-67cc35dab1a3",
+            "datasetPath": "target/advertising-mixed-capacity-dataset.json",
+            "datasetSha256": "39092ea433182f2dfe3df52397f2e73a9ba90356f011a68b6728d7b48ecc5772",
+            "sourceInputsPath": "target/advertising-mixed-capacity-source-inputs.json",
+            "sourceInputsSha256": "9e4b6a9be87c8a84a2fbe8c764dd1a3f27faf5d499a62571bba53a5d7a838a26",
+            "setupStartedAt": "2026-09-06T03:23:10.082300Z",
+            "acceptedFactMeasuredOrigin": "2026-09-06T03:23:29.851249Z",
+            "datasetCapturedAt": "2026-09-06T03:23:53.978221688Z",
+            "measuredLocalGitHead": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+            "publicationIdentity": {
+              "workflowJob": "backend-integration",
+              "workflowRunAttempt": "1",
+              "sourceHeadSha": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+              "workflowRunId": "34008254541",
+              "artifactName": "backend-integration-reports",
+              "testedMergeSha": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+            },
+            "ciIdentity": {
+              "GITHUB_SHA": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34008254541",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "936cfacc1ed2f944478507f111bcaf528369a8a3eb4bcf36b77c37d04d22bb5a",
+            "resourceScopeNotice": "JVM processors/memory describe the host JVM. The outer receipt separately records Docker daemon/VM limits; the final receipt records this test's PostgreSQL container limits.",
+            "clockNotice": "Measured workers use normal advancing application and PostgreSQL clocks; historical stage evaluation timestamps are setup-only."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T03:09:14.918262+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16766414848,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16766414848,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34008254541",
+              "runAttempt": "1",
+              "job": "backend-integration",
+              "testedCheckout": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true,
+          "setupOutcomeStages": {
+            "OPERATIONAL": 40,
+            "RETAINED": 40,
+            "SETTLED": 25
+          },
+          "afterTargetedOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 40,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 40,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 25
+          },
+          "afterTargetedRetainedVerdicts": {
+            "IMPROVED": 20,
+            "REGRESSED": 20
+          },
+          "criticalSalesGuardEvidenceAfterTargeted": 80,
+          "afterSweepOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 80,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 80,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 50
+          },
+          "latestRetainedVerdicts": {
+            "REGRESSED": 40
+          },
+          "exceptionStates": {
+            "EXPIRED": 10,
+            "INVALIDATED": 10
+          },
+          "expiredAuthorizations": 40,
+          "expiredAuthorizationsAlreadyInvalidated": 40,
+          "newAuthorizationExpiryJournals": 0,
+          "heldReservations": 1,
+          "releasedHistoricalReservations": 40,
+          "droppedLateCorrectionObjectsRecovered": 40,
+          "sweepRepairedRequestRows": 40,
+          "postgresContainerResources": {
+            "containerId": "b55f4d4b706af4165944408c2d3662b0ad270607275bdb4a1ec096d6cb57f1d1",
+            "image": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+            "nanoCpus": 0,
+            "cpuQuota": 0,
+            "cpuPeriod": 0,
+            "cpuSet": "",
+            "memoryBytes": 0,
+            "limitNotice": "Zero or null container limits mean no additional per-container cap; Docker daemon/VM limits still apply. Only this test-owned PostgreSQL container's safe resource fields are recorded."
+          },
+          "historicalGateRefusalEntriesVerified": 40,
+          "currentGlobalSwitchRefusalVerified": true,
+          "diagnosticUploaded": false,
+          "diagnosticBoundary": "Official workflow uploads receipt/dataset/source-inputs only. Do not claim the fourth local diagnostic member exists in CI or substitute these files for the local four-file layer."
+        }
+      ],
+      "coverage": null
+    },
+    {
+      "artifactId": 9982042677,
+      "artifactName": "backend-test-reports",
+      "jobId": 101419354463,
+      "jobName": "backend-build",
+      "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+      "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+      "countsActualUniqueWithinJob": {
+        "surefire": {
+          "PASSED": 1630
+        },
+        "failsafe": {
+          "PASSED": 1101
+        }
+      },
+      "declaredVsActualMismatches": [
+        {
+          "member": "backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+          "declaredTests": 12,
+          "actualTestcaseNodes": 13,
+          "boundary": "Actual leaves retained without silent correction or duplicate-name collapse."
+        }
+      ],
+      "duplicateExactNodes": [],
+      "capacityMeasurements": [
+        {
+          "dataset": {
+            "organizations": 1,
+            "sharedProducts": 1,
+            "stores": 1,
+            "nativeObjects": 1000,
+            "completeAffectedSetMembersPerObject": 1,
+            "regressionObjects": 200,
+            "sharedListings": 1
+          },
+          "targeted": {
+            "sampleCount": 1000,
+            "criticalSampleCount": 200,
+            "criticalP95Millis": 10250,
+            "maximumMillis": 151789,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T03:18:51.814897636Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 150457,
+          "sweepWallMillis": 26405,
+          "hourlyMarginMillis": 3573595,
+          "runtime": {
+            "java": "21.0.12.1",
+            "maxJvmMemoryBytes": 4192206848,
+            "os": "Linux",
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "arch": "amd64",
+            "availableProcessors": 4
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-selected-originals/backend-test-reports/backend/marketops-server/target/advertising-capacity-receipt.json",
+            "sha256": "875601366769bd459d40d650244be902b9c4b25f5562c84abddcd32585958f52",
+            "bytes": 2851
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-portfolio-5955d950-e6d7-4337-a397-70c38c749a30",
+            "datasetPath": "target/advertising-capacity-dataset.json",
+            "datasetSha256": "712e00eabf59c33a87864dec66ea9caeb94e293b0385b9e5f3814fd24593b874",
+            "sourceInputsPath": "target/advertising-capacity-source-inputs.json",
+            "sourceInputsSha256": "064353b2db0d618fea410cb00189caeb68ce7d0a91030145f261aab0ed0690a9",
+            "startedAt": "2026-09-06T03:16:19.554130636Z",
+            "datasetCapturedAt": "2026-09-06T03:16:21.348654227Z",
+            "measuredLocalGitHead": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+            "ciIdentity": {
+              "GITHUB_SHA": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34008254541",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "publicationIdentity": {
+              "workflowRunAttempt": "1",
+              "workflowJob": "backend-build",
+              "testedMergeSha": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+              "artifactName": "backend-test-reports",
+              "workflowRunId": "34008254541",
+              "sourceHeadSha": "02e617278793b4458dfb7cac74c2a937f1dfcb00"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "cd72cc4657578ffc48848df4a1732f1a3922f604fbe9ee6dd03764294fa20a3f",
+            "resourceScopeNotice": "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T03:09:19.814677+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16765366272,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16765366272,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34008254541",
+              "runAttempt": "1",
+              "job": "backend-build",
+              "testedCheckout": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true
+        },
+        {
+          "dataset": {
+            "nativeObjects": 1000,
+            "historicalLandedCommands": 40,
+            "exceptionInputs": 20,
+            "stores": 1,
+            "organizations": 1,
+            "syntheticContainmentObjects": 200,
+            "currentUntransmittedCommand": 1,
+            "sharedProducts": 1,
+            "sharedListings": 1
+          },
+          "targeted": {
+            "sampleCount": 1040,
+            "criticalSampleCount": 1040,
+            "criticalP95Millis": 154241,
+            "maximumMillis": 186469,
+            "hardBreachCount": 0,
+            "clockDefectCount": 0,
+            "pendingRequests": 0,
+            "failedRequests": 0,
+            "oldestFactAcceptedAt": null,
+            "lastSweepState": "NOT_ESTABLISHED",
+            "lastSweepCompletedAt": null,
+            "observedAt": "2026-09-06T03:24:15.896840Z",
+            "windowHours": 24,
+            "incidents": [
+              "HOURLY_RECONCILIATION_NOT_CURRENT"
+            ],
+            "state": "INCIDENT",
+            "distributionState": "MEASURED"
+          },
+          "targetedWallMillis": 168542,
+          "sweepWallMillis": 41972,
+          "hourlyMarginMillis": 3558028,
+          "runtime": {
+            "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+            "java": "21.0.12.1",
+            "availableProcessors": 4,
+            "maxJvmMemoryBytes": 4192206848
+          },
+          "productionWriteEnabled": false,
+          "realProviderAccess": false,
+          "kind": "advertising-mixed-capacity",
+          "receipt": {
+            "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/backend-selected-originals/backend-test-reports/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+            "sha256": "3152ee37f7e3f9f72d9469915865549d15beda35ea168136d107e51b4ca1c8fd",
+            "bytes": 32249
+          },
+          "identities": {
+            "datasetId": "synthetic-advertising-mixed-portfolio-82562b6b-ee71-4340-ae4a-3c3e14a6125a",
+            "datasetPath": "target/advertising-mixed-capacity-dataset.json",
+            "datasetSha256": "4936badc6dbfb355950024563d221f54cd1389941eb532871581001fb30869eb",
+            "sourceInputsPath": "target/advertising-mixed-capacity-source-inputs.json",
+            "sourceInputsSha256": "064353b2db0d618fea410cb00189caeb68ce7d0a91030145f261aab0ed0690a9",
+            "setupStartedAt": "2026-09-06T03:20:55.287418Z",
+            "acceptedFactMeasuredOrigin": "2026-09-06T03:21:09.288885Z",
+            "datasetCapturedAt": "2026-09-06T03:21:27.274470012Z",
+            "measuredLocalGitHead": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+            "publicationIdentity": {
+              "workflowRunAttempt": "1",
+              "workflowJob": "backend-build",
+              "testedMergeSha": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+              "artifactName": "backend-test-reports",
+              "workflowRunId": "34008254541",
+              "sourceHeadSha": "02e617278793b4458dfb7cac74c2a937f1dfcb00"
+            },
+            "ciIdentity": {
+              "GITHUB_SHA": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+              "GITHUB_REF": "refs/pull/30/merge",
+              "GITHUB_EVENT_NAME": "pull_request",
+              "GITHUB_RUN_ID": "34008254541",
+              "GITHUB_RUN_ATTEMPT": "1"
+            },
+            "runtimeResourceReceipt": "../../build/slice3-runtime-resources.json",
+            "runtimeResourceReceiptSha256": "cd72cc4657578ffc48848df4a1732f1a3922f604fbe9ee6dd03764294fa20a3f",
+            "resourceScopeNotice": "JVM processors/memory describe the host JVM. The outer receipt separately records Docker daemon/VM limits; the final receipt records this test's PostgreSQL container limits.",
+            "clockNotice": "Measured workers use normal advancing application and PostgreSQL clocks; historical stage evaluation timestamps are setup-only."
+          },
+          "resourceReceipt": {
+            "schemaVersion": "1.0",
+            "recordedAt": "2026-09-06T03:09:19.814677+00:00",
+            "host": {
+              "os": "Linux",
+              "architecture": "x86_64",
+              "logicalProcessors": 4,
+              "physicalMemoryBytes": 16765366272,
+              "processAffinityProcessors": 4
+            },
+            "docker": {
+              "logicalProcessors": 4,
+              "memoryBytes": 16765366272,
+              "serverVersion": "28.0.4"
+            },
+            "github": {
+              "runId": "34008254541",
+              "runAttempt": "1",
+              "job": "backend-build",
+              "testedCheckout": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c"
+            },
+            "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+          },
+          "withinUnchangedThresholds": true,
+          "setupOutcomeStages": {
+            "OPERATIONAL": 40,
+            "RETAINED": 40,
+            "SETTLED": 25
+          },
+          "afterTargetedOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 40,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 40,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 25
+          },
+          "afterTargetedRetainedVerdicts": {
+            "IMPROVED": 20,
+            "REGRESSED": 20
+          },
+          "criticalSalesGuardEvidenceAfterTargeted": 80,
+          "afterSweepOutcomeStages": {
+            "OPERATIONAL": 40,
+            "OPERATIONAL_REVISED": 80,
+            "RETAINED": 40,
+            "RETAINED_REVISED": 80,
+            "SETTLED": 25,
+            "SETTLED_REVISED": 50
+          },
+          "latestRetainedVerdicts": {
+            "REGRESSED": 40
+          },
+          "exceptionStates": {
+            "EXPIRED": 10,
+            "INVALIDATED": 10
+          },
+          "expiredAuthorizations": 40,
+          "expiredAuthorizationsAlreadyInvalidated": 40,
+          "newAuthorizationExpiryJournals": 0,
+          "heldReservations": 1,
+          "releasedHistoricalReservations": 40,
+          "droppedLateCorrectionObjectsRecovered": 40,
+          "sweepRepairedRequestRows": 40,
+          "postgresContainerResources": {
+            "containerId": "9b605b7064808f2428f53d3600648099c2c951b0eb62bdd591af3ca665574eff",
+            "image": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+            "nanoCpus": 0,
+            "cpuQuota": 0,
+            "cpuPeriod": 0,
+            "cpuSet": "",
+            "memoryBytes": 0,
+            "limitNotice": "Zero or null container limits mean no additional per-container cap; Docker daemon/VM limits still apply. Only this test-owned PostgreSQL container's safe resource fields are recorded."
+          },
+          "historicalGateRefusalEntriesVerified": 40,
+          "currentGlobalSwitchRefusalVerified": true,
+          "diagnosticUploaded": false,
+          "diagnosticBoundary": "Official workflow uploads receipt/dataset/source-inputs only. Do not claim the fourth local diagnostic member exists in CI or substitute these files for the local four-file layer."
+        }
+      ],
+      "coverage": {
+        "artifactMember": {
+          "member": "backend/marketops-server/target/site/jacoco/jacoco.xml",
+          "bytes": 3905666,
+          "sha256": "fe974e78d947281be851f1db9cbc2f4b3761c8e43a06478fffce9cd3c2946a7f",
+          "crc32": "84bf96a9"
+        },
+        "aggregation": "JACOCO_REPORT_ROOT_COUNTERS",
+        "rootCounters": {
+          "INSTRUCTION": {
+            "missed": 21478,
+            "covered": 134329
+          },
+          "BRANCH": {
+            "missed": 3035,
+            "covered": 7976
+          },
+          "LINE": {
+            "missed": 3793,
+            "covered": 24321
+          },
+          "COMPLEXITY": {
+            "missed": 3470,
+            "covered": 7405
+          },
+          "METHOD": {
+            "missed": 856,
+            "covered": 4387
+          },
+          "CLASS": {
+            "missed": 102,
+            "covered": 1013
+          }
+        }
+      }
+    },
+    {
+      "artifactId": 9982042066,
+      "artifactName": "backend-supply-chain",
+      "jobId": 101419354463,
+      "jobName": "backend-build",
+      "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+      "testedMerge": "2b3e8e4b60f4d7a22afe1616f205e218d29a178c",
+      "countsActualUniqueWithinJob": {
+        "surefire": {},
+        "failsafe": {}
+      },
+      "declaredVsActualMismatches": [],
+      "duplicateExactNodes": [],
+      "capacityMeasurements": [],
+      "coverage": null
+    }
+  ],
+  "namedTestcaseNodes": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/BACKEND-NAMED-TESTCASE-NODES.json",
+    "sha256": "baf2b6ce5df47aa2501163aa56d256a628bc7ffbb5925a54adf1e7f75d53d2b9",
+    "bytes": 2399459
+  },
+  "sourceInputComparison": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-all/BACKEND-SOURCE-INPUT-COMPARISON.json",
+    "sha256": "ef561588060fad86159ee1dbcd8462fcbb86a05e7591f72aa5111bdccb2ec7e6",
+    "bytes": 1233012
+  },
+  "sourceBinding": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172/SOURCE-IDENTITY-COMPARISON.json",
+    "sha256": "c33108bac35e7bb10bce8774bb1a4542e85f7267eb7ba695629729d6fb77e84c",
+    "bytes": 2098
+  },
+  "securityReceipt": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172/SECURITY-RECEIPT.json",
+    "sha256": "a91e24ead6fc003097c5d37ba4d8e0fc190f4bbe18e68ef52a42e687d55c9af2",
+    "bytes": 17675
+  },
+  "publicationReview": "NOT_YET_SCANNED_NEW_BACKEND_RAW; no reuse of Security scan",
+  "productExecutionPerformedLocallyByThisDecoder": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "productionWriteEnabled": false,
+  "limits": [
+    "This is exact checkpoint02e remote CI, separate from still running local final verification and future evidence-commit CI.",
+    "No CI diagnostic file or executable JAR was uploaded in these three artifacts; supply artifact contains SBOM/dependency inventory. Actual packaged verification remains in successful raw job logs.",
+    "Counts use actual testcase leaves with class and original ordinal. Different nested classes sharing a method name are distinct. Preserve any raw suite declared-count discrepancy."
+  ]
+}

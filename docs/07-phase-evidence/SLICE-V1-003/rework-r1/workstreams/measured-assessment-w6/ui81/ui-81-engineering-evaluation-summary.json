@@ -1,0 +1,39 @@
+{
+  "assessment": {
+    "path": "/tmp/slice3-w6-assessment/ui-81-engineering-evaluated-w6-full-w7-frontend-ci.json",
+    "sha256": "dfdc43d52c6cfe3cafdfd7ae1b04f2ca6055f60f39dface9fe1df59df859b298"
+  },
+  "supplementalNamedJava": {
+    "path": "/tmp/slice3-w6-assessment/console-supplemental-named-junit-w6.json",
+    "sha256": "71a8e36097498d1536b1044af3f9de55e798e28eb6c3bbd6e26d219d54f7aabd"
+  },
+  "nonJavaNamedIndex": {
+    "path": "/tmp/slice3-w6-assessment/console-shard-nonjava-named-evidence-w6-w7.json",
+    "sha256": "0ff1148083ad2c0f51e7805b10966e72ebdefaeee989ff38becc391f694f3e2f"
+  },
+  "criterionCount": 81,
+  "validation": {
+    "acceptedExactAll81Unchanged": true,
+    "oldDraftPreservedSha256": "8df15059b33372f8f08c92ae7bffae082717460d615221f290c9a311aba5364c",
+    "ownJavaReferencesMissing": [],
+    "uniqueBackendReferenceIdsUsed": 138,
+    "currentBackendSourceFilesVerifiedAgainstW6": 30,
+    "rawArchivedXmlFilesRechecked": 30,
+    "supplementaryMethods": 25,
+    "repositoryWrites": false,
+    "testsExecuted": false,
+    "controllerVerdict": null,
+    "noAutomaticCriterionPromotion": true
+  },
+  "status": "ENGINEERING_EVALUATED_PUBLICATION_GATES_PENDING",
+  "w6ActualTests": 2472,
+  "w7ActualBrowserTests": 37,
+  "publicationGates": "PENDING; no Controller verdict; no source/repository writes or test execution",
+  "knownLaterBackendCiFailure": {
+    "source": "Parent exact W7 backend-CI failure report received after W6 measured-source review",
+    "status": "PENDING_NARROW_FIX_AND_NEW_SOURCE_APPLICABILITY_REVIEW",
+    "observedFailure": "Nanosecond Java time versus PostgreSQL microsecond storage exposed a -1 second Case age and an over-precise replay oracle. Source owns the narrow Case-age and two small capacity-method fixes; Root separately repairs the isolated Price worker fixture.",
+    "evidenceBoundary": "Do not erase or relabel W6 2472 successful local cases or W7 actual frontend successes. Those are exact historical observations. They do not close this later backend-CI defect or verify the forthcoming source change.",
+    "futureVerification": "Root will bind the new source delta, targeted regression, next clean backend run and latest required CI. No frontend rerun or same-source inheritance is asserted by this draft."
+  }
+}

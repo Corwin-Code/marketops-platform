@@ -1,0 +1,170 @@
+[
+  {
+    "batch": "01",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-01.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-01"
+    ],
+    "startedAt": "2026-09-06T11:18:09.463598+00:00",
+    "finishedAt": "2026-09-06T11:18:38.770947+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "02",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-02.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-02"
+    ],
+    "startedAt": "2026-09-06T11:18:09.464146+00:00",
+    "finishedAt": "2026-09-06T11:18:38.684428+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "03",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-03.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-03"
+    ],
+    "startedAt": "2026-09-06T11:18:09.464238+00:00",
+    "finishedAt": "2026-09-06T11:18:38.181506+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "04",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-04.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-04"
+    ],
+    "startedAt": "2026-09-06T11:18:38.182177+00:00",
+    "finishedAt": "2026-09-06T11:19:12.244800+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "05",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-05.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-05"
+    ],
+    "startedAt": "2026-09-06T11:18:38.684862+00:00",
+    "finishedAt": "2026-09-06T11:18:57.601663+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "06",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-06.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-06"
+    ],
+    "startedAt": "2026-09-06T11:18:38.771390+00:00",
+    "finishedAt": "2026-09-06T11:18:46.882786+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "07",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-07.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-07"
+    ],
+    "startedAt": "2026-09-06T11:18:46.883260+00:00",
+    "finishedAt": "2026-09-06T11:18:52.489943+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "08",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-08.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-08"
+    ],
+    "startedAt": "2026-09-06T11:18:52.490513+00:00",
+    "finishedAt": "2026-09-06T11:19:05.625008+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "09",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-09.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-09"
+    ],
+    "startedAt": "2026-09-06T11:18:57.602259+00:00",
+    "finishedAt": "2026-09-06T11:19:12.631402+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "10",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-10.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-10"
+    ],
+    "startedAt": "2026-09-06T11:19:05.626007+00:00",
+    "finishedAt": "2026-09-06T11:19:47.772414+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "11",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-11.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-11"
+    ],
+    "startedAt": "2026-09-06T11:19:12.245317+00:00",
+    "finishedAt": "2026-09-06T11:19:52.952259+00:00",
+    "exitCode": 0
+  },
+  {
+    "batch": "12",
+    "argv": [
+      "python3",
+      "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "--manifest",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/input-12.json",
+      "--out",
+      "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-12"
+    ],
+    "startedAt": "2026-09-06T11:19:12.631840+00:00",
+    "finishedAt": "2026-09-06T11:19:32.713624+00:00",
+    "exitCode": 0
+  }
+]

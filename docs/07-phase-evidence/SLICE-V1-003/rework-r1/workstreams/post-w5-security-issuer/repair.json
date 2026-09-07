@@ -1,0 +1,613 @@
+{
+  "kind": "CODEQL_FIXED_ROLE_SYNTHETIC_ISSUER_REPAIR",
+  "recordedAtUTC": "2026-09-05T10:37:39.426155+00:00",
+  "baseHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "sourceState": "UNCOMMITTED_REPAIR_PENDING_ROOT_CHECKPOINT",
+  "actualAlertInputSha256": "494bffda34e017c4e7a2eeb6760fced855b06e858fee4de246ed0282cce2b0ac",
+  "alerts": [
+    {
+      "alertNumber": 128,
+      "rule": "java/concatenated-sql-query",
+      "severity": "high",
+      "testedMergeCommit": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+      "location": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+        "start_line": 77,
+        "end_line": 77,
+        "start_column": 96,
+        "end_column": 171
+      },
+      "stateAtReview": "open"
+    },
+    {
+      "alertNumber": 127,
+      "rule": "java/concatenated-sql-query",
+      "severity": "high",
+      "testedMergeCommit": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+      "location": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "start_line": 65,
+        "end_line": 65,
+        "start_column": 31,
+        "end_column": 106
+      },
+      "stateAtReview": "open"
+    },
+    {
+      "alertNumber": 126,
+      "rule": "java/concatenated-sql-query",
+      "severity": "high",
+      "testedMergeCommit": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+      "location": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 58,
+        "end_line": 58,
+        "start_column": 31,
+        "end_column": 106
+      },
+      "stateAtReview": "open"
+    },
+    {
+      "alertNumber": 125,
+      "rule": "java/concatenated-sql-query",
+      "severity": "high",
+      "testedMergeCommit": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+      "location": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 76,
+        "end_column": 151
+      },
+      "stateAtReview": "open"
+    },
+    {
+      "alertNumber": 124,
+      "rule": "java/concatenated-sql-query",
+      "severity": "high",
+      "testedMergeCommit": "4c1aaa695892f70fe6966d8076b2b05e338c32be",
+      "location": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 65,
+        "end_line": 65,
+        "start_column": 31,
+        "end_column": 106
+      },
+      "stateAtReview": "open"
+    }
+  ],
+  "rootCause": "Five integration test setups interpolated a generated credential into fixed-role ALTER ROLE DDL. Generated values happened to be UUIDs, but direct literal assembly is unsafe under a broader input or future refactor.",
+  "repair": "Shared TestDatabase helper binds the value to PostgreSQL format %L using PreparedStatement, then executes the returned fixed-role DDL. PostgreSQL utility role DDL cannot directly bind its password position. Existing five setup call sites use the helper; their business assertions, roles and thresholds are unchanged.",
+  "sameClassScan": {
+    "scope": "All backend src/test/java role DDL and PASSWORD concatenations",
+    "originalUnsafeOccurrences": 5,
+    "remainingUnsafeRolePasswordConcatenations": 0,
+    "existingSafePeer": "shared/internal/migration/ManagedProfileMigrationIT#createRuntimeRoles already uses bound server-side format %L and is unchanged"
+  },
+  "changedFiles": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java",
+      "sha256": "5cb311838dc236a5dc076348446817daa9cd2742d115bde6ff6347c454af27ba"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+      "sha256": "b043ba4febdb3b5b9b2e663f64f6a2526b0ef632dbfb25f18cc2b5f78b34fcd1"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+      "sha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+      "sha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+      "sha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+      "sha256": "cdb38bf470c136a3f7ff6bd004e134a280b4a87c2680df884682a8653dfd65b7"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+      "sha256": "a2c89d0f8e1868999332ff5e8f5bf59aedd2c681396d410ca6fc0ef4961bf192"
+    }
+  ],
+  "newActualPostgresqlTests": [
+    "TestDatabaseIssuerIT#quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+    "TestDatabaseIssuerIT#applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges"
+  ],
+  "positiveBoundary": "A UUID-prefixed synthetic value containing an apostrophe, semicolon and SQL-like privilege change must authenticate literally without modifying any issuer privilege.",
+  "negativeBoundary": "The application role must receive SQLSTATE42501 when calling this setup helper, while the original credential and nonprivileged issuer attributes remain intact.",
+  "validation": {
+    "gitDiffCheck": "PASS",
+    "compiled": "PASS_R23",
+    "postgresqlTests": "PASS_R23_TWO_NEW_METHODS_AND_FIVE_COMPLETE_EXISTING_CLASSES",
+    "remoteCodeqlClosure": "PENDING_NEXT_EXACT_HEAD_ANALYSIS"
+  },
+  "existingPatchSha256": "5a75baae07fdab4b108c39bc402fcc81b024751a067af4ba455e2bbe86eabd2b",
+  "authority": "Test-only isolated PostgreSQL bootstrap. No production runtime, migration, business assertion, credential, Provider, suppression or CodeQL rule changed.",
+  "actualR23Evidence": {
+    "result": "PASS_LOCAL_TARGETED_R23",
+    "sourceBinding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes.",
+    "baseHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+    "baseTree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+    "sourceManifestSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+    "sourceStable": true,
+    "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+    "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+    "resourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+    "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+    "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+    "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/maven.log.gz",
+    "rawLogSha256": "2c68f2aec3656c444f85aba92a695837a79f33b4d99b111d0a3dd424bd6d8c00",
+    "command": [
+      "./mvnw",
+      "-B",
+      "-ntp",
+      "-Dmarketops.build.gitCommit=247ea5ced6cd0ac110314db9fa606d8995c85cac",
+      "-Dtest=TestDatabaseIssuerIT,AdvertisingAuthorityVersionStopIT,AdvertisingHumanWorkflowIT,AdvertisingManualWorkflowIT,AdvertisingOrdinaryApprovalIT,AdvertisingVerticalPathIT,AdvertisingDisclosureIT,AdvertisingOperationsPrincipalIT,AdvertisingOperationsReadIT,SignedBearerIdentityIT,IngestionAuthorityArchitectureTest,ModuleBoundaryArchitectureTest,ModulithArchitectureTest,RuleSensitivityArchitectureTest,SoleAuthorityArchitectureTest",
+      "test"
+    ],
+    "completeRunCounts": {
+      "tests": 175,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "relatedClassCounts": {
+      "tests": 59,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "reports": [
+      {
+        "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+        "counts": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingAuthorityVersionStopIT.xml",
+        "memberSha256": "84a2eb5bbca049c0cd68875649fcf1617a4a1e8e85c57037321da376efb55e8a",
+        "methods": [
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "organizationScopedSignedHttpStopQuarantinesEveryConsumerWithoutCrossingOrganizations(String)[1]",
+            "timeSeconds": "3.632",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "organizationScopedSignedHttpStopQuarantinesEveryConsumerWithoutCrossingOrganizations(String)[2]",
+            "timeSeconds": "0.95",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "organizationRecoveryRequiresEveryStoreToReplaceTheVersionBeforeIndependentFinalApproval",
+            "timeSeconds": "1.142",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "finalApprovalOrObjectStopProofCannotBeReplayedAsVersionQuarantine",
+            "timeSeconds": "0.291",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "currentAndFrozenPurposeFreshnessAreExplicitConsumedVersionsRatherThanArbitraryJsonIds",
+            "timeSeconds": "0.348",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "anExistingIndependentHoldCannotBeAttributedToANewUnconsumedVersionOrBlockItsRecovery",
+            "timeSeconds": "0.81",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[1]",
+            "timeSeconds": "0.241",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[2]",
+            "timeSeconds": "0.241",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[3]",
+            "timeSeconds": "0.45",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[4]",
+            "timeSeconds": "0.262",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "actualApplicationSinkRequiresOrganizationControlReviewScopeAndExactConsumedVersion(String)[5]",
+            "timeSeconds": "0.291",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+            "method": "signedHttpStoreOnlyActorCannotPublishOrganizationWideAuthorityStop",
+            "timeSeconds": "0.315",
+            "result": "PASS"
+          }
+        ]
+      },
+      {
+        "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+        "counts": {
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "memberSha256": "71b6e5a8ea1d1b7e1d0e102b76b322e3a0fd606999b4390f6513fa9dd319bebc",
+        "methods": [
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens",
+            "timeSeconds": "0.751",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "previewUsesPolicyHeadroomRatherThanRawMaxCpc(String, String, String)[1]",
+            "timeSeconds": "0.65",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "previewUsesPolicyHeadroomRatherThanRawMaxCpc(String, String, String)[2]",
+            "timeSeconds": "0.541",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask",
+            "timeSeconds": "0.619",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "timeSeconds": "0.932",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness",
+            "timeSeconds": "0.463",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection",
+            "timeSeconds": "0.552",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction",
+            "timeSeconds": "0.422",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement",
+            "timeSeconds": "0.442",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+            "timeSeconds": "0.593",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "reconciliationRecordsExpiryOnceWithoutRewritingApprovalOrReleasingExposure",
+            "timeSeconds": "5.564",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "makerWithAnAdditionalOperationsRoleCannotEndorseTheirOwnSelection",
+            "timeSeconds": "0.895",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "aSchedulerClockAheadCannotExpireCurrentApprovalOrRecommendation",
+            "timeSeconds": "0.726",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+            "timeSeconds": "0.848",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
+            "timeSeconds": "0.814",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+            "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
+            "timeSeconds": "0.645",
+            "result": "PASS"
+          }
+        ]
+      },
+      {
+        "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+        "counts": {
+          "tests": 15,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+        "memberSha256": "995a5021591b59bb01581364119039795492916314e6dcc485d997f3c9bf670b",
+        "methods": [
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "makerOpsOwnerExecutionReportAndIndependentProofUseCurrentAuthorityWithoutApiEligibility",
+            "timeSeconds": "1.498",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "knownSharedPriceCommandBlocksManualEndorsementAfterSelection",
+            "timeSeconds": "2.617",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "manualStartCannotBorrowMissingUnresolvedWriteCapacity",
+            "timeSeconds": "2.64",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "evenAnAttestedPayloadCannotOmitAStageOrChangeItsOwnerPolicy",
+            "timeSeconds": "3.401",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField",
+            "timeSeconds": "3.588",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "insufficientCompanyHistoryFreezesAnExplicitIncompletePlanAndCannotBeSelected",
+            "timeSeconds": "1.264",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "scopedStopMakesStartedManualWorkUncertainAndOnlyFactualVerificationCanContinue",
+            "timeSeconds": "1.255",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "applicationCannotInsertOrSelfAttestACanonicalLookingBaseline",
+            "timeSeconds": "2.136",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "knownSharedPriceCommandCommittedAfterManualApprovalBlocksActualStart",
+            "timeSeconds": "4.824",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "callerSqlCannotForgeGradeAndNewScopeRevocationStopsIssuedWork",
+            "timeSeconds": "3.124",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "scopedStopRevokesIssuedManualPacketBeforeAnyExternalStart",
+            "timeSeconds": "2.864",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+            "timeSeconds": "2.317",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "manualConfigurationUnknownConsumesTheSameUnresolvedAxisUntilIndependentProof",
+            "timeSeconds": "1.295",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "newConfigurationInvalidatesAnUnexecutedPacketAndVersionOrProofCannotBeReplayed",
+            "timeSeconds": "1.994",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+            "method": "aPlannerProofRejectsChangedValuesAnotherTransactionAndReplay",
+            "timeSeconds": "2.26",
+            "result": "PASS"
+          }
+        ]
+      },
+      {
+        "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingOrdinaryApprovalIT.xml",
+        "memberSha256": "ff23542f9d5600e5b6c60e0b85f9b62beb16d72bb71f2cc04d537115f4703a0a",
+        "methods": [
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "promotionWithoutOwnerEvidenceCannotBeStored",
+            "timeSeconds": "0.53",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope",
+            "timeSeconds": "0.836",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "inactivePromotionCannotActivateOrDelegateAnOrdinaryBundle",
+            "timeSeconds": "0.472",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand",
+            "timeSeconds": "0.963",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "immutableBundlePromotionReferenceMustResolveAtTransactionCommit",
+            "timeSeconds": "0.569",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+            "timeSeconds": "0.952",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+            "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+            "timeSeconds": "0.872",
+            "result": "PASS"
+          }
+        ]
+      },
+      {
+        "class": "com.mimococo.marketops.TestDatabaseIssuerIT",
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.TestDatabaseIssuerIT.xml",
+        "memberSha256": "1189ea2882f4a9eafbe96aebff9a1f0324a28ac6a144a16e8f053f4e6e81109c",
+        "methods": [
+          {
+            "class": "com.mimococo.marketops.TestDatabaseIssuerIT",
+            "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+            "timeSeconds": "0.049",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.TestDatabaseIssuerIT",
+            "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges",
+            "timeSeconds": "0.041",
+            "result": "PASS"
+          }
+        ]
+      },
+      {
+        "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+        "memberSha256": "641d0c042a78e929a38051399bf1571c98b1bbcb893ecc0896dc07756c8579fd",
+        "methods": [
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
+            "timeSeconds": "3.398",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "missingSecondVariantCpaCannotBorrowFirstVariantAuthorityThroughTheRealGatherer",
+            "timeSeconds": "2.176",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+            "timeSeconds": "1.087",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+            "timeSeconds": "1.432",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "canonicalTwoVariantMetricsAndCpasReconcileEveryLineAndPermutation",
+            "timeSeconds": "2.057",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
+            "timeSeconds": "1.015",
+            "result": "PASS"
+          },
+          {
+            "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+            "method": "missingSecondVariantCostRemainsUnknownThroughTheActualMetricReader",
+            "timeSeconds": "1.852",
+            "result": "PASS"
+          }
+        ]
+      }
+    ],
+    "limit": "Actual private PostgreSQL controls and all original five setup/business classes passed on these measured working-tree bytes. Latest exact PR CodeQL analysis, full clean regression and final browser remain separate and pending."
+  }
+}

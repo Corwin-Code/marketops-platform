@@ -1,0 +1,575 @@
+{
+  "document_type": "controller_final_closure_verification",
+  "id": "CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_3FF042D_R1",
+  "review_date": "2026-09-06",
+  "scope": "CLOSURE_VERIFICATION_OF_FROZEN_FINDINGS_NOT_NEW_DEEP_REVIEW",
+  "verdict": "NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+  "repository": "Corwin-Code/marketops-platform",
+  "source": {
+    "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "reviewed_starting_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+    "final_head": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+    "tree": "907aa20d6d38e116db9cddd9e54ded87a99cbe64",
+    "tested_merge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+    "tested_merge_parents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+    ],
+    "tested_merge_tree": "907aa20d6d38e116db9cddd9e54ded87a99cbe64",
+    "pr": 30,
+    "state": "DRAFT_OPEN_UNMERGED"
+  },
+  "authority": {
+    "read_only_verification": true,
+    "github_writes_performed": false,
+    "ready": false,
+    "merge": false,
+    "deployment": false,
+    "provider_calls": false,
+    "production_write_enabled": false
+  },
+  "immutable_inputs": {
+    "contract_sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "finding_set_sha256": "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
+    "owner_authorization_sha256": "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11"
+  },
+  "intake": {
+    "outer_zip_sha256": "17a7419874b2367d971072b965532d5e992ba290a5b79deb59aecbb993de4186",
+    "manifest_sha256": "4ab64cd795143c921b0e422b0d8f84cb8a79c6d8b543a0e998701f20ca3fa694",
+    "members_verified": 67,
+    "original_archive_sha256": "4b088e506b917302cdb86ad023eae4f6da285764fd4c7cc7705015beaf3d7eac",
+    "original_archive_files_matching_extracted": 40,
+    "artifact_digests_matched_live": 7
+  },
+  "ci": {
+    "required_contexts": 12,
+    "successful_required_contexts": 12,
+    "codeql_aggregate": "SUCCESS_WITH_87_QUALITY_ALERTS_DISCLOSED",
+    "backend_testcases": 2484,
+    "backend_report_files": 189,
+    "duplicate_integration_job_testcases": 924,
+    "failures": 0,
+    "errors": 0,
+    "skipped_testcases": 0,
+    "jacoco_xml_root": {
+      "INSTRUCTION": {
+        "missed": 22207,
+        "covered": 129396,
+        "ratio": 0.8535187298404385
+      },
+      "BRANCH": {
+        "missed": 3019,
+        "covered": 7440,
+        "ratio": 0.711349077349651
+      },
+      "LINE": {
+        "missed": 3861,
+        "covered": 23805,
+        "ratio": 0.8604424202992843
+      },
+      "COMPLEXITY": {
+        "missed": 3464,
+        "covered": 7016,
+        "ratio": 0.6694656488549618
+      },
+      "METHOD": {
+        "missed": 886,
+        "covered": 4240,
+        "ratio": 0.8271556769410847
+      },
+      "CLASS": {
+        "missed": 109,
+        "covered": 995,
+        "ratio": 0.9012681159420289
+      }
+    },
+    "frontend_unit_reported_and_logs_checked": 327,
+    "browser_journeys_reported_and_logs_checked": [
+      25,
+      12
+    ],
+    "governance_tests": 418,
+    "infrastructure_tests": [
+      22,
+      7
+    ]
+  },
+  "scope_limits": [
+    "Controller did not rerun the entire Maven/npm/PostgreSQL/browser test suites.",
+    "Raw artifact bytes were obtained from the supplied handoff and independently hashed against current GitHub artifact metadata.",
+    "CI source HTML was decoded to exact Java source, matched to matrix hashes where available and corroborated with live exact-ref source for decisive checks.",
+    "One unmodified-domain qualification probe and one exact-expression replay were executed locally; neither is claimed to be a full database/network integration run.",
+    "The provided clean-local-worktree claim cannot be independently verified from a remote Git read."
+  ],
+  "frozen_finding_count": 22,
+  "closure_evidence_accepted_for_scope": 17,
+  "closure_not_accepted_or_incomplete": 5,
+  "new_frozen_findings_added": 0,
+  "contract_amendment_required": false,
+  "owner_new_product_decision_required": false,
+  "findings": [
+    {
+      "id": "S3-DR-001",
+      "frozen_severity": "MAJOR",
+      "title": "The handoff and acceptance index do not bind the actual remote candidate identity",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 0,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Exact read-only takeover and current authority pins distinguish the reviewed starting commit from the eventual measured source and remote Head. A clean-tree identity collector derives migration and build input identities from Git."
+    },
+    {
+      "id": "S3-DR-002",
+      "frozen_severity": "BLOCKER",
+      "title": "The canonical facts-to-action path is not executable; the advertised vertical test bypasses the calculator",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 11,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "The real gatherer reads canonical Metric v2 and actual facts, covered fees remain usable, unknown report components survive aggregation, dependent defects retain their own Case and responsibility, and the targeted worker invokes this calculator before projection. Runtime policy ambiguity SQL now uses a valid whole-row alias. Atomic Case upsert returns the persisted identity on both insert and conflict, so all dependent rows and responsibility intake reference the winning Case under concurrent recalculation."
+    },
+    {
+      "id": "S3-DR-003",
+      "frozen_severity": "BLOCKER",
+      "title": "Multi-variant advertising economics and Allowable CPA are calculated with non-canonical aggregation",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 4,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Shared AdvertisingAttributedEconomics computes each attributed line from canonical net amount and its own quantity/cost/complete fees/tax/stage-specific return loss, weights every applicable CPA policy, preserves absent/mixed-currency/estimated terms, and subtracts official object Spend exactly once."
+    },
+    {
+      "id": "S3-DR-004",
+      "frozen_severity": "BLOCKER",
+      "title": "Freshness, conversion, qualification, sustainment and critical-sales authorities are not wired into production decisions",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "ROOT_CAUSE_CLOSURE_NOT_ACCEPTED",
+      "verification_checks": [
+        "CV-A",
+        "CV-B"
+      ],
+      "named_java_proof_references_resolved": 7,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Every required kind resolves its exact purpose/profile/scope with source and accepted age, coverage, correction, confidence, incident and version bounds. Separate qualification levels retain Watch and responsibility while refusing incomplete write authority. Canonical linked conversions, per-product CPA, distinct qualified windows and current critical guards are wired into real gather/calculation. Fresh one-sided harm survives permitted economic unknowns; critical unknown never becomes pass."
+    },
+    {
+      "id": "S3-DR-005",
+      "frozen_severity": "BLOCKER",
+      "title": "Canonical Priority violates the accepted non-compensating lexicographic policy",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 4,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Java and SQL now use fixed lexicographic lane/tier and independent ordered factors; unknown stays explicit and confirmed zero stays comparable. ACK/Action remaining deadlines use the real staffed clock/Exception pause port, current critical exposure and matched-window absolute-profit/per-RUB gaps remain independent, and exact ties use stable identity."
+    },
+    {
+      "id": "S3-DR-006",
+      "frozen_severity": "BLOCKER",
+      "title": "Accountable Task, human SLO and Accepted Exception are not complete operating authorities",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 26,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Responsibilities precede candidate eligibility. Immutable first-raised history, explicit calendar/SLO state and exclusive three-person Accepted Exception preserve one canonical Task through repair, hold and expiry."
+    },
+    {
+      "id": "S3-DR-007",
+      "frozen_severity": "BLOCKER",
+      "title": "Governed Manual Shadow is neither dual-platform nor evidence-safe",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 11,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "One manual policy/proposal/packet chain consumes independently attested baseline, role proof, full scope and the existing reservation authority; actual raw lineage or distinct observer establishes configuration."
+    },
+    {
+      "id": "S3-DR-008",
+      "frozen_severity": "BLOCKER",
+      "title": "The mandatory per-command Maker → Operations endorsement → Owner approval chain is absent",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 10,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Maker selects an independently attested frozen plan, a different Ops reviewer endorses it, and a third Owner approves the initial Material route. A separately promoted Ordinary route retains exact Maker/Checker and current materiality gating."
+    },
+    {
+      "id": "S3-DR-009",
+      "frozen_severity": "BLOCKER",
+      "title": "Approval Lease is re-anchored at command preparation and does not use the earliest authority bound",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 11,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Immutable final approval seals every authority minimum. Seventeen naturally expiring cases use a lawful 900-second approval anchored 885 seconds earlier and approximately 15 seconds of actual PostgreSQL-clock waiting; 14 live actor-withdrawal cases verify revocation. Waiting, creator replay and gate preparation cannot renew the seal, and restoration does not erase invalidation."
+    },
+    {
+      "id": "S3-DR-010",
+      "frozen_severity": "BLOCKER",
+      "title": "The SECURITY DEFINER command creator permits actor and authority spoofing at the database boundary",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 15,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "The public creator takes only recommendation/version/reservation, derives exact immutable approval and checks live actor/sealed identity. No application-mintable GUC acts as authenticated identity. Separate one-use backend/transaction proof consumes verified actual actor context; explicit candidate/object substitutions are attempted through writable app recommendation rows before and after sealing."
+    },
+    {
+      "id": "S3-DR-011",
+      "frozen_severity": "BLOCKER",
+      "title": "Exact target, Materiality and Preview do not implement the accepted deterministic multi-axis contract",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "ROOT_CAUSE_CLOSURE_NOT_ACCEPTED",
+      "verification_checks": [
+        "CV-B"
+      ],
+      "named_java_proof_references_resolved": 29,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "The bounded provider-normalized finite set preserves native denomination and conservative headroom. Every Materiality axis is independent; incomplete authority cannot become Ordinary. Impact evidence includes exact scope, critical sales, financial states and uncertainty."
+    },
+    {
+      "id": "S3-DR-012",
+      "frozen_severity": "BLOCKER",
+      "title": "Idempotency, NOT_APPLIED retry and exact native Readback semantics are incomplete",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 35,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Frozen capability response classification, exact latest prior bid/unit/currency, current fence and all current human/Profile/credential/Gate limits govern retry of the same command/key/payload. Real worker now preserves a known native Task through inconclusive read-only STATUS timeout, then requires resolved status and independent current readback. An unaddressable initial APPLY timeout remains Unknown and cannot acquire invented not-applied proof. A retry uses a fresh native readback at its new fence; a third/unknown value or expired preflight cannot reuse the prior-fence proof. Initial unsent lease recovery remains separate."
+    },
+    {
+      "id": "S3-DR-013",
+      "frozen_severity": "BLOCKER",
+      "title": "Same-object reentry and exact Compensation are not an executable governed path",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 7,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Exact compensation retains the original command/reservation and captured prior value. New preview, distinct Ops endorsement and Owner approval freeze independent current Gate and exact native pair; third-party or unresolved configuration forbids overwrite. No generic reentry path is opened."
+    },
+    {
+      "id": "S3-DR-014",
+      "frozen_severity": "BLOCKER",
+      "title": "Reservation and aggregate Exposure enforce only a subset of the accepted real-intervention envelope",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 50,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "All six non-compensating exposure axes derive through one snapshot. Company and affected retained amounts require per-store/listing covering canonical evidence at the Owner-defined current window, correct accepted/source/ingestion time, currency and no conflicting/cohort duplication. Missing scope evidence stays UNKNOWN/null. Associated spend conservatively includes whole official intersecting reports without proration; cumulative bid-change has its separate governed window. One Shared isolation reader also prevents known cross-domain changes at preview, final seal, API/manual admission, creator and actual APPLY."
+    },
+    {
+      "id": "S3-DR-015",
+      "frozen_severity": "BLOCKER",
+      "title": "The running Outcome path does not implement frozen sales protection, dual-axis Operational/Settled truth or cause-specific terminal states",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "ROOT_CAUSE_CLOSURE_NOT_ACCEPTED",
+      "verification_checks": [
+        "CV-A",
+        "CV-C"
+      ],
+      "named_java_proof_references_resolved": 10,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "The planner freezes exact typed Owner policy, complete affected company channels, three stage baselines and critical-unit rules before human selection. Independent trusted Planner proof binds the complete payload and physical transaction; application direct insertion/self-attestation is denied. Actual observations use the frozen policy and real company/linked/financial facts; every critical unit and both profit axes remain independent. Early proof releases only safety, 30-day Retained is distinct from actual settlement, and late facts append revisions. Explicit insufficient history, confounded, stop, risk-clear and unhealthy states do not become primary success."
+    },
+    {
+      "id": "S3-DR-016",
+      "frozen_severity": "BLOCKER",
+      "title": "Quarantine, Kill and reenablement do not preserve cause-proportional scope or non-resurrection",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 38,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Human and canonical regression stops synchronously invalidate approval assets and deny new side effects while preserving status/readback and uncertain reservation state. New dedicated authority-version stop requires exact Org-wide Owner/Ops policy scope plus Org Ops reviewer and actual consumed version. Object association follows Gate allowlists, frozen command candidate, and Manual authority references so a Store neighbor using another Profile/Bundle is not stopped. Org recovery requires live Org attestations, distinct Ops/Owner and no ACTIVE consumer still referencing the invalid version; version bans and historical invalidations survive review closure."
+    },
+    {
+      "id": "S3-DR-017",
+      "frozen_severity": "BLOCKER",
+      "title": "Gate EV, Gate E, Ordinary promotion and complete Policy-Bundle activation authorities are absent or incomplete",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 22,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Bundle activation compares all independently endorsed immutable authority and Gate fields. Gate E publication requires same predecessor identity scope, demonstrated objects, exact current/target/native unit/currency and no larger max-change; exposure scope/currency and three windows match and all six axes only tighten. A new E has an independently Owner-bounded pilot window, rather than inheriting a past EV deadline or treating a one-time EV command cap as a permanent pilot aggregate policy."
+    },
+    {
+      "id": "S3-DR-018",
+      "frozen_severity": "BLOCKER",
+      "title": "Role-minimal decision disclosure is not enforced across the advertising surface",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 17,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "One server projector separates native minimum fields from full financial scope across direct, alternate delivery and generic recommendation/journal readers."
+    },
+    {
+      "id": "S3-DR-019",
+      "frozen_severity": "MAJOR",
+      "title": "Ozon and Wildberries platform-native semantics are not demonstrated as distinct complete Shadow-only capabilities",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 20,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Independent synthetic real-platform profiles remain UNVERIFIED with distinct KEYWORD/PLACEMENT, major/minor units and grid/readback rules, queried relationships and both human workflows."
+    },
+    {
+      "id": "S3-DR-020",
+      "frozen_severity": "MAJOR",
+      "title": "Advertising-specific recalculation, SLO and declared-capacity evidence are incomplete",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "EVIDENCE_CLOSURE_INCOMPLETE",
+      "verification_checks": [
+        "CV-D"
+      ],
+      "named_java_proof_references_resolved": 11,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Canonical row changes and exact deadlines feed scoped targeted Outcome/calculation/projection/Task; hourly sweep repairs unanswered work and preserves latency violations."
+    },
+    {
+      "id": "S3-DR-021",
+      "frozen_severity": "MAJOR",
+      "title": "The console is largely read-only and does not expose the complete governed action workflow",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "CLOSURE_EVIDENCE_ACCEPTED_FOR_REVIEWED_SCOPE",
+      "verification_checks": [],
+      "named_java_proof_references_resolved": 9,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "Typed role actions now connect exact selection, Task, Exception, Manual, evidence/approval, advertising command/readback, Outcome, containment and compensation."
+    },
+    {
+      "id": "S3-DR-022",
+      "frozen_severity": "MAJOR",
+      "title": "Test, evidence and traceability closure is not bound to the exact candidate and remains explicitly incomplete",
+      "codex_disposition": "CLOSED_WITH_EVIDENCE",
+      "controller_disposition": "DEPENDENT_CLOSURE_INDEX_NOT_ACCEPTED",
+      "verification_checks": [
+        "CV-A",
+        "CV-B",
+        "CV-C",
+        "CV-D",
+        "CV-E"
+      ],
+      "named_java_proof_references_resolved": 7,
+      "named_java_proof_references_unresolved": 0,
+      "accepted_evidence_boundary": "基于 exact source、闭合矩阵及 digest 匹配 CI 测试证据；不表示本轮重新运行全部产品测试，也不等于生产启用。",
+      "implemented_behavior_record": "All 200 accepted criteria retain their exact text and individual source/test reasoning. S3-AC-001 through S3-AC-199 are verified by the applicable measured backend, frontend, browser, governance, infrastructure, migration and security evidence. The frontend supply-chain command pins its JSON validator and fails if CycloneDX validation is skipped. S3-AC-200 remains a Controller-pending candidate prerequisite, and only the 24 exact S3-REL obligations remain externally deferred."
+    }
+  ],
+  "verification_checks": [
+    {
+      "id": "CV-A",
+      "classification": "EXISTING_FINDING_RESIDUAL",
+      "findings": [
+        "S3-DR-004",
+        "S3-DR-015"
+      ],
+      "title": "Outcome 的官方 Spend 分级未消费所需的来源/采集年龄与用途 Freshness 权威",
+      "contract": [
+        "6.8",
+        "6.26",
+        "S3-AC-036",
+        "S3-AC-043",
+        "S3-AC-044",
+        "S3-AC-045",
+        "S3-AC-163"
+      ],
+      "evidence": [
+        "AdvertisingOutcomeEvidenceService.java:84-128",
+        "AdvertisingEvidenceRepository.java:201-267",
+        "counterexamples/OutcomeSpendAgePredicateProbe.out"
+      ],
+      "observation": "objectFacts 返回 source/accepted 时间；Outcome service 仅以金额非空、窗口完整、correction 关闭将 Spend 标为 CANONICAL_CONFIRMED。用途 Profile 在该分支只处理 null/Provider incident，没有把官方 Spend 的年龄、覆盖和独立 evidence-kind 的用途规则传入分级。",
+      "probe_scope": "精确生产 Spend 分级表达式的独立 replay；不是完整 Spring/PostgreSQL 集成测试。",
+      "probe_result": "同一 complete/closed 报表，1秒和3540秒 age 在示例900秒已发布边界下都得到 CANONICAL_CONFIRMED / sufficientForWrite=true。",
+      "required_closure": "对 Outcome 每项必需输入解析并执行 frozen/适用的 evidence-kind × scope × purpose Freshness；历史 cohort 成熟不自动 stale，但超过本用途明确期限不能自动 confirmed。加入旧 source/new ingestion、窗口不全、版本撤销、Provider incident、合法成熟窗口等正反集成测试，证明不能形成伪成功或伪 Exposure-Stopped。"
+    },
+    {
+      "id": "CV-B",
+      "classification": "EXISTING_FINDING_RESIDUAL",
+      "findings": [
+        "S3-DR-004",
+        "S3-DR-011"
+      ],
+      "title": "Cause-bound Protection 被实现内固定为两个原因，精确 Policy 不能授权已证明经济伤害的同一模式",
+      "contract": [
+        "6.9",
+        "6.15",
+        "OD-S3-031",
+        "S3-AC-091",
+        "S3-AC-092",
+        "S3-AC-099",
+        "S3-AC-100"
+      ],
+      "evidence": [
+        "AdCaseCalculation.java:119-134",
+        "AdActionDependencyPolicy.java",
+        "AdvertisingProposalService.java:90-144",
+        "V0058 ops.ad_required_action_evidence_kinds / ops.ad_action_blockers",
+        "counterexamples/CauseBoundProbe.out"
+      ],
+      "observation": "causeBoundProtectionQualified switch 只接受 NOT_SELLABLE 与 UNAVAILABLE；PROVEN_ADVERTISING_LOSS 不论 exact Policy 如何配置都返回 false。Proposal 随后只能走 unavailable Max-CPC 路径；SQL 的 cause/evidence 列表同样只含两个原因。",
+      "probe_scope": "JDK 21 直接编译未经修改的、CI artifact digest 绑定的生产 domain 源码；未模拟替换实现；不是完整网络/数据库测试。",
+      "probe_result": "同一完整对象、Current Bid、正 Spend、无 Max CPC、Fresh purpose evidence：UNAVAILABLE=true、NOT_SELLABLE=true、PROVEN_ADVERTISING_LOSS=false；三者方向均为 PROTECTION_DECREASE。",
+      "required_closure": "在 exact Policy 明确接受 PROVEN_ADVERTISING_LOSS、Fresh 完整经济证据证明未知 conversion 不会翻转危险且其他 Guard 均满足时，使用同一可解释 Cause-bound 模式，或给出能够证明已接受 Contract 不适用的精确证据。不得把未知利润当成亏损；不得免除销售/库存/权限/审批；Java、SQL、Planner、Preview 及测试需保持同一原因依赖规则。"
+    },
+    {
+      "id": "CV-C",
+      "classification": "EXISTING_FINDING_RESIDUAL",
+      "findings": [
+        "S3-DR-015"
+      ],
+      "title": "非财务 Protection 原因的 Risk-Cleared 终局仍缺独立原因验证路径",
+      "contract": [
+        "6.25",
+        "S3-AC-160",
+        "S3-AC-161",
+        "S3-AC-162"
+      ],
+      "evidence": [
+        "AdvertisingOutcomeAssessment.java:businessOutcome",
+        "AdvertisingOutcomeEvidenceService.java:Snapshot / confounderDigest"
+      ],
+      "observation": "businessOutcome 对 VERIFIED_AD_RISK_CLEARED 只实现 PROVEN_ADVERTISING_LOSS + RETAINED + 非负利润。Availability/Sellability 只进入 confounder digest；其原始广告危险经 Fresh 证据解除时，不能独立得到相应原因终局，只能落入通用效率成功、Spend=0、Outcome Confounded 或仍在 Protection，不能独立完成原原因验证。",
+      "probe_scope": "精确 source/control-flow 核验；本轮未重跑此场景的 PostgreSQL/Browser 测试。",
+      "required_closure": "按原行动冻结的原因和观察窗口消费对应安全证据，分别证明原广告危险解除/新危险暴露停止/仍有伤害；与利润效率成功、库存或 Listing 本体修复严格分列。测试非财务原因解除而利润仍 unresolved 的情况，防止重新把不同责任合并。"
+    },
+    {
+      "id": "CV-D",
+      "classification": "EXISTING_FINDING_EVIDENCE_INCOMPLETE",
+      "findings": [
+        "S3-DR-020"
+      ],
+      "title": "已通过的是限定的未启用对象编排容量，冻结 Finding 要求的活动 Outcome/控制状态负载证据仍未覆盖",
+      "contract": [
+        "11",
+        "S3-AC-070",
+        "S3-AC-197",
+        "Frozen S3-DR-020 required_rework"
+      ],
+      "evidence": [
+        "AdvertisingOrchestrationCapacityIT.java",
+        "artifact 9974096071 advertising-capacity-receipt.json",
+        "artifact 9974152039 advertising-capacity-receipt.json"
+      ],
+      "observation": "1000 UNVERIFIED native objects、200 synthetic containment objects、1200 Tasks，共享1个Store/Variant；测试断言 commands=0，未设置 mature Outcomes。Daily Brief 与拒绝路径被调用；活动 Outcome/完整控制状态的容量未被这份负载证明。",
+      "required_closure": "保留当前 PASS。以已声明容量及代表性活动状态补充一个可重放 synthetic mixed workload，涵盖成熟/修订 Outcome、到期/失效等既定状态的 targeted update 与 hourly repair，报告实际阶段数量、P95/hard bound、全 sweep margin。无需真实 Provider、APPLY 吞吐指标、生产账户或新增多店铺规模目标；不降低现有阈值。"
+    },
+    {
+      "id": "CV-E",
+      "classification": "DEPENDENT_EVIDENCE_RECONCILIATION",
+      "findings": [
+        "S3-DR-022"
+      ],
+      "title": "关闭索引与最终运行数字需要随残留修复同步；旧 run 的容量数字不能冒充 W10",
+      "contract": [
+        "S3-AC-199",
+        "S3-AC-200"
+      ],
+      "evidence": [
+        "FINAL_HANDOFF.md",
+        "EXACT_TEST_AND_SUPPLY_CHAIN_RESULTS.json",
+        "ENGINEERING_VERIFICATION.json",
+        "FINDING-CLOSURE-MATRIX.json"
+      ],
+      "observation": "22/22 和 AC001–199 的 blanket CLOSED/VERIFIED 不能覆盖 CV-A..D。PR/摘要的30789ms、109169ms与两个实际 W10 artifact receipt 不一致；最终 artifact 自己的 run/head/merge 绑定与数值可信，应分开保留旧测量来源。",
+      "required_closure": "只在实际根因和证据闭合后重生成矩阵。逐测量记录 sourceHead/testedMerge/run/job/artifact/dataset；保留历史数字但标注其原 measured source。所有既有独立通过证据继续保留，不改 Contract 或 Frozen Finding Set。"
+    }
+  ],
+  "exact_w10_capacity": [
+    {
+      "artifact_id": 9974096071,
+      "receipt_sha256": "6059eb6e4cd84b378943842ff52e7b0d9f76049175e432f9c87d8a76fe9ac78f",
+      "job": "backend-build",
+      "source_head": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "tested_merge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+      "dataset": {
+        "sharedProducts": 1,
+        "stores": 1,
+        "nativeObjects": 1000,
+        "completeAffectedSetMembersPerObject": 1,
+        "regressionObjects": 200,
+        "sharedListings": 1,
+        "organizations": 1
+      },
+      "critical_p95_ms": 14340,
+      "maximum_ms": 170587,
+      "targeted_wall_ms": 169181,
+      "sweep_ms": 45353,
+      "hourly_margin_ms": 3554647,
+      "tasks": 1200,
+      "dropped_correction_recovered": 1
+    },
+    {
+      "artifact_id": 9974152039,
+      "receipt_sha256": "c11f13d7572e4288cd6159311e3d971712d29c9dc1bd53a2f039f1ea527569ed",
+      "job": "backend-integration",
+      "source_head": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+      "tested_merge": "dddb7584b7930b833379f2a3ac75875df05cde0c",
+      "dataset": {
+        "sharedProducts": 1,
+        "stores": 1,
+        "nativeObjects": 1000,
+        "completeAffectedSetMembersPerObject": 1,
+        "regressionObjects": 200,
+        "sharedListings": 1,
+        "organizations": 1
+      },
+      "critical_p95_ms": 20799,
+      "maximum_ms": 194924,
+      "targeted_wall_ms": 192914,
+      "sweep_ms": 69479,
+      "hourly_margin_ms": 3530521,
+      "tasks": 1200,
+      "dropped_correction_recovered": 1
+    }
+  ],
+  "capacity_historical_summary": {
+    "critical_p95_ms": 30789,
+    "sweep_ms": 109169,
+    "classification": "NOT_THE_TWO_FINAL_W10_ARTIFACT_MEASUREMENTS_RETAIN_WITH_ORIGINAL_SOURCE"
+  },
+  "release_obligations": {
+    "count": 24,
+    "state": "DEFERRED_PRODUCTION_BLOCKING",
+    "real_evidence_obtained": false
+  },
+  "next_actor": "CODEX",
+  "next_action": "RESUME_EXISTING_AUTHORIZED_R1_TO_CLOSE_RESIDUALS_APPEND_ONLY_ON_SAME_DRAFT_PR",
+  "ac200": "NOT_PASSED_CONTROLLER_INDEPENDENT_CONCLUSION",
+  "engineering_closure": "NOT_AUTHORIZED",
+  "formal_closure": "NOT_READY"
+}

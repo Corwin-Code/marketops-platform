@@ -1,0 +1,36 @@
+I accept the exact SLICE-V1-003 Production Acceptance Contract at:
+
+Canonical path:
+docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md
+
+Exact source protected main:
+08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
+
+Exact source protected-main tree:
+0ca229112bcf351ab5c572dd8d375c647bab61c0
+
+Encoding:
+UTF-8, LF line endings, no BOM, final newline present
+
+Exact byte count:
+129400
+
+Exact line count:
+2687
+
+SHA-256:
+1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c
+
+Prospective Git blob SHA-1 if committed byte-for-byte unchanged:
+669c38dc4d9429249e663da0e684dabf570c4a4a
+
+I accept all 47 incorporated Owner decisions, all S3-AC-001 through
+S3-AC-200 Production Acceptance criteria, all S3-REL-001 through S3-REL-024
+deferred Release and Capability obligations, and the Contract Execution Envelope.
+
+This exact acceptance authorizes FULL_SCOPE_IMPLEMENTATION_WITHIN_EXECUTION_ENVELOPE_V1
+and no authority beyond that Contract.
+
+No deployment, production database operation, real Credential, real OIDC/Yandex
+activation, real Ozon/Wildberries call, Gate EV, Gate E, Pilot, remote Git write
+or production write is authorized by this acceptance.

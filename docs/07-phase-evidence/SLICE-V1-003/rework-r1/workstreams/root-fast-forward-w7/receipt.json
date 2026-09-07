@@ -1,0 +1,18 @@
+{
+  "kind": "ROOT_WORKTREE_FAST_FORWARD_AFTER_COMPLETED_W6_MEASUREMENT",
+  "utc": "2026-09-05T11:55:36.698159+00:00",
+  "priorHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "head": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "tree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+  "fetchAttempts": [
+    {
+      "attempt": 1,
+      "exitCode": 0
+    }
+  ],
+  "gitStatus": "",
+  "fullW6CompleteBeforeSynchronization": true,
+  "mergeMode": "FAST_FORWARD_ONLY_NO_NEW_COMMIT",
+  "remotePrDraft": true,
+  "productionWriteEnabled": false
+}

@@ -1,0 +1,2617 @@
+{
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "merge": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+  "oldHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "alerts": [
+    {
+      "number": 130,
+      "ruleId": "java/local-variable-is-never-read",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+        "start_line": 79,
+        "end_line": 79,
+        "start_column": 9,
+        "end_column": 45
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+        "start_line": 79,
+        "end_line": 79,
+        "start_column": 9,
+        "end_column": 45
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+      "currentSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+      "currentRemoteGitBlob": "9a305751b8b91b5e4217da66dda033e128e07af3",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 131,
+      "ruleId": "java/local-variable-is-never-read",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGraphFixture.java",
+        "start_line": 216,
+        "end_line": 216,
+        "start_column": 9,
+        "end_column": 32
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGraphFixture.java",
+        "start_line": 216,
+        "end_line": 216,
+        "start_column": 9,
+        "end_column": 32
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "d3fc18c2c5239c4888dc41e425dc53ff6406c10b4ad9f7502c7353ebe128feb2",
+      "currentSourceSha256": "d3fc18c2c5239c4888dc41e425dc53ff6406c10b4ad9f7502c7353ebe128feb2",
+      "currentRemoteGitBlob": "387881c17e70e49ebdd5074588e333b9ae935a17",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 132,
+      "ruleId": "java/uncaught-number-format-exception",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "start_line": 55,
+        "end_line": 55,
+        "start_column": 132,
+        "end_column": 152
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "start_line": 55,
+        "end_line": 55,
+        "start_column": 132,
+        "end_column": 152
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+      "currentSourceSha256": "ae520f391015684b97536557bcb6d376e1ece3e2a60abcf85964eca6b2a49d95",
+      "currentRemoteGitBlob": "2a430cd7f783c1cde02811ca2ab21a5ea3fbe9d7",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 133,
+      "ruleId": "java/internal-representation-exposure",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteResult.java",
+        "start_line": 95,
+        "end_line": 95,
+        "start_column": 12,
+        "end_column": 28
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteResult.java",
+        "start_line": 95,
+        "end_line": 95,
+        "start_column": 12,
+        "end_column": 28
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "996a2e230ee0ef67006d9fa93203eaab1234f256d5afac82ab97bc922dbde88a",
+      "currentSourceSha256": "996a2e230ee0ef67006d9fa93203eaab1234f256d5afac82ab97bc922dbde88a",
+      "currentRemoteGitBlob": "21b9ecaaaabf8432bab894ad14995641572f8889",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 134,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 58,
+        "end_line": 58,
+        "start_column": 66,
+        "end_column": 99
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 67,
+        "end_line": 67,
+        "start_column": 66,
+        "end_column": 99
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "currentSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "currentRemoteGitBlob": "b4c678dcb55fb6de662574ec2049c7570c46b91d",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 135,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 46,
+        "end_line": 46,
+        "start_column": 15,
+        "end_column": 54
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 55,
+        "end_line": 55,
+        "start_column": 15,
+        "end_column": 54
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "currentSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "currentRemoteGitBlob": "b4c678dcb55fb6de662574ec2049c7570c46b91d",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 136,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 47,
+        "end_line": 47,
+        "start_column": 51,
+        "end_column": 87
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 56,
+        "end_line": 56,
+        "start_column": 51,
+        "end_column": 87
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "currentSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "currentRemoteGitBlob": "b4c678dcb55fb6de662574ec2049c7570c46b91d",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 137,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 51,
+        "end_line": 51,
+        "start_column": 58,
+        "end_column": 94
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 58,
+        "end_column": 94
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "currentSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "currentRemoteGitBlob": "b4c678dcb55fb6de662574ec2049c7570c46b91d",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 138,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 52,
+        "end_line": 52,
+        "start_column": 57,
+        "end_column": 91
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 61,
+        "end_line": 61,
+        "start_column": 57,
+        "end_column": 91
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "currentSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "currentRemoteGitBlob": "b4c678dcb55fb6de662574ec2049c7570c46b91d",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 139,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 52,
+        "end_line": 52,
+        "start_column": 99,
+        "end_column": 132
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+        "start_line": 61,
+        "end_line": 61,
+        "start_column": 99,
+        "end_column": 132
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4",
+      "currentSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+      "currentRemoteGitBlob": "b4c678dcb55fb6de662574ec2049c7570c46b91d",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 140,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 42,
+        "end_column": 103
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 42,
+        "end_column": 103
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+      "currentSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+      "currentRemoteGitBlob": "50a671a2e7827bff100e01cbea7d4ef42ea1bc3e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 141,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 49,
+        "end_line": 49,
+        "start_column": 52,
+        "end_column": 90
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 49,
+        "end_line": 49,
+        "start_column": 52,
+        "end_column": 90
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentRemoteGitBlob": "657915aff95018bd6e47d9809e9a35d5782c339e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 142,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 108,
+        "end_line": 108,
+        "start_column": 20,
+        "end_column": 77
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 108,
+        "end_line": 108,
+        "start_column": 20,
+        "end_column": 77
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentRemoteGitBlob": "657915aff95018bd6e47d9809e9a35d5782c339e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 143,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 162,
+        "end_line": 162,
+        "start_column": 20,
+        "end_column": 74
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 162,
+        "end_line": 162,
+        "start_column": 20,
+        "end_column": 74
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentRemoteGitBlob": "657915aff95018bd6e47d9809e9a35d5782c339e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 144,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 168,
+        "end_line": 168,
+        "start_column": 20,
+        "end_column": 74
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 168,
+        "end_line": 168,
+        "start_column": 20,
+        "end_column": 74
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentRemoteGitBlob": "657915aff95018bd6e47d9809e9a35d5782c339e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 145,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 171,
+        "end_line": 171,
+        "start_column": 20,
+        "end_column": 85
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 171,
+        "end_line": 171,
+        "start_column": 20,
+        "end_column": 85
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentRemoteGitBlob": "657915aff95018bd6e47d9809e9a35d5782c339e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 146,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 104,
+        "end_line": 104,
+        "start_column": 20,
+        "end_column": 73
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java",
+        "start_line": 104,
+        "end_line": 104,
+        "start_column": 20,
+        "end_column": 73
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+      "currentSourceSha256": "347a432d79af252859c5d5343b16215b608b021cb6bbcba7f593188cb60059ff",
+      "currentRemoteGitBlob": "50a671a2e7827bff100e01cbea7d4ef42ea1bc3e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 147,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 250,
+        "end_line": 250,
+        "start_column": 145,
+        "end_column": 155
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java",
+        "start_line": 250,
+        "end_line": 250,
+        "start_column": 145,
+        "end_column": 155
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentSourceSha256": "edbc8e6d2294e9ee7de36af735bf665c4956529bb2097ed562d677a273e8e0f6",
+      "currentRemoteGitBlob": "657915aff95018bd6e47d9809e9a35d5782c339e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 148,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 149,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 24,
+        "end_column": 74
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 24,
+        "end_column": 74
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 150,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 86,
+        "end_line": 86,
+        "start_column": 24,
+        "end_column": 83
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 86,
+        "end_line": 86,
+        "start_column": 24,
+        "end_column": 83
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 151,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 95,
+        "end_line": 95,
+        "start_column": 24,
+        "end_column": 92
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 95,
+        "end_line": 95,
+        "start_column": 24,
+        "end_column": 92
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 152,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 63,
+        "end_line": 64,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 63,
+        "end_line": 64,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 153,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 20,
+        "end_column": 104
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 20,
+        "end_column": 104
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 154,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 117,
+        "end_line": 118,
+        "start_column": 20,
+        "end_column": 58
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 117,
+        "end_line": 118,
+        "start_column": 20,
+        "end_column": 58
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 155,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 104,
+        "end_line": 104,
+        "start_column": 20,
+        "end_column": 104
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 104,
+        "end_line": 104,
+        "start_column": 20,
+        "end_column": 104
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 156,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 219,
+        "end_line": 219,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 219,
+        "end_line": 219,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 157,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 229,
+        "end_line": 229,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 229,
+        "end_line": 229,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 158,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 244,
+        "end_line": 244,
+        "start_column": 20,
+        "end_column": 56
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java",
+        "start_line": 244,
+        "end_line": 244,
+        "start_column": 20,
+        "end_column": 56
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentSourceSha256": "0c872f7d579f0ebca50afb82e98d7ba09737b265e46b6405d6ddc28862bc02a0",
+      "currentRemoteGitBlob": "3845dd25d13d25992476950058b7f5faed9ca9bd",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 159,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 167,
+        "end_line": 167,
+        "start_column": 20,
+        "end_column": 62
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 167,
+        "end_line": 167,
+        "start_column": 20,
+        "end_column": 62
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 160,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 31,
+        "end_line": 31,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 31,
+        "end_line": 31,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentRemoteGitBlob": "fc23fda5edc9c6fca214270f590908fd5afefe77",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 161,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 136,
+        "end_line": 136,
+        "start_column": 20,
+        "end_column": 83
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 137,
+        "end_line": 137,
+        "start_column": 20,
+        "end_column": 83
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+      "currentSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+      "currentRemoteGitBlob": "e8f2994061099af9855c51a250f50f31fcb6cc59",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 162,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 211,
+        "end_line": 211,
+        "start_column": 20,
+        "end_column": 61
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 211,
+        "end_line": 211,
+        "start_column": 20,
+        "end_column": 61
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 163,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 141,
+        "end_line": 141,
+        "start_column": 20,
+        "end_column": 94
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 142,
+        "end_line": 142,
+        "start_column": 20,
+        "end_column": 94
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+      "currentSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+      "currentRemoteGitBlob": "e8f2994061099af9855c51a250f50f31fcb6cc59",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 164,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 287,
+        "end_line": 287,
+        "start_column": 20,
+        "end_column": 84
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 287,
+        "end_line": 287,
+        "start_column": 20,
+        "end_column": 84
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 165,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 288,
+        "end_line": 288,
+        "start_column": 20,
+        "end_column": 88
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 288,
+        "end_line": 288,
+        "start_column": 20,
+        "end_column": 88
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 166,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 291,
+        "end_line": 291,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 291,
+        "end_line": 291,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 167,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 181,
+        "end_line": 181,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+        "start_line": 182,
+        "end_line": 182,
+        "start_column": 20,
+        "end_column": 69
+      },
+      "locationMoved": true,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "7813f5297129b21cdc23988caa1d17a3716824a356b371df93d359e1de10e144",
+      "currentSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+      "currentRemoteGitBlob": "e8f2994061099af9855c51a250f50f31fcb6cc59",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 168,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 293,
+        "end_line": 293,
+        "start_column": 20,
+        "end_column": 62
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 293,
+        "end_line": 293,
+        "start_column": 20,
+        "end_column": 62
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 169,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 72,
+        "end_line": 72,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 72,
+        "end_line": 72,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentRemoteGitBlob": "fc23fda5edc9c6fca214270f590908fd5afefe77",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 170,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 77,
+        "end_line": 77,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 77,
+        "end_line": 77,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentRemoteGitBlob": "fc23fda5edc9c6fca214270f590908fd5afefe77",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 171,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 20,
+        "end_column": 49
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentSourceSha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+      "currentRemoteGitBlob": "fc23fda5edc9c6fca214270f590908fd5afefe77",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 172,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 352,
+        "end_line": 352,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 352,
+        "end_line": 352,
+        "start_column": 20,
+        "end_column": 66
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 173,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 354,
+        "end_line": 354,
+        "start_column": 60,
+        "end_column": 99
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 354,
+        "end_line": 354,
+        "start_column": 60,
+        "end_column": 99
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 174,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 405,
+        "end_line": 405,
+        "start_column": 20,
+        "end_column": 46
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 405,
+        "end_line": 405,
+        "start_column": 20,
+        "end_column": 46
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 175,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 406,
+        "end_line": 406,
+        "start_column": 20,
+        "end_column": 63
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 406,
+        "end_line": 406,
+        "start_column": 20,
+        "end_column": 63
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 176,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 410,
+        "end_line": 410,
+        "start_column": 20,
+        "end_column": 57
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 410,
+        "end_line": 410,
+        "start_column": 20,
+        "end_column": 57
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 177,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 428,
+        "end_line": 428,
+        "start_column": 31,
+        "end_column": 47
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 428,
+        "end_line": 428,
+        "start_column": 31,
+        "end_column": 47
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 178,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 428,
+        "end_line": 428,
+        "start_column": 51,
+        "end_column": 64
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 428,
+        "end_line": 428,
+        "start_column": 51,
+        "end_column": 64
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 179,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 429,
+        "end_line": 429,
+        "start_column": 84,
+        "end_column": 97
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+        "start_line": 429,
+        "end_line": 429,
+        "start_column": 84,
+        "end_column": 97
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentSourceSha256": "60591e560cbcf1c6bc15a8eebf9267532e537452ec5207ebf6fc8850a4d84c64",
+      "currentRemoteGitBlob": "dd3f457cf7969bf33369943b9995e8a3b9307fbe",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 180,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 382,
+        "end_line": 382,
+        "start_column": 33,
+        "end_column": 78
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 382,
+        "end_line": 382,
+        "start_column": 33,
+        "end_column": 78
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "currentSourceSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "currentRemoteGitBlob": "5ec71567cb84fae7b3cefc8372d174e97c5c427d",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 181,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 172,
+        "end_line": 172,
+        "start_column": 20,
+        "end_column": 73
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 172,
+        "end_line": 172,
+        "start_column": 20,
+        "end_column": 73
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+      "currentSourceSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+      "currentRemoteGitBlob": "2e34b59d56f6633c44fe7ebef20d311fc06a0486",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 182,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 176,
+        "end_line": 176,
+        "start_column": 20,
+        "end_column": 81
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 176,
+        "end_line": 176,
+        "start_column": 20,
+        "end_column": 81
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+      "currentSourceSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+      "currentRemoteGitBlob": "2e34b59d56f6633c44fe7ebef20d311fc06a0486",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 183,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 177,
+        "end_line": 177,
+        "start_column": 20,
+        "end_column": 58
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "start_line": 177,
+        "end_line": 177,
+        "start_column": 20,
+        "end_column": 58
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+      "currentSourceSha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+      "currentRemoteGitBlob": "2e34b59d56f6633c44fe7ebef20d311fc06a0486",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 184,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "start_line": 18,
+        "end_line": 18,
+        "start_column": 20,
+        "end_column": 51
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "start_line": 18,
+        "end_line": 18,
+        "start_column": 20,
+        "end_column": 51
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+      "currentSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+      "currentRemoteGitBlob": "02836c40ae95b64a2b88b64a710ce72f68129c66",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 185,
+      "ruleId": "java/deprecated-call",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "start_line": 20,
+        "end_line": 20,
+        "start_column": 20,
+        "end_column": 52
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java",
+        "start_line": 20,
+        "end_line": 20,
+        "start_column": 20,
+        "end_column": 52
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+      "currentSourceSha256": "f7e8b30b3d98f0cdcbacd20c630399fe48d1fd66ef77f0bff98d9d04d7fc7b7e",
+      "currentRemoteGitBlob": "02836c40ae95b64a2b88b64a710ce72f68129c66",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 186,
+      "ruleId": "java/missing-case-in-switch",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+        "start_line": 165,
+        "end_line": 165,
+        "start_column": 9,
+        "end_column": 34
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+        "start_line": 165,
+        "end_line": 165,
+        "start_column": 9,
+        "end_column": 34
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0",
+      "currentSourceSha256": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0",
+      "currentRemoteGitBlob": "8be4c52a15512c89adaed6e667c0d2389e97d44a",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 187,
+      "ruleId": "java/misleading-indentation",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+        "start_line": 65,
+        "end_line": 65,
+        "start_column": 31,
+        "end_column": 84
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationSloService.java",
+        "start_line": 65,
+        "end_line": 65,
+        "start_column": 31,
+        "end_column": 84
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+      "currentSourceSha256": "8b452998fec4b8910a4f344215cf6403ad9f6b3a01e0a5e4bd47e1a1c39fb682",
+      "currentRemoteGitBlob": "225e37c0ef119ab1631949c74e49e15f7ae2d9ed",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 188,
+      "ruleId": "java/misleading-indentation",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "start_line": 71,
+        "end_line": 71,
+        "start_column": 43,
+        "end_column": 67
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+        "start_line": 71,
+        "end_line": 71,
+        "start_column": 43,
+        "end_column": 67
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+      "currentSourceSha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+      "currentRemoteGitBlob": "c6ccc1dedfb61b2e9e36a1d90aa09fb9f34748af",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 189,
+      "ruleId": "java/misleading-indentation",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 490,
+        "end_line": 490,
+        "start_column": 101,
+        "end_column": 138
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 490,
+        "end_line": 490,
+        "start_column": 101,
+        "end_column": 138
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "currentSourceSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "currentRemoteGitBlob": "5ec71567cb84fae7b3cefc8372d174e97c5c427d",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 190,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 82,
+        "end_column": 90
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "start_line": 60,
+        "end_line": 60,
+        "start_column": 82,
+        "end_column": 90
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+      "currentSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+      "currentRemoteGitBlob": "dbc3fecd7cd52ccc091ac40f64a43380b5b5b3c7",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 191,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 31,
+        "end_column": 36
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomics.java",
+        "start_line": 78,
+        "end_line": 78,
+        "start_column": 31,
+        "end_column": 36
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+      "currentSourceSha256": "078ecc3358d45a00b7e378f8e33c3d6c9494b96bfd9813b25bc56bc9ad8f0776",
+      "currentRemoteGitBlob": "dbc3fecd7cd52ccc091ac40f64a43380b5b5b3c7",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 192,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "start_line": 130,
+        "end_line": 130,
+        "start_column": 36,
+        "end_column": 44
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "start_line": 130,
+        "end_line": 130,
+        "start_column": 36,
+        "end_column": 44
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "a15c2c0d05b352a1d0e6c4d66b5a43cef0c0afb8a7d4f6398d2cd79e9285cd55",
+      "currentSourceSha256": "a15c2c0d05b352a1d0e6c4d66b5a43cef0c0afb8a7d4f6398d2cd79e9285cd55",
+      "currentRemoteGitBlob": "6fe338df7a1e866178d59581eceafb55314be2a2",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 193,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "start_line": 131,
+        "end_line": 131,
+        "start_column": 36,
+        "end_column": 44
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/OutcomeEvaluation.java",
+        "start_line": 131,
+        "end_line": 131,
+        "start_column": 36,
+        "end_column": 44
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "a15c2c0d05b352a1d0e6c4d66b5a43cef0c0afb8a7d4f6398d2cd79e9285cd55",
+      "currentSourceSha256": "a15c2c0d05b352a1d0e6c4d66b5a43cef0c0afb8a7d4f6398d2cd79e9285cd55",
+      "currentRemoteGitBlob": "6fe338df7a1e866178d59581eceafb55314be2a2",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 194,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "start_line": 147,
+        "end_line": 147,
+        "start_column": 63,
+        "end_column": 70
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "start_line": 147,
+        "end_line": 147,
+        "start_column": 63,
+        "end_column": 70
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+      "currentSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+      "currentRemoteGitBlob": "26e5693ae802f14fca2f7741b0107c221e06202c",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 195,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "start_line": 148,
+        "end_line": 148,
+        "start_column": 39,
+        "end_column": 47
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+        "start_line": 148,
+        "end_line": 148,
+        "start_column": 39,
+        "end_column": 47
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+      "currentSourceSha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3",
+      "currentRemoteGitBlob": "26e5693ae802f14fca2f7741b0107c221e06202c",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 196,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "securitySeverity": null,
+      "level": "warning",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "start_line": 328,
+        "end_line": 328,
+        "start_column": 32,
+        "end_column": 39
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "start_line": 328,
+        "end_line": 328,
+        "start_column": 32,
+        "end_column": 39
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "efa0c4fa4534f590e3acbd78e728a5999919e3d955b0a78f159a51bb9bd71f42",
+      "currentSourceSha256": "efa0c4fa4534f590e3acbd78e728a5999919e3d955b0a78f159a51bb9bd71f42",
+      "currentRemoteGitBlob": "043361df06cf809a7dc58778259913a90beb25cf",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 197,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 311,
+        "end_line": 311,
+        "start_column": 13,
+        "end_column": 36
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 311,
+        "end_line": 311,
+        "start_column": 13,
+        "end_column": 36
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+      "currentSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "currentRemoteGitBlob": "11f112180dffc6c27e67b559a8cfbd81c83b1bf4",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 198,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "start_line": 316,
+        "end_line": 316,
+        "start_column": 36,
+        "end_column": 55
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "start_line": 316,
+        "end_line": 316,
+        "start_column": 36,
+        "end_column": 55
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "d87a13b32d843bf825e0bfab46e3c7c2c66cda7aa732ef52f317488271fe0c3a",
+      "currentSourceSha256": "d87a13b32d843bf825e0bfab46e3c7c2c66cda7aa732ef52f317488271fe0c3a",
+      "currentRemoteGitBlob": "669cd6e4dc0bd4273386083dabcfbf4640b72870",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 199,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "start_line": 316,
+        "end_line": 316,
+        "start_column": 57,
+        "end_column": 90
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+        "start_line": 316,
+        "end_line": 316,
+        "start_column": 57,
+        "end_column": 90
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "d87a13b32d843bf825e0bfab46e3c7c2c66cda7aa732ef52f317488271fe0c3a",
+      "currentSourceSha256": "d87a13b32d843bf825e0bfab46e3c7c2c66cda7aa732ef52f317488271fe0c3a",
+      "currentRemoteGitBlob": "669cd6e4dc0bd4273386083dabcfbf4640b72870",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 200,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 23,
+        "end_column": 34
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 23,
+        "end_column": 34
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "ad4e82fb0915f0d2bc3657d615de244e621c95f6e245fd8f5bfc5a8e642bd0b1",
+      "currentSourceSha256": "ad4e82fb0915f0d2bc3657d615de244e621c95f6e245fd8f5bfc5a8e642bd0b1",
+      "currentRemoteGitBlob": "7e9b45a88229acda13505d47768ec368c9eeea59",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 201,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 39,
+        "end_column": 57
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 39,
+        "end_column": 57
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "currentSourceSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "currentRemoteGitBlob": "6b78619799689a1311faa89bcf646729256d80b0",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 202,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 77,
+        "end_column": 103
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 77,
+        "end_column": 103
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "currentSourceSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "currentRemoteGitBlob": "6b78619799689a1311faa89bcf646729256d80b0",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 203,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 104,
+        "end_column": 124
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 104,
+        "end_column": 124
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "currentSourceSha256": "78897a5ae2663d7459812602b5cbee909f51f6a1ee89cac034a3e79be52480d7",
+      "currentRemoteGitBlob": "6b78619799689a1311faa89bcf646729256d80b0",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 204,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 31,
+        "end_line": 31,
+        "start_column": 33,
+        "end_column": 57
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 31,
+        "end_line": 31,
+        "start_column": 33,
+        "end_column": 57
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+      "currentSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+      "currentRemoteGitBlob": "b9643e226b78953a321ac887c50ac7ab95f4d9ec",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 205,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 27,
+        "end_line": 27,
+        "start_column": 32,
+        "end_column": 56
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 27,
+        "end_line": 27,
+        "start_column": 32,
+        "end_column": 56
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+      "currentSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+      "currentRemoteGitBlob": "b9643e226b78953a321ac887c50ac7ab95f4d9ec",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 206,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 23,
+        "end_line": 23,
+        "start_column": 30,
+        "end_column": 54
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+        "start_line": 23,
+        "end_line": 23,
+        "start_column": 30,
+        "end_column": 54
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+      "currentSourceSha256": "af8ead658693d2c643f82967a3110c323ed440bef6243acedfc82677628c5d9f",
+      "currentRemoteGitBlob": "b9643e226b78953a321ac887c50ac7ab95f4d9ec",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 207,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 39,
+        "end_line": 39,
+        "start_column": 34,
+        "end_column": 58
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 39,
+        "end_line": 39,
+        "start_column": 34,
+        "end_column": 58
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentRemoteGitBlob": "5afdf1f6de216fe0bf7e1f55f42a0e6ba849f1c9",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 208,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 33,
+        "end_line": 33,
+        "start_column": 36,
+        "end_column": 60
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 33,
+        "end_line": 33,
+        "start_column": 36,
+        "end_column": 60
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentRemoteGitBlob": "5afdf1f6de216fe0bf7e1f55f42a0e6ba849f1c9",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 209,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 28,
+        "end_line": 28,
+        "start_column": 31,
+        "end_column": 55
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 28,
+        "end_line": 28,
+        "start_column": 31,
+        "end_column": 55
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentRemoteGitBlob": "5afdf1f6de216fe0bf7e1f55f42a0e6ba849f1c9",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 210,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 23,
+        "end_line": 23,
+        "start_column": 27,
+        "end_column": 51
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+        "start_line": 23,
+        "end_line": 23,
+        "start_column": 27,
+        "end_column": 51
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentSourceSha256": "5e9a6ede60a1cd0a5cb5427a9c7e382a0a98607c495bf4b576c73d4d80aaf8db",
+      "currentRemoteGitBlob": "5afdf1f6de216fe0bf7e1f55f42a0e6ba849f1c9",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 211,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 614,
+        "end_line": 614,
+        "start_column": 13,
+        "end_column": 33
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 614,
+        "end_line": 614,
+        "start_column": 13,
+        "end_column": 33
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+      "currentSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "currentRemoteGitBlob": "11f112180dffc6c27e67b559a8cfbd81c83b1bf4",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 212,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 353,
+        "end_line": 353,
+        "start_column": 13,
+        "end_column": 49
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+        "start_line": 353,
+        "end_line": 353,
+        "start_column": 13,
+        "end_column": 49
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+      "currentSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "currentRemoteGitBlob": "11f112180dffc6c27e67b559a8cfbd81c83b1bf4",
+      "sameWholeFile": false,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 213,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+        "start_line": 140,
+        "end_line": 140,
+        "start_column": 63,
+        "end_column": 98
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+        "start_line": 140,
+        "end_line": 140,
+        "start_column": 63,
+        "end_column": 98
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955",
+      "currentSourceSha256": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955",
+      "currentRemoteGitBlob": "684081247b4ae74d55c8c984c3c07454a7892a3e",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 214,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "start_line": 254,
+        "end_line": 254,
+        "start_column": 32,
+        "end_column": 67
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "start_line": 254,
+        "end_line": 254,
+        "start_column": 32,
+        "end_column": 67
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+      "currentSourceSha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+      "currentRemoteGitBlob": "ab41d324d0645150823cfb5db2ac3272133dea86",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 215,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 32,
+        "end_column": 52
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+        "start_line": 256,
+        "end_line": 256,
+        "start_column": 32,
+        "end_column": 52
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+      "currentSourceSha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+      "currentRemoteGitBlob": "ab41d324d0645150823cfb5db2ac3272133dea86",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    },
+    {
+      "number": 216,
+      "ruleId": "java/unused-parameter",
+      "securitySeverity": null,
+      "level": "note",
+      "state": "open",
+      "priorLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 450,
+        "end_line": 450,
+        "start_column": 27,
+        "end_column": 48
+      },
+      "currentLocation": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "start_line": 450,
+        "end_line": 450,
+        "start_column": 27,
+        "end_column": 48
+      },
+      "locationMoved": false,
+      "sameExactFlaggedExpression": true,
+      "priorSourceSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "currentSourceSha256": "d8bf461c15e86388bd9abb42ab4fddee98aed79fc943fb198c973cbdb6616332",
+      "currentRemoteGitBlob": "5ec71567cb84fae7b3cefc8372d174e97c5c427d",
+      "sameWholeFile": true,
+      "currentMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+      "priorTriage": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6 (original 99-to-87 per-alert triage)",
+      "engineeringAssessment": "Same warning/note and same exact flagged expression. W8 changes address time precision, capacity oracle and test isolation; earlier bounded quality triage remains applicable. No dismissal or accepted-criterion promotion is performed."
+    }
+  ]
+}

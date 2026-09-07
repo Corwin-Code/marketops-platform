@@ -1,0 +1,60 @@
+{
+  "kind": "FRONTEND_DISTRIBUTION_CANARY_ORDER_LOCAL_PROOF",
+  "expectedAuthoredHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "workflow": {
+    "path": ".github/workflows/frontend.yml",
+    "bytes": 6859,
+    "sha256": "ca7a188ac08bd419da4937015f64d44176eb25a9887dac6cd21351afd6f9dafa"
+  },
+  "workflowOrder": {
+    "canaryStepBeforeOfficialBuild": true,
+    "officialBuildBeforeUpload": true,
+    "officialBuildRequiredEnvironment": [
+      "MARKETOPS_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}",
+      "VITE_MARKETOPS_API_BASE_URL: http://127.0.0.1:8080",
+      "VITE_MARKETOPS_ENVIRONMENT: ci"
+    ]
+  },
+  "commands": [
+    {
+      "command": "npm run verify:bundle",
+      "log": {
+        "path": "/tmp/slice3-w10-frontend-bundle-canary-r2.log",
+        "sha256": "c873729931c67f5ba585043d526f9c7f3a6caa9245a284f2c6d955b5908dbdd9"
+      },
+      "exitCode": 0
+    },
+    {
+      "command": "MARKETOPS_BUILD_COMMIT=<authored-head> VITE_MARKETOPS_API_BASE_URL=http://127.0.0.1:8080 VITE_MARKETOPS_ENVIRONMENT=ci npm run build",
+      "log": {
+        "path": "/tmp/slice3-w10-frontend-official-build-r2.log",
+        "sha256": "65b9f189b3a6336c7470bd7bba3c03aaafd566beca5e2902fd08ca3a8e6f675e"
+      },
+      "exitCode": 0
+    }
+  ],
+  "distribution": {
+    "files": [
+      {
+        "path": "frontend/marketops-console/dist/assets/index-fVfb0Szz.js",
+        "bytes": 344702,
+        "sha256": "11bd1b961b1167b5b34dc9c340d616bbe51ddfef6f23cbc651c6b8b9c3420b3c"
+      },
+      {
+        "path": "frontend/marketops-console/dist/index.html",
+        "bytes": 1321,
+        "sha256": "a1c86b9b143c4d0bbcf4dc06534213e7d73238f883792720005e7e6e69325448"
+      }
+    ],
+    "containsExpectedHead": true,
+    "containsLoopbackApi": true,
+    "containsCiEnvironment": true,
+    "exactBuildCommitInitializer": true,
+    "unknownBuildCommitInitializer": false,
+    "publishedCanaryValues": [],
+    "withheldCanaryValues": []
+  },
+  "result": "PASS_LOCAL_ORDER_AND_FINAL_BYTES",
+  "remoteRequirement": "The final authored-Head CI artifact must repeat this check after append-only publication.",
+  "productionWriteEnabled": false
+}

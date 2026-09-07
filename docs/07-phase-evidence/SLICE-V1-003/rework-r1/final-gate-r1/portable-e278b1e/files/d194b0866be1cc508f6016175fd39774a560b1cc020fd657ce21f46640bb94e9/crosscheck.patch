@@ -1,0 +1,64 @@
+--- /tmp/slice3-migration-crosscheck-02e6172-r1/crosscheck.py
++++ /tmp/slice3-migration-crosscheck-e278b1e-r1/crosscheck.py
+@@ -1,8 +1,8 @@
+ import hashlib,json,pathlib,subprocess,zipfile,datetime,sys
+ R=pathlib.Path('/Users/chzhengx/Code/personal/marketops-platform')
+ O=pathlib.Path(__file__).resolve().parent
+-H='02e617278793b4458dfb7cac74c2a937f1dfcb00';D='9d962df4cad0a61305e3ba7f2a04d3b72b108b2e'
+-B=pathlib.Path('/tmp/slice3-final-execution-02e6172-r5');M=B/'migration';raw=M/'raw/build/final-gate-r5-02e6172/migration'
++H='e278b1e3d8541aeb806e41d6cbef4deac8d16d06'
++B=pathlib.Path('/tmp/slice3-final-execution-e278b1e-r6');M=B/'migration';raw=M/'raw/build/final-gate-r6-e278b1e/migration'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def ref(p):
+  p=pathlib.Path(p).resolve();b=p.read_bytes();return {'path':str(p),'sha256':sha(b),'bytes':len(b)}
+@@ -13,9 +13,9 @@
+   if s:
+    m,p=s.split(b'\t',1);mode,typ,oid=m.decode().split();out[p.decode()]={'mode':mode,'type':typ,'oid':oid}
+  return out
+-layer=json.loads((M/'layer-candidate.json').read_text());back=json.loads((B/'backend-full/layer-candidate.json').read_text());summ=json.loads((raw/'summary.json').read_text());invpath=pathlib.Path('/tmp/slice3-source-inventory-02e6172.json');inv=json.loads(invpath.read_text())['files'];by={r['path']:r for r in inv};t0=tree(H);td=tree(D)
+-assert len(inv)==len(by)==1278
+-assert ref(invpath)['sha256']==layer['sourceInventorySha256']==back['sourceInventorySha256']=='9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec'
++layer=json.loads((M/'layer-candidate.json').read_text());back=json.loads((B/'backend-full/layer-candidate.json').read_text());summ=json.loads((raw/'summary.json').read_text());invpath=pathlib.Path('/tmp/slice3-final-drivers-e278b1e-r6/expected-source-inventory.json');inv=json.loads(invpath.read_text())['files'];by={r['path']:r for r in inv};t0=tree(H)
++assert len(inv)==len(by)==1280
++assert ref(invpath)['sha256']==layer['sourceInventorySha256']==back['sourceInventorySha256']=='73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda'
+ for p in [M/'source-before.json',M/'source-after.json',B/'backend-full/source-before.json',B/'backend-full/source-after.json']:assert ref(p)['sha256']==ref(invpath)['sha256']
+ # Read actual immutable Git bytes in a single bounded cat-file batch.
+ objects=[H+':'+r['path'] for r in inv]
+@@ -24,7 +24,7 @@
+ crlf={'backend/marketops-server/mvnw.cmd','scripts/bootstrap-repo.ps1'}
+ for r in inv:
+  path=r['path'];end=data.index(b'\n',pos);oid,typ,size=data[pos:end].decode().split();size=int(size);v=data[end+1:end+1+size];pos=end+size+2
+- assert t0[path]==td[path] and typ=='blob' and oid==t0[path]['oid'],path
++ assert typ=='blob' and oid==t0[path]['oid'],path
+  if sha(v)!=r['sha256']:
+   assert path in crlf and sha(v.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n'))==r['sha256'],path
+   equivalences.append(path)
+@@ -42,22 +42,22 @@
+ jar=next(pathlib.Path(x['backendRaw']['path']) for x in products['files'] if x['originalPath'].endswith('.jar'));assert sha(jar.read_bytes())==summ['artifactSha256']
+ pre='backend/marketops-server/src/main/resources/db/migration/'
+ migration_paths=[p for p in by if p.startswith(pre) and p.endswith('.sql')];expected={pathlib.PurePosixPath(p).name:by[p]['sha256'] for p in migration_paths}
+-assert len(expected)==72 and sorted(int(n[1:5]) for n in expected)==list(range(1,73))
+-resolver=dict(x.split(' ',1) for x in (raw/'packaged-resolver.log').read_text().splitlines());assert len((raw/'packaged-resolver.log').read_text().splitlines())==72
++assert len(expected)==73 and sorted(int(n[1:5]) for n in expected)==list(range(1,74))
++resolver=dict(x.split(' ',1) for x in (raw/'packaged-resolver.log').read_text().splitlines());assert len((raw/'packaged-resolver.log').read_text().splitlines())==73
+ with zipfile.ZipFile(jar) as z:
+- names=z.namelist();ms=[n for n in names if n.startswith('BOOT-INF/classes/db/migration/') and n.endswith('.sql')];assert len(ms)==len(set(ms))==72
++ names=z.namelist();ms=[n for n in names if n.startswith('BOOT-INF/classes/db/migration/') and n.endswith('.sql')];assert len(ms)==len(set(ms))==73
+  packaged={pathlib.PurePosixPath(n).name:sha(z.read(n)) for n in ms};buildinfo=z.read('META-INF/build-info.properties');assert buildinfo==pathlib.Path(products['files'][0]['backendRaw']['path']).read_bytes();assert ('build.gitCommit='+H).encode() in buildinfo
+  assert not any(token in n for n in names for token in ('BrowserFixtureApplication','BrowserSigningFixture','AdvertisingR1Fixture','AdvertisingBrowser','AdvertisingManualBrowserSeed','r1-fictional-positive.sql'))
+ assert expected==summ['migrationInventory']==resolver==packaged
+ rows=[]
+ for p in sorted(migration_paths):
+- n=pathlib.PurePosixPath(p).name;assert sha(contents[p])==expected[n];rows.append({'path':p,'sourceInventorySha256':by[p]['sha256'],'productGit':t0[p],'derivationGit':td[p],'gitBytesSha256':sha(contents[p]),'jarEntry':'BOOT-INF/classes/db/migration/'+n,'jarEntrySha256':packaged[n],'summarySha256':summ['migrationInventory'][n],'packagedResolverSha256':resolver[n]})
++ n=pathlib.PurePosixPath(p).name;assert sha(contents[p])==expected[n];rows.append({'path':p,'sourceInventorySha256':by[p]['sha256'],'productGit':t0[p],'gitBytesSha256':sha(contents[p]),'jarEntry':'BOOT-INF/classes/db/migration/'+n,'jarEntrySha256':packaged[n],'summarySha256':summ['migrationInventory'][n],'packagedResolverSha256':resolver[n]})
+ for p,s in summ['buildContextInputs'].items():
+  if p.endswith('.jar'):assert s==summ['artifactSha256']
+  else:assert p in contents and sha(contents[p])==by[p]['sha256']==s
+ wrong=(raw/'wrong-artifact-build-refused.log').read_text();missing=(raw/'missing-envelope-refused.log').read_text();assert '0'*64 in wrong and 'exit code: 1' in wrong;assert missing=='MIGRATION_FAILED\n'
+ source='scripts/verify_migration_artifact.py';s=contents[source].decode();assert 'expected=1' in s and '"/run/unmounted.properties"' in s
+ assert layer['exitCode']==0 and layer['sourceStable'] is True
+-report={'kind':'READ_ONLY_MIGRATION_RAW_AND_SOURCE_CROSSCHECK','recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'productSourceIdentity':{'sourceHead':H,'sourceTree':git('rev-parse',H+'^{tree}').decode().strip(),'sourceInventory':ref(invpath)},'derivationCommitReadOnlyComparison':{'sourceHead':D,'sourceTree':git('rev-parse',D+'^{tree}').decode().strip(),'runtimeGitEntriesIdentical':1278,'declaredLineEndingEquivalencesObserved':equivalences},'migrationLayer':ref(M/'layer-candidate.json'),'backendLayer':ref(B/'backend-full/layer-candidate.json'),'summary':ref(raw/'summary.json'),'artifactSha256':summ['artifactSha256'],'productSnapshots':{'before':ref(before),'after':ref(after),'bytesIdentical':True,'files':products_out},'migrationCount':72,'migrationComparisons':rows,'buildContextInputs':summ['buildContextInputs'],'resolverLog':ref(raw/'packaged-resolver.log'),'refusals':[{'name':'wrong-artifact-build-refused','raw':ref(raw/'wrong-artifact-build-refused.log'),'exactEvidence':['ARTIFACT_SHA256='+'0'*64,'Dockerfile RUN sha256 equality failed with exit code: 1'],'sourceExpectedExit':1},{'name':'missing-envelope-refused','raw':ref(raw/'missing-envelope-refused.log'),'exactRawText':missing,'sourceExpectedExit':1,'sourceArgvBoundary':['docker','run','--network=none','--read-only','--cap-drop=ALL','--security-opt=no-new-privileges','--user=10001:10001','--migrate','/run/unmounted.properties'],'limitation':'The raw deliberately contains only MIGRATION_FAILED. Exit 1 is verified by exact source run(expected=1) and completed layer, not a separate per-subprocess receipt; the failure location is supported by source inspection, not an unredacted runtime stack.'}],'executedSourceRefs':[{'path':source,'sha256':by[source]['sha256']},{'path':'infra/yandex/runtime/migration.Dockerfile','sha256':by['infra/yandex/runtime/migration.Dockerfile']['sha256']}],'result':'READ_ONLY_COMPARISONS_MATCHED_NOT_A_GATE_ASSESSMENT','limits':['This audit only read existing raw, ZIP entries, Git blobs and source; it ran no product, Java, Maven, Docker, DB or provider operation.','Packaged resolver plus no-network container refusal is not a database upgrade execution; database upgrade proof remains in the separate actual backend integration nodes.','Summary result PASS is an original tool field, not a new engineering closure, Controller verdict or production enablement.','D comparison proves unchanged runtime bytes; this does not claim the product migration layer ran at D.'],'proofsCreated':0,'repositoryFilesChanged':0}
++report={'kind':'READ_ONLY_MIGRATION_RAW_AND_SOURCE_CROSSCHECK','recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'productSourceIdentity':{'sourceHead':H,'sourceTree':git('rev-parse',H+'^{tree}').decode().strip(),'sourceInventory':ref(invpath)},'sameCommitReadOnlyComparison':{'sourceHead':H,'sourceTree':git('rev-parse',H+'^{tree}').decode().strip(),'runtimeGitEntriesCompared':1280,'declaredLineEndingEquivalencesObserved':equivalences},'migrationLayer':ref(M/'layer-candidate.json'),'backendLayer':ref(B/'backend-full/layer-candidate.json'),'summary':ref(raw/'summary.json'),'artifactSha256':summ['artifactSha256'],'productSnapshots':{'before':ref(before),'after':ref(after),'bytesIdentical':True,'files':products_out},'migrationCount':73,'migrationComparisons':rows,'buildContextInputs':summ['buildContextInputs'],'resolverLog':ref(raw/'packaged-resolver.log'),'refusals':[{'name':'wrong-artifact-build-refused','raw':ref(raw/'wrong-artifact-build-refused.log'),'exactEvidence':['ARTIFACT_SHA256='+'0'*64,'Dockerfile RUN sha256 equality failed with exit code: 1'],'sourceExpectedExit':1},{'name':'missing-envelope-refused','raw':ref(raw/'missing-envelope-refused.log'),'exactRawText':missing,'sourceExpectedExit':1,'sourceArgvBoundary':['docker','run','--network=none','--read-only','--cap-drop=ALL','--security-opt=no-new-privileges','--user=10001:10001','--migrate','/run/unmounted.properties'],'limitation':'The raw deliberately contains only MIGRATION_FAILED. Exit 1 is verified by exact source run(expected=1) and completed layer, not a separate per-subprocess receipt; the failure location is supported by source inspection, not an unredacted runtime stack.'}],'executedSourceRefs':[{'path':source,'sha256':by[source]['sha256']},{'path':'infra/yandex/runtime/migration.Dockerfile','sha256':by['infra/yandex/runtime/migration.Dockerfile']['sha256']}],'result':'READ_ONLY_COMPARISONS_MATCHED_NOT_A_GATE_ASSESSMENT','limits':['This audit only read existing raw, ZIP entries, Git blobs and source; it ran no product, Java, Maven, Docker, DB or provider operation.','Packaged resolver plus no-network container refusal is not a database upgrade execution; database upgrade proof remains in the separate actual backend integration nodes.','Summary result PASS is an original tool field, not a new engineering closure, Controller verdict or production enablement.','Every current migration and build-context source was checked against the actual same e278b1e commit; no separate derivation execution is inferred.'],'proofsCreated':0,'repositoryFilesChanged':0}
+ (O/'REVIEW.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+-print(json.dumps({'output':ref(O/'REVIEW.json'),'artifact':summ['artifactSha256'],'migrationCount':72,'allInventoryGitRowsCompared':1278,'productsSnapshotHash':ref(before)['sha256'],'sourceEquivalences':equivalences,'proofsCreated':0},indent=2))
++print(json.dumps({'output':ref(O/'REVIEW.json'),'artifact':summ['artifactSha256'],'migrationCount':73,'allInventoryGitRowsCompared':1280,'productsSnapshotHash':ref(before)['sha256'],'sourceEquivalences':equivalences,'proofsCreated':0},indent=2))

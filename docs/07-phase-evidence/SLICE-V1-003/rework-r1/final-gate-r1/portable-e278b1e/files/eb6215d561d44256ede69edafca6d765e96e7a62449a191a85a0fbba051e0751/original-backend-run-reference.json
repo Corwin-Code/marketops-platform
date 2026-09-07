@@ -1,0 +1,102 @@
+{
+  "kind": "SAME_BACKEND_EXECUTION_SCOPE_REFERENCE_NOT_NEW_RUN",
+  "id": "mixed_capacity",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "workingTreeDirty": false,
+  "runId": "final-backend-r6",
+  "originalLayer": "backend_full",
+  "parentExecution": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/layer-candidate.json",
+    "sha256": "92d617f4b76c9555eec6201da195254d03a040b825dd3b5d7012ce7a91fa8932",
+    "bytes": 746046
+  },
+  "node": {
+    "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT",
+    "name": "declaredPortfolioProcessesFreshMatureRevisionsAndRepairsDroppedCorrectionsWithExpiredControls",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+      "sha256": "b42c251d45c02aa4c83e756b33e3b4fa96ab71a85d426db0ea543a83e9272b19",
+      "bytes": 41100
+    },
+    "nodeIndex": 0,
+    "seconds": "401.966"
+  },
+  "mixedArtifacts": [
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+        "sha256": "e5a7b9184528352ae934450d930687393888890d0a307091f8e3ffe726207722",
+        "bytes": 9793843
+      }
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-diagnostic.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-diagnostic.json",
+        "sha256": "472b014459a512b75d5638d7a38b82873edaef8d23d0e5d578750f2c17b882dd",
+        "bytes": 2057300
+      }
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+        "sha256": "e8d0016362505e7b225dbe7fbce07da7b74ca05e5509d63b3f5dc41ace527c46",
+        "bytes": 33696
+      }
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+        "sha256": "ab62f305c80ef21b8027881c4fe417e79abbf08ef66de7995e0bb2f2e3c4c03a",
+        "bytes": 206437
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+      "sha256": "e5a7b9184528352ae934450d930687393888890d0a307091f8e3ffe726207722",
+      "bytes": 9793843
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-diagnostic.json",
+      "sha256": "472b014459a512b75d5638d7a38b82873edaef8d23d0e5d578750f2c17b882dd",
+      "bytes": 2057300
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+      "sha256": "e8d0016362505e7b225dbe7fbce07da7b74ca05e5509d63b3f5dc41ace527c46",
+      "bytes": 33696
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+      "sha256": "ab62f305c80ef21b8027881c4fe417e79abbf08ef66de7995e0bb2f2e3c4c03a",
+      "bytes": 206437
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+      "sha256": "b42c251d45c02aa4c83e756b33e3b4fa96ab71a85d426db0ea543a83e9272b19",
+      "bytes": 41100
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/build/final-gate-r6-e278b1e/backend/runtime-resources.json",
+      "sha256": "7aff67e281033313c05661001b37a69e102d6b8d60734642fa4a634d7f5cf06a",
+      "bytes": 591
+    }
+  ],
+  "thresholdsMillis": {
+    "criticalP95": 300000,
+    "maximum": 900000,
+    "sweep": 1800000
+  },
+  "sweepComparator": "STRICTLY_LESS_THAN",
+  "timedRunRepeated": false,
+  "assessment": "NOT_PERFORMED",
+  "boundary": "Mixed workload is a separately reviewed scope of the original full backend execution; raw workload/state/resource/source/dataset IDs still require root review. No invented test count, current admission or APPLY throughput."
+}

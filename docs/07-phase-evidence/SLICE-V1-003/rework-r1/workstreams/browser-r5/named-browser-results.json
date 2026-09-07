@@ -1,0 +1,13 @@
+{
+  "rawReporterSha256": "6f462db08270ca989963298755e665b03c932471f734c5d8bd83894149491859",
+  "stats": {
+    "startTime": "2026-09-05T10:23:23.200Z",
+    "duration": 18835.585000000003,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [],
+  "limit": "Named outcomes only; no trace, request headers, fixture tokens, error attachment bodies or reporter environment are copied."
+}

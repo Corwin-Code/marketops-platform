@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/actions/runs/34025462624/attempts/1/jobs?per_page=100",
+    "-X",
+    "GET"
+  ],
+  "startedAt": "2026-09-06T09:50:59.181990+00:00",
+  "finishedAt": "2026-09-06T09:51:00.224469+00:00",
+  "elapsedSeconds": 1.0425781249999986,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/security-jobs.json",
+    "sha256": "5dc695def0f03c74f9cd9583391395078c7dc2474c241bd05f79bb02fc563d4f",
+    "bytes": 6756
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/security-jobs.json.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten.",
+  "originalResponse": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/security-jobs.json.attempt-1",
+    "sha256": "5dc695def0f03c74f9cd9583391395078c7dc2474c241bd05f79bb02fc563d4f",
+    "bytes": 6756
+  },
+  "originalStderr": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/security-jobs.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attemptReceipts": [
+    {
+      "path": "/private/tmp/slice3-security-ci-e278b1e-r1/security-jobs.json.attempt-1.command.json",
+      "sha256": "3eca27c53fa7609424a4ed0448b9a21e964df535662aaf4eb80ea20dd914c211",
+      "bytes": 857
+    }
+  ],
+  "canonicalResponseIsExactCopy": true
+}

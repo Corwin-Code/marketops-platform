@@ -1,0 +1,448 @@
+{
+  "kind": "W9_EXACT_DRAFT_PR_CI_AND_ARTIFACT_ASSESSMENT",
+  "generatedAtUTC": "2026-09-05T16:48:45.286543+00:00",
+  "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "tree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+  "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+  "testedMerge": {
+    "sha": "52e393720653197089bd9530a9330216bc15fb2b",
+    "parents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "52a34f36673dbf7c9f8b7a393f28ea1e096de043"
+    ],
+    "tree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+    "verified": {
+      "reason": "valid",
+      "verified": true,
+      "verified_at": "2026-09-05T14:15:48Z"
+    }
+  },
+  "pullRequest": {
+    "number": 30,
+    "url": "https://github.com/Corwin-Code/marketops-platform/pull/30",
+    "draft": true,
+    "state": "OPEN",
+    "autoMerge": null
+  },
+  "requiredContexts": {
+    "architecture-boundary": {
+      "jobId": 101320137055,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807/job/101320137055"
+    },
+    "backend-build": {
+      "jobId": 101320136970,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807/job/101320136970"
+    },
+    "backend-integration": {
+      "jobId": 101320137098,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807/job/101320137098"
+    },
+    "codeql-java": {
+      "jobId": 101320137110,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877/job/101320137110"
+    },
+    "codeql-typescript": {
+      "jobId": 101320137214,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877/job/101320137214"
+    },
+    "dependency-review": {
+      "jobId": 101320137266,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877/job/101320137266"
+    },
+    "frontend-build": {
+      "jobId": 101320137105,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320137105"
+    },
+    "frontend-lint": {
+      "jobId": 101320136963,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320136963"
+    },
+    "frontend-test": {
+      "jobId": 101320137042,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320137042"
+    },
+    "frontend-typecheck": {
+      "jobId": 101320137050,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320137050"
+    },
+    "governance": {
+      "jobId": 101320136926,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285818/job/101320136926"
+    },
+    "infrastructure-validation": {
+      "jobId": 101320137115,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285811/job/101320137115"
+    }
+  },
+  "aggregateCodeQL": {
+    "status": "COMPLETED",
+    "conclusion": "SUCCESS",
+    "detailsUrl": "https://github.com/Corwin-Code/marketops-platform/runs/101320249446"
+  },
+  "workflowRuns": [
+    {
+      "runId": 33971285807,
+      "attempt": 1,
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-05T14:15:49Z",
+      "updatedAt": "2026-09-05T14:46:54Z",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807",
+      "jobs": [
+        {
+          "name": "architecture-boundary",
+          "jobId": 101320137055,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:52Z",
+          "completedAt": "2026-09-05T14:16:47Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807/job/101320137055"
+        },
+        {
+          "name": "backend-build",
+          "jobId": 101320136970,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:46:09Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807/job/101320136970"
+        },
+        {
+          "name": "backend-integration",
+          "jobId": 101320137098,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:46:53Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285807/job/101320137098"
+        }
+      ]
+    },
+    {
+      "runId": 33971285811,
+      "attempt": 1,
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-05T14:15:49Z",
+      "updatedAt": "2026-09-05T14:16:10Z",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285811",
+      "jobs": [
+        {
+          "name": "infrastructure-validation",
+          "jobId": 101320137115,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:16:09Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285811/job/101320137115"
+        }
+      ]
+    },
+    {
+      "runId": 33971285818,
+      "attempt": 1,
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-05T14:15:49Z",
+      "updatedAt": "2026-09-05T14:16:25Z",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285818",
+      "jobs": [
+        {
+          "name": "governance",
+          "jobId": 101320136926,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:16:25Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285818/job/101320136926"
+        }
+      ]
+    },
+    {
+      "runId": 33971285823,
+      "attempt": 1,
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-05T14:15:49Z",
+      "updatedAt": "2026-09-05T14:20:10Z",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823",
+      "jobs": [
+        {
+          "name": "frontend-build",
+          "jobId": 101320137105,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:52Z",
+          "completedAt": "2026-09-05T14:16:27Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320137105"
+        },
+        {
+          "name": "frontend-lint",
+          "jobId": 101320136963,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:52Z",
+          "completedAt": "2026-09-05T14:16:24Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320136963"
+        },
+        {
+          "name": "frontend-test",
+          "jobId": 101320137042,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:20:09Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320137042"
+        },
+        {
+          "name": "frontend-typecheck",
+          "jobId": 101320137050,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:16:03Z",
+          "completedAt": "2026-09-05T14:16:29Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285823/job/101320137050"
+        }
+      ]
+    },
+    {
+      "runId": 33971285877,
+      "attempt": 1,
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-09-05T14:15:49Z",
+      "updatedAt": "2026-09-05T14:19:11Z",
+      "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877",
+      "jobs": [
+        {
+          "name": "codeql-java",
+          "jobId": 101320137110,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:19:10Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877/job/101320137110"
+        },
+        {
+          "name": "codeql-typescript",
+          "jobId": 101320137214,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:16:48Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877/job/101320137214"
+        },
+        {
+          "name": "dependency-review",
+          "jobId": 101320137266,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-09-05T14:15:51Z",
+          "completedAt": "2026-09-05T14:16:00Z",
+          "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33971285877/job/101320137266"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 9970992171,
+      "name": "infrastructure-verification",
+      "bytes": 2316698,
+      "sha256": "2b866225fd6655741e26fe6247080efcc682085c558765817094db308237caad",
+      "apiDigest": "sha256:2b866225fd6655741e26fe6247080efcc682085c558765817094db308237caad",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285811
+    },
+    {
+      "id": 9970996125,
+      "name": "frontend-distribution",
+      "bytes": 157176,
+      "sha256": "b59186df1567ba3af9e9c514fa5051415b276ff6e0859958dc6c6d331e102458",
+      "apiDigest": "sha256:b59186df1567ba3af9e9c514fa5051415b276ff6e0859958dc6c6d331e102458",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285823
+    },
+    {
+      "id": 9971049186,
+      "name": "advertising-browser-screenshots",
+      "bytes": 13426113,
+      "sha256": "543379ded3a18c98b034b638d023109f45553fb8c700b0a2ad2825a8f400a6f9",
+      "apiDigest": "sha256:543379ded3a18c98b034b638d023109f45553fb8c700b0a2ad2825a8f400a6f9",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285823
+    },
+    {
+      "id": 9971049379,
+      "name": "frontend-coverage",
+      "bytes": 322378,
+      "sha256": "ca27b2f00e2a8fc75cde9a2f80e937b7c562dccae03a9b539cfdd4ba2ed5e31c",
+      "apiDigest": "sha256:ca27b2f00e2a8fc75cde9a2f80e937b7c562dccae03a9b539cfdd4ba2ed5e31c",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285823
+    },
+    {
+      "id": 9971413792,
+      "name": "backend-supply-chain",
+      "bytes": 50366,
+      "sha256": "2c4e93b617026bfa22ef614206cc9d283f43456d84c219454604c23dff738121",
+      "apiDigest": "sha256:2c4e93b617026bfa22ef614206cc9d283f43456d84c219454604c23dff738121",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285807
+    },
+    {
+      "id": 9971414636,
+      "name": "backend-test-reports",
+      "bytes": 6083864,
+      "sha256": "5b8311265e894cbc34feb3a429274f06ca9bf15c8a9bebe446c22f4af3cb796d",
+      "apiDigest": "sha256:5b8311265e894cbc34feb3a429274f06ca9bf15c8a9bebe446c22f4af3cb796d",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285807
+    },
+    {
+      "id": 9971425332,
+      "name": "backend-integration-reports",
+      "bytes": 1004161,
+      "sha256": "c59d0c5880639ed49241aff6d92b0d3d5f4d45123804a09ff71a435db04c29cb",
+      "apiDigest": "sha256:c59d0c5880639ed49241aff6d92b0d3d5f4d45123804a09ff71a435db04c29cb",
+      "headSha": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+      "runId": 33971285807
+    }
+  ],
+  "tests": {
+    "backendBuild": {
+      "originalXmlReports": 189,
+      "actualTestcaseNodes": 2484,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "backendIntegration": {
+      "originalXmlReports": 71,
+      "actualTestcaseNodes": 924,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "frontendUnit": 327,
+    "legacyBrowser": 25,
+    "advertisingBrowser": 12,
+    "governance": 410,
+    "infrastructurePython": 22,
+    "infrastructureTerraformScenarios": 7
+  },
+  "namedBackendProvenance": {
+    "kind": "W9_REMOTE_NAMED_BACKEND_PROVENANCE_RECHECK",
+    "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+    "testedMerge": "52e393720653197089bd9530a9330216bc15fb2b",
+    "catalog": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/current-named-backend/current-named-backend-evidence.json",
+      "sha256": "d92ab91ebb31722b1557c8a552cdcf30b31e244ae307640079e68dadee50e0a1"
+    },
+    "uniqueMethods": 390,
+    "expandedNamedNodes": 522,
+    "sourceIdentityChecks": 390,
+    "remoteXmlNodeChecks": 522,
+    "allSourceBytesMatched": true,
+    "allRemoteNamedNodesPassed": true,
+    "missing": [],
+    "controllerVerdict": "PENDING_INDEPENDENT_REVIEW"
+  },
+  "codeql": {
+    "analyses": [
+      {
+        "analysis_key": ".github/workflows/security.yml:codeql-java",
+        "category": "/language:java-kotlin",
+        "commit_sha": "52e393720653197089bd9530a9330216bc15fb2b",
+        "created_at": "2026-09-05T14:19:03Z",
+        "error": "",
+        "id": 1729449649,
+        "ref": "refs/pull/30/merge",
+        "results_count": 91,
+        "rules_count": 240,
+        "tool": {
+          "guid": null,
+          "name": "CodeQL",
+          "version": "2.26.4"
+        }
+      },
+      {
+        "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+        "category": "/language:javascript-typescript",
+        "commit_sha": "52e393720653197089bd9530a9330216bc15fb2b",
+        "created_at": "2026-09-05T14:16:40Z",
+        "error": "",
+        "id": 1729444859,
+        "ref": "refs/pull/30/merge",
+        "results_count": 1,
+        "rules_count": 201,
+        "tool": {
+          "guid": null,
+          "name": "CodeQL",
+          "version": "2.26.4"
+        }
+      }
+    ],
+    "open": {
+      "count": 87,
+      "securitySeverity": 0,
+      "notes": 76,
+      "warnings": 11
+    },
+    "fixed": 12,
+    "historicalDismissedHigh": 5,
+    "assessment": "No open security-severity result; 87 open quality notes/warnings are unchanged from W8."
+  },
+  "frontendDistribution": {
+    "artifactId": 9970996125,
+    "artifactSha256": "b59186df1567ba3af9e9c514fa5051415b276ff6e0859958dc6c6d331e102458",
+    "containsExpectedHead": false,
+    "containsUnknownBuildCommit": true,
+    "publishedEnvironmentTokens": [
+      "published-b616ded9-f249-485c-ada4-7c191c88cb71"
+    ],
+    "result": "W9_ARTIFACT_PROVENANCE_DEFECT_CONFIRMED_REPAIRED_BY_LATER_WORKFLOW_ORDER_CHANGE",
+    "boundary": "This preserves the W9 failure. Final-head CI must prove the corrected uploaded artifact independently."
+  },
+  "limits": [
+    "W9 proves the UI repair on exact runtime bytes, but its uploaded distribution has the preserved publication-order provenance defect.",
+    "This CI uses isolated synthetic databases and fixture providers; no real Provider, shared environment, apply, deployment or production write occurred.",
+    "Independent Controller closure remains pending."
+  ],
+  "productionWriteEnabled": false,
+  "controllerVerdict": "PENDING_INDEPENDENT_REVIEW"
+}

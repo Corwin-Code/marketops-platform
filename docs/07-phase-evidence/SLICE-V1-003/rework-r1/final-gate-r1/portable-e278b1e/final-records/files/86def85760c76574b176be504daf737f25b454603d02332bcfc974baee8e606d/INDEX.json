@@ -1,0 +1,39 @@
+{
+  "kind": "ORIGINAL_ACTUAL_ATOMIC_MANIFEST_FINALIZER_OUTPUTS",
+  "files": [
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json",
+      "snapshot": {
+        "path": "/private/tmp/slice3-atomic-current-view-snapshot-e278b1e-r1/EXECUTION-MANIFEST.json",
+        "sha256": "bf9ee6bd8bf5b9ba930d48b1b4cd77320a06a04751e3d5530b009b42f4d57f43",
+        "bytes": 8769661
+      }
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json",
+      "snapshot": {
+        "path": "/private/tmp/slice3-atomic-current-view-snapshot-e278b1e-r1/ENGINEERING_VERIFICATION.json",
+        "sha256": "19f443b9e54a03f155b412b36b51611732e08ab8f16a84372b0c675a851576a9",
+        "bytes": 952268
+      }
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json",
+      "snapshot": {
+        "path": "/private/tmp/slice3-atomic-current-view-snapshot-e278b1e-r1/FINDING-CLOSURE-MATRIX.json",
+        "sha256": "644976eab44c016f4b96966bdf0ad35588e8941945c969f6e9dc1ece2bf3edfd",
+        "bytes": 2304965
+      }
+    },
+    {
+      "originalPath": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json",
+      "snapshot": {
+        "path": "/private/tmp/slice3-atomic-current-view-snapshot-e278b1e-r1/S3-AC-REWORK-STATUS.json",
+        "sha256": "0a50a56f6694789aa61b2686242eb0fac41acc2ffd8d0676b7d3caef2fe20e49",
+        "bytes": 5865511
+      }
+    }
+  ],
+  "historicalStatus": "ENGINEERING_COMPLETE_CONTROLLER_PENDING_BEFORE_EQUIVALENT_ASSERTION_CONJUNCTION",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+}

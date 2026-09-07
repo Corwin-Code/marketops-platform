@@ -1,0 +1,16 @@
+{
+  "output": {
+    "path": "/private/tmp/slice3-migration-crosscheck-e278b1e-r1/REVIEW.json",
+    "sha256": "93a2bfdb0b34b3f903d204b857ad4064d0ff7f2d24f86f23e6df395b90db4b49",
+    "bytes": 71535
+  },
+  "artifact": "17e6325ae600d7cff0392b7dcf07852b00b1e9b92277e15e532c64f9bbc61ea4",
+  "migrationCount": 73,
+  "allInventoryGitRowsCompared": 1280,
+  "productsSnapshotHash": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37",
+  "sourceEquivalences": [
+    "backend/marketops-server/mvnw.cmd",
+    "scripts/bootstrap-repo.ps1"
+  ],
+  "proofsCreated": 0
+}

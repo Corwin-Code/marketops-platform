@@ -1,0 +1,132 @@
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java
+@@ -1,5 +1,6 @@
+ package com.mimococo.marketops.advertisingefficiency.internal.application;
+ 
++import com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingSlo;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingRecalculationRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingTraceRepository;
+@@ -129,11 +130,12 @@
+                     var firstCase=outcome.stream().flatMap(value->value.written().cases().stream())
+                             .sorted(java.util.Comparator.comparing(value->!"PROTECTION".equals(value.lane()))).findFirst();
+                     for(var unanswered:queue.unanswered(organizationId,object.id(),asOf)) {
+-                        long latency=Duration.between(unanswered.acceptedAt(),observedAt).toMillis();
++                        Duration latency=Duration.between(unanswered.acceptedAt(),observedAt);
+                         trace.recordSlo(ids.newId(),organizationId,object.id(),firstCase.map(value->value.caseId()).orElse(null),
+                                 firstCase.map(value->value.lane()).orElse("WATCH"),"RECONCILIATION",null,null,null,
+-                                unanswered.acceptedAt(),observedAt,observedAt,latency<0?null:latency,null,
+-                                latency<0||latency>900000,correlationId+":"+unanswered.id());
++                                unanswered.acceptedAt(),observedAt,observedAt,
++                                latency.isNegative()?null:latency.toMillis(),null,
++                                latency.isNegative()||AdvertisingSlo.breached(latency),correlationId+":"+unanswered.id());
+                     }
+                     if (outcome.map(result -> result.written().anyLaneChanged()).orElse(false)) {
+                         changed++;
+--- /dev/null
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java
+@@ -0,0 +1,104 @@
++package com.mimococo.marketops.advertisingefficiency.internal.application;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.mockito.ArgumentMatchers.any;
++import static org.mockito.ArgumentMatchers.anyString;
++import static org.mockito.ArgumentMatchers.eq;
++import static org.mockito.ArgumentMatchers.isNull;
++import static org.mockito.Mockito.mock;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.when;
++
++import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
++import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingRecalculationRepository;
++import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingTraceRepository;
++import com.mimococo.marketops.operationsworkflow.AdvertisingReconciliationMaintenance;
++import java.time.Clock;
++import java.time.Duration;
++import java.time.Instant;
++import java.util.List;
++import java.util.Optional;
++import java.util.UUID;
++import org.junit.jupiter.api.Test;
++import org.mockito.ArgumentCaptor;
++
++/** Actual sweep service with mocked ports: exact clock decisions, not PostgreSQL capacity evidence. */
++class AdvertisingReconciliationWorkerTest {
++
++    private static final Instant ACCEPTED_AT = Instant.parse("2026-09-05T00:00:00Z");
++    private static final UUID ORGANIZATION = UUID.randomUUID();
++    private static final UUID OBJECT = UUID.randomUUID();
++
++    @Test
++    void oneNanosecondClockReversalIsUnknownAndBreachedInsteadOfZeroLatency() {
++        assertSweepObservation(Duration.ofNanos(-1), null, true);
++    }
++
++    @Test
++    void exactZeroLatencyIsMeasuredAndDoesNotBreach() {
++        assertSweepObservation(Duration.ZERO, 0L, false);
++    }
++
++    @Test
++    void exactFifteenMinuteLatencyDoesNotBreachTheInclusiveBound() {
++        assertSweepObservation(Duration.ofMillis(900_000), 900_000L, false);
++    }
++
++    @Test
++    void oneNanosecondBeyondFifteenMinutesBreachesBeforeMillisecondConversion() {
++        assertSweepObservation(Duration.ofMillis(900_000).plusNanos(1), 900_000L, true);
++    }
++
++    private static void assertSweepObservation(Duration elapsed, Long expectedMillis,
++            boolean expectedBreach) {
++        var queue = mock(AdvertisingRecalculationRepository.class);
++        var facts = mock(AdvertisingEvidenceRepository.class);
++        var refresh = mock(AdvertisingCaseRefreshService.class);
++        var trace = mock(AdvertisingTraceRepository.class);
++        var clock = mock(Clock.class);
++        var maintenance = mock(AdvertisingReconciliationMaintenance.class);
++        var outcomes = mock(AdvertisingOutcomeWorker.class);
++        var slo = mock(AdvertisingOrchestrationSloService.class);
++        Instant observedAt = ACCEPTED_AT.plus(elapsed);
++        // The fact is already accepted when the sweep starts. Only the following
++        // clock read moves back in the negative case; the queue never invents a future fact.
++        when(clock.instant()).thenReturn(ACCEPTED_AT, observedAt);
++        when(queue.startRun(any(), eq(ORGANIZATION), eq(ACCEPTED_AT), eq("TEST"),
++                eq(ACCEPTED_AT), anyString())).thenReturn(true);
++        when(queue.backlog(ORGANIZATION))
++                .thenReturn(new AdvertisingRecalculationRepository.Backlog(1, ACCEPTED_AT));
++        when(maintenance.reconcile(ORGANIZATION, ACCEPTED_AT))
++                .thenReturn(new AdvertisingReconciliationMaintenance.Counts(0, 0, 0, 0));
++        var object = new AdvertisingEvidenceRepository.ObjectRow(
++                OBJECT, ORGANIZATION, UUID.randomUUID(), "SYNTHETIC_AD", UUID.randomUUID(),
++                "KEYWORD", "fixture-keyword", "fixture-campaign", "clock-boundary",
++                "MANUAL_CPC", "PROVEN_INDEPENDENT", "fixture-lineage", 1, "KNOWN",
++                ACCEPTED_AT, ACCEPTED_AT, "ACTIVE");
++        when(facts.objectsToReconcile(eq(ORGANIZATION), isNull(), eq(1_000)))
++                .thenReturn(List.of(object));
++        when(facts.objectsToReconcile(ORGANIZATION, OBJECT, 1_000)).thenReturn(List.of());
++        when(outcomes.runForObject(ORGANIZATION, OBJECT, ACCEPTED_AT, 1_000))
++                .thenReturn(new AdvertisingOutcomeWorker.Batch(0, 0, false));
++        when(refresh.refresh(eq(ORGANIZATION), eq(OBJECT), eq(ACCEPTED_AT),
++                eq(AdvertisingProjectionWriter.RECONCILIATION), any(), anyString()))
++                .thenReturn(Optional.empty());
++        when(queue.unanswered(ORGANIZATION, OBJECT, ACCEPTED_AT))
++                .thenReturn(List.of(new AdvertisingRecalculationRepository.Unanswered(
++                        UUID.randomUUID(), OBJECT, ACCEPTED_AT)));
++
++        var worker = new AdvertisingReconciliationWorker(queue, facts, refresh, trace,
++                UUID::randomUUID, clock, maintenance, outcomes, slo);
++        var result = worker.sweep(ORGANIZATION, "TEST").orElseThrow();
++
++        assertThat(result.completed()).isTrue();
++        assertThat(result.objectCount()).isEqualTo(1);
++        assertThat(result.failedObjectCount()).isZero();
++        var millis = ArgumentCaptor.forClass(Long.class);
++        verify(trace).recordSlo(any(), eq(ORGANIZATION), eq(OBJECT), isNull(),
++                eq("WATCH"), eq("RECONCILIATION"), isNull(), isNull(), isNull(),
++                eq(ACCEPTED_AT), eq(observedAt), eq(observedAt), millis.capture(), isNull(),
++                eq(expectedBreach), anyString());
++        assertThat(millis.getValue()).isEqualTo(expectedMillis);
++        verify(slo).record(ORGANIZATION);
++    }
++}

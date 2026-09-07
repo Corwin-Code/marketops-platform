@@ -1,0 +1,74 @@
+{
+  "dataset" : {
+    "stores" : 1,
+    "sharedProducts" : 1,
+    "organizations" : 1,
+    "sharedListings" : 1,
+    "regressionObjects" : 200,
+    "completeAffectedSetMembersPerObject" : 1,
+    "nativeObjects" : 1000
+  },
+  "runtime" : {
+    "postgres" : "17.6 (Debian 17.6-2.pgdg12+1)",
+    "os" : "Mac OS X",
+    "maxJvmMemoryBytes" : 4294967296,
+    "java" : "21.0.10",
+    "availableProcessors" : 8,
+    "arch" : "aarch64"
+  },
+  "identities" : {
+    "datasetId" : "synthetic-advertising-portfolio-cd787cb4-9873-4f17-9a55-90e00dd1a4ad",
+    "datasetPath" : "target/advertising-capacity-dataset.json",
+    "datasetSha256" : "2783396a367b24b648725f42228cb02456d6d38a72ec96f7261a2d77ac4973aa",
+    "sourceInputsPath" : "target/advertising-capacity-source-inputs.json",
+    "sourceInputsSha256" : "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247",
+    "startedAt" : "2026-09-05T12:43:50.839674Z",
+    "datasetCapturedAt" : "2026-09-05T12:43:52.882747Z",
+    "measuredLocalGitHead" : "3e4039259c0a56d0f10319cdcae79cab66f81983",
+    "ciIdentity" : {
+      "GITHUB_SHA" : "NOT_SUPPLIED",
+      "GITHUB_REF" : "NOT_SUPPLIED",
+      "GITHUB_EVENT_NAME" : "NOT_SUPPLIED",
+      "GITHUB_RUN_ID" : "NOT_SUPPLIED",
+      "GITHUB_RUN_ATTEMPT" : "NOT_SUPPLIED"
+    },
+    "publicationIdentity" : {
+      "testedMergeSha" : "NOT_PROVIDED",
+      "workflowJob" : "NOT_PROVIDED",
+      "workflowRunAttempt" : "NOT_PROVIDED",
+      "sourceHeadSha" : "NOT_PROVIDED",
+      "workflowRunId" : "NOT_PROVIDED",
+      "artifactName" : "NOT_PROVIDED"
+    },
+    "runtimeResourceReceipt" : "/tmp/slice3-r1-runtime-resources.json",
+    "runtimeResourceReceiptSha256" : "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4",
+    "resourceScopeNotice" : "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+  },
+  "finishedAt" : "2026-09-05T12:50:11.226809Z",
+  "targeted" : {
+    "sampleCount" : 1000,
+    "criticalSampleCount" : 200,
+    "criticalP95Millis" : 32869,
+    "maximumMillis" : 251906,
+    "hardBreachCount" : 0,
+    "clockDefectCount" : 0,
+    "pendingRequests" : 0,
+    "failedRequests" : 0,
+    "oldestFactAcceptedAt" : null,
+    "lastSweepState" : "NOT_ESTABLISHED",
+    "lastSweepCompletedAt" : null,
+    "observedAt" : "2026-09-05T12:48:03.303218Z",
+    "windowHours" : 24,
+    "incidents" : [ "HOURLY_RECONCILIATION_NOT_CURRENT" ],
+    "state" : "INCIDENT",
+    "distributionState" : "MEASURED"
+  },
+  "targetedWallMillis" : 250333,
+  "workerPasses" : 5,
+  "sweepWallMillis" : 127681,
+  "hourlyMarginMillis" : 3472319,
+  "responsibilityTasks" : 1200,
+  "droppedLateCorrectionRecovered" : 1,
+  "productionWriteEnabled" : false,
+  "realProviderAccess" : false
+}

@@ -1,0 +1,225 @@
+{
+  "wrapperSha256": "7951777bd8d2ffff4903b937b4f054bf050ec80069b9c8aba70c162b548578b7",
+  "sourceCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "sourceTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "attempt": "r6",
+  "startedAt": "2026-09-05T11:09:13.275540+00:00",
+  "finishedAt": "2026-09-05T11:10:53.167393+00:00",
+  "durationSeconds": 99.892,
+  "command": [
+    "bash",
+    "scripts/validation/advertising_browser_isolated.sh",
+    "--reporter=list,json"
+  ],
+  "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+  "exitCode": 0,
+  "result": "PASS",
+  "sourceInputSha256": "f31442e5260ff9e82bde73bc0092bc9ecb542406447f44f0fdd6045d29e59a0f",
+  "sourceUnchanged": true,
+  "resources": {
+    "os": "macOS-26.6.2-arm64-arm-64bit",
+    "architecture": "arm64",
+    "cpuCount": 8,
+    "physicalMemoryBytes": 17179869184,
+    "postgresImage": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+    "network": "A fresh dedicated Docker bridge network with inter-container communication disabled and one loopback-only non-5432 PostgreSQL endpoint; dedicated namespace cleaned by the script",
+    "realProviderAccess": false,
+    "productionWriteEnabled": false,
+    "measuredHostAndDocker": {
+      "schemaVersion": "1.0",
+      "recordedAt": "2026-09-05T11:09:13.269369+00:00",
+      "host": {
+        "os": "Darwin",
+        "architecture": "arm64",
+        "logicalProcessors": 8,
+        "physicalMemoryBytes": 17179869184,
+        "processAffinityProcessors": null
+      },
+      "docker": {
+        "logicalProcessors": 4,
+        "memoryBytes": 6210576384,
+        "serverVersion": "29.7.2"
+      },
+      "github": {
+        "runId": null,
+        "runAttempt": null,
+        "job": null,
+        "testedCheckout": null
+      },
+      "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+    },
+    "measurementSha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+  },
+  "dataIdentityCaptured": true,
+  "log": {
+    "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime.log",
+    "sha256": "06b33bbd93ee3036a13745023cad565b7468fe9ac002eee60465ceb8239ae6ad"
+  },
+  "artifacts": [
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "sha256": "c35edb0b75012ba3ea882fb7970696ea72e7cfa72b3e94404c4dfbf244962fe2",
+      "bytes": 660876
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "sha256": "88aa1d9605327d27a6629e32fbc2648d69c9db060bee6ecb717dce75c47622b1",
+      "bytes": 283512
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "sha256": "76141e31fcbe389e7349bb096286df860b50b2f84564a2d5c311be6795eaf69f",
+      "bytes": 466399
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+      "sha256": "9fdd7ab421c5904a9ac7857d46ccdbe53fef29dbbbd5a8045513ed6c76d69935",
+      "bytes": 299947
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "sha256": "e1a86d0a3ec277da58ebebb2beddd78e612a6dec57c2a190b37ac78d85e27aa1",
+      "bytes": 305836
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+      "sha256": "182b331d94cba95f47d96732f435ba199748d11e1b085d4cfdf954d1d2857b4a",
+      "bytes": 331063
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "sha256": "3203488e6316afe1cef8f4c0bb225f47f28781038343aafa06b91dbf6a0535df",
+      "bytes": 302958
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "sha256": "c6a6c0946e74e1971392b7a277e5d7a941c5c43609649786686336e489a869fe",
+      "bytes": 312532
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "sha256": "fc9e36c79d5d978b7ecef4eb5eb0d863673ad0c0b853fa459a5a90c1d0f3b4d9",
+      "bytes": 383541
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "sha256": "5a4ae2e42998a482c9d585cb70c633c282372de60738b03b6bbb20cdd70cfd28",
+      "bytes": 379553
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "sha256": "413045dba4c1ac5217e4aa933466bd40d7ed08d145cac986d681aa7e229a5778",
+      "bytes": 406663
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "sha256": "e470efc6545d48c5e867b4d7ff0b11cbfdf0e9daa699ed73ad32ee40b6ca45e4",
+      "bytes": 1753181
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "sha256": "348879f66c3fb81312285374eb95983d27b653ea323c00e129a2127893e872a1",
+      "bytes": 1120209
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "sha256": "59005e0793c02fc2a8d7b1d13bb5d60b85d41ef7e6433388ac16d8e2fa22d245",
+      "bytes": 483147
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "sha256": "a9172d3a3a6fe4cb5e3e8e539e86c449cd46a3cdceb52b6666e7adc3507098ae",
+      "bytes": 347219
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "sha256": "1a79bac0d01108b465da7b3006da504ac5eda0815164e65d64af5a54fc372f8e",
+      "bytes": 314323
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "sha256": "8633f594d4fd8bdd18062c09fab4a14d5d7a3fd585f1e74badce77ca00b6cdbc",
+      "bytes": 306002
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+      "sha256": "bb763c3da8f392706ff66cac1ca85656b45c11898154df1e07216f679888182e",
+      "bytes": 348790
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+      "sha256": "604497146b6b1f8b559361a2c92e82f3980d910f1fb57f39805929c0306b686c",
+      "bytes": 4443784
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "sha256": "5b1aa9bd1b7dd65330745d475b55216334a20f62b4d25fb1e2bc2102d7c13c6b",
+      "bytes": 188181
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "eebe090376d8131c55f1a6b7dded9b88562b4dd51e661b225f39bc617c2ce5f0",
+      "bytes": 278028
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "sha256": "af4d3530b250e9221689b901edf3bbfc8063ff0c02276f6b2296ded0bc22a4ec",
+      "bytes": 197721
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "0a999140a16f2bcc2543b1a0651ff55d0ba31af3f417e519c5a9f974fcc70a2d",
+      "bytes": 276229
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "sha256": "f4039278e3f9a90032da4d067973cc668eb8f011677400ac4c1448470563d415",
+      "bytes": 1122167
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "sha256": "91eae1940b3284e7b274318a18dedd87e3a28fce7986a896e1b838c731a64b25",
+      "bytes": 1754173
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "sha256": "510542b4b5495db19de406b5d44883cdb870881d73ed1faf68d30ed98525391a",
+      "bytes": 483426
+    }
+  ],
+  "evidenceLimit": "Browser HTTP/JWT/IAM/SQL/rendering evidence. Explicit synthetic lane and history rows do not establish Provider or canonical outcome computation truth; those have independent PostgreSQL tests. No final remote CI claim.",
+  "namedTestResults": {
+    "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+    "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b",
+    "testCount": 12
+  },
+  "dependencyCommands": [
+    {
+      "command": [
+        "npm",
+        "ci",
+        "--include=dev",
+        "--include=optional"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:09:13.275779+00:00",
+      "finishedAt": "2026-09-05T11:09:32.164372+00:00",
+      "exitCode": 0,
+      "packageLockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4"
+    },
+    {
+      "command": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAt": "2026-09-05T11:09:32.165306+00:00",
+      "finishedAt": "2026-09-05T11:09:32.617316+00:00",
+      "exitCode": 0,
+      "packageLockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4"
+    }
+  ],
+  "sourceHeadAfter": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "evidenceComplete": true
+}

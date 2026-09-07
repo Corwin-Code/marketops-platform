@@ -1,0 +1,32 @@
+{
+  "assessment": {
+    "path": "/tmp/slice3-ui81-w8-final-preparation/ui-81-w8-final-prepared.json",
+    "sha256": "31e1bc165cd32d589eabe428d1048cd3a898136837e302276e9a925085cc0de2"
+  },
+  "requiredNamedBackendAssertions": {
+    "path": "/tmp/slice3-ui81-w8-final-preparation/required-w8-named-backend-assertions.json",
+    "sha256": "1126e8cca4c3015af306dc2f9e424a3fa7c0e4376782f3dbb957616c87066b94"
+  },
+  "sourceManifest": {
+    "path": "/tmp/slice3-ui81-w8-final-preparation/w8-current-source-manifest.json",
+    "sha256": "526fcb3f4422a06a82f2cd97aee106fc003f847be1d2de70a12635e0bb6a61b2"
+  },
+  "r25NamedSupport": {
+    "path": "/tmp/slice3-ui81-w8-final-preparation/r25-actual-supporting-methods.json",
+    "sha256": "8b789d7a827d57160260ac8f652b4753b828b1a202e4ff8051e0858b1878d8d7"
+  },
+  "validation": {
+    "acceptedExact81Unchanged": true,
+    "criterionCount": 81,
+    "ownBrowserRefsUnmatched": [],
+    "currentSourceFiles": 70,
+    "concreteJavaMethodsForFutureJoin": 148,
+    "r25NamedMethodsWithSourceEquality": 19,
+    "repositoryWrites": false,
+    "runtimeExecuted": false,
+    "doesNotPromoteCriterionFromTotals": true
+  },
+  "fullBackend": "PENDING_FROZEN_W8_FULL",
+  "allPublicationGates": "PENDING",
+  "controllerVerdict": null
+}

@@ -1,0 +1,23 @@
+{
+  "name": "all-governance-tests",
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_*.py"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+  "startedAt": "2026-09-06T11:31:15.526609+00:00",
+  "finishedAt": "2026-09-06T11:47:29.559843+00:00",
+  "exitCode": -2,
+  "log": {
+    "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r1/all-governance-tests.log",
+    "sha256": "85611eec839acba378a7222308a879698b43d9e75e82a6c55be5c16f9d276215",
+    "bytes": 5070
+  },
+  "scope": "Current uncommitted evidence-only document publication; measured product H source remains unchanged. No backend product run is claimed."
+}

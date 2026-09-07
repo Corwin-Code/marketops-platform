@@ -1,0 +1,162 @@
+{
+  "kind": "POST_W4_EXPOSURE_FRONTEND_QUALITY",
+  "baseHead": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "baseTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+  "binding": "Current post-W4 frontend working-tree bytes only, not exact committed W4 or later final Head",
+  "wrapperSha256": "264efb69b76070b0818bd9835885f298070573add9de9f2f43d12f92a56f81ba",
+  "sourceBeforeSha256": "80f3e63257cf26d18e3c1e9d6d93773cf13f5986bc951257f2750984cd5c3c0a",
+  "startedAtUTC": "2026-09-05T09:03:16.911749+00:00",
+  "boundary": "Frontend-only npm checks with local env discovery disabled; no browser server, Maven, Docker, Provider or shared/production access",
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:17.266585+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:17.806383+00:00",
+      "elapsedSeconds": 0.54,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/00-command.log",
+      "logSha256": "4c57de53a649428fd3a0f7c30da5b41f25521aaa8e501506ac4d1a229d9d38a6"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:17.807016+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:19.071445+00:00",
+      "elapsedSeconds": 1.264,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/01-command.log",
+      "logSha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:19.072054+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:25.693746+00:00",
+      "elapsedSeconds": 6.622,
+      "exitCode": 1,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/02-command.log",
+      "logSha256": "6dc5469ab86afde7b3e58edff37fd7bc4d1ec9309be180b1161ba838cad7bbf6"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:25.694767+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:27.913585+00:00",
+      "elapsedSeconds": 2.219,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/03-command.log",
+      "logSha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:ci",
+        "--",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/vitest.json"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:27.914372+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:34.432123+00:00",
+      "elapsedSeconds": 6.518,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/04-command.log",
+      "logSha256": "1bb86fb16aa31b2a8dd64cec30b0d6eb0a9f94e5abc3660ca23488c9d247dee9"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:34.433183+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:36.797770+00:00",
+      "elapsedSeconds": 2.365,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/05-command.log",
+      "logSha256": "4817c107a4ccab0c4074cc5c5ec6ee156c7d5cb0deb201bbd49f584200a6e2b0"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "verify:bundle"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:36.798455+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:40.627579+00:00",
+      "elapsedSeconds": 3.829,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/06-command.log",
+      "logSha256": "7beeed36815f7f4e17d5d217f347fe30ccc50e4eba0d962ca74f9179f2efb3b8"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "sbom"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T09:03:40.628759+00:00",
+      "finishedAtUTC": "2026-09-05T09:03:42.059917+00:00",
+      "elapsedSeconds": 1.431,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/07-command.log",
+      "logSha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3"
+    }
+  ],
+  "lockSha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332",
+  "resourceReference": {
+    "source": "/tmp/slice3-r1-final-controls-r16/runtime-resources.json",
+    "copiedSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+    "scope": "Read-only reference to separately captured host/Docker allocation; this frontend run starts no Docker workload"
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "logicalHostCpu": 8
+  },
+  "tests": {
+    "total": 308,
+    "passed": 308,
+    "failed": 0,
+    "pending": 0,
+    "rawReporterSha256": "f0f24affbbd30df4e3d49c2a3416cb27b5c25f92b5ec816542f57f09ad918a82",
+    "namesBoundToSourceBefore": true
+  },
+  "lcov.info": {
+    "sha256": "6a9f008e0f34226c2136db804734172c5d3aabe8ac6387e3c5b34f68fbdc005f"
+  },
+  "frontend-sbom.json": {
+    "sha256": "91d3a0c5bad2e38e52e1e47b8cb4897cebb389b44f0acb039eeee473459e07c8"
+  },
+  "sourceAfterSha256": "80f3e63257cf26d18e3c1e9d6d93773cf13f5986bc951257f2750984cd5c3c0a",
+  "sourceStable": true,
+  "finishedAtUTC": "2026-09-05T09:03:42.112511+00:00",
+  "passed": false,
+  "limits": [
+    "Pending final exact checkpoint frontend, 12 real advertising browser journeys, unchanged legacy browser suite, full backend and exact CI",
+    "No criterion or Controller verdict is inferred solely from green tests"
+  ]
+}

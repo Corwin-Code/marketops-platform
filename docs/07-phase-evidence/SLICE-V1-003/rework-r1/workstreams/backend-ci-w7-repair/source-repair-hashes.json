@@ -1,0 +1,5 @@
+{
+  "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+  "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+  "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java": "4219099c5e847e8512e5d5b9a421d89f44a119f32881247a90ef76cac23c5b97"
+}

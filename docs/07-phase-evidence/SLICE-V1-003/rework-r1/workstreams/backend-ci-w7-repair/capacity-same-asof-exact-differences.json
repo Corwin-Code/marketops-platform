@@ -1,0 +1,14 @@
+[
+  {
+    "expected": "",
+    "actual": "-",
+    "expectedContext": "ion=0, displayNote=PRIORITY_POLICY_UNRESOLVED:HUMAN_SLO_URGENCY], AdRankFactor[code=CASE_AGE, value=0, weight=0, contribution=0, displayNote=LEXICOGRAPHIC:6]]], contributionProfit=AdMeasure[valueState",
+    "actualContext": "ion=0, displayNote=PRIORITY_POLICY_UNRESOLVED:HUMAN_SLO_URGENCY], AdRankFactor[code=CASE_AGE, value=-0.000011574074074074074074, weight=0, contribution=0, displayNote=LEXICOGRAPHIC:6]]], contributionPr"
+  },
+  {
+    "expected": "",
+    "actual": ".000011574074074074074074",
+    "expectedContext": "on=0, displayNote=PRIORITY_POLICY_UNRESOLVED:HUMAN_SLO_URGENCY], AdRankFactor[code=CASE_AGE, value=0, weight=0, contribution=0, displayNote=LEXICOGRAPHIC:6]]], contributionProfit=AdMeasure[valueState=",
+    "actualContext": "n=0, displayNote=PRIORITY_POLICY_UNRESOLVED:HUMAN_SLO_URGENCY], AdRankFactor[code=CASE_AGE, value=-0.000011574074074074074074, weight=0, contribution=0, displayNote=LEXICOGRAPHIC:6]]], contributionProfit=AdMeasure[valueState="
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "startedAtUTC": "2026-09-05T14:00:43.276112+00:00",
+  "finishedAtUTC": "2026-09-05T14:00:46.711644+00:00",
+  "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "sourceTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "groups": [
+    {
+      "name": "full-clean-w8",
+      "archive": "workstreams/full-clean-w8/run-originals.tar.gz",
+      "sha256": "b553edfc139cf9db782df95c6fc8264423cb59c83735cc33748f8812041e0e53",
+      "bytes": 608101
+    },
+    {
+      "name": "full-clean-w8",
+      "archive": "workstreams/full-clean-w8/raw-test-artifacts.tar.gz",
+      "sha256": "bb4377e26239f32d91552b76a44736b4b7acf3071460e1ab5621aa65e7287b8f",
+      "bytes": 3650509
+    },
+    {
+      "name": "validation-w8",
+      "archive": "workstreams/validation-w8/original-evidence.tar.gz",
+      "sha256": "61982c251b1fa8fd75490f363b4f74ca147300dfa3329a944e4ba09ed6fbb73a",
+      "bytes": 15092
+    },
+    {
+      "name": "ci-w8",
+      "archive": "workstreams/ci-w8/original-evidence.tar.gz",
+      "sha256": "661d34321a1ac8d4e8e1a51cb44e04a4d42e50768491dd549aeb099d9686a5b7",
+      "bytes": 23791548
+    },
+    {
+      "name": "backend-ci-w8",
+      "archive": "workstreams/backend-ci-w8/original-evidence.tar.gz",
+      "sha256": "c0afd5ccff1f4ea1be725a8b4c5f443f4c5ed39da22c71d0b138e8a2a2d190ba",
+      "bytes": 886691
+    },
+    {
+      "name": "frontend-ci-w8",
+      "archive": "workstreams/frontend-ci-w8/original-evidence.tar.gz",
+      "sha256": "e21d97483fa335e28380c99042c831a2187f037521b22bfbd03721511422798b",
+      "bytes": 15672658
+    },
+    {
+      "name": "security-w8",
+      "archive": "workstreams/security-w8/original-evidence.tar.gz",
+      "sha256": "6839f08e43e4811f965251c0eb73e10e21ce3edcee19c2d37e4a0b921da82243",
+      "bytes": 1695210,
+      "retainedKnownStaticHelpRawMatches": 8
+    },
+    {
+      "name": "gov-infra-ci-w8",
+      "archive": "workstreams/gov-infra-ci-w8/original-evidence.tar.gz",
+      "sha256": "1b00f948b7d3655bb17e0cf3ff9be21b6e3ffcfecb95c81840b9bd5653792625",
+      "bytes": 2367070
+    }
+  ],
+  "mappedCopiesAndMembers": 2460,
+  "externalExcludedCount": 2,
+  "result": "ARCHIVED_BYTES_BUILT_RECURSIVE_SCAN_PENDING",
+  "gitOrRemoteWrites": false,
+  "providersDatabasesRuntimeTouched": false
+}

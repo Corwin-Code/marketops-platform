@@ -1,0 +1,27 @@
+{
+  "kind": "SLO_PATCH_REVIEW_WITH_ACTUAL_R1_TYPE_FAILURE_AND_ROOT_NARROW_FIX",
+  "currentReview": {
+    "path": "/tmp/slice3-ui-slo-unknown-patch-independent-review/review-r2-type-fix.json",
+    "sha256": "c737a064dc5da50c0b1d64850f0e3ada5cba3a9788f9ca51baa4d2755c758503"
+  },
+  "originalReviewRetained": {
+    "path": "/tmp/slice3-ui-slo-unknown-patch-independent-review/review.json",
+    "sha256": "3ee8634d32eaed678e5792765f29fb6b5061666c3299c9998fb02b6f73a0cd96"
+  },
+  "originalManifestRetained": {
+    "path": "/tmp/slice3-ui-slo-unknown-patch-independent-review/manifest.json",
+    "sha256": "642fe72519116db873d570395d0989c76894ee192076b3b720722892b733e38a"
+  },
+  "actualFailureEvidence": [
+    {
+      "path": "/tmp/slice3-ui-slo-repair-quality-r1/receipt.json",
+      "sha256": "9949a4a10424448b7683cd48e8b1556dbaeacd1f22ac98095d85bdbf61b45976"
+    },
+    {
+      "path": "/tmp/slice3-ui-slo-repair-quality-r1/lint.log",
+      "sha256": "d149b1d71a94b720935491e170117c366baae9336000dbb90c0111142970f75f"
+    }
+  ],
+  "actualR2Result": "PENDING",
+  "controllerVerdict": null
+}

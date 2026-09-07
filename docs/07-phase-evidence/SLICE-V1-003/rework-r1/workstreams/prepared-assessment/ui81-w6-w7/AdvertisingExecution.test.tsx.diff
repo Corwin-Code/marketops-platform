@@ -1,0 +1,336 @@
+diff --git a/frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx b/frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx
+index ae513b7..3a9ca47 100644
+--- a/frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx
++++ b/frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx
+@@ -57,20 +57,33 @@ function context(fetchImpl: typeof fetch): ConsoleRequest {
+ }
+ 
+-const ENVELOPE = {
++const MEASURED_ENVELOPE = {
+   envelopeId: '11111111-1111-4111-8111-111111111111',
+   policyVersion: 3,
+   scopeKind: 'ORGANIZATION',
+   currencyCode: 'RUB',
+-  activeInterventions: 7,
+-  maxActiveInterventions: 10,
+-  reservedRecoveryHeadroom: 3,
+-  unresolvedTransmittedWrites: 0,
+-  maxUnresolvedTransmittedWrites: 2,
+-  cumulativeBidChangeAmount: '120.0000',
+-  maxCumulativeBidChangeAmount: '500.0000',
+-  cumulativeWindowHours: 24,
++  measurementWindowHours: 24,
++  retainedWindowDays: 30,
++  axes: {
++    activeInterventions: { usage: 7, limit: 10, state: 'AVAILABLE' },
++    associatedOfficialSpend: { usage: null, limit: 500, state: 'UNKNOWN', unit: 'RUB_MAJOR' },
++    affectedRetainedSalesShare: { usage: 0.12, limit: 0.2, state: 'AVAILABLE' },
++    cumulativeBidChangeMajor: {
++      usage: 120,
++      limit: 500,
++      state: 'AVAILABLE',
++      windowHours: 24,
++      unit: 'RUB_MAJOR',
++    },
++    unresolvedTransmittedWrites: { usage: 0, limit: 2, state: 'AVAILABLE' },
++    reservedRecoveryHeadroom: { available: 3, reserved: 3, state: 'AVAILABLE' },
++  },
++  reasons: ['ASSOCIATED_SPEND_UNRESOLVED'],
++};
++const ENVELOPE = {
++  measuredAt: '2026-09-04T00:00:00Z',
++  envelopes: [MEASURED_ENVELOPE],
++  unresolvedStoreIds: [],
+   resolved: true,
+-  exhaustedAxes: ['ACTIVE_INTERVENTIONS'],
+-  status: 'ACTIVE',
++  status: 'MEASURED',
+ };
+ 
+@@ -124,22 +137,25 @@ describe('the exposure envelope surface', () => {
+ 
+     const envelope = await screen.findByLabelText('Exposure envelope');
+-    // Three axes, three limits, and nothing that reads as an overall figure.
+-    // A single percentage would describe a quantity the product does not have.
+-    expect(within(envelope).getAllByRole('row')).toHaveLength(4);
+-    expect(envelope.querySelector('[data-axis="ACTIVE_INTERVENTIONS"]')).not.toBeNull();
+-    expect(envelope.querySelector('[data-axis="UNRESOLVED_TRANSMITTED_WRITES"]')).not.toBeNull();
+-    expect(envelope.querySelector('[data-axis="CUMULATIVE_BID_CHANGE"]')).not.toBeNull();
++    expect(within(envelope).getAllByRole('row')).toHaveLength(7);
++    for (const code of Object.keys(MEASURED_ENVELOPE.axes)) {
++      expect(envelope.querySelector(`[data-axis="${code}"]`)).not.toBeNull();
++    }
++    const unknown = envelope.querySelector('[data-axis="associatedOfficialSpend"]');
++    expect(unknown?.textContent).toContain('not measured');
++    expect(unknown?.textContent).toContain('unknown; capacity unproven');
++    expect(unknown?.textContent).not.toContain('within current limit');
+   });
+ 
+-  it('TC-UI-ADV-016 shows the intervention limit reduced by the recovery headroom', async () => {
++  it('TC-UI-ADV-016 shows remaining headroom independently from current interventions', async () => {
+     render(<AdvertisingOperations context={context(operationsRoutes())} />);
+ 
+     const envelope = await screen.findByLabelText('Exposure envelope');
+-    const row = envelope.querySelector('[data-axis="ACTIVE_INTERVENTIONS"]');
+-    // Ten interventions with three reserved for recovery leaves seven for
+-    // ordinary work. Showing ten would tell an operator they had room.
++    const row = envelope.querySelector('[data-axis="activeInterventions"]');
+     expect(row?.textContent).toContain('7');
+     expect(row?.textContent).toContain('3 of 10 reserved for recovery');
+-    expect(row?.querySelector('[data-exhausted="true"]')).not.toBeNull();
++    const headroom = envelope.querySelector('[data-axis="reservedRecoveryHeadroom"]');
++    expect(headroom?.textContent).toContain('remaining intervention capacity / reserved capacity');
++    expect(headroom?.querySelectorAll('td')[0]?.textContent).toBe('3');
++    expect(headroom?.querySelectorAll('td')[1]?.textContent).toBe('3');
+   });
+ 
+@@ -150,9 +166,9 @@ describe('the exposure envelope surface', () => {
+           operationsRoutes({
+             '/advertising/exposure': {
+-              envelopeId: null,
+-              activeInterventions: 2,
+-              unresolvedTransmittedWrites: 1,
++              measuredAt: ENVELOPE.measuredAt,
++              envelopes: [],
++              unresolvedStoreIds: ['unresolved-store'],
+               resolved: false,
+-              exhaustedAxes: ['AGGREGATE_ENVELOPE_UNRESOLVED'],
++              status: 'UNRESOLVED',
+             },
+           }),
+@@ -166,10 +182,25 @@ describe('the exposure envelope surface', () => {
+   });
+ 
+-  it('TC-UI-ADV-018 keeps a retired envelope visible as still binding', async () => {
++  it('TC-UI-ADV-018 preserves both organization and Store envelope limits', async () => {
+     render(
+       <AdvertisingOperations
+         context={context(
+           operationsRoutes({
+-            '/advertising/exposure': { ...ENVELOPE, status: 'RETIRED' },
++            '/advertising/exposure': {
++              ...ENVELOPE,
++              envelopes: [
++                MEASURED_ENVELOPE,
++                {
++                  ...MEASURED_ENVELOPE,
++                  envelopeId: 'other-envelope',
++                  scopeKind: 'STORE',
++                  storeId: 'scoped-store',
++                  axes: {
++                    ...MEASURED_ENVELOPE.axes,
++                    activeInterventions: { usage: 2, limit: 3, state: 'AVAILABLE' },
++                  },
++                },
++              ],
++            },
+           }),
+         )}
+@@ -178,7 +209,204 @@ describe('the exposure envelope surface', () => {
+ 
+     const envelope = await screen.findByLabelText('Exposure envelope');
+-    // The gate treats a retired envelope as binding rather than absent, so the
+-    // console may not present it as expired.
+-    expect(envelope.textContent).toContain('retired and still binding');
++    expect(within(envelope).getAllByRole('table')).toHaveLength(2);
++    expect(envelope.textContent).toContain('ORGANIZATION scope');
++    expect(envelope.textContent).toContain('STORE scope / Store scoped-store');
++    expect(
++      envelope.querySelector('[data-envelope="other-envelope"] [data-axis="activeInterventions"]')
++        ?.textContent,
++    ).toContain('2');
++  });
++});
++
++describe('six-axis exposure disclosure and partial-input boundaries', () => {
++  it('TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body', async () => {
++    const body = {
++      ...ENVELOPE,
++      disclosureState: 'MASKED',
++      unresolvedStoreIds: ['private-store'],
++      envelopes: [{ ...MEASURED_ENVELOPE, envelopeId: 'private-envelope' }],
++    };
++    expect(parseAdvertisingExposure(body)).toEqual({
++      measuredAt: undefined,
++      envelopes: [],
++      unresolvedStoreIds: [],
++      resolved: false,
++      status: 'MASKED',
++    });
++    render(
++      <AdvertisingOperations
++        context={context(operationsRoutes({ '/advertising/exposure': body }))}
++      />,
++    );
++    const panel = await screen.findByLabelText('Exposure envelope');
++    expect(panel).toHaveAttribute('data-state', 'masked');
++    expect(within(panel).queryByRole('table')).not.toBeInTheDocument();
++    expect(panel.textContent).toContain('not zero or spare capacity');
++    expect(panel.textContent).not.toContain('private-store');
++    expect(panel.textContent).not.toContain('private-envelope');
++    expect(panel.textContent).not.toContain(ENVELOPE.measuredAt);
++  });
++
++  it.each([
++    ['absent', undefined],
++    ['null', null],
++    ['empty', ''],
++    ['whitespace', '  '],
++    ['not a number', 'unresolved'],
++    ['nonfinite', Number.POSITIVE_INFINITY],
++    ['boolean', false],
++  ])(
++    'TC-UI-ADV-043 %s usage cannot become a measured zero or available capacity',
++    (_label, usage) => {
++      const result = parseAdvertisingExposure({
++        ...ENVELOPE,
++        envelopes: [
++          {
++            ...MEASURED_ENVELOPE,
++            axes: {
++              ...MEASURED_ENVELOPE.axes,
++              activeInterventions: { usage, limit: 10, state: 'AVAILABLE' },
++            },
++          },
++        ],
++      });
++      expect(result?.envelopes[0]?.axes.activeInterventions.usage).toBeUndefined();
++      expect(result?.envelopes[0]?.axes.activeInterventions.limit).toBe(10);
++      expect(result?.envelopes[0]?.axes.activeInterventions.state).toBe('UNKNOWN');
++    },
++  );
++
++  it('TC-UI-ADV-044 preserves explicit zero and exceeded negative headroom independently', async () => {
++    const body = {
++      ...ENVELOPE,
++      envelopes: [
++        {
++          ...MEASURED_ENVELOPE,
++          axes: {
++            ...MEASURED_ENVELOPE.axes,
++            unresolvedTransmittedWrites: { usage: 0, limit: 2, state: 'AVAILABLE' },
++            reservedRecoveryHeadroom: { available: -2, reserved: 3, state: 'EXCEEDED' },
++          },
++        },
++      ],
++    };
++    const parsed = parseAdvertisingExposure(body);
++    expect(parsed?.envelopes[0]?.axes.unresolvedTransmittedWrites.usage).toBe(0);
++    expect(parsed?.envelopes[0]?.axes.unresolvedTransmittedWrites.state).toBe('AVAILABLE');
++    render(
++      <AdvertisingOperations
++        context={context(operationsRoutes({ '/advertising/exposure': body }))}
++      />,
++    );
++    const panel = await screen.findByLabelText('Exposure envelope');
++    const row = panel.querySelector('[data-axis="reservedRecoveryHeadroom"]');
++    expect(row?.querySelectorAll('td')[0]?.textContent).toBe('-2');
++    expect(row?.querySelectorAll('td')[2]?.textContent).toBe('exceeded');
++  });
++
++  it('TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag', async () => {
++    const body = { ...ENVELOPE, unresolvedStoreIds: ['missing-store'], resolved: true };
++    expect(parseAdvertisingExposure(body)?.resolved).toBe(false);
++    render(
++      <AdvertisingOperations
++        context={context(operationsRoutes({ '/advertising/exposure': body }))}
++      />,
++    );
++    const panel = await screen.findByLabelText('Exposure envelope');
++    expect(panel).toHaveAttribute('data-state', 'unresolved');
++    expect(within(panel).getByRole('alert').textContent).toContain(
++      'cannot admit a new advertising action',
++    );
++    expect(panel.textContent).toContain('missing-store');
++    expect(within(panel).getAllByRole('row')).toHaveLength(7);
++  });
++
++  it('TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions', () => {
++    expect(parseAdvertisingExposure({ ...ENVELOPE, unresolvedStoreIds: [42] })).toBeUndefined();
++    expect(parseAdvertisingExposure({ ...ENVELOPE, unresolvedStoreIds: ['  '] })).toBeUndefined();
++    expect(
++      parseAdvertisingExposure({
++        ...ENVELOPE,
++        envelopes: [{ ...MEASURED_ENVELOPE, policyVersion: 1.5 }],
++      }),
++    ).toBeUndefined();
++    expect(
++      parseAdvertisingExposure({
++        ...ENVELOPE,
++        envelopes: [
++          {
++            ...MEASURED_ENVELOPE,
++            axes: without(MEASURED_ENVELOPE.axes, 'reservedRecoveryHeadroom'),
++          },
++        ],
++      }),
++    ).toBeUndefined();
++    expect(parseAdvertisingExposure({ ...ENVELOPE, resolved: undefined })).toBeUndefined();
++    expect(parseAdvertisingExposure({ ...ENVELOPE, status: 'unexpected' })).toBeUndefined();
++  });
++
++  it('TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window', async () => {
++    const body = {
++      ...ENVELOPE,
++      envelopes: [
++        {
++          ...MEASURED_ENVELOPE,
++          axes: {
++            ...MEASURED_ENVELOPE.axes,
++            associatedOfficialSpend: {
++              usage: 450,
++              limit: 500,
++              state: 'AVAILABLE',
++              unit: 'RUB_MAJOR',
++              aggregationBasis: 'COMPLETE_INTERSECTING_OFFICIAL_REPORT_AMOUNTS',
++              conservativeBoundaryReportCount: 2,
++            },
++            affectedRetainedSalesShare: {
++              usage: 0.12,
++              limit: 0.2,
++              state: 'AVAILABLE',
++              affectedSales: 120,
++              companySales: 1000,
++            },
++          },
++        },
++      ],
++    };
++    render(
++      <AdvertisingOperations
++        context={context(operationsRoutes({ '/advertising/exposure': body }))}
++      />,
++    );
++    const panel = await screen.findByLabelText('Exposure envelope');
++    expect(panel.querySelector('[data-axis="associatedOfficialSpend"]')?.textContent).toContain(
++      '2 reports crossed the start of this window and are counted in full',
++    );
++    expect(panel.querySelector('[data-axis="affectedRetainedSalesShare"]')?.textContent).toContain(
++      'affected sales 120 / company sales 1000',
++    );
++  });
++
++  it('TC-UI-ADV-048 missing limits and recovery reserves keep explicit UNKNOWN states', () => {
++    const result = parseAdvertisingExposure({
++      ...ENVELOPE,
++      envelopes: [
++        {
++          ...MEASURED_ENVELOPE,
++          axes: {
++            ...MEASURED_ENVELOPE.axes,
++            cumulativeBidChangeMajor: {
++              usage: 120,
++              state: 'AVAILABLE',
++              windowHours: 24,
++              unit: 'RUB_MAJOR',
++            },
++            reservedRecoveryHeadroom: { available: 3, reserved: null, state: 'AVAILABLE' },
++          },
++        },
++      ],
++    });
++    expect(result?.envelopes[0]?.axes.cumulativeBidChangeMajor.state).toBe('UNKNOWN');
++    expect(result?.envelopes[0]?.axes.reservedRecoveryHeadroom.state).toBe('UNKNOWN');
++    expect(result?.envelopes[0]?.axes.reservedRecoveryHeadroom.reserved).toBeUndefined();
+   });
+ });

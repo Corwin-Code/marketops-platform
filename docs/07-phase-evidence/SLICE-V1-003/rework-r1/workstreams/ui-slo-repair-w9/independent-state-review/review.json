@@ -1,0 +1,332 @@
+{
+  "kind": "BOUNDED_READ_ONLY_ACCEPTED_F006_F021_UI_SLO_STATE_REVIEW",
+  "preparedAtUTC": "2026-09-05T13:39:51.965976+00:00",
+  "sourceHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "status": "CONFIRMED_PRESENTATION_ROOT_CAUSE_PATCH_AND_NEW_VERIFICATION_PENDING",
+  "scope": "Existing accepted AC064–069, Contract6.11/6.12 and Frozen006/021 only; no new ordinary finding or policy",
+  "immutableReferences": [
+    {
+      "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.json",
+      "sha256": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0"
+    }
+  ],
+  "acceptedCriteriaExact": [
+    "- `S3-AC-064` — human SLO distinguishes acknowledgement from action decision/first attributable action.",
+    "- `S3-AC-065` — page open or free-text acknowledgement cannot satisfy the action stage.",
+    "- `S3-AC-066` — Protection/Regression response is no weaker than Optimization; material Data Repair has a cause-owner Profile.",
+    "- `S3-AC-067` — reassignment preserves Case age and SLO history.",
+    "- `S3-AC-068` — outside coverage, staffed-clock handling and `OUT_OF_COVERAGE_ACTIVE_HARM` exposure remain simultaneously visible.",
+    "- `S3-AC-069` — missing human SLO/Coverage Profile leaves Task active and blocks affected operating readiness rather than claiming on-time."
+  ],
+  "frozenRowsExact": [
+    {
+      "id": "S3-DR-006",
+      "severity": "BLOCKER",
+      "title": "Accountable Task, human SLO and Accepted Exception are not complete operating authorities",
+      "criteria": [
+        "S3-AC-061",
+        "S3-AC-062",
+        "S3-AC-063",
+        "S3-AC-064",
+        "S3-AC-066",
+        "S3-AC-068",
+        "S3-AC-069",
+        "S3-AC-070",
+        "S3-AC-072",
+        "S3-AC-073",
+        "S3-AC-074"
+      ],
+      "observed": [
+        "AdvertisingProposalService suppresses every blocked Case before Task creation, so material Data Repair and non-bid Protection responsibilities can remain taskless.",
+        "The acknowledgement deadline and staffed/out-of-coverage logic are stored but not evaluated; a missing human-SLO Profile silently falls back to 15 minutes.",
+        "No advertising Accepted Exception entity, service or endpoint exists."
+      ],
+      "risk": "Proven harm or data blockers can lack accountable work, SLO reporting can claim an unpublished service level, and risk can be suppressed without the accepted exclusive, expiring exception control.",
+      "required_rework": [
+        "Create/update cause-routed Tasks independently of whether a bid candidate exists, using the existing operationsworkflow sole authority.",
+        "Implement acknowledgement/action clocks, staffed calendar, OUT_OF_COVERAGE_ACTIVE_HARM, escalation, reassignment history and no hidden fallback.",
+        "Implement advertising Accepted Exception with exact cause/scope/evidence/consequence, Operations endorsement, Owner approval, Bundle, expiry, exclusive action-intent rule and same-Case reopen."
+      ],
+      "verification": [
+        "Concurrent/replay Task dedupe tests.",
+        "Clock/coverage/expiry/escalation tests.",
+        "Exception lifecycle and no-auto-renew tests."
+      ]
+    },
+    {
+      "id": "S3-DR-021",
+      "severity": "MAJOR",
+      "title": "The console is largely read-only and does not expose the complete governed action workflow",
+      "criteria": [
+        "S3-AC-095",
+        "S3-AC-105",
+        "S3-AC-181",
+        "S3-AC-187",
+        "S3-AC-188",
+        "S3-AC-189",
+        "S3-AC-195"
+      ],
+      "observed": [
+        "Queue, operations and brief readers exist, but the candidate audit records no production operator surface for selecting/rejecting an exact candidate and no complete Manual Packet issue path.",
+        "Required Preview/approval/lease/command/unknown/mismatch/exception/kill/reenablement transitions are not all reachable through backend APIs and browser scenarios.",
+        "State distinctions exist in fragments but are not proven across the full role-scoped console."
+      ],
+      "risk": "The implementation may pass component/browser tests without delivering the primary Action-first operating console.",
+      "required_rework": [
+        "Complete backend APIs and frontend flows for candidate selection/rejection, Task, Exception, Manual Shadow, Preview, endorsement/approval, command/readback, Outcome, containment and reenablement.",
+        "Keep authorization server-side and render confirmed/estimated/stale/blocked, Provider accepted/readback/manual verified, Operational/Settled as distinct states.",
+        "Verify keyboard, UTF-8/Russian, UTC/Store-local time, pagination and safe errors."
+      ],
+      "verification": [
+        "Role-specific Playwright paths for Protection, Data Repair, Optimization, Watch, manual action, material approval, expiry, Unknown/Mismatch, regression, exception, kill and late Settled transition."
+      ]
+    }
+  ],
+  "actualSourceReferences": [
+    {
+      "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.json",
+      "sha256": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0"
+    },
+    {
+      "path": "frontend/marketops-console/src/api/advertising.ts",
+      "sha256": "ddcb09ab7af193001b3f7c89c1bc68090b152fa0e7c34ce95ae1aa4c87849091"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+      "sha256": "ee45398e237631a12adaba76d64b9daa1ee3beeed81253d9a7030b7a702eff9f"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingTimestamp.tsx",
+      "sha256": "61cff677b97a4145196454cb35a6e7b7cef3c3593ce02152f6c5c28854e72094"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+      "sha256": "276049ce3b78d4338895c49016b00fbdd8c371612e71f153963e5be8adfb7f3f"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "sha256": "72bc072528cd7292f4dc68522d1285dd09076cdaf3f0d3bec7d5640f93aec50c"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AdvertisingTaskSloQuery.java",
+      "sha256": "d385ce47b528b7d652c8586830fed29098cc210dc3934ea4f6bfeac2f1ee3a25"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+      "sha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+      "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+      "sha256": "2a463e17c6acf58272c14431835013f97a0f1e21c7410338c5b0d42bf716804f"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+      "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+      "sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a"
+    }
+  ],
+  "confirmedRootCause": {
+    "backend": "AdvertisingTaskSloService missing-profile branch (lines57–63) deliberately returns PROFILE_OR_CALENDAR_MISSING, null deadlines/events and primitive false flags; this represents absent evaluability, not on-time. Valid profile branch derives current-epoch ACK/ACTION events separately and Accepted Exception only affects Action pauses.",
+    "client": "AdvertisingWorkflow.tsx lines186–201 labels breach false as within current staffed clock without checking profile/coverage/deadline, and all non-true actionPaused values as active. It ignores completion timestamps.",
+    "sameClassEffects": [
+      "Both ACK and Action may appear on-time for a missing Profile/calendar.",
+      "OUT_OF_COVERAGE(_ACTIVE_HARM) can be labeled action active because actionPaused only represents Accepted Exception; actual existing PG test asserts actionPaused=false outside coverage.",
+      "A completed stage may still display active because no completion event is considered.",
+      "Missing/null pause field is treated as active by a ternary fallback."
+    ],
+    "evidenceBoundary": "This review reads exact source and test assertions; it did not execute UI, browser, Java, SQL or inspect pixels. W8 screenshot observations are supplied by the independent UI reviewer and should link to that reviewer report."
+  },
+  "minimalCorrectModel": {
+    "axes": [
+      "Completion fact for ACK and ACTION independently",
+      "Timeliness evaluated by server with applicable deadline/coverage availability",
+      "Current clock disposition with completion, pause and staffing facts"
+    ],
+    "knownCoverageStates": [
+      "IN_COVERAGE",
+      "OUT_OF_COVERAGE",
+      "OUT_OF_COVERAGE_ACTIVE_HARM",
+      "ACCEPTED_EXCEPTION_ACTIVE"
+    ],
+    "unknownCoverage": "Missing/empty/unrecognized/PROFILE_OR_CALENDAR_MISSING cannot support an on-time or active claim.",
+    "dateRule": "Use a nonempty parsable instant consistent with AdvertisingTimestamp; a string alone is not a valid deadline/event. Do not recalculate staffed deadlines from browser time.",
+    "trueEvidencePrecedence": "Never hide true breach because due/profile is missing or a pause/completion is present. Show factual completion and pause independently, with unresolved authority where applicable.",
+    "completionPrecedence": "Valid completed timestamp prevents a running-clock label for that completed stage, but must not erase BREACHED.",
+    "pausePrecedence": "True current Action pause remains visible; missing authority cannot be upgraded to an active clock. Accepted Exception does not pause ACK.",
+    "noTaskLoss": "A malformed or missing SLO payload must degrade that section to unresolved while retaining the active Task and separately authorized actions."
+  },
+  "stateTable": [
+    {
+      "input": "No live slo object, malformed object/array, or unrecognized coverage state",
+      "completion": "Only separately supplied valid event may be shown; do not infer from Task state",
+      "timeliness": "UNRESOLVED even if legacy due dates exist",
+      "clock": "UNRESOLVED; no active/paused inference",
+      "guard": "Keep Task, accountable role, reasons, journal and server-authorized actions visible."
+    },
+    {
+      "input": "PROFILE_OR_CALENDAR_MISSING + null deadlines + primitive false/false/false (actual backend response)",
+      "completion": "UNRESOLVED in this SLO response; backend returns before reading current-epoch events",
+      "timeliness": "UNRESOLVED for both stages; false is not proof of on-time",
+      "clock": "UNRESOLVED; exposure age remains the actual value",
+      "guard": "Missing profile does not make Task healthy or drop it; do not replace deadline with 15 minutes or legacy date."
+    },
+    {
+      "input": "Known coverage but relevant stage deadline absent, blank or invalid",
+      "completion": "Display a valid event if present",
+      "timeliness": "UNRESOLVED for that stage when breach is false/null; retain true breach separately",
+      "clock": "No positive active claim for a stage without a valid deadline",
+      "guard": "ACK deadline cannot substitute for ACTION deadline. Other stage may remain resolved."
+    },
+    {
+      "input": "Valid acknowledgedAt only, firstAttributableActionAt absent",
+      "completion": "ACK recorded at its own instant; ACTION not established",
+      "timeliness": "Each stage uses its own due and authoritative breach value",
+      "clock": "ACK stage completed; ACTION depends on current coverage/pause/completion",
+      "guard": "Opening page, ACK POST204, Task IN_PROGRESS, or an allowed action is never ACTION completion."
+    },
+    {
+      "input": "Valid completion timestamp + breach=true",
+      "completion": "Show completed ACK or ACTION with timestamp",
+      "timeliness": "BREACHED / completed after deadline, retain separately",
+      "clock": "That completed stage no longer has a running clock",
+      "guard": "Do not replace historical breach with generic completed success. A current Exception may remain visible separately."
+    },
+    {
+      "input": "Valid completion timestamp + known coverage + valid deadline + breach=false",
+      "completion": "Completed at actual supplied timestamp",
+      "timeliness": "No breach reported by current server evaluation; not an Outcome success",
+      "clock": "That stage completed, not active",
+      "guard": "Do not independently derive SLO timing from the browser clock."
+    },
+    {
+      "input": "Valid completion timestamp + unknown timeliness authority",
+      "completion": "Completed timestamp remains a fact",
+      "timeliness": "Timeliness UNRESOLVED",
+      "clock": "Completed stage, with unresolved SLO authority stated",
+      "guard": "Completion and on-time are distinct."
+    },
+    {
+      "input": "IN_COVERAGE + valid stage due + no completed event + breach=false + actionPaused=false",
+      "completion": "Awaiting the relevant recorded event",
+      "timeliness": "NOT_BREACHED at returned server snapshot",
+      "clock": "Corresponding staffed clock active",
+      "guard": "Positive state requires exact false, not falsy/null; do not calculate readiness/write permission."
+    },
+    {
+      "input": "IN_COVERAGE + breach=null/missing or actionPaused=null/missing",
+      "completion": "Use exact event only",
+      "timeliness": "Unknown breach remains UNRESOLVED",
+      "clock": "Unknown pause must not become action active",
+      "guard": "The DTO is currently an unvalidated Record on the client; explicit field checks are required."
+    },
+    {
+      "input": "OUT_OF_COVERAGE or OUT_OF_COVERAGE_ACTIVE_HARM + actionPaused=false (actual backend possibility)",
+      "completion": "Use exact events only",
+      "timeliness": "Keep server true breach; valid false may be described as no breach reported, never current active staffed coverage",
+      "clock": "Awaiting staffed coverage; show nextStaffedResponseAt or its explicit unresolved state",
+      "guard": "Preserve OUT_OF_COVERAGE_ACTIVE_HARM, wall age and existing continuing exposure; no implicit 24x7."
+    },
+    {
+      "input": "actionPaused=true / known ACCEPTED_EXCEPTION_ACTIVE before Action completion",
+      "completion": "ACK and ACTION remain independently determined",
+      "timeliness": "True breach stays visible. False during pause is not proof of completed/on-time Action",
+      "clock": "Action paused; wall exposure age continues",
+      "guard": "Exception does not pause ACK or create write/Outcome authority; preserve separate coverage/disposition."
+    },
+    {
+      "input": "breach=true and paused=true simultaneously",
+      "completion": "Use event fact independently",
+      "timeliness": "BREACHED must remain visible",
+      "clock": "Paused must also remain visible for pending Action; do not force mutually exclusive status",
+      "guard": "The existing component already preserves both, and repair must not regress that behavior."
+    },
+    {
+      "input": "Exposure age is missing, NaN, infinite or negative",
+      "completion": "Unaffected",
+      "timeliness": "Unaffected",
+      "clock": "Exposure age UNRESOLVED; never zero",
+      "guard": "Zero is valid only when explicitly finite nonnegative server value; ordinary JSON cannot encode NaN but local parser boundaries should be strict."
+    }
+  ],
+  "sameClassScan": [
+    {
+      "surface": "parseAdvertisingWorkflow / slo Record",
+      "result": "No semantic readiness parser; accepts object including arrays. A local strict presentation helper can safely degrade unknown fields. No need to reject entire workflow/Task or invent a new backend authority."
+    },
+    {
+      "surface": "AdvertisingWorkflow.liveTime",
+      "result": "When live slo exists but field missing, it does NOT fallback to legacy deadline. Preserve this good boundary."
+    },
+    {
+      "surface": "AdvertisingTimestamp",
+      "result": "Already marks undefined/invalid date as Time unresolved and preserves UTC plus actual Store timezone. Reuse its validity semantics."
+    },
+    {
+      "surface": "AdvertisingResponsibilityControls",
+      "result": "ACK endpoint and canonical data/mapping repair action are separate; journal lists eventKind/actor/role/time. Do not infer Action from ACK or start."
+    },
+    {
+      "surface": "AdvertisingQueue / Case / Brief / Outcome / Orchestration display scan",
+      "result": "The within current staffed clock and action active/paused conditional is confined to AdvertisingWorkflow; other coverage fields found are distinct brief/settled coverage, not human SLO positive inference."
+    },
+    {
+      "surface": "AdvertisingTaskSloMonitor",
+      "result": "Missing coverage produces a RESPONSE_PROFILE_OR_CALENDAR_UNRESOLVED escalation, not success; UI repair must not modify monitor/write authority."
+    },
+    {
+      "surface": "Existing unit live staffed SLO test",
+      "result": "Verifies live-date override and ACK204 reload, preserves paused+exposure text, but does not assert absence of on-time/active for missing Profile, outside coverage, or completed stage."
+    },
+    {
+      "surface": "Existing actual PG unstaffedProtectionShowsOngoingHarmAgeAndTheNextStaffedResponseTogether",
+      "result": "Source explicitly asserts OUT_OF_COVERAGE_ACTIVE_HARM, nextStaffed, age>=7200, valid due dates and actionPaused=false, providing exact semantic counterexample to the UI active fallback. This read-only review does not create a new run result."
+    }
+  ],
+  "boundedImplementationRecommendation": {
+    "owner": "UI agent prepared /tmp patch; no edits by reviewer",
+    "minimumFiles": [
+      "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+      "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx or existing AdvertisingGovernedActions.test.tsx",
+      "Existing DATA_REPAIR browser scenario assertions"
+    ],
+    "runtimeScope": "Frontend presentation only; no change to backend role/scope/SQL deadlines/pause authority or Owner policy. A local typed/validated reader is sufficient; do not build a second SLO calculator.",
+    "remainingBackendEvidenceLimit": "When Profile is missing, backend early return does not query ACK/ACTION events. Thus null event in that response cannot assert no such journal event exists. Display completion evidence unresolved there; the attributable journal remains independently accessible. No new backend patch is required merely to stop false on-time/active claims."
+  },
+  "requiredFocusedProofBeforeClaimingFix": [
+    "Actual missing-profile payload false/false/false plus null due displays both stages/clock unresolved; Task and allowed ACK remain.",
+    "Known coverage with only ACK deadline validates only ACK, leaving Action unresolved.",
+    "Null/absent/invalid date/boolean or malformed SLO preserves safe unresolved and never positive fallback.",
+    "Known in-coverage pending false yields a bounded active/not-breached positive control.",
+    "OUT_OF_COVERAGE_ACTIVE_HARM + actionPaused=false retains harm, next staffed time, exposure age and no active clock claim.",
+    "ACK completed does not mark Action completed; true attributable Action timestamp completes only Action.",
+    "Completed late + breached and paused+breached remain simultaneously visible.",
+    "Existing live-date override, ACK204, role actions, UTF-8 and timezone assertions remain intact.",
+    "Re-run actual DATA_REPAIR browser scenario and inspect updated screenshot; include Optimization reuse assertion or shared component proof. Preserve W8 screenshot/run history; do not restamp measured W8 runtime after a frontend change."
+  ],
+  "prohibitedConclusions": [
+    "No frontend on-time state from breach=false alone.",
+    "No implicit 24x7 coverage from pause=false.",
+    "No pause/completion equated with Outcome or approval.",
+    "No missing Profile blocks visibility of an existing Task.",
+    "No Controller verdict or final publication success issued by this review."
+  ],
+  "repoWrites": false,
+  "runtimeExecution": false,
+  "databaseOrProviderAccess": false,
+  "controllerVerdict": null
+}

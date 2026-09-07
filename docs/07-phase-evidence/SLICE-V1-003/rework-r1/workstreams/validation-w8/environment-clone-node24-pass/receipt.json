@@ -1,0 +1,43 @@
+{
+  "kind": "ACTUAL_W8_POST_FULL_ENVIRONMENT_CLONE",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "fullRunReceiptSha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0",
+  "fullVerifiedJarSha256": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+  "commands": [
+    {
+      "name": "doctor",
+      "command": [
+        "make",
+        "doctor"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAtUTC": "2026-09-05T13:41:52.902171+00:00",
+      "finishedAtUTC": "2026-09-05T13:41:54.382445+00:00",
+      "exitCode": 0,
+      "log": "doctor.log",
+      "sha256": "5cd26f315199333354fac55e3696192d083532d35cfafa4c2c5cccf4c32df8d1"
+    },
+    {
+      "name": "fresh-clone-offline",
+      "command": [
+        "bash",
+        "scripts/fresh_clone_check.sh",
+        "--offline"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAtUTC": "2026-09-05T13:41:54.382585+00:00",
+      "finishedAtUTC": "2026-09-05T13:42:23.147182+00:00",
+      "exitCode": 0,
+      "log": "fresh-clone-offline.log",
+      "sha256": "afc6cf9547737022470cf766a0bff288a174667be39f55beeb7cc27d234c30ae"
+    }
+  ],
+  "headAfter": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "statusAfter": "",
+  "verifiedJarStillEqual": true,
+  "productionWriteEnabled": false,
+  "scope": "Doctor dependency/port inspection and independent Git-object fresh clone in offline mode. Existing user containers, busy5432 and ignored configuration untouched; no database connection or real Provider/shared/production access. This is not full-mode fresh-clone runtime evidence.",
+  "pass": true,
+  "collectorSha256": "eff4cc29bb55c24dd184d704c24268dd937a3766d682aa483e9f52624ccff683"
+}

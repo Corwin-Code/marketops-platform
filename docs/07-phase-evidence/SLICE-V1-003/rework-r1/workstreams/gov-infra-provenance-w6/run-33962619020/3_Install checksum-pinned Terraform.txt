@@ -1,0 +1,14 @@
+﻿2026-09-05T11:10:43.1558029Z ##[group]Run set -euo pipefail
+2026-09-05T11:10:43.1558505Z [36;1mset -euo pipefail[0m
+2026-09-05T11:10:43.1558921Z [36;1mcurl --fail --show-error --silent --location --max-time 60 \[0m
+2026-09-05T11:10:43.1559584Z [36;1m  https://releases.hashicorp.com/terraform/1.14.9/terraform_1.14.9_linux_amd64.zip \[0m
+2026-09-05T11:10:43.1560115Z [36;1m  -o "${RUNNER_TEMP}/terraform.zip"[0m
+2026-09-05T11:10:43.1560792Z [36;1mprintf '%s  %s\n' '2e5cffc20a0b48a67a76268723bd5a10b8666f69b2aa4f04906e206726bedd63' "${RUNNER_TEMP}/terraform.zip" | sha256sum -c -[0m
+2026-09-05T11:10:43.1561598Z [36;1munzip -o "${RUNNER_TEMP}/terraform.zip" -d "${RUNNER_TEMP}/terraform-bin"[0m
+2026-09-05T11:10:43.1562316Z [36;1mecho "${RUNNER_TEMP}/terraform-bin" >> "${GITHUB_PATH}"[0m
+2026-09-05T11:10:43.1603164Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-05T11:10:43.1603614Z ##[endgroup]
+2026-09-05T11:10:43.3230650Z /home/runner/work/_temp/terraform.zip: OK
+2026-09-05T11:10:43.3254542Z Archive:  /home/runner/work/_temp/terraform.zip
+2026-09-05T11:10:43.3256537Z   inflating: /home/runner/work/_temp/terraform-bin/LICENSE.txt  
+2026-09-05T11:10:44.0403485Z   inflating: /home/runner/work/_temp/terraform-bin/terraform  

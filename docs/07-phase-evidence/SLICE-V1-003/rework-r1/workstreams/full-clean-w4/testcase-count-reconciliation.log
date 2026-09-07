@@ -1,0 +1,48 @@
+{
+  "summary": {
+    "rawTestcaseNodes": 2264,
+    "declaredTests": 2263,
+    "actualFailures": 0,
+    "actualErrors": 0,
+    "actualSkipped": 0
+  },
+  "mismatches": [
+    {
+      "name": "com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest",
+      "suiteDeclaredCounts": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actualTestcaseNodeCounts": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "console": [
+    {
+      "phase": "surefire",
+      "line": 842,
+      "counts": {
+        "tests": 1546,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "phase": "failsafe",
+      "line": 7876,
+      "counts": {
+        "tests": 718,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  ]
+}

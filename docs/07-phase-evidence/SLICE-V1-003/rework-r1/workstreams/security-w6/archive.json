@@ -1,0 +1,6 @@
+{
+  "sourceDirectory": "/tmp/slice3-security-w6",
+  "originalArchive": "/tmp/slice3-security-w6-evidence.tar.gz",
+  "archiveSha256": "bcc610a4f1dd579fa3e51f9da3d33ac9c1bf89232bb1e12daf94dfa59ddabefc",
+  "retention": "Every original member and its SHA retained; summary copies do not replace the original archive."
+}

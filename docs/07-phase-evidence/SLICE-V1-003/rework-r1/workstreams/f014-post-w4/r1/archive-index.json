@@ -1,0 +1,52 @@
+{
+  "kind": "RAW_TARGETED_ARCHIVE",
+  "sourceDirectory": "/tmp/slice3-r1-f014-r1",
+  "files": [
+    {
+      "original": "/tmp/slice3-r1-f014-r1/maven.log",
+      "archive": "maven.log.gz",
+      "originalSha256": "6f2bcb3a3b6b4248c2c4706aa1db4ad2bf861d61afb8232e1962643cc6a54f21",
+      "archiveSha256": "cb5f968517d6f8ac392fd1b2c47b54d25c06e00143458483ad0c03836917a4eb",
+      "originalBytes": 49493
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r1/receipt.json",
+      "archive": "receipt.json",
+      "originalSha256": "4f1de4cc519e074b7a13541e1c1645d2d3f3f84e7efe43a6e1fdf64f84b53e8b",
+      "archiveSha256": "4f1de4cc519e074b7a13541e1c1645d2d3f3f84e7efe43a6e1fdf64f84b53e8b",
+      "originalBytes": 4322
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r1/runtime-resources.json",
+      "archive": "runtime-resources.json",
+      "originalSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "archiveSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "originalBytes": 591
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r1/source-after.json",
+      "archive": "source-after.json",
+      "originalSha256": "cf72068fa0fefdfad93318b25ed9446a195beed698612264d5f9821c4888198e",
+      "archiveSha256": "cf72068fa0fefdfad93318b25ed9446a195beed698612264d5f9821c4888198e",
+      "originalBytes": 196141
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r1/source-before.json",
+      "archive": "source-before.json",
+      "originalSha256": "cf72068fa0fefdfad93318b25ed9446a195beed698612264d5f9821c4888198e",
+      "archiveSha256": "cf72068fa0fefdfad93318b25ed9446a195beed698612264d5f9821c4888198e",
+      "originalBytes": 196141
+    }
+  ],
+  "reports": [
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r1/reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "sha256": "905db682e4a04205d99785b13bc7c82e75cbcdaf8d2d7453ee07981461f5460e",
+      "bytes": 76496
+    }
+  ],
+  "reportsTarGzSha256": "fa9734d6f41e818a2a557a3905b442562804abff53ae81685be04ff3a69af089",
+  "transport": "Lossless compression; original receipt and all failure/success bytes are unmodified.",
+  "limits": "A targeted run on recorded uncommitted source is not a complete clean run, exact CI or Controller verdict."
+}

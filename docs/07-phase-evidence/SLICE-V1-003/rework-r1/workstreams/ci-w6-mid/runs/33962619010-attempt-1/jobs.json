@@ -1,0 +1,490 @@
+[
+  {
+    "id": 101297026308,
+    "run_id": 33962619010,
+    "workflow_name": "Frontend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619010",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1BA",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026308",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026308",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:38Z",
+    "completed_at": "2026-09-05T11:11:03Z",
+    "name": "frontend-typecheck",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:50Z"
+      },
+      {
+        "name": "Install from the lockfile",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:50Z",
+        "completed_at": "2026-09-05T11:10:55Z"
+      },
+      {
+        "name": "Type-check",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T11:10:55Z",
+        "completed_at": "2026-09-05T11:10:59Z"
+      },
+      {
+        "name": "Post Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T11:10:59Z",
+        "completed_at": "2026-09-05T11:11:01Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-09-05T11:11:01Z",
+        "completed_at": "2026-09-05T11:11:02Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-09-05T11:11:02Z",
+        "completed_at": "2026-09-05T11:11:02Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026308",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001044,
+    "runner_name": "GitHub Actions 1000001044",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026370,
+    "run_id": 33962619010,
+    "workflow_name": "Frontend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619010",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1Qg",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026370",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026370",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:13:19Z",
+    "name": "frontend-test",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:40Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:40Z",
+        "completed_at": "2026-09-05T11:10:43Z"
+      },
+      {
+        "name": "Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:43Z",
+        "completed_at": "2026-09-05T11:10:48Z"
+      },
+      {
+        "name": "Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:48Z",
+        "completed_at": "2026-09-05T11:10:53Z"
+      },
+      {
+        "name": "Install from the lockfile",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T11:10:53Z",
+        "completed_at": "2026-09-05T11:10:59Z"
+      },
+      {
+        "name": "Run the tests with coverage",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:10:59Z",
+        "completed_at": "2026-09-05T11:11:14Z"
+      },
+      {
+        "name": "Prove the frontend coverage gate rejects an unmet threshold",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T11:11:14Z",
+        "completed_at": "2026-09-05T11:11:29Z"
+      },
+      {
+        "name": "Install the Chromium runtime",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T11:11:29Z",
+        "completed_at": "2026-09-05T11:11:52Z"
+      },
+      {
+        "name": "Generate isolated local configuration",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T11:11:52Z",
+        "completed_at": "2026-09-05T11:11:52Z"
+      },
+      {
+        "name": "Start PostgreSQL",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-09-05T11:11:52Z",
+        "completed_at": "2026-09-05T11:12:09Z"
+      },
+      {
+        "name": "Exercise authenticated business flow and dependency recovery in Chromium",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 11,
+        "started_at": "2026-09-05T11:12:09Z",
+        "completed_at": "2026-09-05T11:13:14Z"
+      },
+      {
+        "name": "Stop the isolated database",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-09-05T11:13:14Z",
+        "completed_at": "2026-09-05T11:13:15Z"
+      },
+      {
+        "name": "Exercise governed advertising roles in a fresh isolated database",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 13,
+        "started_at": "2026-09-05T11:13:15Z",
+        "completed_at": "2026-09-05T11:13:15Z"
+      },
+      {
+        "name": "Publish advertising browser screenshots",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-09-05T11:13:15Z",
+        "completed_at": "2026-09-05T11:13:15Z"
+      },
+      {
+        "name": "Publish the coverage report",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-09-05T11:13:15Z",
+        "completed_at": "2026-09-05T11:13:16Z"
+      },
+      {
+        "name": "Post Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 28,
+        "started_at": "2026-09-05T11:13:16Z",
+        "completed_at": "2026-09-05T11:13:17Z"
+      },
+      {
+        "name": "Post Set up Node",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 29,
+        "started_at": "2026-09-05T11:13:17Z",
+        "completed_at": "2026-09-05T11:13:17Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 30,
+        "started_at": "2026-09-05T11:13:17Z",
+        "completed_at": "2026-09-05T11:13:17Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 31,
+        "started_at": "2026-09-05T11:13:17Z",
+        "completed_at": "2026-09-05T11:13:17Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026370",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001043,
+    "runner_name": "GitHub Actions 1000001043",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026373,
+    "run_id": 33962619010,
+    "workflow_name": "Frontend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619010",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1RQ",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026373",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026373",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:11:05Z",
+    "name": "frontend-build",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:38Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:42Z"
+      },
+      {
+        "name": "Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:42Z",
+        "completed_at": "2026-09-05T11:10:47Z"
+      },
+      {
+        "name": "Install from the lockfile",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:47Z",
+        "completed_at": "2026-09-05T11:10:52Z"
+      },
+      {
+        "name": "Build the console",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T11:10:52Z",
+        "completed_at": "2026-09-05T11:10:56Z"
+      },
+      {
+        "name": "Prove that only prefixed values reached the bundle",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:10:56Z",
+        "completed_at": "2026-09-05T11:11:01Z"
+      },
+      {
+        "name": "Produce the CycloneDX and dependency inventories",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T11:11:01Z",
+        "completed_at": "2026-09-05T11:11:03Z"
+      },
+      {
+        "name": "Publish the console and its inventory",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T11:11:03Z",
+        "completed_at": "2026-09-05T11:11:03Z"
+      },
+      {
+        "name": "Post Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-09-05T11:11:03Z",
+        "completed_at": "2026-09-05T11:11:04Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-09-05T11:11:04Z",
+        "completed_at": "2026-09-05T11:11:04Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-09-05T11:11:04Z",
+        "completed_at": "2026-09-05T11:11:04Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026373",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001045,
+    "runner_name": "GitHub Actions 1000001045",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026433,
+    "run_id": 33962619010,
+    "workflow_name": "Frontend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619010",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1gQ",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026433",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619010/job/101297026433",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:36Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:11:07Z",
+    "name": "frontend-lint",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:43Z"
+      },
+      {
+        "name": "Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:43Z",
+        "completed_at": "2026-09-05T11:10:48Z"
+      },
+      {
+        "name": "Install from the lockfile",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:48Z",
+        "completed_at": "2026-09-05T11:10:53Z"
+      },
+      {
+        "name": "Lint",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T11:10:53Z",
+        "completed_at": "2026-09-05T11:11:02Z"
+      },
+      {
+        "name": "Check formatting",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:11:02Z",
+        "completed_at": "2026-09-05T11:11:04Z"
+      },
+      {
+        "name": "Post Set up Node",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-09-05T11:11:04Z",
+        "completed_at": "2026-09-05T11:11:05Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-09-05T11:11:05Z",
+        "completed_at": "2026-09-05T11:11:05Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-09-05T11:11:05Z",
+        "completed_at": "2026-09-05T11:11:05Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026433",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001046,
+    "runner_name": "GitHub Actions 1000001046",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  }
+]

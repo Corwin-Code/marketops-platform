@@ -1,0 +1,9 @@
+{
+  "group": "gov-infra-ci-w8",
+  "archive": "original-evidence.tar.gz",
+  "archiveSha256": "1b00f948b7d3655bb17e0cf3ff9be21b6e3ffcfecb95c81840b9bd5653792625",
+  "originalSources": [
+    "/tmp/slice3-w8-gov-infra-provenance"
+  ],
+  "boundary": "Original bytes in tar. Failed attempts and original receipt identities retained; no source path rewriting. Direct review JSON copies only when LF or no newlines."
+}

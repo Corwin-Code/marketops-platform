@@ -1,0 +1,675 @@
+{
+  "recordedAtUTC": "2026-09-05T11:38:55.382005+00:00",
+  "scannerSource": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+  "scannerSourceSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+  "patternCounts": {
+    "repository": 7,
+    "additionalJwtBearer": 2
+  },
+  "scope": "Downloaded W7 Frontend JSON/logs and text members of artifact/log ZIPs plus the two final UI draft/index JSON files. PNG binary pixels are not a text scan. No raw browser trace ZIP was published.",
+  "scannedFiles": [
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968637524.zip!frontend/marketops-console/dist/assets/index-B9WzCkFn.js",
+      "sha256": "028d3a035343bf3a23b8d12189bdefc91a761272ca50ede888092631a21fb43d",
+      "bytes": 343224
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968637524.zip!frontend/marketops-console/npm-dependency-inventory.json",
+      "sha256": "f90734a6274f1a1b5d88d352c76d680980415a1b509f2d7b9ca78dafbbea0a15",
+      "bytes": 114924
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968637524.zip!frontend/marketops-console/dist/index.html",
+      "sha256": "7fd144836322be19d24d2371c2c8a3d49e4bc03b7c77b5f2ea7fab98af822855",
+      "bytes": 1321
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968637524.zip!build/supply-chain/frontend-sbom.json",
+      "sha256": "44135b2aa0a3b25db9f1bfaa93a93dc9b7694c17fb64bd355cb752677af283cb",
+      "bytes": 616517
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/block-navigation.js",
+      "sha256": "cd8db34b1fbeb973354a93f8b4133c7c7eab34cdda9429a0434be91384783b7e",
+      "bytes": 2655
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/index.html",
+      "sha256": "28e8d93af629cfdd1885fafbf3bff21d13204e6f171aaa161a51825da1774bb4",
+      "bytes": 11430
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/prettify.js",
+      "sha256": "fa1b1e1b906ddcfa08b46f161c0f924f506e1a31b4f3e09b8caaa2463ef52c18",
+      "bytes": 17590
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/sorter.js",
+      "sha256": "f8cc5d157379d844fd695ad567b6c29b3c1f0812964ddf6f95c26327e434bab5",
+      "bytes": 6731
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/App.tsx.html",
+      "sha256": "3cf5fd8b82de8242ef27ddb8fa472c96d7e1453e6a6eb10eaf8a176bd0b52c65",
+      "bytes": 31169
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/ConsoleShell.tsx.html",
+      "sha256": "5002785684cff6945953cce951922cd74f3093051af296056e5304b6d2f867b0",
+      "bytes": 31955
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingBriefView.tsx.html",
+      "sha256": "d97fe9386fb8fafdbe4b0e3019878eb7329b26ddc0a175e70b352489910f2ca6",
+      "bytes": 33457
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingCaseView.tsx.html",
+      "sha256": "7382cc1d523959aa62355b99da4548120383c39a40ce27b2fccabc4672cb9890",
+      "bytes": 39310
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingCommandTimeline.tsx.html",
+      "sha256": "3f9eab933077e7f17ad29353e8f85fc412e3b4fe295754aae39c559a1afa2f0e",
+      "bytes": 18563
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingCompensation.tsx.html",
+      "sha256": "dfbe61f7560a77d2767747433a3ec0fe71c1faf9378aea08c1cb127ac89afc29",
+      "bytes": 16733
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingContainmentControls.tsx.html",
+      "sha256": "ea5979d16db396fe824e8886d9ded15b2f35eb7c2e4ff20db68871771cc12ef2",
+      "bytes": 26019
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingEvidenceDetails.tsx.html",
+      "sha256": "ddaede9553de78111c6b38ce20f4b28fb2b7e398a38b4af18137d23077ab723a",
+      "bytes": 10030
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingManualControls.tsx.html",
+      "sha256": "ccde45befee96e836797da4417923afc625af09906f34091f60c24da1488d99c",
+      "bytes": 28354
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingManualShadow.tsx.html",
+      "sha256": "7505a7adad3501b7dc15d7107ebb4d653e8ff406b5c2e2b428b2b7b0e8908cfa",
+      "bytes": 27333
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingOperations.tsx.html",
+      "sha256": "65cbb23603b0f7b27389884dc13967964930b1b2641e2dbb8668f49866473f63",
+      "bytes": 51473
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingOrchestration.tsx.html",
+      "sha256": "1eb87cad42b9be2144149cbec966525e2e39ddba34c53c2d83aa920a2a88d85d",
+      "bytes": 9668
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingOutcomeHistory.tsx.html",
+      "sha256": "22abe00d9f5011a0a1a700c0be010023e7a58ec154081fec7f77c01d109471ed",
+      "bytes": 22868
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingQueue.tsx.html",
+      "sha256": "82eb454d0416062e0c8a4263da11e33a06ed5c3470577ecf9268a2ab6cb718aa",
+      "bytes": 33606
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingResponsibilityControls.tsx.html",
+      "sha256": "6ae927d25cd496c557e1c738b93ab1ff2a7977d5f23ad8e5a6b55ef199c5749e",
+      "bytes": 47808
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingTimestamp.tsx.html",
+      "sha256": "cc1e99780c183ace9875305251dbd2baa0f1ec41ddb23b08c71d191880341001",
+      "bytes": 7054
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/AdvertisingWorkflow.tsx.html",
+      "sha256": "148cd718bd5528c44aaf6f28fb2f6ec80e8cc3ad0661c169802e2d43f93dfb42",
+      "bytes": 44216
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/evidencePresentation.ts.html",
+      "sha256": "b6cfb89d73b175680f9a71f075874956709a7ff9c2f62d93ae9a266295ac9742",
+      "bytes": 26520
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/EvidenceChip.tsx.html",
+      "sha256": "829414d8642de924f37e9597ae68a7b7ac4dd25173173251042853436074193c",
+      "bytes": 8109
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/advertising/index.html",
+      "sha256": "598458fc150b712dcd83b45e51e90f67d5ec2cd507efb3ad798ac30c95a8ad2d",
+      "bytes": 16293
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/api/advertising.ts.html",
+      "sha256": "f051b6d34d0134098358a5bcbb94410a0e6d45226d45c2a9af6ea19241e7b4f8",
+      "bytes": 134399
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/api/console.ts.html",
+      "sha256": "c7b5bfb47477bc963385e4caad623b1215fbbdf5827194a0c64483b621ef38d9",
+      "bytes": 309167
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/api/diagnosticExport.ts.html",
+      "sha256": "13d40f56380d98d432fc5f4eeb32ae4904febfc60ff8a8b5e7757a63618e4d62",
+      "bytes": 45951
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/api/index.html",
+      "sha256": "20e5cfc2b13dc322635dfdd9c6be8ca54e6ce24c95b63fe08c1752d665d2148b",
+      "bytes": 6604
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/api/metaStatus.ts.html",
+      "sha256": "5f88e7719fae8867298fa4ccb49a08402b8a5e9082eb833147f7184526903958",
+      "bytes": 27449
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/availability/AvailabilityCases.tsx.html",
+      "sha256": "590a9932050453f4122fd5652a631697f393e528e20a09a90c280af8ffd84fdb",
+      "bytes": 41620
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/availability/AvailabilityAuthorityPanel.tsx.html",
+      "sha256": "c7e4d770a0e753a0eb0e8b2182ae037d51404b7f7b8a14089152a4b41b2ae3f9",
+      "bytes": 64067
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/availability/AvailabilityQueue.tsx.html",
+      "sha256": "c587a4e51a13eea9b0d1cdad8de686ed7862274f167f24dc0571ed954ed82975",
+      "bytes": 37488
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/availability/casePresentation.ts.html",
+      "sha256": "08a97102104816a89fad37453fd297924ec49f8a957b6ff908dc7cb5dfe8b23c",
+      "bytes": 24238
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/availability/index.html",
+      "sha256": "716a79bd1e113586d553056a33eb7c291891491a95632423284f26490933f869",
+      "bytes": 7415
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/availability/riskPresentation.ts.html",
+      "sha256": "4f0c8dd55a37ae54586cc2ca0521a1fea3e62c6a24fa2faba180faac26fcb912",
+      "bytes": 31799
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/buildInfo.ts.html",
+      "sha256": "60e18c7dfd388be4bc6c675938c2576af5573393469ca11c0e5f87a3f8b759a3",
+      "bytes": 7887
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/commands/CommandTimeline.tsx.html",
+      "sha256": "1f61befe751b4a7cbc21a4618ae2f4787ed7a1dffd677725db16cd2a4581a782",
+      "bytes": 35386
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/commands/index.html",
+      "sha256": "3db13befe23a9ae352b353b98734f8ef52245686aac17fc1fba36b273eb5a2f0",
+      "bytes": 4512
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/config.ts.html",
+      "sha256": "6b410af688e5372389bce915c685a35602af4375c02ee7205f91a1cacbbd0feb",
+      "bytes": 17364
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/diagnosis/AiExplanationPanel.tsx.html",
+      "sha256": "f5b3c4249e0f782c337faa28970128636808ca00880de950dfbeffc0b5a41849",
+      "bytes": 19810
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/diagnosis/DiagnosticExportPanel.tsx.html",
+      "sha256": "db269f74ae52318aaf21855e01452c7b0f363c30bd59c7f45e925af30ada3da9",
+      "bytes": 29379
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/diagnosis/MetricEvidencePanel.tsx.html",
+      "sha256": "82164d4ea54b8b574a04a959fe41d65c20233393e6737bee54654a07d8948934",
+      "bytes": 16211
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/diagnosis/SubjectDiagnosisView.tsx.html",
+      "sha256": "673212c8c0dadf538e10e12f569144e21101086544b5d2b871603ac4a725e8e7",
+      "bytes": 27318
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/diagnosis/index.html",
+      "sha256": "de2b7236db912c0040ac253b8319b694510f02c7c302c3a403c16fb7140d3dff",
+      "bytes": 6715
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/health/HealthShell.tsx.html",
+      "sha256": "340d525db7bdc587f288262cd263d5010a8c290a11b2a3195353b0d79ee04ace",
+      "bytes": 27271
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/health/healthState.ts.html",
+      "sha256": "b3498c3b8b559cd7835d1cf85fbed195aa93a0271237df69f707fd10aed3c2d3",
+      "bytes": 18316
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/health/index.html",
+      "sha256": "07c8b2abb0f3fe88c6a9c928da2a19fbd08b57f5295ba939366734a73ac05cc8",
+      "bytes": 5177
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/index.html",
+      "sha256": "53e8f3c5aabd82a337d1e59fa652ed0397918bf09d19c9702d90661f68feecbd",
+      "bytes": 7147
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/queue/PriorityQueue.tsx.html",
+      "sha256": "70b9ffce713eb178ccaeafc5d828a345a03323ad151e3e9d509b601fe0788961",
+      "bytes": 23619
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/queue/index.html",
+      "sha256": "88db62238e2f5ce26090c9c53099d745d8e5235ab65ba630201e63afe5ab0350",
+      "bytes": 4487
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/session/SignIn.tsx.html",
+      "sha256": "110dcd90abe218689b2d95f55b8334dda30f11732caf96a909a7b20f14220774",
+      "bytes": 9338
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/session/index.html",
+      "sha256": "c1ae806d9c9aa67f44e64d74b0453ea9a44fc7ea7c8d9d7b9e1dbed5a87cb2ed",
+      "bytes": 6485
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/session/oidc.ts.html",
+      "sha256": "7884692ffa44a08e11469b657261c32d96ca89759c630b2ff84c83bd63555c2b",
+      "bytes": 28627
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/session/pkce.ts.html",
+      "sha256": "f788477450d62d5606d6d3d82061b2a0afde103880912fd5aa81d0451cda315c",
+      "bytes": 9946
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/session/session.ts.html",
+      "sha256": "b88dc8e1bf39364c03c8b79d596765576b1a7e545e9af6597faf57ba04e3bc68",
+      "bytes": 12764
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/state/ValueCell.tsx.html",
+      "sha256": "283302b44c532d2a23f339e4bd5915c52486b61c7d93ded8711a967b5cf900d3",
+      "bytes": 9348
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/state/confidence.ts.html",
+      "sha256": "77dd4ddef45758da1afc9a3e303ffb9a3d4354afc77e46cabd00671d867638d8",
+      "bytes": 21163
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/state/index.html",
+      "sha256": "1416880a5decd9f60bf5f4b0be3670ee1b353bfd6a1674d0d56584217353c00c",
+      "bytes": 5141
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/vite-env.d.ts.html",
+      "sha256": "a7a500acbc9f2ec97c1fe52739070b4c41c1d45dee3de346420405754a773cde",
+      "bytes": 5309
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/workflow/RecommendationReview.tsx.html",
+      "sha256": "ff7c66f15014b0ca399ae48266aaeeac68a83f60404d4f7b46d26651e473cc7a",
+      "bytes": 36760
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/workflow/SubjectRecommendations.tsx.html",
+      "sha256": "3d8135c43974b349932d4fe81240a3259c0cac284c38b1aadd266d786eaeda91",
+      "bytes": 10407
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-9968689812.zip!lcov-report/src/workflow/index.html",
+      "sha256": "180988cb80425c804b46e5d70cfb967c6da4c5d9f29af9cc68a0628f360c6c42",
+      "bytes": 5263
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifact-download-attempt2.json",
+      "sha256": "fe34efb62d36ea91e1c44b3c66b6298edfe8cb44037e0818476d14f616a1d7aa",
+      "bytes": 342
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/artifacts.json",
+      "sha256": "83d246ff3497b9da7f82b7e0f653d9b1da2a37fa395f8d559b9011b0816aa991",
+      "bytes": 2280
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/jobs-latest.json",
+      "sha256": "b04bd8a30ced196c063ecaac83312c056d6781c2be0e5073d90c8b26cd8eb418",
+      "bytes": 11645
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/jobs.json",
+      "sha256": "3255229a5dad0b455180eb044cdc9cbb81782840c19cca396b93361d831c8739",
+      "bytes": 11105
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!0_frontend-build.txt",
+      "sha256": "6c46e71d864627488370c6b490523d90fe81e31d45b2428008e0df37f5d02b57",
+      "bytes": 26164
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/system.txt",
+      "sha256": "4500c030b9cbec044b5cf1d624912ac8464a1c36d45aec0c9001300e2143d8dd",
+      "bytes": 596
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/1_Set up job.txt",
+      "sha256": "691e9856cf66241012db0d4323c4ccf865109a9b65027ed547fc6aa5313dde59",
+      "bytes": 2193
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/2_Checkout repository.txt",
+      "sha256": "647f323b93aaf098ce03be0bfb3d864db0fab15190b09ecbc0eb3e0a99adb10f",
+      "bytes": 12316
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/3_Set up Node.txt",
+      "sha256": "6218fd0b7cada908b06a5886ae422f7ac4fc6a9c0cf41cf636023029afb4d273",
+      "bytes": 2581
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/4_Install from the lockfile.txt",
+      "sha256": "5855563680aa0172cc3053d7e62f5dfa8346f6be8bcf12e3e5ea71f0cb6476b1",
+      "bytes": 994
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/5_Build the console.txt",
+      "sha256": "2654e2a85b757227175852335af1caf78d558e363306a9f350b1928f5c61e697",
+      "bytes": 1348
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/6_Prove that only prefixed values reached the bundle.txt",
+      "sha256": "9214308d6a11dff7e52fdf6590ffe4b2dc12fbe505c4450ba614a7c0dc6b9e4e",
+      "bytes": 1417
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/7_Produce the CycloneDX and dependency inventories.txt",
+      "sha256": "9e95ec8a002797480dc6c67fce98d8396037f17a176c61fae8b9f9951723aae3",
+      "bytes": 995
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/8_Publish the console and its inventory.txt",
+      "sha256": "e70818562c4aa6ca36f042e8cebb367f573aba64b996a343e02d008b1fba2bde",
+      "bytes": 2300
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/15_Post Set up Node.txt",
+      "sha256": "276ed697709d077ae4dc7054ee0846289eea1de8924c2761579fb7b1917bf4c6",
+      "bytes": 226
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/16_Post Checkout repository.txt",
+      "sha256": "fbcc4bb381fe8b2cc3b9b90ee64e197631079846756a5048630db19835be5277",
+      "bytes": 1763
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-build/17_Complete job.txt",
+      "sha256": "02b907ff3e00ae06de3eb85d88c6ce597a99ccebc4f0229125af12c8596048c4",
+      "bytes": 61
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!1_frontend-test.txt",
+      "sha256": "e756a0dd46ea188ca8cfee7ea0b4c8889711d04580e9ddaa492d949323d75773",
+      "bytes": 744205
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/system.txt",
+      "sha256": "2f6268b1e76f175269433b5106e749f2db7e211920238403925d23c83d2ab195",
+      "bytes": 595
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/1_Set up job.txt",
+      "sha256": "8f534259027d2b8653f9b750450a0b58c46351769a9dca19fad8717b1cd0bad8",
+      "bytes": 2361
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/2_Checkout repository.txt",
+      "sha256": "8a48a8f2f671984e6869cd8df70afaa90291ef03c694acfa8880c5242d682167",
+      "bytes": 12316
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/3_Set up Node.txt",
+      "sha256": "a531d70b3bc0ba9dc8433d0e6347f90345384118ddea91336559f5e29e0e712e",
+      "bytes": 2662
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/4_Set up Java.txt",
+      "sha256": "e44002b51742287977c6289fc48a34fce7db72d9ca00871c7d3dafa2f9121f13",
+      "bytes": 3771
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/5_Install from the lockfile.txt",
+      "sha256": "bdbae3b40251b9808df6d71e9d0b21861ed2a29956da9a0e31046bf45fcf9a2c",
+      "bytes": 1253
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/6_Run the tests with coverage.txt",
+      "sha256": "810d802f351cf455e726e3156154c27e762a22f57e9eaae3f0c3891397e92de5",
+      "bytes": 24875
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/7_Prove the frontend coverage gate rejects an unmet threshold.txt",
+      "sha256": "fabb1d77e55db1e9156e3d30a07b29182d12d2691dac6bfbeab83d1b3d06b9b2",
+      "bytes": 858
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/8_Install the Chromium runtime.txt",
+      "sha256": "62819f0b034d44bcb8832ea8a482622b66c185fbb87930b998536eceb96e2258",
+      "bytes": 24103
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/9_Generate isolated local configuration.txt",
+      "sha256": "f99b64fde2e0f2adbe20307bb64e2935aeeea655300e5e389060dc610a5a6328",
+      "bytes": 1732
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/10_Start PostgreSQL.txt",
+      "sha256": "64322497089e18cc24ebee4797013f7afef22afb1da94672115d2b0aebf5d257",
+      "bytes": 15245
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/11_Exercise authenticated business flow and dependency recovery in Chromium.txt",
+      "sha256": "891c84e5bf75207496c2c3ae4f480e166413e41ed18194b2f66a2507654ec691",
+      "bytes": 136842
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/12_Stop the isolated database.txt",
+      "sha256": "7398f1b6b6d3ffff09e2ced7273cabd12e4e6f1321304763486d4e05cdd4c1fb",
+      "bytes": 1705
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "sha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "bytes": 509570
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/14_Publish advertising browser screenshots.txt",
+      "sha256": "1ab8b9576eb7308b9f90760385048f84f490a09cf259f23e649686169db52c0d",
+      "bytes": 2312
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/15_Publish the coverage report.txt",
+      "sha256": "360157e2de8e0f6b4ea8bfb18fb2985bf3d6521780edfd63245094b306476717",
+      "bytes": 2176
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/28_Post Set up Java.txt",
+      "sha256": "b497e75b175898604ab2474bbe3f798c31c93e0ddd3d36d72b3c44fef56ab96d",
+      "bytes": 428
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/29_Post Set up Node.txt",
+      "sha256": "27e83f12f4ebc871cbeff53efdaa71133684a02100f6991265890e9b12348a85",
+      "bytes": 226
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/30_Post Checkout repository.txt",
+      "sha256": "9e4bd2c57a988876e5e6563dac4eb4dad7a8d5e727462c36124a73868686ee08",
+      "bytes": 1763
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-test/31_Complete job.txt",
+      "sha256": "99133ce87d9bd17416f7302cf3698ae0616df81ef64406dce2b698e19cc4c617",
+      "bytes": 61
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!2_frontend-typecheck.txt",
+      "sha256": "c8444d1a6f18ebbce02206680d06ded3d258ebaa8cb2ad8cb350d8851a18a8c3",
+      "bytes": 20642
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/system.txt",
+      "sha256": "c30b78d22a07dfc50adc3378f1294afa6f76f914d873196ddcd46d1dc24220d8",
+      "bytes": 600
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/1_Set up job.txt",
+      "sha256": "5954cd4831cd16717d3bf9b0fc4ff75631165e2bbde3b93b13d8f902b0a6396c",
+      "bytes": 2025
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/2_Checkout repository.txt",
+      "sha256": "199b8b3c17e138311cb2fe18f6a830d61b18e764f0158715cca6120a047b896d",
+      "bytes": 12316
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/3_Set up Node.txt",
+      "sha256": "caaa6cb9e597f43fe3fbe608bb2e1226192ec070ff31a7e312d50e9301aa66ad",
+      "bytes": 2653
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/4_Install from the lockfile.txt",
+      "sha256": "0c8476f8bfcbb9a90e33cb4e1ecd2ca59225a1eac45c0254e807205f50a63476",
+      "bytes": 994
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/5_Type-check.txt",
+      "sha256": "08138b4dee5e2c823872bcfe68f621172e5ddbe5156be09bc50846f3d7842034",
+      "bytes": 625
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/9_Post Set up Node.txt",
+      "sha256": "6a696d9349fc0eaa17e03ec2d716fbc7511d56322f0b054fc56cfc2ee9ebb6b9",
+      "bytes": 226
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/10_Post Checkout repository.txt",
+      "sha256": "6b80b0082bcf01e70ffe6c994275a29849aee2415cfbb7b07e516468f6641721",
+      "bytes": 1763
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-typecheck/11_Complete job.txt",
+      "sha256": "1cff0b179541c1f3725e8502af6aaf93a2b76f170cd66ac430299c97758b7c6f",
+      "bytes": 61
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!3_frontend-lint.txt",
+      "sha256": "73ee069d4e0d82f684a9e7e18ea0269a6149c070f891a769662ebc6de91e850e",
+      "bytes": 21313
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/system.txt",
+      "sha256": "67f775673fc60b153ce65fc2ac0a82643e434469929e1dc009c7d76d976fc7b6",
+      "bytes": 595
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/1_Set up job.txt",
+      "sha256": "cb2871a2aea89f8e09935a94c64c70c39e271e69f70b32dde77b9d9c98078dd3",
+      "bytes": 2027
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/2_Checkout repository.txt",
+      "sha256": "1dc8b31a544d0b5485a3d6b81b43a0bce8080bac49195549cb7c5fc1cf10b849",
+      "bytes": 12316
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/3_Set up Node.txt",
+      "sha256": "736d228503fc8eeba4513ab420e10887da07c00db8b8adf9306f906b827c176d",
+      "bytes": 2581
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/4_Install from the lockfile.txt",
+      "sha256": "94d20cb400304d4d2be6a37245504e63b812690bb1acd9b1f0302b49967e8ac3",
+      "bytes": 994
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/5_Lint.txt",
+      "sha256": "6c665a4fb205bc68307ba70bae837ac001fc092fc5c7dba10b60985c93f6ea74",
+      "bytes": 614
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/6_Check formatting.txt",
+      "sha256": "d095dd74380761ba9d9d533bb4fb6f0b3171d855ed6d15f4d0ff11ef0bd62852",
+      "bytes": 755
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/11_Post Set up Node.txt",
+      "sha256": "8c948bd28ac8f3c0862df21d6952a855c81d07b8ebccfa78a04415b67e555f55",
+      "bytes": 226
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/12_Post Checkout repository.txt",
+      "sha256": "50f68a18fa8a975ef110f6f656c0835d9a1454f2eeaeddcb8195ff64f63b1a57",
+      "bytes": 1763
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/logs.zip!frontend-lint/13_Complete job.txt",
+      "sha256": "205b7026ca16ad8c909f25811ef023f790abd98b9ba90fecc73dd393714157e5",
+      "bytes": 61
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/named-browser-results.json",
+      "sha256": "95fcf639dbe3972f93c4359f22471f2e24169fc2258ac42da08a20f9b6bd0a65",
+      "bytes": 49792
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/receipt.json",
+      "sha256": "496339c287afc40de553c472fb401f680ed59ec0e3542678f693e45ef97499c3",
+      "bytes": 25562
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/run-final.json",
+      "sha256": "cdfbd18ed2540619a23d7854237c15045225f595181520f347d9c9fadebc4e60",
+      "bytes": 13688
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/run.json",
+      "sha256": "790206453a5f69e95f551cdb105112c2411d63145e01792d8877048200ef2ad4",
+      "bytes": 13685
+    },
+    {
+      "path": "/tmp/slice3-w7-frontend-ci/tested-merge-commit.json",
+      "sha256": "ac210940997b31d09254d5946d7ef31f62b4eac784f4e284f3f0d780638fcc6d",
+      "bytes": 2687
+    },
+    {
+      "path": "/tmp/slice3-w6-assessment/ui-ac-adjudication-w6-local-w7-ci.json",
+      "sha256": "8df15059b33372f8f08c92ae7bffae082717460d615221f290c9a311aba5364c",
+      "bytes": 2287120
+    },
+    {
+      "path": "/tmp/slice3-w6-assessment/console-shard-nonjava-named-evidence-w6-w7.json",
+      "sha256": "0ff1148083ad2c0f51e7805b10966e72ebdefaeee989ff38becc391f694f3e2f",
+      "bytes": 569899
+    }
+  ],
+  "findings": [],
+  "passed": true,
+  "limit": "Exact pattern result only; not an independent guarantee of every conceivable secret or PII class."
+}

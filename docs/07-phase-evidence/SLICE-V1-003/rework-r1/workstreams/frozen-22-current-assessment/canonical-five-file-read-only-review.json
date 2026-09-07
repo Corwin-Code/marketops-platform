@@ -1,0 +1,34 @@
+{
+  "patch": {
+    "path": "/tmp/slice3-r1-final-canonical-review-w6/candidate-five-file-sync.patch",
+    "sha256": "1d3863f5548eec31ea087d8927340ae44bf3a379c2d4bbf0721675b2366250d3"
+  },
+  "actualArgv": [
+    "git",
+    "apply",
+    "--check",
+    "/tmp/slice3-r1-final-canonical-review-w6/candidate-five-file-sync.patch"
+  ],
+  "measuredCurrentHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "exitCode": 0,
+  "mechanicallyApplicable": true,
+  "applied": false,
+  "futureScope": "NON_RUNTIME_CANONICAL_GOVERNANCE_AND_EVIDENCE_ONLY",
+  "futureScopeConditions": "CURRENT_STATE + twoPythonvalidators + twoPythontests + evidence/docs only; backend/frontend runtime AND tests/migrations/build/workflows unchanged from applicable measured sources, proved by exact actual delta.",
+  "actualCurrentGovernance": {
+    "source": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+    "count": 410,
+    "evidence": {
+      "path": "/tmp/slice3-r1-named-python-w8.json",
+      "sha256": "99fa9543952b8d8e4f0e4e94ab622255dbc64e27a79477712f6250feff778be6"
+    }
+  },
+  "expectedNewGovernanceCount": 412,
+  "expectedCountNotActualPass": "The two prepared new tests yield expected412 only with unchanged discovery; execute full final governance and report actual results. No run is inferred from apply--check.",
+  "remainingApplicationGates": [
+    "Root exact199/22 engineering evaluation and final index synchronization",
+    "Actual final governance/production-readiness/security checks",
+    "Exact latest authored-tip remote protected CI/artifact identities",
+    "Controller remains independent; no Ready/merge/production enablement"
+  ]
+}

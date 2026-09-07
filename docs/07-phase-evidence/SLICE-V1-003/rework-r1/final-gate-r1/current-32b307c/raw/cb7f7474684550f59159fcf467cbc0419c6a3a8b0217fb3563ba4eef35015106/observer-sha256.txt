@@ -1,0 +1,2 @@
+58bc2d3d3ea1f8870fa8093a97d8307236bccf2eba21cbfce81dd29c651c7063  /tmp/slice3-final-governance-hook.6z5lNf/sitecustomize.py
+9ad5cf522d0b8c446d81335bd1193f58e3703c1e6e0cbaecd46abc1d8587bfd9  /tmp/slice3-final-governance-hook.6z5lNf/slice3_unittest_capture.py

@@ -1,0 +1,67 @@
+{
+  "wrapperSha256": "571bf08043a59a617e100b80a9558fe30c4760a08d90d4c9bdac79b7ad660b47",
+  "sourceCommit": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "sourceTree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+  "attempt": "r5",
+  "startedAt": "2026-09-05T10:23:20.052065+00:00",
+  "finishedAt": "2026-09-05T10:23:43.262845+00:00",
+  "durationSeconds": 23.211,
+  "command": [
+    "bash",
+    "scripts/validation/advertising_browser_isolated.sh",
+    "--reporter=list,json"
+  ],
+  "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+  "exitCode": 1,
+  "result": "FAILED",
+  "sourceInputSha256": "3bb3cc47932361c0d677ad098bfd855e185c14e530bbd274b45adc804cdc67df",
+  "sourceUnchanged": true,
+  "resources": {
+    "os": "macOS-26.6.2-arm64-arm-64bit",
+    "architecture": "arm64",
+    "cpuCount": 8,
+    "physicalMemoryBytes": 17179869184,
+    "postgresImage": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+    "network": "A fresh dedicated Docker bridge network with inter-container communication disabled and one loopback-only non-5432 PostgreSQL endpoint; dedicated namespace cleaned by the script",
+    "realProviderAccess": false,
+    "productionWriteEnabled": false,
+    "measuredHostAndDocker": {
+      "schemaVersion": "1.0",
+      "recordedAt": "2026-09-05T10:23:20.046499+00:00",
+      "host": {
+        "os": "Darwin",
+        "architecture": "arm64",
+        "logicalProcessors": 8,
+        "physicalMemoryBytes": 17179869184,
+        "processAffinityProcessors": null
+      },
+      "docker": {
+        "logicalProcessors": 4,
+        "memoryBytes": 6210576384,
+        "serverVersion": "29.7.2"
+      },
+      "github": {
+        "runId": null,
+        "runAttempt": null,
+        "job": null,
+        "testedCheckout": null
+      },
+      "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+    },
+    "measurementSha256": "9020560875e03fa0b4ba1ae65725f9ee64cdbb9b274cad0b7a624ff35ae8d93b"
+  },
+  "dataIdentityCaptured": false,
+  "log": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/runtime.log",
+    "sha256": "eb0b053efd2cd45283565d5ddef2c183fb5b0704f1a30c08a247c5683539dede"
+  },
+  "artifacts": [],
+  "evidenceLimit": "Browser HTTP/JWT/IAM/SQL/rendering evidence. Explicit synthetic lane and history rows do not establish Provider or canonical outcome computation truth; those have independent PostgreSQL tests. No final remote CI claim.",
+  "namedTestResults": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r5/named-browser-results.json",
+    "sha256": "909af212df716a7860612b323959c67859fd2de22880b7726623cff8e2f0b1b4",
+    "testCount": 0
+  },
+  "sourceHeadAfter": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "evidenceComplete": false
+}

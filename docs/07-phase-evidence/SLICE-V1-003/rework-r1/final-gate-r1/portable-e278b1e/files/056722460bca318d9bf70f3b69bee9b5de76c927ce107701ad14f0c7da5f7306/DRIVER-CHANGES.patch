@@ -1,0 +1,301 @@
+--- /private/tmp/slice3-final-drivers-02e6172-r5/backend_full.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/backend_full.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight backend_full
+@@ -22,7 +22,7 @@
+ case "$SLICE3_MAVEN_SETTINGS" in ""|*[!A-Za-z0-9_./-]*) echo "Unsafe Maven settings path refused" >&2; exit 2;; esac
+ export MAVEN_CONFIG="-s $SLICE3_MAVEN_SETTINGS -gs $SLICE3_MAVEN_SETTINGS"
+ mkdir -p "$SLICE3_PUBLIC"
+-python3 "$SLICE3_COLLECT" --layer backend_full --run-id final-backend-r5 \
++python3 "$SLICE3_COLLECT" --layer backend_full --run-id final-backend-r6 \
+   --out "$SLICE3_RUNS/backend-full" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+   --capture 'backend/marketops-server/target/surefire-reports/*' \
+   --capture 'backend/marketops-server/target/failsafe-reports/*' \
+@@ -37,7 +37,7 @@
+   --capture 'backend/marketops-server/target/performance/**/*' \
+   --capture 'backend/marketops-server/target/advertising-capacity-*.json' \
+   --capture 'backend/marketops-server/target/advertising-mixed-capacity-*.json' \
+-  --capture 'build/final-gate-r5-02e6172/backend/*' \
++  --capture 'build/final-gate-r6-e278b1e/backend/*' \
+   -- bash --noprofile --norc -euo pipefail -c '
+     mkdir -p "$SLICE3_PUBLIC/backend"
+     cp "$1" "$SLICE3_PUBLIC/backend/empty-maven-settings.xml"
+--- /private/tmp/slice3-final-drivers-02e6172-r5/frontend_quality.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/frontend_quality.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight frontend_quality
+@@ -21,9 +21,9 @@
+ : > "$SLICE3_NPM_CONFIG/npm-user.rc"
+ : > "$SLICE3_NPM_CONFIG/npm-global.rc"
+ export npm_config_userconfig="$SLICE3_NPM_CONFIG/npm-user.rc" npm_config_globalconfig="$SLICE3_NPM_CONFIG/npm-global.rc" npm_config_registry=https://registry.npmjs.org/
+-python3 "$SLICE3_COLLECT" --layer frontend_quality --run-id final-frontend-r5 \
++python3 "$SLICE3_COLLECT" --layer frontend_quality --run-id final-frontend-r6 \
+   --out "$SLICE3_RUNS/frontend-quality" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+-  --capture 'build/final-gate-r5-02e6172/frontend/**/*' \
++  --capture 'build/final-gate-r6-e278b1e/frontend/**/*' \
+   --capture 'frontend/marketops-console/dist/**/*' \
+   -- bash --noprofile --norc -euo pipefail -c '
+     mkdir -p "$SLICE3_PUBLIC/frontend"
+--- /private/tmp/slice3-final-drivers-02e6172-r5/infrastructure.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/infrastructure.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight infrastructure
+@@ -22,9 +22,9 @@
+ git archive "$SLICE3_SOURCE_HEAD" infra/yandex scripts tests | tar -xf - -C "$SLICE3_INFRA_WORK/source"
+ mkdir -p "$SLICE3_INFRA_WORK/mirror/registry.terraform.io/yandex-cloud/yandex/0.220.0"
+ cp -R infra/yandex/bootstrap/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.220.0/darwin_arm64 "$SLICE3_INFRA_WORK/mirror/registry.terraform.io/yandex-cloud/yandex/0.220.0/"
+-python3 "$SLICE3_COLLECT" --layer infrastructure --run-id final-infrastructure-r5 \
++python3 "$SLICE3_COLLECT" --layer infrastructure --run-id final-infrastructure-r6 \
+   --out "$SLICE3_RUNS/infrastructure" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+-  --capture 'build/final-gate-r5-02e6172/infrastructure/**/*' \
++  --capture 'build/final-gate-r6-e278b1e/infrastructure/**/*' \
+   -- bash --noprofile --norc -euo pipefail -c '
+     cp /tmp/slice3-finalgate-tools/terraform-installation-receipt.json "$SLICE3_PUBLIC/infrastructure/"
+     cd "$SLICE3_INFRA_WORK/source"
+--- /private/tmp/slice3-final-drivers-02e6172-r5/migration.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/migration.sh
+@@ -8,18 +8,18 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight migration
+ finish() { s=$?; trap - EXIT; set +e; python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" finish migration "$s"; f=$?; if [ "$s" -ne 0 ]; then exit "$s"; fi; exit "$f"; }
+ trap finish EXIT
+ mkdir -p "$SLICE3_PUBLIC"
+-python3 "$SLICE3_COLLECT" --layer migration --run-id final-migration-r5 \
++python3 "$SLICE3_COLLECT" --layer migration --run-id final-migration-r6 \
+   --out "$SLICE3_RUNS/migration" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+-  --capture 'build/final-gate-r5-02e6172/migration/**/*' \
++  --capture 'build/final-gate-r6-e278b1e/migration/**/*' \
+   -- bash --noprofile --norc -euo pipefail -c '
+     mkdir -p "$SLICE3_PUBLIC/migration"
+     python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" products "$SLICE3_PUBLIC/migration/backend-products-before.json"
+--- /private/tmp/slice3-final-drivers-02e6172-r5/supply_chain.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/supply_chain.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight supply_chain
+@@ -21,9 +21,9 @@
+ : > "$SLICE3_NPM_CONFIG/npm-user.rc"
+ : > "$SLICE3_NPM_CONFIG/npm-global.rc"
+ export npm_config_userconfig="$SLICE3_NPM_CONFIG/npm-user.rc" npm_config_globalconfig="$SLICE3_NPM_CONFIG/npm-global.rc" npm_config_registry=https://registry.npmjs.org/
+-python3 "$SLICE3_COLLECT" --layer supply_chain --run-id final-supply-chain-r5 \
++python3 "$SLICE3_COLLECT" --layer supply_chain --run-id final-supply-chain-r6 \
+   --out "$SLICE3_RUNS/supply-chain" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+-  --capture 'build/final-gate-r5-02e6172/supply-chain/**/*' \
++  --capture 'build/final-gate-r6-e278b1e/supply-chain/**/*' \
+   -- bash --noprofile --norc -euo pipefail -c '
+     mkdir -p "$SLICE3_PUBLIC/supply-chain"
+     python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" products "$SLICE3_PUBLIC/supply-chain/backend-products-before.json"
+--- /private/tmp/slice3-final-drivers-02e6172-r5/mixed_capacity.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/mixed_capacity.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight mixed_capacity
+--- /private/tmp/slice3-final-drivers-02e6172-r5/security.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/security.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-02e6172-r5/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-02e6172-r5/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-02e6172-r5/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight security
+@@ -20,4 +20,4 @@
+ # The root must first collect/review a fresh CI receipt for this exact source.
+ # Arguments: current EXPECTED-SOURCE.json current SECURITY-RECEIPT.json. No defaults to prior results.
+ test "$#" -eq 2
+-python3 /private/tmp/slice3-final-drivers-02e6172-r5/local-npm-audit.py --expected-source "$1" --security-receipt "$2" --output "$SLICE3_RUNS/security-npm-audit"
++python3 /private/tmp/slice3-final-drivers-e278b1e-r6/local-npm-audit.py --expected-source "$1" --security-receipt "$2" --output "$SLICE3_RUNS/security-npm-audit"
+--- /private/tmp/slice3-final-governance-driver-02e6172-r2/governance.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/governance.sh
+@@ -8,9 +8,9 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-governance-driver-02e6172-r2/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-governance-driver-02e6172-r2/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-governance-driver-02e6172-r2/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ for output in "$SLICE3_RUNS/governance-r2" "$SLICE3_RUNS/binder-synthetic-r2" "$SLICE3_RUNS/governance-named-r2.json" "$SLICE3_RUNS/assessment-tools-check-r2" "$SLICE3_PUBLIC/governance-r2"; do
+@@ -23,9 +23,9 @@
+ export SLICE3_GOV_HOOK="$(mktemp -d /tmp/slice3-final-governance-hook.XXXXXX)"
+ cp docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w4-governance/sitecustomize.py "$SLICE3_GOV_HOOK/"
+ cp docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w4-governance/slice3_unittest_capture.py "$SLICE3_GOV_HOOK/"
+-python3 "$SLICE3_COLLECT" --layer governance --run-id final-governance-r5-r2 \
++python3 "$SLICE3_COLLECT" --layer governance --run-id final-governance-r6 \
+   --out "$SLICE3_RUNS/governance-r2" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+-  --capture 'build/final-gate-r5-02e6172/governance-r2/**/*' \
++  --capture 'build/final-gate-r6-e278b1e/governance-r2/**/*' \
+   -- bash --noprofile --norc -euo pipefail -c '
+     mkdir -p "$SLICE3_PUBLIC/governance-r2"
+     shasum -a 256 "$SLICE3_GOV_HOOK/"*.py > "$SLICE3_PUBLIC/governance-r2/observer-sha256.txt"
+--- /private/tmp/slice3-final-browser-driver-02e6172-r4/browser.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/browser.sh
+@@ -8,13 +8,13 @@
+ fi
+ shift
+ umask 077
+-export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00 SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r5-02e6172 SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
+-export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-browser-driver-02e6172-r4/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-browser-driver-02e6172-r4/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-browser-driver-02e6172-r4/empty-maven-settings.xml
++export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06 SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6 SLICE3_PUBLIC=/Users/chzhengx/Code/personal/marketops-platform/build/final-gate-r6-e278b1e SLICE3_COLLECT=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py
++export SLICE3_DRIVER_CONFIG=/private/tmp/slice3-final-drivers-e278b1e-r6/CONFIG.json SLICE3_DRIVER_SUPPORT=/private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py SLICE3_MAVEN_SETTINGS=/private/tmp/slice3-final-drivers-e278b1e-r6/empty-maven-settings.xml
+ export npm_config_cache=/tmp/slice3-finalgate-npm-cache
+ cd "$SLICE3_REPO"
+ python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" preflight browser-r4
+ finish() { s=$?; trap - EXIT; set +e; python3 "$SLICE3_DRIVER_SUPPORT" --config "$SLICE3_DRIVER_CONFIG" finish browser-r4 "$s"; f=$?; if [ "$s" -ne 0 ]; then exit "$s"; fi; exit "$f"; }
+ trap finish EXIT
+ mkdir -p "$SLICE3_PUBLIC"
+-python3 "$SLICE3_COLLECT" --layer browser --run-id final-browser-r5-r4 --out "$SLICE3_RUNS/browser-r4" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean --capture 'build/final-gate-r5-02e6172/browser-r4/**/*' -- /bin/bash /private/tmp/slice3-final-browser-driver-02e6172-r4/browser-owned-child.sh
++python3 "$SLICE3_COLLECT" --layer browser --run-id final-browser-r6 --out "$SLICE3_RUNS/browser-r4" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean --capture 'build/final-gate-r6-e278b1e/browser-r4/**/*' -- /bin/bash /private/tmp/slice3-final-drivers-e278b1e-r6/browser-owned-child.sh
+--- /private/tmp/slice3-final-browser-driver-02e6172-r4/browser-owned-child.sh
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/browser-owned-child.sh
+@@ -11,12 +11,12 @@
+ fi
+ umask 077
+ export SLICE3_REPO=/Users/chzhengx/Code/personal/marketops-platform
+-export SLICE3_SOURCE_HEAD=02e617278793b4458dfb7cac74c2a937f1dfcb00
+-export SLICE3_SOURCE_TREE=8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc
+-export SLICE3_BASELINE=/private/tmp/slice3-final-browser-driver-02e6172-r4/expected-source-inventory.json
+-export SLICE3_BASELINE_SHA=9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec
+-export SLICE3_RUNS=/private/tmp/slice3-final-execution-02e6172-r5
+-export SLICE3_PUBLIC="$SLICE3_REPO/build/final-gate-r5-02e6172"
++export SLICE3_SOURCE_HEAD=e278b1e3d8541aeb806e41d6cbef4deac8d16d06
++export SLICE3_SOURCE_TREE=178132dd32a92e59e320eb100774b5bb9f6fb248
++export SLICE3_BASELINE=/private/tmp/slice3-final-drivers-e278b1e-r6/expected-source-inventory.json
++export SLICE3_BASELINE_SHA=73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda
++export SLICE3_RUNS=/private/tmp/slice3-final-execution-e278b1e-r6
++export SLICE3_PUBLIC="$SLICE3_REPO/build/final-gate-r6-e278b1e"
+ export SLICE3_BROWSER_PUBLIC="$SLICE3_PUBLIC/browser-r4"
+ export SLICE3_REAL_DOCKER=/usr/local/bin/docker
+ cd "$SLICE3_REPO"
+@@ -70,7 +70,7 @@
+ DECLARED_CRLF_SOURCE_PATHS=frozenset({'backend/marketops-server/mvnw.cmd','scripts/bootstrap-repo.ps1'})
+ def source_check(stage):
+  baseline=Path(E['SLICE3_BASELINE']); assert sha(baseline)==E['SLICE3_BASELINE_SHA']
+- files=json.loads(baseline.read_text())['files']; assert len(files)==1278
++ files=json.loads(baseline.read_text())['files']; assert len(files)==1280
+  result=[]
+  for row in files:
+   name=row['path']; rp=root/name; cp=src/name
+--- /private/tmp/slice3-final-governance-driver-02e6172-r2/driver_support.py
++++ /private/tmp/slice3-final-drivers-e278b1e-r6/driver_support.py
+@@ -11,7 +11,7 @@
+ def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+ def require(ok,msg):
+  if not ok:raise ValueError(msg)
+-def git(c,*args):return subprocess.check_output(['git',*args],cwd=c['repo']).decode().strip()
++def git(c,*args):return subprocess.check_output(['git','--no-replace-objects',*args],cwd=c['repo']).decode().strip()
+ def load_collector(c):
+  p=P(c['repo'])/GATE/'collect_execution.py';s=importlib.util.spec_from_file_location('bound_collector',p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+ 
+@@ -59,21 +59,21 @@
+ 
+ def binder(c):
+  out=P(c['runs'])/c['binderOutputName'];out.mkdir(exist_ok=False);started=now();t=time.monotonic();code=None
+- tool=P(c['driverDirectory'])/'binder';hook=P(c['binderObserverDirectory'])
++ tool=P(c['repo'])/GATE/'assessment_tools';hook=P(c['binderObserverDirectory'])
+  observer_before=[ref(hook/n) for n in ('sitecustomize.py','slice3_unittest_capture.py')]
+  observer_binding=c['binderObserverSourceBinding']
+  require(sha(observer_binding['copiedInput']['path'])==sha(observer_binding['repositoryInput']['path'])==observer_binding['gitBlobSha256'],'Unchanged unittest observer copied/current/committed bytes differ')
+- before=[ref(tool/n) for n in ('propose_method_bindings.py','test_propose_method_bindings.py')]
++ before=[ref(row['repositoryInput']['path']) for row in c['binderSourceBindings']]
+  for row in c['binderSourceBindings']:
+   require(sha(row['copiedInput']['path'])==sha(row['repositoryInput']['path'])==row['gitBlobSha256'],'Binder copied/current/committed bytes differ')
+  env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONPATH=str(hook)+':'+str(tool),SLICE3_NAMED_REPOSITORY=str(tool),SLICE3_NAMED_UNITTEST_OUTPUT=str(out/'named-tests.json'))
+- argv=[sys.executable,'-m','unittest','discover','-s',str(tool),'-p','test_propose_method_bindings.py','-v']
++ argv=[sys.executable,'-m','unittest','discover','-s',str(tool),'-p','test_*.py','-v']
+  require(argv[1:]==c['binderObserverExpectedArgvSuffix'],'Binder observer must match the exact actual argv')
+  with (out/'command.log').open('wb') as f:code=subprocess.run(argv,cwd=tool,env=env,stdout=f,stderr=subprocess.STDOUT).returncode
+- after=[ref(tool/n) for n in ('propose_method_bindings.py','test_propose_method_bindings.py')];n=read(out/'named-tests.json') if (out/'named-tests.json').is_file() else {}
++ after=[ref(row['repositoryInput']['path']) for row in c['binderSourceBindings']];n=read(out/'named-tests.json') if (out/'named-tests.json').is_file() else {}
+  observer_after=[ref(hook/n) for n in ('sitecustomize.py','slice3_unittest_capture.py')]
+- count=n.get('frameworkCounts',{});ok=code==0 and before==after and observer_before==observer_after and count=={'testsRun':22,'failures':0,'errors':0,'skipped':0,'expectedFailures':0,'unexpectedSuccesses':0} and n.get('frameworkWasSuccessful') is True and n.get('unexecutedIds')==[]
+- receipt={'kind':'INDEPENDENT_ADDITIONAL_INPUT_SYNTHETIC_EXECUTION','id':'method_binder_synthetic','sourceHead':c['head'],'sourceTree':c['tree'],'sourceInventorySha256':c['inventory']['sha256'],'runId':out.name,'startedAt':started,'finishedAt':now(),'elapsedSeconds':round(time.monotonic()-t,6),'argv':argv,'exitCode':code,'sourceStable':before==after and observer_before==observer_after,'inputsBefore':before,'inputsAfter':after,'observerInputsBefore':observer_before,'observerInputsAfter':observer_after,'observerRepositoryGitBinding':observer_binding,'observerExpectedArgvSuffix':c['binderObserverExpectedArgvSuffix'],'repositoryGitBindings':c['binderSourceBindings'],'frameworkCounts':count,'result':'COMMAND_SUCCEEDED_REVIEW_REQUIRED' if ok else 'COMMAND_FAILED_REVIEW_REQUIRED','evidence':[ref(p) for p in out.iterdir() if p.is_file()],'boundary':'22 tool synthetic boundary tests only, never product acceptance nodes or automatic proof admission.'};write(out/'receipt.json',receipt)
++ count=n.get('frameworkCounts',{});ok=code==0 and before==after and observer_before==observer_after and count=={'testsRun':106,'failures':0,'errors':0,'skipped':0,'expectedFailures':0,'unexpectedSuccesses':0} and n.get('frameworkWasSuccessful') is True and n.get('unexecutedIds')==[]
++ receipt={'kind':'INDEPENDENT_ADDITIONAL_INPUT_SYNTHETIC_EXECUTION','id':'method_binder_synthetic','sourceHead':c['head'],'sourceTree':c['tree'],'sourceInventorySha256':c['inventory']['sha256'],'runId':out.name,'startedAt':started,'finishedAt':now(),'elapsedSeconds':round(time.monotonic()-t,6),'argv':argv,'exitCode':code,'sourceStable':before==after and observer_before==observer_after,'inputsBefore':before,'inputsAfter':after,'observerInputsBefore':observer_before,'observerInputsAfter':observer_after,'observerRepositoryGitBinding':observer_binding,'observerExpectedArgvSuffix':c['binderObserverExpectedArgvSuffix'],'repositoryGitBindings':c['binderSourceBindings'],'frameworkCounts':count,'result':'COMMAND_SUCCEEDED_REVIEW_REQUIRED' if ok else 'COMMAND_FAILED_REVIEW_REQUIRED','evidence':[ref(p) for p in out.iterdir() if p.is_file()],'boundary':'106 evidence-tool synthetic boundary tests only, never product acceptance nodes or automatic proof admission.'};write(out/'receipt.json',receipt)
+  require(ok,'Binder synthetic checks must all execute successfully; see independent receipt')
+ 
+ 
+@@ -109,7 +109,7 @@
+   ident=exact_source(c);i=inputs(c);d=P(c['runs'])/'driver-executions'/a.value;d.mkdir(parents=True,exist_ok=False);write(d/'before.json',{'at':now(),**ident,'executionInputs':i,'config':ref(a.config)})
+  elif a.mode=='finish':
+   d=P(c['runs'])/'driver-executions'/a.value;before=read(d/'before.json');stable=False;error=None
+-  try:ident=exact_source(c,False);inputs(c);stable=True
++  try:ident=exact_source(c,False);require(ref(a.config)==before['config'],'Driver CONFIG changed during execution');require(inputs(c)==before['executionInputs'],'Execution input index changed during execution');stable=True
+   except Exception as e:error=str(e);ident={'sourceHead':c['head'],'sourceTree':c['tree'],'sourceInventorySha256':c['inventory']['sha256']}
+   write(d/'receipt.json',{'kind':'DRIVER_ADDITIONAL_EXECUTION_INPUT_RECEIPT','id':a.value,**ident,'startedAt':before['at'],'finishedAt':now(),'exitCode':int(a.extra),'sourceStable':stable,'executionInputs':before['executionInputs'],'before':ref(d/'before.json'),'error':error,'result':'COMMAND_SUCCEEDED_REVIEW_REQUIRED' if int(a.extra)==0 and stable else 'COMMAND_FAILED_REVIEW_REQUIRED','boundary':'Driver transport/inputs only. Layer collector or independently collected CI receipt remains the product execution authority; this does not assert layer PASS.'});require(stable,'Execution input drift')
+  elif a.mode=='products':products(c,a.value)

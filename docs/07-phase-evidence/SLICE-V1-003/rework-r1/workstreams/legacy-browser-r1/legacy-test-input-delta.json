@@ -1,0 +1,109 @@
+{
+  "baselineCommit": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "testedCommit": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "changedFilesSinceBaseline": [
+    "frontend/marketops-console/tests/browser/advertising-execution.spec.ts"
+  ],
+  "allowedChange": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+  "reason": "Authorized F014 six-axis Exposure wire contract update: original three render fixtures/assertions now require all six axes and complete scope/window/unknown information; all four actual HTTP credential refusals and every other legacy journey remain unchanged. This is not an unchanged-original-bytes claim.",
+  "historicalTestIdentities": [
+    {
+      "label": "frozenReviewed",
+      "commit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+      "files": [
+        {
+          "path": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+          "sha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+          "sha256": "df6e3570e21bcc8c4a4cc9f56872a9705fd2d452b29f7f51022ec64e4fa14255"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+          "sha256": "5b5d7841e53ce28a44e75273b88391d1d175fc56c536b1227f063362e0b1a66d"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+          "sha256": "cf1bb00fff867470634e6bca683dbd2c9371d6a38abd9a0c3fcc0a153fca4adf"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/health-shell.spec.ts",
+          "sha256": "913648b162fb0527fe0ee99831add3c5abdb986456309e59965aa1dfb07a0059"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+          "sha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/sourceIdentity.ts",
+          "sha256": "f5ac6025c683b699621658ab86b837cb083f10f80c54042bd870dfc7455f2f70"
+        }
+      ]
+    },
+    {
+      "label": "preExposureBaseline",
+      "commit": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+      "files": [
+        {
+          "path": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+          "sha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+          "sha256": "df6e3570e21bcc8c4a4cc9f56872a9705fd2d452b29f7f51022ec64e4fa14255"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+          "sha256": "5b5d7841e53ce28a44e75273b88391d1d175fc56c536b1227f063362e0b1a66d"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+          "sha256": "cf1bb00fff867470634e6bca683dbd2c9371d6a38abd9a0c3fcc0a153fca4adf"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/health-shell.spec.ts",
+          "sha256": "913648b162fb0527fe0ee99831add3c5abdb986456309e59965aa1dfb07a0059"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+          "sha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d"
+        },
+        {
+          "path": "frontend/marketops-console/tests/browser/sourceIdentity.ts",
+          "sha256": "f5ac6025c683b699621658ab86b837cb083f10f80c54042bd870dfc7455f2f70"
+        }
+      ]
+    }
+  ],
+  "testedTestIdentities": [
+    {
+      "path": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+      "sha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+      "sha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+      "sha256": "5b5d7841e53ce28a44e75273b88391d1d175fc56c536b1227f063362e0b1a66d"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+      "sha256": "cf1bb00fff867470634e6bca683dbd2c9371d6a38abd9a0c3fcc0a153fca4adf"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/health-shell.spec.ts",
+      "sha256": "913648b162fb0527fe0ee99831add3c5abdb986456309e59965aa1dfb07a0059"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+      "sha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d"
+    },
+    {
+      "path": "frontend/marketops-console/tests/browser/sourceIdentity.ts",
+      "sha256": "f5ac6025c683b699621658ab86b837cb083f10f80c54042bd870dfc7455f2f70"
+    }
+  ]
+}

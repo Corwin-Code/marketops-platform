@@ -1,0 +1,1 @@
+Exact attempt-1 log download failed with EOF after redirect to the GitHub Actions results host. Signed redirect URL omitted from this publishable derivative; original stderr is retained privately under its exact SHA-256. Same completed run/attempt was successfully read on request attempt 2.

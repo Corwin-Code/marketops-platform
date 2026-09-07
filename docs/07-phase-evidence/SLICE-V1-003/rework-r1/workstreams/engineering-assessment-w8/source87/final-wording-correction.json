@@ -1,0 +1,9 @@
+{
+  "criterionIds": [
+    "S3-AC-070",
+    "S3-AC-071"
+  ],
+  "from": "Final unselected W8 full capacity and exact remote CI must be bound after completion; R25 remains targeted evidence.",
+  "to": "Completed unselected W8 local full and exact remote W8 CI capacity are now bound; R25 remains distinct historical targeted evidence. The declared workload limit and final W9/UI/whole-gate review remain applicable.",
+  "reason": "Do not leave a current pending-full statement after exact W8 completed evidence has been bound; original preparation/historical proof remains unchanged."
+}

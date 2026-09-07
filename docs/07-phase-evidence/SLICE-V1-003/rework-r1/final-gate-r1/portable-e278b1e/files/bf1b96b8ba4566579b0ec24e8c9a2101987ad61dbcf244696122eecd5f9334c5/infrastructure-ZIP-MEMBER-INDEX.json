@@ -1,0 +1,267 @@
+{
+  "kind": "IMMUTABLE_LOCAL_LAYER_ARCHIVE_INDEX",
+  "layer": "infrastructure",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "runId": "final-infrastructure-r6",
+  "originalStartedAt": "2026-09-06T09:44:05.923070+00:00",
+  "originalFinishedAt": "2026-09-06T09:44:14.945022+00:00",
+  "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "originalExitCode": 0,
+  "originalSourceStable": true,
+  "originalCollectorTestcaseCounts": null,
+  "originalReceipt": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/layer-candidate.json",
+    "sha256": "f8b6f8abed4af90c4a06adf0217cd325f774935033515d693405c541b79f1ae8",
+    "bytes": 8505
+  },
+  "originalReceiptMember": "infrastructure/layer-candidate.json",
+  "archive": {
+    "path": "/private/tmp/slice3-local-layer-archives-e278b1e-r1/infrastructure-e278b1e-immutable.zip",
+    "sha256": "2d60ffe89b9174852a9c8a08a7115b5e7f30c780b712cac49c1ddde7b746959a",
+    "bytes": 2481586
+  },
+  "memberCount": 23,
+  "uncompressedBytes": 22630118,
+  "allOriginalEvidenceReferencesVerified": 15,
+  "allOriginalBytesAndFilesetUnchanged": true,
+  "allZipCrcAndMemberShaVerified": true,
+  "files": [
+    {
+      "member": "infrastructure/command.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/command.log",
+      "relativeSourcePath": "command.log",
+      "sha256": "030b736c0be6fd59a12e3d4448213464985e976d9aba5dc23ccadcb089a8edb4",
+      "bytes": 2674,
+      "crc32": "d1f0fa97",
+      "compressedBytes": 814,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/identity-after.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/identity-after.json",
+      "relativeSourcePath": "identity-after.json",
+      "sha256": "da7128317ab06ea7563c25477f0006b11e33734581da9bb60b4fa7a23b37d525",
+      "bytes": 283,
+      "crc32": "96387514",
+      "compressedBytes": 215,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/identity-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/identity-before.json",
+      "relativeSourcePath": "identity-before.json",
+      "sha256": "da7128317ab06ea7563c25477f0006b11e33734581da9bb60b4fa7a23b37d525",
+      "bytes": 283,
+      "crc32": "96387514",
+      "compressedBytes": 215,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/layer-candidate.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/layer-candidate.json",
+      "relativeSourcePath": "layer-candidate.json",
+      "sha256": "f8b6f8abed4af90c4a06adf0217cd325f774935033515d693405c541b79f1ae8",
+      "bytes": 8505,
+      "crc32": "1135dbc5",
+      "compressedBytes": 2096,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/named-testcase-nodes.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/named-testcase-nodes.json",
+      "relativeSourcePath": "named-testcase-nodes.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "crc32": "7068d244",
+      "compressedBytes": 5,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/preserved-reports.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/preserved-reports.json",
+      "relativeSourcePath": "preserved-reports.json",
+      "sha256": "064790f406ca92caa18eb5e088482d8b80369871d38b66b183fa47fe6a4269bd",
+      "bytes": 5467,
+      "crc32": "d5704894",
+      "compressedBytes": 869,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-init.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-init.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-init.log",
+      "sha256": "8869e619b7010a30326d82b84670f6788519ab032ea8bdf995151c9a3910cf37",
+      "bytes": 263,
+      "crc32": "08cfadf9",
+      "compressedBytes": 159,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-plan.jsonl",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-plan.jsonl",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-plan.jsonl",
+      "sha256": "2237f79b700e78aaa422c67ffe7cfa2af7fa030b1bca49fd8d381e27aef3eb04",
+      "bytes": 3054893,
+      "crc32": "08728b45",
+      "compressedBytes": 317717,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-validate.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-validate.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/bootstrap-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+      "bytes": 38,
+      "crc32": "0945a718",
+      "compressedBytes": 40,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/fmt.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/fmt.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "crc32": "00000000",
+      "compressedBytes": 2,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-init.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-init.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-init.log",
+      "sha256": "f00b36bd9e007785d9f7d772d7e31b00e58771fd8a87df800253954eee241c40",
+      "bytes": 547,
+      "crc32": "87b69238",
+      "compressedBytes": 249,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-plan.jsonl",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-plan.jsonl",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-plan.jsonl",
+      "sha256": "bdf991da3211c50453c1f0320682c3e09124f8f7219d0dad6578cf776319f1b3",
+      "bytes": 9466876,
+      "crc32": "686d7efa",
+      "compressedBytes": 1002148,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-validate.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-validate.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/production-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+      "bytes": 38,
+      "crc32": "0945a718",
+      "compressedBytes": 40,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-init.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-init.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-init.log",
+      "sha256": "f00b36bd9e007785d9f7d772d7e31b00e58771fd8a87df800253954eee241c40",
+      "bytes": 547,
+      "crc32": "87b69238",
+      "compressedBytes": 249,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-plan.jsonl",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-plan.jsonl",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-plan.jsonl",
+      "sha256": "37fb1c4bf7207faede313e44994ee08f1ca005914d4f4af7ecb483e8d5f5c73d",
+      "bytes": 9466446,
+      "crc32": "ac53e41d",
+      "compressedBytes": 1002093,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-validate.log",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-validate.log",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/staging-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+      "bytes": 38,
+      "crc32": "0945a718",
+      "compressedBytes": 40,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/summary.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/summary.json",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/summary.json",
+      "sha256": "fa9bc9cf40578189acd1f05e7786f4d014b0c1229d0e6362773b3092b630c00e",
+      "bytes": 2350,
+      "crc32": "fc5d907b",
+      "compressedBytes": 763,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/verification.tfrc",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/verification.tfrc",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/verification.tfrc",
+      "sha256": "97cc9f6e4a2eaa6012f3fed769f00b2940a139f669f8449d95d48ef50282943d",
+      "bytes": 197,
+      "crc32": "388ae089",
+      "compressedBytes": 152,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/version.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform/version.json",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform/version.json",
+      "sha256": "e6f53c613e59bd8bec48e54c4131c347fa0a87012d041efc8ecd22fa615300eb",
+      "bytes": 126,
+      "crc32": "4912a780",
+      "compressedBytes": 98,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform-installation-receipt.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/raw/build/final-gate-r6-e278b1e/infrastructure/terraform-installation-receipt.json",
+      "relativeSourcePath": "raw/build/final-gate-r6-e278b1e/infrastructure/terraform-installation-receipt.json",
+      "sha256": "8f0fb610ed0176356dc2e22288cff7fe01763143a0c3eacc8958232c839c2ae5",
+      "bytes": 365,
+      "crc32": "4a6add62",
+      "compressedBytes": 263,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/report-state-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/report-state-before.json",
+      "relativeSourcePath": "report-state-before.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3,
+      "crc32": "dda1b006",
+      "compressedBytes": 5,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/source-after.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/source-after.json",
+      "relativeSourcePath": "source-after.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088,
+      "crc32": "6e0430d1",
+      "compressedBytes": 74223,
+      "zipMemberReadShaVerified": true
+    },
+    {
+      "member": "infrastructure/source-before.json",
+      "originalPath": "/private/tmp/slice3-final-execution-e278b1e-r6/infrastructure/source-before.json",
+      "relativeSourcePath": "source-before.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088,
+      "crc32": "6e0430d1",
+      "compressedBytes": 74223,
+      "zipMemberReadShaVerified": true
+    }
+  ],
+  "reexecutionPerformed": false,
+  "publicationScan": "PENDING_SCAN_OF_EXACT_ARCHIVE_AND_METADATA_BYTES",
+  "productPassInferred": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false
+}

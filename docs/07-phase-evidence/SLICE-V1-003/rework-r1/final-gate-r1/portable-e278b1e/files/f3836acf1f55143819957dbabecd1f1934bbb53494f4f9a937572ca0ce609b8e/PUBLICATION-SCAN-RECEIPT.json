@@ -1,0 +1,118 @@
+{
+  "kind": "INDEPENDENT_LOCAL_LAYER_PUBLICATION_SCANS",
+  "productSourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "productSourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "layers": [
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/frontend-quality/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "cf7167ae5cd5cf6fb2e5737b157f06fc3a0746fb926daf9891e97c2f103c695f",
+      "size": 4697,
+      "layer": "frontend-quality",
+      "originalFiles": 80,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-r2/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "e7898809fe4a99bb82b5c2c5a77320d30ac1ad6c08e49c4602cc7986867c749f",
+      "size": 4660,
+      "layer": "governance-r2",
+      "originalFiles": 19,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/infrastructure/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "20d0f124b2b0cb38e1df9f8daacf87b50fa3c7e94e831ce5b9611b88e0cd33b3",
+      "size": 4676,
+      "layer": "infrastructure",
+      "originalFiles": 23,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/migration/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "f5ce839aea4c2c2b653e2589c9e980c2ebe34a14d320198e7ac53de2787307a2",
+      "size": 4602,
+      "layer": "migration",
+      "originalFiles": 25,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/supply-chain/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "94413482585557c2b161a68dc5bb762f7399c249c0b2242fdfa1eb4b96cb45e4",
+      "size": 4645,
+      "layer": "supply-chain",
+      "originalFiles": 17,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/security-npm-audit-r2/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "6ce147d1552215f6da2c45ef2c865d53b8debed591267d529bed1f95919d3943",
+      "size": 4747,
+      "layer": "security-npm-audit-r2",
+      "originalFiles": 32,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/browser/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "2c893a250a7db8ed076685051a7094f6a534f9830808e80dbb1fbd186e47596b",
+      "size": 4662,
+      "layer": "browser",
+      "originalFiles": 23,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_FAILED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/browser-r2/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "991f958092e95095edfa36a2ad2bf5829e5269d6778bdc37ea6e5e8c4be1c634",
+      "size": 4769,
+      "layer": "browser-r2",
+      "originalFiles": 62,
+      "archiveMembers": 28,
+      "originalResult": "COMMAND_FAILED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    },
+    {
+      "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/browser-r3/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "147fb2c72ffddb3e26c6b9141ba33d39350175ac91543b90ef46b29cb3db675f",
+      "size": 4823,
+      "layer": "browser-r3",
+      "originalFiles": 38,
+      "archiveMembers": 0,
+      "originalResult": "COMMAND_FAILED",
+      "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE"
+    }
+  ],
+  "scopeBoundary": [
+    "Each entry has an independent original run, file SHA list, byte/member counts and success/failure boundary. Counts are not merged into product verification totals.",
+    "Backend and all-CI domains were previously scanned and are not repeated or absorbed here.",
+    "Original successful governance remains 02e; no later D execution is inferred.",
+    "Failed browser r1/r2/r3 remain failed. Any later browser r4 is outside this scan and needs its own scan.",
+    "No original file was changed. Images received bytes-only pattern scanning, no OCR or pixel inspection.",
+    "Seven immutable governance regex patterns plus JWT and signed/token URL shape searches. Zero matches in each layer; no allowlist or rule-help exception used."
+  ],
+  "productVerificationExecutionPerformed": false,
+  "publicationPerformed": false,
+  "sourceRepositoryChanged": false,
+  "scannerProvenance": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/SCANNER-PROVENANCE.json",
+    "sha256": "0ae7cbb983493bd68a42bd9748e27f4a2f230b4111eac41250befb4c8ca7e8b8",
+    "size": 984
+  },
+  "actualScanCommands": {
+    "path": "/tmp/slice3-local-layer-publication-scans-02e6172-r1/SCAN-COMMANDS.json",
+    "sha256": "924cfa2696dbf39616b1eac537b5252d17c6a46d08c19d99f630c1c1b8240b77",
+    "size": 10860
+  }
+}

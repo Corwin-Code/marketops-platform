@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0",
+  "scope": "Read-only W7 CI failure diagnosis plus authorized narrowly scoped repairs; no rerun was initiated by this reviewer.",
+  "run": {
+    "workflow": "Backend",
+    "runId": 33963350093,
+    "runAttempt": 1,
+    "sourceHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+    "testedMerge": "1d48739f4fe71d394e12e0623cf533e89770bece",
+    "baseHead": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "createdAtUTC": "2026-09-05T11:26:42Z",
+    "completedAtUTC": "2026-09-05T11:58:56Z",
+    "conclusion": "FAILURE",
+    "identityEvidence": [
+      "run33963350093.response.txt",
+      "backend-build.log",
+      "backend-integration.log"
+    ]
+  },
+  "jobs": [
+    {
+      "id": 101299023501,
+      "name": "backend-build",
+      "status": "FAILURE",
+      "integrationConsoleCounts": {
+        "tests": 920,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failureMethods": [
+        "PriceCommandWorkerIT.unknownWriteOutcome",
+        "AdvertisingOrchestrationCapacityIT.replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach"
+      ],
+      "logSha256": "8a497478447a3f64cb2de1dd4d5884fe0e4a1369edc9767db9bbd0046eff8656"
+    },
+    {
+      "id": 101299023481,
+      "name": "backend-integration",
+      "status": "FAILURE",
+      "integrationConsoleCounts": {
+        "tests": 920,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failureMethods": [
+        "PriceCommandWorkerIT.unknownWriteOutcome",
+        "AdvertisingOrchestrationCapacityIT.replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+        "AdvertisingOrchestrationCapacityIT.sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization"
+      ],
+      "logSha256": "748370ddf23b55f814e85b7f627a5c5dc7979980da1b86b96e481898a69dc746"
+    }
+  ],
+  "diagnoses": [
+    {
+      "id": "PRICE_WORKER_WHOLE_DATABASE_FIXTURE_ISOLATION",
+      "category": "Cross-class test fixture contamination, not a demonstrated production retry violation",
+      "actual": "The callback for a global worker.runOnce APPLY finds zero IN_FLIGHT rows for this test command and request digest, expected exactly one. The command under test had already reached UNKNOWN_REQUIRES_READBACK.",
+      "evidence": "Both original Price XML failure stacks pass through runOnce -> advance -> apply -> beforeCall at old line 107. claimable is global; UNKNOWN with no explicit READBACK request is excluded. resetSharedState restores capability and switch, not foreign commands.",
+      "inferenceBoundary": "The raw failure does not contain the foreign command UUID. No UUID or originating test class is invented. Control flow and database sharing establish the isolation defect; actual regression remains required.",
+      "repair": "Dedicated TestDatabase.isolatedContainer reused by both application and migration arranger; original whole-worker and durable-attempt assertions preserved.",
+      "owner": "Root",
+      "independentReview": "independent-price-isolation-review.json"
+    },
+    {
+      "id": "REPLAY_ORACLE_PLATFORM_TIMESTAMP_PRECISION",
+      "category": "Test oracle disagrees with PostgreSQL microsecond precision",
+      "expected": "2026-09-05T11:35:20.827524030Z",
+      "actual": "2026-09-05T11:35:20.827524Z",
+      "repair": "Read the logical starting timestamp from PostgreSQL clock_timestamp(), derive subsequent whole-second offsets, and retain exact timestamp equality. No tolerance and no queue suppression/lease rule changes.",
+      "owner": "source_audit"
+    },
+    {
+      "id": "CASE_AGE_SAME_ASOF_REPLAY_NEGATIVE_SECOND",
+      "category": "Runtime nanosecond to persisted-microsecond boundary defect",
+      "asOf": "2026-09-05T11:35:19.105198878Z",
+      "expectedFactor": "CASE_AGE value=0",
+      "actualFactor": "CASE_AGE value=-0.000011574074074074074074 days",
+      "analysis": "The persisted origin rounds to .105199, 122ns later than the original Java Instant. SQL binds the original asOf at the same microsecond and legitimately returns the Case. Duration.toSeconds on a negative fractional interval produces -1, so a repeated identical-asOf calculation changes rank. The two full calculation values differ only in the age factor, as mechanically recorded in capacity-same-asof-exact-differences.json.",
+      "repair": "If an origin is after asOf, only equality with the exact PostgreSQL rounded-microsecond representation of that asOf yields age zero. Any genuinely future origin remains null with explicit unresolved marker. Positive elapsed ages and SQL historical exclusion are unchanged.",
+      "acceptedSemantics": [
+        "Contract §6.10 age is an ordered rank factor and unknown is not zero.",
+        "Identical asOf/facts/policy/scope targeted and reconciliation calculations must agree."
+      ],
+      "testsAdded": [
+        "AdvertisingCaseCalculationServiceTest.aPersistedMicrosecondOriginCannotGiveTheSameCalculationNegativeAge",
+        "AdvertisingCaseCalculationServiceTest.microsecondRoundingAcrossASecondBoundaryStillRepresentsAgeZero",
+        "AdvertisingCaseCalculationServiceTest.aGenuinelyFutureCaseOriginRemainsUnknownInsteadOfZero",
+        "AdvertisingCaseCalculationServiceTest.anExistingCaseKeepsItsPositiveElapsedAge"
+      ],
+      "existingIntegrationStrengthened": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization forces .123456789 -> PG .123457 on every platform, asserts the persisted origin, preserves full calculation and Case identity equality, asserts zero age factors, and uses nonempty actual historical rankContexts to exclude future Case identities.",
+      "unchangedBoundaries": [
+        "1000-object workload",
+        "All orchestration SLO limits and delays",
+        "Future official fact and policy filters",
+        "Case first-raised identity and Task SLO age",
+        "Priority lane and hard tier",
+        "Provider and production write controls"
+      ],
+      "owner": "source_audit"
+    }
+  ],
+  "repairSourceIdentities": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "failedW7GitSourceSha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe",
+      "preparedRepairWorkingSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+      "repairHasNotYetPassedTargetedOrFullVerification": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+      "failedW7GitSourceSha256": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4",
+      "preparedRepairWorkingSourceSha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+      "repairHasNotYetPassedTargetedOrFullVerification": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "failedW7GitSourceSha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+      "preparedRepairWorkingSourceSha256": "4219099c5e847e8512e5d5b9a421d89f44a119f32881247a90ef76cac23c5b97",
+      "repairHasNotYetPassedTargetedOrFullVerification": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
+      "failedW7GitSourceSha256": "f792d74746eb6f2582e8f0f167a45b4b289002e3459cbc6c8d5e6c8a9e4c7385",
+      "preparedRepairWorkingSourceSha256": "f81b97a5fb8433a59b5e6ce29fcb2972f05b7eb185843349a6e83d1a35194e68",
+      "repairHasNotYetPassedTargetedOrFullVerification": true
+    }
+  ],
+  "repairPatch": {
+    "path": "prepared-four-file-repair.patch",
+    "sha256": "06e16b6aa7d7b625c70a3f09df0b9d5585faea0e31fefea1d77bb761b7042556"
+  },
+  "rawOriginalReports": "original-report-manifest.json",
+  "verificationStatus": "PREPARED_REPAIR; Root R24 selected verification is running. No successful result is claimed here. W7 full failures remain immutable. Final new exact-source full clean verification and CI are still required.",
+  "scopeLimit": "Security W7 succeeded independently; that does not override these failed Backend contexts. Earlier local W6 full PASS was a different run and did not exercise forced Linux timestamp rounding or this shared-suite order."
+}

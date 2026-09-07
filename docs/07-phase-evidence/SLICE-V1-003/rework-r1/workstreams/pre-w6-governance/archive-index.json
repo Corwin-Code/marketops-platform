@@ -1,0 +1,18 @@
+{
+  "kind": "PRE_W6_GOVERNANCE_ORIGINAL_ARTIFACTS",
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w6-governance/make-governance.log",
+      "sha256": "678f79d0fd6c7c9be80771b337289389824d13b3b25f22305399e3556ce94fbe"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w6-governance/named-unittest-results.json",
+      "sha256": "9ba643c5c8eae16a0f260b5ae5e31d77e44ec5f9a5fc47522e125231d701b7fc"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w6-governance/receipt.json",
+      "sha256": "ccfeefef06e809ffcca5d162626518d81ac792eee280316947ff17ee7f9c51da"
+    }
+  ],
+  "limit": "410 actual named methods pass on the frozen pre-W6 worktree; this does not identify the later clean commit or replace final CI."
+}

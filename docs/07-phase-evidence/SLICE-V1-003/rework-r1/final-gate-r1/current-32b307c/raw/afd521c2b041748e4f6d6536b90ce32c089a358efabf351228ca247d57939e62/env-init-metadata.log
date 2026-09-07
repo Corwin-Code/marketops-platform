@@ -1,0 +1,10 @@
+env-init: target = /private/tmp/slice3-final-browser-work.7TIa4Q/source/.env.local
+env-init: gitignore check = PASS
+env-init: wrote 4 variables (MARKETOPS_POSTGRES_SUPERUSER_PASSWORD, MARKETOPS_DB_MIGRATION_PASSWORD, MARKETOPS_DB_APP_PASSWORD, MARKETOPS_DB_PORT)
+env-init: file mode = 0600
+env-init: OK
+env-init: target = /private/tmp/slice3-final-browser-work.7TIa4Q/source/frontend/marketops-console/.env.local
+env-init: gitignore check = PASS
+env-init: wrote 7 variables (VITE_MARKETOPS_API_BASE_URL, VITE_MARKETOPS_ENVIRONMENT, VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT, VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT, VITE_MARKETOPS_OIDC_CLIENT_ID, VITE_MARKETOPS_OIDC_AUDIENCE, VITE_MARKETOPS_STORE_ID)
+env-init: file mode = 0600
+env-init: OK

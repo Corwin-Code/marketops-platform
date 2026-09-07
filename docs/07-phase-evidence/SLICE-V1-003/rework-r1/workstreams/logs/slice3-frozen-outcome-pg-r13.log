@@ -1,0 +1,1369 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[INFO] 
+[INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] Copying 66 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 666 source files with javac [debug deprecation parameters release 21] to target/classes
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java:[118,25] trailing white space will be removed
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/./build/generated-spring-modulith/javadoc.json.
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[46,42] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[47,78] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[51,82] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,82] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,123] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[58,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[56,61] PAYLOAD_TOO_LARGE in org.springframework.http.HttpStatus has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[77,66] UNPROCESSABLE_ENTITY in org.springframework.http.HttpStatus has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationEvidence.java:[22,7] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[84,18] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[260,22] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[INFO] Copying 4 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 267 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/./build/generated-spring-modulith/javadoc.json.
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[77,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[80,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[84,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[107,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[156,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[199,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[222,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[224,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[263,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ marketops-server ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.mimococo.marketops.AdvertisingMaterialityIT
+10:09:07.180 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+10:09:07.184 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:09:07.199 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 2.0.5
+10:09:07.560 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+10:09:07.939 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+10:09:07.941 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+10:09:07.964 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.7.2
+  API Version: 1.55
+  Operating System: Docker Desktop
+  Total Memory: 5922 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/chzhengx/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:09:08.228 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Creating container for image: testcontainers/ryuk:0.14.0
+10:09:08.507 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Credential helper/store (docker-credential-desktop) does not have credentials for https://index.docker.io/v1/
+10:09:08.657 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 is starting: 2d1932d6019a270a75c91699122a2540fb70ecacaad475181f3ac0b9c8c1abdb
+10:09:09.004 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 started in PT0.776125S
+10:09:09.014 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+10:09:09.014 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+10:09:09.015 [main] INFO org.testcontainers.DockerClientFactory -- ✔︎ Docker server version should be at least 1.6.0
+10:09:09.062 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+10:09:09.748 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 7f2f3fd1071745820554a6f9a8bcd8f5427123e1983c2d58ed76ab0d83f4a357
+10:09:11.023 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.960971S
+10:09:11.023 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:62833/marketops?loggerLevel=OFF)
+10:09:11.611 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:62833/marketops?loggerLevel=OFF (PostgreSQL 17.6)
+10:09:11.710 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:11.716 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.054s)
+10:09:11.733 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:11.800 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:11.808 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:11.831 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:11.864 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+10:09:11.888 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+10:09:11.933 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+10:09:11.964 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+10:09:12.036 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+10:09:12.090 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+10:09:12.120 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+10:09:12.155 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+10:09:12.214 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+10:09:12.285 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+10:09:12.355 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+10:09:12.426 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+10:09:12.484 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+10:09:12.508 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+10:09:12.534 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+10:09:12.572 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+10:09:12.602 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+10:09:12.651 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+10:09:12.698 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+10:09:12.721 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+10:09:12.748 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+10:09:12.773 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+10:09:12.791 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+10:09:12.816 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+10:09:12.835 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+10:09:12.878 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+10:09:12.933 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+10:09:12.999 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+10:09:13.106 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+10:09:13.115 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+10:09:13.130 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+10:09:13.143 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+10:09:13.189 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+10:09:13.246 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+10:09:13.299 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+10:09:13.356 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+10:09:13.425 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+10:09:13.469 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+10:09:13.499 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+10:09:13.547 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+10:09:13.598 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+10:09:13.622 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+10:09:13.633 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+10:09:13.641 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+10:09:13.649 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+10:09:13.659 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+10:09:13.673 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+10:09:13.699 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+10:09:13.731 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+10:09:13.743 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+10:09:13.767 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+10:09:13.776 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+10:09:13.791 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+10:09:13.817 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+10:09:13.863 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+10:09:13.920 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+10:09:14.058 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+10:09:14.117 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+10:09:14.152 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+10:09:14.179 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+10:09:14.201 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+10:09:14.229 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+10:09:14.253 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0065 - route settled advertising contradictions to finance review"
+10:09:14.276 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 65 migrations to schema "public", now at version v0065 (execution time 00:01.727s)
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.750 s -- in com.mimococo.marketops.AdvertisingMaterialityIT
+[INFO] Running com.mimococo.marketops.database.FlywayMigrationIT
+10:09:16.883 [main] INFO tc.postgres:18.4 -- Creating container for image: postgres:18.4
+10:09:17.165 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 is starting: 4e359e9ba30f6d5df4d717a5a4c0d7838e9e028a6b2c5e108ba8a947676eee2d
+10:09:18.514 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 started in PT1.63063S
+10:09:18.514 [main] INFO tc.postgres:18.4 -- Container is started (JDBC URL: jdbc:postgresql://localhost:62950/marketops?loggerLevel=OFF)
+10:09:18.562 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:62950/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:18.597 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:18.598 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.016s)
+10:09:18.607 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:18.630 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:18.633 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:18.655 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:18.701 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+10:09:18.726 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+10:09:18.869 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+10:09:18.943 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+10:09:18.997 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+10:09:19.037 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+10:09:19.067 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+10:09:19.151 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+10:09:19.216 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+10:09:19.295 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+10:09:19.383 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+10:09:19.471 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+10:09:19.516 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+10:09:19.538 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+10:09:19.567 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+10:09:19.600 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+10:09:19.626 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+10:09:19.669 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+10:09:19.713 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+10:09:19.736 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+10:09:19.764 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+10:09:19.788 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+10:09:19.808 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+10:09:19.831 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+10:09:19.851 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+10:09:19.885 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+10:09:19.922 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+10:09:19.970 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+10:09:20.080 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+10:09:20.090 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+10:09:20.100 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+10:09:20.113 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+10:09:20.171 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+10:09:20.222 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+10:09:20.283 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+10:09:20.352 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+10:09:20.432 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+10:09:20.484 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+10:09:20.514 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+10:09:20.573 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+10:09:20.639 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+10:09:20.658 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+10:09:20.670 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+10:09:20.679 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+10:09:20.688 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+10:09:20.698 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+10:09:20.712 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+10:09:20.737 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+10:09:20.767 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+10:09:20.778 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+10:09:20.793 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+10:09:20.802 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+10:09:20.812 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+10:09:20.836 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+10:09:20.874 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+10:09:20.925 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+10:09:21.062 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+10:09:21.130 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+10:09:21.183 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+10:09:21.215 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+10:09:21.236 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+10:09:21.268 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+10:09:21.291 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0065 - route settled advertising contradictions to finance review"
+10:09:21.310 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 65 migrations to schema "public", now at version v0065 (execution time 00:01.976s)
+10:09:21.438 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:62950/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:21.464 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.018s)
+10:09:21.477 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": 0065
+10:09:21.478 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Schema "public" is up to date. No migration necessary.
+10:09:21.493 [main] INFO tc.postgres:18.4 -- Creating container for image: postgres:18.4
+10:09:21.735 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 is starting: 8b67a260cfa4316bd714b8102a6e7847086cf5db7083456e0a68dcaf455550bb
+10:09:23.133 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 started in PT1.638946S
+10:09:23.136 [main] INFO tc.postgres:18.4 -- Container is started (JDBC URL: jdbc:postgresql://localhost:62972/marketops?loggerLevel=OFF)
+10:09:23.205 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:62972/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:23.228 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:23.229 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.011s)
+10:09:23.236 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:23.305 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:23.311 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:23.411 [main] ERROR org.flywaydb.core.internal.command.DbMigrate -- Migration of schema "public" to version "0001 - create foundation schemas" failed! Changes successfully rolled back.
+10:09:23.477 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:62972/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:23.501 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.014s)
+10:09:23.515 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:23.518 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:23.532 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:23.565 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+10:09:23.581 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+10:09:23.619 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+10:09:23.646 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+10:09:23.697 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+10:09:23.733 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+10:09:23.758 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+10:09:23.797 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+10:09:23.833 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+10:09:23.871 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+10:09:24.035 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+10:09:24.085 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+10:09:24.122 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+10:09:24.143 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+10:09:24.169 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+10:09:24.205 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+10:09:24.235 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+10:09:24.276 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+10:09:24.339 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+10:09:24.366 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+10:09:24.393 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+10:09:24.416 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+10:09:24.434 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+10:09:24.459 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+10:09:24.482 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+10:09:24.513 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+10:09:24.553 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+10:09:24.607 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+10:09:24.693 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+10:09:24.701 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+10:09:24.709 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+10:09:24.719 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+10:09:24.765 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+10:09:24.807 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+10:09:24.857 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+10:09:24.909 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+10:09:24.976 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+10:09:25.030 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+10:09:25.056 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+10:09:25.112 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+10:09:25.166 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+10:09:25.184 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+10:09:25.195 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+10:09:25.210 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+10:09:25.221 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+10:09:25.233 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+10:09:25.246 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+10:09:25.282 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+10:09:25.312 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+10:09:25.326 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+10:09:25.341 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+10:09:25.351 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+10:09:25.382 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+10:09:25.411 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+10:09:25.465 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+10:09:25.521 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+10:09:25.644 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+10:09:25.698 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+10:09:25.735 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+10:09:25.760 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+10:09:25.775 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+10:09:25.805 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+10:09:25.825 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0065 - route settled advertising contradictions to finance review"
+10:09:25.839 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 65 migrations to schema "public", now at version v0065 (execution time 00:01.566s)
+10:09:26.223 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:62950/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:26.237 [main] INFO tc.postgres:18.4 -- Creating container for image: postgres:18.4
+10:09:26.370 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 is starting: cd317383a3341e8c30b9017de7c90f8025b4fadb97761a80e3325ef45c0e7c6e
+10:09:27.391 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 started in PT1.153179S
+10:09:27.391 [main] INFO tc.postgres:18.4 -- Container is started (JDBC URL: jdbc:postgresql://localhost:63009/marketops?loggerLevel=OFF)
+10:09:27.416 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:63009/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:27.435 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:27.436 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.010s)
+10:09:27.442 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:27.459 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:27.461 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:27.471 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 1 migration to schema "public", now at version v0001 (execution time 00:00.005s)
+10:09:27.510 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:63009/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+10:09:27.528 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.010s)
+10:09:27.539 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": 0001
+10:09:27.541 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:27.545 [main] ERROR org.flywaydb.core.internal.command.DbMigrate -- Migration of schema "public" to version "0002 - enable btree gist extension" failed! Changes successfully rolled back.
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.82 s -- in com.mimococo.marketops.database.FlywayMigrationIT
+[INFO] Running com.mimococo.marketops.AdvertisingReservationIT
+10:09:27.702 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+10:09:27.790 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 92937075ef3c6181ef3fbeb97fdf1a00cac9fffeed1bff8fd0672b301560c68b
+10:09:28.792 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.090849S
+10:09:28.793 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:63030/marketops?loggerLevel=OFF)
+10:09:28.815 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:63030/marketops?loggerLevel=OFF (PostgreSQL 17.6)
+10:09:28.838 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:28.839 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.013s)
+10:09:28.845 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:28.863 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:28.865 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:28.877 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:28.905 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+10:09:28.919 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+10:09:28.959 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+10:09:28.983 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+10:09:29.057 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+10:09:29.114 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+10:09:29.140 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+10:09:29.174 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+10:09:29.213 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+10:09:29.248 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+10:09:29.296 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+10:09:29.351 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+10:09:29.385 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+10:09:29.406 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+10:09:29.432 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+10:09:29.466 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+10:09:29.496 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+10:09:29.530 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+10:09:29.571 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+10:09:29.594 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+10:09:29.620 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+10:09:29.641 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+10:09:29.658 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+10:09:29.688 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+10:09:29.708 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+10:09:29.737 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+10:09:29.795 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+10:09:29.862 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+10:09:29.959 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+10:09:29.968 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+10:09:29.977 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+10:09:29.988 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+10:09:30.032 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+10:09:30.071 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+10:09:30.123 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+10:09:30.171 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+10:09:30.235 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+10:09:30.275 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+10:09:30.297 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+10:09:30.341 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+10:09:30.392 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+10:09:30.413 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+10:09:30.433 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+10:09:30.449 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+10:09:30.458 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+10:09:30.467 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+10:09:30.480 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+10:09:30.505 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+10:09:30.537 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+10:09:30.547 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+10:09:30.566 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+10:09:30.575 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+10:09:30.584 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+10:09:30.609 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+10:09:30.645 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+10:09:30.699 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+10:09:30.816 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+10:09:30.868 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+10:09:30.901 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+10:09:30.926 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+10:09:30.940 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+10:09:30.968 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+10:09:30.986 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0065 - route settled advertising contradictions to finance review"
+10:09:31.003 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 65 migrations to schema "public", now at version v0065 (execution time 00:01.521s)
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.158 s -- in com.mimococo.marketops.AdvertisingReservationIT
+[INFO] Running com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT
+10:09:35.862 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+10:09:36.081 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 93fc46659e8a056c90e31763e5c2cde975310cb2177f7f1d67294194d555872e
+10:09:37.112 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.250346S
+10:09:37.118 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:63282/marketops?loggerLevel=OFF)
+10:09:37.352 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:63282/marketops_standard?loggerLevel=OFF (PostgreSQL 17.6)
+10:09:37.373 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:37.374 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.012s)
+10:09:37.383 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:37.422 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:37.425 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:37.436 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:37.462 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+10:09:37.477 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+10:09:37.515 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+10:09:37.538 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+10:09:37.596 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+10:09:37.627 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+10:09:37.646 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+10:09:37.684 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+10:09:37.721 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+10:09:37.760 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+10:09:37.796 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+10:09:37.837 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+10:09:37.872 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+10:09:37.895 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+10:09:37.933 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+10:09:37.967 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+10:09:38.001 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+10:09:38.070 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+10:09:38.120 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+10:09:38.142 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+10:09:38.166 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+10:09:38.187 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+10:09:38.203 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+10:09:38.226 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+10:09:38.243 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+10:09:38.272 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+10:09:38.316 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+10:09:38.375 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+10:09:38.480 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+10:09:38.488 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+10:09:38.497 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+10:09:38.509 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+10:09:38.563 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+10:09:38.603 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+10:09:38.650 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+10:09:38.699 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+10:09:38.774 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+10:09:38.819 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+10:09:38.852 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+10:09:38.899 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+10:09:38.956 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+10:09:38.973 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+10:09:38.991 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+10:09:38.999 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+10:09:39.007 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+10:09:39.016 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+10:09:39.033 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+10:09:39.058 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+10:09:39.086 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+10:09:39.105 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+10:09:39.134 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+10:09:39.143 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+10:09:39.150 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+10:09:39.182 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+10:09:39.225 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+10:09:39.290 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+10:09:39.404 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+10:09:39.448 [main] ERROR org.flywaydb.core.internal.command.DbMigrate -- Migration of schema "public" to version "0059 - freeze advertising outcome baselines and critical units" failed! Changes successfully rolled back.
+10:09:39.692 [main] INFO tc.postgres:18.4-bookworm@sha256:882236... -- Creating container for image: postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382
+10:09:39.834 [main] INFO tc.postgres:18.4-bookworm@sha256:882236... -- Container postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382 is starting: e9b320ec29e2de6f650025c892d5527b1578a7a809db4bc649019886defea470
+10:09:41.324 [main] INFO tc.postgres:18.4-bookworm@sha256:882236... -- Container postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382 started in PT1.631907S
+10:09:41.324 [main] INFO tc.postgres:18.4-bookworm@sha256:882236... -- Container is started (JDBC URL: jdbc:postgresql://localhost:63350/marketops?loggerLevel=OFF)
+[ERROR] Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 6.112 s <<< FAILURE! -- in com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT
+[ERROR] com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT.pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas -- Time elapsed: 2.145 s <<< ERROR!
+org.flywaydb.core.internal.exception.FlywayMigrateException: 
+Failed to execute script V0059__freeze_advertising_outcome_baselines_and_critical_units.sql
+-------------------------------------------------------------------------------------------
+SQL State  : 42704
+Error Code : 0
+Message    : ERROR: role "marketops_identity_issuer" does not exist
+Location   : db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql (/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/classes/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql)
+Line       : 297
+Statement  : Run Flyway with -X option to see the actual statement causing the problem
+
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:399)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$applyMigrations$1(DbMigrate.java:283)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:59)
+	at org.flywaydb.core.internal.command.DbMigrate.applyMigrations(DbMigrate.java:282)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateGroup(DbMigrate.java:255)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$migrateAll$0(DbMigrate.java:153)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:77)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.lambda$execute$0(PostgreSQLAdvisoryLockTemplate.java:60)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:59)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:60)
+	at org.flywaydb.database.postgresql.PostgreSQLConnection.lock(PostgreSQLConnection.java:105)
+	at org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory.lock(JdbcTableSchemaHistory.java:165)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateAll(DbMigrate.java:153)
+	at org.flywaydb.core.internal.command.DbMigrate.migrate(DbMigrate.java:104)
+	at org.flywaydb.core.Flyway.lambda$migrate$3(Flyway.java:231)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:236)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:120)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:181)
+	at com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunner.migrate(ManagedMigrationRunner.java:61)
+	at com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT.pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas(ManagedProfileMigrationIT.java:57)
+Caused by: org.flywaydb.core.internal.sqlscript.FlywaySqlScriptException: Failed to execute script V0059__freeze_advertising_outcome_baselines_and_critical_units.sql
+-------------------------------------------------------------------------------------------
+SQL State  : 42704
+Error Code : 0
+Message    : ERROR: role "marketops_identity_issuer" does not exist
+Location   : db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql (/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/classes/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql)
+Line       : 297
+Statement  : Run Flyway with -X option to see the actual statement causing the problem
+
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.handleException(DefaultSqlScriptExecutor.java:251)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:212)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.execute(DefaultSqlScriptExecutor.java:134)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.executeOnce(SqlMigrationExecutor.java:75)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.lambda$execute$0(SqlMigrationExecutor.java:66)
+	at org.flywaydb.core.internal.database.DefaultExecutionStrategy.execute(DefaultExecutionStrategy.java:31)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:65)
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:391)
+	... 19 more
+Caused by: org.postgresql.util.PSQLException: ERROR: role "marketops_identity_issuer" does not exist
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:359)
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:344)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:320)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:315)
+	at org.flywaydb.core.internal.jdbc.JdbcTemplate.executeStatement(JdbcTemplate.java:229)
+	at org.flywaydb.core.internal.sqlscript.ParsedSqlStatement.execute(ParsedSqlStatement.java:88)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:207)
+	... 25 more
+
+[INFO] Running com.mimococo.marketops.AdvertisingSealedAuthorityIT
+10:09:41.975 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+10:09:42.075 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 936f30942f45533fd7ee88c80b0f641fe80cb1ded0fa26a88ee157398121462f
+10:09:43.176 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.200886S
+10:09:43.179 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:63372/marketops?loggerLevel=OFF)
+10:09:43.210 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:63372/marketops?loggerLevel=OFF (PostgreSQL 17.6)
+10:09:43.240 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+10:09:43.241 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.017s)
+10:09:43.247 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+10:09:43.268 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+10:09:43.271 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+10:09:43.292 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+10:09:43.324 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+10:09:43.342 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+10:09:43.390 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+10:09:43.422 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+10:09:43.474 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+10:09:43.503 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+10:09:43.526 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+10:09:43.556 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+10:09:43.586 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+10:09:43.622 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+10:09:43.666 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+10:09:43.707 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+10:09:43.738 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+10:09:43.766 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+10:09:43.791 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+10:09:43.836 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+10:09:43.871 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+10:09:43.916 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+10:09:43.970 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+10:09:43.999 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+10:09:44.027 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+10:09:44.056 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+10:09:44.085 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+10:09:44.109 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+10:09:44.129 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+10:09:44.161 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+10:09:44.211 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+10:09:44.255 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+10:09:44.344 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+10:09:44.356 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+10:09:44.365 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+10:09:44.377 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+10:09:44.417 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+10:09:44.453 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+10:09:44.498 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+10:09:44.540 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+10:09:44.596 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+10:09:44.638 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+10:09:44.662 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+10:09:44.708 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+10:09:44.757 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+10:09:44.773 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+10:09:44.784 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+10:09:44.792 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+10:09:44.800 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+10:09:44.810 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+10:09:44.823 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+10:09:44.846 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+10:09:44.873 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+10:09:44.890 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+10:09:44.904 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+10:09:44.913 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+10:09:44.922 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+10:09:44.943 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+10:09:44.991 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+10:09:45.046 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+10:09:45.156 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+10:09:45.217 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+10:09:45.256 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+10:09:45.280 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+10:09:45.296 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+10:09:45.328 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+10:09:45.342 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0065 - route settled advertising contradictions to finance review"
+10:09:45.356 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 65 migrations to schema "public", now at version v0065 (execution time 00:01.427s)
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.172 s -- in com.mimococo.marketops.AdvertisingSealedAuthorityIT
+[INFO] Running com.mimococo.marketops.AdvertisingManualWorkflowIT
+10:09:49.362 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.mimococo.marketops.MarketOpsServerApplication for test class com.mimococo.marketops.AdvertisingManualWorkflowIT
+10:09:49.414 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.mimococo.marketops.MarketOpsServerApplication for test class com.mimococo.marketops.AdvertisingManualWorkflowIT
+10:09:49.438 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+10:09:49.640 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 2eaea69a3e3305d800b64347c6579c4642bcd9c67c96434f1192ad0e5592224f
+10:09:50.659 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.221009S
+10:09:50.659 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:63499/marketops?loggerLevel=OFF)
+{"@timestamp":"2026-09-05T02:09:51.002896Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingManualWorkflowIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingManualWorkflowIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:09:51.006568Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingManualWorkflowIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:09:56.339602Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingManualWorkflowIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingManualWorkflowIT in 5.632 seconds (process running for 50.366)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.98 s -- in com.mimococo.marketops.AdvertisingManualWorkflowIT
+[INFO] Running com.mimococo.marketops.AdvertisingOrdinaryApprovalIT
+{"@timestamp":"2026-09-05T02:10:03.898320Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingOrdinaryApprovalIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingOrdinaryApprovalIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:03.899278Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingOrdinaryApprovalIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:07.167432Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingOrdinaryApprovalIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingOrdinaryApprovalIT in 3.316 seconds (process running for 61.194)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:08.200095Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"5fa32614-bc68-4301-87b0-5b8531d3f320","action":"STATUS_CHANGE","actorId":"6f6fc1b6-9efa-4e06-9ff7-05de6b70a5bc"}
+{"@timestamp":"2026-09-05T02:10:08.271548Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"5fa32614-bc68-4301-87b0-5b8531d3f320","action":"STATUS_CHANGE","actorId":"de2c92d6-6922-4290-960b-c2d954c9d4db"}
+{"@timestamp":"2026-09-05T02:10:09.382321Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"1de9eee4-2603-4120-b293-10634a72f4a9","action":"STATUS_CHANGE","actorId":"b1f39151-6548-4430-aab8-77dbb22082c3"}
+{"@timestamp":"2026-09-05T02:10:09.452871Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"1de9eee4-2603-4120-b293-10634a72f4a9","action":"STATUS_CHANGE","actorId":"247e5e64-2da9-404a-b966-a3b3229d7578"}
+{"@timestamp":"2026-09-05T02:10:09.617848Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"approval-decision","entityId":"6a85e1a5-424f-41a7-9219-465501d005f1","action":"APPROVAL_DECISION","actorId":"247e5e64-2da9-404a-b966-a3b3229d7578"}
+{"@timestamp":"2026-09-05T02:10:09.621996Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"1de9eee4-2603-4120-b293-10634a72f4a9","action":"STATUS_CHANGE","actorId":"247e5e64-2da9-404a-b966-a3b3229d7578"}
+{"@timestamp":"2026-09-05T02:10:09.737970Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"1de9eee4-2603-4120-b293-10634a72f4a9","action":"STATUS_CHANGE","actorId":"247e5e64-2da9-404a-b966-a3b3229d7578"}
+{"@timestamp":"2026-09-05T02:10:09.739059Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"1de9eee4-2603-4120-b293-10634a72f4a9","action":"COMMAND_TRANSITION","actorId":"247e5e64-2da9-404a-b966-a3b3229d7578"}
+{"@timestamp":"2026-09-05T02:10:10.597282Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"2d96a761-3357-474b-b8f9-1fb998eeed8b","action":"STATUS_CHANGE","actorId":"84a2d83f-433a-4b71-8b24-68d8bf0e5425"}
+{"@timestamp":"2026-09-05T02:10:10.643943Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"2d96a761-3357-474b-b8f9-1fb998eeed8b","action":"STATUS_CHANGE","actorId":"bc7a2fab-6793-41ea-8842-867f3a8c44bc"}
+{"@timestamp":"2026-09-05T02:10:11.122574Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"232d3bdb-c538-4d0d-9f68-821e502353bd","action":"STATUS_CHANGE","actorId":"166ad137-a6bb-4480-bb8a-c74bcf083349"}
+{"@timestamp":"2026-09-05T02:10:11.170761Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"232d3bdb-c538-4d0d-9f68-821e502353bd","action":"STATUS_CHANGE","actorId":"50b0855a-73f3-4dda-a5a8-5002e19d54a2"}
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.150 s -- in com.mimococo.marketops.AdvertisingOrdinaryApprovalIT
+[INFO] Running com.mimococo.marketops.AdvertisingHumanWorkflowIT
+{"@timestamp":"2026-09-05T02:10:12.931474Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingHumanWorkflowIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingHumanWorkflowIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:12.931892Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingHumanWorkflowIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:16.001915Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingHumanWorkflowIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingHumanWorkflowIT in 3.1 seconds (process running for 70.029)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:17.949819Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"730d1c00-24b6-44ed-bbf1-d4b3e424c73c","action":"STATUS_CHANGE","actorId":"4f663aa4-5986-48a1-af34-6686556fd4ab"}
+{"@timestamp":"2026-09-05T02:10:18.083478Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"730d1c00-24b6-44ed-bbf1-d4b3e424c73c","action":"STATUS_CHANGE","actorId":"97b49cfd-6be4-40bf-a7a2-42d483ab2e6f"}
+{"@timestamp":"2026-09-05T02:10:18.258459Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"approval-decision","entityId":"582c903c-5048-43aa-9a6b-3ebfe7632709","action":"APPROVAL_DECISION","actorId":"7a743c05-f1f4-4db8-a13b-ce21135e7019"}
+{"@timestamp":"2026-09-05T02:10:18.261304Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"730d1c00-24b6-44ed-bbf1-d4b3e424c73c","action":"STATUS_CHANGE","actorId":"7a743c05-f1f4-4db8-a13b-ce21135e7019"}
+{"@timestamp":"2026-09-05T02:10:18.414682Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"730d1c00-24b6-44ed-bbf1-d4b3e424c73c","action":"STATUS_CHANGE","actorId":"7a743c05-f1f4-4db8-a13b-ce21135e7019"}
+{"@timestamp":"2026-09-05T02:10:18.417122Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"730d1c00-24b6-44ed-bbf1-d4b3e424c73c","action":"COMMAND_TRANSITION","actorId":"7a743c05-f1f4-4db8-a13b-ce21135e7019"}
+{"@timestamp":"2026-09-05T02:10:20.545284Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"3a540afe-384e-4962-91ea-ec978eaa6d64","action":"STATUS_CHANGE","actorId":"55f8a1ff-1e8e-43ec-932d-237b921803c1"}
+{"@timestamp":"2026-09-05T02:10:20.592453Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"3a540afe-384e-4962-91ea-ec978eaa6d64","action":"STATUS_CHANGE","actorId":"98959282-397b-42b5-b116-2955d0d8a31f"}
+{"@timestamp":"2026-09-05T02:10:20.645313Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"approval-decision","entityId":"b58dbb20-1786-473f-a9df-60612412316b","action":"APPROVAL_DECISION","actorId":"7d384713-2264-40b6-a25b-8db21c851593"}
+{"@timestamp":"2026-09-05T02:10:20.647904Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"3a540afe-384e-4962-91ea-ec978eaa6d64","action":"STATUS_CHANGE","actorId":"7d384713-2264-40b6-a25b-8db21c851593"}
+{"@timestamp":"2026-09-05T02:10:27.902753Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"967d2d7d-00e3-413a-a694-f8d8cb0a46da","action":"CREATE","actorId":"finite-choice-runtime"}
+{"@timestamp":"2026-09-05T02:10:27.908532Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"2f4799c2-e001-4015-83ba-96436fcb672b","action":"CREATE","actorId":"finite-choice-runtime"}
+{"@timestamp":"2026-09-05T02:10:27.913556Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"a8a407eb-582a-4aff-a02c-9c24779f9acf","action":"CREATE","actorId":"finite-choice-runtime"}
+[ERROR] Tests run: 10, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 16.66 s <<< FAILURE! -- in com.mimococo.marketops.AdvertisingHumanWorkflowIT
+[ERROR] com.mimococo.marketops.AdvertisingHumanWorkflowIT.unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness -- Time elapsed: 0.657 s <<< ERROR!
+org.springframework.jdbc.UncategorizedSQLException: 
+PreparedStatementCallback; uncategorized SQLException for SQL [SELECT ops.expire_ad_action_authority(?,?)]; SQL state [MO092]; error code [0]; ERROR: expiry reconciliation requires a current or past observation
+  在位置：PL/pgSQL function expire_ad_action_authority(uuid,timestamp with time zone) line 5 at RAISE
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1550)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:732)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:752)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:804)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.query(NamedParameterJdbcTemplate.java:224)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec$NamedParamMappedQuerySpec.list(DefaultJdbcClient.java:410)
+	at org.springframework.jdbc.core.simple.JdbcClient$MappedQuerySpec.single(JdbcClient.java:452)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingReconciliationMaintenanceService.reconcile(AdvertisingReconciliationMaintenanceService.java:37)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingReconciliationMaintenanceService$$SpringCGLIB$$0.reconcile(<generated>)
+	at com.mimococo.marketops.AdvertisingHumanWorkflowIT.unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness(AdvertisingHumanWorkflowIT.java:229)
+Caused by: org.postgresql.util.PSQLException: ERROR: expiry reconciliation requires a current or past observation
+  在位置：PL/pgSQL function expire_ad_action_authority(uuid,timestamp with time zone) line 5 at RAISE
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:139)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeQuery(ProxyPreparedStatement.java:52)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeQuery(HikariProxyPreparedStatement.java)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$query$0(JdbcTemplate.java:738)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 19 more
+
+[INFO] Running com.mimococo.marketops.ManagedMigrationRunnerIT
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.365 s -- in com.mimococo.marketops.ManagedMigrationRunnerIT
+[INFO] Running com.mimococo.marketops.AdvertisingFinanceReviewIT
+{"@timestamp":"2026-09-05T02:10:35.787756Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingFinanceReviewIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingFinanceReviewIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:35.789392Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingFinanceReviewIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:39.145332Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingFinanceReviewIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingFinanceReviewIT in 3.393 seconds (process running for 93.172)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+[ERROR] Tests run: 5, Failures: 0, Errors: 5, Skipped: 0, Time elapsed: 8.077 s <<< FAILURE! -- in com.mimococo.marketops.AdvertisingFinanceReviewIT
+[ERROR] com.mimococo.marketops.AdvertisingFinanceReviewIT.earlySafetyAndUnknownSettledEvidenceCannotForgeFinanceResponsibility -- Time elapsed: 0.496 s <<< ERROR!
+org.springframework.dao.DataIntegrityViolationException: 
+PreparedStatementCallback; SQL [INSERT INTO ops.ad_outcome_observation(id,organization_id,command_id,ad_native_object_id,affected_set_digest,
+    outcome_policy_id,outcome_policy_version,outcome_stage,revision_no,supersedes_observation_id,adjustment_reason,
+    window_starts_at,window_ends_at,baseline_metric_state,baseline_metric_value,observed_metric_state,
+    observed_metric_value,observed_traffic_count,settled_coverage_ratio,verdict,guard_state,unresolved_reason_codes,
+    evaluated_at,input_digest,correlation_id)
+SELECT ?,b.organization_id,?,b.ad_native_object_id,b.affected_set_digest,b.outcome_policy_id,
+    b.outcome_policy_version,?,coalesce((SELECT revision_no+1 FROM ops.ad_outcome_observation WHERE id=?),1),
+    ?,CASE WHEN CAST(? AS uuid) IS NULL THEN NULL ELSE 'Canonical synthetic settlement correction' END,
+    CAST(? AS timestamptz)+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer),
+    CAST(? AS timestamptz)+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer,hours=>s.window_hours),
+    s.snapshot#>>'{profit,absoluteProfit,valueState}',(s.snapshot#>>'{profit,absoluteProfit,value}')::numeric,
+    'NOT_AVAILABLE',NULL,100,1,?,CASE WHEN ?='OPERATIONAL' THEN 'NOT_APPLICABLE' ELSE 'SATISFIED' END,
+    CAST('{}' AS text[]),CAST(? AS timestamptz)+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer,
+        hours=>s.window_hours)+interval '1 minute'+CASE WHEN CAST(? AS uuid) IS NULL THEN interval '0' ELSE interval '1 minute' END,
+    repeat('c',64),'fictional-finance-review'
+FROM ops.ad_outcome_baseline b JOIN ops.ad_outcome_stage_baseline s ON s.outcome_baseline_id=b.id
+WHERE b.id=? AND s.stage=?
+]; ERROR: new row for relation "ad_outcome_observation" violates check constraint "ad_outcome_observation_reason_presence_ck"
+  詳細：Failing row contains (7b11802e-ff4e-432e-a240-1b1431aee97d, ba2b68ce-fd16-429b-b233-bbd2444c9227, 419daac9-b963-4d11-afac-042a1291d46a, 9581a0ec-ac15-46b4-9721-171810ea714c, bc2143351b311308437a062a6dd1da614a56480a33d18c1c6fbcc61e88261fae, 9f8dcf14-2184-4168-9cc6-6446602870e9, 1, SETTLED, 2026-09-05 10:40:40.493644+08, 2026-11-04 10:40:40.493644+08, NOT_AVAILABLE, null, NOT_AVAILABLE, null, 100, 1.00000, INDETERMINATE, SATISFIED, {}, 2026-11-04 10:41:40.493644+08, cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc, fictional-finance-review, 1, null, null, null).
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.AdvertisingFinanceReviewIT.observation(AdvertisingFinanceReviewIT.java:190)
+	at com.mimococo.marketops.AdvertisingFinanceReviewIT.earlySafetyAndUnknownSettledEvidenceCannotForgeFinanceResponsibility(AdvertisingFinanceReviewIT.java:117)
+Caused by: org.postgresql.util.PSQLException: ERROR: new row for relation "ad_outcome_observation" violates check constraint "ad_outcome_observation_reason_presence_ck"
+  詳細：Failing row contains (7b11802e-ff4e-432e-a240-1b1431aee97d, ba2b68ce-fd16-429b-b233-bbd2444c9227, 419daac9-b963-4d11-afac-042a1291d46a, 9581a0ec-ac15-46b4-9721-171810ea714c, bc2143351b311308437a062a6dd1da614a56480a33d18c1c6fbcc61e88261fae, 9f8dcf14-2184-4168-9cc6-6446602870e9, 1, SETTLED, 2026-09-05 10:40:40.493644+08, 2026-11-04 10:40:40.493644+08, NOT_AVAILABLE, null, NOT_AVAILABLE, null, 100, 1.00000, INDETERMINATE, SATISFIED, {}, 2026-11-04 10:41:40.493644+08, cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc, fictional-finance-review, 1, null, null, null).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 6 more
+
+[ERROR] com.mimococo.marketops.AdvertisingFinanceReviewIT.financeAssignmentRequiresItsRoleAndTheCompleteFrozenAffectedScope -- Time elapsed: 0.398 s <<< ERROR!
+org.springframework.dao.DataIntegrityViolationException: 
+PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (debfc659-bea3-4ad4-bd74-bd8bec9467e0, be3379f9-80a6-4e87-a777-06288f2f2114, f172292f-f148-4629-9ee3-dc3fa2eaea87, 2, OUTCOME_OBSERVED, advertising-case:e44e77a1-7ec8-4047-bc22-c0bd876743bf, null, null, null, SETTLED_REGRESSION, ad-outcome:1409e634-06ad-48c5-82b2-c68bf9068cd7, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.026336+08, fictional-finance-review).
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository.append(WorkTaskEventRepository.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository$$SpringCGLIB$$0.append(<generated>)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService.record(AdvertisingOutcomeReviewService.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService$$SpringCGLIB$$0.record(<generated>)
+	at com.mimococo.marketops.AdvertisingFinanceReviewIT.financeAssignmentRequiresItsRoleAndTheCompleteFrozenAffectedScope(AdvertisingFinanceReviewIT.java:130)
+Caused by: org.postgresql.util.PSQLException: ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (debfc659-bea3-4ad4-bd74-bd8bec9467e0, be3379f9-80a6-4e87-a777-06288f2f2114, f172292f-f148-4629-9ee3-dc3fa2eaea87, 2, OUTCOME_OBSERVED, advertising-case:e44e77a1-7ec8-4047-bc22-c0bd876743bf, null, null, null, SETTLED_REGRESSION, ad-outcome:1409e634-06ad-48c5-82b2-c68bf9068cd7, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.026336+08, fictional-finance-review).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 31 more
+
+[ERROR] com.mimococo.marketops.AdvertisingFinanceReviewIT.settledContradictionCreatesFinanceReviewWithoutInventingRegressionOrReplacingHistory -- Time elapsed: 0.634 s <<< ERROR!
+org.springframework.dao.DataIntegrityViolationException: 
+PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (b9febcfa-d4a8-4dae-8565-0363fd9475fb, 09481ba5-ee0a-483b-b7ce-cece076e33b7, e6585b26-093d-4fff-acbe-465d4ffff1bc, 2, OUTCOME_OBSERVED, advertising-case:dc8e11eb-3020-4aa4-814e-2b93ac682db1, null, null, null, SETTLED_CONTRADICTS_OPERATIONAL_SUCCESS, ad-outcome:7d56dc15-d52a-4671-ba4c-3be5c1a71416, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.675038+08, fictional-finance-review).
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository.append(WorkTaskEventRepository.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository$$SpringCGLIB$$0.append(<generated>)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService.record(AdvertisingOutcomeReviewService.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService$$SpringCGLIB$$0.record(<generated>)
+	at com.mimococo.marketops.AdvertisingFinanceReviewIT.settledContradictionCreatesFinanceReviewWithoutInventingRegressionOrReplacingHistory(AdvertisingFinanceReviewIT.java:85)
+Caused by: org.postgresql.util.PSQLException: ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (b9febcfa-d4a8-4dae-8565-0363fd9475fb, 09481ba5-ee0a-483b-b7ce-cece076e33b7, e6585b26-093d-4fff-acbe-465d4ffff1bc, 2, OUTCOME_OBSERVED, advertising-case:dc8e11eb-3020-4aa4-814e-2b93ac682db1, null, null, null, SETTLED_CONTRADICTS_OPERATIONAL_SUCCESS, ad-outcome:7d56dc15-d52a-4671-ba4c-3be5c1a71416, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.675038+08, fictional-finance-review).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 31 more
+
+[ERROR] com.mimococo.marketops.AdvertisingFinanceReviewIT.settledRevisionsReopenTheSameFinanceTaskAndKeepBothTaskAges -- Time elapsed: 0.283 s <<< ERROR!
+org.springframework.dao.DataIntegrityViolationException: 
+PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (3f776846-b2d5-4549-8df2-a208284f5616, 0d9fbe34-f245-470b-8527-5437c868a82f, 805088c0-42e8-4e55-b7d8-920a249eedf2, 2, OUTCOME_OBSERVED, advertising-case:74be592a-868b-47d9-86a3-bf0a405b3153, null, null, null, SETTLED_REGRESSION, ad-outcome:f9997962-4dd1-4027-b8ee-7015a53f8d1d, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.95973+08, fictional-finance-review).
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository.append(WorkTaskEventRepository.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository$$SpringCGLIB$$0.append(<generated>)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService.record(AdvertisingOutcomeReviewService.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService$$SpringCGLIB$$0.record(<generated>)
+	at com.mimococo.marketops.AdvertisingFinanceReviewIT.settledRevisionsReopenTheSameFinanceTaskAndKeepBothTaskAges(AdvertisingFinanceReviewIT.java:102)
+Caused by: org.postgresql.util.PSQLException: ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (3f776846-b2d5-4549-8df2-a208284f5616, 0d9fbe34-f245-470b-8527-5437c868a82f, 805088c0-42e8-4e55-b7d8-920a249eedf2, 2, OUTCOME_OBSERVED, advertising-case:74be592a-868b-47d9-86a3-bf0a405b3153, null, null, null, SETTLED_REGRESSION, ad-outcome:f9997962-4dd1-4027-b8ee-7015a53f8d1d, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.95973+08, fictional-finance-review).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 31 more
+
+[ERROR] com.mimococo.marketops.AdvertisingFinanceReviewIT.reviewClosureRequiresCurrentConclusiveSettledReconciliation -- Time elapsed: 0.427 s <<< ERROR!
+org.springframework.dao.DataIntegrityViolationException: 
+PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (7b9a57dc-4f7c-4bce-9f0d-7aa84c4fcfb6, b77757db-eb28-4dc7-b699-9ccab95771e1, 0aa75929-5dc8-4e83-bc6a-de5390acb8b6, 2, OUTCOME_OBSERVED, advertising-case:f0d4422e-b55d-488e-bc87-ae53f29d9c57, null, null, null, SETTLED_REGRESSION, ad-outcome:7f425134-167c-4cd9-a9eb-4e3edac6d431, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:41.386976+08, fictional-finance-review).
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository.append(WorkTaskEventRepository.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository$$SpringCGLIB$$0.append(<generated>)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService.record(AdvertisingOutcomeReviewService.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService$$SpringCGLIB$$0.record(<generated>)
+	at com.mimococo.marketops.AdvertisingFinanceReviewIT.reviewClosureRequiresCurrentConclusiveSettledReconciliation(AdvertisingFinanceReviewIT.java:143)
+Caused by: org.postgresql.util.PSQLException: ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (7b9a57dc-4f7c-4bce-9f0d-7aa84c4fcfb6, b77757db-eb28-4dc7-b699-9ccab95771e1, 0aa75929-5dc8-4e83-bc6a-de5390acb8b6, 2, OUTCOME_OBSERVED, advertising-case:f0d4422e-b55d-488e-bc87-ae53f29d9c57, null, null, null, SETTLED_REGRESSION, ad-outcome:7f425134-167c-4cd9-a9eb-4e3edac6d431, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:41.386976+08, fictional-finance-review).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 31 more
+
+[INFO] Running com.mimococo.marketops.AdvertisingBrowserHistoryIT
+[ERROR] Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 7.456 s <<< FAILURE! -- in com.mimococo.marketops.AdvertisingBrowserHistoryIT
+[ERROR] com.mimococo.marketops.AdvertisingBrowserHistoryIT.historyUsesRealSealedCreationAndDistinguishesEveryReadOracle(String)[3] -- Time elapsed: 0.426 s <<< ERROR!
+org.springframework.jdbc.UncategorizedSQLException: 
+PreparedStatementCallback; uncategorized SQLException for SQL [INSERT INTO ops.ad_outcome_observation(id,organization_id,command_id,ad_native_object_id,affected_set_digest,
+  outcome_policy_id,outcome_policy_version,outcome_stage,window_starts_at,window_ends_at,
+  baseline_metric_state,baseline_metric_value,observed_metric_state,observed_metric_value,
+  observed_traffic_count,settled_coverage_ratio,verdict,guard_state,unresolved_reason_codes,
+  evaluated_at,input_digest,correlation_id,revision_no,supersedes_observation_id,adjustment_reason)
+SELECT ?,c.organization_id,c.id,c.ad_native_object_id,c.affected_set_digest,?,1,?,
+  clock_timestamp()-interval '60 days',clock_timestamp()-interval '30 days','AVAILABLE',100,
+  'AVAILABLE',?,1000,1,?,'SATISFIED','{}',clock_timestamp(),?,
+  'synthetic-browser-read-oracle',?,?,? FROM ops.ad_bid_command c WHERE c.id=?
+]; SQL state [MO099]; error code [0]; ERROR: observation must respect the frozen window and baseline value
+  在位置：PL/pgSQL function ops.validate_frozen_ad_outcome_observation() line 31 at RAISE
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1550)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.AdvertisingBrowserHistorySeed.observation(AdvertisingBrowserHistorySeed.java:128)
+	at com.mimococo.marketops.AdvertisingBrowserHistorySeed.seed(AdvertisingBrowserHistorySeed.java:57)
+	at com.mimococo.marketops.AdvertisingBrowserHistoryIT.historyUsesRealSealedCreationAndDistinguishesEveryReadOracle(AdvertisingBrowserHistoryIT.java:32)
+Caused by: org.postgresql.util.PSQLException: ERROR: observation must respect the frozen window and baseline value
+  在位置：PL/pgSQL function ops.validate_frozen_ad_outcome_observation() line 31 at RAISE
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 7 more
+
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT
+{"@timestamp":"2026-09-05T02:10:50.964931Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingOrchestrationCapacityIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:50.965656Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:54.716564Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingOrchestrationCapacityIT in 3.779 seconds (process running for 108.743)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.019 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.282 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT
+{"@timestamp":"2026-09-05T02:10:58.594211Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingFrozenOutcomeIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:10:58.595547Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:11:03.043998Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingFrozenOutcomeIT in 4.511 seconds (process running for 117.071)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+[ERROR] Tests run: 10, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 13.34 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT
+[ERROR] com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess -- Time elapsed: 0.591 s <<< ERROR!
+org.springframework.dao.DataIntegrityViolationException: 
+PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (6083b763-c1e3-4ef1-bc3a-2d95374bb8e8, e52fb58a-fe1e-4bfb-9fdc-bfdf8752fb1c, ef808d73-e22f-4d0e-91ee-05f4dd7b9072, 2, OUTCOME_OBSERVED, advertising-case:eb23aa82-9c43-4a53-834c-dbee91c8b8a5, null, null, null, SETTLED_REGRESSION, ad-outcome:deffa85b-de45-4e85-bfcf-33ef09753de9, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:11:05.536223+08, e9e125a1-ee73-4799-a431-101bb3de616d).
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository.append(WorkTaskEventRepository.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository$$SpringCGLIB$$0.append(<generated>)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService.record(AdvertisingOutcomeReviewService.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingOutcomeReviewService$$SpringCGLIB$$0.record(<generated>)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeService.evaluate(AdvertisingOutcomeService.java:71)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeService$$SpringCGLIB$$0.evaluate(<generated>)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess(AdvertisingFrozenOutcomeIT.java:221)
+Caused by: org.postgresql.util.PSQLException: ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (6083b763-c1e3-4ef1-bc3a-2d95374bb8e8, e52fb58a-fe1e-4bfb-9fdc-bfdf8752fb1c, ef808d73-e22f-4d0e-91ee-05f4dd7b9072, 2, OUTCOME_OBSERVED, advertising-case:eb23aa82-9c43-4a53-834c-dbee91c8b8a5, null, null, null, SETTLED_REGRESSION, ad-outcome:deffa85b-de45-4e85-bfcf-33ef09753de9, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:11:05.536223+08, e9e125a1-ee73-4799-a431-101bb3de616d).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 43 more
+
+[ERROR] com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.matureRetainedAndFavorableActualSettlementPreserveBothStageHistories -- Time elapsed: 1.018 s <<< ERROR!
+org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [SELECT observed_company_sales FROM ops.ad_outcome_axes WHERE observation_id=?]
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:134)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:732)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:752)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:804)
+	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.query(NamedParameterJdbcTemplate.java:224)
+	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec$NamedParamMappedQuerySpec.list(DefaultJdbcClient.java:410)
+	at org.springframework.jdbc.core.simple.JdbcClient$MappedQuerySpec.single(JdbcClient.java:452)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.axis(AdvertisingFrozenOutcomeIT.java:330)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.matureRetainedAndFavorableActualSettlementPreserveBothStageHistories(AdvertisingFrozenOutcomeIT.java:212)
+Caused by: org.postgresql.util.PSQLException: ERROR: column "observed_company_sales" does not exist
+  位置：8
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:139)
+	at org.springframework.jdbc.core.JdbcTemplate.lambda$query$0(JdbcTemplate.java:738)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+	... 8 more
+
+[ERROR] com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.matureUnallocatedFinancialFactCannotBecomeSettledEfficiencySuccess -- Time elapsed: 0.865 s <<< ERROR!
+org.springframework.dao.TypeMismatchDataAccessException: Result value is null but no null value expected
+	at org.springframework.dao.support.DataAccessUtils.requiredSingleResult(DataAccessUtils.java:175)
+	at org.springframework.jdbc.core.simple.JdbcClient$MappedQuerySpec.single(JdbcClient.java:452)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.axis(AdvertisingFrozenOutcomeIT.java:330)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.matureUnallocatedFinancialFactCannotBecomeSettledEfficiencySuccess(AdvertisingFrozenOutcomeIT.java:237)
+
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT
+{"@timestamp":"2026-09-05T02:11:12.292725Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingCanonicalFactsIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 74264 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:11:12.294521Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T02:11:16.107060Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT"},"process":{"pid":74264,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingCanonicalFactsIT in 3.86 seconds (process running for 130.134)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.845 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.329 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.248 s -- in com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   AdvertisingBrowserHistoryIT.historyUsesRealSealedCreationAndDistinguishesEveryReadOracle:32 » UncategorizedSQL PreparedStatementCallback; uncategorized SQLException for SQL [INSERT INTO ops.ad_outcome_observation(id,organization_id,command_id,ad_native_object_id,affected_set_digest,
+  outcome_policy_id,outcome_policy_version,outcome_stage,window_starts_at,window_ends_at,
+  baseline_metric_state,baseline_metric_value,observed_metric_state,observed_metric_value,
+  observed_traffic_count,settled_coverage_ratio,verdict,guard_state,unresolved_reason_codes,
+  evaluated_at,input_digest,correlation_id,revision_no,supersedes_observation_id,adjustment_reason)
+SELECT ?,c.organization_id,c.id,c.ad_native_object_id,c.affected_set_digest,?,1,?,
+  clock_timestamp()-interval '60 days',clock_timestamp()-interval '30 days','AVAILABLE',100,
+  'AVAILABLE',?,1000,1,?,'SATISFIED','{}',clock_timestamp(),?,
+  'synthetic-browser-read-oracle',?,?,? FROM ops.ad_bid_command c WHERE c.id=?
+]; SQL state [MO099]; error code [0]; ERROR: observation must respect the frozen window and baseline value
+  在位置：PL/pgSQL function ops.validate_frozen_ad_outcome_observation() line 31 at RAISE
+[ERROR]   AdvertisingFinanceReviewIT.earlySafetyAndUnknownSettledEvidenceCannotForgeFinanceResponsibility:117->observation:190 » DataIntegrityViolation PreparedStatementCallback; SQL [INSERT INTO ops.ad_outcome_observation(id,organization_id,command_id,ad_native_object_id,affected_set_digest,
+    outcome_policy_id,outcome_policy_version,outcome_stage,revision_no,supersedes_observation_id,adjustment_reason,
+    window_starts_at,window_ends_at,baseline_metric_state,baseline_metric_value,observed_metric_state,
+    observed_metric_value,observed_traffic_count,settled_coverage_ratio,verdict,guard_state,unresolved_reason_codes,
+    evaluated_at,input_digest,correlation_id)
+SELECT ?,b.organization_id,?,b.ad_native_object_id,b.affected_set_digest,b.outcome_policy_id,
+    b.outcome_policy_version,?,coalesce((SELECT revision_no+1 FROM ops.ad_outcome_observation WHERE id=?),1),
+    ?,CASE WHEN CAST(? AS uuid) IS NULL THEN NULL ELSE 'Canonical synthetic settlement correction' END,
+    CAST(? AS timestamptz)+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer),
+    CAST(? AS timestamptz)+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer,hours=>s.window_hours),
+    s.snapshot#>>'{profit,absoluteProfit,valueState}',(s.snapshot#>>'{profit,absoluteProfit,value}')::numeric,
+    'NOT_AVAILABLE',NULL,100,1,?,CASE WHEN ?='OPERATIONAL' THEN 'NOT_APPLICABLE' ELSE 'SATISFIED' END,
+    CAST('{}' AS text[]),CAST(? AS timestamptz)+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer,
+        hours=>s.window_hours)+interval '1 minute'+CASE WHEN CAST(? AS uuid) IS NULL THEN interval '0' ELSE interval '1 minute' END,
+    repeat('c',64),'fictional-finance-review'
+FROM ops.ad_outcome_baseline b JOIN ops.ad_outcome_stage_baseline s ON s.outcome_baseline_id=b.id
+WHERE b.id=? AND s.stage=?
+]; ERROR: new row for relation "ad_outcome_observation" violates check constraint "ad_outcome_observation_reason_presence_ck"
+  詳細：Failing row contains (7b11802e-ff4e-432e-a240-1b1431aee97d, ba2b68ce-fd16-429b-b233-bbd2444c9227, 419daac9-b963-4d11-afac-042a1291d46a, 9581a0ec-ac15-46b4-9721-171810ea714c, bc2143351b311308437a062a6dd1da614a56480a33d18c1c6fbcc61e88261fae, 9f8dcf14-2184-4168-9cc6-6446602870e9, 1, SETTLED, 2026-09-05 10:40:40.493644+08, 2026-11-04 10:40:40.493644+08, NOT_AVAILABLE, null, NOT_AVAILABLE, null, 100, 1.00000, INDETERMINATE, SATISFIED, {}, 2026-11-04 10:41:40.493644+08, cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc, fictional-finance-review, 1, null, null, null).
+[ERROR]   AdvertisingFinanceReviewIT.financeAssignmentRequiresItsRoleAndTheCompleteFrozenAffectedScope:130 » DataIntegrityViolation PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (debfc659-bea3-4ad4-bd74-bd8bec9467e0, be3379f9-80a6-4e87-a777-06288f2f2114, f172292f-f148-4629-9ee3-dc3fa2eaea87, 2, OUTCOME_OBSERVED, advertising-case:e44e77a1-7ec8-4047-bc22-c0bd876743bf, null, null, null, SETTLED_REGRESSION, ad-outcome:1409e634-06ad-48c5-82b2-c68bf9068cd7, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.026336+08, fictional-finance-review).
+[ERROR]   AdvertisingFinanceReviewIT.reviewClosureRequiresCurrentConclusiveSettledReconciliation:143 » DataIntegrityViolation PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (7b9a57dc-4f7c-4bce-9f0d-7aa84c4fcfb6, b77757db-eb28-4dc7-b699-9ccab95771e1, 0aa75929-5dc8-4e83-bc6a-de5390acb8b6, 2, OUTCOME_OBSERVED, advertising-case:f0d4422e-b55d-488e-bc87-ae53f29d9c57, null, null, null, SETTLED_REGRESSION, ad-outcome:7f425134-167c-4cd9-a9eb-4e3edac6d431, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:41.386976+08, fictional-finance-review).
+[ERROR]   AdvertisingFinanceReviewIT.settledContradictionCreatesFinanceReviewWithoutInventingRegressionOrReplacingHistory:85 » DataIntegrityViolation PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (b9febcfa-d4a8-4dae-8565-0363fd9475fb, 09481ba5-ee0a-483b-b7ce-cece076e33b7, e6585b26-093d-4fff-acbe-465d4ffff1bc, 2, OUTCOME_OBSERVED, advertising-case:dc8e11eb-3020-4aa4-814e-2b93ac682db1, null, null, null, SETTLED_CONTRADICTS_OPERATIONAL_SUCCESS, ad-outcome:7d56dc15-d52a-4671-ba4c-3be5c1a71416, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.675038+08, fictional-finance-review).
+[ERROR]   AdvertisingFinanceReviewIT.settledRevisionsReopenTheSameFinanceTaskAndKeepBothTaskAges:102 » DataIntegrityViolation PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (3f776846-b2d5-4549-8df2-a208284f5616, 0d9fbe34-f245-470b-8527-5437c868a82f, 805088c0-42e8-4e55-b7d8-920a249eedf2, 2, OUTCOME_OBSERVED, advertising-case:74be592a-868b-47d9-86a3-bf0a405b3153, null, null, null, SETTLED_REGRESSION, ad-outcome:f9997962-4dd1-4027-b8ee-7015a53f8d1d, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:10:40.95973+08, fictional-finance-review).
+[ERROR]   AdvertisingHumanWorkflowIT.unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness:229 » UncategorizedSQL PreparedStatementCallback; uncategorized SQLException for SQL [SELECT ops.expire_ad_action_authority(?,?)]; SQL state [MO092]; error code [0]; ERROR: expiry reconciliation requires a current or past observation
+  在位置：PL/pgSQL function expire_ad_action_authority(uuid,timestamp with time zone) line 5 at RAISE
+[ERROR]   AdvertisingFrozenOutcomeIT.matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess:221 » DataIntegrityViolation PreparedStatementCallback; SQL [INSERT INTO ops.work_task_event (
+    id, task_id, organization_id, sequence_no, event_kind, lineage_key,
+    action_kind, action_evidence, evidence_reference, outcome_kind,
+    outcome_reference, from_assignee_user_id, to_assignee_user_id,
+    actor_user_id, actor_role_code, reason, occurred_at, correlation_id)
+VALUES (?, ?, ?,
+    (SELECT coalesce(max(sequence_no), 0) + 1
+       FROM ops.work_task_event WHERE task_id = ?),
+    ?, ?, ?,
+    CAST(? AS jsonb), ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?)
+]; ERROR: new row for relation "work_task_event" violates check constraint "work_task_event_outcome_kind_ck"
+  詳細：Failing row contains (6083b763-c1e3-4ef1-bc3a-2d95374bb8e8, e52fb58a-fe1e-4bfb-9fdc-bfdf8752fb1c, ef808d73-e22f-4d0e-91ee-05f4dd7b9072, 2, OUTCOME_OBSERVED, advertising-case:eb23aa82-9c43-4a53-834c-dbee91c8b8a5, null, null, null, SETTLED_REGRESSION, ad-outcome:deffa85b-de45-4e85-bfcf-33ef09753de9, null, null, null, null, Canonical Settled evidence requires Finance and advertising revi..., 2026-09-05 10:11:05.536223+08, e9e125a1-ee73-4799-a431-101bb3de616d).
+[ERROR]   AdvertisingFrozenOutcomeIT.matureRetainedAndFavorableActualSettlementPreserveBothStageHistories:212->axis:330 » BadSqlGrammar PreparedStatementCallback; bad SQL grammar [SELECT observed_company_sales FROM ops.ad_outcome_axes WHERE observation_id=?]
+[ERROR]   AdvertisingFrozenOutcomeIT.matureUnallocatedFinancialFactCannotBecomeSettledEfficiencySuccess:237->axis:330 » TypeMismatchDataAccess Result value is null but no null value expected
+[ERROR]   ManagedProfileMigrationIT.pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas:57 » FlywayMigrate Failed to execute script V0059__freeze_advertising_outcome_baselines_and_critical_units.sql
+-------------------------------------------------------------------------------------------
+SQL State  : 42704
+Error Code : 0
+Message    : ERROR: role "marketops_identity_issuer" does not exist
+Location   : db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql (/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/classes/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql)
+Line       : 297
+Statement  : Run Flyway with -X option to see the actual statement causing the problem
+
+[INFO] 
+[ERROR] Tests run: 219, Failures: 0, Errors: 11, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:24 min
+[INFO] Finished at: 2026-09-05T10:11:19+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project marketops-server: 
+[ERROR] 
+[ERROR] See /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

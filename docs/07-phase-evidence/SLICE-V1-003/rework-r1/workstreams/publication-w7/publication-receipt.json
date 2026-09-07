@@ -1,0 +1,24 @@
+{
+  "kind": "EXACT_APPEND_ONLY_W7_SINGLE_BROWSER_ASSERTION_REPAIR",
+  "utc": "2026-09-05T11:26:42.366444+00:00",
+  "priorHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "head": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "tree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+  "changedPaths": [
+    "frontend/marketops-console/tests/browser/business-journey.spec.ts"
+  ],
+  "backendRuntimeBuildMigrationInputDelta": [],
+  "isolatedWorktree": "/tmp/slice3-r1-w7-isolated-publication/repository",
+  "isolatedWorktreeClean": true,
+  "originalWorktreeHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "originalWorktreeClean": true,
+  "draftPr": 30,
+  "remoteHeadTreeExact": true,
+  "draft": true,
+  "merged": false,
+  "autoMerge": null,
+  "productionWriteEnabled": false,
+  "pushExitCode": 0,
+  "transportAttempt": 2,
+  "priorTransportFailure": "Original SSL failure retained; exact old remote verified by API before ordinary retry."
+}

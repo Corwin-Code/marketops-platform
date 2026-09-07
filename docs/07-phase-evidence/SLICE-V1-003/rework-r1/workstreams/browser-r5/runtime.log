@@ -1,0 +1,173 @@
+[WebServer] [INFO] Scanning for projects...
+[WebServer] [INFO] 
+[WebServer] [INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[WebServer] [INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[WebServer] [INFO]   from pom.xml
+[WebServer] [INFO] --------------------------------[ jar ]---------------------------------
+[WebServer] [INFO] 
+[WebServer] [INFO] >>> spring-boot:4.1.0:test-run (advertising-browser-fixture) > test-compile @ marketops-server >>>
+[WebServer] [INFO] 
+[WebServer] [INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---
+[WebServer] [INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[WebServer] [INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[WebServer] [INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[WebServer] [INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[WebServer] [INFO] 
+[WebServer] [INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[WebServer] [INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[WebServer] [INFO] 
+[WebServer] [INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[WebServer] [INFO] 
+[WebServer] [INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[WebServer] [INFO] Copying 5 resources from src/main/resources to target/classes
+[WebServer] [INFO] Copying 66 resources from src/main/resources to target/classes
+[WebServer] [INFO] 
+[WebServer] [INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[WebServer] [INFO] Nothing to compile - all classes are up to date.
+[WebServer] [INFO] 
+[WebServer] [INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[WebServer] [INFO] Copying 4 resources from src/test/resources to target/test-classes
+[WebServer] [INFO] 
+[WebServer] [INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[WebServer] [INFO] Recompiling the module because of changed source code.
+[WebServer] [INFO] Compiling 286 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[49,81] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[108,68] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[162,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[168,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[171,76] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAggregateExposureIT.java:[250,146] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java:[78,94] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityVersionStopIT.java:[104,64] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[60,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[64,60] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[74,95] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[104,95] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[219,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[229,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingCrossDomainIsolationIT.java:[244,47] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[83,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[86,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[95,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[118,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[167,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[212,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[288,75] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[289,79] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[292,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[294,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[356,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[358,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[409,37] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[410,54] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[414,48] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[432,35] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[432,55] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[433,88] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[136,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[141,85] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[181,60] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[382,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated[WebServer] 
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[172,64] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[176,72] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[177,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java:[18,42] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingRankFactorSerializationTest.java:[20,43] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String
+[WebServer] [WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[WebServer] [INFO] 
+[WebServer] [INFO] <<< spring-boot:4.1.0:test-run (advertising-browser-fixture) < test-compile @ marketops-server <<<
+[WebServer] [INFO] 
+[WebServer] [INFO] 
+[WebServer] [INFO] --- spring-boot:4.1.0:test-run (advertising-browser-fixture) @ marketops-server ---
+[WebServer] [INFO] Attaching agents: []
+[WebServer] 2026-09-05T18:23:34.640+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.AdvertisingBrowserFixtureApplication - Starting AdvertisingBrowserFixtureApplication v0.1.0-SNAPSHOT using Java 21.0.10 with PID 40283 (/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/test-classes started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server) 
+[WebServer] 2026-09-05T18:23:34.642+08:00 DEBUG application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.AdvertisingBrowserFixtureApplication - Running with Spring Boot v4.1.0, Spring v7.0.8 
+[WebServer] 2026-09-05T18:23:34.643+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.AdvertisingBrowserFixtureApplication - The following 1 profile is active: "local" 
+[WebServer] 2026-09-05T18:23:36.070+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http) 
+[WebServer] 2026-09-05T18:23:36.087+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.a.catalina.core.StandardService - Starting service [Tomcat] 
+[WebServer] 2026-09-05T18:23:36.087+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22] 
+[WebServer] 2026-09-05T18:23:36.110+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1438 ms 
+[WebServer] 2026-09-05T18:23:36.220+08:00 DEBUG application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.s.i.c.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use 
+[WebServer] 2026-09-05T18:23:41.387+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator' 
+[WebServer] 2026-09-05T18:23:41.429+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/' 
+[WebServer] 2026-09-05T18:23:41.434+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.s.config.TaskSchedulerRouter - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing 
+[WebServer] 2026-09-05T18:23:41.437+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.AdvertisingBrowserFixtureApplication - Started AdvertisingBrowserFixtureApplication in 7.245 seconds (process running for 7.47) 
+[WebServer] 2026-09-05T18:23:41.873+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="ad7c9752-3a49-42e6-a7e2-3e7cd41af99f" action="GRANT" actorId="synthetic-ad-browser" correlationId="7521dc5a-bf32-42ba-a274-ad63fe9f3928"
+[WebServer] 2026-09-05T18:23:41.880+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="4cb05ad3-f4e9-4258-a581-ba61b2339ede" action="GRANT" actorId="synthetic-ad-browser" correlationId="f350455b-d0f9-46bf-8597-5932acaf5a54"
+[WebServer] 2026-09-05T18:23:41.884+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="84708601-a55a-40a5-a76b-7b05c600e98f" action="GRANT" actorId="synthetic-ad-browser" correlationId="a6406bdb-496d-4ae3-b0e9-9c6d6dd807ac"
+[WebServer] 2026-09-05T18:23:41.888+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none c.m.m.a.i.a.JdbcMetadataAuditStore - Metadata change recorded event="metadata_change_recorded" sourceDomain="identityaccess" entityType="user-scope-grant" entityId="ca9e5aee-bc6a-4159-afe6-e11b7debb103" action="GRANT" actorId="synthetic-ad-browser" correlationId="b405bfd8-da57-46a4-82eb-965b795f5c30"
+[WebServer] 2026-09-05T18:23:41.903+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete 
+[WebServer] 2026-09-05T18:23:41.904+08:00 INFO  application=marketops-server environment=local buildVersion=0.1.0-SNAPSHOT correlationId=none o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete 
+[WebServer] Exception in thread "main" [WebServer] org.springframework.dao.DataIntegrityViolationException: PreparedStatementCallback; SQL [INSERT INTO iam.user_role_assignment (
+[WebServer]     id, organization_id, user_id, role_code, effective_from,
+[WebServer]     effective_to, status, reason, created_at, updated_at, version)
+[WebServer] VALUES (?, ?, ?, ?, ?,
+[WebServer]     ?, ?, ?, ?, ?, ?)
+[WebServer] ]; ERROR: conflicting key value violates exclusion constraint "user_role_assignment_no_overlap"
+[WebServer]   詳細：Key (user_id, role_code, tstzrange(effective_from, effective_to, '[)'::text))=(035fac28-8772-4b85-b4cd-bb104d0d756a, MARKETPLACE_OPERATOR, ["2026-09-05 18:23:41.890173+08",)) conflicts with existing key (user_id, role_code, tstzrange(effective_from, effective_to, '[)'::text))=(035fac28-8772-4b85-b4cd-bb104d0d756a, MARKETPLACE_OPERATOR, ["2026-09-04 18:23:41.544781+08",)).
+[WebServer] 	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:140)
+[WebServer] 	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:102)
+[WebServer] 	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:111)
+[WebServer] 	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+[WebServer] 	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:689)
+[WebServer] 	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:966)
+[WebServer] 	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:987)
+[WebServer] 	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.update(NamedParameterJdbcTemplate.java:339)
+[WebServer] 	at org.springframework.jdbc.core.simple.DefaultJdbcClient$DefaultStatementSpec.update(DefaultJdbcClient.java:281)
+[WebServer] 	at com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.UserGrantRepository.insertRole(UserGrantRepository.java:56)
+[WebServer] 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[WebServer] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[WebServer] 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+[WebServer] 	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+[WebServer] 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+[WebServer] 	at com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.UserGrantRepository$$SpringCGLIB$$0.insertRole(<generated>)
+[WebServer] 	at com.mimococo.marketops.identityaccess.internal.application.UserAdministrationService.assignRole(UserAdministrationService.java:209)
+[WebServer] 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[WebServer] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[WebServer] 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371)
+[WebServer] 	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130)
+[WebServer] 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+[WebServer] 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719)
+[WebServer] 	at com.mimococo.marketops.identityaccess.internal.application.UserAdministrationService$$SpringCGLIB$$0.assignRole(<generated>)
+[WebServer] 	at com.mimococo.marketops.AdvertisingBrowserFixtureApplication.main(AdvertisingBrowserFixtureApplication.java:71)
+[WebServer] Caused by: org.postgresql.util.PSQLException: ERROR: conflicting key value violates exclusion constraint "user_role_assignment_no_overlap"
+[WebServer]   詳細：Key (user_id, role_code, tstzrange(effective_from, effective_to, '[)'::text))=(035fac28-8772-4b85-b4cd-bb104d0d756a, MARKETPLACE_OPERATOR, ["2026-09-05 18:23:41.890173+08",)) conflicts with existing key (user_id, role_code, tstzrange(effective_from, effective_to, '[)'::text))=(035fac28-8772-4b85-b4cd-bb104d0d756a, MARKETPLACE_OPERATOR, ["2026-09-04 18:23:41.544781+08",)).
+[WebServer] 	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+[WebServer] 	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+[WebServer] 	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:431)
+[WebServer] 	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:534)
+[WebServer] 	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:437)
+[WebServer] 	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:196)
+[WebServer] 	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:157)
+[WebServer] 	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+[WebServer] 	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+[WebServer] 	at org.springframework.jdbc.core.JdbcTemplate.lambda$update$0(JdbcTemplate.java:971)
+[WebServer] 	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:670)
+[WebServer] 	... 27 more
+[WebServer] [INFO] ------------------------------------------------------------------------
+[WebServer] [INFO] BUILD FAILURE
+[WebServer] [INFO] ------------------------------------------------------------------------
+[WebServer] [INFO] Total time:  17.014 s
+[WebServer] [INFO] Finished at: 2026-09-05T18:23:41+08:00
+[WebServer] [INFO] ------------------------------------------------------------------------
+[WebServer] [ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:test-run (advertising-browser-fixture) on project marketops-server: Process terminated with exit code: 1 -> [Help 1]
+[WebServer] [ERROR] 
+[WebServer] [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[WebServer] [ERROR] Re-run Maven using the -X switch to enable full debug logging.[WebServer] 
+[WebServer] [ERROR] 
+[WebServer] [ERROR] For more information about the errors and possible solutions, please read the following articles:[WebServer] 
+[WebServer] [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+Error: Process from config.webServer was not able to start. Exit code: 1
+

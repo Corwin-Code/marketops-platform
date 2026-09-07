@@ -1,0 +1,10 @@
+{
+  "scope": "Actual final-publication additional bytes, batch 1. No product test is executed.",
+  "files": [
+    {
+      "path": "/private/tmp/slice3-backend-checkpoint-archive-02e6172-r5/slice3-backend-02e6172-r5-immutable.zip",
+      "sha256": "e7066a6816f4c4ee3149b05e7b8efc86973e0531f8daa4fa9792456dafee2e19",
+      "bytes": 46386208
+    }
+  ]
+}

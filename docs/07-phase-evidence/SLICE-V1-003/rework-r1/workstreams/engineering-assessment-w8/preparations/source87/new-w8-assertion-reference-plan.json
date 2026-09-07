@@ -1,0 +1,990 @@
+[
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+    "method": "aPersistedMicrosecondOriginCannotGiveTheSameCalculationNegativeAge",
+    "w8SourceSha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+    "declarationOrReferenceLines": [
+      566
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CALCULATION_MICROSECOND_AGE",
+    "specificAssertion": "At .123456789, persisted origin .123457 is the exact PG representation and has age0; existing critical cause remains P1.",
+    "proofLayer": "PURE_ACTUAL_CALCULATOR",
+    "targetedExecution": {
+      "run": "R24",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r24/receipt.json",
+      "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=PriceCommandWorkerIT,AdvertisingOrchestrationCapacityIT,AdvertisingCaseCalculationServiceTest,AdPriorityLexicographicTest,AdvertisingEfficiencyFlowIT,AdvertisingReservationIT",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 130,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 1,
+      "wholeRunAllPass": false,
+      "sourceStable": true,
+      "sourceBeforeSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "sourceAfterSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "xmlSha256": "7a32197a4bcd1f767c0bd8762d9f3778c6ad3fb7ea9c29a9614cc14d34717758",
+      "suiteDeclaredCounts": {
+        "tests": "34",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 34,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 2,
+          "name": "aPersistedMicrosecondOriginCannotGiveTheSameCalculationNegativeAge",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+          "timeSeconds": "0.001",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+          "measuredSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "w8GitSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java",
+          "measuredSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "w8GitSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+    "method": "microsecondRoundingAcrossASecondBoundaryStillRepresentsAgeZero",
+    "w8SourceSha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+    "declarationOrReferenceLines": [
+      571
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CALCULATION_MICROSECOND_AGE",
+    "specificAssertion": "Origin at next whole second and asOf at .999999999 denote one persisted microsecond and produce age0, not -1 second.",
+    "proofLayer": "PURE_ACTUAL_CALCULATOR",
+    "targetedExecution": {
+      "run": "R24",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r24/receipt.json",
+      "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=PriceCommandWorkerIT,AdvertisingOrchestrationCapacityIT,AdvertisingCaseCalculationServiceTest,AdPriorityLexicographicTest,AdvertisingEfficiencyFlowIT,AdvertisingReservationIT",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 130,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 1,
+      "wholeRunAllPass": false,
+      "sourceStable": true,
+      "sourceBeforeSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "sourceAfterSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "xmlSha256": "7a32197a4bcd1f767c0bd8762d9f3778c6ad3fb7ea9c29a9614cc14d34717758",
+      "suiteDeclaredCounts": {
+        "tests": "34",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 34,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 3,
+          "name": "microsecondRoundingAcrossASecondBoundaryStillRepresentsAgeZero",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+          "timeSeconds": "0.001",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+          "measuredSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "w8GitSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java",
+          "measuredSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "w8GitSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+    "method": "aGenuinelyFutureCaseOriginRemainsUnknownInsteadOfZero",
+    "w8SourceSha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+    "declarationOrReferenceLines": [
+      576
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CALCULATION_MICROSECOND_AGE",
+    "specificAssertion": "Origin .123458 exceeds exact .123457 representation, so value remains null with PRIORITY_POLICY_UNRESOLVED:CASE_AGE; it is not a zero-value safety fact.",
+    "proofLayer": "PURE_ACTUAL_CALCULATOR",
+    "targetedExecution": {
+      "run": "R24",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r24/receipt.json",
+      "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=PriceCommandWorkerIT,AdvertisingOrchestrationCapacityIT,AdvertisingCaseCalculationServiceTest,AdPriorityLexicographicTest,AdvertisingEfficiencyFlowIT,AdvertisingReservationIT",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 130,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 1,
+      "wholeRunAllPass": false,
+      "sourceStable": true,
+      "sourceBeforeSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "sourceAfterSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "xmlSha256": "7a32197a4bcd1f767c0bd8762d9f3778c6ad3fb7ea9c29a9614cc14d34717758",
+      "suiteDeclaredCounts": {
+        "tests": "34",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 34,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 7,
+          "name": "aGenuinelyFutureCaseOriginRemainsUnknownInsteadOfZero",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+          "timeSeconds": "0.001",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+          "measuredSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "w8GitSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java",
+          "measuredSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "w8GitSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+    "method": "anExistingCaseKeepsItsPositiveElapsedAge",
+    "w8SourceSha256": "e2ca9ac68df9b07bb35bac50e75f4b1accf0d83ba42446b2c6f5df7328a136b6",
+    "declarationOrReferenceLines": [
+      582
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CALCULATION_MICROSECOND_AGE",
+    "specificAssertion": "A real129600-second interval remains1.5 days; the repair neither resets nor clamps positive exposure.",
+    "proofLayer": "PURE_ACTUAL_CALCULATOR",
+    "targetedExecution": {
+      "run": "R24",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r24/receipt.json",
+      "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=PriceCommandWorkerIT,AdvertisingOrchestrationCapacityIT,AdvertisingCaseCalculationServiceTest,AdPriorityLexicographicTest,AdvertisingEfficiencyFlowIT,AdvertisingReservationIT",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 130,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 1,
+      "wholeRunAllPass": false,
+      "sourceStable": true,
+      "sourceBeforeSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "sourceAfterSha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "xmlSha256": "7a32197a4bcd1f767c0bd8762d9f3778c6ad3fb7ea9c29a9614cc14d34717758",
+      "suiteDeclaredCounts": {
+        "tests": "34",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 34,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 6,
+          "name": "anExistingCaseKeepsItsPositiveElapsedAge",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+          "timeSeconds": "0.002",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityPolicy.java",
+          "measuredSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "w8GitSourceSha256": "d56c9f1577c48111ae64e26f4ecd28777dad945a31ea8cb8b52bacecb03eb7be",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdRankFactor.java",
+          "measuredSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "w8GitSourceSha256": "b3ba9305508059c458ae0e0ed13244487e67bf3f03d25cf10ad30c1ee4ead447",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+    "method": "staffedTaskAgeUsesTheExactPersistedMicrosecondOrigin",
+    "w8SourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+    "declarationOrReferenceLines": [
+      474
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "TASK_SLO_MICROSECOND_AGE",
+    "specificAssertion": "Actual PG round-up is asserted; public Case and direct Task reads agree at age0 with valid staffed profile/deadlines. A genuinely earlier read is absent; positive129600-second age remains.",
+    "proofLayer": "REAL_POSTGRESQL_SYNTHETIC_TIMESTAMP_ORACLE",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "xmlSha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3",
+      "suiteDeclaredCounts": {
+        "tests": "18",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 18,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 13,
+          "name": "staffedTaskAgeUsesTheExactPersistedMicrosecondOrigin",
+          "classname": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+          "timeSeconds": "0.357",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "measuredSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+          "w8GitSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "measuredSourceSha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829",
+          "w8GitSourceSha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+    "method": "unresolvedProfileTaskAgeUsesTheExactPersistedMicrosecondOrigin",
+    "w8SourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990",
+    "declarationOrReferenceLines": [
+      478
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "TASK_SLO_MICROSECOND_AGE",
+    "specificAssertion": "Missing profile remains PROFILE_OR_CALENDAR_MISSING with null due time, while actual rounded-origin age is0; public/direct historical reads reject the genuinely future Task.",
+    "proofLayer": "REAL_POSTGRESQL_SYNTHETIC_TIMESTAMP_ORACLE",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "xmlSha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3",
+      "suiteDeclaredCounts": {
+        "tests": "18",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 18,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 8,
+          "name": "unresolvedProfileTaskAgeUsesTheExactPersistedMicrosecondOrigin",
+          "classname": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+          "timeSeconds": "0.422",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "measuredSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+          "w8GitSourceSha256": "83fd2aa64d34908fd89dcb9bcfc23b8979db3f5578cb773801b6deb554d9e640",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "measuredSourceSha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829",
+          "w8GitSourceSha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+    "method": "oneNanosecondClockReversalIsUnknownAndBreachedInsteadOfZeroLatency",
+    "w8SourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb",
+    "declarationOrReferenceLines": [
+      33
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "RECONCILIATION_EXACT_DURATION",
+    "specificAssertion": "After an already accepted fact, clock reverses1ns; captured trace latency is null and breach true. This is a clock decision test, not PostgreSQL throughput.",
+    "proofLayer": "ACTUAL_SWEEP_SERVICE_WITH_MOCKED_PORTS",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "xmlSha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac",
+      "suiteDeclaredCounts": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 4,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 1,
+          "name": "oneNanosecondClockReversalIsUnknownAndBreachedInsteadOfZeroLatency",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+          "timeSeconds": "0.004",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdvertisingSlo.java",
+          "measuredSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "w8GitSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+    "method": "exactZeroLatencyIsMeasuredAndDoesNotBreach",
+    "w8SourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb",
+    "declarationOrReferenceLines": [
+      38
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "RECONCILIATION_EXACT_DURATION",
+    "specificAssertion": "Zero Duration records0ms and does not breach.",
+    "proofLayer": "ACTUAL_SWEEP_SERVICE_WITH_MOCKED_PORTS",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "xmlSha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac",
+      "suiteDeclaredCounts": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 4,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 3,
+          "name": "exactZeroLatencyIsMeasuredAndDoesNotBreach",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+          "timeSeconds": "0.003",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdvertisingSlo.java",
+          "measuredSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "w8GitSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+    "method": "exactFifteenMinuteLatencyDoesNotBreachTheInclusiveBound",
+    "w8SourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb",
+    "declarationOrReferenceLines": [
+      43
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "RECONCILIATION_EXACT_DURATION",
+    "specificAssertion": "Exactly900seconds records900000ms without breach.",
+    "proofLayer": "ACTUAL_SWEEP_SERVICE_WITH_MOCKED_PORTS",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "xmlSha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac",
+      "suiteDeclaredCounts": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 4,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 0,
+          "name": "exactFifteenMinuteLatencyDoesNotBreachTheInclusiveBound",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+          "timeSeconds": "0.544",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdvertisingSlo.java",
+          "measuredSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "w8GitSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java",
+    "method": "oneNanosecondBeyondFifteenMinutesBreachesBeforeMillisecondConversion",
+    "w8SourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb",
+    "declarationOrReferenceLines": [
+      48
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "RECONCILIATION_EXACT_DURATION",
+    "specificAssertion": "900seconds+1ns records rounded900000ms but breach true; the control evaluates exact Duration before display/storage conversion.",
+    "proofLayer": "ACTUAL_SWEEP_SERVICE_WITH_MOCKED_PORTS",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "xmlSha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac",
+      "suiteDeclaredCounts": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 4,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 2,
+          "name": "oneNanosecondBeyondFifteenMinutesBreachesBeforeMillisecondConversion",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+          "timeSeconds": "0.004",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdvertisingSlo.java",
+          "measuredSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "w8GitSourceSha256": "ee4081c2eb1cb0b690212624dfb2b6967d83a973a93b69c6692e4a71224ecfe2",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+    "method": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+    "w8SourceSha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e",
+    "declarationOrReferenceLines": [
+      55
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CAPACITY_AND_REPLAY",
+    "specificAssertion": "1000 UNVERIFIED native objects share one Variant/listing;200 seeded regression-containment oracles. Actual target refresh/Task/brief and dropped correction sweep are measured; API command count is0. This is not a mature Outcome or Provider command throughput benchmark.",
+    "proofLayer": "REAL_POSTGRESQL_BOUNDED_ORCHESTRATION_MEASUREMENT",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "xmlSha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49",
+      "suiteDeclaredCounts": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 3,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 2,
+          "name": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "timeSeconds": "380.412",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseRefreshService.java",
+          "measuredSourceSha256": "eaa7b914d0a5502cd69c5e31fd76be2d8244e54052fc0638f1464ce2a0dd4a37",
+          "w8GitSourceSha256": "eaa7b914d0a5502cd69c5e31fd76be2d8244e54052fc0638f1464ce2a0dd4a37",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+          "measuredSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+          "w8GitSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+          "measuredSourceSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+          "w8GitSourceSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+    "method": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+    "w8SourceSha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e",
+    "declarationOrReferenceLines": [
+      140
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CAPACITY_AND_REPLAY",
+    "specificAssertion": "Clock base comes from PG clock_timestamp; exact accepted timestamp equality, expired-owner fencing, newer fact retention and existing old breach survive.",
+    "proofLayer": "REAL_POSTGRESQL_QUEUE_REPLAY",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "xmlSha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49",
+      "suiteDeclaredCounts": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 3,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 0,
+          "name": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "timeSeconds": "0.374",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseRefreshService.java",
+          "measuredSourceSha256": "eaa7b914d0a5502cd69c5e31fd76be2d8244e54052fc0638f1464ce2a0dd4a37",
+          "w8GitSourceSha256": "eaa7b914d0a5502cd69c5e31fd76be2d8244e54052fc0638f1464ce2a0dd4a37",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+          "measuredSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+          "w8GitSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+          "measuredSourceSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+          "w8GitSourceSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  },
+  {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+    "method": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+    "w8SourceSha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e",
+    "declarationOrReferenceLines": [
+      163
+    ],
+    "currentFinalExecutionStatus": "PENDING_FROZEN_W8_FULL_XML_BINDING",
+    "group": "CAPACITY_AND_REPLAY",
+    "specificAssertion": "Forces .123456789->.123457 for actual projected Case IDs; checks full calculation equality, stable Case IDs, zero Case age and true historical exclusion. Earlier unrelated preseeded Case remains legitimate and is excluded only from this new-origin oracle.",
+    "proofLayer": "REAL_POSTGRESQL_COMPLETE_CALCULATION_REPLAY",
+    "targetedExecution": {
+      "run": "R25",
+      "receiptPath": "/tmp/slice3-r1-final-controls-r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+        "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+        "test"
+      ],
+      "wholeRunCounts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRunExitCode": 0,
+      "wholeRunAllPass": true,
+      "sourceStable": true,
+      "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "testSourceMatchesW8": true,
+      "xmlPath": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "xmlSha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49",
+      "suiteDeclaredCounts": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "actualSuiteNodes": 3,
+      "actualMatchedNodes": [
+        {
+          "nodeOrdinal": 1,
+          "name": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "timeSeconds": "0.487",
+          "status": "PASS"
+        }
+      ],
+      "relevantRuntimeSourceBindings": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "measuredSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "w8GitSourceSha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseRefreshService.java",
+          "measuredSourceSha256": "eaa7b914d0a5502cd69c5e31fd76be2d8244e54052fc0638f1464ce2a0dd4a37",
+          "w8GitSourceSha256": "eaa7b914d0a5502cd69c5e31fd76be2d8244e54052fc0638f1464ce2a0dd4a37",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+          "measuredSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+          "w8GitSourceSha256": "a899d2baa51ff4acfcd3d830c74082027c01d4e45a088ac5ff75c17b695fd908",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java",
+          "measuredSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "w8GitSourceSha256": "2a74745d100217c512ae6635f451f34768d290762cd35a2537e91255ba98cc15",
+          "sameExactBytes": true
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+          "measuredSourceSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+          "w8GitSourceSha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+          "sameExactBytes": true
+        }
+      ]
+    },
+    "boundary": "A specifically observed passing assertion in this historical targeted run, not a completed unselected W8 full-run claim."
+  }
+]

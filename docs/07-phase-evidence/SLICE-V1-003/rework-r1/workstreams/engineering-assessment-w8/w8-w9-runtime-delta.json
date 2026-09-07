@@ -1,0 +1,39 @@
+{
+  "kind": "EXACT_W8_BACKEND_MEASUREMENT_TO_W9_FRONTEND_REPAIR_DELTA",
+  "w8Head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "w8Tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "w9Head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "w9Tree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+  "completeGitDiff": [
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "w8Sha256": "338f23bae7d5aadafd05cefd0eaa2d57bf2568934e8e1c4dc37658e231336028",
+      "w9Sha256": "024023ffd37da2860b5eecbd211d1e928978e1539f79639cf1108e006289d609"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "w8Sha256": "aa30f489eaf8ee4c1012d337b01db7fdecaac1879086a03a0960b5ffd6cada6e",
+      "w9Sha256": "c13556029e5d4bacb7ebccd18c0a4de396e771c90b2a2fb978c4478b755a6c08"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "w8Sha256": "03d4ad863ee0a24a36b9a03f0385b354b3161325b2d90ab3452749312896c5a6",
+      "w9Sha256": "c414ff4b23cad028b0dcdb01d0465c9e4b38f3dac752d9d44612dc49eb27f57c"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+      "w8Sha256": "ee45398e237631a12adaba76d64b9daa1ee3beeed81253d9a7030b7a702eff9f",
+      "w9Sha256": "efd840099b850831db7d01462e9c9121bbd3f356a882572df8280cfd10c98b86"
+    },
+    {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "w8Sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "w9Sha256": "d7775956248a3cd59e3c8b35a649a8f0ecfed43d5df7bb00ab857d11e79d80e0"
+    }
+  ],
+  "backendSourceTestsMigrationsBuildWorkflowChanged": false,
+  "backendMeasurement": "W8 full2484; exact unchanged backend input bytes. This is not a W9 local full Maven execution.",
+  "frontendMeasurement": "W9 committed-source browser12; precommit complete quality327 with all measured bytes equal W9 commit.",
+  "finalCanonicalAndEvidenceTip": "SEPARATE_COMMIT_DELTA_AND_LATEST_CI_MUST_BE_BOUND_OUTSIDE_GIT_AFTER_PUBLICATION",
+  "production_write_enabled": false
+}

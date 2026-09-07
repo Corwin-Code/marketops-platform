@@ -1,0 +1,65 @@
+[
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseCalculation.java",
+    "sha256": "3d8a951940dbec76decbd84cbaffd827265c215478f594dd94a3b438c70b0783",
+    "git_blob_sha1": "3b9e854aa8fa07d34a693066c09488fefdd92914",
+    "excerpt_lines": [
+      112,
+      134
+    ]
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+    "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067",
+    "git_blob_sha1": "12e9a88cdaa15882dad407a9ba3085d8b43e0a88",
+    "excerpt_lines": [
+      1,
+      24
+    ]
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+    "sha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824",
+    "git_blob_sha1": "ab41d324d0645150823cfb5db2ac3272133dea86",
+    "excerpt_lines": [
+      85,
+      149
+    ]
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+    "sha256": "684010ba63262599adff7aba189123e8e8464dbdbb26f7d9346bc84dc890fe03",
+    "git_blob_sha1": "11f112180dffc6c27e67b559a8cfbd81c83b1bf4",
+    "excerpt_lines": [
+      421,
+      443
+    ]
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeEvidenceService.java",
+    "sha256": "a7da1bd9a051d5a8c90670f0ea4dd23df0e5496146c52b59968f83c4b74b7e59",
+    "git_blob_sha1": "c6ccc1dedfb61b2e9e36a1d90aa09fb9f34748af",
+    "excerpt_lines": [
+      23,
+      127
+    ]
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeAssessment.java",
+    "sha256": "70dd3e7140cb399e63bc931b3dcbc0ca0f6638b58c0e72f93ca2db919bbd95ca",
+    "git_blob_sha1": "7db69d8c64dc5bface04a29eb40c94429fde80b3",
+    "excerpt_lines": [
+      103,
+      132
+    ]
+  },
+  {
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+    "sha256": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f",
+    "git_blob_sha1": "f1f299b20ae909b826f1ceb62047421b709b99dd",
+    "excerpt_lines": [
+      201,
+      267
+    ]
+  }
+]

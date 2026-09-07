@@ -1,0 +1,18 @@
+{
+  "kind": "CURRENT_ALERT_WHOLE_SOURCE_AND_EXPRESSION_COMPARISON",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+  "priorRootTriage": {
+    "path": "/private/tmp/slice3-security-admission-da559bd-r1/ALERT-DELTA-TRIAGE.json",
+    "sha256": "4ecf5fc1efdbd14e5f71de1e53447584709f31ccd60d9f0e46e1e53d5159fb4e",
+    "bytes": 156766
+  },
+  "currentRawReview": {
+    "path": "/private/tmp/slice3-security-review-e278b1e-r1/SECURITY-RAW-REVIEW-CANDIDATE.json",
+    "sha256": "755c03885f9e1bf67af1a22d1c5878721c271c9c9c3d73a33aee0cbe55b36eb2",
+    "bytes": 152145
+  },
+  "exactWholeFilesAndExpressions": 95,
+  "changedOrNewComparedToSpecificRootReview": [],
+  "scope": "Current official raw alerts, SARIF locations, checkout and source identities are newly read. Every flagged whole file and expression is byte-identical to the explicitly reviewed da559bd root triage; its bounded source assessments remain applicable. No old execution result is promoted."
+}

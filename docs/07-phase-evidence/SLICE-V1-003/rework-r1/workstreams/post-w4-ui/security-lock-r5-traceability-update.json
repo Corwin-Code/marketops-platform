@@ -1,0 +1,30 @@
+{
+  "run": {
+    "id": "post-w5-security-lock-frontend-quality-r5",
+    "result": "PASS",
+    "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/receipt.json",
+    "sha256": "606c3d19d40c2e26ae186b9aca1472fc765747a5102c50fc7860b0df7ccc6c11",
+    "counts": {
+      "total": 308,
+      "passed": 308,
+      "failed": 0,
+      "pending": 0,
+      "rawReporterSha256": "14233b46b8835d22c6d32ddfa6bdd28cd03163347d390722132adcf035fded46",
+      "namesBoundToSourceBefore": true
+    },
+    "sourceManifestSha256": "596a83c12ff7ce62888eacb63a3e3d31343a7f943920f33da9f5ba3edb6f01f1",
+    "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+    "scope": "Fresh npm ci/ls on exact repaired fast-uri3.1.6 lock, full static checks, 308 named Vitest/coverage/build/bundle/SBOM. Only lock changed from frontend r3. No browser/Maven/PostgreSQL/Provider executed; actual final exact-checkpoint browser and CI remain pending."
+  },
+  "draft": "/tmp/slice3-ui-ac-adjudication-final-draft.json",
+  "draftSha256": "b09a53da839303e0316b7082bfcb34ef450f8bb806edd88f5b6f03d55ab6ed58",
+  "engineeringDraftSha256": "5f1d4bb72771f66c0a787981b69a65216c7dd27f9e33baea66f436e6d0ed6e89",
+  "shardSha256": "262fcf854c78ecd7c90e00a0864117a525e281c86dbe159dc32d2b51d8eccc63",
+  "criterionCount": 81,
+  "acceptedExactPreserved": true,
+  "matchedSupportingCriterionRows": 47,
+  "publicationScanSha256": "f3d81a74aff6fe810e9b413062a53d0538cdefd85b2592019ae7443fdbb3b87a",
+  "finalStatus": "PENDING_EXACT_COMMITTED_BROWSER_FULL_CI",
+  "failedR4ReceiptSha256": "b999c168efb444192a15e27e80414dd0ee7da8f441f3e77a8c3cc65501ef0637",
+  "failedR4PublicationScanSha256": "e311bba1b08c0fa2eac4f7f278c8b56dd5476f8e1d0e41ff0c2c5aa5fc672cbf"
+}

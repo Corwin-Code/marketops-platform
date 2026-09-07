@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 271.8 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT
+com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach -- Time elapsed: 0.185 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: 2026-09-05T11:35:15.905951416Z
+ but was: 2026-09-05T11:35:15.905951Z
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach(AdvertisingOrchestrationCapacityIT.java:147)
+
