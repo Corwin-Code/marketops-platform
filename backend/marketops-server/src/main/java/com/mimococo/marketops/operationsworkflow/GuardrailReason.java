@@ -96,5 +96,41 @@ public enum GuardrailReason {
     ENTITY_VERSION_CHANGED,
 
     /** The recommendation's own validity window has elapsed. */
-    RECOMMENDATION_EXPIRED
+    RECOMMENDATION_EXPIRED,
+
+    // The advertising reasons. A bid change refuses for different things from a
+    // price change, and naming them apart is what lets a runbook exist for each.
+
+    /** The platform's bid moved since the candidate was computed against it. */
+    BID_MOVED_SINCE_CANDIDATE,
+
+    /** Nothing observed the bid, so no change could be exact. */
+    CURRENT_BID_NOT_OBSERVED,
+
+    /** The advertising object is not proven to be independently controllable. */
+    CONTROL_GRANULARITY_UNPROVEN,
+
+    /** No active reservation is held for the set this change would affect. */
+    RESERVATION_NOT_HELD,
+
+    /** No unique complete active policy bundle covers this decision. */
+    AD_POLICY_BUNDLE_UNRESOLVED,
+
+    /** An aggregate exposure axis has no headroom left. */
+    EXPOSURE_ENVELOPE_EXHAUSTED,
+
+    /** The proposed bid exceeds the ceiling a click may be worth. */
+    ABOVE_MAX_CPC,
+
+    /** The ceiling a click may be worth could not be established. */
+    MAX_CPC_UNAVAILABLE,
+
+    /** The advertising calculation itself refused, and said why. */
+    ADVERTISING_CASE_BLOCKED,
+
+    /** The proposal names the bid the platform already holds. */
+    NO_CHANGE_PROPOSED,
+
+    /** No approval-lease policy is in force for this direction. */
+    APPROVAL_LEASE_POLICY_ABSENT
 }

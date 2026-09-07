@@ -63,3 +63,10 @@ GRANT USAGE, CREATE ON SCHEMA public TO marketops_migration;
 -- to it there, and its resolution order does not mention the schema, so an
 -- unqualified name can never resolve to an object it does not own.
 ALTER ROLE marketops_app SET search_path = iam, platform, raw, staging, core, ledger, mart, ops;
+
+-- No login or password is provisioned for the inactive authenticated invocation
+-- boundary. Isolated tests may enable a synthetic login; real provisioning is
+-- a separate Owner-authorized identity deployment operation.
+CREATE ROLE marketops_identity_issuer WITH NOLOGIN NOSUPERUSER NOCREATEDB
+    NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;
+GRANT CONNECT ON DATABASE marketops TO marketops_identity_issuer;

@@ -3,16 +3,25 @@ package com.mimococo.marketops.operationsworkflow;
 /**
  * What a recommendation proposes to do about a subject.
  *
- * <p>Exactly one of these has a platform write behind it. Everything else is
+ * <p>Exactly two of these have a platform write behind them. Everything else is
  * work a person performs, which is why the distinction is carried in the type
  * rather than discovered later: a recommendation whose action has no write
  * capability never enters the command path at all, and cannot be approved into
  * one by mistake.
+ *
+ * <p>{@code ADVERTISING_REVIEW} and {@code AD_BID_CHANGE} are both about
+ * advertising and only one of them can reach a marketplace. The review is the
+ * route for everything this product deliberately does not write — a budget, a
+ * campaign status, a targeting structure — and it carries no capability, so
+ * approving one can never produce a command.
  */
 public enum ActionKind {
 
     /** Change the price a marketplace holds for a listing variant. */
     PRICE_CHANGE(true),
+
+    /** Change the bid a marketplace holds for one advertising object. */
+    AD_BID_CHANGE(true),
 
     /** Resolve a listing-to-SKU mapping a person must judge. */
     RESOLVE_MAPPING(false),

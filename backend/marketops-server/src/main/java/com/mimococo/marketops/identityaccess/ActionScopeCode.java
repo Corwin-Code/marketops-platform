@@ -72,7 +72,49 @@ public enum ActionScopeCode {
      * <p>Step-up is required for the same reason a price approval needs it: the
      * consequence is that a real risk stops raising work.
      */
-    AVAILABILITY_EXCEPTION_APPROVE(true);
+    AVAILABILITY_EXCEPTION_APPROVE(true),
+
+    /** Read the advertising control queue, its cases, evidence and outcomes. */
+    ADVERTISING_VIEW(false),
+
+    /** Read financial decision evidence for every member of an advertising affected set. */
+    ADVERTISING_DECISION_EVIDENCE_VIEW(false),
+
+    ADVERTISING_MANUAL_EXECUTE(true),
+    ADVERTISING_MANUAL_VERIFY(true),
+    ADVERTISING_MANUAL_ENDORSE(true),
+    ADVERTISING_MANUAL_APPROVE(true),
+
+    ADVERTISING_TECHNICAL_STOP(true),
+    ADVERTISING_TECHNICAL_ATTEST(true),
+
+    /** Record structured action evidence against an accountable advertising case. */
+    ADVERTISING_TASK_ACT(false),
+
+    /** Request a scoped, expiring accepted exception against a calculated advertising risk. */
+    ADVERTISING_EXCEPTION_REQUEST(false),
+
+    /**
+     * Give the distinct operational endorsement a bid change requires.
+     *
+     * <p>Separate from the final approval on purpose. The Contract's material
+     * route needs two different people, and two different actions are how a
+     * single grant cannot silently satisfy both halves of it.
+     */
+    AD_BID_CHANGE_ENDORSE(true),
+
+    /** Give the final per-command approval for an exact, bounded advertising bid change. */
+    AD_BID_CHANGE_APPROVE(true),
+
+    /**
+     * Publish or retire advertising decision policy.
+     *
+     * <p>Step-up for the same reason the supply policy needs it: a published
+     * freshness, qualification, target or outcome version silently changes every
+     * advertising answer calculated after it, and a relaxed threshold can turn a
+     * blocked write into an available one without a single fact changing.
+     */
+    ADVERTISING_POLICY_MANAGE(true);
 
     private final boolean stepUpRequired;
 

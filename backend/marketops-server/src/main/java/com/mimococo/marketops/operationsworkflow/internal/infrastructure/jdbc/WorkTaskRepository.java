@@ -46,6 +46,13 @@ public class WorkTaskRepository {
                 .update();
     }
 
+    public boolean reopen(UUID id, Instant at, long expectedVersion) {
+        return jdbc.sql("""
+                UPDATE ops.work_task SET state='OPEN',closed_at=NULL,closure_reason=NULL,
+                    updated_at=:at,version=version+1 WHERE id=:id AND version=:version
+                """).param("id",id).param("at",Timestamp.from(at)).param("version",expectedVersion).update()==1;
+    }
+
     /** Give a task an owner. */
     public boolean assign(UUID id, UUID assigneeUserId, Instant at, long expectedVersion) {
         return jdbc.sql("""

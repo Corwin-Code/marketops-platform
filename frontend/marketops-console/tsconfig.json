@@ -29,6 +29,7 @@
     "src",
     "tests",
     "playwright.config.ts",
+    "playwright.advertising.config.ts",
     "vite.config.ts",
     "vite.constants.ts",
     "scripts"

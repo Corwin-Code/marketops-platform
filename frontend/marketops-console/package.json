@@ -27,7 +27,7 @@
     "test:browser": "playwright test",
     "verify:bundle": "node scripts/verify-bundle-isolation.mjs",
     "presbom": "node scripts/prepare-sbom-output.mjs",
-    "sbom": "cyclonedx-npm --output-file ../../build/supply-chain/frontend-sbom.json --spec-version 1.6 --output-reproducible --validate"
+    "sbom": "node scripts/generate-validated-sbom.mjs"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -45,6 +45,9 @@
     "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "6.0.5",
     "@vitest/coverage-v8": "4.1.10",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "ajv-formats-draft2019": "1.6.1",
     "eslint": "10.8.1",
     "eslint-config-prettier": "10.1.8",
     "jsdom": "30.0.1",

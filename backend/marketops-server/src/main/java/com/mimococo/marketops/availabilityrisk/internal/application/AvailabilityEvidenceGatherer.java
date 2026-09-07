@@ -67,6 +67,21 @@ public class AvailabilityEvidenceGatherer {
         this.policies = policies;
     }
 
+    /**
+     * A gatherer for exactly one calculation, which asks each question once.
+     *
+     * <p>The channel view and the company view of one variant read the same
+     * facts, and for a variant sold through one listing in one mode several of
+     * those reads are byte-identical. They cannot disagree — one transaction,
+     * one snapshot, one {@code asOf} — so asking twice buys nothing but a round
+     * trip. This gatherer remembers within the calculation and is discarded with
+     * it; nothing is remembered across variants or across instants.
+     */
+    public AvailabilityEvidenceGatherer forOneCalculation() {
+        return new AvailabilityEvidenceGatherer(new OneCalculationFactMemo(facts), listings,
+                policies);
+    }
+
     /** One exact channel, with the identity the Contract fixes for it. */
     public record ChannelSubject(ChannelObservation observation, String platformCode) {
     }

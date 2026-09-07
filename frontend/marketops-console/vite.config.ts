@@ -14,6 +14,10 @@ const packageManifest: unknown = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 );
 
+// Isolated browser verification supplies every public setting explicitly.
+const environmentDirectory =
+  process.env.MARKETOPS_BROWSER_ISOLATION === 'ISOLATED_SYNTHETIC_DATABASE' ? false : process.cwd();
+
 /**
  * Bundler configuration for the operations console.
  *
@@ -22,6 +26,7 @@ const packageManifest: unknown = JSON.parse(
  * the set of replaced identifiers, which is exactly two.
  */
 export default defineConfig(({ mode }) => ({
+  envDir: environmentDirectory,
   plugins: [
     react(),
     {
@@ -36,7 +41,10 @@ export default defineConfig(({ mode }) => ({
       transformIndexHtml: {
         order: 'pre' as const,
         handler(html: string) {
-          const environment = { ...loadEnv(mode, process.cwd(), ENV_PREFIX), ...process.env };
+          const environment = {
+            ...loadEnv(mode, environmentDirectory, ENV_PREFIX),
+            ...process.env,
+          };
           return html.replaceAll(CONNECT_SOURCE_PLACEHOLDER, connectSourceDirective(environment));
         },
       },

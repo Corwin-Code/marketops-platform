@@ -103,6 +103,19 @@ marketops:
     # passes the write gate — it only decides whether this process is one of the
     # ones that tries.
     worker-enabled: false
+  ad-bid-write:
+    # Off, for the same reason and one more. No advertising capability is
+    # verified anywhere, so the adapter refuses before any socket and the
+    # attempt-opening function refuses before any attempt row. This flag is the
+    # weakest of the reasons nothing can be transmitted; it is here so the
+    # process is honest about what it is not doing, not so the others can be
+    # relaxed.
+    worker-enabled: false
+  advertising:
+    # The calculation loop, not a write path. Off by default so a workstation or
+    # a test container does not start scanning; the loop reads facts and writes
+    # projections and can reach no marketplace at all.
+    worker-enabled: false
     commands-per-pass: 5
     retry-budget: 3
   # The directory the platform's secret manager delivers values into. Absent by
