@@ -66,7 +66,12 @@ public class ConsoleProblemAdvice {
             Map.entry(ErrorCode.OUTCOME_POLICY_CONFLICTED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.APPROVAL_REQUIRED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.COMPENSATION_UNSAFE, HttpStatus.CONFLICT),
-            Map.entry(ErrorCode.READBACK_REQUIRED, HttpStatus.CONFLICT));
+            Map.entry(ErrorCode.READBACK_REQUIRED, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.BINDING_INAPPLICABLE, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.ALLOWANCE_INSUFFICIENT, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.SCOPE_CONTAINED, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.INDEPENDENCE_REQUIRED, HttpStatus.FORBIDDEN),
+            Map.entry(ErrorCode.RESTORE_UNSUPPORTED, HttpStatus.CONFLICT));
 
     /**
      * The status a business refusal that is not in the table above is answered

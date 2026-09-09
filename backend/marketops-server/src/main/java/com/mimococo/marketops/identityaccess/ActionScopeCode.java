@@ -114,7 +114,43 @@ public enum ActionScopeCode {
      * advertising answer calculated after it, and a relaxed threshold can turn a
      * blocked write into an available one without a single fact changing.
      */
-    ADVERTISING_POLICY_MANAGE(true);
+    ADVERTISING_POLICY_MANAGE(true),
+
+    /** Read Listing Health, retained-visit conversion, candidates, actions and outcomes. */
+    LISTING_CONVERSION_VIEW(false),
+
+    /** Author a candidate comparison or an exact listing action for review. */
+    LISTING_ACTION_PREPARE(false),
+
+    /** Attest the exact Russian text and the facts as a person other than the author. */
+    LISTING_ACTION_REVIEW(true),
+
+    /** Give the final approval for a listing action below both material triggers. */
+    LISTING_ACTION_APPROVE_ORDINARY(true),
+
+    /** Give the final approval for a listing action that crosses a material trigger. */
+    LISTING_ACTION_APPROVE_MATERIAL(true),
+
+    /** Launch an approved listing action and acquire its exposure allowance. */
+    LISTING_ACTION_LAUNCH(true),
+
+    /** Report the execution of a governed manual listing packet. */
+    LISTING_MANUAL_EXECUTE(true),
+
+    /** Verify management-side match and display evidence independently of the executor. */
+    LISTING_MANUAL_VERIFY(true),
+
+    /** Record a technical or business stop at an exact listing scope. */
+    LISTING_CONTAINMENT_STOP(true),
+
+    /** Attest, as the cause owner, that a contained cause is repaired. */
+    LISTING_CONTAINMENT_ATTEST(true),
+
+    /** Consent, as the business owner, to reenabling a contained listing scope. */
+    LISTING_CONTAINMENT_CONSENT(true),
+
+    /** Adopt, exit and release simple promotion engagements on the governed manual path. */
+    LISTING_PROMOTION_MANAGE(true);
 
     private final boolean stepUpRequired;
 

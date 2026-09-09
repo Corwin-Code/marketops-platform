@@ -1,0 +1,262 @@
+package com.mimococo.marketops.listingconversion.internal.application;
+
+import com.mimococo.marketops.analyticsdecision.CalculationRunLedger;
+import com.mimococo.marketops.analyticsdecision.MetricWindow;
+import com.mimococo.marketops.identityaccess.ActionScopeCode;
+import com.mimococo.marketops.identityaccess.AuthenticatedActor;
+import com.mimococo.marketops.listingconversion.ConversionMeasurementView;
+import com.mimococo.marketops.listingconversion.EvaluationView;
+import com.mimococo.marketops.listingconversion.NodeVerdict;
+import com.mimococo.marketops.listingconversion.ProtectionVerdict;
+import com.mimococo.marketops.listingconversion.RatioState;
+import com.mimococo.marketops.listingconversion.SimulationView;
+import com.mimococo.marketops.listingconversion.internal.domain.ProtectionVector;
+import com.mimococo.marketops.listingconversion.internal.domain.PromotionSimulator;
+import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.EvaluationRepository;
+import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository;
+import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingFactRepository;
+import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingHealthRepository;
+import com.mimococo.marketops.operationsworkflow.ListingActionIntake;
+import com.mimococo.marketops.shared.Digest;
+import com.mimococo.marketops.shared.ErrorCode;
+import com.mimococo.marketops.shared.IdGenerator;
+import com.mimococo.marketops.shared.MetadataFieldPolicy;
+import com.mimococo.marketops.shared.OperationRejectedException;
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
+
+/**
+ * Freezes the evaluation plan before launch and records node results after it.
+ *
+ * <p>A node result carries the primary ratio, its conservative bound, the
+ * accepted threshold and the protection vector; the database derives the
+ * protection verdict and refuses a MET that the bound does not support. Late
+ * facts append a revision under the original plan; the original stays readable.
+ */
+@Service
+public class EvaluationService {
+
+    private final EvaluationRepository evaluations;
+    private final ListingActionRepository actions;
+    private final ListingHealthRepository measurements;
+    private final ListingFactRepository facts;
+    private final CalibrationService calibration;
+    private final CalculationRunLedger ledger;
+    private final ListingActionIntake intake;
+    private final IdGenerator ids;
+    private final Clock clock;
+
+    EvaluationService(EvaluationRepository evaluations, ListingActionRepository actions, ListingHealthRepository measurements,
+                      ListingFactRepository facts, CalibrationService calibration, CalculationRunLedger ledger,
+                      ListingActionIntake intake, IdGenerator ids, Clock clock) {
+        this.evaluations = evaluations;
+        this.actions = actions;
+        this.measurements = measurements;
+        this.facts = facts;
+        this.calibration = calibration;
+        this.ledger = ledger;
+        this.intake = intake;
+        this.ids = ids;
+        this.clock = clock;
+    }
+
+    /** Freeze the plan from the bound calibration package, once. */
+    @Transactional
+    public UUID freezePlan(ListingActionRepository.ActionRow action) {
+        Optional<UUID> existing = actions.planId(action.id());
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+        if (action.calibrationPackageId() == null) {
+            throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
+        }
+        ListingFactRepository.ListingContext listing = facts.listing(action.listingId())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
+                listing.storeId(), clock.instant());
+        if (!resolved.ok() || !resolved.resolved().packageId().equals(action.calibrationPackageId())) {
+            throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
+        }
+        List<Map<String, Object>> nodes = CalibrationService.formalNodes(resolved.resolved());
+        Map<String, Object> stopRule = CalibrationService.stopRule(resolved.resolved());
+        int crossPeriod = CalibrationService.crossPeriodWindowDays(resolved.resolved()).orElse(0);
+        if (nodes.isEmpty() || stopRule.isEmpty() || crossPeriod < 1) {
+            throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
+        }
+        Instant now = clock.instant();
+        Map<String, String> coverage = new LinkedHashMap<>();
+        coverage.put("priorTextDigest", String.valueOf(action.currentTextDigest()));
+        coverage.put("targetTextDigest", String.valueOf(action.targetTextDigest()));
+        coverage.put("affectedSetDigest", action.affectedSetDigest());
+        int longestMaturity = nodes.stream().mapToInt(node -> (Integer) node.get("maturityDays")).max().orElse(30);
+        Instant boundary = now.plus(Duration.ofDays((long) longestMaturity + crossPeriod));
+        String digest = Digest.ofComponents(List.of(action.id().toString(), coverage.toString(), nodes.toString(),
+                stopRule.toString(), Integer.toString(crossPeriod), action.calibrationPackageId() + ":" + action.calibrationVersion()));
+        UUID planId = ids.newId();
+        actions.insertPlan(planId, action.organizationId(), action.id(), action.calibrationPackageId(), action.calibrationVersion(),
+                coverage, boundary, nodes, stopRule, CalibrationService.criticalGroups(resolved.resolved()),
+                "PRIOR_VERSION_WINDOW", crossPeriod, digest, now);
+        return planId;
+    }
+
+    /** What a node evaluation is told about the protections, each observed or unknown. */
+    public record ProtectionInputs(BigDecimal directContributionProfit, BigDecimal linkedScopeProfit,
+                                   BigDecimal overallReturnRate, BigDecimal criticalVariantReturnRate,
+                                   BigDecimal supplyCoverageDays, Map<String, BigDecimal> criticalGroupRatios,
+                                   BigDecimal priorContributionProfit, BigDecimal priorLinkedScopeProfit,
+                                   BigDecimal priorReturnRate, BigDecimal minimumSupplyCoverageDays) {
+    }
+
+    @Transactional
+    public EvaluationView evaluateNode(AuthenticatedActor actor, UUID actionId, String nodeCode, String stage,
+                                       UUID measurementId, BigDecimal conservativeBound, ProtectionInputs protections,
+                                       String lateFactReference) {
+        ListingActionRepository.ActionRow action = actions.action(actionId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        EvaluationRepository.PlanRow plan = evaluations.plan(actionId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION));
+        JsonNode node = null;
+        for (JsonNode candidate : plan.formalNodes()) {
+            if (candidate.path("nodeCode").asText().equals(nodeCode)) {
+                node = candidate;
+            }
+        }
+        if (node == null || (!"OPERATIONAL".equals(stage) && !"SETTLED".equals(stage))) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        BigDecimal threshold = new BigDecimal(node.path("threshold").asText());
+        Instant now = clock.instant();
+        Optional<ConversionMeasurementView> measurement = measurementId == null ? Optional.empty()
+                : measurements.measurement(measurementId);
+        BigDecimal ratio = measurement.filter(m -> m.ratioState() == RatioState.DEFINED)
+                .map(ConversionMeasurementView::primaryRatio).orElse(null);
+        boolean maturity = measurement.map(ConversionMeasurementView::maturityReached).orElse(false);
+        BigDecimal bound = ratio == null ? null : conservativeBound == null ? ratio : conservativeBound.min(ratio);
+        NodeVerdict verdict = ProtectionVector.nodeVerdict(ratio, bound, threshold, maturity);
+
+        ListingFactRepository.ListingContext listing = facts.listing(action.listingId()).orElseThrow();
+        CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
+                listing.storeId(), now);
+        BigDecimal profitBound = resolved.ok() ? CalibrationService.nonWorseningProfitBound(resolved.resolved()).orElse(null) : null;
+        BigDecimal returnBound = resolved.ok() ? CalibrationService.nonWorseningReturnBound(resolved.resolved()).orElse(null) : null;
+        Map<String, ProtectionVerdict> vector = new LinkedHashMap<>();
+        vector.put("DIRECT_CONTRIBUTION_PROFIT", ProtectionVector.compare(protections.directContributionProfit(),
+                floor(protections.priorContributionProfit(), profitBound), false));
+        vector.put("LINKED_SCOPE_PROFIT", ProtectionVector.compare(protections.linkedScopeProfit(),
+                floor(protections.priorLinkedScopeProfit(), profitBound), false));
+        vector.put("OVERALL_RETURN_RATE", ProtectionVector.compare(protections.overallReturnRate(),
+                ceiling(protections.priorReturnRate(), returnBound), true));
+        vector.put("CRITICAL_VARIANT_RETURN", ProtectionVector.compare(protections.criticalVariantReturnRate(),
+                ceiling(protections.priorReturnRate(), returnBound), true));
+        vector.put("SUPPLY_COVERAGE", ProtectionVector.compare(protections.supplyCoverageDays(),
+                protections.minimumSupplyCoverageDays(), false));
+        for (JsonNode group : plan.criticalGroups()) {
+            String code = group.asText();
+            BigDecimal observed = protections.criticalGroupRatios() == null ? null : protections.criticalGroupRatios().get(code);
+            vector.put("CRITICAL_GROUP_" + code, ProtectionVector.compare(observed, threshold, false));
+        }
+        ProtectionVerdict protection = ProtectionVector.verdictOf(vector);
+        boolean stopNode = nodeCode.equals(plan.stopRule().path("nodeCode").asText());
+        boolean stop = ProtectionVector.stopTriggered(verdict, stopNode, maturity);
+
+        UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(action.organizationId(), action.storeId(),
+                lateFactReference == null ? "MANUAL" : "LATE_DATA", MetricWindow.D30, now.minus(Duration.ofDays(30)), now,
+                Digest.ofText("lc-node-1"), 1, 1, true, null, now));
+        Optional<UUID> original = evaluations.latestResult(plan.id(), nodeCode, stage);
+        int revision = evaluations.nextRevision(plan.id(), nodeCode, stage);
+        UUID resultId = ids.newId();
+        evaluations.insertResult(resultId, action.organizationId(), plan.id(), nodeCode, stage, revision, measurementId, runId,
+                ratio, bound, threshold, verdict, ProtectionVector.toStrings(vector), protection, stop, maturity,
+                measurement.map(ConversionMeasurementView::sourceTime).orElse(null), now);
+        if (original.isPresent()) {
+            evaluations.insertRevision(ids.newId(), action.organizationId(), plan.id(), original.get(), resultId,
+                    lateFactReference == null ? "CORRECTION" : "LATE_FACT",
+                    lateFactReference == null ? "re-evaluation:" + resultId : MetadataFieldPolicy.requireText("lateFactReference", lateFactReference),
+                    now);
+        }
+        intake.recordTaskOutcome(action.recommendationId(), "SETTLED".equals(stage) ? (original.isPresent() ? "SETTLED_REVISED" : "SETTLED") : "OPERATIONAL",
+                "lc-node-result:" + resultId, "node " + nodeCode + " " + verdict + " protections " + protection);
+        return view(actionId).orElseThrow();
+    }
+
+    private static BigDecimal floor(BigDecimal prior, BigDecimal bound) {
+        return prior == null || bound == null ? null : prior.subtract(bound);
+    }
+
+    private static BigDecimal ceiling(BigDecimal prior, BigDecimal bound) {
+        return prior == null || bound == null ? null : prior.add(bound);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<EvaluationView> view(UUID actionId) {
+        return evaluations.plan(actionId).map(plan -> {
+            List<EvaluationView.Node> nodes = new ArrayList<>();
+            plan.formalNodes().forEach(node -> nodes.add(new EvaluationView.Node(node.path("nodeCode").asText(),
+                    node.path("maturityDays").asInt(), node.path("method").asText(), new BigDecimal(node.path("threshold").asText()))));
+            List<String> groups = new ArrayList<>();
+            plan.criticalGroups().forEach(group -> groups.add(group.asText()));
+            Map<String, String> stop = new LinkedHashMap<>();
+            plan.stopRule().properties().forEach(entry -> stop.put(entry.getKey(), entry.getValue().asText()));
+            Map<String, String> coverage = new LinkedHashMap<>();
+            plan.versionCoverage().properties().forEach(entry -> coverage.put(entry.getKey(), entry.getValue().asText()));
+            return new EvaluationView(plan.id(), plan.actionId(), plan.calibrationPackageId(), plan.calibrationVersion(), coverage,
+                    "EXCLUDE_TRANSITION_DAYS", plan.latestBoundary(), nodes, stop, groups, plan.comparisonBasis(),
+                    plan.crossPeriodWindowDays(), plan.planDigest(), plan.frozenAt(), evaluations.results(plan.id()),
+                    evaluations.revisions(plan.id()));
+        });
+    }
+
+    // ------------------------------------------------------------------ simulation
+
+    @Transactional
+    public SimulationView simulate(AuthenticatedActor actor, UUID candidateId, PromotionSimulator.Inputs inputs,
+                                   List<PromotionSimulator.Scenario> scenarios, BigDecimal referenceProfitLine) {
+        var candidate = actions.candidate(candidateId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        ListingFactRepository.ListingContext listing = facts.listing(candidate.platformListingId()).orElseThrow();
+        Instant now = clock.instant();
+        PromotionSimulator.Simulation simulation = PromotionSimulator.simulate(inputs, scenarios, referenceProfitLine);
+        List<Map<String, Object>> scenarioRows = new ArrayList<>();
+        scenarios.forEach(s -> scenarioRows.add(Map.of("code", s.code(), "quantity", String.valueOf(s.quantity()),
+                "necessary", s.necessary(), "conservative", s.conservative())));
+        List<Map<String, Object>> resultRows = new ArrayList<>();
+        simulation.scenarios().forEach(r -> {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("code", r.code());
+            row.put("state", r.state());
+            row.put("quantity", r.quantity() == null ? null : r.quantity().toPlainString());
+            row.put("netRevenue", r.netRevenue() == null ? null : r.netRevenue().toPlainString());
+            row.put("contributionProfit", r.contributionProfit() == null ? null : r.contributionProfit().toPlainString());
+            row.put("missingInputs", r.missingInputs());
+            resultRows.add(row);
+        });
+        UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(), listing.storeId(),
+                "MANUAL", MetricWindow.D30, now.minus(Duration.ofDays(30)), now, Digest.ofText("lc-simulation-1"), 1, 1, true,
+                null, now));
+        String inputsDigest = Digest.ofComponents(List.of(inputs.toString(), scenarios.toString(), String.valueOf(referenceProfitLine)));
+        UUID id = ids.newId();
+        evaluations.insertSimulation(id, listing.organizationId(), candidateId, runId, scenarioRows, inputsDigest, resultRows,
+                simulation.inverseMinimumQuantity(), simulation.inverseState(), simulation.demandGatePassed(), now);
+        return evaluations.simulations(candidateId).stream().filter(s -> s.id().equals(id)).findFirst().orElseThrow();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimulationView> simulations(UUID candidateId) {
+        return evaluations.simulations(candidateId);
+    }
+
+    static ActionScopeCode viewScope() {
+        return ActionScopeCode.LISTING_CONVERSION_VIEW;
+    }
+}

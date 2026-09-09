@@ -142,9 +142,43 @@ Readback for stock, and its absence is checked by test rather than asserted.
 | `AD_BID_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |
 | `AD_BUDGET_CHANGE` | none; deliberately never a controlled write | no capability exists |
 | `AD_CAMPAIGN_STATE_CHANGE` | none; deliberately never a controlled write | no capability exists |
-| `PROMOTION_PARTICIPATION_CHANGE` | SLICE-V1-004 | DISABLED / UNVERIFIED |
-| `LISTING_CONTENT_CHANGE` | SLICE-V1-004 | DISABLED / UNVERIFIED |
+| `LISTING_DESCRIPTION_CHANGE` (`listing-description-change`) | SLICE-V1-004; the one selected write | DISABLED / UNVERIFIED |
+| `PROMOTION_PARTICIPATION_CHANGE` | none; SLICE-V1-004 handles promotion participation and seller direct discount on the Manual path only | no Provider write capability exists |
+| `LISTING_CONTENT_CHANGE` (title, images, attributes other than the Description) | none; explicitly outside SLICE-V1-004 | no capability exists |
 | `ORDER_FULFILLMENT_ACTION` | SLICE-V1-005 | DISABLED / UNVERIFIED |
+
+## 5a. SLICE-V1-004 controlled-write capability: `LISTING_DESCRIPTION_CHANGE`
+
+`LISTING_DESCRIPTION_CHANGE` is the one new controlled write SLICE-V1-004 adds,
+and the only one: the exact Russian Description text of one listing. The
+capability code is `listing-description-change`, credential purpose
+`CONTENT_WRITE`, endpoint functions `DESCRIPTION_APPLY`, `DESCRIPTION_STATUS`,
+`DESCRIPTION_READBACK` and `DESCRIPTION_RESTORE`. A verified `APPLY` or
+`RESTORE` operation must name the one description attribute it changes
+(`description_attribute_key`) and render `{descriptionAttributeKey}` and
+`{descriptionText}`; a verified `READBACK` must name the observed text pointer.
+The registry trigger refuses any other shape, so a whole-card import can never
+become a verified operation of this capability, and the adapter guard refuses a
+rendered body that carries a non-target field, a second attribute, more leaves
+than one attribute needs, text that is not the approved text, or a marking
+declaration that is missing or differs from the declared value.
+
+| Field | Ozon | Wildberries |
+| --- | --- | --- |
+| Verification state | `UNVERIFIED`, fail-closed | `UNVERIFIED`, fail-closed |
+| Native method/endpoint | not recorded; requires `F-M01`/`F-M02` primary-source and account evidence | not recorded; requires `F-W01`/`F-W02` primary-source and account evidence |
+| Description attribute identity | not recorded; never guessed from documentation samples | not recorded; never guessed from documentation samples |
+| Marking (КИЗ) declaration semantics | not recorded; the command carries the declared value and the gate refuses an undeclared action | same |
+| Length bound | published only by an Owner calibration package (`DESCRIPTION_LENGTH_RULE`); no default | same |
+| Retry-after unit | minutes, converted and capped at one hour (`RetryAfterUnits`) pending evidence | seconds, capped at one hour, pending evidence |
+| Write result model | fail-closed until verified | fail-closed until verified |
+| Gate authority | `ops.lc_gate_authority` has no Java writer; `production_write_enabled` is `false` | same |
+| Kill switch | `listing-description-write` GLOBAL and CAPABILITY flags must both be `ENABLED`; any scoped `DISABLED` closes the gate | same |
+
+Real evidence for this row is `F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02` and
+`E-04`; none was obtained in the Level 1 local session, and the isolated fixture
+that exercises the gate proves only that everything except the Owner gate
+authority is complete.
 
 ## 6. Gate-EV authority before write evidence
 

@@ -124,17 +124,18 @@ class RecommendationStateTest {
     }
 
     @Nested
-    @DisplayName("TC-WF-004 exactly two actions have a platform write behind them")
+    @DisplayName("TC-WF-004 exactly three actions have a platform write behind them")
     class ActionCapability {
 
         @Test
-        void priceAndBidAreTheOnlyWriteCapableActions() {
+        void priceBidAndDescriptionAreTheOnlyWriteCapableActions() {
             Set<ActionKind> writeCapable = Set.of(ActionKind.values()).stream()
                     .filter(ActionKind::writeCapable)
                     .collect(java.util.stream.Collectors.toSet());
 
             assertThat(writeCapable)
-                    .containsExactlyInAnyOrder(ActionKind.PRICE_CHANGE, ActionKind.AD_BID_CHANGE);
+                    .containsExactlyInAnyOrder(ActionKind.PRICE_CHANGE, ActionKind.AD_BID_CHANGE,
+                            ActionKind.LISTING_DESCRIPTION_CHANGE);
         }
 
         @Test

@@ -296,6 +296,82 @@ public class PlatformCallSpecRepository {
                 .query(Boolean.class).single());
     }
 
+    /** What a current description attempt was opened for, re-derived from the command itself. */
+    public record DescriptionAttemptContext(int lengthBoundMin, int lengthBoundMax) {
+    }
+
+    /**
+     * The description attempt's context, or empty when the attempt is not current.
+     *
+     * <p>Like the advertising check, every value the caller supplied is
+     * re-derived from the command: the listing key, the text digest, the
+     * attribute key from the verified operation, the marking declaration, the
+     * idempotency key, the fence and lease, the credential's purpose and scope,
+     * the evidence currency and, for a mutating call, an open write gate.
+     */
+    public Optional<DescriptionAttemptContext> descriptionAttemptContext(
+            com.mimococo.marketops.marketplaceintegration.port.DescriptionWriteRequest request) {
+        return jdbc.sql("""
+                SELECT c.length_bound_min, c.length_bound_max
+                  FROM ops.lc_description_command_attempt a
+                  JOIN ops.lc_description_command c ON c.id=a.command_id
+                  JOIN core.store store ON store.id=c.store_id
+                  JOIN core.platform_listing listing ON listing.id=c.platform_listing_id
+                      AND listing.organization_id=c.organization_id
+                  JOIN platform.capability_operation operation ON operation.capability_id=c.capability_id
+                      AND operation.operation=a.purpose
+                  JOIN platform.credential_metadata credential
+                      ON credential.marketplace_account_id=store.marketplace_account_id
+                 WHERE a.id=:attempt AND a.request_digest=:digest AND a.outcome_class='IN_FLIGHT'
+                   AND a.purpose=:purpose AND c.capability_id=:capability
+                   AND listing.native_listing_key=:listing AND listing.status='OBSERVED'
+                   AND :idempotency=CASE WHEN a.purpose='RESTORE'
+                       THEN encode(sha256(convert_to(c.idempotency_key||chr(31)||'RESTORE'||chr(31),'UTF8')),'hex')
+                       ELSE c.idempotency_key END
+                   AND (a.purpose NOT IN ('APPLY','RESTORE') OR (
+                       CAST(:textDigest AS text)=CASE WHEN a.purpose='RESTORE'
+                           THEN encode(sha256(convert_to(c.prior_text,'UTF8')),'hex')
+                           ELSE c.target_text_digest END
+                       AND CAST(:attributeKey AS text)=operation.description_attribute_key
+                       AND CAST(:kizMarked AS boolean)=c.kiz_marked_declared))
+                   AND CASE WHEN a.purpose='STATUS_ENQUIRY'
+                       THEN CAST(:task AS text)=(SELECT prior.native_task_key
+                           FROM ops.lc_description_command_attempt prior
+                           WHERE prior.command_id=c.id AND prior.native_task_key IS NOT NULL
+                           ORDER BY prior.started_at DESC,prior.attempt_no DESC LIMIT 1)
+                       ELSE CAST(:task AS text) IS NULL END
+                   AND c.fence_token=a.fence_token AND c.lease_owner=a.lease_owner
+                   AND c.lease_expires_at > clock_timestamp()
+                   AND (a.purpose<>'APPLY' OR c.approval_expires_at > clock_timestamp())
+                   AND a.expected_version_token IS NOT DISTINCT FROM CAST(:precondition AS text)
+                   AND a.operation_snapshot=platform.lc_description_operation_snapshot(c.capability_id,a.purpose)
+                   AND platform.capability_evidence_current(store.marketplace_account_id,c.capability_id,
+                       (a.operation_snapshot #>> '{operation,endpoint_id}')::uuid)
+                   AND credential.id=:credential AND credential.organization_id=c.organization_id
+                   AND credential.purpose_code='CONTENT_WRITE' AND credential.status='ACTIVE'
+                   AND credential.effective_from<=clock_timestamp()
+                   AND credential.expires_at>clock_timestamp()
+                   AND (credential.scope_mode='ACCOUNT' OR EXISTS (
+                       SELECT 1 FROM platform.credential_store_scope scope
+                       WHERE scope.credential_id=credential.id AND scope.store_id=store.id
+                         AND scope.status='ACTIVE'))
+                   AND (a.purpose NOT IN ('APPLY','RESTORE')
+                       OR cardinality(ops.evaluate_lc_description_write_gate(c.id))=0)
+                """).param("attempt",request.attemptId()).param("digest",request.digest())
+                .param("purpose",request.operation().name()).param("capability",request.capabilityId())
+                .param("listing",request.nativeListingKey())
+                .param("idempotency",request.idempotencyKey())
+                .param("textDigest",request.descriptionText()==null?null
+                        :com.mimococo.marketops.shared.Digest.ofText(request.descriptionText()))
+                .param("attributeKey",request.descriptionAttributeKey())
+                .param("kizMarked",request.kizMarkedDeclared())
+                .param("task",request.nativeTaskKey())
+                .param("credential",request.credentialId()).param("precondition",request.expectedVersionToken())
+                .query((rs, n) -> new DescriptionAttemptContext(rs.getInt("length_bound_min"),
+                        rs.getInt("length_bound_max")))
+                .optional();
+    }
+
     private static EndpointCallSpec mapSpec(ResultSet rows, int rowNumber) throws SQLException {
         // wasNull reports on the column read immediately before it, so the
         // absence of a rate limit is captured here rather than inside the

@@ -1,0 +1,156 @@
+package com.mimococo.marketops;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.UUID;
+import javax.sql.DataSource;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+/**
+ * The description write gate, asserted from the outside.
+ *
+ * <p>With the capability verified and available, both switches on, the listing
+ * allowlisted, the approval standing, the action launched and its allowance
+ * occupied, the one thing that still closes the gate is the Owner-published
+ * gate authority with production writes disabled. Nothing in this product can
+ * open it; the database refuses the lease while it is closed.
+ */
+class ListingDescriptionWriteGateIT {
+
+    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE = TestDatabase.isolatedContainer();
+    private static DataSource migration;
+    private static DataSource application;
+    private static DataSource admin;
+
+    @BeforeAll
+    static void database() {
+        migration = new DriverManagerDataSource(DATABASE.getJdbcUrl(), TestDatabase.migrationRole(),
+                TestDatabase.migrationPassword());
+        application = new DriverManagerDataSource(DATABASE.getJdbcUrl(), TestDatabase.applicationRole(),
+                TestDatabase.applicationPassword());
+        admin = new DriverManagerDataSource(DATABASE.getJdbcUrl(), DATABASE.getUsername(), DATABASE.getPassword());
+        Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
+    }
+
+    private static ListingConversionFixture launched() throws Exception {
+        var f = new ListingConversionFixture(migration, application, admin);
+        assertThat(f.launch(UUID.randomUUID(), "actionOne", f.id("ownerUser")).path("launched").asBoolean()).isTrue();
+        return f;
+    }
+
+    @Test
+    @DisplayName("TC-LC-GATE-001 a launched API action becomes exactly one command, and the gate names only the authority")
+    void gateIsClosedOnlyByTheOwnerAuthority() throws Exception {
+        var f = launched();
+
+        UUID command = f.createCommand(f.id("actionOne"), f.id("ownerUser"));
+
+        assertThat(f.createCommand(f.id("actionOne"), f.id("ownerUser"))).isEqualTo(command);
+        assertThat(f.app.sql("SELECT state, prior_text, idempotency_key FROM ops.lc_description_command WHERE id = :id")
+                .param("id", command).query((rs, n) -> rs.getString(1) + "|" + rs.getString(2) + "|" + rs.getString(3)).single())
+                .isEqualTo("PENDING|" + ListingConversionFixture.PRIOR_TEXT_ONE + "|lcd-"
+                        + f.id("actionOne").toString().replace("-", ""));
+        assertThat(f.gateReasons(command)).containsExactly("PRODUCTION_WRITE_DISABLED");
+        assertThatThrownBy(() -> f.app.sql("SELECT ops.lease_lc_description_command(:id, 'fixture-worker', 60)")
+                .param("id", command).query(Long.class).single())
+                .hasMessageContaining("PRODUCTION_WRITE_DISABLED");
+        assertThat(f.app.sql("SELECT state FROM ops.lc_description_command WHERE id = :id").param("id", command)
+                .query(String.class).single()).isEqualTo("PENDING");
+    }
+
+    @Test
+    @DisplayName("TC-LC-GATE-002 the application role cannot write a command, an attempt or a readback itself")
+    void applicationRoleCannotWriteTheOutbox() throws Exception {
+        var f = launched();
+        for (String table : java.util.List.of("ops.lc_description_command", "ops.lc_description_command_attempt",
+                "ops.lc_description_command_readback", "ops.lc_description_command_transition",
+                "raw.lc_description_response_observation", "ops.lc_gate_authority")) {
+            for (String privilege : java.util.List.of("INSERT", "UPDATE", "DELETE")) {
+                assertThat(f.app.sql("SELECT has_table_privilege('marketops_app', :table, :privilege)")
+                        .param("table", table).param("privilege", privilege).query(Boolean.class).single())
+                        .describedAs("%s %s", table, privilege).isFalse();
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("TC-LC-GATE-003 a scoped kill switch, an elapsed approval and a containment each close the gate by name")
+    void eachClosureIsNamed() throws Exception {
+        var f = launched();
+        UUID command = f.createCommand(f.id("actionOne"), f.id("ownerUser"));
+
+        f.seed.sql("""
+                INSERT INTO platform.feature_flag(id,flag_code,flag_kind,scope_kind,store_id,state,status,reason,created_at,updated_at)
+                VALUES (gen_random_uuid(),'listing-description-write','WRITE_CAPABILITY','STORE',:store,'DISABLED','ACTIVE','fixture stop',now(),now())
+                """).param("store", f.id("store")).update();
+        assertThat(f.gateReasons(command)).contains("SCOPED_SWITCH_DISABLED", "PRODUCTION_WRITE_DISABLED");
+
+        f.seed.sql("UPDATE ops.approval_decision SET scope_expires_at = clock_timestamp() - interval '1 second' WHERE id = :id")
+                .param("id", f.id("approvalOne")).update();
+        f.seed.sql("UPDATE ops.lc_action_binding SET expires_at = clock_timestamp() - interval '1 second' WHERE id = :id")
+                .param("id", f.id("bindingOne")).update();
+        assertThat(f.gateReasons(command)).contains("AUTHORIZATION_INVALID_OR_EXPIRED", "BINDING_EXPIRED");
+
+        f.contain(UUID.randomUUID(), f.id("ownerUser"), f.id("listing"));
+        assertThat(f.gateReasons(command)).contains("SCOPE_CONTAINED", "ACTION_NOT_LAUNCHED");
+    }
+
+    @Test
+    @DisplayName("TC-LC-GATE-004 only a launched description change on the API path becomes a command")
+    void manualOrUnlaunchedActionsNeverBecomeCommands() throws Exception {
+        var f = new ListingConversionFixture(migration, application, admin);
+
+        assertThatThrownBy(() -> f.createCommand(f.id("actionOne"), f.id("ownerUser")))
+                .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        f.launch(UUID.randomUUID(), "actionTwo", f.id("ownerUser"));
+        assertThatThrownBy(() -> f.createCommand(f.id("actionTwo"), f.id("ownerUser")))
+                .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_description_command").query(Integer.class).single()).isZero();
+    }
+
+    @Test
+    @DisplayName("TC-LC-GATE-005 a moved current text or a stale action version refuses command creation")
+    void movedTextRefusesCreation() throws Exception {
+        var f = launched();
+        f.seed.sql("""
+                INSERT INTO core.lc_description_observation(id,organization_id,provenance_id,platform_listing_id,source_fact_key,
+                    observed_at,acquired_at,description_text,text_digest,language_code,kiz_marked_declared)
+                VALUES (gen_random_uuid(),:org,:provenance,:listing,'fictional-description-moved',now(),now(),
+                    'Текст, изменённый кем-то ещё',encode(sha256(convert_to('Текст, изменённый кем-то ещё','UTF8')),'hex'),'ru',false)
+                """).param("org", f.id("organization")).param("provenance", f.id("provenance"))
+                .param("listing", f.id("listing")).update();
+
+        assertThatThrownBy(() -> f.createCommand(f.id("actionOne"), f.id("ownerUser")))
+                .hasMessageContaining("CURRENT_TEXT_MOVED");
+        assertThatThrownBy(() -> f.app.sql("SELECT ops.create_lc_description_command(:action, :actor, 999, 'listing-fixture')")
+                .param("action", f.id("actionOne")).param("actor", f.id("ownerUser")).query(UUID.class).single())
+                .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO090"));
+    }
+
+    @Test
+    @DisplayName("TC-LC-GATE-006 with every other condition met, the Owner authority alone decides")
+    void theOwnerAuthorityAloneDecides() throws Exception {
+        var f = launched();
+        UUID command = f.createCommand(f.id("actionOne"), f.id("ownerUser"));
+        assertThat(f.gateReasons(command)).containsExactly("PRODUCTION_WRITE_DISABLED");
+
+        // A test-only isolated server: the Owner's row is flipped here to prove
+        // the chain behind it is complete, and nowhere else.
+        f.seed.sql("UPDATE ops.lc_gate_authority SET production_write_enabled = true WHERE id = :id")
+                .param("id", f.id("gateAuthority")).update();
+        assertThat(f.gateReasons(command)).isEmpty();
+
+        f.seed.sql("UPDATE ops.lc_gate_authority SET production_write_enabled = false WHERE id = :id")
+                .param("id", f.id("gateAuthority")).update();
+        assertThat(f.gateReasons(command)).containsExactly("PRODUCTION_WRITE_DISABLED");
+        assertThatThrownBy(() -> f.seed.sql(
+                "UPDATE ops.lc_gate_authority SET production_write_enabled = true, status = 'SUSPENDED' WHERE id = :id")
+                .param("id", f.id("gateAuthority")).update())
+                .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("23514"));
+    }
+}

@@ -631,6 +631,12 @@ class MigrationContractTests(unittest.TestCase):
                 "V0071__align_frozen_outcome_company_profile_scope.sql",
                 "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
                 "V0073__require_complete_independent_manual_observation.sql",
+                "V0074__widen_shared_spine_for_listing_conversion.sql",
+                "V0075__create_listing_conversion_facts_and_health.sql",
+                "V0076__create_listing_calibration_and_exposure_allowance.sql",
+                "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
+                "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
+                "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
             ),
             APPROVED_MIGRATIONS,
         )

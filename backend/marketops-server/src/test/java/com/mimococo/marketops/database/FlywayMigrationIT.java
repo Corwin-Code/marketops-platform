@@ -106,7 +106,13 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0070__record_canonical_metric_reevaluation_proofs.sql",
             "V0071__align_frozen_outcome_company_profile_scope.sql",
             "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
-            "V0073__require_complete_independent_manual_observation.sql");
+            "V0073__require_complete_independent_manual_observation.sql",
+            "V0074__widen_shared_spine_for_listing_conversion.sql",
+            "V0075__create_listing_conversion_facts_and_health.sql",
+            "V0076__create_listing_calibration_and_exposure_allowance.sql",
+            "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
+            "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
+            "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql");
 
     private static PostgreSQLContainer container;
 
@@ -200,6 +206,16 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.inbound_supply_attestation",
                     "core.inbound_supply_attestation_version",
                     "core.internal_stock_snapshot",
+                    "core.lc_affected_set",
+                    "core.lc_calibration_category",
+                    "core.lc_calibration_package",
+                    "core.lc_calibration_value",
+                    "core.lc_description_observation",
+                    "core.lc_display_observation",
+                    "core.lc_official_summary_observation",
+                    "core.lc_summary_equivalence_profile",
+                    "core.lc_visit_fact",
+                    "core.lc_visit_purchase_link",
                     "core.lead_time_safety_policy",
                     "core.legal_entity",
                     "core.listing_health_observation",
@@ -268,6 +284,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.diagnosis_rule",
                     "mart.diagnosis_rule_input",
                     "mart.diagnostic_export_row",
+                    "mart.lc_conversion_measurement",
+                    "mart.lc_feedback_theme",
+                    "mart.lc_listing_health",
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
@@ -344,6 +363,35 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.ingestion_checkpoint",
                     "ops.ingestion_run",
                     "ops.kill_switch_event",
+                    "ops.lc_action",
+                    "ops.lc_action_binding",
+                    "ops.lc_action_review",
+                    "ops.lc_action_transition",
+                    "ops.lc_batch",
+                    "ops.lc_batch_member",
+                    "ops.lc_candidate",
+                    "ops.lc_collaboration_link",
+                    "ops.lc_containment",
+                    "ops.lc_containment_attestation",
+                    "ops.lc_description_command",
+                    "ops.lc_description_command_attempt",
+                    "ops.lc_description_command_readback",
+                    "ops.lc_description_command_transition",
+                    "ops.lc_evaluation_plan",
+                    "ops.lc_exposure_allowance",
+                    "ops.lc_exposure_occupation",
+                    "ops.lc_gate_authority",
+                    "ops.lc_isolation_dependency",
+                    "ops.lc_late_association",
+                    "ops.lc_launch",
+                    "ops.lc_manual_packet",
+                    "ops.lc_manual_report",
+                    "ops.lc_manual_verification",
+                    "ops.lc_node_result",
+                    "ops.lc_outcome_revision",
+                    "ops.lc_promotion_engagement",
+                    "ops.lc_recalculation_queue",
+                    "ops.lc_simulation",
                     "ops.metadata_audit_event",
                     "ops.pilot_allowlist_entry",
                     "ops.policy_authorization",
@@ -378,6 +426,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "platform.platform_permission_requirement",
                     "platform.registry_verification_case",
                     "raw.ad_bid_response_observation",
+                    "raw.lc_description_response_observation",
                     "raw.price_response_observation",
                     "raw.raw_acquisition_observation",
                     "raw.raw_content",
@@ -389,8 +438,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "staging.normalization_checkpoint",
                     "staging.normalization_field",
                     "staging.normalization_mapping",
-                    "staging.schema_drift_observation"
-            );
+                    "staging.schema_drift_observation");
         }
     }
 
@@ -411,7 +459,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(strings(connection,
                     "SELECT code FROM platform.credential_purpose ORDER BY code"))
                     .containsExactly(
-                            "ADS_WRITE", "FINANCE", "INVENTORY_WRITE", "PRICE_WRITE", "READ");
+                            "ADS_WRITE", "CONTENT_WRITE", "FINANCE", "INVENTORY_WRITE", "PRICE_WRITE",
+                            "READ");
             assertThat(strings(connection,
                     "SELECT kind FROM platform.control_boundary_kind ORDER BY ordinal"))
                     .containsExactly(
@@ -449,7 +498,13 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             "ADVERTISING_DECISION_EVIDENCE_VIEW", "ADVERTISING_MANUAL_EXECUTE",
                             "ADVERTISING_MANUAL_VERIFY", "ADVERTISING_MANUAL_ENDORSE",
                             "ADVERTISING_MANUAL_APPROVE", "ADVERTISING_TECHNICAL_STOP",
-                            "ADVERTISING_TECHNICAL_ATTEST");
+                            "ADVERTISING_TECHNICAL_ATTEST",
+                            "LISTING_CONVERSION_VIEW", "LISTING_ACTION_PREPARE",
+                            "LISTING_ACTION_REVIEW", "LISTING_ACTION_APPROVE_ORDINARY",
+                            "LISTING_ACTION_APPROVE_MATERIAL", "LISTING_ACTION_LAUNCH",
+                            "LISTING_MANUAL_EXECUTE", "LISTING_MANUAL_VERIFY",
+                            "LISTING_CONTAINMENT_STOP", "LISTING_CONTAINMENT_ATTEST",
+                            "LISTING_CONTAINMENT_CONSENT", "LISTING_PROMOTION_MANAGE");
             // A role matrix that grew without review is the quiet way a
             // read-only profile acquires the ability to move a price.
             assertThat(strings(connection,
@@ -480,7 +535,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "SELECT action_code FROM iam.business_role_action_scope"
                             + " WHERE role_code = 'AUDITOR' ORDER BY action_code"))
                     .containsExactly("ADVERTISING_DECISION_EVIDENCE_VIEW", "ADVERTISING_VIEW", "AVAILABILITY_VIEW",
-                            "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
+                            "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW", "LISTING_CONVERSION_VIEW");
             // Initial Material requires distinct Maker, Operations and Owner.
             // The exact later Ordinary promotion may permit the same endorsing
             // Operations Lead to finalize; SQL checks the live per-command route

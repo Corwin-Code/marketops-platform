@@ -55,6 +55,17 @@ class SoleAuthorityArchitectureTest {
                     "the ops.record_ad_bid_command_readback function"),
             Map.entry("ops.ad_bid_command_transition", "the ad bid transition function"),
             Map.entry("ops.price_command", "marketplaceintegration PriceCommandRepository"),
+            Map.entry("ops.lc_description_command", "the ops.create_lc_description_command function"),
+            Map.entry("ops.lc_description_command_attempt",
+                    "the ops.open_lc_description_command_attempt function"),
+            Map.entry("ops.lc_description_command_readback",
+                    "the ops.record_lc_description_command_readback function"),
+            Map.entry("ops.lc_description_command_transition", "the description transition function"),
+            Map.entry("ops.lc_launch", "the ops.acquire_lc_launch_allowance function"),
+            Map.entry("ops.lc_exposure_occupation", "the launch, observe and release functions"),
+            Map.entry("ops.lc_containment", "the ops.record_lc_containment function"),
+            Map.entry("ops.lc_containment_attestation", "the ops.attest_lc_containment function"),
+            Map.entry("raw.lc_description_response_observation", "marketplaceintegration RawCustody"),
             Map.entry("raw.ad_bid_response_observation", "marketplaceintegration RawCustody"),
             Map.entry("mart.metric_value", "analyticsdecision"),
             Map.entry("mart.metric_value_evaluation", "analyticsdecision"),
@@ -83,7 +94,13 @@ class SoleAuthorityArchitectureTest {
             Map.entry("core.ad_allowable_cpa_definition", "owner-published allowable CPA"),
             Map.entry("core.ad_freshness_profile", "owner-published freshness bounds"),
             Map.entry("core.ad_optimization_qualification_policy",
-                    "owner-published qualification tiers"));
+                    "owner-published qualification tiers"),
+            Map.entry("core.lc_calibration_package", "owner-published listing calibration package"),
+            Map.entry("core.lc_calibration_value", "owner-published listing calibration value"),
+            Map.entry("core.lc_calibration_category", "owner-published listing calibration catalogue"),
+            Map.entry("core.lc_summary_equivalence_profile", "owner-published summary equivalence proof"),
+            Map.entry("ops.lc_exposure_allowance", "owner-published exposure allowance"),
+            Map.entry("ops.lc_gate_authority", "owner-published description write gate authority"));
 
     /** Statements that write. A SELECT of any of these tables is fine. */
     private static final Pattern WRITE_STATEMENT = Pattern.compile(
@@ -221,6 +238,62 @@ class SoleAuthorityArchitectureTest {
                 }
             }
             assertThat(creators).containsExactly("V0045__create_ad_bid_command_from_approval.sql");
+        }
+    }
+
+    @Nested
+    @DisplayName("TC-AUTHORITY-004 listingconversion writes nothing a function or another module owns")
+    class ListingConversionAuthority {
+
+        @Test
+        @DisplayName("no SQL in the module writes a table with a writer elsewhere")
+        void noSqlInTheModuleWritesAForeignTable() throws IOException {
+            List<String> violations = new ArrayList<>();
+            for (Path file : javaFilesUnder(SOURCE_ROOT.resolve("listingconversion"))) {
+                violations.addAll(foreignWriteViolations(file,
+                        Files.readString(file, StandardCharsets.UTF_8)));
+            }
+            // The listing module prepares, reviews, evaluates and reports. The
+            // recommendation, the approval, the launch, the occupation, the
+            // containment and the command are all written by somebody else.
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("no Java anywhere inserts a description command, a launch, an occupation or a containment")
+        void noJavaWritesAFunctionOwnedListingTable() throws IOException {
+            List<String> violations = new ArrayList<>();
+            for (Path file : javaFilesUnder(SOURCE_ROOT)) {
+                String source = Files.readString(file, StandardCharsets.UTF_8);
+                var matcher = WRITE_STATEMENT.matcher(source);
+                while (matcher.find()) {
+                    String table = matcher.group(2).toLowerCase(Locale.ROOT);
+                    if (table.startsWith("ops.lc_description_command") || table.equals("ops.lc_launch")
+                            || table.equals("ops.lc_exposure_occupation")
+                            || table.startsWith("ops.lc_containment")
+                            || table.equals("ops.lc_gate_authority")) {
+                        violations.add(file.getFileName() + " " + matcher.group(1) + " " + table);
+                    }
+                }
+            }
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("the migration defines exactly one function that inserts a description command")
+        void exactlyOneFunctionCreatesDescriptionCommands() throws IOException {
+            Path migrations = Path.of("src/main/resources/db/migration");
+            List<String> creators = new ArrayList<>();
+            try (Stream<Path> files = Files.list(migrations)) {
+                for (Path file : files.filter(p -> p.toString().endsWith(".sql")).toList()) {
+                    String sql = Files.readString(file, StandardCharsets.UTF_8);
+                    if (sql.matches("(?is).*insert\\s+into\\s+ops\\.lc_description_command\\s*\\(.*")) {
+                        creators.add(file.getFileName().toString());
+                    }
+                }
+            }
+            assertThat(creators).containsExactly(
+                    "V0078__create_listing_description_command_outbox_readback_and_gate.sql");
         }
     }
 

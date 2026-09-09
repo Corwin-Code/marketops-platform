@@ -39,11 +39,26 @@ public record WriteOperationSpec(
         String conditionalWriteHeader,
         String acceptedPointer,
         tools.jackson.databind.JsonNode acceptedValue,
-        java.util.Set<String> taskPendingValues) {
+        java.util.Set<String> taskPendingValues,
+        String descriptionObservedTextPointer,
+        String descriptionKizMarkedPointer,
+        String descriptionAttributeKey) {
 
     public WriteOperationSpec {
         taskPendingValues = taskPendingValues == null ? java.util.Set.of() : java.util.Set.copyOf(taskPendingValues);
         acceptedValue = acceptedValue == null ? null : acceptedValue.deepCopy();
+    }
+
+    public WriteOperationSpec(UUID capabilityId, String platformCode, String operation,
+            String writeResultModel, String requestTemplate, String taskKeyPointer,
+            String taskStatusPointer, String taskSuccessValue, String taskFailureValue,
+            String observedPricePointer, String observedCurrencyPointer, EndpointCallSpec endpoint,
+            String conditionalWriteHeader, String acceptedPointer,
+            tools.jackson.databind.JsonNode acceptedValue, java.util.Set<String> taskPendingValues) {
+        this(capabilityId, platformCode, operation, writeResultModel, requestTemplate,
+                taskKeyPointer, taskStatusPointer, taskSuccessValue, taskFailureValue,
+                observedPricePointer, observedCurrencyPointer, endpoint, conditionalWriteHeader,
+                acceptedPointer, acceptedValue, taskPendingValues, null, null, null);
     }
 
     public WriteOperationSpec(UUID capabilityId, String platformCode, String operation,

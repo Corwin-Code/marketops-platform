@@ -1,0 +1,74 @@
+{
+  "slice": "SLICE-V1-004",
+  "checkpoint": "LEVEL_1_LOCAL",
+  "base_commit": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+  "base_tree": "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+  "preserved_migrations": {
+    "range": "V0001-V0073",
+    "count": 73,
+    "byte_changes_in_this_checkpoint": 0
+  },
+  "new_migrations": [
+    {
+      "version": "V0074",
+      "file": "backend/marketops-server/src/main/resources/db/migration/V0074__widen_shared_spine_for_listing_conversion.sql",
+      "bytes": 25911,
+      "lines": 456,
+      "sha256": "d0e4f69901e74653c33d2ea2894e7516114cd47226a1d5f9c9d7727804cf7b7b",
+      "forward_only": true,
+      "authority": "Shared-Spine widening: LISTING_CONVERSION audit domain, listing action scopes and role matrix, workflow vocabularies (LISTING_DESCRIPTION_CHANGE, LISTING_PROMOTION_ACTION), credential purpose CONTENT_WRITE, description endpoint functions and operation pointers, write registry vocabulary and shape, readback shape admitting an observed-text pointer, control invocation purposes, ops.lc_actor_holds_action"
+    },
+    {
+      "version": "V0075",
+      "file": "backend/marketops-server/src/main/resources/db/migration/V0075__create_listing_conversion_facts_and_health.sql",
+      "bytes": 31910,
+      "lines": 571,
+      "sha256": "be3289b284de29594248532483b9860f15a35ea5c2f20a72140597388aa31a52",
+      "forward_only": true,
+      "authority": "Listing conversion facts, affected sets and digest, description/display/visit observations, purchase links, owner-published summary equivalence profiles, official summaries, conversion measurement, three-layer Listing Health projection, feedback themes, collaboration links"
+    },
+    {
+      "version": "V0076",
+      "file": "backend/marketops-server/src/main/resources/db/migration/V0076__create_listing_calibration_and_exposure_allowance.sql",
+      "bytes": 19926,
+      "lines": 370,
+      "sha256": "e6ba9ea30a68315ec4f59dc5080f5402cff4a57efd09a11590525e4eaa96d433",
+      "forward_only": true,
+      "authority": "Owner-published calibration packages, categories and values with complete-combination activation, core.lc_resolve_calibration, exposure allowances, guardrail evaluation third authority (lc_calibration_package_id/version, exactly one of three)"
+    },
+    {
+      "version": "V0077",
+      "file": "backend/marketops-server/src/main/resources/db/migration/V0077__create_listing_actions_launch_manual_path_and_containment.sql",
+      "bytes": 91248,
+      "lines": 1648,
+      "sha256": "40e3c8fe150b69458419748396cf6a30fb5d1e43871e5d5e19862e39e5766a82",
+      "forward_only": true,
+      "authority": "Candidates, actions and lawful transitions, review, binding and gaps, evaluation plan, batches, containment and attestation, isolation dependencies, launch and occupation with ops.acquire_lc_launch_allowance, manual packet/report/verification, promotion engagement and exit, ops.lc_authority_snapshot and the listing branch of ops.bind_price_authority_snapshot"
+    },
+    {
+      "version": "V0078",
+      "file": "backend/marketops-server/src/main/resources/db/migration/V0078__create_listing_description_command_outbox_readback_and_gate.sql",
+      "bytes": 75771,
+      "lines": 1304,
+      "sha256": "f7d5f190147bc1b96ecf4ca0f8f38e50c012495dcad16ba31af5214b3ba49e3f",
+      "forward_only": true,
+      "authority": "Description command (sole writer: SECURITY DEFINER functions), transitions, attempts, readbacks, raw response custody, ops.evaluate_lc_description_write_gate, lease/status/readback/compensation/recovery functions"
+    },
+    {
+      "version": "V0079",
+      "file": "backend/marketops-server/src/main/resources/db/migration/V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
+      "bytes": 19240,
+      "lines": 339,
+      "sha256": "a1ae88615f82e4e96f24c095c58006efeb53fecd0c662523e4f142a72e1b9182",
+      "forward_only": true,
+      "authority": "Node results and protection verdicts, outcome revisions, simulations, late association, recalculation queue"
+    }
+  ],
+  "local_apply": {
+    "database": "isolated PostgreSQL 16 at 127.0.0.1:55432 (session-local, not a shared environment)",
+    "roles": "marketops_migration applies; marketops_app exercised",
+    "result": "V0001-V0079 applied cleanly in order, one transaction per file",
+    "testcontainers_flyway_it": "NOT_RUN (no container runtime in this session; FlywayMigrationIT compiled with APPROVED_MIGRATIONS extended to V0079)"
+  },
+  "rollback": "Forward-only. Every new object is additive under the lc_ prefix or a widening CHECK/vocabulary insert; a corrective change is a later forward migration, never an edit of V0074-V0079 once applied outside this session."
+}

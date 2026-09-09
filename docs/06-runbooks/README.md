@@ -31,6 +31,10 @@
 | `advertising-reenablement.md` | Restarting advertising after a stop: five conditions and two people |
 | `advertising-task-history.md` | Reading what actually happened to a piece of work, and what a page view is not |
 | `advertising-brief-and-review.md` | A brief that is missing, changed since you read it, or reporting a figure you doubt |
+| `listing-description-command-resolution.md` | A description change that will not progress: closed gate, unknown result, mismatch or an impossible restore |
+| `listing-launch-and-allowance.md` | An approved listing action that did not launch, and releasing an allowance with evidence |
+| `listing-containment-and-reenablement.md` | Stopping listing work at the right scope and restarting it with two people |
+| `listing-manual-path.md` | Applying an approved description by hand, independent verification and promotion engagements |
 
 Still required before V1 production enablement: credential expiry, schema
 change, inventory drift, finance mismatch and personal-data incident

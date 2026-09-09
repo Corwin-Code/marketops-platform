@@ -296,6 +296,8 @@ public class RecommendationService
             case LISTING_CONTENT_REVIEW -> "Review the listing content";
             case ADVERTISING_REVIEW -> "Review advertising spend for this variant";
             case COST_DATA_REVIEW -> "Correct or supply the cost data";
+            case LISTING_DESCRIPTION_CHANGE -> "Review the proposed listing description change";
+            case LISTING_PROMOTION_ACTION -> "Review the proposed promotion action";
         };
     }
 

@@ -139,14 +139,19 @@ public class KillSwitchRepository {
 
     /** Which price-write switches exist and what state they are in. */
     public List<FlagRow> priceWriteFlags() {
+        return flags("price-change-write");
+    }
+
+    public List<FlagRow> flags(String flagCode) {
         return jdbc.sql("""
                         SELECT id, scope_kind, platform_code, marketplace_account_id, store_id,
                                capability_id, state, status, updated_at
                           FROM platform.feature_flag
-                         WHERE flag_code = 'price-change-write'
+                         WHERE flag_code = :flagCode
                          ORDER BY scope_kind
                         """)
-                .query(KillSwitchRepository::mapFlag)
+                .param("flagCode", flagCode)
+                        .query(KillSwitchRepository::mapFlag)
                 .list();
     }
 

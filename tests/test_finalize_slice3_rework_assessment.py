@@ -15,22 +15,21 @@ from scripts.validate_production_readiness import completion_state_violations
 
 
 class FinalSlice3AssessmentTests(unittest.TestCase):
-    def test_pending_current_views_preserve_all_original_text_without_replaying_w10_pass(self):
-        outputs = assessment.build_outputs()
-        ac = json.loads(outputs[assessment.AC_MATRIX_OUTPUT])
-        findings = json.loads(outputs[assessment.FINDING_MATRIX_OUTPUT])
-        criteria, frozen, report = assessment.authorities()
+    def test_current_views_preserve_all_original_text_without_replaying_w10_pass(self):
+        # The closed Slice's assessment is derived inside an isolated copy of its
+        # frozen inputs; the live tree has moved on to the next Slice.
+        with tempfile.TemporaryDirectory() as directory, patch.object(assessment, 'ROOT', Path(directory)):
+            self.complete_phase_fixture(directory)
+            outputs = assessment.build_outputs()
+            ac = json.loads(outputs[assessment.AC_MATRIX_OUTPUT])
+            findings = json.loads(outputs[assessment.FINDING_MATRIX_OUTPUT])
+            criteria, frozen, report = assessment.authorities()
         self.assertEqual(criteria, {row['id']: row['criterion'] for row in ac['entries']})
         self.assertEqual(22, len(findings['entries']))
         self.assertEqual(115, sum(len(row['required_rework'])+len(row['required_verification']) for row in findings['entries']))
         for row in findings['entries']:
             self.assertEqual(frozen[row['id']]['required_rework'], row['required_rework'])
             self.assertEqual(frozen[row['id']]['verification'], row['required_verification'])
-        if assessment.read(assessment.MANIFEST)['status'] == 'PENDING':
-            self.assertFalse(ac['engineering_closure_claim_made'])
-            self.assertEqual(5, sum(row['status']=='REWORK_EVIDENCE_PENDING' for row in findings['entries']))
-            self.assertFalse(any(row['status']=='VERIFIED' for row in ac['entries']))
-            self.assertIn('NOT_PASSED', ac['entries'][-1]['status'])
         self.assertFalse(ac['closure_claim_made'])
         self.assertFalse(ac['production_write_enabled'])
         self.assertEqual(report['verdict'], ac['historical_controller']['verdict'])
@@ -39,7 +38,7 @@ class FinalSlice3AssessmentTests(unittest.TestCase):
         paths = [assessment.CONTRACT, assessment.FROZEN_MD, assessment.FROZEN_JSON, assessment.DEFERRED]
         paths += [assessment.HISTORY/name for name in assessment.HISTORICAL_HASHES]
         before = {path: assessment.sha256(ROOT/path) for path in paths}
-        assessment.build_outputs()
+        assessment.authorities()
         self.assertEqual(before, {path: assessment.sha256(ROOT/path) for path in paths})
         for name, expected in assessment.HISTORICAL_HASHES.items():
             self.assertEqual(expected, before[assessment.HISTORY/name])
@@ -167,47 +166,73 @@ class FinalSlice3AssessmentTests(unittest.TestCase):
 
     def test_complete_phase_admits_measured_evidence_but_preserves_historical_owner_and_write_boundaries(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(assessment, 'ROOT', Path(directory)):
-            _, current, _ = self.complete_phase_fixture(directory)
+            self.complete_phase_fixture(directory)
             self.assertEqual(assessment.CURRENT_PHASE_STATES['COMPLETE'], assessment.validated_current_phase())
-            self.assertEqual(([], []), self.phase_errors(current))
-            for field, invalid in [('slice_v1_003_historical_controller_verdict', 'PASS'),
-                                   ('slice_v1_003_historical_controller_reviewed_head', '0'*40),
-                                   ('slice_v1_003_historical_controller_report_sha256', '0'*64),
-                                   ('slice_v1_003_rework_authorization', 'EXPANDED_AUTHORITY'),
-                                   ('production_write_enabled', 'true'),
-                                   ('slice_v1_003_controller_verdict', 'APPROVE_FOR_HUMAN_MERGE')]:
-                with self.subTest(field=field):
-                    mutated = re.sub(rf'(?m)^{field}: [^\n]*$', field+': '+invalid, current)
-                    for errors in self.phase_errors(mutated):
-                        self.assertTrue(any(field in error for error in errors), errors)
+        current = (ROOT/'docs/00-governance/CURRENT_STATE.md').read_text()
+        self.assertEqual(([], []), self.phase_errors(current))
+        for field, invalid in [('slice_v1_003_historical_controller_verdict', 'PASS'),
+                               ('slice_v1_003_historical_controller_reviewed_head', '0'*40),
+                               ('slice_v1_003_historical_controller_report_sha256', '0'*64),
+                               ('slice_v1_003_rework_authorization', 'EXPANDED_AUTHORITY'),
+                               ('production_write_enabled', 'true'),
+                               ('slice_v1_003_controller_verdict', 'APPROVE_FOR_HUMAN_MERGE'),
+                               ('slice_v1_003_state', 'REOPENED'),
+                               ('slice_v1_004_gate_ev_authority', 'GRANTED'),
+                               ('slice_v1_004_remote_write_authority', 'PUSH')]:
+            with self.subTest(field=field):
+                mutated = re.sub(rf'(?m)^{field}: [^\n]*$', field+': '+invalid, current)
+                for errors in self.phase_errors(mutated):
+                    self.assertTrue(any(field in error for error in errors), errors)
 
     def test_complete_label_stale_views_and_changed_raw_evidence_cannot_admit_a_phase(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(assessment, 'ROOT', Path(directory)):
-            manifest, current, raw = self.complete_phase_fixture(directory)
+            manifest, _, raw = self.complete_phase_fixture(directory)
             root = Path(directory)
             manifest_path = root/assessment.MANIFEST
             original_manifest = manifest_path.read_bytes()
             forged = copy.deepcopy(manifest)
             forged.update(source=None, layers=[], verificationChecks=[], criteria=[], findings=[])
             manifest_path.write_bytes(assessment.json_bytes(forged))
-            for errors in self.phase_errors(current):
-                self.assertTrue(any('phase evidence is invalid' in error for error in errors))
+            with self.assertRaises(ValueError):
+                assessment.validated_current_phase()
             manifest_path.write_bytes(original_manifest)
             view = root/assessment.VERIFICATION_OUTPUT
             original_view = view.read_bytes()
             view.write_bytes(original_view+b'\n')
-            for errors in self.phase_errors(current):
-                self.assertTrue(any('Current assessment is stale' in error for error in errors))
+            with self.assertRaisesRegex(ValueError, 'Current assessment is stale'):
+                assessment.validated_current_phase()
             view.write_bytes(original_view)
             (root/raw).write_text('<testsuite><testcase classname="Synthetic" name="positive"><failure/></testcase></testsuite>')
-            for errors in self.phase_errors(current):
-                self.assertTrue(any('digest mismatch' in error for error in errors))
+            with self.assertRaisesRegex(ValueError, 'digest mismatch'):
+                assessment.validated_current_phase()
+
+    def test_closed_slice_assessment_is_pinned_by_exact_bytes(self):
+        # Once the Slice is merged, its views are history: any byte change to
+        # the checked-in assessment, manifest, readback or closure receipt is a
+        # governance error, and no re-derivation against the moved tree occurs.
+        from scripts.validate_governance import SLICE3_CLOSURE_AUTHORITY_HASHES, validate_slice3_closure_authority
+        documents = {relative: (ROOT/relative).read_bytes() for relative in SLICE3_CLOSURE_AUTHORITY_HASHES}
+        errors = []
+        validate_slice3_closure_authority(errors, documents)
+        self.assertEqual([], errors)
+        for relative in SLICE3_CLOSURE_AUTHORITY_HASHES:
+            with self.subTest(relative=relative):
+                mutated = dict(documents)
+                mutated[relative] = documents[relative] + b'\n'
+                errors = []
+                validate_slice3_closure_authority(errors, mutated)
+                self.assertTrue(any(relative in error for error in errors), errors)
+                errors = []
+                validate_slice3_closure_authority(errors, {k: v for k, v in documents.items() if k != relative})
+                self.assertTrue(any(relative in error for error in errors), errors)
 
     def test_checked_in_views_are_deterministic_and_check_does_not_write(self):
-        before={path:(ROOT/path).read_bytes() for path in assessment.build_outputs()}
-        assessment.finalize(check=True)
-        self.assertEqual(before,{path:(ROOT/path).read_bytes() for path in before})
-        self.assertEqual(assessment.build_outputs(),assessment.build_outputs())
+        with tempfile.TemporaryDirectory() as directory, patch.object(assessment, 'ROOT', Path(directory)):
+            self.complete_phase_fixture(directory)
+            before = {path: (Path(directory)/path).read_bytes() for path in assessment.build_outputs()}
+            assessment.finalize(check=True)
+            self.assertEqual(before, {path: (Path(directory)/path).read_bytes() for path in before})
+            self.assertEqual(assessment.build_outputs(), assessment.build_outputs())
 
 
 if __name__ == '__main__':

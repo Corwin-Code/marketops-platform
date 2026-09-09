@@ -81,4 +81,16 @@ public class CredentialLookupRepository {
                 .query(UUID.class)
                 .optional();
     }
+    /** The verified description attribute key of the APPLY operation, when one is recorded. */
+    public java.util.Optional<String> descriptionAttributeKey(java.util.UUID capabilityId) {
+        return jdbc.sql("""
+                SELECT description_attribute_key FROM platform.capability_operation
+                 WHERE capability_id = :capabilityId AND operation = 'APPLY'
+                   AND status = 'ACTIVE' AND verification_state = 'VERIFIED'
+                   AND description_attribute_key IS NOT NULL
+                """)
+                .param("capabilityId", capabilityId)
+                .query(String.class)
+                .optional();
+    }
 }

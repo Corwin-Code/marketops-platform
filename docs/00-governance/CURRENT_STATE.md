@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-06
+as_of: 2026-09-09
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -9,16 +9,65 @@ lifecycle_state: EXECUTING_V1
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 legacy_phase_model: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
-active_delivery_slice: SLICE-V1-003
-active_slice_title: Advertising & Traffic Efficiency
-active_slice_contract: docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md
-active_slice_contract_sha256: 1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c
-active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a
-active_slice_contract_bytes: 129400
-active_slice_contract_lines: 2687
-active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md
-active_slice_acceptance_evidence_sha256: d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d
+active_delivery_slice: SLICE-V1-004
+active_slice_title: Promotion & Listing Conversion
+active_slice_contract: docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md
+active_slice_contract_sha256: 5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983
+active_slice_contract_git_blob_sha1: 8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9
+active_slice_contract_bytes: 70847
+active_slice_contract_lines: 669
+active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md
+active_slice_acceptance_evidence_sha256: 5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb
 active_slice_amendment: NONE_ACCEPTED
+active_slice_annex: docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md
+active_slice_annex_sha256: c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
+active_slice_annex_git_blob_sha1: 4d9e93c17e26deee5d2222c8fc51d61d619aa9c8
+slice_v1_004_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
+slice_v1_004_owner_acceptance_statement: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt
+slice_v1_004_owner_acceptance_statement_sha256: 2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3
+slice_v1_004_execution_authority: FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY
+slice_v1_004_maker: CLAUDE
+slice_v1_004_source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
+slice_v1_004_source_base_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
+slice_v1_004_branch: claude/slice-v1-004-local-implementation-pmrr80
+slice_v1_004_implementation_state: LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING
+slice_v1_004_controlled_write_target: LISTING_DESCRIPTION_CHANGE
+slice_v1_004_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
+slice_v1_004_real_provider_calls: NONE
+slice_v1_004_remote_write_authority: NONE
+slice_v1_004_level_2_authority: NONE
+slice_v1_004_gate_ev_authority: NONE
+slice_v1_004_gate_e_authority: NONE
+slice_v1_004_owner_decision_count: 85
+slice_v1_004_decision_085: B
+slice_v1_004_scope_deltas_not_required: DELTA_01_DELTA_02_DELTA_03
+slice_v1_004_evidence_obligations_open: F_M01_F_M02_F_S01_F_W01_F_W02_E_04
+slice_v1_004_migrations: V0074_THROUGH_V0079
+slice_v1_004_as_built_design: docs/02-architecture/designs/SLICE-V1-004-design.md
+slice_v1_004_acceptance_status: docs/07-phase-evidence/SLICE-V1-004/acceptance-status.md
+slice_v1_004_executable_evidence: docs/07-phase-evidence/SLICE-V1-004/executable-evidence.md
+slice_v1_004_migration_inventory: docs/07-phase-evidence/SLICE-V1-004/MIGRATION-INVENTORY.json
+slice_v1_004_handoff: docs/07-phase-evidence/SLICE-V1-004/controller-handoff.md
+slice_v1_003_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+slice_v1_003_controller_final_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_ECB3385_R2
+slice_v1_003_owner_formal_closure: HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD
+slice_v1_003_owner_formal_closure_receipt: docs/08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md
+slice_v1_003_owner_formal_closure_receipt_sha256: 48f1ee92c6acbab04857cd8a85f03e722ab14fe34069b4e86e92e4776c47e947
+slice_v1_003_accepted_head: ecb33851cd507c0443daab5f40e79fa008be24bb
+slice_v1_003_pr: 30
+slice_v1_003_pr_state: MERGED_PROTECTED_SQUASH
+slice_v1_003_actual_squash_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
+slice_v1_003_actual_squash_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
+slice_v1_003_actual_squash_sole_parent: 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
+slice_v1_003_actual_squash_merged_at: 2026-09-07T03:09:19Z
+slice_v1_003_merge_readback: CONTROLLER_SLICE_V1_003_READY_MERGE_EXECUTION_ACCEPTANCE_0F26D0E_R1
+slice_v1_003_merge_readback_verdict: PASS_MERGE_EXECUTION_AND_READBACK
+slice_v1_003_merge_readback_snapshot: docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md
+slice_v1_003_merge_readback_snapshot_sha256: be014d7462f12dfc214d491dd60176d337951c968fec1a8a12b19060b1a1ec54
+slice_v1_003_merge_readback_verdict_record: docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/VERDICT.json
+slice_v1_003_merge_readback_verdict_record_sha256: b839b9962c843d7ef22ea4907d18112acbf94434269364a4bfe26ce27fb1a25b
+slice_v1_003_frozen_findings_closed: 22_OF_22
+slice_v1_003_source_branch: DELETED_BY_ACCEPTED_CONFIGURATION
 slice_v1_003_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
 slice_v1_003_owner_acceptance_statement_sha256: 0ffaf4e865447ad18e0cb18f2527a3183553366295274e1be0811db3e2b19634
 slice_v1_003_source_protected_main: 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
@@ -33,9 +82,9 @@ slice_v1_003_rework_starting_head: a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb
 slice_v1_003_rework_starting_tree: fb4d242d62febd87191da9dce353bdef99f5a77d
 slice_v1_003_frozen_findings_sha256: 15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1
 slice_v1_003_rework_takeover: docs/07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md
-slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PENDING
+slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PASS_MERGED
 slice_v1_003_rework_transport: APPEND_ONLY_NAMED_BRANCH_ONE_DRAFT_PR_AND_CI_AUTHORIZED
-slice_v1_003_implementation_state: RESIDUAL_REWORK_ENGINEERING_VERIFIED
+slice_v1_003_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_003_controlled_write_target: AD_BID_CHANGE
 slice_v1_003_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_003_real_provider_calls: NONE
@@ -63,7 +112,7 @@ slice_v1_001_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
 slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION
+active_gate: CONTROLLER_SLICE_V1_004_LEVEL_1_CHECKPOINT_REVIEW
 authorization: FULL_SCOPE_IMPLEMENTATION
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
@@ -147,8 +196,8 @@ slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/rework-r1/
 slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json
 slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/
 slice_v1_003_runbooks: docs/06-runbooks/
-slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_COMPLETE_INDEPENDENT_CONTROLLER_PENDING
-slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW
+slice_v1_003_engineering_closure_claim: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+slice_v1_003_controller_verdict: PASS_FINAL_CLOSURE_VERIFICATION
 slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED
 slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a
 slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127
@@ -230,7 +279,7 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: SLICE_V1_003_ENGINEERING_COMPLETE_NOT_CONTROLLER_APPROVED
+candidate_state_scope: SLICE_V1_004_LEVEL_1_LOCAL_CHECKPOINT_NOT_CONTROLLER_REVIEWED
 merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
@@ -240,7 +289,7 @@ slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-s
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: CONTROLLER
-next_action: INDEPENDENT_FINAL_CLOSURE_VERIFICATION_ON_EXACT_CURRENT_HEAD
+next_action: INDEPENDENT_REVIEW_AND_LEVEL_3_PUBLICATION_DECISION_ON_EXACT_LOCAL_CHECKPOINT
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -250,6 +299,8 @@ ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 ozon_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+ozon_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+wildberries_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 pilot: NOT_AUTHORIZED
 release_v1_001: RESERVED_NOT_ACTIVATED
 production_infrastructure: YANDEX_CLOUD_RU_CENTRAL1
@@ -265,30 +316,67 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
-SLICE-V1-003 is the active Slice. Its accepted Contract is
-[SLICE-V1-003-advertising-traffic-efficiency.md](../03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md)
-at SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`
-and Git blob `669c38dc4d9429249e663da0e684dabf570c4a4a`, exactly 129400 bytes
-and 2687 lines, with Human Owner acceptance recorded in
-[OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md)
-at SHA-256 `d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d`.
-Those bytes are frozen: a normative change requires a separately identified,
-exact, Owner-accepted additive Amendment, and no Amendment to this Contract has
-been accepted. The Contract is anchored to protected `main`
-`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`, tree
-`0ca229112bcf351ab5c572dd8d375c647bab61c0`.
+SLICE-V1-004 is the active Slice. Its accepted Contract is
+[SLICE-V1-004-promotion-listing-conversion.md](../03-work-items/SLICE-V1-004-promotion-listing-conversion.md)
+at SHA-256 `5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983`
+and Git blob `8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9`, exactly 70847 bytes
+and 669 lines, bound to its normative acceptance annex
+[SLICE-V1-004-promotion-listing-conversion-acceptance.md](../03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md)
+at SHA-256 `c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d`
+(sections 1, 2 and 4 normative; section 3 a traceability index). Human Owner
+acceptance is recorded in
+[OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb`,
+with the attributable Owner statement preserved at SHA-256
+`2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3`. Those bytes
+are frozen: the original files still carry their issue-time wording
+(`OFFERED_FOR_EXACT_OWNER_ACCEPTANCE`, `NOT_OBTAINED`), and a normative change
+requires a separately identified, exact, Owner-accepted additive Amendment; no
+Amendment has been accepted. The Contract is anchored to protected `main`
+`0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd`, tree
+`9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400`.
 
-Exact acceptance authorizes `FULL_SCOPE_IMPLEMENTATION_WITHIN_EXECUTION_ENVELOPE_V1`
-and nothing beyond it. The selected controlled-write family is `AD_BID_CHANGE`
-on both Ozon and Wildberries, engineered to production quality with every
-unverified Provider write path structurally unreachable. The initial Ordinary
-nonzero envelope is zero, so every nonzero `AD_BID_CHANGE` is Material and
-requires Human Owner final per-command approval; Standing Policy automation is
-not authorized. All 47 incorporated Owner decisions, `S3-AC-001` through
-`S3-AC-200` and `S3-REL-001` through `S3-REL-024` are in force. No acceptance
-here activates `RELEASE-V1-001`, Gate EV, Gate E, Pilot, deployment, real
-Credentials, real Provider access or production write, and
-`production_write_enabled` remains `false`.
+Exact acceptance grants Contract section 15 Level 1 authority only:
+`FULL_SCOPE_IMPLEMENTATION` as Detailed Design, full-scope implementation,
+tests, canonical documents and a local Git checkpoint, performed by Claude as
+the established Maker and handed to the Controller. The one new controlled
+write is `LISTING_DESCRIPTION_CHANGE`: the exact Russian Description of one
+listing, on the API path only where a verified capability exists, with every
+Provider write path structurally unreachable behind the verified registry, the
+kill switches, the Pilot allowlist and an Owner-published gate authority whose
+`production_write_enabled` is `false`. Promotion actions are Manual-path only.
+All 85 incorporated Owner decisions, decision 085 option B, the three scope
+deltas that are not required, `EVIDENCE-REQUEST-M`, `EVIDENCE-REQUEST-W`,
+`F-S01`, `E-04` and the existing account and configuration obligations remain in
+force. Nothing here authorizes a Level 2 environment, a remote push, PR or
+merge, deployment, a real Provider or account call, Gate EV, Gate E, Pilot or
+production write.
+
+SLICE-V1-003 is formally closed as
+`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. Its accepted Contract
+[bytes](../03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md)
+at SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`
+and Git blob `669c38dc4d9429249e663da0e684dabf570c4a4a`, its
+[acceptance evidence](../08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d`,
+its frozen finding set, its final Codex engineering assessment and the
+historical Controller report are preserved unchanged. The exact candidate
+`ecb33851cd507c0443daab5f40e79fa008be24bb` received
+`PASS_FINAL_CLOSURE_VERIFICATION` (`CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_ECB3385_R2`),
+the Human Owner accepted its Formal Closure for that exact head
+([receipt](../08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md)),
+and PR #30 merged it as protected squash
+`0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd` (tree
+`9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400`, sole parent
+`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`, `2026-09-07T03:09:19Z`) with the
+Controller's
+[merge readback](../07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md)
+recording `PASS_MERGE_EXECUTION_AND_READBACK`. `S3-REL-001` through
+`S3-REL-024` stay production-blocking; the closed Slice's engineering
+assessment is history pinned by exact bytes and is not re-derived against a
+source tree the active Slice has moved. SLICE-V1-004 may consume SLICE-V1-003
+advertising facts, Tasks, Manual Shadow and control paths; it does not reopen
+`AD_BID_CHANGE`, price or availability authority.
 
 SLICE-V1-002 is formally closed as
 `CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. Its accepted Contract

@@ -2911,7 +2911,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         return (
             Path(__file__).resolve().parents[1]
             / "docs/03-work-items"
-            / "SLICE-V1-003-advertising-traffic-efficiency.md"
+            / "SLICE-V1-004-promotion-listing-conversion.md"
         ).read_bytes()
 
     def validate(
@@ -2953,8 +2953,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_duplicate_active_slice_is_rejected(self) -> None:
         current = self.current().replace(
-            "active_delivery_slice: SLICE-V1-003",
-            "active_delivery_slice: SLICE-V1-003\nactive_delivery_slice: SLICE-V1-003",
+            "active_delivery_slice: SLICE-V1-004",
+            "active_delivery_slice: SLICE-V1-004\nactive_delivery_slice: SLICE-V1-004",
             1,
         )
         self.assertTrue(any("active_delivery_slice" in error for error in self.validate(current=current)))
@@ -2963,7 +2963,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         mutations = (
             (
                 "active_slice_contract: docs/03-work-items/"
-                "SLICE-V1-003-advertising-traffic-efficiency.md",
+                "SLICE-V1-004-promotion-listing-conversion.md",
                 "active_slice_contract: docs/03-work-items/other.md",
                 "active_slice_contract",
             ),
@@ -3121,8 +3121,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
         mutated = self.slice_contract_bytes().replace(
-            b"Advertising & Traffic Efficiency",
-            b"Advertising & Traffic Efficiencx",
+            b"Promotion & Listing Conversion",
+            b"Promotion & Listing Conversiom",
             1,
         )
         self.assertNotEqual(mutated, self.slice_contract_bytes())

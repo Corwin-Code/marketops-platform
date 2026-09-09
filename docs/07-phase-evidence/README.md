@@ -88,3 +88,46 @@ The acceptance status is deliberately evidence-bound. A criterion is verified
 only where a named, currently passing test asserts it: 99 are
 `EXECUTABLY_VERIFIED`, while `S2-AC-100` remains reserved exclusively for
 independent Controller Final Closure.
+
+## SLICE-V1-003 post-merge readback and formal closure record
+
+SLICE-V1-003 is closed for engineering with 24 deferred release obligations.
+Its closure entry points are:
+
+- [`POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md`](SLICE-V1-003/post-merge-readback-20260907/POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md)
+  and [`VERDICT.json`](SLICE-V1-003/post-merge-readback-20260907/VERDICT.json)
+  — the Controller readback of protected SQUASH `0f26d0ed` (tree `9d65c590`,
+  sole parent `08ad7da7`, merged `2026-09-07T03:09:19Z`) over accepted head
+  `ecb33851`, pinned by [`SHA256SUMS`](SLICE-V1-003/post-merge-readback-20260907/SHA256SUMS);
+- [`OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md`](../08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md)
+  — the Human Owner formal closure for that exact head.
+
+The `rework-r1` assessment artefacts are historical and pinned by exact bytes;
+they are no longer re-derived from live source. `S3-REL-001..024` stay
+production-blocking and `production_write_enabled` remains `false`.
+
+## SLICE-V1-004 Level 1 local checkpoint record
+
+SLICE-V1-004 is the active Slice. The Human Owner accepted the exact Contract
+and bound annex and granted Contract §15 Level 1 local implementation authority
+only. Its entry points are:
+
+- [`controller-handoff.md`](SLICE-V1-004/controller-handoff.md) — the single
+  Level 1 handoff to the Controller: identities, change scope, migration chain,
+  clause–source–test–evidence mapping, commands and results, impact analysis
+  and unmet external obligations;
+- [`acceptance-status.md`](SLICE-V1-004/acceptance-status.md) and
+  [`S4-AC-STATUS.json`](SLICE-V1-004/S4-AC-STATUS.json) — 36 functional groups,
+  6 non-functional groups and 27 official-API scenarios, each `LOCAL_VERIFIED`,
+  `LOCAL_PARTIAL` or `NOT_RUN`;
+- [`executable-evidence.md`](SLICE-V1-004/executable-evidence.md) — exact
+  commands, isolated environments and results, including what was not run;
+- [`MIGRATION-INVENTORY.json`](SLICE-V1-004/MIGRATION-INVENTORY.json) —
+  V0074–V0079 bytes, lines and SHA-256 over byte-preserved V0001–V0073;
+- [`CONTRACT-NAVIGATION-INDEX.md`](SLICE-V1-004/CONTRACT-NAVIGATION-INDEX.md)
+  — heading index of the accepted Contract.
+
+No Controller verdict, remote publication, Level 2 environment, Gate EV, Gate E,
+Pilot or real Provider evidence is claimed. Testcontainers integration tests are
+`NOT_RUN` in the Level 1 session; every new write path is disabled and
+structurally unreachable, and `production_write_enabled` remains `false`.

@@ -28,6 +28,7 @@
 | D-24 | 2026-08-26 | ACCEPTED | A production-grade Slice may enter bounded production before V1 is complete; write Capability enablement uses a Pilot Cohort and its own Gate; V1 completion is capability-based, not uplift-proof-based. | OD-V1-010/023 and CD-V1-004/006. |
 | D-25 | 2026-08-26 | ACCEPTED | DR-0004 plus exact Owner-accepted DR-0004-AMENDMENT-001 is the engineering execution and closure protocol; frozen proposal-status fields are provenance only and repository effect requires the accepted result on protected main. No V1 Product scope change and no SLICE-V1-001 scope change. | DR-0004; DR-0004-AMENDMENT-001; durable Human Owner acceptance evidence. |
 | D-26 | 2026-09-04 | ACCEPTED | SLICE-V1-003 Advertising & Traffic Efficiency is the active Slice. Its single controlled-write Capability is `AD_BID_CHANGE`; Budget, Campaign pause/resume, bidding strategy/mode, structure, creative and portfolio actions stay manual-Shadow or future scope. The initial Ordinary nonzero envelope is zero, so every nonzero bid Command is Material and needs Human Owner final per-command approval, and Standing Policy automation is disabled. Both platforms receive the full governed Manual Shadow; every unverified Provider write path stays structurally unreachable. | Exact accepted SLICE-V1-003 Contract SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`; OD-S3-001..047; durable Human Owner acceptance evidence. |
+| D-27 | 2026-09-09 | ACCEPTED | SLICE-V1-004 Promotion & Listing Conversion is the active Slice. Its single new controlled-write Capability is `LISTING_DESCRIPTION_CHANGE`, limited to the exact Russian Description attribute; promotion, price, media, title, attribute and every other content write stay governed-manual or out of scope. The 85 Owner decisions, three local substitutions (DELTA-01/02/03 not required) and Q085-B are fixed. Owner acceptance grants Contract §15 Level 1 full local Detailed Design, Full-Scope Implementation, Tests, canonical docs and local Git checkpoint authority to Claude; no Level 2 environment, remote push/PR/merge, production deployment/migration, real Provider/account call, Gate EV, Gate E or real business side effect is authorized, and every new platform write is disabled by default. | Exact accepted SLICE-V1-004 Contract SHA-256 `5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983`; bound annex SHA-256 `c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d`; [Owner acceptance receipt](../08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md) and [statement](../08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt). |
 
 ## Change rule
 
@@ -57,3 +58,19 @@ All 22 original Findings and CV-A..E have current engineering evidence; independ
 Controller review of the final containing Head remains pending. Accepted Contract,
 47 Owner Decisions, Frozen Finding Set and 24 deferred release obligations are
 unchanged. This record grants no Ready, merge, Gate EV or production authority.
+
+## Execution evidence — 2026-09-09 Claude SLICE-V1-004 Level 1 local checkpoint
+
+This records execution authority and its consumption without adding a product
+decision beyond D-27: the Human Owner accepted the exact SLICE-V1-004 Contract
+and bound annex on the accepted source base `0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd`
+(tree `9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400`) and granted Contract §15
+Level 1 local authority only. Claude, as Maker, produced the detailed design,
+backend, forward migrations V0074–V0079, Console, tests, canonical documents and
+one local Git checkpoint on branch `claude/slice-v1-004-local-implementation-pmrr80`,
+recorded in the [Level 1 handoff](../07-phase-evidence/SLICE-V1-004/controller-handoff.md).
+No remote publication, Draft PR, Level 2 environment, real Provider call, Gate EV,
+Gate E or production enablement was used or is implied. Independent Controller
+Deep Review of the exact local checkpoint is the next step; this entry grants no
+Ready, merge, Pilot or production authority and `production_write_enabled`
+remains `false`.

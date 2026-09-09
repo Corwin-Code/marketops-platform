@@ -1,0 +1,1038 @@
+{
+  "actionState": {
+    "DRAFT": {
+      "zh": "草稿",
+      "ru": "Черновик"
+    },
+    "REVIEWED": {
+      "zh": "已复核",
+      "ru": "Проверено"
+    },
+    "APPROVED": {
+      "zh": "已批准",
+      "ru": "Одобрено"
+    },
+    "APPROVED_NOT_LAUNCHABLE": {
+      "zh": "已批准，额度不足未启动",
+      "ru": "Одобрено, лимит недостаточен"
+    },
+    "LAUNCHED": {
+      "zh": "已启动",
+      "ru": "Запущено"
+    },
+    "VERIFIED": {
+      "zh": "已核实",
+      "ru": "Подтверждено"
+    },
+    "CLOSED": {
+      "zh": "已关闭",
+      "ru": "Закрыто"
+    },
+    "CANCELLED": {
+      "zh": "已取消",
+      "ru": "Отменено"
+    },
+    "CONTAINED": {
+      "zh": "已遏制",
+      "ru": "Остановлено"
+    }
+  },
+  "candidateKind": {
+    "CONTENT_DESCRIPTION": {
+      "zh": "内容：商品描述",
+      "ru": "Контент: описание товара"
+    },
+    "OFFICIAL_PROMOTION_PARTICIPATION": {
+      "zh": "官方促销参与",
+      "ru": "Участие в официальной акции"
+    },
+    "SELLER_DIRECT_DISCOUNT": {
+      "zh": "卖家直接折扣",
+      "ru": "Прямая скидка продавца"
+    }
+  },
+  "executionPath": {
+    "MANUAL": {
+      "zh": "人工路径",
+      "ru": "Ручной путь"
+    },
+    "API": {
+      "zh": "API 路径",
+      "ru": "Путь через API"
+    }
+  },
+  "materialityRoute": {
+    "MATERIAL_IMPACT": {
+      "zh": "重大影响",
+      "ru": "Существенное влияние"
+    },
+    "ORDINARY_IMPACT": {
+      "zh": "普通影响",
+      "ru": "Обычное влияние"
+    },
+    "MATERIALITY_UNRESOLVED": {
+      "zh": "重要性未确定",
+      "ru": "Существенность не определена"
+    }
+  },
+  "ratioState": {
+    "DEFINED": {
+      "zh": "已定义",
+      "ru": "Определено"
+    },
+    "UNDEFINED": {
+      "zh": "无定义（无访问）",
+      "ru": "Не определено (нет визитов)"
+    },
+    "NOT_AVAILABLE": {
+      "zh": "不可用",
+      "ru": "Недоступно"
+    }
+  },
+  "nodeVerdict": {
+    "MET": {
+      "zh": "达标",
+      "ru": "Достигнуто"
+    },
+    "NOT_MET": {
+      "zh": "未达标",
+      "ru": "Не достигнуто"
+    },
+    "UNDETERMINED": {
+      "zh": "无法判定",
+      "ru": "Не установлено"
+    }
+  },
+  "protectionVerdict": {
+    "PASS": {
+      "zh": "通过",
+      "ru": "Пройдено"
+    },
+    "FAIL": {
+      "zh": "未通过",
+      "ru": "Не пройдено"
+    },
+    "UNDETERMINED": {
+      "zh": "无法判定",
+      "ru": "Не установлено"
+    }
+  },
+  "containmentCauseClass": {
+    "LOCAL_COST": {
+      "zh": "局部成本",
+      "ru": "Локальные издержки"
+    },
+    "SHARED_VERSION": {
+      "zh": "共享版本",
+      "ru": "Общая версия"
+    },
+    "PATH_INTEGRITY": {
+      "zh": "路径完整性",
+      "ru": "Целостность пути"
+    },
+    "SAFETY_FAILURE": {
+      "zh": "安全失效",
+      "ru": "Нарушение безопасности"
+    },
+    "PLATFORM_INCIDENT": {
+      "zh": "平台事故",
+      "ru": "Инцидент платформы"
+    }
+  },
+  "releaseBasis": {
+    "STOP_EVIDENCE": {
+      "zh": "停止证据",
+      "ru": "Свидетельство остановки"
+    },
+    "OBLIGATION_CLEARED": {
+      "zh": "义务已清",
+      "ru": "Обязательства закрыты"
+    },
+    "NOT_APPLIED_PROVEN": {
+      "zh": "已证明未应用",
+      "ru": "Доказано: не применено"
+    }
+  },
+  "recalculationClass": {
+    "RISK": {
+      "zh": "风险（5 分钟）",
+      "ru": "Риск (5 минут)"
+    },
+    "ORDINARY": {
+      "zh": "普通（15 分钟）",
+      "ru": "Обычный (15 минут)"
+    },
+    "FULL_REVIEW": {
+      "zh": "全面复核（60 分钟）",
+      "ru": "Полный пересмотр (60 минут)"
+    }
+  },
+  "evidencePath": {
+    "DETAIL": {
+      "zh": "明细路径",
+      "ru": "Детальный путь"
+    },
+    "OFFICIAL_SUMMARY": {
+      "zh": "官方汇总路径",
+      "ru": "Официальная сводка"
+    }
+  },
+  "healthState": {
+    "PASS": {
+      "zh": "通过",
+      "ru": "Пройдено"
+    },
+    "FAIL": {
+      "zh": "未通过",
+      "ru": "Не пройдено"
+    },
+    "UNKNOWN": {
+      "zh": "未知",
+      "ru": "Неизвестно"
+    }
+  },
+  "eligibility": {
+    "ELIGIBLE": {
+      "zh": "符合条件",
+      "ru": "Допустимо"
+    },
+    "INELIGIBLE": {
+      "zh": "不符合条件",
+      "ru": "Недопустимо"
+    },
+    "UNKNOWN": {
+      "zh": "未知",
+      "ru": "Неизвестно"
+    }
+  },
+  "healthCondition": {
+    "AFFECTED_SET_COMPLETE": {
+      "zh": "受影响集合完整",
+      "ru": "Затронутый набор полный"
+    },
+    "MAPPING_RESOLVED": {
+      "zh": "映射已解析",
+      "ru": "Сопоставление разрешено"
+    },
+    "DESCRIPTION_OBSERVED": {
+      "zh": "描述已观测",
+      "ru": "Описание наблюдалось"
+    },
+    "NOT_CONTAINED": {
+      "zh": "未被遏制",
+      "ru": "Не остановлено"
+    },
+    "CALIBRATION_RESOLVED": {
+      "zh": "校准已解析",
+      "ru": "Калибровка разрешена"
+    }
+  },
+  "opportunity": {
+    "DESCRIPTION_NOT_RUSSIAN": {
+      "zh": "描述非俄语",
+      "ru": "Описание не на русском"
+    },
+    "KIZ_MARKING_UNDECLARED": {
+      "zh": "КИЗ 标记未声明",
+      "ru": "Маркировка КИЗ не заявлена"
+    },
+    "SOURCE_STRATIFICATION_MISSING": {
+      "zh": "缺少来源分层",
+      "ru": "Нет разбивки по источникам"
+    },
+    "NOT_SELLABLE_AT_LAST_OBSERVATION": {
+      "zh": "最近观测不可售",
+      "ru": "Недоступно к продаже при последнем наблюдении"
+    },
+    "FEEDBACK_THEMES_PRESENT": {
+      "zh": "存在反馈主题",
+      "ru": "Есть темы отзывов"
+    }
+  },
+  "qualificationReason": {
+    "VISIT_FACTS_ABSENT": {
+      "zh": "缺少访问事实",
+      "ru": "Нет фактов визитов"
+    },
+    "PURCHASE_LINKS_ABSENT": {
+      "zh": "缺少购买关联",
+      "ru": "Нет связей с покупками"
+    },
+    "SOURCE_STRATIFICATION_MISSING": {
+      "zh": "缺少来源分层",
+      "ru": "Нет разбивки по источникам"
+    },
+    "EQUIVALENCE_PROFILE_ABSENT": {
+      "zh": "缺少等价性档案",
+      "ru": "Нет профиля эквивалентности"
+    },
+    "EQUIVALENCE_NOT_PROVEN": {
+      "zh": "等价性未证明",
+      "ru": "Эквивалентность не доказана"
+    },
+    "EQUIVALENCE_NUMERATOR_UNCOVERED": {
+      "zh": "分子未覆盖",
+      "ru": "Числитель не покрыт"
+    },
+    "EQUIVALENCE_DENOMINATOR_UNCOVERED": {
+      "zh": "分母未覆盖",
+      "ru": "Знаменатель не покрыт"
+    },
+    "EQUIVALENCE_TIME_ATTRIBUTION_UNCOVERED": {
+      "zh": "时间归因未覆盖",
+      "ru": "Временная атрибуция не покрыта"
+    },
+    "EQUIVALENCE_MATURITY_UNCOVERED": {
+      "zh": "成熟期未覆盖",
+      "ru": "Срок созревания не покрыт"
+    },
+    "EQUIVALENCE_REVISION_UNCOVERED": {
+      "zh": "修订未覆盖",
+      "ru": "Пересмотр не покрыт"
+    }
+  },
+  "bindingGap": {
+    "ACTION_NOT_FOUND": {
+      "zh": "未找到操作",
+      "ru": "Действие не найдено"
+    },
+    "BINDING_MISSING": {
+      "zh": "缺少绑定",
+      "ru": "Нет привязки"
+    },
+    "BINDING_INAPPLICABLE": {
+      "zh": "绑定不再适用",
+      "ru": "Привязка неприменима"
+    },
+    "BINDING_EXPIRED": {
+      "zh": "绑定已过期",
+      "ru": "Привязка истекла"
+    },
+    "AFFECTED_SET_DIGEST_CHANGED": {
+      "zh": "受影响集合已变化",
+      "ru": "Затронутый набор изменился"
+    },
+    "CURRENT_TEXT_MOVED": {
+      "zh": "当前文本已变化",
+      "ru": "Текущий текст изменился"
+    },
+    "CALIBRATION_NOT_CURRENT": {
+      "zh": "校准已非当前",
+      "ru": "Калибровка неактуальна"
+    },
+    "AUTHORIZATION_INVALID_OR_EXPIRED": {
+      "zh": "授权无效或已过期",
+      "ru": "Полномочие недействительно или истекло"
+    },
+    "RECOMMENDATION_STALE": {
+      "zh": "建议已过时",
+      "ru": "Рекомендация устарела"
+    }
+  },
+  "decisionBlocker": {
+    "CALIBRATION_UNRESOLVED": {
+      "zh": "校准未解析",
+      "ru": "Калибровка не разрешена"
+    },
+    "CALIBRATION_CONFLICTED": {
+      "zh": "校准冲突",
+      "ru": "Конфликт калибровок"
+    },
+    "AFFECTED_SET_INCOMPLETE": {
+      "zh": "受影响集合不完整",
+      "ru": "Затронутый набор неполон"
+    },
+    "AFFECTED_SET_DIGEST_CHANGED": {
+      "zh": "受影响集合已变化",
+      "ru": "Затронутый набор изменился"
+    },
+    "CURRENT_TEXT_MOVED": {
+      "zh": "当前文本已变化",
+      "ru": "Текущий текст изменился"
+    },
+    "LISTING_HEALTH_NECESSARY_FAILED": {
+      "zh": "Listing 健康必要条件未通过",
+      "ru": "Необходимые условия здоровья карточки не пройдены"
+    },
+    "LISTING_HEALTH_UNKNOWN": {
+      "zh": "Listing 健康未知",
+      "ru": "Здоровье карточки неизвестно"
+    },
+    "SCOPE_CONTAINED": {
+      "zh": "范围已遏制",
+      "ru": "Область остановлена"
+    },
+    "TEXT_LENGTH_OUT_OF_BOUNDS": {
+      "zh": "文本长度超出范围",
+      "ru": "Длина текста вне границ"
+    },
+    "KIZ_MARKED_UNDECLARED": {
+      "zh": "КИЗ 标记未声明",
+      "ru": "Маркировка КИЗ не заявлена"
+    },
+    "MATERIALITY_UNRESOLVED": {
+      "zh": "重要性未确定",
+      "ru": "Существенность не определена"
+    },
+    "REVIEW_MISSING": {
+      "zh": "缺少独立复核",
+      "ru": "Нет независимой проверки"
+    },
+    "ENTITY_VERSION_CHANGED": {
+      "zh": "实体版本已变化",
+      "ru": "Версия сущности изменилась"
+    }
+  },
+  "gateReason": {
+    "COMMAND_NOT_FOUND": {
+      "zh": "未找到命令",
+      "ru": "Команда не найдена"
+    },
+    "CAPABILITY_NOT_VERIFIED": {
+      "zh": "能力未验证",
+      "ru": "Возможность не верифицирована"
+    },
+    "CAPABILITY_NOT_AVAILABLE_FOR_STORE": {
+      "zh": "该店铺不可用此能力",
+      "ru": "Возможность недоступна для магазина"
+    },
+    "CAPABILITY_SWITCH_DISABLED": {
+      "zh": "能力开关已关闭",
+      "ru": "Переключатель возможности выключен"
+    },
+    "GLOBAL_SWITCH_DISABLED": {
+      "zh": "全局开关已关闭",
+      "ru": "Глобальный переключатель выключен"
+    },
+    "SCOPED_SWITCH_DISABLED": {
+      "zh": "范围开关已关闭",
+      "ru": "Переключатель области выключен"
+    },
+    "ENTITY_NOT_ALLOWLISTED": {
+      "zh": "实体不在试点白名单",
+      "ru": "Объект не в пилотном списке"
+    },
+    "PRODUCTION_WRITE_DISABLED": {
+      "zh": "生产写入未启用",
+      "ru": "Запись в продуктив выключена"
+    },
+    "AUTHORIZATION_INVALID_OR_EXPIRED": {
+      "zh": "授权无效或已过期",
+      "ru": "Полномочие недействительно или истекло"
+    },
+    "APPROVAL_LEASE_EXPIRED": {
+      "zh": "批准期限已过",
+      "ru": "Срок одобрения истёк"
+    },
+    "ACTION_NOT_LAUNCHED": {
+      "zh": "操作未启动",
+      "ru": "Действие не запущено"
+    },
+    "ALLOWANCE_NOT_OCCUPIED": {
+      "zh": "额度未占用",
+      "ru": "Лимит не занят"
+    },
+    "SCOPE_CONTAINED": {
+      "zh": "范围已遏制",
+      "ru": "Область остановлена"
+    },
+    "EXECUTION_PASS_MISSING": {
+      "zh": "缺少执行前通过",
+      "ru": "Нет проверки перед исполнением"
+    },
+    "NON_TARGET_FIELD_RISK": {
+      "zh": "非目标字段风险",
+      "ru": "Риск изменения других полей"
+    },
+    "KIZ_MARKED_UNDECLARED": {
+      "zh": "КИЗ 标记未声明",
+      "ru": "Маркировка КИЗ не заявлена"
+    },
+    "TEXT_LENGTH_OUT_OF_BOUNDS": {
+      "zh": "文本长度超出范围",
+      "ru": "Длина текста вне границ"
+    },
+    "PRIOR_TEXT_MOVED": {
+      "zh": "先前文本已变化",
+      "ru": "Прежний текст изменился"
+    }
+  },
+  "allowanceShortfall": {
+    "ALLOWANCE_UNRESOLVED": {
+      "zh": "额度未发布",
+      "ru": "Лимит не опубликован"
+    },
+    "REQUEST_UNSTATED": {
+      "zh": "请求未说明",
+      "ru": "Запрос не указан"
+    }
+  },
+  "allowanceAxis": {
+    "CONCURRENT_LISTINGS": {
+      "zh": "并发 Listing 数",
+      "ru": "Одновременные карточки"
+    },
+    "AFFECTED_VARIANTS": {
+      "zh": "受影响变体数",
+      "ru": "Затронутые варианты"
+    },
+    "REVENUE_EXPOSURE": {
+      "zh": "收入敞口",
+      "ru": "Экспозиция выручки"
+    },
+    "CATEGORY_SHARE": {
+      "zh": "类目份额",
+      "ru": "Доля категории"
+    }
+  },
+  "commandState": {
+    "PENDING": {
+      "zh": "待处理",
+      "ru": "Ожидает"
+    },
+    "LEASED": {
+      "zh": "已租用",
+      "ru": "Взято в работу"
+    },
+    "EXECUTING": {
+      "zh": "执行中",
+      "ru": "Выполняется"
+    },
+    "PLATFORM_PENDING": {
+      "zh": "平台处理中",
+      "ru": "Ожидает платформу"
+    },
+    "READBACK_PENDING": {
+      "zh": "待回读",
+      "ru": "Ожидает обратное чтение"
+    },
+    "READBACK_MATCHED": {
+      "zh": "回读匹配",
+      "ru": "Обратное чтение совпало"
+    },
+    "RETRY_WAIT": {
+      "zh": "等待重试",
+      "ru": "Ожидание повтора"
+    },
+    "UNKNOWN_REQUIRES_READBACK": {
+      "zh": "结果未知，需回读",
+      "ru": "Неизвестно, требуется обратное чтение"
+    },
+    "READBACK_MISMATCH": {
+      "zh": "回读不匹配",
+      "ru": "Обратное чтение не совпало"
+    },
+    "LATER_CHANGE_OR_MISMATCH_INVESTIGATION": {
+      "zh": "后续变更或不匹配，需调查",
+      "ru": "Позднее изменение или расхождение, требуется разбор"
+    },
+    "MANUAL_RESOLUTION": {
+      "zh": "人工处置",
+      "ru": "Ручное разрешение"
+    },
+    "FAILED_FINAL": {
+      "zh": "最终失败",
+      "ru": "Окончательный сбой"
+    },
+    "TERMINATED_WITHOUT_PROVIDER_CALL": {
+      "zh": "未调用平台即终止",
+      "ru": "Завершено без вызова платформы"
+    },
+    "COMPENSATION_PENDING": {
+      "zh": "待补偿",
+      "ru": "Ожидает компенсацию"
+    },
+    "COMPENSATED": {
+      "zh": "已补偿",
+      "ru": "Компенсировано"
+    },
+    "COMPENSATION_FAILED": {
+      "zh": "补偿失败",
+      "ru": "Компенсация не удалась"
+    }
+  },
+  "readbackMatch": {
+    "MATCHES_TARGET": {
+      "zh": "与目标一致",
+      "ru": "Совпадает с целью"
+    },
+    "MATCHES_PRIOR": {
+      "zh": "与先前一致",
+      "ru": "Совпадает с прежним"
+    },
+    "DIFFERENT": {
+      "zh": "第三方值",
+      "ru": "Иное значение"
+    },
+    "UNREADABLE": {
+      "zh": "无法读取",
+      "ru": "Не читается"
+    }
+  },
+  "attemptOutcome": {
+    "IN_FLIGHT": {
+      "zh": "进行中",
+      "ru": "В процессе"
+    },
+    "ACCEPTED": {
+      "zh": "已接受",
+      "ru": "Принято"
+    },
+    "REJECTED": {
+      "zh": "已拒绝",
+      "ru": "Отклонено"
+    },
+    "RETRIABLE_ERROR": {
+      "zh": "可重试错误",
+      "ru": "Повторяемая ошибка"
+    },
+    "TIMEOUT": {
+      "zh": "超时",
+      "ru": "Тайм-аут"
+    },
+    "UNKNOWN_STATE": {
+      "zh": "状态未知",
+      "ru": "Состояние неизвестно"
+    }
+  },
+  "packetState": {
+    "ISSUED": {
+      "zh": "已签发",
+      "ru": "Выдан"
+    },
+    "REPORTED": {
+      "zh": "已报告",
+      "ru": "Отчёт подан"
+    },
+    "VERIFIED": {
+      "zh": "已核实",
+      "ru": "Проверен"
+    },
+    "EXPIRED": {
+      "zh": "已过期",
+      "ru": "Истёк"
+    },
+    "WITHDRAWN": {
+      "zh": "已撤回",
+      "ru": "Отозван"
+    }
+  },
+  "reportState": {
+    "APPLIED": {
+      "zh": "已应用",
+      "ru": "Применено"
+    },
+    "NOT_APPLIED": {
+      "zh": "未应用",
+      "ru": "Не применено"
+    },
+    "PARTIAL": {
+      "zh": "部分应用",
+      "ru": "Частично"
+    }
+  },
+  "managementMatch": {
+    "MATCHED_TARGET": {
+      "zh": "与目标一致",
+      "ru": "Совпадает с целью"
+    },
+    "MATCHED_PRIOR": {
+      "zh": "与先前一致",
+      "ru": "Совпадает с прежним"
+    },
+    "DIFFERENT": {
+      "zh": "不一致",
+      "ru": "Отличается"
+    },
+    "UNKNOWN": {
+      "zh": "未知",
+      "ru": "Неизвестно"
+    }
+  },
+  "displayState": {
+    "DISPLAYED": {
+      "zh": "已展示",
+      "ru": "Отображается"
+    },
+    "NOT_DISPLAYED": {
+      "zh": "未展示",
+      "ru": "Не отображается"
+    },
+    "UNKNOWN": {
+      "zh": "未知",
+      "ru": "Неизвестно"
+    }
+  },
+  "verificationBasis": {
+    "INDEPENDENT_HUMAN": {
+      "zh": "独立人工",
+      "ru": "Независимый человек"
+    },
+    "OFFICIAL_EVIDENCE": {
+      "zh": "官方证据",
+      "ru": "Официальное свидетельство"
+    }
+  },
+  "engagementState": {
+    "ACTIVE": {
+      "zh": "进行中",
+      "ru": "Активно"
+    },
+    "EXITING": {
+      "zh": "退出中",
+      "ru": "Выход"
+    },
+    "STOPPED": {
+      "zh": "已停止新交易",
+      "ru": "Новые сделки остановлены"
+    },
+    "CLEARED": {
+      "zh": "义务已清",
+      "ru": "Обязательства закрыты"
+    }
+  },
+  "engagementKind": {
+    "OFFICIAL_PROMOTION_PARTICIPATION": {
+      "zh": "官方促销参与",
+      "ru": "Участие в официальной акции"
+    },
+    "SELLER_DIRECT_DISCOUNT": {
+      "zh": "卖家直接折扣",
+      "ru": "Прямая скидка продавца"
+    }
+  },
+  "exitReason": {
+    "MARGIN_BELOW_BOUND": {
+      "zh": "毛利低于下限",
+      "ru": "Маржа ниже границы"
+    },
+    "RETURN_RATE_ABOVE_BOUND": {
+      "zh": "退货率高于上限",
+      "ru": "Возвраты выше границы"
+    },
+    "SUPPLY_COVERAGE_LOST": {
+      "zh": "库存覆盖丧失",
+      "ru": "Потеря покрытия запасом"
+    },
+    "PLATFORM_TERMS_CHANGED": {
+      "zh": "平台条款变更",
+      "ru": "Условия платформы изменились"
+    },
+    "OWNER_DECISION": {
+      "zh": "Owner 决定",
+      "ru": "Решение владельца"
+    }
+  },
+  "occupationState": {
+    "ACQUIRED": {
+      "zh": "已获取",
+      "ru": "Занято"
+    },
+    "ACTUAL": {
+      "zh": "实际值",
+      "ru": "Фактически"
+    },
+    "UNKNOWN": {
+      "zh": "未知",
+      "ru": "Неизвестно"
+    },
+    "RELEASED": {
+      "zh": "已释放",
+      "ru": "Освобождено"
+    }
+  },
+  "containmentScope": {
+    "LISTING": {
+      "zh": "单个 Listing",
+      "ru": "Карточка"
+    },
+    "STORE": {
+      "zh": "店铺",
+      "ru": "Магазин"
+    },
+    "PLATFORM": {
+      "zh": "平台",
+      "ru": "Платформа"
+    },
+    "ORGANIZATION": {
+      "zh": "组织",
+      "ru": "Организация"
+    },
+    "BATCH": {
+      "zh": "批次",
+      "ru": "Пакет"
+    }
+  },
+  "containmentState": {
+    "ACTIVE": {
+      "zh": "生效中",
+      "ru": "Действует"
+    },
+    "REENABLED": {
+      "zh": "已恢复",
+      "ru": "Снято"
+    }
+  },
+  "attestationKind": {
+    "REPAIR_ATTESTATION": {
+      "zh": "修复证明",
+      "ru": "Подтверждение исправления"
+    },
+    "BUSINESS_CONSENT": {
+      "zh": "业务同意",
+      "ru": "Согласие бизнеса"
+    }
+  },
+  "associationKind": {
+    "LAWFUL_LATE_REPORT": {
+      "zh": "合法迟报",
+      "ru": "Законный поздний отчёт"
+    },
+    "UNAUTHORISED_DEVIATION": {
+      "zh": "未授权偏离",
+      "ru": "Несанкционированное отклонение"
+    },
+    "UNRESOLVED_CHANGE": {
+      "zh": "未解决变更",
+      "ru": "Неразрешённое изменение"
+    }
+  },
+  "associationState": {
+    "OPEN": {
+      "zh": "待处理",
+      "ru": "Открыто"
+    },
+    "LINKED": {
+      "zh": "已关联",
+      "ru": "Связано"
+    },
+    "UNDER_VERIFICATION": {
+      "zh": "核实中",
+      "ru": "На проверке"
+    },
+    "CLOSED": {
+      "zh": "已关闭",
+      "ru": "Закрыто"
+    }
+  },
+  "queueState": {
+    "QUEUED": {
+      "zh": "排队中",
+      "ru": "В очереди"
+    },
+    "RUNNING": {
+      "zh": "运行中",
+      "ru": "Выполняется"
+    },
+    "FINISHED": {
+      "zh": "已完成",
+      "ru": "Завершено"
+    },
+    "FAILED": {
+      "zh": "失败",
+      "ru": "Сбой"
+    }
+  },
+  "evaluationStage": {
+    "OPERATIONAL": {
+      "zh": "运营阶段",
+      "ru": "Операционный этап"
+    },
+    "SETTLED": {
+      "zh": "结算阶段",
+      "ru": "Этап расчётов"
+    }
+  },
+  "protection": {
+    "DIRECT_CONTRIBUTION_PROFIT": {
+      "zh": "直接贡献利润",
+      "ru": "Прямая маржинальная прибыль"
+    },
+    "LINKED_SCOPE_PROFIT": {
+      "zh": "关联范围利润",
+      "ru": "Прибыль связанной области"
+    },
+    "OVERALL_RETURN_RATE": {
+      "zh": "总体退货率",
+      "ru": "Общий уровень возвратов"
+    },
+    "CRITICAL_VARIANT_RETURN": {
+      "zh": "关键变体退货",
+      "ru": "Возвраты критичных вариантов"
+    },
+    "SUPPLY_COVERAGE": {
+      "zh": "库存覆盖",
+      "ru": "Покрытие запасом"
+    }
+  },
+  "simulationState": {
+    "COMPUTED": {
+      "zh": "已计算",
+      "ru": "Рассчитано"
+    },
+    "NO_SOLUTION": {
+      "zh": "无解",
+      "ru": "Нет решения"
+    },
+    "UNDETERMINED": {
+      "zh": "无法判定",
+      "ru": "Не установлено"
+    }
+  },
+  "candidateState": {
+    "OPEN": {
+      "zh": "待选",
+      "ru": "Открыт"
+    },
+    "SELECTED": {
+      "zh": "已选用",
+      "ru": "Выбран"
+    },
+    "DISMISSED": {
+      "zh": "已弃用",
+      "ru": "Отклонён"
+    }
+  },
+  "reviewVerdict": {
+    "ATTESTED": {
+      "zh": "已证明",
+      "ru": "Подтверждено"
+    },
+    "RETURNED": {
+      "zh": "退回",
+      "ru": "Возвращено"
+    }
+  },
+  "bindingState": {
+    "BOUND": {
+      "zh": "已绑定",
+      "ru": "Привязано"
+    },
+    "INAPPLICABLE": {
+      "zh": "不再适用",
+      "ru": "Неприменимо"
+    }
+  },
+  "errorCode": {
+    "CALIBRATION_UNRESOLVED": {
+      "zh": "校准未解析",
+      "ru": "Калибровка не разрешена"
+    },
+    "CALIBRATION_CONFLICTED": {
+      "zh": "校准冲突",
+      "ru": "Конфликт калибровок"
+    },
+    "AFFECTED_SET_INCOMPLETE": {
+      "zh": "受影响集合不完整",
+      "ru": "Затронутый набор неполон"
+    },
+    "BINDING_INAPPLICABLE": {
+      "zh": "绑定不再适用",
+      "ru": "Привязка неприменима"
+    },
+    "INDEPENDENCE_REQUIRED": {
+      "zh": "需要独立人员",
+      "ru": "Требуется другой человек"
+    },
+    "ALLOWANCE_INSUFFICIENT": {
+      "zh": "额度不足",
+      "ru": "Лимит недостаточен"
+    },
+    "SCOPE_CONTAINED": {
+      "zh": "范围已遏制",
+      "ru": "Область остановлена"
+    },
+    "LISTING_HEALTH_BLOCKS_LAUNCH": {
+      "zh": "Listing 健康阻止启动",
+      "ru": "Здоровье карточки блокирует запуск"
+    },
+    "EXECUTION_PATH_MISMATCH": {
+      "zh": "执行路径不匹配",
+      "ru": "Несоответствие пути исполнения"
+    },
+    "RESTORE_UNSUPPORTED": {
+      "zh": "不支持恢复",
+      "ru": "Восстановление не поддерживается"
+    },
+    "EVIDENCE_PATH_UNQUALIFIED": {
+      "zh": "证据路径不合格",
+      "ru": "Путь доказательств не квалифицирован"
+    },
+    "MATERIALITY_UNRESOLVED": {
+      "zh": "重要性未确定",
+      "ru": "Существенность не определена"
+    },
+    "EXIT_REASON_NOT_APPROVED": {
+      "zh": "退出理由未批准",
+      "ru": "Причина выхода не утверждена"
+    },
+    "STEP_UP_REQUIRED": {
+      "zh": "需要强化认证",
+      "ru": "Требуется повторная аутентификация"
+    },
+    "ACTION_NOT_PERMITTED": {
+      "zh": "无权执行",
+      "ru": "Действие не разрешено"
+    },
+    "RESOURCE_SCOPE_DENIED": {
+      "zh": "超出资源范围",
+      "ru": "Ресурс вне области доступа"
+    },
+    "RESOURCE_NOT_FOUND": {
+      "zh": "未找到资源",
+      "ru": "Ресурс не найден"
+    },
+    "VERSION_CONFLICT": {
+      "zh": "版本冲突",
+      "ru": "Конфликт версий"
+    },
+    "INVALID_STATE_TRANSITION": {
+      "zh": "状态转换无效",
+      "ru": "Недопустимый переход состояния"
+    },
+    "GUARDRAIL_BLOCKED": {
+      "zh": "护栏阻止",
+      "ru": "Заблокировано защитным правилом"
+    },
+    "APPROVAL_REQUIRED": {
+      "zh": "需要批准",
+      "ru": "Требуется одобрение"
+    },
+    "RECOMMENDATION_STALE": {
+      "zh": "建议已过时",
+      "ru": "Рекомендация устарела"
+    },
+    "COMMAND_STATE_INVALID": {
+      "zh": "命令状态无效",
+      "ru": "Недопустимое состояние команды"
+    },
+    "WRITE_GATE_CLOSED": {
+      "zh": "写入闸门关闭",
+      "ru": "Шлюз записи закрыт"
+    },
+    "VALIDATION_FAILED": {
+      "zh": "校验失败",
+      "ru": "Проверка не пройдена"
+    },
+    "DUPLICATE_IDENTITY": {
+      "zh": "重复标识",
+      "ru": "Дублирующий идентификатор"
+    },
+    "POLICY_AUTHORIZATION_UNUSABLE": {
+      "zh": "策略授权不可用",
+      "ru": "Полномочие политики непригодно"
+    },
+    "CAPABILITY_NOT_USABLE": {
+      "zh": "能力不可用",
+      "ru": "Возможность непригодна"
+    },
+    "READBACK_REQUIRED": {
+      "zh": "需要回读",
+      "ru": "Требуется обратное чтение"
+    },
+    "COMPENSATION_UNSAFE": {
+      "zh": "补偿不安全",
+      "ru": "Компенсация небезопасна"
+    }
+  }
+}

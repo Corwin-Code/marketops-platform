@@ -18,7 +18,8 @@ public enum AuditSourceDomain {
     AI_COPILOT("aicopilot"),
     OPERATIONS_WORKFLOW("operationsworkflow"),
     AVAILABILITY_RISK("availabilityrisk"),
-    ADVERTISING_EFFICIENCY("advertisingefficiency");
+    ADVERTISING_EFFICIENCY("advertisingefficiency"),
+    LISTING_CONVERSION("listingconversion");
 
     private final String dbValue;
 

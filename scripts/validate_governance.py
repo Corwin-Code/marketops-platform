@@ -11,10 +11,6 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-if __package__:
-    from .validation.finalize_slice3_rework_assessment import validated_current_phase
-else:
-    from validation.finalize_slice3_rework_assessment import validated_current_phase
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -296,14 +292,67 @@ V1_SLICE_003_ACCEPTANCE_SHA256 = (
 V1_SLICE_003_OWNER_STATEMENT_SHA256 = (
     "0ffaf4e865447ad18e0cb18f2527a3183553366295274e1be0811db3e2b19634"
 )
-# The active Slice is SLICE-V1-003. The SLICE-V1-002 identities above stay
-# pinned so a closed Slice cannot lose its accepted bytes when the active
-# pointer moves.
-V1_ACTIVE_SLICE_CONTRACT_PATH = V1_SLICE_003_CONTRACT_PATH
-V1_ACTIVE_SLICE_CONTRACT_SHA256 = V1_SLICE_003_CONTRACT_SHA256
-V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = V1_SLICE_003_CONTRACT_GIT_BLOB_SHA1
-V1_ACTIVE_SLICE_ACCEPTANCE_PATH = V1_SLICE_003_ACCEPTANCE_PATH
-V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = V1_SLICE_003_ACCEPTANCE_SHA256
+V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md"
+)
+V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_SHA256 = (
+    "48f1ee92c6acbab04857cd8a85f03e722ab14fe34069b4e86e92e4776c47e947"
+)
+V1_SLICE_003_MERGE_READBACK_SNAPSHOT_PATH = (
+    "docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/"
+    "POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md"
+)
+V1_SLICE_003_MERGE_READBACK_SNAPSHOT_SHA256 = (
+    "be014d7462f12dfc214d491dd60176d337951c968fec1a8a12b19060b1a1ec54"
+)
+V1_SLICE_003_MERGE_READBACK_VERDICT_PATH = (
+    "docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/VERDICT.json"
+)
+V1_SLICE_003_MERGE_READBACK_VERDICT_SHA256 = (
+    "b839b9962c843d7ef22ea4907d18112acbf94434269364a4bfe26ce27fb1a25b"
+)
+V1_SLICE_004_CONTRACT_PATH = (
+    "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md"
+)
+V1_SLICE_004_CONTRACT_SHA256 = (
+    "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983"
+)
+V1_SLICE_004_CONTRACT_GIT_BLOB_SHA1 = (
+    "8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9"
+)
+V1_SLICE_004_CONTRACT_BYTES = "70847"
+V1_SLICE_004_CONTRACT_LINES = "669"
+V1_SLICE_004_ANNEX_PATH = (
+    "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md"
+)
+V1_SLICE_004_ANNEX_SHA256 = (
+    "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d"
+)
+V1_SLICE_004_ANNEX_GIT_BLOB_SHA1 = (
+    "4d9e93c17e26deee5d2222c8fc51d61d619aa9c8"
+)
+V1_SLICE_004_ACCEPTANCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md"
+)
+V1_SLICE_004_ACCEPTANCE_SHA256 = (
+    "5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb"
+)
+V1_SLICE_004_OWNER_STATEMENT_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt"
+)
+V1_SLICE_004_OWNER_STATEMENT_SHA256 = (
+    "2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3"
+)
+V1_SLICE_004_SOURCE_BASE_COMMIT = "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd"
+V1_SLICE_004_SOURCE_BASE_TREE = "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400"
+# The active Slice is SLICE-V1-004. The SLICE-V1-002 and SLICE-V1-003
+# identities above stay pinned so a closed Slice cannot lose its accepted bytes
+# when the active pointer moves.
+V1_ACTIVE_SLICE_CONTRACT_PATH = V1_SLICE_004_CONTRACT_PATH
+V1_ACTIVE_SLICE_CONTRACT_SHA256 = V1_SLICE_004_CONTRACT_SHA256
+V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = V1_SLICE_004_CONTRACT_GIT_BLOB_SHA1
+V1_ACTIVE_SLICE_ACCEPTANCE_PATH = V1_SLICE_004_ACCEPTANCE_PATH
+V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = V1_SLICE_004_ACCEPTANCE_SHA256
 V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH = (
     "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
 )
@@ -391,8 +440,8 @@ V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
     "delivery_model": "PRODUCTION_VERTICAL_SLICES",
-    "active_delivery_slice": "SLICE-V1-003",
-    "active_slice_title": "Advertising & Traffic Efficiency",
+    "active_delivery_slice": "SLICE-V1-004",
+    "active_slice_title": "Promotion & Listing Conversion",
     "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
     "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
     "active_slice_contract_git_blob_sha1": V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1,
@@ -400,9 +449,76 @@ V1_ACTIVE_STATE = {
     "active_slice_acceptance_evidence": V1_ACTIVE_SLICE_ACCEPTANCE_PATH,
     "active_slice_acceptance_evidence_sha256": V1_ACTIVE_SLICE_ACCEPTANCE_SHA256,
     "active_slice_amendment": "NONE_ACCEPTED",
-    "active_slice_contract_bytes": V1_SLICE_003_CONTRACT_BYTES,
-    "active_slice_contract_lines": V1_SLICE_003_CONTRACT_LINES,
+    "active_slice_contract_bytes": V1_SLICE_004_CONTRACT_BYTES,
+    "active_slice_contract_lines": V1_SLICE_004_CONTRACT_LINES,
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
+    "active_slice_annex": V1_SLICE_004_ANNEX_PATH,
+    "active_slice_annex_sha256": V1_SLICE_004_ANNEX_SHA256,
+    "active_slice_annex_git_blob_sha1": V1_SLICE_004_ANNEX_GIT_BLOB_SHA1,
+    "slice_v1_004_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
+    "slice_v1_004_owner_acceptance_statement": V1_SLICE_004_OWNER_STATEMENT_PATH,
+    "slice_v1_004_owner_acceptance_statement_sha256": V1_SLICE_004_OWNER_STATEMENT_SHA256,
+    "slice_v1_004_execution_authority": "FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY",
+    "slice_v1_004_maker": "CLAUDE",
+    "slice_v1_004_source_base_commit": V1_SLICE_004_SOURCE_BASE_COMMIT,
+    "slice_v1_004_source_base_tree": V1_SLICE_004_SOURCE_BASE_TREE,
+    "slice_v1_004_implementation_state": (
+        "LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING"
+    ),
+    "slice_v1_004_controlled_write_target": "LISTING_DESCRIPTION_CHANGE",
+    "slice_v1_004_controlled_write_provider_paths": (
+        "STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE"
+    ),
+    "slice_v1_004_real_provider_calls": "NONE",
+    "slice_v1_004_remote_write_authority": "NONE",
+    "slice_v1_004_level_2_authority": "NONE",
+    "slice_v1_004_gate_ev_authority": "NONE",
+    "slice_v1_004_gate_e_authority": "NONE",
+    "slice_v1_004_owner_decision_count": "85",
+    "slice_v1_004_decision_085": "B",
+    "slice_v1_004_scope_deltas_not_required": "DELTA_01_DELTA_02_DELTA_03",
+    "slice_v1_004_evidence_obligations_open": "F_M01_F_M02_F_S01_F_W01_F_W02_E_04",
+    "slice_v1_004_migrations": "V0074_THROUGH_V0079",
+    "slice_v1_003_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_rework_status": "CODEX_ENGINEERING_COMPLETE_CONTROLLER_PASS_MERGED",
+    "slice_v1_003_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
+    "slice_v1_003_engineering_closure_claim": (
+        "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS"
+    ),
+    "slice_v1_003_controller_final_gate": (
+        "CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_ECB3385_R2"
+    ),
+    "slice_v1_003_controller_verdict": "PASS_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_003_owner_formal_closure": "HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD",
+    "slice_v1_003_owner_formal_closure_receipt": V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_PATH,
+    "slice_v1_003_owner_formal_closure_receipt_sha256": (
+        V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_SHA256
+    ),
+    "slice_v1_003_accepted_head": "ecb33851cd507c0443daab5f40e79fa008be24bb",
+    "slice_v1_003_pr": "30",
+    "slice_v1_003_pr_state": "MERGED_PROTECTED_SQUASH",
+    "slice_v1_003_actual_squash_commit": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "slice_v1_003_actual_squash_tree": "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+    "slice_v1_003_actual_squash_sole_parent": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "slice_v1_003_actual_squash_merged_at": "2026-09-07T03:09:19Z",
+    "slice_v1_003_merge_readback": (
+        "CONTROLLER_SLICE_V1_003_READY_MERGE_EXECUTION_ACCEPTANCE_0F26D0E_R1"
+    ),
+    "slice_v1_003_merge_readback_verdict": "PASS_MERGE_EXECUTION_AND_READBACK",
+    "slice_v1_003_merge_readback_snapshot": V1_SLICE_003_MERGE_READBACK_SNAPSHOT_PATH,
+    "slice_v1_003_merge_readback_snapshot_sha256": V1_SLICE_003_MERGE_READBACK_SNAPSHOT_SHA256,
+    "slice_v1_003_merge_readback_verdict_record": V1_SLICE_003_MERGE_READBACK_VERDICT_PATH,
+    "slice_v1_003_merge_readback_verdict_record_sha256": (
+        V1_SLICE_003_MERGE_READBACK_VERDICT_SHA256
+    ),
+    "slice_v1_003_frozen_findings_closed": "22_OF_22",
+    "slice_v1_003_source_branch": "DELETED_BY_ACCEPTED_CONFIGURATION",
+    "active_gate": "CONTROLLER_SLICE_V1_004_LEVEL_1_CHECKPOINT_REVIEW",
+    "candidate_state_scope": "SLICE_V1_004_LEVEL_1_LOCAL_CHECKPOINT_NOT_CONTROLLER_REVIEWED",
+    "next_authorized_actor": "CONTROLLER",
+    "next_action": (
+        "INDEPENDENT_REVIEW_AND_LEVEL_3_PUBLICATION_DECISION_ON_EXACT_LOCAL_CHECKPOINT"
+    ),
     "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_003_owner_acceptance_statement_sha256": (
         V1_SLICE_003_OWNER_STATEMENT_SHA256
@@ -4863,6 +4979,49 @@ def validate_slice3_r1_authority(errors: list[str], documents: dict[str, bytes])
             errors.append(f"SLICE-V1-003 R1 authority missing or changed: {relative}")
 
 
+# SLICE-V1-003 is closed and merged. Its final engineering assessment, the
+# execution manifest it was derived from, the Controller merge readback and
+# the Owner's formal closure receipt are history: pinned by exact bytes, never
+# re-derived against a source tree that the next Slice has legitimately moved.
+SLICE3_CLOSURE_AUTHORITY_HASHES = {
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json":
+        "98a3f25af157e85e00d20b25a63a16aa9b30ced6555e76e10dedda0e985d5528",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json":
+        "663b8b4ea095c3b9633e32e3568328e89a79925e0b4298e6b87f082144204cb0",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json":
+        "93cdba1abaa27b2c94c3b005560e6c5a47841d1390cd012391d400e26055ceab",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json":
+        "7dd14916ffa42a894aa4f3de9c9391f7531f7cf96ee8c535e520de581e93b1ee",
+    V1_SLICE_003_MERGE_READBACK_SNAPSHOT_PATH: V1_SLICE_003_MERGE_READBACK_SNAPSHOT_SHA256,
+    V1_SLICE_003_MERGE_READBACK_VERDICT_PATH: V1_SLICE_003_MERGE_READBACK_VERDICT_SHA256,
+    V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_PATH: V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_SHA256,
+}
+
+
+def validate_slice3_closure_authority(errors: list[str], documents: dict[str, bytes]) -> None:
+    """The closed Slice's assessment, readback and closure receipt keep their bytes."""
+    for relative, expected in SLICE3_CLOSURE_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-003 closure authority missing or changed: {relative}")
+
+
+# The active Slice's authority is the exact bytes the Owner accepted: the
+# Contract, its bound normative annex and the attributable acceptance statement.
+SLICE4_ACCEPTANCE_AUTHORITY_HASHES = {
+    V1_SLICE_004_ANNEX_PATH: V1_SLICE_004_ANNEX_SHA256,
+    V1_SLICE_004_OWNER_STATEMENT_PATH: V1_SLICE_004_OWNER_STATEMENT_SHA256,
+}
+
+
+def validate_slice4_acceptance_authority(errors: list[str], documents: dict[str, bytes]) -> None:
+    """An accepted annex or statement that changed is no longer what was accepted."""
+    for relative, expected in SLICE4_ACCEPTANCE_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-004 acceptance authority missing or changed: {relative}")
+
+
 def validate_v1_current_state_text(
     errors: list[str],
     current_state_text: str,
@@ -4880,12 +5039,17 @@ def validate_v1_current_state_text(
         for relative in SLICE3_R1_AUTHORITY_HASHES
         if (path := ROOT / relative).is_file()
     })
-    try:
-        phase = validated_current_phase()
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
-        errors.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
-        phase = {}
-    for field, expected in {**V1_ACTIVE_STATE, **phase}.items():
+    validate_slice3_closure_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE3_CLOSURE_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    })
+    validate_slice4_acceptance_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE4_ACCEPTANCE_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    })
+    for field, expected in V1_ACTIVE_STATE.items():
         actual = unique_yaml_value(metadata, field)
         if actual != expected:
             errors.append(f"CURRENT_STATE {field} must be exactly: {expected}")
@@ -5128,7 +5292,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         "product_version": "V1",
         "delivery_model": "PRODUCTION_VERTICAL_SLICES",
         "source_contract": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
-        "active_slice": "SLICE-V1-003",
+        "active_slice": "SLICE-V1-004",
         "old_phase_zero_backlog": "SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN",
         "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
     }
@@ -5151,7 +5315,13 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
             # readable next to it.
             "SLICE-V1-002 — Inventory & Availability Optimization",
             "SLICE-V1-003 — Advertising & Traffic Efficiency",
-            "CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION",
+            "SLICE-V1-004 — Promotion & Listing Conversion",
+            "CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL",
+            "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+            # The roadmap placeholder this Contract narrowed stays readable
+            # beside the one selected write target.
+            "selected promotion/listing command",
+            "LISTING_DESCRIPTION_CHANGE",
             # The same honesty rule as above: the open-ended controlled-write
             # phrase this Contract narrowed must stay readable beside the row.
             "new controlled-write target: selected budget/bid/campaign command",

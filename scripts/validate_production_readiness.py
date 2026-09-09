@@ -34,11 +34,6 @@ import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass, field
 from pathlib import Path
 
-if __package__:
-    from .validation.finalize_slice3_rework_assessment import validated_current_phase
-else:
-    from validation.finalize_slice3_rework_assessment import validated_current_phase
-
 ROOT = Path(__file__).resolve().parents[1]
 
 BACKEND = "backend/marketops-server"
@@ -179,6 +174,12 @@ APPROVED_MIGRATIONS = (
     "V0071__align_frozen_outcome_company_profile_scope.sql",
     "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
     "V0073__require_complete_independent_manual_observation.sql",
+    "V0074__widen_shared_spine_for_listing_conversion.sql",
+    "V0075__create_listing_conversion_facts_and_health.sql",
+    "V0076__create_listing_calibration_and_exposure_allowance.sql",
+    "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
+    "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
+    "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -463,14 +464,14 @@ LOCAL_LOGGING_TOKENS = (
 
 COMPLETION_STATE_TOKENS = (
     "lifecycle_state: EXECUTING_V1",
-    "active_delivery_slice: SLICE-V1-003",
+    "active_delivery_slice: SLICE-V1-004",
     "active_slice_contract: docs/03-work-items/"
-    "SLICE-V1-003-advertising-traffic-efficiency.md",
+    "SLICE-V1-004-promotion-listing-conversion.md",
     "active_slice_contract_sha256: "
-    "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
-    "active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a",
+    "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
+    "active_slice_contract_git_blob_sha1: 8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9",
     "active_slice_acceptance_evidence_sha256: "
-    "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
+    "5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
     "authorization: FULL_SCOPE_IMPLEMENTATION",
@@ -592,17 +593,31 @@ COMPLETION_STATE_TOKENS = (
     "wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
     "pilot: NOT_AUTHORIZED",
     "release_v1_001: RESERVED_NOT_ACTIVATED",
+    "ozon_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "wildberries_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "slice_v1_003_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PASS_MERGED",
+    "slice_v1_003_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
+    "slice_v1_003_engineering_closure_claim: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_controller_verdict: PASS_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_003_actual_squash_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "slice_v1_003_actual_squash_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+    "candidate_state_scope: SLICE_V1_004_LEVEL_1_LOCAL_CHECKPOINT_NOT_CONTROLLER_REVIEWED",
+    "slice_v1_004_implementation_state: LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING",
+    "slice_v1_003_owner_formal_closure: HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD",
+    "slice_v1_004_execution_authority: FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY",
+    "slice_v1_004_remote_write_authority: NONE",
+    "slice_v1_004_gate_ev_authority: NONE",
+    "slice_v1_004_gate_e_authority: NONE",
+    "active_gate: CONTROLLER_SLICE_V1_004_LEVEL_1_CHECKPOINT_REVIEW",
+    "next_authorized_actor: CONTROLLER",
 )
 
 
 def completion_state_violations(text: str) -> list[str]:
-    """Keep fixed authority and the evidence-admitted phase exact and unique."""
+    """Keep fixed authority and the recorded Slice states exact and unique."""
     expected = dict(token.split(": ", 1) for token in COMPLETION_STATE_TOKENS)
-    violations = []
-    try:
-        expected.update(validated_current_phase())
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
-        violations.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
+    violations: list[str] = []
     metadata = re.search(r"(?ms)^```yaml\s*\n(.*?)^```", text)
     if metadata is None:
         return violations + ["CURRENT_STATE requires its fenced YAML metadata"]

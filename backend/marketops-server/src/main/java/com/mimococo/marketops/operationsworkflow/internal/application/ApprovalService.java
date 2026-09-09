@@ -12,6 +12,9 @@ import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
+import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
+import com.mimococo.marketops.operationsworkflow.ListingActionIntake;
+import com.mimococo.marketops.operationsworkflow.ListingDecisionScope;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.ApprovalRepository;
@@ -76,6 +79,8 @@ public class ApprovalService {
     private final Clock clock;
     private final AdvertisingHumanDecisionService advertisingHumans;
     private final com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval;
+    private final ListingActionDecisionAuthority listingDecisions;
+    private final ListingActionIntake listingIntake;
 
     ApprovalService(RecommendationService recommendations,
                     GuardrailService guardrails,
@@ -86,7 +91,9 @@ public class ApprovalService {
                     MetadataAuditRecorder auditRecorder,
                     IdGenerator idGenerator,
                     Clock clock, AdvertisingHumanDecisionService advertisingHumans,
-                    com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval) {
+                    com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval,
+                    ListingActionDecisionAuthority listingDecisions,
+                    ListingActionIntake listingIntake) {
         this.recommendations = recommendations;
         this.guardrails = guardrails;
         this.approvals = approvals;
@@ -98,6 +105,8 @@ public class ApprovalService {
         this.clock = clock;
         this.advertisingHumans = advertisingHumans;
         this.advertisingApproval = advertisingApproval;
+        this.listingDecisions = listingDecisions;
+        this.listingIntake = listingIntake;
     }
 
     /**
@@ -119,19 +128,31 @@ public class ApprovalService {
 
         UUID advertisingBaseline = proposal.actionKind() == ActionKind.AD_BID_CHANGE
                 ? advertisingHumans.requireFinalApproval(actor, proposal) : null;
+        ListingDecisionScope listingScope = proposal.actionKind().listingAction()
+                ? requireListingApproval(actor, proposal) : null;
         GuardrailVerdict verdict = guardrails.evaluate(proposal, null,
                 GuardrailPurpose.APPROVAL);
         if (!verdict.passed()) {
             throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
         }
 
+        Duration scope = listingScope == null ? AUTHORIZATION_SCOPE : listingScope.approvalValidity();
         UUID decisionId = record(proposal, "APPROVED", actor.userId(), null,
-                actor.authenticatedAt(), true, reason, now);
+                actor.authenticatedAt(), true, reason, now, scope);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.APPROVED, null, expectedVersion);
         if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
             advertisingApproval.seal(recommendationId, decisionId, advertisingBaseline);
             advertisingHumans.recordAction(actor,recommendationId,"DECISION_APPROVED",decisionId,reason);
+        }
+        if (listingScope != null) {
+            // The binding freezes exactly what this approval was given against,
+            // with the earliest expiry of every bound authority. Nothing later
+            // extends it.
+            listingDecisions.bindApproval(recommendationId, decisionId, verdict.evaluationId(),
+                    now.plus(scope));
+            listingIntake.recordTaskAction(actor, recommendationId, "DECISION_APPROVED",
+                    "approval-decision:" + decisionId, reason);
         }
         return new Decision(decisionId, RecommendationState.APPROVED, verdict, null);
     }
@@ -145,11 +166,16 @@ public class ApprovalService {
         if(proposal.actionKind()==ActionKind.AD_BID_CHANGE) advertisingHumans.requireFinalApproval(actor,proposal);
         Instant now = clock.instant();
         UUID decisionId = record(proposal, "REJECTED", actor.userId(), null,
-                actor.authenticatedAt(), actor.stepUpSatisfiedAt(now), reason, now);
+                actor.authenticatedAt(), actor.stepUpSatisfiedAt(now), reason, now, AUTHORIZATION_SCOPE);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.REJECTED, "REJECTED_BY_REVIEWER", expectedVersion);
         if(proposal.actionKind()==ActionKind.AD_BID_CHANGE)
             advertisingHumans.recordAction(actor,recommendationId,"DECISION_REJECTED",decisionId,reason);
+        if (proposal.actionKind().listingAction()) {
+            listingDecisions.recordRejection(recommendationId, decisionId);
+            listingIntake.recordTaskAction(actor, recommendationId, "DECISION_REJECTED",
+                    "approval-decision:" + decisionId, reason);
+        }
         return new Decision(decisionId, RecommendationState.REJECTED, null, null);
     }
 
@@ -166,11 +192,12 @@ public class ApprovalService {
                                       String reason, long expectedVersion) {
         RecommendationView proposal = requireDecidable(actor, recommendationId,
                 expectedVersion);
-        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE || proposal.actionKind().listingAction()) {
             // Standing policy automation is not part of this product's
-            // advertising capability. A bid change is decided by a person, every
-            // time, and refusing here rather than failing later on a missing
-            // change rate is the difference between a rule and an accident.
+            // advertising or listing capability. A bid change and a listing
+            // action are decided by a person, every time, and refusing here
+            // rather than failing later on a missing change rate is the
+            // difference between a rule and an accident.
             throw OperationRejectedException.of(ErrorCode.POLICY_AUTHORIZATION_UNUSABLE);
         }
         Instant now = clock.instant();
@@ -196,7 +223,7 @@ public class ApprovalService {
                 proposal.storeId(), productVariantId);
 
         UUID decisionId = record(proposal, "POLICY_AUTHORIZED", null, standing.id(), null,
-                false, reason, now);
+                false, reason, now, AUTHORIZATION_SCOPE);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.POLICY_AUTHORIZED, null, expectedVersion);
         return new Decision(decisionId, RecommendationState.POLICY_AUTHORIZED, verdict,
@@ -238,7 +265,7 @@ public class ApprovalService {
         if (proposal.state() != RecommendationState.READY_FOR_REVIEW) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
-        if (!proposal.actionKind().writeCapable()) {
+        if (!proposal.actionKind().requiresApproval()) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
         if (!proposal.validUntil().isAfter(clock.instant())) {
@@ -254,10 +281,22 @@ public class ApprovalService {
      * write-capable action added without a grant of its own would not silently
      * inherit one — the switch would not compile.
      */
-    private static ActionScopeCode approvalScopeOf(RecommendationView proposal) {
+    private ActionScopeCode approvalScopeOf(RecommendationView proposal) {
         return switch (proposal.actionKind()) {
             case PRICE_CHANGE -> ActionScopeCode.PRICE_CHANGE_APPROVE;
             case AD_BID_CHANGE -> ActionScopeCode.AD_BID_CHANGE_APPROVE;
+            // Either axis crossing its material trigger routes the final
+            // approval to the Owner; otherwise the Operations Lead decides. An
+            // unresolved materiality names no grant, because nobody may hold it.
+            case LISTING_DESCRIPTION_CHANGE, LISTING_PROMOTION_ACTION -> {
+                ListingDecisionScope scope = listingDecisions.decisionScope(proposal.id())
+                        .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+                if (!scope.materialityResolved()) {
+                    throw OperationRejectedException.of(ErrorCode.MATERIALITY_UNRESOLVED);
+                }
+                yield scope.material() ? ActionScopeCode.LISTING_ACTION_APPROVE_MATERIAL
+                        : ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY;
+            }
             case RESOLVE_MAPPING, RESTOCK_REVIEW, LISTING_CONTENT_REVIEW,
                  ADVERTISING_REVIEW, COST_DATA_REVIEW ->
                     // Not decidable at all. requireDecidable refuses these on
@@ -269,12 +308,12 @@ public class ApprovalService {
 
     private UUID record(RecommendationView proposal, String decision, UUID decidedByUserId,
                         UUID policyAuthorizationId, Instant authenticatedAt,
-                        boolean stepUpSatisfied, String reason, Instant now) {
+                        boolean stepUpSatisfied, String reason, Instant now, Duration validity) {
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
         UUID decisionId = idGenerator.newId();
         approvals.insert(decisionId, proposal.organizationId(), proposal.id(), decision,
                 decidedByUserId, policyAuthorizationId, authenticatedAt, stepUpSatisfied,
-                proposal.entityVersionDigest(), now.plus(AUTHORIZATION_SCOPE), validReason,
+                proposal.entityVersionDigest(), now.plus(validity), validReason,
                 now, CorrelationId.current());
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATIONS_WORKFLOW,
@@ -289,6 +328,35 @@ public class ApprovalService {
                                 Boolean.toString(stepUpSatisfied))),
                 validReason, null));
         return decisionId;
+    }
+
+    /**
+     * What a listing action needs before a person may give the final approval.
+     *
+     * <p>The author never approves. The reviewer may combine review and
+     * approval only when the same person holds both grants, which the role
+     * matrix decides; an unattested action is not decidable at all.
+     */
+    private ListingDecisionScope requireListingApproval(AuthenticatedActor actor,
+                                                        RecommendationView proposal) {
+        ListingDecisionScope scope = listingDecisions.decisionScope(proposal.id())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        if (!actor.organizationId().equals(scope.organizationId())) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        if (actor.userId().equals(scope.authorUserId())) {
+            throw OperationRejectedException.of(ErrorCode.INDEPENDENCE_REQUIRED);
+        }
+        if (!scope.reviewAttested()) {
+            throw OperationRejectedException.of(ErrorCode.APPROVAL_REQUIRED);
+        }
+        if (!scope.materialityResolved()) {
+            throw OperationRejectedException.of(ErrorCode.MATERIALITY_UNRESOLVED);
+        }
+        if (scope.approvalValidity().isNegative() || scope.approvalValidity().isZero()) {
+            throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
+        }
+        return scope;
     }
 
     /** The change the verdict measured, as the consuming function expects it. */
