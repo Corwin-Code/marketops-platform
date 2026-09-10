@@ -9,10 +9,12 @@
       "title": "Outcome写入口遗漏业务授权与对象边界，读权限检查不能覆盖写入口",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Added independent current business scope before Outcome writes; foreign measurement listing rejected. Exact frozen measurement window/stage binding remains open."
+        "Added independent current business scope before Outcome writes; foreign measurement listing rejected. Exact frozen measurement window/stage binding remains open.",
+        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open."
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
+        "Checkpoint-7: 104 unit/architecture, 24 signed HTTP/database including concurrent revision chain, and 8 schema/application-role tests passed. An earlier unexplained preparation 403 is retained for continued investigation. No closure claim."
       ]
     },
     {
@@ -56,11 +58,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Legacy HTTP numeric assertions no longer manufacture formal MET or protection PASS/FAIL. Canonical Metric exact-period read added; qualified positive Outcome pipeline and full protections remain open.",
-        "Added same-authority canonical scope Metric projection with compatible whole-profit sum, weighted return counts, scoped identity checks and original confidence/provenance. Formal protection consumer still open."
+        "Added same-authority canonical scope Metric projection with compatible whole-profit sum, weighted return counts, scoped identity checks and original confidence/provenance. Formal protection consumer still open.",
+        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open."
       ],
       "executed_evidence": [
         "Checkpoint-4 targeted receipts: 16 actual Metric Engine/database tests and 20 signed HTTP/database tests passed, including caller-number forgery. Positive canonical Outcome and full regression still required.",
-        "Checkpoint-5 actual Metric Engine subset 17 passed including available-to-unavailable scope profit revision and preserved historical projection. Unit/architecture subset 91 passed."
+        "Checkpoint-5 actual Metric Engine subset 17 passed including available-to-unavailable scope profit revision and preserved historical projection. Unit/architecture subset 91 passed.",
+        "Checkpoint-7: 104 unit/architecture, 24 signed HTTP/database including concurrent revision chain, and 8 schema/application-role tests passed. An earlier unexplained preparation 403 is retained for continued investigation. No closure claim."
       ]
     },
     {
@@ -70,13 +74,15 @@
       "implementation": [
         "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open.",
         "Full structured methods and critical group rules retained; explicit empty stop/zero tail permitted, missing stop remains unresolved. NOT_MET is no longer an automatic stop. Real qualified upper-bound/node schedule integration remains open.",
-        "Normal DRAFT preparation now freezes the plan before review. V0088 binds review and approval to its exact digest/chronology and rejects legacy unbound approval reuse. Full frozen definition is available on read; complete windows/method/node execution remain open."
+        "Normal DRAFT preparation now freezes the plan before review. V0088 binds review and approval to its exact digest/chronology and rejects legacy unbound approval reuse. Full frozen definition is available on read; complete windows/method/node execution remain open.",
+        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open."
       ],
       "executed_evidence": [
         "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending.",
         "Protection/calibration unit and architecture subset: 88 passed before the latest HTTP authority removal. ListingConversionSchemaIT: 8 passed including mandatory protection dimensions and known-failure precedence. Partial evidence only.",
         "Checkpoint-4: 91 unit/architecture tests including positive explicit no-stop/zero-tail freeze and exact package-version refusal. SQL schema subset 8 passed. No final closure claim.",
-        "Checkpoint-6: 93 unit/architecture, 23 signed HTTP/database, 7 launch and 7 description Gate tests passed. Normal preparation and legacy plan-binding refusal covered; no final closure claim."
+        "Checkpoint-6: 93 unit/architecture, 23 signed HTTP/database, 7 launch and 7 description Gate tests passed. Normal preparation and legacy plan-binding refusal covered; no final closure claim.",
+        "Checkpoint-7: 104 unit/architecture, 24 signed HTTP/database including concurrent revision chain, and 8 schema/application-role tests passed. An earlier unexplained preparation 403 is retained for continued investigation. No closure claim."
       ]
     },
     {

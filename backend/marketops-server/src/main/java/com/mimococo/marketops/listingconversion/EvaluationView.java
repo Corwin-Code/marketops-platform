@@ -32,9 +32,10 @@ public record EvaluationView(
     public record NodeResult(UUID id, String nodeCode, String stage, int revisionNo, BigDecimal primaryRatio,
                              BigDecimal conservativeBound, BigDecimal acceptedThreshold, NodeVerdict verdict,
                              Map<String, String> protectionVector, ProtectionVerdict protectionVerdict,
-                             String stopVerdict, Instant evaluatedAt) {
+                             String stopVerdict, Instant evaluatedAt, Map<String,Object> evaluationEvidence) {
         public NodeResult {
             protectionVector = Map.copyOf(protectionVector == null ? Map.of() : protectionVector);
+            evaluationEvidence = Map.copyOf(evaluationEvidence == null ? Map.of() : evaluationEvidence);
         }
     }
 

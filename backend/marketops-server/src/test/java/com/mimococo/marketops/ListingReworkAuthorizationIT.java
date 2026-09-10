@@ -314,7 +314,9 @@ class ListingReworkAuthorizationIT {
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(Map.of("executionPath","MANUAL","targetText",ListingConversionFixture.PRIOR_TEXT_ONE+".",
                         "kizMarkedDeclared",false,"exposureShare",new java.math.BigDecimal("0.01")))))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("DRAFT")).andReturn();
+                .andExpect(result -> assertThat(result.getResponse().getStatus())
+                        .withFailMessage("Preparation failed: %s", result.getResolvedException()).isEqualTo(200))
+                .andExpect(jsonPath("$.state").value("DRAFT")).andReturn();
         UUID actionId=UUID.fromString(json.readTree(actionResponse.getResponse().getContentAsString()).path("id").asText());
         assertThat(jdbc.sql("""
                 SELECT p.frozen_at>=a.created_at AND p.calibration_package_id=a.calibration_package_id
@@ -372,9 +374,50 @@ class ListingReworkAuthorizationIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results[0].verdict").value("UNDETERMINED"))
                 .andExpect(jsonPath("$.results[0].protectionVerdict").value("UNDETERMINED"))
-                .andExpect(jsonPath("$.results[0].stopVerdict").value("UNDETERMINED"));
+                .andExpect(jsonPath("$.results[0].stopVerdict").value("UNDETERMINED"))
+                .andExpect(jsonPath("$.results[0].evaluationEvidence.nodeWindowQualified").value(false))
+                .andExpect(jsonPath("$.results[0].evaluationEvidence.qualificationGaps[0]").value("FROZEN_METHOD_OR_SCHEDULE_UNQUALIFIED"));
         assertThat(jdbc.sql("SELECT conservative_bound IS NULL FROM ops.lc_node_result WHERE plan_id=:plan")
                 .param("plan",fixture.id("planOne")).query(Boolean.class).single()).isTrue();
+        mvc.perform(post(endpoint()).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                        .content(request.replace("OPERATIONAL", "SETTLED")))
+                .andExpect(status().isOk());
+        assertThat(jdbc.sql("SELECT outcome_kind FROM ops.work_task_event WHERE organization_id=:org AND event_kind='OUTCOME_OBSERVED'")
+                .param("org",fixture.id("organization")).query(String.class).list()).containsExactly("UNKNOWN","UNKNOWN");
+        assertThat(jdbc.sql("SELECT bool_and(evaluation_evidence->>'planDigest'=p.plan_digest) FROM ops.lc_node_result r JOIN ops.lc_evaluation_plan p ON p.id=r.plan_id WHERE p.id=:plan")
+                .param("plan",fixture.id("planOne")).query(Boolean.class).single()).isTrue();
+    }
+
+    @Test
+    void concurrentOutcomeRequestsAppendASingleOrderedRevisionChain() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_OUTCOME_EVALUATE,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Synthetic concurrent Outcome responsibility",Instant.now().plusSeconds(86400),Instant.now());
+        String token=bearer(), route=endpoint(), request=body();
+        var ready=new java.util.concurrent.CountDownLatch(2);
+        var start=new java.util.concurrent.CountDownLatch(1);
+        try (var workers=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+            var futures=new java.util.ArrayList<java.util.concurrent.Future<Integer>>();
+            for (int index=0;index<2;index++) futures.add(workers.submit(()->{
+                ready.countDown();
+                if (!start.await(10,java.util.concurrent.TimeUnit.SECONDS)) throw new AssertionError("concurrent start timeout");
+                return mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,token)
+                        .contentType(MediaType.APPLICATION_JSON).content(request)).andReturn().getResponse().getStatus();
+            }));
+            assertThat(ready.await(10,java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+            start.countDown();
+            for (var future:futures) assertThat(future.get(20,java.util.concurrent.TimeUnit.SECONDS)).isEqualTo(200);
+        }
+        assertThat(jdbc.sql("SELECT revision_no FROM ops.lc_node_result WHERE plan_id=:plan ORDER BY revision_no")
+                .param("plan",fixture.id("planOne")).query(Integer.class).list()).containsExactly(0,1);
+        assertThat(jdbc.sql("""
+                SELECT count(*) FROM ops.lc_outcome_revision revision
+                  JOIN ops.lc_node_result original ON original.id=revision.original_result_id
+                  JOIN ops.lc_node_result revised ON revised.id=revision.revised_result_id
+                  WHERE revision.plan_id=:plan AND original.revision_no=0 AND revised.revision_no=1
+                """).param("plan",fixture.id("planOne")).query(Long.class).single()).isEqualTo(1);
     }
 
     @Test

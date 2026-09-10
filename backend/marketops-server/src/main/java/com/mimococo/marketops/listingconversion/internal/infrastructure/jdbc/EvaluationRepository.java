@@ -61,6 +61,26 @@ public class EvaluationRepository {
                 .param("plan", planId).param("node", nodeCode).param("stage", stage).query(Integer.class).single();
     }
 
+    /** Serialize all result revisions for a plan in the surrounding transaction. */
+    public void lockPlan(UUID planId) {
+        jdbc.sql("SELECT pg_advisory_xact_lock(hashtextextended('lc-node-result:' || CAST(:plan AS text), 0))")
+                .param("plan", planId).query((rs,n)->true).single();
+    }
+
+    public boolean previouslyAdmittedWindow(UUID planId, String nodeCode, String stage,
+                                            Instant from, Instant to, int retentionDays) {
+        return jdbc.sql("""
+                SELECT EXISTS(SELECT 1 FROM ops.lc_node_result r
+                  JOIN mart.lc_conversion_measurement m ON m.id=r.measurement_id
+                  WHERE r.plan_id=:plan AND r.node_code=:node AND r.stage=:stage
+                    AND r.evaluation_evidence->'nodeWindowQualified'='true'::jsonb
+                    AND r.evaluation_evidence->'withinInitialEvaluationPeriod'='true'::jsonb
+                    AND m.window_start=:from AND m.window_end=:to AND m.retention_window_days=:retention)
+                """).param("plan",planId).param("node",nodeCode).param("stage",stage)
+                .param("from",Timestamp.from(from)).param("to",Timestamp.from(to)).param("retention",retentionDays)
+                .query(Boolean.class).single();
+    }
+
     public Optional<UUID> latestResult(UUID planId, String nodeCode, String stage) {
         return jdbc.sql("SELECT id FROM ops.lc_node_result WHERE plan_id = :plan AND node_code = :node AND stage = :stage ORDER BY revision_no DESC LIMIT 1")
                 .param("plan", planId).param("node", nodeCode).param("stage", stage).query(UUID.class).optional();
@@ -69,18 +89,19 @@ public class EvaluationRepository {
     public void insertResult(UUID id, UUID organizationId, UUID planId, String nodeCode, String stage, int revision,
                              UUID measurementId, UUID runId, BigDecimal ratio, BigDecimal bound, BigDecimal threshold,
                              NodeVerdict verdict, Map<String, String> vector, ProtectionVerdict protection, boolean stop,
-                             boolean maturity, Instant sourceTime, Instant now) {
+                             boolean maturity, Instant sourceTime, Instant now, Map<String,Object> evidence) {
         jdbc.sql("""
                 INSERT INTO ops.lc_node_result (id, organization_id, plan_id, node_code, stage, revision_no, measurement_id,
                     calculation_run_id, primary_ratio, conservative_bound, accepted_threshold, verdict, protection_vector,
-                    protection_verdict, stop_triggered, maturity_reached, source_time, evaluated_at)
+                    protection_verdict, stop_triggered, maturity_reached, source_time, evaluated_at, evaluation_evidence)
                 VALUES (:id, :org, :plan, :node, :stage, :revision, :measurement, :run, :ratio, :bound, :threshold, :verdict,
-                    CAST(:vector AS jsonb), :protection, :stop, :maturity, :source, :now)
+                    CAST(:vector AS jsonb), :protection, :stop, :maturity, :source, :now, CAST(:evidence AS jsonb))
                 """).param("id", id).param("org", organizationId).param("plan", planId).param("node", nodeCode).param("stage", stage)
                 .param("revision", revision).param("measurement", measurementId).param("run", runId).param("ratio", ratio)
                 .param("bound", bound).param("threshold", threshold).param("verdict", verdict.name())
                 .param("vector", json.writeValueAsString(vector)).param("protection", protection.name()).param("stop", stop)
                 .param("maturity", maturity).param("source", ListingFactRepository.ts(sourceTime)).param("now", Timestamp.from(now))
+                .param("evidence",json.writeValueAsString(evidence))
                 .update();
     }
 
@@ -99,6 +120,7 @@ public class EvaluationRepository {
         return jdbc.sql("""
                 SELECT id, node_code, stage, revision_no, primary_ratio, conservative_bound, accepted_threshold, verdict,
                        protection_vector::text AS vector, protection_verdict, stop_triggered, evaluated_at,
+                       evaluation_evidence::text AS evidence,
                        (SELECT p.stop_rule = '{}'::jsonb FROM ops.lc_evaluation_plan p WHERE p.id = plan_id) AS no_stop_rule
                   FROM ops.lc_node_result WHERE plan_id = :plan ORDER BY evaluated_at
                 """).param("plan", planId)
@@ -108,7 +130,8 @@ public class EvaluationRepository {
                         NodeVerdict.valueOf(rs.getString("verdict")), ListingActionRepository.stringMap(rs.getString("vector")),
                         ProtectionVerdict.valueOf(rs.getString("protection_verdict")),
                         rs.getBoolean("stop_triggered") ? "STOP" : rs.getBoolean("no_stop_rule") ? "NOT_CONFIGURED" : "UNDETERMINED",
-                        ListingFactRepository.instant(rs, "evaluated_at")))
+                        ListingFactRepository.instant(rs, "evaluated_at"),
+                        rs.getString("evidence")==null?Map.of():jsonToObjectMap(json.readTree(rs.getString("evidence")))) )
                 .list();
     }
 
@@ -176,5 +199,11 @@ public class EvaluationRepository {
                     entry.getValue().isValueNode() ? entry.getValue().asText() : entry.getValue().toString()));
         }
         return out;
+    }
+
+    private static Map<String,Object> jsonToObjectMap(JsonNode node) {
+        Map<String,Object> values = new LinkedHashMap<>();
+        node.properties().forEach(entry -> values.put(entry.getKey(),entry.getValue().deepCopy()));
+        return values;
     }
 }

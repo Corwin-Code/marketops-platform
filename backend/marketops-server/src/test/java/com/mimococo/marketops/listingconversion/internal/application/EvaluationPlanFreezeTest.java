@@ -108,6 +108,21 @@ class EvaluationPlanFreezeTest {
         assertThatThrownBy(()->service.freezePlan(action)).isInstanceOfSatisfying(OperationRejectedException.class,
                 failure->assertThat(failure.errorCode()).isEqualTo(ErrorCode.CALIBRATION_UNRESOLVED));
     }
+
+    @Test void executableMethodFreezesItsWholeObservationAndDecisionHorizon() {
+        put("CRITICAL_GROUP_RULE",null,"{\"groups\":[]}");
+        put("FORMAL_NODES",null,"""
+                [{"nodeCode":"D14","maturityDays":14,"method":"EXACT_BINOMIAL_FIXED_TRAFFIC_BONFERRONI_V1","threshold":"0.05",
+                  "methodParameters":{"familyAlpha":"0.05","nodeAlpha":"0.05",
+                   "samplingModel":"INDEPENDENT_BERNOULLI_VISITS","qualificationRef":"fixture://verified-method"},
+                  "schedule":{"windowStartOffsetDays":1,"windowEndOffsetDays":15,"notBeforeOffsetDays":29,"lastOffsetDays":43}}]
+                """);
+        assertThat(service.freezePlan(action)).isEqualTo(planId);
+        verify(actions).insertPlan(any(),any(),any(),any(),anyInt(),anyMap(),eq(at.plusSeconds(43L*86400)),
+                anyList(),anyMap(),anyList(),anyString(),eq(0),anyString(),eq(at));
+        put("CRITICAL_GROUP_RULE",null,"{\"groups\":[\"unstructured\"]}");
+        rejectsUnresolved();
+    }
     void put(String category,BigDecimal number,String body) {
         values.put(category,new CalibrationRepository.Value(category,number,null,body==null?null:json.readTree(body),
                 "RULE",null,"fixture://accepted-calibration"));

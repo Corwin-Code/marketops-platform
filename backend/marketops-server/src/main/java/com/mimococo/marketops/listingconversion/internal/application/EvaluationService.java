@@ -11,6 +11,8 @@ import com.mimococo.marketops.listingconversion.ProtectionVerdict;
 import com.mimococo.marketops.listingconversion.RatioState;
 import com.mimococo.marketops.listingconversion.SimulationView;
 import com.mimococo.marketops.listingconversion.internal.domain.ProtectionVector;
+import com.mimococo.marketops.listingconversion.internal.domain.FrozenComparisonMethod;
+import com.mimococo.marketops.listingconversion.internal.domain.FrozenNodeWindow;
 import com.mimococo.marketops.listingconversion.internal.domain.PromotionSimulator;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.EvaluationRepository;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository;
@@ -123,6 +125,19 @@ public class EvaluationService {
         }
         Instant boundary = now.plus(Duration.ofDays((long) longestMaturity + crossPeriod));
         List<JsonNode> groups = CalibrationService.criticalGroupRules(resolved.resolved());
+        JsonNode frozenNodes = json.valueToTree(nodes);
+        JsonNode frozenGroups = json.valueToTree(groups);
+        boolean registeredMethod = nodes.stream().anyMatch(node -> node.get("method") instanceof JsonNode method
+                && FrozenComparisonMethod.CODE.equals(method.asText()));
+        if (registeredMethod) {
+            int lastScheduledDay = 0;
+            for (JsonNode node : frozenNodes) {
+                var method = FrozenComparisonMethod.resolve(frozenNodes, frozenGroups, node.path("nodeCode").asText())
+                        .orElseThrow(() -> OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED));
+                lastScheduledDay = Math.max(lastScheduledDay, method.lastDay());
+            }
+            boundary = now.plus(Duration.ofDays((long) lastScheduledDay + crossPeriod));
+        }
         String digest = Digest.ofComponents(List.of("lc-frozen-plan-2", action.id().toString(),
                 json.writeValueAsString(coverage), json.writeValueAsString(nodes), json.writeValueAsString(stopRule),
                 json.writeValueAsString(groups), "PRIOR_VERSION_WINDOW", "EXCLUDE_TRANSITION_DAYS",
@@ -157,6 +172,7 @@ public class EvaluationService {
         scopes.require(actor, action.listingId(), ActionScopeCode.LISTING_OUTCOME_EVALUATE);
         EvaluationRepository.PlanRow plan = evaluations.plan(actionId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION));
+        evaluations.lockPlan(plan.id());
         JsonNode node = null;
         for (JsonNode candidate : plan.formalNodes()) {
             if (candidate.path("nodeCode").asText().equals(nodeCode)) {
@@ -176,7 +192,31 @@ public class EvaluationService {
         }
         BigDecimal ratio = measurement.filter(m -> m.ratioState() == RatioState.DEFINED)
                 .map(ConversionMeasurementView::primaryRatio).orElse(null);
-        boolean maturity = measurement.map(ConversionMeasurementView::maturityReached).orElse(false);
+        var method = FrozenComparisonMethod.resolve(plan.formalNodes(), plan.criticalGroups(), nodeCode).orElse(null);
+        var launchedAt = actions.launch(actionId).map(com.mimococo.marketops.listingconversion.ListingActionView.Launch::launchedAt).orElse(null);
+        var window = FrozenNodeWindow.assess(method, plan.frozenAt(), plan.latestBoundary(), launchedAt,
+                measurement.orElse(null), now, false);
+        if (method != null && evaluations.previouslyAdmittedWindow(plan.id(), nodeCode, stage,
+                window.windowStart(), window.windowEnd(), window.retentionDays())) {
+            window = FrozenNodeWindow.assess(method, plan.frozenAt(), plan.latestBoundary(), launchedAt,
+                    measurement.orElse(null), now, true);
+        }
+        boolean maturity = window.admitted();
+        Map<String,Object> evaluationEvidence = new LinkedHashMap<>();
+        evaluationEvidence.put("planDigest", plan.planDigest());
+        evaluationEvidence.put("nodeCode", nodeCode);
+        evaluationEvidence.put("requestedStage", stage);
+        evaluationEvidence.put("method", node.path("method").asText());
+        evaluationEvidence.put("nodeWindowQualified", window.admitted());
+        evaluationEvidence.put("withinInitialEvaluationPeriod", window.notBefore()!=null
+                && !now.isBefore(window.notBefore()) && !now.isAfter(window.lastEvaluation()) && !now.isAfter(plan.latestBoundary()));
+        evaluationEvidence.put("measurementId", measurementId==null?null:measurementId.toString());
+        evaluationEvidence.put("frozenWindowStart", window.windowStart()==null?null:window.windowStart().toString());
+        evaluationEvidence.put("frozenWindowEnd", window.windowEnd()==null?null:window.windowEnd().toString());
+        List<String> qualificationGaps = new ArrayList<>(window.gaps());
+        qualificationGaps.add("QUALIFIED_CONTROL_AND_VERSION_COVERAGE_UNRESOLVED");
+        qualificationGaps.add("CANONICAL_PROTECTION_EVIDENCE_UNRESOLVED");
+        evaluationEvidence.put("qualificationGaps", qualificationGaps);
         // A request number cannot be a qualified comparison bound. The measured
         // absolute ratio stays visible as a fact, separately from improvement.
         BigDecimal bound = null;
@@ -206,15 +246,17 @@ public class EvaluationService {
         UUID resultId = ids.newId();
         evaluations.insertResult(resultId, action.organizationId(), plan.id(), nodeCode, stage, revision, measurementId, runId,
                 ratio, bound, threshold, verdict, ProtectionVector.toStrings(vector), protection, stop, maturity,
-                measurement.map(ConversionMeasurementView::sourceTime).orElse(null), now);
+                measurement.map(ConversionMeasurementView::sourceTime).orElse(null), now, evaluationEvidence);
         if (original.isPresent()) {
             evaluations.insertRevision(ids.newId(), action.organizationId(), plan.id(), original.get(), resultId,
                     lateFactReference == null ? "CORRECTION" : "LATE_FACT",
                     lateFactReference == null ? "re-evaluation:" + resultId : MetadataFieldPolicy.requireText("lateFactReference", lateFactReference),
                     now);
         }
-        intake.recordTaskOutcome(action.recommendationId(), "SETTLED".equals(stage) ? (original.isPresent() ? "SETTLED_REVISED" : "SETTLED") : "OPERATIONAL",
-                "lc-node-result:" + resultId, "node " + nodeCode + " " + verdict + " protections " + protection);
+        // A requested stage is not proof that the underlying business evidence
+        // has reached that stage. Keep the responsibility journal honest too.
+        intake.recordTaskOutcome(action.recommendationId(), "UNKNOWN",
+                "lc-node-result:" + resultId, "node " + nodeCode + " requested " + stage + " " + verdict + " protections " + protection);
         return viewAuthorized(actionId).orElseThrow();
     }
 

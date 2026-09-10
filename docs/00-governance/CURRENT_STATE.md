@@ -760,3 +760,12 @@ one Draft PR and CI; it does not permit Ready, merge, force-push, real Provider
 access, shared/production access or production enablement. No finding or AC status
 is inherited as verified in this R1 cycle. `production_write_enabled=false` remains
 in force; all 24 external release obligations remain production-blocking.
+
+SLICE-V1-004 continuous local rework update: finite frozen statistical-method
+parameters, exact node-window/deadline admission, retained result qualification
+gaps and serialized revisions now have targeted local evidence in
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-7-test-receipts.json`.
+104 unit/architecture, 24 signed HTTP/database and 8 schema/role checks passed.
+The receipt also preserves an unexplained intermittent preparation 403 for
+continued investigation. Qualified positive formal Outcome and complete root-cause
+closure remain unfinished: 0/27 findings closed, final handoff NOT_READY.
