@@ -61,6 +61,8 @@ class ListingReworkAuthorizationIT {
     private static final RSAKey SIGNING_KEY = signingKey();
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE = TestDatabase.isolatedContainer();
     @Autowired MockMvc mvc;
+    @Autowired org.springframework.context.ApplicationContext applicationContext;
+    @Autowired ListingDescriptionLoopback loopback;
     @Autowired JdbcClient jdbc;
     @Autowired IdentityProviderService providers;
     @Autowired UserAdministrationService users;
@@ -463,6 +465,184 @@ class ListingReworkAuthorizationIT {
                   WHERE revision.plan_id=:plan AND original.revision_no=0 AND revised.revision_no=1
                 """).param("plan",fixture.id("planOne")).query(Long.class).single()).isEqualTo(1);
     }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"SYNC","ASYNC","CRASH_AFTER_APPLY"})
+    void oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole(String scenario) throws Exception {
+        var json=new tools.jackson.databind.ObjectMapper();
+        fixture.seed.sql("""
+                UPDATE platform.capability_operation SET description_response_binding='{
+                    "schema":"DESCRIPTION_RESPONSE_IDENTITY_V1","evidenceRef":"fixture://protocol",
+                    "mode":"EXACT_OBJECT","selection":"ITEMS","payloadPointer":"/items",
+                    "listingKeyPointer":"/offer_id","listingKeyType":"string"}'::jsonb
+                 WHERE capability_id=:id
+                """).param("id",fixture.id("capability")).update();
+        fixture.seed.sql("""
+                UPDATE platform.capability_operation SET description_request_guard='{
+                    "schema":"DESCRIPTION_REQUEST_V1","evidenceRef":"fixture://protocol",
+                    "mutationSemantics":"PARTIAL_ATTRIBUTE","markingPolicy":"NOT_APPLICABLE",
+                    "body":{"offer_id":{"$bind":"LISTING_KEY","$type":"string"},
+                      "attributes":[{"id":{"$bind":"ATTRIBUTE_KEY","$type":"string"},
+                        "values":[{"value":{"$bind":"DESCRIPTION_TEXT","$type":"string"}}]}],"kizMarked":false}}
+                    '::jsonb WHERE capability_id=:id AND operation IN ('APPLY','RESTORE')
+                """).param("id",fixture.id("capability")).update();
+        fixture.seed.sql("""
+                INSERT INTO platform.platform_api_profile(platform_code,base_url,request_timeout_ms,max_response_bytes,
+                    verification_state,last_verified_at,evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
+                SELECT platform_code,'https://example.invalid',5000,8192,'VERIFIED',now(),'fixture://protocol',
+                    'Synthetic connected protocol','fixture','ACTIVE',now(),now() FROM platform.platform_capability WHERE id=:id
+                """).param("id",fixture.id("capability")).update();
+        UUID header=UUID.randomUUID();
+        fixture.seed.sql("""
+                INSERT INTO platform.platform_auth_header(id,platform_code,header_name,value_source,value_template,credential_purpose,
+                    ordinal,verification_state,last_verified_at,evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
+                SELECT :id,platform_code,'X-Fixture-Description','LITERAL','synthetic','CONTENT_WRITE',99,'VERIFIED',now(),
+                    'fixture://protocol','Synthetic connected protocol','fixture','ACTIVE',now(),now()
+                 FROM platform.platform_capability WHERE id=:capability
+                """).param("id",header).param("capability",fixture.id("capability")).update();
+        if (scenario.equals("ASYNC")) configureConnectedAsyncProtocol();
+        // This is an isolated fabricated attestation of a fictional protocol, never real account evidence.
+        fixture.seed.sql("""
+                INSERT INTO platform.registry_verification_case(id,organization_id,marketplace_account_id,capability_id,
+                    endpoint_ids,auth_header_ids,official_source_url,official_source_sha256,account_evidence_ref,
+                    account_evidence_sha256,evidence_class,tested_at,valid_until,submitted_by_user_id,reviewed_by_user_id,
+                    reviewed_at,state,configuration_snapshot,submitted_configuration_snapshot)
+                VALUES(gen_random_uuid(),:org,:account,:capability,ARRAY(SELECT endpoint_id FROM platform.capability_operation WHERE capability_id=:capability),
+                    ARRAY[CAST(:header AS uuid)],'https://example.invalid/synthetic',:digest,'evidence://synthetic/never-a-real-account',
+                    :digest,'REAL_ACCOUNT',now()-interval '1 minute',now()+interval '1 day',:author,:reviewer,now(),'APPROVED',
+                    platform.registry_configuration_snapshot(:capability),platform.registry_configuration_snapshot(:capability))
+                """).param("org",fixture.id("organization")).param("account",fixture.id("account")).param("capability",fixture.id("capability"))
+                .param("header",header).param("digest","a".repeat(64)).param("author",fixture.id("executorUser"))
+                .param("reviewer",fixture.id("ownerUser")).update();
+        String nativeKey=jdbc.sql("SELECT native_listing_key FROM core.platform_listing WHERE id=:id")
+                .param("id",fixture.id("listing")).query(String.class).single();
+        loopback.open(nativeKey,ListingConversionFixture.TARGET_TEXT_ONE,scenario);
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for (var scope:List.of(ActionScopeCode.LISTING_ACTION_LAUNCH,ActionScopeCode.LISTING_CONVERSION_VIEW))
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Synthetic connected responsibility",Instant.now().plusSeconds(86400),Instant.now());
+        String route="/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/launch";
+        var response=mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{}}" )).andExpect(status().isOk()).andExpect(jsonPath("$.launched").value(true)).andReturn();
+        UUID command=UUID.fromString(json.readTree(response.getResponse().getContentAsString()).path("commandId").asText());
+        assertThat(fixture.gateReasons(command)).contains("PRODUCTION_WRITE_DISABLED");
+        assertThat(loopback.received).isEmpty();
+        // Only this disposable database's fictional envelope is open, and the transport can reach only its own server.
+        fixture.seed.sql("UPDATE ops.lc_gate_authority SET production_write_enabled=true WHERE id=:id")
+                .param("id",fixture.id("gateAuthority")).update();
+        assertThat(fixture.gateReasons(command)).isEmpty();
+        var worker=applicationContext.getBean("listingDescriptionCommandWorker");
+        applicationContext.getBean(com.mimococo.marketops.marketplaceintegration.internal.config.ListingDescriptionWriteProperties.class)
+                .setRetryDelaySeconds(1);
+        if (scenario.equals("CRASH_AFTER_APPLY")) {
+            assertThatThrownBy(()->runConnectedWorker(applicationContext.getBean("listingDescriptionCommandWorker"))).isInstanceOf(ListingDescriptionLoopback.SimulatedProcessLoss.class);
+            assertThat(jdbc.sql("SELECT outcome_class FROM ops.lc_description_command_attempt WHERE command_id=:id")
+                    .param("id",command).query(String.class).single()).isEqualTo("IN_FLIGHT");
+            fixture.seed.sql("UPDATE ops.lc_description_command SET lease_expires_at=clock_timestamp()-interval '1 second' WHERE id=:id")
+                    .param("id",command).update();
+            // A newly constructed worker uses the committed database; no in-memory command state is carried over.
+            worker=applicationContext.getAutowireCapableBeanFactory().createBean(Class.forName(
+                    "com.mimococo.marketops.marketplaceintegration.internal.application.ListingDescriptionCommandWorker"));
+            assertThat(runConnectedWorker(worker)).isZero();
+            mvc.perform(get("/api/v1/console/listing-description-commands/"+command).header(HttpHeaders.AUTHORIZATION,bearer()))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("UNKNOWN_REQUIRES_READBACK"));
+            assertThat(loopback.received).hasSize(1);
+            users.grantScope(OPERATOR,userId,ActionScopeCode.COMMAND_RESOLVE,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+            mvc.perform(post("/api/v1/console/listing-description-commands/"+command+"/readback")
+                    .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"reason\":\"Read back the interrupted fictional command without resubmitting it\"}"))
+                    .andExpect(status().isOk());
+            assertThat(runConnectedWorker(worker)).isEqualTo(1);
+        } else {
+            assertThat(runConnectedWorker(worker)).isEqualTo(1);
+            if (scenario.equals("ASYNC")) {
+                assertThat(loopback.received).hasSize(1);
+                mvc.perform(get("/api/v1/console/listing-description-commands/"+command).header(HttpHeaders.AUTHORIZATION,bearer()))
+                        .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("PLATFORM_PENDING"))
+                        .andExpect(jsonPath("$.executionReceipts").isEmpty());
+                fixture.seed.sql("UPDATE ops.approval_decision SET scope_expires_at=clock_timestamp()+interval '100 milliseconds' WHERE id=:id")
+                        .param("id",fixture.id("approvalOne")).update();
+                for (int poll=0;poll<2;poll++) {
+                    awaitConnectedCommandDue(command);
+                    assertThat(jdbc.sql("SELECT clock_timestamp()>scope_expires_at FROM ops.approval_decision WHERE id=:id")
+                            .param("id",fixture.id("approvalOne")).query(Boolean.class).single()).isTrue();
+                    assertThat(runConnectedWorker(worker)).isEqualTo(1);
+                }
+            }
+        }
+        boolean proven=!scenario.equals("CRASH_AFTER_APPLY");
+        mvc.perform(get("/api/v1/console/listing-description-commands/"+command).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("READBACK_MATCHED"))
+                .andExpect(jsonPath("$.executionReceipts[0].executionState").value(proven?"MANAGEMENT_VERIFIED":"NATIVE_COMPLETION_UNPROVEN"));
+        applicationContext.getBean(com.mimococo.marketops.operationsworkflow.ListingExecutionJournal.class).deliverPending(10);
+        mvc.perform(get("/api/v1/console/listing/actions/"+fixture.id("actionOne")).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value(proven?"VERIFIED":"LAUNCHED"));
+        mvc.perform(get("/api/v1/console/listing-description-commands/"+command).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.executionReceipts[0].taskEventId").isString());
+        if (scenario.equals("ASYNC")) assertThat(loopback.received).containsExactly("POST /fixture/descriptions",
+                "POST /fixture/task-info","POST /fixture/task-info","GET /fixture/descriptions/"+nativeKey);
+        else assertThat(loopback.received).containsExactly("POST /fixture/descriptions","GET /fixture/descriptions/"+nativeKey);
+        var wire=json.readTree(new String(loopback.bodies.getFirst(),java.nio.charset.StandardCharsets.UTF_8));
+        assertThat(wire.path("offer_id").asString()).isEqualTo(nativeKey);
+        assertThat(wire.path("attributes").get(0).path("values").get(0).path("value").asString()).isEqualTo(ListingConversionFixture.TARGET_TEXT_ONE);
+        var custody=applicationContext.getBean(com.mimococo.marketops.marketplaceintegration.RawCustody.class);
+        for (UUID content:jdbc.sql("SELECT raw_content_id FROM raw.lc_description_response_observation WHERE command_id=:id")
+                .param("id",command).query(UUID.class).list()) assertThat(custody.readById(content)).isPresent();
+        mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{}}" )).andExpect(status().isConflict());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
+                .param("id",fixture.id("actionOne")).query(Integer.class).single()).isEqualTo(1);
+        assertThat(loopback.received).hasSize(scenario.equals("ASYNC")?4:2);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_node_result WHERE plan_id=:id")
+                .param("id",fixture.id("planOne")).query(Integer.class).single()).isZero();
+        loopback.stop();
+    }
+
+    private int runConnectedWorker(Object worker) {
+        Integer advanced=org.springframework.test.util.ReflectionTestUtils.invokeMethod(worker,"runOnce",Instant.now(),10);
+        return advanced==null?0:advanced;
+    }
+
+    private void awaitConnectedCommandDue(UUID command) throws InterruptedException {
+        // Wait once for the persisted deadline, bounded to this fixture's one-second delay.
+        var due=jdbc.sql("SELECT next_attempt_at FROM ops.lc_description_command WHERE id=:id")
+                .param("id",command).query(java.sql.Timestamp.class).single().toInstant();
+        long millis=java.time.Duration.between(Instant.now(),due).toMillis();
+        assertThat(millis).isLessThan(3000);
+        if(millis>=0) Thread.sleep(millis+30);
+    }
+
+    private void configureConnectedAsyncProtocol() {
+        fixture.seed.sql("UPDATE platform.platform_capability SET write_result_model='ASYNCHRONOUS_TASK' WHERE id=:id")
+                .param("id",fixture.id("capability")).update();
+        fixture.seed.sql("""
+                UPDATE platform.capability_operation SET task_key_pointer='/task_id',description_response_binding=
+                    '{"schema":"DESCRIPTION_RESPONSE_IDENTITY_V1","evidenceRef":"fixture://protocol","mode":"TASK_ACCEPTANCE_ONLY"}'
+                 WHERE capability_id=:id AND operation IN ('APPLY','RESTORE')
+                """).param("id",fixture.id("capability")).update();
+        UUID endpoint=UUID.randomUUID();
+        fixture.seed.sql("""
+                INSERT INTO platform.platform_endpoint SELECT (jsonb_populate_record(NULL::platform.platform_endpoint,
+                    to_jsonb(e)||jsonb_build_object('id',:id,'endpoint_code',:code,'operation_function','DESCRIPTION_STATUS',
+                        'path_template','/fixture/task-info','http_method','POST'))).*
+                  FROM platform.platform_endpoint e WHERE id=:original
+                """).param("id",endpoint).param("code","synthetic.connected.status."+endpoint)
+                .param("original",fixture.id("endpointReadback")).update();
+        fixture.seed.sql("""
+                INSERT INTO platform.capability_operation SELECT (jsonb_populate_record(NULL::platform.capability_operation,
+                    to_jsonb(o)||jsonb_build_object('id',:id,'endpoint_id',:endpoint,'operation','STATUS_ENQUIRY',
+                        'request_template','{"task_id":"{nativeTaskKey}"}',
+                        'task_status_pointer','/status','task_success_value','done','task_failure_value','error',
+                        'task_pending_values',jsonb_build_array('working'),
+                        'description_response_binding',description_response_binding||'{"statusValueType":"string",
+                            "taskBindingMethod":"REQUEST_UNIQUE","taskRequestPointer":"/task_id","taskRequestValueType":"string"}'::jsonb))).*
+                  FROM platform.capability_operation o WHERE capability_id=:capability AND operation='READBACK'
+                """).param("id",UUID.randomUUID()).param("endpoint",endpoint).param("capability",fixture.id("capability")).update();
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void stopConnectedServer() { loopback.stop(); }
 
     @Test
     void oneSignedApiLaunchCreatesAndReturnsItsOnlyCommandBeforeCommit() throws Exception {
@@ -903,6 +1083,11 @@ class ListingReworkAuthorizationIT {
      */
     @TestConfiguration(proxyBeanMethods = false)
     static class LocalSigningKey {
+        @Bean @Primary ListingDescriptionLoopback descriptionLoopback() { return new ListingDescriptionLoopback(); }
+        @Bean @Primary com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort connectedObjects() {
+            return new com.mimococo.marketops.marketplaceintegration.port.InMemoryObjectStoragePort();
+        }
+
         @Bean
         @Primary
         JwtDecoder localDecoder() throws JOSEException {

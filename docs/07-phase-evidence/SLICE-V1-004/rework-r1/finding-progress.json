@@ -201,7 +201,8 @@
       ],
       "executed_evidence": [
         "Checkpoint-9 receipts: 76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and 1 V0090-to-V0091 upgrade tests passed. All local and targeted; no finding closure.",
-        "checkpoint-14-test-receipts.json: actual DB synchronous/async, absent/unknown/conflicting/historical proof, rollback, containment, concurrent Task delivery, repository projection, shared journal/authorization/UI and scheduler fault isolation pass; targeted only."
+        "checkpoint-14-test-receipts.json: actual DB synchronous/async, absent/unknown/conflicting/historical proof, rollback, containment, concurrent Task delivery, repository projection, shared journal/authorization/UI and scheduler fault isolation pass; targeted only.",
+        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim."
       ]
     },
     {
@@ -240,7 +241,8 @@
         "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
         "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
         "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure.",
-        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence."
+        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
+        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim."
       ]
     },
     {
@@ -283,7 +285,8 @@
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
         "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only.",
-        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence."
+        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
+        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim."
       ]
     }
   ],
