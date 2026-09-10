@@ -465,6 +465,30 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void oneSignedApiLaunchCreatesAndReturnsItsOnlyCommandBeforeCommit() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for (var scope:List.of(ActionScopeCode.LISTING_ACTION_LAUNCH,ActionScopeCode.LISTING_CONVERSION_VIEW))
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Synthetic atomic launch responsibility",Instant.now().plusSeconds(86400),Instant.now());
+        String route="/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/launch";
+        var response=mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{}}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.launched").value(true))
+                .andExpect(jsonPath("$.commandId").isString()).andReturn();
+        var json=new tools.jackson.databind.ObjectMapper();
+        UUID command=UUID.fromString(json.readTree(response.getResponse().getContentAsString()).path("commandId").asText());
+        mvc.perform(get("/api/v1/console/listing-description-commands/"+command).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("PENDING"));
+        mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{}}" )).andExpect(status().isConflict());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:action")
+                .param("action",fixture.id("actionOne")).query(Integer.class).single()).isEqualTo(1);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command_attempt WHERE command_id=:command")
+                .param("command",command).query(Integer.class).single()).isZero();
+    }
+
+    @Test
     void officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow() throws Exception {
         measurementGrants();
         seedSummaryProfile();

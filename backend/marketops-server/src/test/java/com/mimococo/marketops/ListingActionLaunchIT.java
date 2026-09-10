@@ -65,6 +65,52 @@ class ListingActionLaunchIT {
                 .containsExactly("AFFECTED_VARIANTS", "CONCURRENT_LISTINGS");
         assertThat(f.app.sql("SELECT proof_hash FROM ops.lc_launch WHERE id = :id").param("id", launch)
                 .query(String.class).single()).matches("[0-9a-f]{64}");
+        UUID command=UUID.fromString(answer.path("commandId").asText());
+        assertThat(f.app.sql("""
+                SELECT c.action_id=:action AND c.launch_id=:launch AND c.state='PENDING'
+                    AND c.attempt_no=0 AND l.created_transaction_id IS NOT NULL
+                FROM ops.lc_description_command c JOIN ops.lc_launch l ON l.id=c.launch_id WHERE c.id=:command
+                """).param("action",f.id("actionOne")).param("launch",launch).param("command",command)
+                .query(Boolean.class).single()).isTrue();
+        assertThat(f.createCommand(f.id("actionOne"),f.id("ownerUser"))).isEqualTo(command);
+        assertThat(f.app.sql("""
+                SELECT n.nspname||'.'||p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                WHERE p.prosrc ~* 'insert[[:space:]]+into[[:space:]]+ops[.]lc_description_command[[:space:]]*[(]'
+                """).query(String.class).list()).containsExactly("ops.create_lc_description_command");
+    }
+
+    @Test
+    void manualLaunchCreatesNoApiCommand() throws Exception {
+        var f=ready();
+        var result=f.launch(UUID.randomUUID(),"actionTwo",f.id("ownerUser"));
+        assertThat(result.path("launched").asBoolean()).isTrue();
+        assertThat(result.path("commandId").isNull()).isTrue();
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:action")
+                .param("action",f.id("actionTwo")).query(Integer.class).single()).isZero();
+    }
+
+    @Test
+    void commandCreationFailureRollsBackLaunchAndEveryAcquiredAxis() throws Exception {
+        var f=ready();
+        // Remove the command's described capability from this synthetic
+        // platform without changing any launch/approval or allowance control.
+        f.seed.sql("UPDATE platform.platform_capability SET capability_code='fixture-unavailable' WHERE id=:id")
+                .param("id",f.id("capability")).update();
+        assertThatThrownBy(()->f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser")))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThat(f.actionState(f.id("actionOne"))).isEqualTo("APPROVED");
+        for (String table:List.of("lc_launch","lc_exposure_occupation","lc_description_command"))
+            assertThat(f.app.sql("SELECT count(*) FROM ops."+table+" WHERE action_id=:action")
+                    .param("action",f.id("actionOne")).query(Integer.class).single()).as(table).isZero();
+    }
+
+    @Test
+    void idempotentCommandLookupStillRequiresTheCurrentActorsScope() throws Exception {
+        var f=ready();
+        f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"));
+        var foreign=ready();
+        assertThatThrownBy(()->f.createCommand(f.id("actionOne"),foreign.id("ownerUser")))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
     }
 
     @Test

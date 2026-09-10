@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.UUID;
+import java.util.List;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
@@ -115,9 +116,36 @@ class ListingDescriptionWriteGateIT {
     }
 
     @Test
-    @DisplayName("TC-LC-GATE-005 a moved current text or a stale action version refuses command creation")
-    void movedTextRefusesCreation() throws Exception {
+    @DisplayName("TC-LC-GATE-005 a moved current text blocks the already queued command before any attempt")
+    void movedTextRefusesExecution() throws Exception {
         var f = launched();
+        UUID command=f.createCommand(f.id("actionOne"),f.id("ownerUser"));
+        movedText(f);
+        assertThat(f.createCommand(f.id("actionOne"),f.id("ownerUser"))).isEqualTo(command);
+        assertThat(f.gateReasons(command)).contains("CURRENT_TEXT_MOVED");
+        assertThatThrownBy(()->f.app.sql("SELECT ops.lease_lc_description_command(:id,'moved-text-fixture',60)")
+                .param("id",command).query(Long.class).single()).hasMessageContaining("CURRENT_TEXT_MOVED");
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_description_command_attempt WHERE command_id=:id")
+                .param("id",command).query(Integer.class).single()).isZero();
+        assertThat(f.app.sql("SELECT state FROM ops.lc_description_command WHERE id=:id")
+                .param("id",command).query(String.class).single()).isEqualTo("PENDING");
+        assertThatThrownBy(() -> f.app.sql("SELECT ops.create_lc_description_command(:action, :actor, 999, 'listing-fixture')")
+                .param("action", f.id("actionOne")).param("actor", f.id("ownerUser")).query(UUID.class).single())
+                .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO090"));
+    }
+
+    @Test
+    void movedTextBeforeLaunchCreatesNeitherLaunchNorCommand() throws Exception {
+        var f=new ListingConversionFixture(migration,application,admin);
+        movedText(f);
+        assertThatThrownBy(()->f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"))).hasMessageContaining("CURRENT_TEXT_MOVED");
+        assertThat(f.actionState(f.id("actionOne"))).isEqualTo("APPROVED");
+        for (String table:List.of("lc_launch","lc_exposure_occupation","lc_description_command"))
+            assertThat(f.app.sql("SELECT count(*) FROM ops."+table+" WHERE action_id=:id")
+                    .param("id",f.id("actionOne")).query(Integer.class).single()).isZero();
+    }
+
+    private static void movedText(ListingConversionFixture f) {
         f.seed.sql("""
                 INSERT INTO core.lc_description_observation(id,organization_id,provenance_id,platform_listing_id,source_fact_key,
                     observed_at,acquired_at,description_text,text_digest,language_code,kiz_marked_declared)
@@ -126,11 +154,6 @@ class ListingDescriptionWriteGateIT {
                 """).param("org", f.id("organization")).param("provenance", f.id("provenance"))
                 .param("listing", f.id("listing")).update();
 
-        assertThatThrownBy(() -> f.createCommand(f.id("actionOne"), f.id("ownerUser")))
-                .hasMessageContaining("CURRENT_TEXT_MOVED");
-        assertThatThrownBy(() -> f.app.sql("SELECT ops.create_lc_description_command(:action, :actor, 999, 'listing-fixture')")
-                .param("action", f.id("actionOne")).param("actor", f.id("ownerUser")).query(UUID.class).single())
-                .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO090"));
     }
 
     @Test

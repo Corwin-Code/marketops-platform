@@ -30,7 +30,7 @@ public interface ListingActionLaunch {
      * @param insufficientAxes the axes that could not absorb the launch, otherwise empty
      */
     record LaunchResult(boolean launched, UUID launchId, List<UUID> occupationIds,
-                        List<String> insufficientAxes) {
+                        List<String> insufficientAxes, UUID commandId) {
         public LaunchResult {
             occupationIds = List.copyOf(occupationIds == null ? List.of() : occupationIds);
             insufficientAxes = List.copyOf(insufficientAxes == null ? List.of() : insufficientAxes);

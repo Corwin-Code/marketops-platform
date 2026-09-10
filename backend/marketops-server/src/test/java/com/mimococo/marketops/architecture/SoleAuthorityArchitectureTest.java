@@ -283,17 +283,27 @@ class SoleAuthorityArchitectureTest {
         @DisplayName("the migration defines exactly one function that inserts a description command")
         void exactlyOneFunctionCreatesDescriptionCommands() throws IOException {
             Path migrations = Path.of("src/main/resources/db/migration");
-            List<String> creators = new ArrayList<>();
+            java.util.Set<String> creators = new java.util.HashSet<>();
             try (Stream<Path> files = Files.list(migrations)) {
                 for (Path file : files.filter(p -> p.toString().endsWith(".sql")).toList()) {
                     String sql = Files.readString(file, StandardCharsets.UTF_8);
-                    if (sql.matches("(?is).*insert\\s+into\\s+ops\\.lc_description_command\\s*\\(.*")) {
-                        creators.add(file.getFileName().toString());
-                    }
+                    creators.addAll(descriptionCommandCreators(sql));
                 }
             }
-            assertThat(creators).containsExactly(
-                    "V0078__create_listing_description_command_outbox_readback_and_gate.sql");
+            assertThat(creators).containsExactly("ops.create_lc_description_command");
+        }
+
+        @Test
+        void descriptionCreationScanRejectsASecondFunctionAndTopLevelWriteButAllowsForwardReplacement() {
+            String original="CREATE FUNCTION ops.create_lc_description_command(p_id uuid) RETURNS uuid LANGUAGE plpgsql AS $$ BEGIN INSERT INTO ops.lc_description_command(id) VALUES(p_id); RETURN p_id; END; $$;";
+            assertThat(descriptionCommandCreators(original+original.replace("CREATE FUNCTION","CREATE OR REPLACE FUNCTION")))
+                    .containsOnly("ops.create_lc_description_command");
+            assertThat(descriptionCommandCreators(original.replace("ops.create_lc_description_command(","ops.other_creator(")))
+                    .containsExactly("ops.other_creator");
+            assertThat(descriptionCommandCreators("INSERT INTO ops.lc_description_command(id) VALUES(gen_random_uuid());"))
+                    .containsExactly("OUTSIDE_FUNCTION");
+            assertThat(descriptionCommandCreators(original+"\nINSERT INTO ops.lc_description_command(id) VALUES(gen_random_uuid());"))
+                    .containsExactly("ops.create_lc_description_command","OUTSIDE_FUNCTION");
         }
     }
 
@@ -304,6 +314,25 @@ class SoleAuthorityArchitectureTest {
         try (Stream<Path> walk = Files.walk(root)) {
             return walk.filter(p -> p.toString().endsWith(".java")).toList();
         }
+    }
+
+    /** Every textual INSERT must lie inside the sole creator; a forward
+     * CREATE OR REPLACE preserves function identity, not a second writer. The
+     * integration test independently inspects the installed pg_proc bodies. */
+    private static List<String> descriptionCommandCreators(String sql) {
+        var functions=java.util.regex.Pattern.compile(
+                "(?is)\\bCREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+([a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*)\\s*\\(.*?\\)\\s*RETURNS\\b.*?\\bAS\\s*(\\$(?:[a-z_][a-z0-9_]*)?\\$).*?\\2\\s*;").matcher(sql);
+        record FunctionRegion(int start,int end,String name) { }
+        List<FunctionRegion> regions=new ArrayList<>();
+        while (functions.find()) regions.add(new FunctionRegion(functions.start(),functions.end(),functions.group(1).toLowerCase(Locale.ROOT)));
+        var inserts=java.util.regex.Pattern.compile("(?is)\\binsert\\s+into\\s+ops\\.lc_description_command\\s*\\(").matcher(sql);
+        List<String> creators=new ArrayList<>();
+        while (inserts.find()) {
+            int position=inserts.start();
+            creators.add(regions.stream().filter(region->region.start()<=position && position<region.end())
+                    .map(FunctionRegion::name).findFirst().orElse("OUTSIDE_FUNCTION"));
+        }
+        return creators;
     }
 
     /** Shared by the actual source scan and its deliberate forbidden-writer example. */

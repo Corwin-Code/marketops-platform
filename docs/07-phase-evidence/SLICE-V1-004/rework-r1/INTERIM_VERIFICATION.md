@@ -71,3 +71,9 @@ The first 23-test HTTP run had one unexplained preparation 403. The isolated dia
 `checkpoint-8-test-receipts.json`: 91 unit/architecture, 26 signed HTTP/database and 8 independent PostgreSQL application-role manual-evidence tests passed. Normal HTTP packet issuance, independent management/customer observations, rejection of a same-organization foreign-listing display and successful bound verification/read are covered. Further cases exercise wrong text, unknown display, executor evidence, stale/future evidence, the reported-operation boundary and relabelling human evidence as official. A management-only verified observation preserves unknown customer display. Historical measured display input stays unchanged after later unknown reports.
 
 These checks prove exact instant evidence binding, not full target-version coverage or formal Outcome. The earlier intermittent preparation 403 remains documented without a claimed root cause. Final verification, all downstream controls and finding closure remain pending.
+
+## Atomic API launch checkpoint
+
+`checkpoint-9-test-receipts.json`: 76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and 1 V0090-to-V0091 upgrade tests passed. A normal API launch returns its one queued command. Creation failure rolls back the launch and every occupation; manual launch queues none. Historic orphan launches are preserved and cannot be converted to new commands by a later call. The authority check covers actual database function bodies and rejects a second static writer. Existing default-off dispatch and changed-text lease refusal remain exercised.
+
+The receipt retains corrected test failures and their causes. Command-result/business propagation, broader protocol qualification, complete regression and final closure remain unfinished; 0/27 closed. The earlier intermittent preparation 403 remains unresolved.

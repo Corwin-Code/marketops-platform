@@ -117,7 +117,8 @@ class ListingActionLaunchService implements ListingActionLaunch {
                 Map.of("state", new FieldChange(context.state(), launched ? "LAUNCHED" : "APPROVED_NOT_LAUNCHABLE"),
                         "insufficientAxes", new FieldChange(null, String.join(",", insufficient))),
                 launched ? "launched with every allowance axis acquired" : "allowance insufficient", null));
-        return new LaunchResult(launched, launched ? launchId : null, occupations, insufficient);
+        UUID commandId = result.path("commandId").isTextual() ? UUID.fromString(result.path("commandId").asText()) : null;
+        return new LaunchResult(launched, launched ? launchId : null, occupations, insufficient, commandId);
     }
 
     @Override

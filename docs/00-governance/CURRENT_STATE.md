@@ -775,3 +775,9 @@ verification now have 91 unit/architecture, 26 signed HTTP/database and 8
 application-role manual-evidence tests in `checkpoint-8-test-receipts.json`.
 Instant display evidence is explicitly distinguished from whole-window coverage.
 Final handoff remains NOT_READY, 0/27 findings closed; this is local progress only.
+
+SLICE-V1-004 local rework update: atomic API launch and command now have
+76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and
+1 V0090-to-V0091 upgrade checks in `checkpoint-9-test-receipts.json`.
+Qualified result-to-business propagation remains unfinished. Local checkpoint
+only: no remote action, no provider calls, 0/27 closed, final handoff NOT_READY.
