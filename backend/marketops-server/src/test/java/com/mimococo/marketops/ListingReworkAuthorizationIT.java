@@ -56,12 +56,14 @@ class ListingReworkAuthorizationIT {
     private static final String ISSUER = "https://identity.example.invalid/listing-rework";
     private static final String AUDIENCE = "marketops-listing-rework";
     private static final String OPERATOR = "listing-rework-fixture";
+    private static final String ISSUER_PASSWORD = UUID.randomUUID().toString();
     private static final RSAKey SIGNING_KEY = signingKey();
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE = TestDatabase.isolatedContainer();
     @Autowired MockMvc mvc;
     @Autowired JdbcClient jdbc;
     @Autowired IdentityProviderService providers;
     @Autowired UserAdministrationService users;
+    @Autowired com.mimococo.marketops.listingconversion.internal.application.CalibrationService calibration;
     private UUID providerId;
     private UUID userId;
     private String subject;
@@ -77,10 +79,16 @@ class ListingReworkAuthorizationIT {
         registry.add("marketops.identity.oidc.issuer-uri", () -> ISSUER);
         registry.add("marketops.identity.oidc.jwk-set-uri", () -> ISSUER + "/jwks");
         registry.add("marketops.identity.oidc.audience", () -> AUDIENCE);
+        registry.add("marketops.identity.invocation.jdbc-url", DATABASE::getJdbcUrl);
+        registry.add("marketops.identity.invocation.username", () -> "marketops_identity_issuer");
+        registry.add("marketops.identity.invocation.password", () -> ISSUER_PASSWORD);
     }
 
     @BeforeAll
-    void provider() {
+    void provider() throws Exception {
+        try (var connection=java.sql.DriverManager.getConnection(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword())) {
+            TestDatabase.enableSyntheticIdentityIssuer(connection,ISSUER_PASSWORD);
+        }
         var p = providers.register(OPERATOR, "listing-rework-provider", "Listing OIDC", ISSUER, 900, "synthetic-platform");
         providerId = providers.verifyAndActivate(OPERATOR, p.id(), "amr", "mfa",
                 "evidence://synthetic/listing-rework", "Local signed fixture", p.version()).id();
@@ -387,6 +395,115 @@ class ListingReworkAuthorizationIT {
                 .param("amount",reversal ? -100:100).param("adjustment",reversal ? "REVERSAL":null)
                 .param("supersedes",supersedes).update();
         return sale;
+    }
+
+    @Test
+    void historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion() {
+        Instant frozen=jdbc.sql("SELECT clock_timestamp()").query(java.time.OffsetDateTime.class).single().toInstant();
+        UUID org=fixture.id("organization"), store=fixture.id("store"), pack=fixture.id("calibrationPackage");
+        var before=calibration.resolveBound(org,fixture.graph.platform(),store,pack,1,frozen);
+        assertThat(before.ok()).isTrue();
+        fixture.seed.sql("UPDATE core.lc_calibration_package SET status='RETIRED',retired_at=:at WHERE id=:id")
+                .param("id",pack).param("at",java.sql.Timestamp.from(frozen.plusSeconds(1))).update();
+        var after=calibration.resolveBound(org,fixture.graph.platform(),store,pack,1,frozen);
+        assertThat(after.ok()).isTrue();
+        assertThat(after.resolved().values()).isEqualTo(before.resolved().values());
+        assertThat(calibration.resolve(org,fixture.graph.platform(),store,frozen.plusSeconds(2)).ok()).isFalse();
+        assertThat(calibration.resolveBound(org,fixture.graph.platform(),store,pack,2,frozen).ok()).isFalse();
+        assertThat(calibration.resolveBound(UUID.randomUUID(),fixture.graph.platform(),store,pack,1,frozen).ok()).isFalse();
+    }
+
+    @Test
+    void calibrationLifecycleUsesProfessionalAndIndependentOwnerThroughSignedHttp() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for (var action:List.of(ActionScopeCode.LISTING_CALIBRATION_PREPARE,ActionScopeCode.LISTING_CALIBRATION_VALIDATE,
+                ActionScopeCode.LISTING_CALIBRATION_ACCEPT)) {
+            users.grantScope(OPERATOR,userId,action,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        }
+        var json=new tools.jackson.databind.ObjectMapper();
+        var draft=calibrationDraft("synthetic-correction-calibration");
+        var created=postCalibration("",draft);
+        String id=created.path("package").path("id").asText();
+        String digest=created.path("governance").path("draft_digest").asText();
+        var decision=Map.of("digest",digest,"evidenceReference","evidence://synthetic/professional-validation");
+        var validated=postCalibration("/"+id+"/validate",decision);
+        assertThat(validated.path("governance").path("validated_digest").asText()).isEqualTo(digest);
+        mvc.perform(post("/api/v1/console/listing/calibrations/"+id+"/accept")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(decision))).andExpect(status().is4xxClientError());
+        assertThat(jdbc.sql("SELECT accepted_at IS NULL FROM ops.lc_calibration_governance WHERE package_id=:id")
+                .param("id",UUID.fromString(id)).query(Boolean.class).single()).isTrue();
+        // A separately authenticated Owner performs the exact acceptance.
+        subject="calibration-independent-owner-"+UUID.randomUUID();
+        userId=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Synthetic independent Owner",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",userId).update();
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_CALIBRATION_ACCEPT,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        var accepted=postCalibration("/"+id+"/accept",decision);
+        assertThat(accepted.path("package").path("status").asText()).isEqualTo("DRAFT");
+        var active=postCalibration("/"+id+"/activate",decision);
+        assertThat(active.path("package").path("status").asText()).isEqualTo("ACTIVE");
+        assertThat(jdbc.sql("SELECT package_id FROM core.lc_resolve_calibration_for(:org,:platform,:store,clock_timestamp(),'DESCRIPTION_CORRECTION')")
+                .param("org",fixture.id("organization")).param("platform",fixture.graph.platform()).param("store",fixture.id("store"))
+                .query(UUID.class).single()).isEqualTo(UUID.fromString(id));
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_calibration_event WHERE package_id=:id")
+                .param("id",UUID.fromString(id)).query(Long.class).single()).isEqualTo(4);
+        assertThat(calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now())
+                .resolved().packageId()).isEqualTo(fixture.id("calibrationPackage"));
+    }
+
+    private tools.jackson.databind.node.ObjectNode calibrationDraft(String code) {
+        var json=new tools.jackson.databind.ObjectMapper();
+        var draft=json.createObjectNode();
+        draft.put("code",code); draft.put("version",1);
+        draft.put("scopeKind","ORGANIZATION"); draft.put("purposeCode","DESCRIPTION_CORRECTION");
+        draft.put("effectiveFrom",Instant.now().minusSeconds(60).toString());
+        draft.put("effectiveTo",Instant.now().plusSeconds(86400).toString());
+        draft.put("evidenceReference","evidence://synthetic/calibration-source");
+        draft.put("rationale","Synthetic professional calibration"); draft.put("impact","Exact synthetic scope");
+        draft.put("differences","Initial synthetic correction package");
+        String values=jdbc.sql("""
+                SELECT jsonb_agg(jsonb_build_object('categoryCode',category_code,'numeric',value_numeric,'text',value_text,
+                 'json',value_json,'unitCode',unit_code,'scopeNote',scope_note,'windowDays',window_days,'evidenceReference',evidence_reference))::text
+                FROM core.lc_calibration_value WHERE package_id=:id
+                """).param("id",fixture.id("calibrationPackage")).query(String.class).single();
+        draft.set("values",json.readTree(values));
+        return draft;
+    }
+
+    @Test
+    void calibrationValidationRejectsMissingComponentsAndIncorrectExactDigest() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for (var action:List.of(ActionScopeCode.LISTING_CALIBRATION_PREPARE,ActionScopeCode.LISTING_CALIBRATION_VALIDATE)) {
+            users.grantScope(OPERATOR,userId,action,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        }
+        var json=new tools.jackson.databind.ObjectMapper();
+        var draft=calibrationDraft("synthetic-incomplete-calibration");
+        ((tools.jackson.databind.node.ArrayNode) draft.path("values")).remove(0);
+        var created=postCalibration("",draft);
+        String id=created.path("package").path("id").asText();
+        assertThat(created.path("combinationFailures").isEmpty()).isFalse();
+        mvc.perform(post("/api/v1/console/listing/calibrations/"+id+"/validate")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("digest",created.path("governance").path("draft_digest").asText(),
+                  "evidenceReference","evidence://synthetic/review")))).andExpect(status().isBadRequest());
+        var complete=postCalibration("",calibrationDraft("synthetic-complete-calibration"));
+        String completeId=complete.path("package").path("id").asText();
+        mvc.perform(post("/api/v1/console/listing/calibrations/"+completeId+"/validate")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("digest","f".repeat(64),"evidenceReference","evidence://synthetic/wrong-digest"))))
+                .andExpect(status().isBadRequest());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_calibration_event WHERE package_id IN (:a,:b) AND event_kind<>'DRAFTED'")
+                .param("a",UUID.fromString(id)).param("b",UUID.fromString(completeId)).query(Long.class).single()).isZero();
+    }
+
+    private tools.jackson.databind.JsonNode postCalibration(String suffix,Object body) throws Exception {
+        var json=new tools.jackson.databind.ObjectMapper();
+        var result=mvc.perform(post("/api/v1/console/listing/calibrations"+suffix).header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body)))
+                .andDo(r -> { if (r.getResolvedException()!=null) throw r.getResolvedException(); })
+                .andExpect(status().isOk()).andReturn();
+        return json.readTree(result.getResponse().getContentAsString());
     }
 
     private void seedSummaryProfile() {

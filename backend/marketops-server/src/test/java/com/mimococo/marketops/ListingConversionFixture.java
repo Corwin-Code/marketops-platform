@@ -114,6 +114,22 @@ public final class ListingConversionFixture {
             connection.commit();
         }
         this.graph = new AdvertisingR1Fixture.Graph(Map.copyOf(named), base.platform());
+        // Synthetic preexisting authority for unrelated action/worker fixtures.
+        // The calibration lifecycle itself is tested through signed HTTP, never this seed.
+        seed.sql("""
+                INSERT INTO ops.lc_calibration_governance(package_id,rationale,impact,differences,
+                  drafted_by_user_id,drafted_at,draft_digest)
+                SELECT id,'Synthetic fixture only','Synthetic scope','Synthetic initial version',
+                  :drafter,published_at,repeat('0',64) FROM core.lc_calibration_package WHERE id=:id
+                """).param("id",id("calibrationPackage")).param("drafter",id("executorUser")).update();
+        seed.sql("""
+                UPDATE ops.lc_calibration_governance g SET draft_digest=ops.lc_calibration_digest(g.package_id),
+                  validated_digest=ops.lc_calibration_digest(g.package_id),accepted_digest=ops.lc_calibration_digest(g.package_id),
+                  validated_by_user_id=:verifier,accepted_by_user_id=:owner,
+                  validated_at=p.published_at,accepted_at=p.activated_at,
+                  validation_reference='fixture://synthetic/professional',acceptance_reference='fixture://synthetic/owner'
+                FROM core.lc_calibration_package p WHERE p.id=g.package_id AND g.package_id=:id
+                """).param("id",id("calibrationPackage")).param("verifier",id("verifierUser")).param("owner",id("ownerUser")).update();
     }
 
     public UUID id(String name) {

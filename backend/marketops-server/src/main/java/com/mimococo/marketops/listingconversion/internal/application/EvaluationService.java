@@ -156,8 +156,8 @@ public class EvaluationService {
         NodeVerdict verdict = ProtectionVector.nodeVerdict(ratio, bound, threshold, maturity);
 
         ListingFactRepository.ListingContext listing = facts.listing(action.listingId()).orElseThrow();
-        CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
-                listing.storeId(), now);
+        CalibrationService.Outcome resolved = calibration.resolveBound(listing.organizationId(), listing.platformCode(),
+                listing.storeId(), plan.calibrationPackageId(), plan.calibrationVersion(), plan.frozenAt());
         BigDecimal profitBound = resolved.ok() ? CalibrationService.nonWorseningProfitBound(resolved.resolved()).orElse(null) : null;
         BigDecimal returnBound = resolved.ok() ? CalibrationService.nonWorseningReturnBound(resolved.resolved()).orElse(null) : null;
         Map<String, ProtectionVerdict> vector = new LinkedHashMap<>();

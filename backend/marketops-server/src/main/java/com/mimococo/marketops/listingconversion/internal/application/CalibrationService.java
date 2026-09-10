@@ -51,6 +51,15 @@ public class CalibrationService {
     }
 
     @Transactional(readOnly = true)
+    public Outcome resolveBound(UUID organizationId, String platformCode, UUID storeId,
+                                UUID packageId, int version, Instant frozenAt) {
+        if (!calibration.boundAt(organizationId,platformCode,storeId,packageId,version,frozenAt)) {
+            return new Outcome(null,"BOUND_CALIBRATION_UNRESOLVED");
+        }
+        return new Outcome(new Resolved(packageId,version,calibration.values(packageId)),"RESOLVED");
+    }
+
+    @Transactional(readOnly = true)
     public boolean active(UUID packageId, int version) {
         return calibration.active(packageId, version);
     }

@@ -59,6 +59,25 @@ public class CalibrationRepository {
         return values;
     }
 
+    /** Resolve the exact authority in force when the original plan was frozen. */
+    public boolean boundAt(UUID organizationId, String platformCode, UUID storeId,
+                           UUID packageId, int version, Instant frozenAt) {
+        return Boolean.TRUE.equals(jdbc.sql("""
+                SELECT EXISTS (SELECT 1 FROM core.lc_calibration_package p
+                  JOIN ops.lc_calibration_governance g ON g.package_id=p.id
+                 WHERE p.id=:id AND p.package_version=:version AND p.organization_id=:org
+                   AND g.accepted_at<=:at AND g.accepted_digest=ops.lc_calibration_digest(p.id)
+                   AND p.status IN ('ACTIVE','RETIRED') AND p.activated_at IS NOT NULL AND p.activated_at<=:at
+                   AND p.published_at<=:at AND p.effective_from<=:at
+                   AND (p.effective_to IS NULL OR p.effective_to>:at)
+                   AND (p.retired_at IS NULL OR p.retired_at>:at)
+                   AND (p.scope_kind='ORGANIZATION' OR (p.scope_kind='PLATFORM' AND p.platform_code=:platform)
+                      OR (p.scope_kind='STORE' AND p.store_ref_id=:store)))
+                """).param("id",packageId).param("version",version).param("org",organizationId)
+                .param("platform",platformCode).param("store",storeId).param("at",Timestamp.from(frozenAt))
+                .query(Boolean.class).single());
+    }
+
     public boolean active(UUID packageId, int version) {
         return Boolean.TRUE.equals(jdbc.sql("""
                 SELECT EXISTS (SELECT 1 FROM core.lc_calibration_package

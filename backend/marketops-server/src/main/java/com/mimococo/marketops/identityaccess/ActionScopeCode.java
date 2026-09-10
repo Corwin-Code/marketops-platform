@@ -119,6 +119,11 @@ public enum ActionScopeCode {
     /** Read Listing Health, retained-visit conversion, candidates, actions and outcomes. */
     LISTING_CONVERSION_VIEW(false),
 
+    /** Prepare, professionally validate and independently accept scoped calibration authority. */
+    LISTING_CALIBRATION_PREPARE(true),
+    LISTING_CALIBRATION_VALIDATE(true),
+    LISTING_CALIBRATION_ACCEPT(true),
+
     /** Record an evaluation using the frozen plan and qualified canonical evidence. */
     LISTING_OUTCOME_EVALUATE(false),
 

@@ -58,9 +58,13 @@
     {
       "id": "S4-DR-R1-006",
       "title": "评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open."
+      ],
+      "executed_evidence": [
+        "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending."
+      ]
     },
     {
       "id": "S4-DR-R1-007",
@@ -97,9 +101,13 @@
     {
       "id": "S4-DR-R1-011",
       "title": "Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "V0082 adds sealed prepare/validate/accept/activate Policy operations, current role/scope checks, independent Owner acceptance, exact digests, lifecycle events, purpose-specific resolution and explicit replacement identity. App role remains read-only on calibration tables."
+      ],
+      "executed_evidence": [
+        "Signed HTTP plus real PostgreSQL completed draft, professional validation, independent Owner acceptance and activation; self-acceptance, missing components and incorrect digest refused. Replacement/concurrency/expiry/dependency-continuation and full Console remain pending."
+      ]
     },
     {
       "id": "S4-DR-R1-012",
