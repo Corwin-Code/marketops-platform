@@ -213,6 +213,195 @@ class ListingDescriptionResponseIdentityIT {
         }
     }
 
+    @Test void actualDatabaseAdapterAndLocalHttpRetainQueryBeforeTheServerReceivesIt() throws Exception {
+        queryOverLocalHttp(false);
+    }
+
+    @Test void actualDatabaseLeaseLossBeforeQueryCaptureSendsNoHttpAndKeepsTaskPending() throws Exception {
+        queryOverLocalHttp(true);
+    }
+
+    private void queryOverLocalHttp(boolean revokeLease) throws Exception {
+        var f=fixture(); UUID command=command(f); configureAsync(f); configureUniqueQuery(f);
+        UUID endpoint=f.app.sql("SELECT endpoint_id FROM platform.capability_operation WHERE capability_id=:id AND operation='STATUS_ENQUIRY'")
+                .param("id",f.id("capability")).query(UUID.class).single();
+        UUID header=UUID.randomUUID();
+        f.seed.sql("""
+                INSERT INTO platform.platform_api_profile(platform_code,base_url,request_timeout_ms,max_response_bytes,
+                    verification_state,last_verified_at,evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
+                SELECT platform_code,'https://example.invalid',5000,8192,'VERIFIED',now(),'fixture://protocol',
+                    'Synthetic query protocol','fixture','ACTIVE',now(),now() FROM platform.platform_capability WHERE id=:id
+                """).param("id",f.id("capability")).update();
+        f.seed.sql("""
+                INSERT INTO platform.platform_auth_header(id,platform_code,header_name,value_source,value_template,credential_purpose,
+                    ordinal,verification_state,last_verified_at,evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
+                SELECT :id,platform_code,'X-Fixture-Query','LITERAL','synthetic','CONTENT_WRITE',99,'VERIFIED',now(),
+                    'fixture://protocol','Synthetic query protocol','fixture','ACTIVE',now(),now()
+                 FROM platform.platform_capability WHERE id=:capability
+                """).param("id",header).param("capability",f.id("capability")).update();
+        f.seed.sql("""
+                INSERT INTO platform.registry_verification_case(id,organization_id,marketplace_account_id,capability_id,
+                    endpoint_ids,auth_header_ids,official_source_url,official_source_sha256,account_evidence_ref,
+                    account_evidence_sha256,evidence_class,tested_at,valid_until,submitted_by_user_id,reviewed_by_user_id,
+                    reviewed_at,state,configuration_snapshot,submitted_configuration_snapshot)
+                VALUES(gen_random_uuid(),:org,:account,:capability,ARRAY[CAST(:endpoint AS uuid)],ARRAY[CAST(:header AS uuid)],
+                    'https://example.invalid/synthetic',:digest,'evidence://synthetic/never-a-real-account',:digest,'REAL_ACCOUNT',
+                    now()-interval '1 minute',now()+interval '1 day',:author,:reviewer,now(),'APPROVED',
+                    platform.registry_configuration_snapshot(:capability),platform.registry_configuration_snapshot(:capability))
+                """).param("org",f.id("organization")).param("account",f.id("account")).param("capability",f.id("capability"))
+                .param("endpoint",endpoint).param("header",header).param("digest",DIGEST).param("author",f.id("executorUser"))
+                .param("reviewer",f.id("ownerUser")).update();
+        complete(f,syntheticMutation(f,command),"{\"accepted\":true,\"task_id\":\"task-exact\"}");
+        UUID attempt=UUID.randomUUID();
+        String key=f.app.sql("SELECT idempotency_key FROM ops.lc_description_command WHERE id=:id").param("id",command).query(String.class).single();
+        var request=new com.mimococo.marketops.marketplaceintegration.port.DescriptionWriteRequest(
+                com.mimococo.marketops.marketplaceintegration.port.DescriptionWriteRequest.Operation.STATUS_ENQUIRY,
+                f.id("capability"),f.id("credential"),nativeKey(f,command),null,null,"4191",false,key,"task-exact",null,attempt);
+        f.seed.sql("UPDATE ops.lc_description_command SET state='PLATFORM_PENDING' WHERE id=:id").param("id",command).update();
+        f.app.sql("SELECT ops.open_lc_description_command_attempt(:id,:command,'STATUS_ENQUIRY',1,'identity-worker',:digest,'query-wire-test')")
+                .param("id",attempt).param("command",command).param("digest",request.digest()).query(UUID.class).single();
+        var received=new java.util.concurrent.atomic.AtomicReference<byte[]>();
+        var persistedBeforeReceive=new java.util.concurrent.atomic.AtomicBoolean();
+        var server=com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1",0),0);
+        server.createContext("/fixture/task-info",exchange -> {
+            byte[] body=exchange.getRequestBody().readAllBytes(); received.set(body);
+            persistedBeforeReceive.set(Boolean.TRUE.equals(f.app.sql("SELECT query_body=:body AND query_recorded_at IS NOT NULL FROM ops.lc_description_command_attempt WHERE id=:id")
+                    .param("body",body).param("id",attempt).query(Boolean.class).single()));
+            byte[] answer=JSON.writeValueAsBytes(Map.of("items",java.util.List.of(Map.of("offer_id",request.nativeListingKey(),"status","done"))));
+            exchange.sendResponseHeaders(200,answer.length); exchange.getResponseBody().write(answer); exchange.close();
+        });
+        server.start();
+        try (var client=java.net.http.HttpClient.newBuilder().followRedirects(java.net.http.HttpClient.Redirect.NEVER).build();
+             var context=new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+            context.registerBean(org.springframework.jdbc.core.simple.JdbcClient.class,() -> f.app);
+            context.register(com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PlatformCallSpecRepository.class,
+                    com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.WriteOperationRepository.class);
+            context.refresh();
+            var calls=context.getBean(com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PlatformCallSpecRepository.class);
+            var operations=context.getBean(com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.WriteOperationRepository.class);
+            assertThat(calls.descriptionAttemptContext(request).orElseThrow().queryBindingRequired()).isTrue();
+            var spec=operations.verifiedOperation(request.capabilityId(),"STATUS_ENQUIRY").orElseThrow();
+            String logical=spec.endpoint().baseUrl()+"/fixture/task-info";
+            com.mimococo.marketops.shared.port.OutboundHttp transport=new com.mimococo.marketops.shared.port.OutboundHttp() {
+                record LocalPlan(Destination destination) implements Plan { }
+                @Override public Plan prepare(Destination destination) {
+                    if (!destination.uri().toString().equals(logical) || !destination.method().equals("POST")) throw new IllegalArgumentException("not this fictional task endpoint");
+                    if (revokeLease) f.seed.sql("UPDATE ops.lc_description_command SET lease_expires_at=clock_timestamp()-interval '1 second' WHERE id=:id")
+                            .param("id",command).update();
+                    return new LocalPlan(destination);
+                }
+                @Override public Response exchange(Plan plan,Map<String,String> headers) throws java.io.IOException,InterruptedException {
+                    var destination=((LocalPlan)plan).destination();
+                    var builder=java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:"+server.getAddress().getPort()+"/fixture/task-info"))
+                            .timeout(java.time.Duration.ofSeconds(3)).POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(destination.body()));
+                    headers.forEach(builder::header);
+                    var response=client.send(builder.build(),java.net.http.HttpResponse.BodyHandlers.ofByteArray());
+                    return new Response(response.statusCode(),response.body(),response.headers().map(),true,null);
+                }
+            };
+            var secrets=org.mockito.Mockito.mock(com.mimococo.marketops.shared.port.SecretResolverPort.class);
+            var answer=new com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpDescriptionWriteAdapter(
+                    operations,calls,secrets,transport,java.time.Clock.systemUTC()).perform(request);
+            if (revokeLease) {
+                assertThat(answer.response()).isNull();
+                assertThat(received.get()).isNull();
+                assertThat(f.app.sql("SELECT query_identity IS NULL FROM ops.lc_description_command_attempt WHERE id=:id")
+                        .param("id",attempt).query(Boolean.class).single()).isTrue();
+                assertThat(f.app.sql("SELECT state FROM ops.lc_description_command WHERE id=:id")
+                        .param("id",command).query(String.class).single()).isEqualTo("PLATFORM_PENDING");
+                org.mockito.Mockito.verifyNoInteractions(secrets);
+                return;
+            }
+            assertThat(answer.response()).isNotNull();
+            assertThat(persistedBeforeReceive.get()).isTrue();
+            assertThat(received.get()).isEqualTo("{\"task_id\":\"task-exact\"}".getBytes(StandardCharsets.UTF_8));
+            org.mockito.Mockito.verifyNoInteractions(secrets);
+            complete(f,attempt,new String(answer.body(),StandardCharsets.UTF_8),request.digest());
+            assertThat(outcome(f,attempt)).isEqualTo("ACCEPTED");
+        } finally { server.stop(0); }
+    }
+
+    @Test void nonEchoStatusNeedsItsExactDurableQueryAndKeepsTheNativeItemBinding() throws Exception {
+        for (String scenario:java.util.List.of("bound","missing","foreignItem")) {
+            var f=fixture(); UUID command=command(f); configureAsync(f); configureUniqueQuery(f);
+            complete(f,syntheticMutation(f,command),"{\"accepted\":true,\"task_id\":\"task-exact\"}");
+            UUID status=openStatus(f,command);
+            if (!scenario.equals("missing")) {
+                assertThat(recordQuery(f,status,"{\"task_id\":\"task-exact\"}")).isTrue();
+                assertThat(recordQuery(f,status,"{\"task_id\":\"task-exact\"}")).isTrue();
+            }
+            String listing=scenario.equals("foreignItem")?"foreign":nativeKey(f,command);
+            complete(f,status,JSON.writeValueAsString(Map.of("items",java.util.List.of(Map.of("offer_id",listing,"status","done")))));
+            assertThat(outcome(f,status)).as(scenario).isEqualTo(scenario.equals("bound")?"ACCEPTED":"UNKNOWN_STATE");
+            if (scenario.equals("bound")) {
+                assertThat(f.app.sql("SELECT encode(sha256(query_body),'hex')=query_identity->>'bodySha256' FROM ops.lc_description_command_attempt WHERE id=:id")
+                        .param("id",status).query(Boolean.class).single()).isTrue();
+                assertThatThrownBy(() -> f.seed.sql("UPDATE ops.lc_description_command_attempt SET query_body=convert_to('changed','UTF8') WHERE id=:id")
+                        .param("id",status).update()).hasMessageContaining("retained task query is immutable");
+            }
+        }
+    }
+
+    @Test void queryWrongTaskTypeDuplicateKeysExtraFieldsAndLateCaptureCannotQualify() throws Exception {
+        var f=fixture(); UUID command=command(f); configureAsync(f); configureUniqueQuery(f);
+        complete(f,syntheticMutation(f,command),"{\"accepted\":true,\"task_id\":\"task-exact\"}");
+        UUID status=openStatus(f,command);
+        for (String body:java.util.List.of("{\"task_id\":\"wrong\"}","{\"task_id\":12}",
+                "{\"task_id\":\"task-exact\",\"unrelated\":true}","{\"task_id\":\"wrong\",\"task_id\":\"task-exact\"}")) {
+            assertThat(recordQuery(f,status,body)).isFalse();
+        }
+        complete(f,status,JSON.writeValueAsString(Map.of("items",java.util.List.of(Map.of("offer_id",nativeKey(f,command),"status","done")))));
+        assertThat(recordQuery(f,status,"{\"task_id\":\"task-exact\"}")).isFalse();
+        assertThat(outcome(f,status)).isEqualTo("UNKNOWN_STATE");
+    }
+
+    @Test void numericTaskKeysAndLiteralPlaceholderCharactersRemainExactlyBound() throws Exception {
+        for (boolean numeric:java.util.List.of(false,true)) {
+            var f=fixture(); UUID command=command(f); configureAsync(f); configureUniqueQuery(f);
+            Object task=numeric?42:"{nativeListingKey}";
+            if (numeric) f.seed.sql("""
+                    UPDATE platform.capability_operation SET request_template='{"task_id":{nativeTaskKey}}',
+                        description_response_binding=jsonb_set(description_response_binding,'{taskRequestValueType}','"number"')
+                     WHERE capability_id=:id AND operation='STATUS_ENQUIRY'
+                    """).param("id",f.id("capability")).update();
+            complete(f,syntheticMutation(f,command),JSON.writeValueAsString(Map.of("accepted",true,"task_id",task)));
+            UUID status=openStatus(f,command);
+            assertThat(recordQuery(f,status,JSON.writeValueAsString(Map.of("task_id",task)))).isTrue();
+            complete(f,status,JSON.writeValueAsString(Map.of("items",java.util.List.of(Map.of("offer_id",nativeKey(f,command),"status","done")))));
+            assertThat(outcome(f,status)).isEqualTo("ACCEPTED");
+        }
+    }
+
+    @Test void revokedLeaseOrNewerMutationCannotBindAnOlderQuery() throws Exception {
+        for (boolean newer:java.util.List.of(false,true)) {
+            var f=fixture(); UUID command=command(f); configureAsync(f); configureUniqueQuery(f);
+            complete(f,syntheticMutation(f,command),"{\"accepted\":true,\"task_id\":\"task-exact\"}");
+            UUID status=openStatus(f,command);
+            if (newer) syntheticMutation(f,command);
+            else f.seed.sql("UPDATE ops.lc_description_command SET lease_expires_at=clock_timestamp()-interval '1 second' WHERE id=:id").param("id",command).update();
+            assertThat(recordQuery(f,status,"{\"task_id\":\"task-exact\"}")).isFalse();
+        }
+    }
+
+    private void configureUniqueQuery(ListingConversionFixture f) {
+        f.seed.sql("UPDATE platform.platform_endpoint SET http_method='POST' WHERE capability_id=:id AND operation_function='DESCRIPTION_STATUS'")
+                .param("id",f.id("capability")).update();
+        f.seed.sql("""
+                UPDATE platform.capability_operation SET request_template='{"task_id":"{nativeTaskKey}"}',
+                    description_response_binding=(description_response_binding-'taskEchoPointer')||
+                        '{"taskBindingMethod":"REQUEST_UNIQUE","taskRequestPointer":"/task_id","taskRequestValueType":"string"}'::jsonb
+                 WHERE capability_id=:id AND operation='STATUS_ENQUIRY'
+                """).param("id",f.id("capability")).update();
+        f.seed.sql("UPDATE platform.platform_endpoint SET http_method='POST',path_template='/fixture/task-info' WHERE capability_id=:id AND operation_function='DESCRIPTION_STATUS'")
+                .param("id",f.id("capability")).update();
+    }
+
+    private boolean recordQuery(ListingConversionFixture f,UUID attempt,String body) {
+        return f.app.sql("SELECT ops.record_lc_description_task_query(:id,:digest,:body)")
+                .param("id",attempt).param("digest",DIGEST).param("body",body.getBytes(StandardCharsets.UTF_8))
+                .query(Boolean.class).single();
+    }
+
     private void configureAsync(ListingConversionFixture f) {
         f.seed.sql("UPDATE platform.platform_capability SET write_result_model='ASYNCHRONOUS_TASK' WHERE id=:id")
                 .param("id",f.id("capability")).update();
@@ -281,13 +470,16 @@ class ListingDescriptionResponseIdentityIT {
                 .param("id",UUID.randomUUID()).param("command",command).param("digest",DIGEST).query(UUID.class).single();
     }
     private UUID complete(ListingConversionFixture f,UUID attempt,String document) {
+        return complete(f,attempt,document,DIGEST);
+    }
+    private UUID complete(ListingConversionFixture f,UUID attempt,String document,String digest) {
         byte[] body=document.getBytes(StandardCharsets.UTF_8); UUID content=UUID.randomUUID();
         f.seed.sql("INSERT INTO raw.raw_content(id,hash_algorithm,hash_value,byte_length,object_ref) VALUES(:id,'SHA256',encode(sha256(:body),'hex'),:length,:ref) ON CONFLICT (hash_algorithm,hash_value) DO NOTHING")
                 .param("id",content).param("body",body).param("length",body.length).param("ref","object-ref://fictional/response-identity/"+content).update();
         content=f.app.sql("SELECT id FROM raw.raw_content WHERE hash_algorithm='SHA256' AND hash_value=encode(sha256(:body),'hex')")
                 .param("body",body).query(UUID.class).single();
         return f.app.sql("SELECT ops.complete_lc_description_command_attempt(:id,1,'identity-worker','ACCEPTED','200','forged-task',NULL,:content,:body,200,'{}','PROTOCOL_FIXTURE',:digest,true)")
-                .param("id",attempt).param("content",content).param("body",body).param("digest",DIGEST).query(UUID.class).single();
+                .param("id",attempt).param("content",content).param("body",body).param("digest",digest).query(UUID.class).single();
     }
     private String readback(ListingConversionFixture f,UUID command,UUID attempt) {
         return f.app.sql("SELECT ops.record_lc_description_command_readback(:id,:command,:attempt,1,'identity-worker','response-identity-test')")

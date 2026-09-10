@@ -164,6 +164,9 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
             OutboundHttp.Response response;
             try {
                 OutboundHttp.Plan plan = http.prepare(destination);
+                if (context.queryBindingRequired() && !specs.recordDescriptionTaskQuery(request,destination.body())) {
+                    return DescriptionWriteResult.refusedBeforeDispatch("exact_task_query_not_bound", clock.instant());
+                }
                 Map<String, String> headers = new LinkedHashMap<>();
                 if (body != null) headers.put("Content-Type", "application/json");
                 for (AuthHeaderSpec header : authHeaders) {

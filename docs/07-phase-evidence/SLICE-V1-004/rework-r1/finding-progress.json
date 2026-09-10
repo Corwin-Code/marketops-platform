@@ -231,12 +231,14 @@
       "implementation": [
         "Native retry headers are preserved with exact units; waits are not capped. V0084 derives durable earliest-call time or explicit timing-unknown hold from retained transport evidence and guards leases, attempts and dispatch rechecks. HTTP 409 is inconclusive. Native task/object identity, per-purpose protocol and all scheduler/expiry coverage remain open.",
         "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open.",
-        "Checkpoint 11: Description metadata now flows through the existing scoped registry draft, revision and independent exact-configuration verification functions using CONTENT_WRITE. New/revised descriptors bind submitted evidence; renewed attestation preserves the existing verified definition. Runtime request guard and non-echo identity still remain open."
+        "Checkpoint 11: Description metadata now flows through the existing scoped registry draft, revision and independent exact-configuration verification functions using CONTENT_WRITE. New/revised descriptors bind submitted evidence; renewed attestation preserves the existing verified definition. Runtime request guard and non-echo identity still remain open.",
+        "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
         "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
-        "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure."
+        "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure.",
+        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence."
       ]
     },
     {
@@ -273,11 +275,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Isolated PostgreSQL and real signed Console requests execute. Found and fixed manual fact provenance, missing calculation requester, and read-audit transaction defects; no full regression or LOCAL_VERIFIED claim.",
-        "Checkpoint 12: governed closed request schema with exact typed native identity/attribute/Unicode/conditional marking; destination-before-secret, final authority check, exact conditional header and JSON media type. Restoration business authority and combined runtime still unfinished."
+        "Checkpoint 12: governed closed request schema with exact typed native identity/attribute/Unicode/conditional marking; destination-before-secret, final authority check, exact conditional header and JSON media type. Restoration business authority and combined runtime still unfinished.",
+        "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only."
+        "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only.",
+        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence."
       ]
     }
   ]

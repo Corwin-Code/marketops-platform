@@ -297,7 +297,18 @@ public class PlatformCallSpecRepository {
     }
 
     /** What a current description attempt was opened for, re-derived from the command itself. */
-    public record DescriptionAttemptContext(int lengthBoundMin, int lengthBoundMax) {
+    public record DescriptionAttemptContext(int lengthBoundMin, int lengthBoundMax, boolean queryBindingRequired) {
+        public DescriptionAttemptContext(int lengthBoundMin, int lengthBoundMax) {
+            this(lengthBoundMin,lengthBoundMax,false);
+        }
+    }
+
+    /** Persists the actual query before dispatch; PostgreSQL binds it to the immutable task/operation. */
+    public boolean recordDescriptionTaskQuery(
+            com.mimococo.marketops.marketplaceintegration.port.DescriptionWriteRequest request, byte[] body) {
+        return Boolean.TRUE.equals(jdbc.sql("SELECT ops.record_lc_description_task_query(:id,:digest,:body)")
+                .param("id",request.attemptId()).param("digest",request.digest()).param("body",body)
+                .query(Boolean.class).single());
     }
 
     /**
@@ -312,7 +323,9 @@ public class PlatformCallSpecRepository {
     public Optional<DescriptionAttemptContext> descriptionAttemptContext(
             com.mimococo.marketops.marketplaceintegration.port.DescriptionWriteRequest request) {
         return jdbc.sql("""
-                SELECT c.length_bound_min, c.length_bound_max
+                SELECT c.length_bound_min, c.length_bound_max,
+                       a.purpose='STATUS_ENQUIRY' AND operation.description_response_binding->>'taskBindingMethod'='REQUEST_UNIQUE'
+                           AS query_binding_required
                   FROM ops.lc_description_command_attempt a
                   JOIN ops.lc_description_command c ON c.id=a.command_id
                   JOIN core.store store ON store.id=c.store_id
@@ -374,7 +387,7 @@ public class PlatformCallSpecRepository {
                 .param("task",request.nativeTaskKey())
                 .param("credential",request.credentialId()).param("precondition",request.expectedVersionToken())
                 .query((rs, n) -> new DescriptionAttemptContext(rs.getInt("length_bound_min"),
-                        rs.getInt("length_bound_max")))
+                        rs.getInt("length_bound_max"),rs.getBoolean("query_binding_required")))
                 .optional();
     }
 

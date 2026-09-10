@@ -98,6 +98,73 @@ class ListingDescriptionRegistryIT {
                 .query(UUID.class).single()).hasMessageContaining("unknown or unbounded draft fields");
     }
 
+    @Test void governedNonEchoTaskQueryAcceptsExactBindingAndRejectsUnsupportedShapes() throws Exception {
+        for (String scenario:java.util.List.of("exact","wrongPointer","wrongType","unsupportedGet")) {
+            var f=fixture(); UUID header=configure(f,"CONTENT_WRITE");
+            f.app.sql("""
+                    SELECT platform.configure_registry_draft(:account,:capability,:actor,'CAPABILITY',id,version,
+                        '{"write_result_model":"ASYNCHRONOUS_TASK"}','synthetic-async')
+                      FROM platform.platform_capability WHERE id=:capability
+                    """).param("account",f.id("account")).param("capability",f.id("capability"))
+                    .param("actor",f.id("ownerUser")).query(UUID.class).single();
+            for (String operation:java.util.List.of("APPLY","RESTORE")) {
+                patchOperation(f,operation,"""
+                        {"task_key_pointer":"/task_id","description_response_binding":{
+                        "schema":"DESCRIPTION_RESPONSE_IDENTITY_V1","evidenceRef":"evidence://synthetic/description-protocol",
+                        "mode":"TASK_ACCEPTANCE_ONLY"}}
+                        """);
+            }
+            UUID endpoint=UUID.randomUUID();
+            // Registry identity skeleton only; operational semantics and approval use the controlled path.
+            f.seed.sql("""
+                    INSERT INTO platform.platform_endpoint SELECT (jsonb_populate_record(NULL::platform.platform_endpoint,
+                        to_jsonb(e)||jsonb_build_object('id',:id,'endpoint_code',:code,'operation_function','UNDECLARED',
+                            'verification_state','UNVERIFIED','status','RETIRED'))).*
+                      FROM platform.platform_endpoint e WHERE id=:original
+                    """).param("id",endpoint).param("code","synthetic.status."+endpoint).param("original",f.id("endpointReadback")).update();
+            f.app.sql("""
+                    SELECT platform.configure_registry_draft(:account,:capability,:actor,'ENDPOINT',id,version,
+                        jsonb_build_object('http_method',CAST(:method AS text),'path_template','/fixture/task-info',
+                            'operation_function','DESCRIPTION_STATUS','response_content_type','application/json',
+                            'pagination_model','NONE','rate_limit_per_minute',60),'synthetic-query-endpoint')
+                      FROM platform.platform_endpoint WHERE id=:id
+                    """).param("account",f.id("account")).param("capability",f.id("capability")).param("actor",f.id("ownerUser"))
+                    .param("method",scenario.equals("unsupportedGet")?"GET":"POST").param("id",endpoint).query(UUID.class).single();
+            f.app.sql("""
+                    SELECT platform.configure_registry_draft(:account,:capability,:actor,'OPERATION',NULL,-1,
+                        jsonb_build_object('operation','STATUS_ENQUIRY','endpoint_id',CAST(:endpoint AS text),
+                            'request_template','{"task_id":"{nativeTaskKey}"}','task_status_pointer','/status',
+                            'task_success_value','done','task_failure_value','error','task_pending_values',jsonb_build_array('working'),
+                            'description_response_binding',jsonb_build_object('schema','DESCRIPTION_RESPONSE_IDENTITY_V1',
+                                'evidenceRef',CAST(:ref AS text),'mode','EXACT_OBJECT','selection','ITEMS','payloadPointer','/items',
+                                'listingKeyPointer','/offer_id','listingKeyType','string','statusValueType','string',
+                                'taskBindingMethod','REQUEST_UNIQUE','taskRequestPointer',CAST(:pointer AS text),
+                                'taskRequestValueType',CAST(:type AS text)),'owner_label','synthetic'), 'synthetic-query-operation')
+                    """).param("account",f.id("account")).param("capability",f.id("capability")).param("actor",f.id("ownerUser"))
+                    .param("endpoint",endpoint.toString()).param("ref",REFERENCE)
+                    .param("pointer",scenario.equals("wrongPointer")?"/unrelated":"/task_id")
+                    .param("type",scenario.equals("wrongType")?"number":"string").query(UUID.class).single();
+            UUID evidence=submit(f,header);
+            if (scenario.equals("exact")) review(f,evidence,f.id("verifierUser"));
+            else assertThatThrownBy(() -> review(f,evidence,f.id("verifierUser"))).as(scenario)
+                    .hasMessageContaining("Description exact task query is unsupported");
+        }
+    }
+
+    private void patchOperation(ListingConversionFixture f,String operation,String patch) {
+        f.app.sql("""
+                SELECT platform.configure_registry_draft(:account,:capability,:actor,'OPERATION',o.id,o.version,
+                    (SELECT jsonb_object_agg(key,value) FROM jsonb_each(to_jsonb(o)) WHERE key=ANY(ARRAY[
+                        'operation','endpoint_id','request_template','accepted_pointer','accepted_value','task_key_pointer',
+                        'task_status_pointer','task_success_value','task_failure_value','task_pending_values','observed_price_pointer',
+                        'observed_currency_pointer','conditional_write_header','version_token_header','owner_label',
+                        'description_observed_text_pointer','description_kiz_marked_pointer','description_attribute_key',
+                        'description_response_binding','description_request_guard','ad_not_applied_pointer','ad_not_applied_value']))||CAST(:patch AS jsonb),
+                    'synthetic-query-patch') FROM platform.capability_operation o WHERE capability_id=:capability AND operation=:operation
+                """).param("account",f.id("account")).param("capability",f.id("capability")).param("actor",f.id("ownerUser"))
+                .param("operation",operation).param("patch",patch).query(UUID.class).single();
+    }
+
     private ListingConversionFixture fixture() throws Exception {
         var f=new ListingConversionFixture(migration,application,admin);
         f.seed.sql("""
