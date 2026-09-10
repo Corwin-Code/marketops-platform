@@ -52,3 +52,10 @@ All results remain partial working-tree evidence. No finding is marked closed; n
 `checkpoint-5-test-receipts.json`: targeted unit/architecture 91 passed; actual canonical Metric Engine/database 17 passed; signed listing HTTP/database 21 passed. The final HTTP run applies V0087 and validates exact lineage coverage and digest, late-reversal source strata, retained historical inputs and the measurement/listing read boundary. Two corrected failed runs and their actual causes remain recorded with local raw-log hashes.
 
 These results prove the local primitives and their exercised paths only. Canonical totals retain estimate/confidence metadata and do not certify a protection; measured source strata do not establish the frozen comparison method or full Description coverage. Required positive formal Outcome, plan admission and downstream control paths remain unfinished. No finding is closed by this checkpoint.
+
+
+## Pre-approval frozen-plan checkpoint
+
+`checkpoint-6-test-receipts.json`: 93 unit/architecture, 23 signed HTTP/database, 7 launch/concurrency and 7 Description write-Gate tests passed. Normal preparation freezes the resolved plan before review; first-time freeze after review/approval is refused. Review/approval captures and consumes the exact plan digest. The test preserves one-live-action exclusivity and cancels the prior unused synthetic action through the actual route before creating a new round. Read responses preserve the full frozen definition and captured plan digests.
+
+Historical approvals without a plan binding cannot borrow one retrospectively. Existing allowance, scope and expiry checks continue to pass their targeted regressions. Full precise comparison-window/method admission, formal positive Outcome and all downstream/root-cause closure remain unfinished; this is another local engineering checkpoint, not Controller approval or production authority.

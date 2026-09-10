@@ -207,12 +207,12 @@ public class ListingActionRepository {
 
     public List<ListingActionView.Review> reviews(UUID actionId) {
         return jdbc.sql("""
-                SELECT id, reviewer_user_id, verdict, reason, reviewed_at FROM ops.lc_action_review
+                SELECT id, reviewer_user_id, verdict, reason, reviewed_at, evaluation_plan_digest FROM ops.lc_action_review
                  WHERE action_id = :action ORDER BY reviewed_at DESC
                 """).param("action", actionId)
                 .query((rs, n) -> new ListingActionView.Review(rs.getObject("id", UUID.class),
                         rs.getObject("reviewer_user_id", UUID.class), rs.getString("verdict"), rs.getString("reason"),
-                        ListingFactRepository.instant(rs, "reviewed_at")))
+                        ListingFactRepository.instant(rs, "reviewed_at"), rs.getString("evaluation_plan_digest")))
                 .list();
     }
 
@@ -251,14 +251,14 @@ public class ListingActionRepository {
     public Optional<ListingActionView.Binding> binding(UUID actionId) {
         return jdbc.sql("""
                 SELECT id, approval_decision_id, guardrail_evaluation_id, binding_digest, bound_at, expires_at, state,
-                       inapplicable_reason
+                       inapplicable_reason, evaluation_plan_digest
                   FROM ops.lc_action_binding WHERE action_id = :action
                 """).param("action", actionId)
                 .query((rs, n) -> new ListingActionView.Binding(rs.getObject("id", UUID.class),
                         rs.getObject("approval_decision_id", UUID.class), rs.getObject("guardrail_evaluation_id", UUID.class),
                         rs.getString("binding_digest"), ListingFactRepository.instant(rs, "bound_at"),
                         ListingFactRepository.instant(rs, "expires_at"), rs.getString("state"),
-                        rs.getString("inapplicable_reason")))
+                        rs.getString("inapplicable_reason"), rs.getString("evaluation_plan_digest")))
                 .optional();
     }
 

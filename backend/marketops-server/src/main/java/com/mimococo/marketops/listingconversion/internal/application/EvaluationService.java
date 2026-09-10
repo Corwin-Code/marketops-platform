@@ -86,6 +86,9 @@ public class EvaluationService {
         if (existing.isPresent()) {
             return existing.get();
         }
+        if (!"DRAFT".equals(action.state())) {
+            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
         if (action.calibrationPackageId() == null) {
             throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
         }
@@ -112,11 +115,11 @@ public class EvaluationService {
         int longestMaturity = 0;
         for (Map<String, Object> node : nodes) {
             Object value = node.get("maturityDays");
-            if (!(value instanceof JsonNode days) || !days.isIntegralNumber()
-                    || !java.util.Set.of(7, 14, 30).contains(days.asInt())) {
+            if (!(value instanceof JsonNode days)
+                    || !java.util.Set.of("7", "14", "30").contains(days.asText())) {
                 throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
             }
-            longestMaturity = Math.max(longestMaturity, days.asInt());
+            longestMaturity = Math.max(longestMaturity, Integer.parseInt(days.asText()));
         }
         Instant boundary = now.plus(Duration.ofDays((long) longestMaturity + crossPeriod));
         List<JsonNode> groups = CalibrationService.criticalGroupRules(resolved.resolved());
@@ -130,6 +133,11 @@ public class EvaluationService {
                 coverage, boundary, nodes, stopRule, groups,
                 "PRIOR_VERSION_WINDOW", crossPeriod, digest, now);
         return planId;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<String> frozenPlanDigest(UUID actionId) {
+        return evaluations.plan(actionId).map(EvaluationRepository.PlanRow::planDigest);
     }
 
     /** Legacy request fields retained for wire compatibility; none is authoritative Outcome evidence. */
@@ -230,7 +238,10 @@ public class EvaluationService {
             plan.versionCoverage().properties().forEach(entry -> coverage.put(entry.getKey(), entry.getValue().asText()));
             return new EvaluationView(plan.id(), plan.actionId(), plan.calibrationPackageId(), plan.calibrationVersion(), coverage,
                     "EXCLUDE_TRANSITION_DAYS", plan.latestBoundary(), nodes, stop, groups, plan.comparisonBasis(),
-                    plan.crossPeriodWindowDays(), plan.planDigest(), plan.frozenAt(), evaluations.results(plan.id()),
+                    plan.crossPeriodWindowDays(), plan.planDigest(), plan.frozenAt(),
+                    Map.of("versionCoverage",plan.versionCoverage().deepCopy(),"formalNodes",plan.formalNodes().deepCopy(),
+                            "stopRule",plan.stopRule().deepCopy(),"criticalGroups",plan.criticalGroups().deepCopy()),
+                    evaluations.results(plan.id()),
                     evaluations.revisions(plan.id()));
         });
     }

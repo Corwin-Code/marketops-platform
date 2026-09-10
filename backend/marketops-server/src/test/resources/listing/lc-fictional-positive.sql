@@ -141,7 +141,14 @@ INSERT INTO ops.lc_action(id,organization_id,store_id,platform_listing_id,candid
   'LISTING_DESCRIPTION_CHANGE','MANUAL','5c000000-0000-5000-8000-000000000025',encode(sha256(convert_to('Прежнее описание второго товара','UTF8')),'hex'),
   'Новое описание второго товара для покупателя',encode(sha256(convert_to('Новое описание второго товара для покупателя','UTF8')),'hex'),'ru',false,false,false,'ORDINARY_IMPACT','5c000000-0000-5000-8000-000000000001',1,'0998716b-6f78-56da-bbea-554b20cfd093','DRAFT',now(),now(),1);
 
--- Independent review, then approval with a PASS naming the calibration package, then the frozen binding and plan.
+-- Synthetic plan is frozen before independent review and approval.
+INSERT INTO ops.lc_evaluation_plan(id,organization_id,action_id,calibration_package_id,calibration_version,version_coverage,transition_handling,latest_boundary,formal_nodes,stop_rule,critical_groups,comparison_basis,cross_period_window_days,plan_digest,frozen_at) VALUES
+ ('5c000000-0000-5000-8000-00000000000f','8689c119-8fa0-50b7-8ba2-f9bf3039d336','5c000000-0000-5000-8000-00000000000a','5c000000-0000-5000-8000-000000000001',1,'{"targetVersion":"one"}','EXCLUDE_TRANSITION_DAYS',now()+interval '30 days',
+  '[{"nodeCode":"D14","maturityDays":14,"method":"WILSON_LOWER_BOUND","threshold":"0.050000"}]','{"nodeCode":"D14"}','[]','PRIOR_VERSION_WINDOW',30,repeat('6',64),now()),
+ ('5c000000-0000-5000-8000-00000000002f','8689c119-8fa0-50b7-8ba2-f9bf3039d336','5c000000-0000-5000-8000-00000000002a','5c000000-0000-5000-8000-000000000001',1,'{"targetVersion":"two"}','EXCLUDE_TRANSITION_DAYS',now()+interval '30 days',
+  '[{"nodeCode":"D14","maturityDays":14,"method":"WILSON_LOWER_BOUND","threshold":"0.050000"}]','{"nodeCode":"D14"}','[]','PRIOR_VERSION_WINDOW',30,repeat('7',64),now());
+
+-- Independent review, then approval with a PASS naming the calibration package, then its exact plan binding.
 INSERT INTO ops.lc_action_review(id,organization_id,action_id,reviewer_user_id,attested_target_text_digest,attested_current_text_digest,attested_affected_set_digest,facts_digest,verdict,reason,reviewed_at)
 SELECT gen_random_uuid(),a.organization_id,a.id,'8ec704dd-3aa5-529c-93db-def4bbf39260',a.target_text_digest,a.current_text_digest,a.affected_set_digest,repeat('f',64),'ATTESTED','synthetic independent review',now()
   FROM ops.lc_action a WHERE a.id IN ('5c000000-0000-5000-8000-00000000000a','5c000000-0000-5000-8000-00000000002a');
@@ -163,8 +170,3 @@ SELECT '5c000000-0000-5000-8000-00000000002e',a.organization_id,a.id,'5c000000-0
        jsonb_build_object('descriptionObservation','5c000000-0000-5000-8000-000000000025'),jsonb_build_object('calibration','1'),a.calibration_package_id,a.calibration_version,repeat('5',64),now(),now()+interval '1 hour','BOUND'
   FROM ops.lc_action a WHERE a.id='5c000000-0000-5000-8000-00000000002a';
 UPDATE ops.lc_action SET state='APPROVED', updated_at=now(), version=version+1 WHERE id IN ('5c000000-0000-5000-8000-00000000000a','5c000000-0000-5000-8000-00000000002a');
-INSERT INTO ops.lc_evaluation_plan(id,organization_id,action_id,calibration_package_id,calibration_version,version_coverage,transition_handling,latest_boundary,formal_nodes,stop_rule,critical_groups,comparison_basis,cross_period_window_days,plan_digest,frozen_at) VALUES
- ('5c000000-0000-5000-8000-00000000000f','8689c119-8fa0-50b7-8ba2-f9bf3039d336','5c000000-0000-5000-8000-00000000000a','5c000000-0000-5000-8000-000000000001',1,'{"targetVersion":"one"}','EXCLUDE_TRANSITION_DAYS',now()+interval '30 days',
-  '[{"nodeCode":"D14","maturityDays":14,"method":"WILSON_LOWER_BOUND","threshold":"0.050000"}]','{"nodeCode":"D14"}','[]','PRIOR_VERSION_WINDOW',30,repeat('6',64),now()),
- ('5c000000-0000-5000-8000-00000000002f','8689c119-8fa0-50b7-8ba2-f9bf3039d336','5c000000-0000-5000-8000-00000000002a','5c000000-0000-5000-8000-000000000001',1,'{"targetVersion":"two"}','EXCLUDE_TRANSITION_DAYS',now()+interval '30 days',
-  '[{"nodeCode":"D14","maturityDays":14,"method":"WILSON_LOWER_BOUND","threshold":"0.050000"}]','{"nodeCode":"D14"}','[]','PRIOR_VERSION_WINDOW',30,repeat('7',64),now());

@@ -223,6 +223,9 @@ public class ListingActionService {
                 classification.contentAxisMaterial(), classification.exposureAxisMaterial(), classification.route(),
                 unresolved ? null : resolved.resolved().packageId(), unresolved ? null : resolved.resolved().version(),
                 actor.userId(), now);
+        if (!unresolved) {
+            evaluation.freezePlan(actions.action(actionId).orElseThrow());
+        }
         if (!actions.moveCandidate(candidateId, "OPEN", "SELECTED", candidate.version(), now)) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
         }
@@ -261,9 +264,14 @@ public class ListingActionService {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
+        Optional<String> planDigest = evaluation.frozenPlanDigest(actionId);
+        if ("ATTESTED".equals(verdict) && planDigest.isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
         String factsDigest = Digest.ofComponents(List.of(action.affectedSetDigest(),
                 String.valueOf(action.currentTextDigest()), String.valueOf(action.targetTextDigest()),
-                String.valueOf(action.calibrationPackageId()), String.valueOf(action.calibrationVersion())));
+                String.valueOf(action.calibrationPackageId()), String.valueOf(action.calibrationVersion()),
+                planDigest.orElse("NO_FROZEN_PLAN")));
         actions.insertReview(ids.newId(), action.organizationId(), actionId, actor.userId(), action.targetTextDigest(),
                 action.currentTextDigest(), action.affectedSetDigest(), factsDigest, verdict, validReason, now);
         if ("ATTESTED".equals(verdict)) {

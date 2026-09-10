@@ -69,12 +69,14 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open.",
-        "Full structured methods and critical group rules retained; explicit empty stop/zero tail permitted, missing stop remains unresolved. NOT_MET is no longer an automatic stop. Real qualified upper-bound/node schedule integration remains open."
+        "Full structured methods and critical group rules retained; explicit empty stop/zero tail permitted, missing stop remains unresolved. NOT_MET is no longer an automatic stop. Real qualified upper-bound/node schedule integration remains open.",
+        "Normal DRAFT preparation now freezes the plan before review. V0088 binds review and approval to its exact digest/chronology and rejects legacy unbound approval reuse. Full frozen definition is available on read; complete windows/method/node execution remain open."
       ],
       "executed_evidence": [
         "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending.",
         "Protection/calibration unit and architecture subset: 88 passed before the latest HTTP authority removal. ListingConversionSchemaIT: 8 passed including mandatory protection dimensions and known-failure precedence. Partial evidence only.",
-        "Checkpoint-4: 91 unit/architecture tests including positive explicit no-stop/zero-tail freeze and exact package-version refusal. SQL schema subset 8 passed. No final closure claim."
+        "Checkpoint-4: 91 unit/architecture tests including positive explicit no-stop/zero-tail freeze and exact package-version refusal. SQL schema subset 8 passed. No final closure claim.",
+        "Checkpoint-6: 93 unit/architecture, 23 signed HTTP/database, 7 launch and 7 description Gate tests passed. Normal preparation and legacy plan-binding refusal covered; no final closure claim."
       ]
     },
     {

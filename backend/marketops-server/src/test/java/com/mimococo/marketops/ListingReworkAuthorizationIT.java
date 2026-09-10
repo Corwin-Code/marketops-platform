@@ -294,6 +294,56 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void normalPreparationFreezesTheEvaluationPlanBeforeAnyReviewOrApproval() throws Exception {
+        var json=new tools.jackson.databind.ObjectMapper();
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for (ActionScopeCode scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.LISTING_CONVERSION_VIEW)) {
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        }
+        mvc.perform(post("/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/cancel")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"reason\":\"Withdraw unused synthetic action before preparing the next round\"}"))
+                .andExpect(status().isOk());
+        var candidateResponse=mvc.perform(post("/api/v1/console/listing/actions/candidates")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("listingId",fixture.id("listing"),"candidateKind","CONTENT_DESCRIPTION",
+                        "roundKey","pre-approval-plan","evidenceReferences",List.of("evidence://synthetic/preapproval")))))
+                .andExpect(status().isOk()).andReturn();
+        String candidate=json.readTree(candidateResponse.getResponse().getContentAsString()).path("id").asText();
+        var actionResponse=mvc.perform(post("/api/v1/console/listing/actions/candidates/"+candidate+"/prepare")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("executionPath","MANUAL","targetText",ListingConversionFixture.PRIOR_TEXT_ONE+".",
+                        "kizMarkedDeclared",false,"exposureShare",new java.math.BigDecimal("0.01")))))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("DRAFT")).andReturn();
+        UUID actionId=UUID.fromString(json.readTree(actionResponse.getResponse().getContentAsString()).path("id").asText());
+        assertThat(jdbc.sql("""
+                SELECT p.frozen_at>=a.created_at AND p.calibration_package_id=a.calibration_package_id
+                    AND p.calibration_version=a.calibration_version
+                    AND NOT EXISTS (SELECT 1 FROM ops.lc_action_review r WHERE r.action_id=a.id)
+                    AND NOT EXISTS (SELECT 1 FROM ops.lc_action_binding b WHERE b.action_id=a.id)
+                FROM ops.lc_evaluation_plan p JOIN ops.lc_action a ON a.id=p.action_id WHERE a.id=:id
+                """).param("id",actionId).query(Boolean.class).single()).isTrue();
+        mvc.perform(get("/api/v1/console/listing/actions/"+actionId+"/evaluation").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.formalNodes[0].nodeCode").value("D14"))
+                .andExpect(jsonPath("$.frozenDefinition.formalNodes[0].maturityDays").value(14));
+    }
+
+    @Test
+    void approvalBindingKeepsTheReviewedPlanAndLegacyUnboundApprovalCannotBorrowIt() {
+        assertThat(jdbc.sql("""
+                SELECT b.evaluation_plan_digest=p.plan_digest AND EXISTS (
+                    SELECT 1 FROM ops.lc_action_review r WHERE r.action_id=p.action_id
+                        AND r.evaluation_plan_digest=p.plan_digest AND r.reviewed_at>=p.frozen_at)
+                FROM ops.lc_action_binding b JOIN ops.lc_evaluation_plan p ON p.action_id=b.action_id
+                WHERE b.action_id=:action
+                """).param("action",fixture.id("actionOne")).query(Boolean.class).single()).isTrue();
+        fixture.seed.sql("UPDATE ops.lc_action_binding SET evaluation_plan_digest=NULL WHERE action_id=:id")
+                .param("id",fixture.id("actionOne")).update();
+        assertThat(bindingGaps("actionOne")).contains("EVALUATION_PLAN_BINDING_MISSING_OR_CHANGED");
+        assertThat(bindingGaps("actionTwo")).doesNotContain("EVALUATION_PLAN_BINDING_MISSING_OR_CHANGED");
+    }
+
+    @Test
     void callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio() throws Exception {
         measurementGrants();
         listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),

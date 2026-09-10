@@ -22,6 +22,7 @@ public record EvaluationView(
         int crossPeriodWindowDays,
         String planDigest,
         Instant frozenAt,
+        Map<String, Object> frozenDefinition,
         List<NodeResult> results,
         List<Revision> revisions) {
 
@@ -46,6 +47,7 @@ public record EvaluationView(
         formalNodes = List.copyOf(formalNodes == null ? List.of() : formalNodes);
         stopRule = Map.copyOf(stopRule == null ? Map.of() : stopRule);
         criticalGroups = List.copyOf(criticalGroups == null ? List.of() : criticalGroups);
+        frozenDefinition = Map.copyOf(frozenDefinition == null ? Map.of() : frozenDefinition);
         results = List.copyOf(results == null ? List.of() : results);
         revisions = List.copyOf(revisions == null ? List.of() : revisions);
     }

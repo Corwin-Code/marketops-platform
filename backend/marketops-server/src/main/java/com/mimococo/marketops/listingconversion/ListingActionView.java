@@ -44,11 +44,13 @@ public record ListingActionView(
         Instant updatedAt,
         long version) {
 
-    public record Review(UUID id, UUID reviewerUserId, String verdict, String reason, Instant reviewedAt) {
+    public record Review(UUID id, UUID reviewerUserId, String verdict, String reason, Instant reviewedAt,
+                         String evaluationPlanDigest) {
     }
 
     public record Binding(UUID id, UUID approvalDecisionId, UUID guardrailEvaluationId, String bindingDigest,
-                          Instant boundAt, Instant expiresAt, String state, String inapplicableReason) {
+                          Instant boundAt, Instant expiresAt, String state, String inapplicableReason,
+                          String evaluationPlanDigest) {
     }
 
     public record Launch(UUID id, UUID launchedByUserId, Instant launchedAt) {

@@ -40,6 +40,7 @@ class EvaluationPlanFreezeTest {
 
     @BeforeEach void exactActionAndAcceptedPackage() {
         when(action.id()).thenReturn(actionId);
+        when(action.state()).thenReturn("DRAFT");
         when(action.organizationId()).thenReturn(organization);
         when(action.listingId()).thenReturn(listing);
         when(action.calibrationPackageId()).thenReturn(packageId);
@@ -84,6 +85,23 @@ class EvaluationPlanFreezeTest {
         rejectsUnresolved();
         put("FORMAL_NODES",null,"[{\"nodeCode\":\"D14\"}]");
         rejectsUnresolved();
+    }
+
+    @Test void firstFreezeCannotBeAddedAfterReviewOrApproval() {
+        for (String state:java.util.List.of("REVIEWED","APPROVED","LAUNCHED")) {
+            when(action.state()).thenReturn(state);
+            assertThatThrownBy(()->service.freezePlan(action)).isInstanceOfSatisfying(OperationRejectedException.class,
+                    failure->assertThat(failure.errorCode()).isEqualTo(ErrorCode.INVALID_STATE_TRANSITION));
+        }
+        verify(actions,never()).insertPlan(any(),any(),any(),any(),anyInt(),anyMap(),any(),anyList(),anyMap(),anyList(),anyString(),anyInt(),anyString(),any());
+    }
+
+    @Test void admittedIntegerTextRetainsItsExactRepresentationAndMaturity() {
+        put("FORMAL_NODES",null,"[{\"nodeCode\":\"D14\",\"maturityDays\":\"14\",\"method\":\"QUALIFIED_COMPARISON\",\"threshold\":\"0.05\"}]");
+        assertThat(service.freezePlan(action)).isEqualTo(planId);
+        verify(actions).insertPlan(any(),any(),any(),any(),anyInt(),anyMap(),eq(at.plusSeconds(14L*86400)),
+                argThat(nodes->json.<JsonNode>valueToTree(nodes).get(0).path("maturityDays").isTextual()),
+                anyMap(),anyList(),anyString(),eq(0),anyString(),eq(at));
     }
 
     void rejectsUnresolved() {
