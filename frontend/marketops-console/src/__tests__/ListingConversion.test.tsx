@@ -371,6 +371,57 @@ describe('actions, allowance and launch', () => {
     );
   });
 
+  it.each([
+    [
+      'zh',
+      '操作与启动',
+      '打开',
+      '额度预览',
+      '额度依据尚未齐备，当前不能启动。',
+      '缺少该轴的有效额度配置',
+    ],
+    [
+      'ru',
+      'Действия и запуск',
+      'Открыть',
+      'Предпросмотр лимита',
+      'Основания лимита неполны; запуск пока недоступен.',
+      'Нет действующего лимита для этой оси',
+    ],
+  ] as const)(
+    'shows unresolved mandatory allowance evidence in %s',
+    async (language, tab, open, preview, unresolved, missing) => {
+      const { fetchImpl } = backend({
+        '/api/v1/console/listing/actions/candidates': [],
+        [`/api/v1/console/listing/actions/${ACTION}/allowance-preview`]: {
+          platformListingId: LISTING,
+          resolved: false,
+          axes: [],
+          gaps: ['AFFECTED_VARIANTS:ALLOWANCE_MISSING'],
+        },
+        [`/api/v1/console/listing/actions/${ACTION}`]: action('APPROVED'),
+        '/api/v1/console/listing/actions': [action('APPROVED')],
+      });
+      render(
+        <ListingConversionShell
+          context={context(fetchImpl)}
+          storeId={STORE}
+          onBack={() => undefined}
+          initialLanguage={language}
+        />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: tab }));
+      fireEvent.click(await screen.findByRole('button', { name: open }));
+      fireEvent.click(await screen.findByRole('button', { name: preview }));
+      expect(await screen.findByText(unresolved)).toBeInTheDocument();
+      expect(screen.getByText(missing, { exact: false })).toBeInTheDocument();
+      expect(screen.getByRole('table', { name: preview })).toHaveAttribute(
+        'data-resolved',
+        'false',
+      );
+    },
+  );
+
   it('TC-UI-LC-009 a reviewed action is approved through the workflow decision, never a listing endpoint', async () => {
     const { fetchImpl, calls } = backend({
       '/api/v1/console/workflow/recommendations': { decisionId: 'd1', state: 'APPROVED' },

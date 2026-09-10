@@ -164,8 +164,9 @@ public class CalibrationService {
     public static List<String> allowanceAxes(Resolved resolved) {
         CalibrationRepository.Value value = resolved.values().get("ALLOWANCE_AXES");
         List<String> axes = new ArrayList<>();
-        if (value != null && value.json() != null && value.json().isArray()) {
-            value.json().forEach(axis -> axes.add(axis.asText()));
+        if (value != null && value.json() != null) {
+            JsonNode configured=value.json().isObject()?value.json().path("axes"):value.json();
+            if (configured.isArray()) configured.forEach(axis -> axes.add(axis.asText()));
         }
         return axes;
     }

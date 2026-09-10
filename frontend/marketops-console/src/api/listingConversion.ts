@@ -150,6 +150,7 @@ export interface Allowance {
   readonly platformListingId: string;
   readonly axes: readonly AllowanceAxis[];
   readonly resolved: boolean;
+  readonly gaps: readonly string[];
 }
 
 export interface LaunchAnswer {
@@ -715,7 +716,7 @@ export function parseAllowance(body: unknown): Allowance | undefined {
   });
   if (platformListingId === undefined || resolved === undefined || axes === undefined)
     return undefined;
-  return { platformListingId, axes, resolved };
+  return { platformListingId, axes, resolved, gaps: strings(r.gaps) };
 }
 
 export function parseLaunchAnswer(body: unknown): LaunchAnswer | undefined {

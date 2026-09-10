@@ -1,0 +1,6 @@
+Command: fnm exec --using 24.19.0 npm run build
+Working directory: frontend/marketops-console
+Result: PASS (local targeted scope only)
+> marketops-console@0.1.0 build
+> tsc --noEmit && vite build
+✓ built in 91ms

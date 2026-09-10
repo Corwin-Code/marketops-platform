@@ -92,6 +92,17 @@ public final class ListingConversionFixture {
     }
 
     ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,boolean emptyPrior) throws Exception {
+        this(migration,application,admin,emptyPrior,1);
+    }
+
+    ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
+                             boolean emptyPrior,int nativeVariantsPerListing) throws Exception {
+        this(migration,application,admin,emptyPrior,nativeVariantsPerListing,null);
+    }
+
+    ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
+                             boolean emptyPrior,int nativeVariantsPerListing,String allowanceAxes) throws Exception {
+        if (nativeVariantsPerListing<1 || nativeVariantsPerListing>4096) throw new IllegalArgumentException("finite fixture scope");
         this.migration = migration;
         this.application = application;
         this.admin = admin;
@@ -107,6 +118,33 @@ public final class ListingConversionFixture {
         String source = new ClassPathResource("listing/lc-fictional-positive.sql")
                 .getContentAsString(StandardCharsets.UTF_8);
         if (emptyPrior) source=source.replace(PRIOR_TEXT_ONE,"");
+        if (allowanceAxes!=null) source=source.replace(
+                "'[\"CONCURRENT_LISTINGS\", \"AFFECTED_VARIANTS\"]'",
+                "'"+allowanceAxes.replace("'","''")+"'");
+        if (nativeVariantsPerListing>1) {
+            // Expand real native identities and mappings BEFORE exact affected sets, plans and approvals are frozen.
+            String expansion="""
+                INSERT INTO core.platform_listing_variant(id,organization_id,platform_listing_id,native_variant_key,
+                  first_seen_at,last_seen_at,status,created_at,updated_at,version)
+                SELECT md5(v.id::text||':'||n)::uuid,v.organization_id,v.platform_listing_id,
+                  'fixture-expanded-'||n,now()-interval '1 day',now(),'OBSERVED',now()-interval '1 day',now(),0
+                FROM core.platform_listing_variant v CROSS JOIN generate_series(2,%d) n
+                WHERE v.id IN ('7d693f80-2ad3-570d-8f47-e589af7b5598','5c000000-0000-5000-8000-000000000023');
+                INSERT INTO core.listing_mapping(id,organization_id,platform_listing_variant_id,product_variant_id,
+                  effective_from,status,confirmed_by_user_id,reason,created_at,updated_at,version)
+                SELECT gen_random_uuid(),m.organization_id,md5(m.platform_listing_variant_id::text||':'||n)::uuid,
+                  m.product_variant_id,now()-interval '1 day','ACTIVE',m.confirmed_by_user_id,
+                  'Synthetic native-member allowance fixture',now()-interval '1 day',now(),0
+                FROM core.listing_mapping m CROSS JOIN generate_series(2,%d) n
+                WHERE m.platform_listing_variant_id IN ('7d693f80-2ad3-570d-8f47-e589af7b5598','5c000000-0000-5000-8000-000000000023')
+                  AND m.status='ACTIVE';
+                """.formatted(nativeVariantsPerListing,nativeVariantsPerListing);
+            source=source.replace("INSERT INTO core.lc_affected_set(",expansion+"INSERT INTO core.lc_affected_set(");
+            source=source.replace("ARRAY['7d693f80-2ad3-570d-8f47-e589af7b5598']::uuid[]",
+                    "(SELECT array_agg(id ORDER BY id) FROM core.platform_listing_variant WHERE platform_listing_id='aa14dd95-b455-5db2-924c-8a3972e6f9d2')");
+            source=source.replace("ARRAY['5c000000-0000-5000-8000-000000000023']::uuid[]",
+                    "(SELECT array_agg(id ORDER BY id) FROM core.platform_listing_variant WHERE platform_listing_id='5c000000-0000-5000-8000-000000000022')");
+        }
         var uuid = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}").matcher(source);
         String sql = uuid.replaceAll(match -> replacement.computeIfAbsent(match.group(),
                         ignored -> UUID.randomUUID().toString()))
@@ -158,6 +196,10 @@ public final class ListingConversionFixture {
 
     /** Launch one action as one person inside one committed transaction; the database's answer comes back. */
     JsonNode launch(UUID launchId, String actionName, UUID actor) throws Exception {
+        return launch(launchId,actionName,actor,"{}");
+    }
+
+    JsonNode launch(UUID launchId,String actionName,UUID actor,String requested) throws Exception {
         String suffix = actionName.endsWith("Two") ? "Two" : "One";
         UUID action = id(actionName);
         UUID recommendation = id("recommendation" + suffix);
@@ -165,11 +207,12 @@ public final class ListingConversionFixture {
         try (Connection connection = transaction()) {
             String proof = proof(connection, actor, "LISTING_ACTION_LAUNCH", recommendation, approval);
             try (var query = connection.prepareStatement(
-                    "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, '{}'::jsonb)::text")) {
+                    "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, ?::jsonb)::text")) {
                 query.setObject(1, launchId);
                 query.setObject(2, action);
                 query.setObject(3, actor);
                 query.setString(4, proof);
+                query.setString(5, requested);
                 try (var rows = query.executeQuery()) {
                     rows.next();
                     JsonNode answer = JSON.readTree(rows.getString(1));
@@ -266,14 +309,19 @@ public final class ListingConversionFixture {
     }
 
     void release(UUID occupation, UUID actor, UUID evidence) throws Exception {
+        release(occupation,actor,evidence,"STOP_EVIDENCE");
+    }
+
+    void release(UUID occupation,UUID actor,UUID evidence,String basis) throws Exception {
         try (Connection connection = transaction()) {
             String proof = proof(connection, actor, "LISTING_OCCUPATION_RELEASE", occupation, occupation);
             try (var query = connection.prepareStatement(
-                    "SELECT ops.release_lc_occupation(?, ?, ?, 'STOP_EVIDENCE', ?, 'fixture://display')")) {
+                    "SELECT ops.release_lc_occupation(?, ?, ?, ?, ?, 'fixture://release-proof')")) {
                 query.setObject(1, occupation);
                 query.setObject(2, actor);
                 query.setString(3, proof);
-                query.setObject(4, evidence);
+                query.setString(4, basis);
+                query.setObject(5, evidence);
                 query.execute();
                 connection.commit();
             } catch (SQLException refused) {

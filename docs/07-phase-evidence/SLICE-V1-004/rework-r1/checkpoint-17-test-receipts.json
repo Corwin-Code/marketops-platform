@@ -1,0 +1,127 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "812c5842cb4adadef1de65b7cb2720882a301efa",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/AllowanceView.java": "1770878cf82045918518d2fa8e5f2d8d84fd6fac0cead6a6325d79f18d70afc3",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/CalibrationService.java": "e8cd67d375f28a86d0cdfdd109c166f9616075502bbf1fb0538fdb1c9c388082",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java": "76c1cb16fd49d4fc946852baa43c5e942de083d4dcd44bdc71347005a0b4972d",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingActionRepository.java": "6d151183ad4c000fb4026cb7e64e526a0b285598e9b52b867ecc1b46986c8c0f",
+    "backend/marketops-server/src/main/resources/db/migration/V0098__accumulate_listing_allowance_across_configuration_versions.sql": "fef2c8cf80af2592cf56b0c1459b6c32f016002586426213b04cc165e4cc1c05",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingActionLaunchIT.java": "8953a2deb9aa126c4adcf390c142ee2b32d406fde96b4167008d3ca910845a24",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingConversionFixture.java": "dcc11c3536a4e553b7fb99d0bdea4bdd952908d5d20e570dadbdc4714f00d289",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "65bb0986319ab96cf57024177cdd5024a085c8043ae238e5c1ee2c051d9f658b",
+    "frontend/marketops-console/src/__tests__/ListingConversion.test.tsx": "a171da225408d6156a0669f9acbc47c03850d374f6c12810c9ede90d4b4bec92",
+    "frontend/marketops-console/src/api/listingConversion.ts": "ed19820cd5fe9dcde43e91845f86d6ada033931db88293b021aa00587fbb4510",
+    "frontend/marketops-console/src/listing/ListingActionsPanel.tsx": "8c90eeb4eb4c22b78113543f777ea3f8826c0c62c27cee6a25bc5a01170c7cb6",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "a77af7047161e97cc55d86618f5d4251a27ea2dcf1f282655f832a60d4367c1e"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingActionLaunchIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 21,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-launch-final.log",
+      "raw_log_sha256": "5fa904d33af897d13e889d7866991f57bde8028a195bfda1bb932df471a3b113",
+      "summary_path": "allowance-launch-final-summary.txt",
+      "summary_sha256": "40962550ba57c3eb18b8c29062f1bf326abeb6eccc5896893140d40970cab7c4"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 40,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-authorization-final.log",
+      "raw_log_sha256": "dffa7a06ef17790260fdad2b48d55b780c77845d87527d2fbb38cd45935e0eac",
+      "summary_path": "allowance-authorization-final-summary.txt",
+      "summary_sha256": "1579819de41a6e594b2664410ae16952bea60944ff6819da5803f70b5c1c9824"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-upgrade.log",
+      "raw_log_sha256": "442b90736557e92f2f6007a59090f7fd05dd6d8e03891867636ef274de6c3933",
+      "summary_path": "allowance-upgrade-summary.txt",
+      "summary_sha256": "02ee90bda7cac3a803e0aef351f8b6e7a7f049c2c4956a8d254b21b24c66295a"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=CalibrationSnapshotTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 81,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-architecture.log",
+      "raw_log_sha256": "572d4997c36e531d9f064473d2cc0b04d81b1c00ad6d3f121dafd95f9d8730f9",
+      "summary_path": "allowance-architecture-summary.txt",
+      "summary_sha256": "528809a565d64c5348621f7f15500813dafd46d7479bf599ba193e7554f31514"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 24,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-frontend-targeted.log",
+      "raw_log_sha256": "3cacad37ab190d23a9ca5471a53811380066ff029c0e8872ce9a15e56f3f35c0",
+      "summary_path": "allowance-frontend-targeted-summary.txt",
+      "summary_sha256": "35e7f031c86929f9c67699f3c0da6c46813e35847dcdddc34499559ff5c76e44"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run typecheck",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-frontend-typecheck.log",
+      "raw_log_sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "summary_path": "allowance-frontend-typecheck-summary.txt",
+      "summary_sha256": "634f0a623a09df151c66624ec1d92d3f44e1026a71cb210fd3082e28906e48cc"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-frontend-lint.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "allowance-frontend-lint-summary.txt",
+      "summary_sha256": "5d410597b1bcdef234ac0316e9989b6b4b078c93495aa4d4f5d1b8dc27ede7b8"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/allowance-frontend-build.log",
+      "raw_log_sha256": "082b1055aeb89dde98280f3dbc341f66f92964f582b399d0013cacc28f71d5d2",
+      "summary_path": "allowance-frontend-build-summary.txt",
+      "summary_sha256": "cf473028c6aeef5fe451cc45c68c16e90c7bb536ac877d46f90eb2f050922e15"
+    }
+  ],
+  "diagnosed_failures": [
+    {
+      "raw_log_local_path": "build/slice4-rework/allowance-authority-probe.log",
+      "raw_log_sha256": "295332aa054fde89fce9b9ac9486d66dbeb2a7847d497b4cff60da5d94b626dd",
+      "tests": 7,
+      "passed": 6,
+      "errors": 1,
+      "cause": "Hierarchy test attempted to mutate an ACTIVE accepted calibration value; the unchanged immutability trigger correctly rejected it (MO036).",
+      "correction": "Build a separate policy fixture before activation and acceptance. No trigger or control was relaxed. Corrected hierarchy probe passed; later complete regression includes it.",
+      "corrected_probe_log": "build/slice4-rework/allowance-hierarchy-corrected-fixture.log",
+      "corrected_probe_sha256": "69e0de8c751df9b978332c1a64a455a1bae2e626b45b54ba01f35e3fb42d7953"
+    }
+  ],
+  "verification_discipline": [
+    "The 7-case probe and 1-case corrected hierarchy run overlap the full 21-case launch regression. The earlier 14-case launch and 39-case authorization runs precede final test hardening; counts are not summed as unique coverage.",
+    "Final database suite adds actual 70-member identities/mappings before frozen affected-set creation. No fabricated amount or post-approval scope mutation stands in for 100/70/70 concurrency.",
+    "Frontend tests/typecheck/lint/build passed once after final frontend changes. No unchanged response/Worker/timing suite was rerun for this migration-only authority change; the connected full signed class exercises their launch/restoration interactions.",
+    "Every process was observed to completion; no Java/migration source was edited during Maven execution. No unrelated Docker containers or volumes were pruned."
+  ],
+  "limitations": [
+    "All 27 roots remain open for Controller closure.",
+    "Qualified revenue/category demand, accepted allowance limit-publication linkage and preexisting promotion obligations remain incomplete. Financial axes cannot be satisfied by caller amounts.",
+    "Positive release currently proves only exact terminal no-submit with no mutation attempt or linked promotion. Independent STOP_NEW and historical-obligation clearing still require the connected promotion lifecycle; these mandatory flows are not considered closed.",
+    "Historical upgrade test is V0090 to V0098 with old orphan-command invariants; it is not full schema/upgrade parity.",
+    "No actual provider/account, GateEV/GateE, shared migration/deployment, remote publication, persistent-storage DR or whole-process restart was performed.",
+    "Complete browser journeys, final all-scope security/regression/performance/DR/SBOM/runbook synchronization and exact final-head verification remain outstanding."
+  ]
+}

@@ -341,27 +341,23 @@ public class ListingActionRepository {
                 .list();
     }
 
-    public record AllowanceRow(UUID id, String axisCode, String scopeKind, BigDecimal limit, BigDecimal reserve,
-                               BigDecimal occupied, String unitCode) {
-    }
-
-    public List<AllowanceRow> allowances(UUID organizationId, UUID listingId, Instant at) {
-        return jdbc.sql("""
-                SELECT a.id, a.axis_code, a.scope_kind, a.limit_value, a.reserve_value, a.unit_code,
-                       coalesce((SELECT sum(o.occupied_value) FROM ops.lc_exposure_occupation o
-                                  WHERE o.allowance_id = a.id AND o.state <> 'RELEASED'), 0) AS occupied
-                  FROM ops.lc_allowances_for(:org, :listing, :at) a
-                 ORDER BY a.axis_code
-                """).param("org", organizationId).param("listing", listingId).param("at", Timestamp.from(at))
-                .query((rs, n) -> new AllowanceRow(rs.getObject("id", UUID.class), rs.getString("axis_code"),
-                        rs.getString("scope_kind"), rs.getBigDecimal("limit_value"), rs.getBigDecimal("reserve_value"),
-                        rs.getBigDecimal("occupied"), rs.getString("unit_code")))
-                .list();
-    }
-
-    public int affectedVariantCount(UUID affectedSetId) {
-        return jdbc.sql("SELECT cardinality(platform_listing_variant_ids) FROM core.lc_affected_set WHERE id = :id")
-                .param("id", affectedSetId).query(Integer.class).optional().orElse(0);
+    public AllowanceView allowanceProjection(UUID actionId, Instant at) {
+        String projection = jdbc.sql("SELECT ops.lc_allowance_projection(:action,:at)::text")
+                .param("action",actionId).param("at",Timestamp.from(at)).query(String.class).single();
+        JsonNode value = JsonValues.read(json,projection);
+        List<AllowanceView.Axis> axes = new java.util.ArrayList<>();
+        for (JsonNode axis : value.path("axes")) {
+            axes.add(new AllowanceView.Axis(UUID.fromString(axis.path("allowanceId").asText()),
+                    axis.path("axisCode").asText(),axis.path("scopeKind").asText(),
+                    axis.path("limitValue").decimalValue(),axis.path("reserveValue").decimalValue(),
+                    axis.path("occupiedValue").decimalValue(),
+                    axis.path("requestedValue").isNull()?null:axis.path("requestedValue").decimalValue(),
+                    axis.path("headroom").decimalValue(),axis.path("sufficient").asBoolean(),axis.path("unitCode").asText()));
+        }
+        List<String> gaps = new java.util.ArrayList<>();
+        value.path("gaps").forEach(gap->gaps.add(gap.asText()));
+        return new AllowanceView(UUID.fromString(value.path("platformListingId").asText()),axes,
+                value.path("resolved").asBoolean(),gaps);
     }
 
     public record RecommendationRow(String state, long version) {
@@ -398,13 +394,6 @@ public class ListingActionRepository {
         node.properties().forEach(entry -> out.put(entry.getKey(),
                 entry.getValue().isValueNode() ? entry.getValue().asText() : entry.getValue().toString()));
         return out;
-    }
-
-    public static AllowanceView.Axis axis(AllowanceRow row, BigDecimal requested) {
-        BigDecimal headroom = row.limit().subtract(row.reserve()).subtract(row.occupied());
-        boolean sufficient = requested != null && requested.signum() >= 0 && requested.compareTo(headroom) <= 0;
-        return new AllowanceView.Axis(row.id(), row.axisCode(), row.scopeKind(), row.limit(), row.reserve(),
-                row.occupied(), requested, headroom, sufficient, row.unitCode());
     }
 
     public static ListingActionState stateOf(String value) {

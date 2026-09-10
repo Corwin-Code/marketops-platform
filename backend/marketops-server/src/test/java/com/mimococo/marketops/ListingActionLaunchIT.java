@@ -131,7 +131,11 @@ class ListingActionLaunchIT {
     @Test
     @DisplayName("TC-LC-LAUNCH-003 two launches racing for one allowance are serialised; exactly one wins")
     void racingLaunchesAreSerialised() throws Exception {
-        var f = ready();
+        var f = new ListingConversionFixture(migration,application,admin,false,70);
+        f.seed.sql("UPDATE ops.lc_exposure_allowance SET limit_value=100 WHERE organization_id=:org")
+                .param("org",f.id("organization")).update();
+        assertThat(f.app.sql("SELECT cardinality(platform_listing_variant_ids) FROM core.lc_affected_set WHERE organization_id=:org")
+                .param("org",f.id("organization")).query(Integer.class).list()).containsExactlyInAnyOrder(70,70);
         CountDownLatch firstHoldsTheLock = new CountDownLatch(1);
         CountDownLatch secondMayFinish = new CountDownLatch(1);
         ExecutorService pool = Executors.newFixedThreadPool(2);
@@ -226,8 +230,8 @@ class ListingActionLaunchIT {
     }
 
     @Test
-    @DisplayName("TC-LC-LAUNCH-006 a release with stop evidence frees the axis and the waiting action launches")
-    void releaseFreesTheAxis() throws Exception {
+    @DisplayName("TC-LC-LAUNCH-006 ordinary target observation cannot release active exposure; proven no-submit can")
+    void releaseRequiresExactPurposeQualifiedEvidence() throws Exception {
         var f = ready();
         f.launch(UUID.randomUUID(), "actionOne", f.id("ownerUser"));
         assertThat(f.launch(UUID.randomUUID(), "actionTwo", f.id("ownerUser")).path("launched").asBoolean()).isFalse();
@@ -235,7 +239,19 @@ class ListingActionLaunchIT {
                 .param("id", f.id("actionOne")).query(UUID.class).single();
         UUID evidence = f.displayObservation("listing", ListingConversionFixture.TARGET_TEXT_ONE, f.id("verifierUser"));
 
-        f.release(occupation, f.id("ownerUser"), evidence);
+        assertThatThrownBy(()->f.release(occupation,f.id("ownerUser"),evidence))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThatThrownBy(()->f.app.sql("SELECT ops.observe_lc_occupation(:id,'UNKNOWN',0)")
+                .param("id",occupation).query(Object.class).optional())
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("42501"));
+        UUID command=f.createCommand(f.id("actionOne"),f.id("ownerUser"));
+        assertThatThrownBy(()->f.release(occupation,f.id("ownerUser"),command,"NOT_APPLIED_PROVEN"))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThat(f.app.sql("SELECT ops.transition_lc_description_command(:id,0,NULL,'TERMINATED_WITHOUT_PROVIDER_CALL','SCOPE_STOPPED',NULL,NULL)")
+                .param("id",command).query(String.class).single()).isEqualTo("TERMINATED_WITHOUT_PROVIDER_CALL");
+        f.release(occupation,f.id("ownerUser"),command,"NOT_APPLIED_PROVEN");
+        assertThat(f.app.sql("SELECT release_evidence->>'purpose' FROM ops.lc_exposure_occupation WHERE id=:id")
+                .param("id",occupation).query(String.class).single()).isEqualTo("NOT_APPLIED");
 
         assertThat(f.app.sql("SELECT state FROM ops.lc_exposure_occupation WHERE id = :id").param("id", occupation)
                 .query(String.class).single()).isEqualTo("RELEASED");
@@ -266,4 +282,135 @@ class ListingActionLaunchIT {
                 .satisfies(failure -> assertThat(List.of("MO091", "MO092"))
                         .contains(ListingConversionFixture.sqlState(failure)));
     }
+    private static JsonNode projection(ListingConversionFixture f,String action) {
+        return new tools.jackson.databind.ObjectMapper().readTree(f.app.sql(
+                "SELECT ops.lc_allowance_projection(:action,clock_timestamp())::text")
+                .param("action",f.id(action)).query(String.class).single());
+    }
+
+    @Test
+    void configurationReplacementRetainsOldUnknownOccupationAndPreviewMatchesLaunch() throws Exception {
+        var f=ready();
+        f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"));
+        // Historical unsafe zeroes cannot erase the outstanding canonical obligation.
+        f.seed.sql("UPDATE ops.lc_exposure_occupation SET state='UNKNOWN',occupied_value=0 WHERE action_id=:action")
+                .param("action",f.id("actionOne")).update();
+        f.seed.sql("UPDATE ops.lc_exposure_allowance SET status='RETIRED' WHERE id=:old")
+                .param("old",f.id("allowanceConcurrent")).update();
+        UUID replacement=UUID.randomUUID();
+        f.seed.sql("""
+                INSERT INTO ops.lc_exposure_allowance(id,organization_id,allowance_version,scope_kind,axis_code,
+                  limit_value,reserve_value,unit_code,published_by_user_id,published_at,evidence_reference,effective_from,status)
+                SELECT :id,organization_id,2,scope_kind,axis_code,limit_value,reserve_value,unit_code,
+                  published_by_user_id,clock_timestamp(),'fixture://replacement',clock_timestamp(),'ACTIVE'
+                FROM ops.lc_exposure_allowance WHERE id=:old
+                """).param("id",replacement).param("old",f.id("allowanceConcurrent")).update();
+        JsonNode before=projection(f,"actionTwo");
+        assertThat(before.path("resolved").asBoolean()).isTrue();
+        JsonNode axis=java.util.stream.StreamSupport.stream(before.path("axes").spliterator(),false)
+                .filter(x->x.path("axisCode").asText().equals("CONCURRENT_LISTINGS")).findFirst().orElseThrow();
+        assertThat(axis.path("allowanceId").asText()).isEqualTo(replacement.toString());
+        assertThat(axis.path("occupiedValue").asInt()).isEqualTo(1);
+        assertThat(axis.path("sufficient").asBoolean()).isFalse();
+        assertThat(f.launch(UUID.randomUUID(),"actionTwo",f.id("ownerUser")).path("insufficientAxes"))
+                .extracting(JsonNode::asText).containsExactly("CONCURRENT_LISTINGS");
+    }
+
+    @Test
+    void missingRequiredAxisDoesNotDisappearFromLaunchRequirements() throws Exception {
+        var f=ready();
+        f.seed.sql("UPDATE ops.lc_exposure_allowance SET status='RETIRED' WHERE id=:id")
+                .param("id",f.id("allowanceVariants")).update();
+        assertThat(projection(f,"actionOne").path("gaps")).extracting(JsonNode::asText)
+                .containsExactly("AFFECTED_VARIANTS:ALLOWANCE_MISSING");
+        JsonNode result=f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"));
+        assertThat(result.path("launched").asBoolean()).isFalse();
+        assertThat(f.actionState(f.id("actionOne"))).isEqualTo("APPROVED_NOT_LAUNCHABLE");
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE organization_id=:org")
+                .param("org",f.id("organization")).query(Integer.class).single()).isZero();
+    }
+
+    private static void addStoreBudget(ListingConversionFixture f) {
+        f.seed.sql("""
+                INSERT INTO ops.lc_exposure_allowance(id,organization_id,allowance_version,scope_kind,store_ref_id,axis_code,
+                  limit_value,reserve_value,unit_code,published_by_user_id,published_at,evidence_reference,effective_from,status)
+                SELECT gen_random_uuid(),organization_id,1,'STORE',:store,axis_code,10,0,unit_code,
+                  published_by_user_id,clock_timestamp(),'fixture://store-budget',clock_timestamp(),'ACTIVE'
+                FROM ops.lc_exposure_allowance WHERE id=:id
+                """).param("store",f.id("store")).param("id",f.id("allowanceConcurrent")).update();
+    }
+
+    @Test
+    void hierarchyRequiresAnAcceptedCompositionAndCannotBypassTheOrganizationBalance() throws Exception {
+        var f=ready();
+        addStoreBudget(f);
+        assertThat(projection(f,"actionOne").path("gaps")).extracting(JsonNode::asText)
+                .containsExactly("CONCURRENT_LISTINGS:SCOPE_COMPOSITION_UNRESOLVED");
+        // A separate fixture accepts composition BEFORE activation; never mutate an accepted package.
+        f=new ListingConversionFixture(migration,application,admin,false,1,
+                "{\"axes\":[\"CONCURRENT_LISTINGS\",\"AFFECTED_VARIANTS\"],\"scopeComposition\":\"ALL_APPLICABLE\"}");
+        addStoreBudget(f);
+        assertThat(projection(f,"actionOne").path("axes")).hasSize(3);
+        assertThat(f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser")).path("launched").asBoolean()).isTrue();
+        assertThat(f.launch(UUID.randomUUID(),"actionTwo",f.id("ownerUser")).path("launched").asBoolean()).isFalse();
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE action_id=:action")
+                .param("action",f.id("actionOne")).query(Integer.class).single()).isEqualTo(2);
+    }
+
+    @Test
+    void callerAmountsCannotSetOrLowerCanonicalOccupation() throws Exception {
+        var f=ready();
+        JsonNode result=f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"),
+                "{\"CONCURRENT_LISTINGS\":\"0\",\"AFFECTED_VARIANTS\":\"0\",\"REVENUE_EXPOSURE\":\"999999\"}");
+        assertThat(result.path("launched").asBoolean()).isTrue();
+        assertThat(f.app.sql("SELECT requested_value=1 AND occupied_value=1 AND demand_evidence->>'actionId'=:actionText FROM ops.lc_exposure_occupation WHERE action_id=:action")
+                .param("action",f.id("actionOne")).param("actionText",f.id("actionOne").toString())
+                .query(Boolean.class).list()).containsExactly(true,true);
+        assertThat(projection(f,"actionOne").path("axes")).allSatisfy(axis->
+                assertThat(axis.path("requestedValue").asInt()).isZero());
+    }
+
+    @Test
+    void disposalReserveCannotBeConsumedOrOffsetByAnotherAxis() throws Exception {
+        var f=new ListingConversionFixture(migration,application,admin,false,70);
+        f.seed.sql("UPDATE ops.lc_exposure_allowance SET limit_value=70,reserve_value=1 WHERE id=:id")
+                .param("id",f.id("allowanceVariants")).update();
+        var result=f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"));
+        assertThat(result.path("launched").asBoolean()).isFalse();
+        assertThat(result.path("insufficientAxes")).extracting(JsonNode::asText).containsExactly("AFFECTED_VARIANTS");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"null","[]","42","[\"CONCURRENT_LISTINGS\",\"CONCURRENT_LISTINGS\"]","{\"axes\":[\"CONCURRENT_LISTINGS\"],\"scopeComposition\":\"UNACCEPTED_PRIORITY\"}"})
+    void malformedAxisPolicyCannotBeTreatedAsUnlimited(String policy) throws Exception {
+        var f=new ListingConversionFixture(migration,application,admin,false,1,policy);
+        assertThat(projection(f,"actionOne").path("resolved").asBoolean()).isFalse();
+        assertThat(f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser")).path("launched").asBoolean()).isFalse();
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE organization_id=:org")
+                .param("org",f.id("organization")).query(Integer.class).single()).isZero();
+    }
+
+    @Test
+    void releaseCannotBorrowAnotherActorsProofOrAnotherActionsEvidence() throws Exception {
+        var f=ready();
+        var launched=f.launch(UUID.randomUUID(),"actionOne",f.id("ownerUser"));
+        UUID command=UUID.fromString(launched.path("commandId").asText());
+        f.app.sql("SELECT ops.transition_lc_description_command(:id,0,NULL,'TERMINATED_WITHOUT_PROVIDER_CALL','SCOPE_STOPPED',NULL,NULL)")
+                .param("id",command).query(String.class).single();
+        UUID occupation=UUID.fromString(launched.path("occupationIds").get(0).asText());
+        try (Connection connection=f.transaction()) {
+            String proof=f.proof(connection,f.id("verifierUser"),"LISTING_OCCUPATION_RELEASE",occupation,occupation);
+            assertThatThrownBy(()->{
+                try (var q=connection.prepareStatement("SELECT ops.release_lc_occupation(?,?,?,'NOT_APPLIED_PROVEN',?,'fixture://no-submit')")) {
+                    q.setObject(1,occupation);q.setObject(2,f.id("ownerUser"));q.setString(3,proof);q.setObject(4,command);q.execute();
+                }
+            }).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+            connection.rollback();
+        }
+        assertThatThrownBy(()->f.release(occupation,f.id("ownerUser"),UUID.randomUUID(),"NOT_APPLIED_PROVEN"))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThat(f.app.sql("SELECT state FROM ops.lc_exposure_occupation WHERE id=:id")
+                .param("id",occupation).query(String.class).single()).isEqualTo("ACQUIRED");
+    }
+
 }

@@ -1,0 +1,8 @@
+Command: ./mvnw -B -ntp test -Dtest=ListingReworkAuthorizationIT
+Working directory: backend/marketops-server
+Result: PASS (local targeted scope only)
+[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 35.72 s -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  47.271 s
+[INFO] Finished at: 2026-09-10T22:46:54+08:00

@@ -94,6 +94,32 @@ const STRINGS = {
   reserve: { zh: '预留', ru: 'Резерв' },
   occupied: { zh: '已占用', ru: 'Занято' },
   headroom: { zh: '余量', ru: 'Запас' },
+  allowanceUnresolved: {
+    zh: '额度依据尚未齐备，当前不能启动。',
+    ru: 'Основания лимита неполны; запуск пока недоступен.',
+  },
+  allowanceScope: { zh: '累计范围', ru: 'Область суммирования' },
+  allowanceOrganization: { zh: '组织', ru: 'Организация' },
+  allowancePlatform: { zh: '平台', ru: 'Площадка' },
+  allowanceStore: { zh: '店铺', ru: 'Магазин' },
+  allowancePolicyGap: {
+    zh: '缺少当前适用的已接受额度政策',
+    ru: 'Нет применимой принятой политики лимита',
+  },
+  allowanceAxesGap: { zh: '必要额度轴未明确', ru: 'Обязательные оси лимита не определены' },
+  allowanceMissingGap: { zh: '缺少该轴的有效额度配置', ru: 'Нет действующего лимита для этой оси' },
+  allowanceCompositionGap: {
+    zh: '多个范围的组合规则尚未被接受',
+    ru: 'Правило сочетания областей не принято',
+  },
+  allowanceDemandGap: {
+    zh: '该轴缺少合格的事实依据或单位不适用',
+    ru: 'Нет подтверждённых фактов для оси или единица неприменима',
+  },
+  allowanceReserveGap: {
+    zh: '处置余量未明确或低于已接受要求',
+    ru: 'Резерв не определён или ниже принятого требования',
+  },
   sufficient: { zh: '足够', ru: 'Достаточно' },
   insufficient: { zh: '不足', ru: 'Недостаточно' },
   bindingGaps: { zh: '绑定差距', ru: 'Разрывы привязки' },

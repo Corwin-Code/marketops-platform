@@ -25,7 +25,7 @@ import {
 } from '../api/listingConversion';
 import { Code, ListingProblem, When, YesNo } from './ListingCommon';
 import { useLanguage } from './i18n/language';
-import { t } from './i18n/ui';
+import { t, type UiKey } from './i18n/ui';
 
 export interface ListingActionsPanelProps {
   readonly context: ConsoleRequest;
@@ -667,32 +667,79 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
 function AllowanceTable({ allowance }: { readonly allowance: Allowance }): React.JSX.Element {
   const { language } = useLanguage();
   return (
-    <table aria-label={t('allowancePreview', language)} data-resolved={String(allowance.resolved)}>
-      <thead>
-        <tr>
-          <th>{t('axis', language)}</th>
-          <th>{t('limit', language)}</th>
-          <th>{t('reserve', language)}</th>
-          <th>{t('occupied', language)}</th>
-          <th>{t('headroom', language)}</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {allowance.axes.map((axis) => (
-          <tr key={axis.axisCode} data-sufficient={String(axis.sufficient)}>
-            <td>
-              <Code family="allowanceAxis" code={axis.axisCode} />
-            </td>
-            <td>{axis.limitValue}</td>
-            <td>{axis.reserveValue}</td>
-            <td>{axis.occupiedValue}</td>
-            <td>{axis.headroom}</td>
-            <td>{axis.sufficient ? t('sufficient', language) : t('insufficient', language)}</td>
+    <div>
+      {!allowance.resolved && <p role="status">{t('allowanceUnresolved', language)}</p>}
+      {allowance.gaps.length > 0 && (
+        <ul>
+          {allowance.gaps.map((gap) => {
+            const parts = gap.split(':');
+            const reason = parts.length > 1 ? parts[1] : parts[0];
+            const labels: Readonly<Record<string, UiKey>> = {
+              ALLOWANCE_POLICY_UNRESOLVED: 'allowancePolicyGap',
+              ALLOWANCE_AXES_UNRESOLVED: 'allowanceAxesGap',
+              ALLOWANCE_MISSING: 'allowanceMissingGap',
+              SCOPE_COMPOSITION_UNRESOLVED: 'allowanceCompositionGap',
+              CANONICAL_DEMAND_UNRESOLVED: 'allowanceDemandGap',
+              RESERVE_UNRESOLVED: 'allowanceReserveGap',
+              RESERVE_BELOW_ACCEPTED_POLICY: 'allowanceReserveGap',
+            };
+            return (
+              <li key={gap}>
+                {parts.length > 1 && (
+                  <>
+                    <Code family="allowanceAxis" code={parts[0] ?? ''} />:{' '}
+                  </>
+                )}
+                {t(labels[reason ?? ''] ?? 'allowanceUnresolved', language)}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <table
+        aria-label={t('allowancePreview', language)}
+        data-resolved={String(allowance.resolved)}
+      >
+        <thead>
+          <tr>
+            <th>{t('axis', language)}</th>
+            <th>{t('allowanceScope', language)}</th>
+            <th>{t('limit', language)}</th>
+            <th>{t('reserve', language)}</th>
+            <th>{t('occupied', language)}</th>
+            <th>{t('headroom', language)}</th>
+            <th />
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {allowance.axes.map((axis) => (
+            <tr
+              key={`${axis.axisCode}:${axis.scopeKind}`}
+              data-sufficient={String(axis.sufficient)}
+            >
+              <td>
+                <Code family="allowanceAxis" code={axis.axisCode} />
+              </td>
+              <td>
+                {t(
+                  axis.scopeKind === 'ORGANIZATION'
+                    ? 'allowanceOrganization'
+                    : axis.scopeKind === 'PLATFORM'
+                      ? 'allowancePlatform'
+                      : 'allowanceStore',
+                  language,
+                )}
+              </td>
+              <td>{axis.limitValue}</td>
+              <td>{axis.reserveValue}</td>
+              <td>{axis.occupiedValue}</td>
+              <td>{axis.headroom}</td>
+              <td>{axis.sufficient ? t('sufficient', language) : t('insufficient', language)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

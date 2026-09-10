@@ -129,25 +129,35 @@
       "title": "Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续",
       "status": "IN_PROGRESS",
       "implementation": [
-        "V0082 adds sealed prepare/validate/accept/activate Policy operations, current role/scope checks, independent Owner acceptance, exact digests, lifecycle events, purpose-specific resolution and explicit replacement identity. App role remains read-only on calibration tables."
+        "V0082 adds sealed prepare/validate/accept/activate Policy operations, current role/scope checks, independent Owner acceptance, exact digests, lifecycle events, purpose-specific resolution and explicit replacement identity. App role remains read-only on calibration tables.",
+        "The existing signed professional/independent Owner calibration lifecycle now also exercises explicit ALL_APPLICABLE allowance scope composition without modifying an accepted package."
       ],
       "executed_evidence": [
-        "Signed HTTP plus real PostgreSQL completed draft, professional validation, independent Owner acceptance and activation; self-acceptance, missing components and incorrect digest refused. Replacement/concurrency/expiry/dependency-continuation and full Console remain pending."
+        "Signed HTTP plus real PostgreSQL completed draft, professional validation, independent Owner acceptance and activation; self-acceptance, missing components and incorrect digest refused. Replacement/concurrency/expiry/dependency-continuation and full Console remain pending.",
+        "Checkpoint 17 signed HTTP/database regression passes 40 tests, including exact policy composition acceptance and active resolution. Purpose-dependent consumers and continuation remain open."
       ]
     },
     {
       "id": "S4-DR-R1-012",
       "title": "累计额度未绑定完整轴集合和准确需求，换版本可能把现存承担从余额中清零",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "V0098 makes preview and acquisition share one complete accepted-axis projection, with explicit scope composition, stable organization locking, cross-configuration canonical outstanding identities, retained Unknown and immutable demand evidence. Request numbers no longer set occupation. Qualified revenue/category demand, accepted limit-publication linkage and preexisting promotion obligations remain open."
+      ],
+      "executed_evidence": [
+        "Checkpoint 17: real PostgreSQL 100/70/70 manual/API race admits only one; configuration replacement retains historical Unknown even with stored zero; missing axis, malformed policy, reserve consumption and implicit scope priority refuse. Signed HTTP preview and independent acceptance of explicit scope composition are exercised. No closure claim."
+      ]
     },
     {
       "id": "S4-DR-R1-013",
       "title": "占用释放只验证有一条观察/旧值匹配，不能证明已经停止或不可能应用",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "V0098 revokes arbitrary occupation-state/number mutation and removes generic observation, MATCHED_PRIOR and self-reported promotion-state release. Release consumes an exact actor/org-bound proof and records purpose/identity evidence. Positive NOT_APPLIED release requires a terminal no-submit command with no mutation attempt or linked promotion. Independent STOP_NEW and historical-obligation clearing remain open."
+      ],
+      "executed_evidence": [
+        "Checkpoint 17: ordinary still-active display evidence, no-submit inference from a pending command, direct zero overwrite, borrowed actor proof and wrong evidence are refused; exact never-submitted termination releases only the selected occupation. Positive qualified stop/obligation lifecycle and async old-value end-to-end negatives remain pending."
+      ]
     },
     {
       "id": "S4-DR-R1-014",
@@ -276,9 +286,13 @@
     {
       "id": "S4-DR-R1-026",
       "title": "双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Allowance preview exposes unresolved required axes and each applied scope in Chinese/Russian; rows with the same axis in multiple scopes retain separate keys. It uses the shared canonical projection."
+      ],
+      "executed_evidence": [
+        "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open."
+      ]
     },
     {
       "id": "S4-DR-R1-027",

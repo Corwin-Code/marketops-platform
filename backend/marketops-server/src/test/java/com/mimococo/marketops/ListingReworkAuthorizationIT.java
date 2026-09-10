@@ -358,6 +358,28 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void signedAllowancePreviewUsesCanonicalDemandAndShowsMissingRequiredAxes() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        String endpoint="/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/allowance-preview";
+        mvc.perform(post(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{\"CONCURRENT_LISTINGS\":0,\"AFFECTED_VARIANTS\":0}}"))
+                .andExpect(status().isForbidden());
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_CONVERSION_VIEW,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{\"CONCURRENT_LISTINGS\":0,\"AFFECTED_VARIANTS\":0}}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.resolved").value(true))
+                .andExpect(jsonPath("$.gaps").isEmpty()).andExpect(jsonPath("$.axes[0].requestedValue").value(1))
+                .andExpect(jsonPath("$.axes[1].requestedValue").value(1));
+        fixture.seed.sql("UPDATE ops.lc_exposure_allowance SET status='RETIRED' WHERE id=:id")
+                .param("id",fixture.id("allowanceVariants")).update();
+        mvc.perform(post(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{}}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.resolved").value(false))
+                .andExpect(jsonPath("$.gaps[0]").value("AFFECTED_VARIANTS:ALLOWANCE_MISSING"));
+    }
+
+    @Test
     void normalPreparationFreezesTheEvaluationPlanBeforeAnyReviewOrApproval() throws Exception {
         var json=new tools.jackson.databind.ObjectMapper();
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
@@ -1169,6 +1191,12 @@ class ListingReworkAuthorizationIT {
         }
         var json=new tools.jackson.databind.ObjectMapper();
         var draft=calibrationDraft("synthetic-correction-calibration");
+        for (var value:draft.path("values")) {
+            if (value.path("categoryCode").asText().equals("ALLOWANCE_AXES")) {
+                ((tools.jackson.databind.node.ObjectNode)value).set("json",json.readTree(
+                        "{\"axes\":[\"CONCURRENT_LISTINGS\",\"AFFECTED_VARIANTS\"],\"scopeComposition\":\"ALL_APPLICABLE\"}"));
+            }
+        }
         var created=postCalibration("",draft);
         String id=created.path("package").path("id").asText();
         String digest=created.path("governance").path("draft_digest").asText();
@@ -1190,6 +1218,8 @@ class ListingReworkAuthorizationIT {
         assertThat(accepted.path("package").path("status").asText()).isEqualTo("DRAFT");
         var active=postCalibration("/"+id+"/activate",decision);
         assertThat(active.path("package").path("status").asText()).isEqualTo("ACTIVE");
+        assertThat(jdbc.sql("SELECT value_json->>'scopeComposition' FROM core.lc_calibration_value WHERE package_id=:id AND category_code='ALLOWANCE_AXES'")
+                .param("id",UUID.fromString(id)).query(String.class).single()).isEqualTo("ALL_APPLICABLE");
         assertThat(jdbc.sql("SELECT package_id FROM core.lc_resolve_calibration_for(:org,:platform,:store,clock_timestamp(),'DESCRIPTION_CORRECTION')")
                 .param("org",fixture.id("organization")).param("platform",fixture.graph.platform()).param("store",fixture.id("store"))
                 .query(UUID.class).single()).isEqualTo(UUID.fromString(id));

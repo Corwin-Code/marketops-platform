@@ -332,23 +332,8 @@ public class ListingActionService {
     @Transactional(readOnly = true)
     public AllowanceView allowancePreview(AuthenticatedActor actor, UUID actionId, Map<String, BigDecimal> requested) {
         ListingActionRepository.ActionRow action = requireAction(actor, actionId, ActionScopeCode.LISTING_CONVERSION_VIEW);
-        return preview(action, requested);
-    }
-
-    private AllowanceView preview(ListingActionRepository.ActionRow action, Map<String, BigDecimal> requested) {
-        List<ListingActionRepository.AllowanceRow> rows = actions.allowances(action.organizationId(), action.listingId(),
-                clock.instant());
-        List<AllowanceView.Axis> axes = new ArrayList<>();
-        int variants = actions.affectedVariantCount(action.affectedSetId());
-        for (ListingActionRepository.AllowanceRow row : rows) {
-            BigDecimal value = switch (row.axisCode()) {
-                case "CONCURRENT_LISTINGS" -> BigDecimal.ONE;
-                case "AFFECTED_VARIANTS" -> BigDecimal.valueOf(variants);
-                default -> requested == null ? null : requested.get(row.axisCode());
-            };
-            axes.add(ListingActionRepository.axis(row, value));
-        }
-        return new AllowanceView(action.listingId(), axes, !rows.isEmpty());
+        // Request numbers are retained only for transport compatibility; the Policy projection owns demand.
+        return actions.allowanceProjection(action.id(), clock.instant());
     }
 
     @Transactional

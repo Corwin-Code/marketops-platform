@@ -807,3 +807,17 @@ See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-16-test-receipts.j
 This supersedes earlier partial-path limitations only to that measured extent;
 all 27 findings remain open for final closure. No Level-2, remote publication,
 real-account verification, shared migration or production enablement occurred.
+
+SLICE-V1-004 continuous local rework update: checkpoint-17 corrects cumulative
+allowance identity across configuration versions and makes Console preview and
+launch consume the same complete-axis Policy projection. Required scope
+composition/reserve and real 100/70/70 API/manual concurrency are tested.
+Unsafe observation/old-value release and arbitrary zero overwrite are refused;
+exact never-submitted termination is a purpose-bound positive release. Results:
+21 database, 40 signed HTTP/database, 81 calibration/architecture, 1 upgrade,
+24 frontend; Node 24 typecheck/lint/build pass. See
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-17-test-receipts.json`.
+Qualified monetary demand, preexisting promotion obligations and independent
+stop/historical-clearing flows remain in the continuous rework. 0/27 CLOSED;
+no production enablement, real-account call, shared migration or remote Git
+publication has occurred.
