@@ -2,6 +2,17 @@ import type { Language } from './language';
 
 /** Every string the listing console shows that is not a backend code. */
 const STRINGS = {
+  executionObservation: { zh: '执行观察', ru: 'Наблюдение исполнения' },
+  executionBoundary: {
+    zh: '管理端完成、买家端展示与业务效果分别取证。此记录不代表业务效果达标。',
+    ru: 'Исполнение в кабинете, показ покупателю и бизнес-эффект подтверждаются отдельно. Эта запись не подтверждает достижение бизнес-результата.',
+  },
+  noExecutionObservation: {
+    zh: '尚无可归属的执行观察。',
+    ru: 'Подтверждённое наблюдение исполнения отсутствует.',
+  },
+  taskDeliveryPending: { zh: '待记入责任任务', ru: 'Ожидает записи в задачу' },
+  taskDeliveryRecorded: { zh: '已记入责任任务', ru: 'Записано в задачу' },
   title: { zh: 'Listing 转化与内容', ru: 'Конверсия и контент карточек' },
   back: { zh: '返回队列', ru: 'Назад к очереди' },
   tabHealth: { zh: 'Listing 健康', ru: 'Здоровье карточек' },

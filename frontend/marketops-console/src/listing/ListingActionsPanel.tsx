@@ -749,6 +749,29 @@ function CommandTimeline({
           code={command.priorTextCaptured ? undefined : 'RESTORE_UNSUPPORTED'}
         />
       </p>
+      <h5>{t('executionObservation', language)}</h5>
+      <p>{t('executionBoundary', language)}</p>
+      {command.executionReceipts.length === 0 && <p>{t('noExecutionObservation', language)}</p>}
+      <ul>
+        {command.executionReceipts.map((receipt) => (
+          <li key={receipt.id} data-execution-state={receipt.executionState}>
+            <Code family="descriptionExecutionState" code={receipt.executionState} />{' '}
+            <When value={receipt.recordedAt} />
+            <p>
+              {receipt.taskEventId === undefined
+                ? t('taskDeliveryPending', language)
+                : t('taskDeliveryRecorded', language)}
+            </p>
+            <ul>
+              {receipt.gaps.map((gap) => (
+                <li key={gap}>
+                  <Code family="descriptionExecutionGap" code={gap} />
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
       <h5>{t('gate', language)}</h5>
       {gate === undefined ? (
         <p>{t('loading', language)}</p>

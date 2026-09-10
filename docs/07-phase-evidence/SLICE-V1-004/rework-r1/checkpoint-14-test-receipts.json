@@ -1,0 +1,138 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "ce49ce0ad9649f38be1e2042f1ba90f3ee3ee447",
+  "input_identity": "V0096 derives exact native execution receipts and delivers them transactionally through the existing Task journal. Historical commands receive no retrospective completion evidence.",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingConversionScheduler.java": "18c7e287b3b786a335d779893fea1a6443174df7434d7a9f3bc373279a470928",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/ListingDescriptionCommandView.java": "811d65cf2998a450324fd72280059275f273278a5fc4bf95f5af28f62360ef5f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/ListingDescriptionCommandRepository.java": "1d6c2788bdd54491779bb4dbf003409d72117b5104bfb32b09e6f7aa3cd77018",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingDescriptionResponseIdentityIT.java": "f8a0b5c9ba2324d3c9106c6dec8a6752905fdb078a4be2dfbb7027f81c1df240",
+    "frontend/marketops-console/src/__tests__/ListingConversion.test.tsx": "ece4dd5e58624c1f13798f4d164f79bd29f2a2297ba81a183644641b24e17670",
+    "frontend/marketops-console/src/__tests__/ListingConversionApi.test.ts": "fed2d3287937fa06880d8ce91d766316bcc0b9d057c240527b61b86136e85389",
+    "frontend/marketops-console/src/api/listingConversion.ts": "9cadadc4b31de631634555b2b8c9835c5087d03431334fab57e5b1e3aa163120",
+    "frontend/marketops-console/src/listing/ListingActionsPanel.tsx": "0357bf26087cc6472f47d6e9754e983cf1b67463136a6272d9dbef87a639676b",
+    "frontend/marketops-console/src/listing/i18n/backend-codes.json": "0a70abcb9ebe4d674b2ba6ac4f88bf011fc44737f332d70baf0e801af755b086",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "bad46669a7940295fed478483cd2b04dd90a5fa8a3e00331ea5a97ad0a28cb31",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingExecutionJournal.java": "8541e1d0ca0e9ac90ae91f981b09a0e777d4811618952ff74f26ee30e5f19acb",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingExecutionJournalService.java": "444cae78b6811195eb6c63bbb6abee94b9df4c25b02e4b600ee68319a062eb7f",
+    "backend/marketops-server/src/main/resources/db/migration/V0096__project_qualified_description_execution_results.sql": "7906769cb9a9d7fa29e7824978dfdb336c80887be33711df03fbd2c14f1239d5",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/listingconversion/internal/application/ListingConversionSchedulerTest.java": "e5815b09c27885fa5b1bbbfc4d427265e74734dcf18a5bc36515ee5cdd49774a"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingConversionSchedulerTest,WorkTaskEventPropertyTest,ListingDescriptionCommandWorkerTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 156,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-unit-architecture.log",
+      "raw_log_sha256": "5cd305ec9d9e42fc3af7d4f7dd3d415331e665522b9df583c6d1c95e3903f43b",
+      "summary_path": "execution-projection-unit-architecture-summary.txt",
+      "summary_sha256": "3830334583426fa5d938f22ea843056e6f10ff6d41a7e429b6a7c6253ba29df6",
+      "later_change": "Scheduler failure isolation was added after this run; its two targeted tests passed in the final scheduler-isolation run. Counts across runs are not a unique-test total."
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingDescriptionResponseIdentityIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 21,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-final-runtime.log",
+      "raw_log_sha256": "b67e936f9d531e53338a9834ae74b34f5ebc533736e2201e6920ac18fbeda28b",
+      "summary_path": "execution-projection-final-runtime-summary.txt",
+      "summary_sha256": "aabcbe6a7e95de22d61fde310c5462ac9db7c553a089109b8c98e41a2d7b454b"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=WorkTaskJournalIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 7,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-WorkTaskJournalIT.log",
+      "raw_log_sha256": "706ef5c30bf35e83a8d7d932de8aa8dc5c74efbc9baf8bbfe9afa76cacdef510",
+      "summary_path": "execution-projection-WorkTaskJournalIT-summary.txt",
+      "summary_sha256": "abc7a90360057efc4b330c7dfee760aa40d33eb965568476d3bddd2536540618"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 27,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-ListingReworkAuthorizationIT.log",
+      "raw_log_sha256": "3ff999303a1892b535aa6bbbebd6183dd45a07dbe436fa352880d3f3029573fd",
+      "summary_path": "execution-projection-ListingReworkAuthorizationIT-summary.txt",
+      "summary_sha256": "27adf1e911b6f138042712d90e3147d2278c282c8c50a98966d763099626e4ab"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingConversionSchedulerTest",
+      "working_directory": "backend/marketops-server",
+      "tests": 2,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-scheduler-isolation.log",
+      "raw_log_sha256": "419e979955e03e47792506d8eb5ac2e16132efe2bdd244e458ed4d1c4e92164c",
+      "summary_path": "execution-projection-scheduler-isolation-summary.txt",
+      "summary_sha256": "d6a4dbbfc60d7ae0420257cb3def3582c6bb6c5df21b8ec6a00edca2789e0798"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 21,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-frontend-tests.log",
+      "raw_log_sha256": "1876b360298aefdc0d62b5fe149e6609927288fa96f79d81ed43443382528413",
+      "summary_path": "execution-projection-frontend-tests-summary.txt",
+      "summary_sha256": "b1c0ac7e0a62a4e23874dcd2a519913729c4a5b6228f9d2ee4277664e4eefea3"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run typecheck",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-frontend-typecheck.log",
+      "raw_log_sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "summary_path": "execution-projection-frontend-typecheck-summary.txt",
+      "summary_sha256": "c70233132d7b4a88f8da0ec9c0fd2d09f7923c7fc643178e1b1024acc9d2c51c"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-frontend-lint.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "execution-projection-frontend-lint-summary.txt",
+      "summary_sha256": "97aeb8d98d216c551f872b82b950b02121d5cb2316f62129a87c4489d6e7fb92"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/execution-projection-frontend-build.log",
+      "raw_log_sha256": "17243dfcf1e29f659d2794cee81fcaab29ac5e32de743e2fda6e2bec83f1436a",
+      "summary_path": "execution-projection-frontend-build-summary.txt",
+      "summary_sha256": "81198eae025ee14dd27f1026f708e57c3e316f7de49e5193f3961740a78e387c"
+    }
+  ],
+  "corrected_failures": [
+    {
+      "log": "build/slice4-rework/execution-projection-expanded-runtime.log",
+      "sha256": "3233c173c13d2b46dbda77296c275f1310f04ce8eb2864e7cb623696a5362b3f",
+      "cause": "One negative checked the Spring wrapper rather than the underlying permission denial; one fixture applied request metadata to an asynchronous RESTORE row before its task shape was established. Corrected assertion and fixture setup order; controls unchanged."
+    }
+  ],
+  "self_review": {
+    "scope": "S4-DR-R1-019 and its 022/024/026/027 transitive execution-evidence requirements; no new provider behavior or business decision.",
+    "necessary_components": [
+      "One derived receipt table and controlled functions, retained atomically with the command/action result.",
+      "One public journal delivery port and its Operations Workflow implementation using the existing journal writer.",
+      "Existing scheduler consumes receipts; existing scoped command projection and bilingual UI expose state."
+    ],
+    "coupling_found_and_fixed": "A journal delivery exception could starve independent recalculation. It is now logged and rolled back while the existing queue continues; the two affected scheduler tests passed.",
+    "test_stop_rule": "The relevant DB, shared journal, authorization, UI and build checks passed. Do not repeat these unchanged while accumulating isolated proofs; next evidence must exercise the connected worker path."
+  },
+  "remaining_limitations": [
+    "0/27 findings closed; exact final-head closure and all remaining roots are unfinished.",
+    "Current execution tests join actual DB, transaction service and repository; preceding checkpoint joins adapter and localhost HTTP. The full launch -> worker -> actual HTTP -> custody -> Console chain remains to be joined.",
+    "No new exact restoration approval flow yet. No customer-display coverage, business Outcome or occupation release is inferred from execution.",
+    "Earlier intermittent preparation 403 still has no demonstrated root-cause fix.",
+    "No real account/provider call, Gate-EV/E exercise, remote publication or deployment."
+  ]
+}

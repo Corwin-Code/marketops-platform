@@ -196,10 +196,12 @@
       "title": "一次明确启动没有接通Description Command，命令结果也未闭合业务动作",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Checkpoint 9: one launch transaction creates exactly one API command through the sole creator, or rolls back action, launch and all allowance axes. Manual launch creates none. Historic orphan launches cannot gain a command retrospectively; current actor authority precedes idempotent reads. Qualified result-to-business closure remains open."
+        "Checkpoint 9: one launch transaction creates exactly one API command through the sole creator, or rolls back action, launch and all allowance axes. Manual launch creates none. Historic orphan launches cannot gain a command retrospectively; current actor authority precedes idempotent reads. Qualified result-to-business closure remains open.",
+        "Checkpoint 14: qualified native completion + exact subsequent management readback atomically produce an immutable receipt and verify only its still-launched API action; the existing workflow journal consumes receipts transactionally without human/outcome conflation. Full connected launch/worker/HTTP/custody/Console verification remains open."
       ],
       "executed_evidence": [
-        "Checkpoint-9 receipts: 76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and 1 V0090-to-V0091 upgrade tests passed. All local and targeted; no finding closure."
+        "Checkpoint-9 receipts: 76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and 1 V0090-to-V0091 upgrade tests passed. All local and targeted; no finding closure.",
+        "checkpoint-14-test-receipts.json: actual DB synchronous/async, absent/unknown/conflicting/historical proof, rollback, containment, concurrent Task delivery, repository projection, shared journal/authorization/UI and scheduler fault isolation pass; targeted only."
       ]
     },
     {
@@ -284,5 +286,6 @@
         "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence."
       ]
     }
-  ]
+  ],
+  "convergence_control": "Owner 2026-09-10: monitor active runs; diagnose before rerun; rerun a passed check only for relevant changes/new evidence/final exact-head verification; every addition maps to a frozen root and an observable required outcome; prioritize connected acceptance paths."
 }

@@ -1,0 +1,32 @@
+COMMAND: ./mvnw -B -ntp test '-Dtest=ListingConversionSchedulerTest,WorkTaskEventPropertyTest,ListingDescriptionCommandWorkerTest,*ArchitectureTest'
+WORKING_DIRECTORY: backend/marketops-server
+RESULT: PASS_TARGETED_ONLY
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.787 s -- in TC-LC-WORKER-006 a refusal from the database is not a failure of the pass
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s -- in TC-LC-WORKER-001 each answer moves the command somewhere different
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in TC-LC-WORKER-004 compensation restores exactly the captured prior text or nothing
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in TC-LC-WORKER-005 a platform's pending task is polled, never re-applied
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in TC-LC-WORKER-003 an unknown result is observed, never repeated
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in TC-LC-WORKER-002 every call carries the one verified attribute and the declared marking
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.919 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.ListingDescriptionCommandWorkerTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.562 s -- in Additional code-quality architecture safeguards
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.296 s -- in com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.518 s -- in rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.516 s -- in com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.874 s -- in com.mimococo.marketops.architecture.ModulithArchitectureTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in Additional code-quality rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.410 s -- in com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.263 s -- in TC-AUTHORITY-003 owner-published policy has no writer in this product
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.198 s -- in TC-AUTHORITY-004 listingconversion writes nothing a function or another module owns
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.133 s -- in TC-AUTHORITY-002 command creation has exactly one route
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.629 s -- in com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.075 s -- in com.mimococo.marketops.listingconversion.internal.application.ListingConversionSchedulerTest
+[INFO] Tests run: 47, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.072 s -- in an event is one kind of thing, never two
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in a verdict names every reason it was built from
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in an action stage needs its action, its evidence and its actor
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in the internal response bounds are ordered and strict at the edge
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.120 s -- in com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest
+[INFO] Tests run: 156, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  33.633 s
+[INFO] Finished at: 2026-09-10T21:28:18+08:00

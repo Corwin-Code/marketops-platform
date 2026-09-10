@@ -33,7 +33,8 @@ public record ListingDescriptionCommandView(
         Instant updatedAt,
         Instant terminalAt,
         List<Attempt> attempts,
-        List<Readback> readbacks) {
+        List<Readback> readbacks,
+        List<ExecutionReceipt> executionReceipts) {
 
     public record Attempt(UUID id, int attemptNo, String purpose, String outcomeClass,
                           String nativeStatus, String errorCode, Instant startedAt, Instant completedAt) {
@@ -43,7 +44,14 @@ public record ListingDescriptionCommandView(
                            Boolean observedKizMarked, Instant observedAt) {
     }
 
+    public record ExecutionReceipt(UUID id, String executionState, UUID readbackId, UUID mutationAttemptId,
+                                   UUID nativeStatusAttemptId, List<String> gaps, Instant recordedAt,
+                                   UUID taskEventId, Instant taskRecordedAt) {
+        public ExecutionReceipt { gaps=List.copyOf(gaps); }
+    }
+
     public ListingDescriptionCommandView {
+        executionReceipts=List.copyOf(executionReceipts == null ? List.of() : executionReceipts);
         attempts = List.copyOf(attempts == null ? List.of() : attempts);
         readbacks = List.copyOf(readbacks == null ? List.of() : readbacks);
     }

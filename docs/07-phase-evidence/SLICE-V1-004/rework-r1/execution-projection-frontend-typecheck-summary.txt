@@ -1,0 +1,5 @@
+COMMAND: fnm exec --using 24.19.0 npm run typecheck
+WORKING_DIRECTORY: frontend/marketops-console
+RESULT: PASS_TARGETED_ONLY
+> marketops-console@0.1.0 typecheck
+> tsc --noEmit --pretty

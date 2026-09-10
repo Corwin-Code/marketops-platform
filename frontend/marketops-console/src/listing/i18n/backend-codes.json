@@ -1034,5 +1034,41 @@
       "zh": "补偿不安全",
       "ru": "Компенсация небезопасна"
     }
+  },
+  "descriptionExecutionState": {
+    "MANAGEMENT_VERIFIED": {
+      "zh": "原生完成与管理端读回已确认",
+      "ru": "Завершение на платформе и чтение из кабинета подтверждены"
+    },
+    "NATIVE_COMPLETION_UNPROVEN": {
+      "zh": "尚未证明原生执行完成",
+      "ru": "Завершение на платформе не подтверждено"
+    }
+  },
+  "descriptionExecutionGap": {
+    "EXACT_MANAGEMENT_READBACK_UNPROVEN": {
+      "zh": "缺少精确管理端读回",
+      "ru": "Нет точного чтения из кабинета"
+    },
+    "EXACT_MUTATION_REQUEST_UNQUALIFIED": {
+      "zh": "写入请求未获精确协议资格",
+      "ru": "Запрос изменения не подтверждён точным протоколом"
+    },
+    "LATEST_APPLY_COMPLETION_UNPROVEN": {
+      "zh": "最近一次写入完成尚未证明",
+      "ru": "Завершение последней записи не подтверждено"
+    },
+    "ACCEPTED_TASK_COMPLETION_UNPROVEN": {
+      "zh": "缺少对应原生任务完成证据",
+      "ru": "Нет подтверждения завершения соответствующего задания"
+    },
+    "CONTRADICTORY_NATIVE_TASK_RESULT": {
+      "zh": "原生任务结果存在矛盾",
+      "ru": "Результаты задания платформы противоречат друг другу"
+    },
+    "SYNCHRONOUS_NATIVE_COMPLETION_UNPROVEN": {
+      "zh": "同步写入完成尚未证明",
+      "ru": "Завершение синхронной записи не подтверждено"
+    }
   }
 }

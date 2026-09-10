@@ -1,0 +1,8 @@
+COMMAND: fnm exec --using 24.19.0 npm run test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx
+WORKING_DIRECTORY: frontend/marketops-console
+RESULT: PASS_TARGETED_ONLY
+> marketops-console@0.1.0 test
+> vitest run src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Duration  2.49s (transform 630ms, setup 662ms, import 722ms, tests 1.52s, environment 3.14s)

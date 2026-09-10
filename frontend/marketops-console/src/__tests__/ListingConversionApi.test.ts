@@ -160,6 +160,7 @@ const COMMAND = {
   approvalExpiresAt: 't',
   attempts: [{ id: 'at', attemptNo: 1, purpose: 'APPLY', outcomeClass: 'TIMEOUT', errorCode: 'x' }],
   readbacks: [{ id: 'rb', matchState: 'UNREADABLE', observedAt: 't' }],
+  executionReceipts: [],
 };
 
 const ROUTES: readonly (readonly [RegExp, unknown])[] = [
@@ -334,6 +335,33 @@ describe('the listing client covers every console route', () => {
     ).toBeUndefined();
     expect(api.parseEvaluation({ ...EVALUATION, results: [{ id: 'x' }] })).toBeUndefined();
     expect(api.parseDescriptionCommand(COMMAND)?.attempts[0]?.errorCode).toBe('x');
+    const receipt = {
+      id: 'receipt',
+      executionState: 'MANAGEMENT_VERIFIED',
+      readbackId: 'rb',
+      mutationAttemptId: 'apply',
+      nativeStatusAttemptId: 'status',
+      gaps: [],
+      recordedAt: 't',
+      taskEventId: 'event',
+      taskRecordedAt: 't2',
+    };
+    expect(
+      api.parseDescriptionCommand({ ...COMMAND, executionReceipts: [receipt] })
+        ?.executionReceipts[0]?.taskEventId,
+    ).toBe('event');
+    expect(
+      api.parseDescriptionCommand({
+        ...COMMAND,
+        executionReceipts: [{ ...receipt, executionState: 'BUSINESS_SUCCESS' }],
+      }),
+    ).toBeUndefined();
+    expect(
+      api.parseDescriptionCommand({ ...COMMAND, executionReceipts: [{ ...receipt, gaps: [42] }] }),
+    ).toBeUndefined();
+    expect(
+      api.parseDescriptionCommand({ ...COMMAND, executionReceipts: undefined }),
+    ).toBeUndefined();
     expect(api.parseDescriptionCommand({ ...COMMAND, readbacks: [{ id: 'x' }] })).toBeUndefined();
     expect(api.parseDescriptionCommand({ ...COMMAND, attempts: [{ id: 'x' }] })).toBeUndefined();
     expect(api.parseCandidate({ ...CANDIDATE, version: 'v' })).toBeUndefined();

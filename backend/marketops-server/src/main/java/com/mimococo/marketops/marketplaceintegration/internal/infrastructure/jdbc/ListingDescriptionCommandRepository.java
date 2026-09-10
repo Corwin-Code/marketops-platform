@@ -295,6 +295,17 @@ public class ListingDescriptionCommandRepository {
                         rs.getString("observed_text_digest"),
                         rs.getObject("observed_kiz_marked", Boolean.class), instantOf(rs, "observed_at")))
                 .list();
+        List<ListingDescriptionCommandView.ExecutionReceipt> receipts=jdbc.sql("""
+                SELECT id,execution_state,readback_id,(evidence->>'mutationAttemptId')::uuid AS mutation_id,
+                    (evidence->>'nativeStatusAttemptId')::uuid AS status_id,
+                    ARRAY(SELECT jsonb_array_elements_text(evidence->'gaps')) AS gaps,
+                    recorded_at,task_event_id,task_recorded_at
+                  FROM ops.lc_execution_receipt WHERE command_id=:id ORDER BY recorded_at,id
+                """).param("id",commandId).query((rs,n)->new ListingDescriptionCommandView.ExecutionReceipt(
+                        rs.getObject("id",UUID.class),rs.getString("execution_state"),rs.getObject("readback_id",UUID.class),
+                        rs.getObject("mutation_id",UUID.class),rs.getObject("status_id",UUID.class),
+                        java.util.Arrays.asList((String[])rs.getArray("gaps").getArray()),instantOf(rs,"recorded_at"),
+                        rs.getObject("task_event_id",UUID.class),instantOf(rs,"task_recorded_at"))).list();
         return Optional.of(jdbc.sql("""
                 SELECT failure_code, created_at, updated_at, terminal_at
                   FROM ops.lc_description_command WHERE id = :commandId
@@ -308,7 +319,7 @@ public class ListingDescriptionCommandRepository {
                         command.equivalenceRule(), command.affectedSetDigest(), command.attemptNo(),
                         command.retryBudgetRemaining(), rs.getString("failure_code"),
                         command.approvalExpiresAt(), instantOf(rs, "created_at"),
-                        instantOf(rs, "updated_at"), instantOf(rs, "terminal_at"), attempts, readbacks))
+                        instantOf(rs, "updated_at"), instantOf(rs, "terminal_at"), attempts, readbacks, receipts))
                 .single());
     }
 

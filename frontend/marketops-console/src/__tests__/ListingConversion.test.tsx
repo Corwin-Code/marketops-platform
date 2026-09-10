@@ -423,6 +423,19 @@ describe('actions, allowance and launch', () => {
         terminalAt: null,
         attempts: [],
         readbacks: [],
+        executionReceipts: [
+          {
+            id: 'receipt-1',
+            executionState: 'NATIVE_COMPLETION_UNPROVEN',
+            readbackId: 'rb-1',
+            mutationAttemptId: null,
+            nativeStatusAttemptId: null,
+            gaps: ['LATEST_APPLY_COMPLETION_UNPROVEN'],
+            recordedAt: '2026-09-01T02:00:00Z',
+            taskEventId: null,
+            taskRecordedAt: null,
+          },
+        ],
       },
       '/api/v1/console/listing-description-commands/cmd-1/gate': {
         reasons: ['PRODUCTION_WRITE_DISABLED'],
@@ -461,6 +474,12 @@ describe('actions, allowance and launch', () => {
     expect(command).toHaveAttribute('data-command-state', 'PENDING');
     expect(await within(command).findByText('生产写入未启用')).toBeInTheDocument();
     expect(screen.getByText('已获取')).toBeInTheDocument();
+    expect(within(command).getByText('尚未证明原生执行完成')).toBeInTheDocument();
+    expect(within(command).getByText('待记入责任任务')).toBeInTheDocument();
+    expect(within(command).getByText(/此记录不代表业务效果达标/u)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Русский' }));
+    expect(screen.getByText('Завершение на платформе не подтверждено')).toBeInTheDocument();
+    expect(screen.getByText('Ожидает записи в задачу')).toBeInTheDocument();
   });
 });
 

@@ -383,6 +383,161 @@ class ListingDescriptionResponseIdentityIT {
         }
     }
 
+    @Test void exactNativeCompletionAndReadbackVerifyActionWithoutClaimingBusinessEffect() throws Exception {
+        for (boolean async:java.util.List.of(false,true)) {
+            var f=fixture(); UUID command=command(f); configureExecutionGuard(f);
+            if (async) configureAsync(f);
+            UUID mutation=syntheticMutation(f,command);
+            complete(f,mutation,async?"{\"accepted\":true,\"task_id\":\"task-exact\"}":
+                    JSON.writeValueAsString(Map.of("items",java.util.List.of(Map.of("offer_id",nativeKey(f,command),"accepted",true)))));
+            if (async) finishNativeTask(f,command,"done");
+            UUID receipt=finishExecutionReadback(f,command);
+            assertThat(actionState(f)).isEqualTo("VERIFIED");
+            var proof=JSON.readTree(f.app.sql("SELECT evidence::text FROM ops.lc_execution_receipt WHERE id=:id")
+                    .param("id",receipt).query(String.class).single());
+            assertThat(proof.path("executionState").asString()).isEqualTo("MANAGEMENT_VERIFIED");
+            assertThat(proof.path("customerDisplay").asString()).isEqualTo("UNKNOWN");
+            assertThat(proof.path("businessEffect").asString()).isEqualTo("NOT_EVALUATED");
+            assertThat(proof.path("gaps").size()).isZero();
+            assertThat(f.gateReasons(command)).contains("PRODUCTION_WRITE_DISABLED");
+            assertThatThrownBy(()->f.seed.sql("UPDATE ops.lc_execution_receipt SET evidence='{}' WHERE id=:id")
+                    .param("id",receipt).update()).hasMessageContaining("immutable");
+            assertThatThrownBy(()->f.app.sql("SELECT ops.record_lc_description_execution_result(:command,:readback)")
+                    .param("command",command).param("readback",UUID.fromString(proof.path("readbackId").asString())).query(UUID.class).single())
+                    .rootCause().hasMessageContaining("permission denied");
+        }
+    }
+
+    @Test void matchingManagementTextCannotProveMissingUnknownConflictingOrHistoricalMutation() throws Exception {
+        for (String scenario:java.util.List.of("absent","unknown","noFinalStatus","conflictingFinal","historicalGuard")) {
+            var f=fixture(); UUID command=command(f);
+            if (!scenario.equals("historicalGuard")) configureExecutionGuard(f);
+            configureAsync(f);
+            if (!scenario.equals("absent")) {
+                complete(f,syntheticMutation(f,command),scenario.equals("unknown")?"{}":
+                        "{\"accepted\":true,\"task_id\":\"task-exact\"}");
+                if (scenario.equals("conflictingFinal")) { finishNativeTask(f,command,"error"); finishNativeTask(f,command,"done"); }
+                if (scenario.equals("historicalGuard")) finishNativeTask(f,command,"done");
+            }
+            UUID receipt=finishExecutionReadback(f,command);
+            assertThat(actionState(f)).as(scenario).isEqualTo("LAUNCHED");
+            assertThatThrownBy(()->f.seed.sql("UPDATE ops.lc_action SET state='VERIFIED' WHERE id=:id")
+                    .param("id",f.id("actionOne")).update()).hasMessageContaining("exact native completion");
+            assertThat(f.app.sql("SELECT execution_state FROM ops.lc_execution_receipt WHERE id=:id")
+                    .param("id",receipt).query(String.class).single()).isEqualTo("NATIVE_COMPLETION_UNPROVEN");
+        }
+    }
+
+    @Test void receiptActionAndTerminalCommandRollbackTogetherAndContainedActionStaysContained() throws Exception {
+        var f=fixture(); UUID command=command(f); configureExecutionGuard(f); configureAsync(f);
+        complete(f,syntheticMutation(f,command),"{\"accepted\":true,\"task_id\":\"task-exact\"}");
+        finishNativeTask(f,command,"done");
+        var tx=new org.springframework.transaction.support.TransactionTemplate(
+                new org.springframework.jdbc.datasource.DataSourceTransactionManager(application));
+        tx.executeWithoutResult(status->{ finishExecutionReadback(f,command); assertThat(actionState(f)).isEqualTo("VERIFIED"); status.setRollbackOnly(); });
+        assertThat(actionState(f)).isEqualTo("LAUNCHED");
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_execution_receipt WHERE command_id=:id")
+                .param("id",command).query(Integer.class).single()).isZero();
+        f.seed.sql("UPDATE ops.lc_action SET state='CONTAINED' WHERE id=:id").param("id",f.id("actionOne")).update();
+        finishExecutionReadback(f,command);
+        assertThat(actionState(f)).isEqualTo("CONTAINED");
+    }
+
+    private void configureExecutionGuard(ListingConversionFixture f) {
+        // Fictional partial-attribute semantics, not certification of any marketplace attribute.
+        f.seed.sql("""
+                UPDATE platform.capability_operation SET description_request_guard='{
+                    "schema":"DESCRIPTION_REQUEST_V1","evidenceRef":"fixture://protocol",
+                    "mutationSemantics":"PARTIAL_ATTRIBUTE","markingPolicy":"NOT_APPLICABLE",
+                    "body":{"offer_id":{"$bind":"LISTING_KEY","$type":"string"},
+                      "attributes":[{"id":{"$bind":"ATTRIBUTE_KEY","$type":"string"},
+                        "values":[{"value":{"$bind":"DESCRIPTION_TEXT","$type":"string"}}]}],"kizMarked":false}}
+                    '::jsonb WHERE capability_id=:id AND operation IN ('APPLY','RESTORE')
+                """).param("id",f.id("capability")).update();
+    }
+    private void finishNativeTask(ListingConversionFixture f,UUID command,String state) {
+        complete(f,openStatus(f,command),JSON.writeValueAsString(Map.of("task_id","task-exact","items",
+                java.util.List.of(Map.of("offer_id",nativeKey(f,command),"status",state)))));
+    }
+    private UUID finishExecutionReadback(ListingConversionFixture f,UUID command) {
+        if (!f.app.sql("SELECT state FROM ops.lc_description_command WHERE id=:id").param("id",command)
+                .query(String.class).single().equals("READBACK_PENDING"))
+            f.app.sql("SELECT ops.transition_lc_description_command(:id,1,'identity-worker','READBACK_PENDING',NULL,NULL,NULL)")
+                .param("id",command).query(String.class).single();
+        UUID attempt=open(f,command);
+        complete(f,attempt,JSON.writeValueAsString(Map.of("items",java.util.List.of(item(nativeKey(f,command))))));
+        assertThat(readback(f,command,attempt)).isEqualTo("MATCHES_TARGET");
+        UUID readback=f.app.sql("SELECT id FROM ops.lc_description_command_readback WHERE attempt_id=:id")
+                .param("id",attempt).query(UUID.class).single();
+        f.app.sql("SELECT ops.transition_lc_description_command(:id,1,'identity-worker','READBACK_MATCHED',NULL,NULL,:readback)")
+                .param("id",command).param("readback",readback).query(String.class).single();
+        return f.app.sql("SELECT id FROM ops.lc_execution_receipt WHERE readback_id=:id")
+                .param("id",readback).query(UUID.class).single();
+    }
+    private String actionState(ListingConversionFixture f) {
+        return f.app.sql("SELECT state FROM ops.lc_action WHERE id=:id").param("id",f.id("actionOne"))
+                .query(String.class).single();
+    }
+
+    @Test void workflowJournalDeliveryRollsBackRetriesOnceAndNeverSatisfiesHumanOrOutcomeStage() throws Exception {
+        var f=fixture(); UUID command=command(f); configureExecutionGuard(f); configureAsync(f);
+        complete(f,syntheticMutation(f,command),"{\"accepted\":true,\"task_id\":\"task-exact\"}");
+        finishNativeTask(f,command,"done"); UUID receipt=finishExecutionReadback(f,command);
+        try (var context=new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+            context.registerBean(javax.sql.DataSource.class,()->application);
+            context.registerBean(org.springframework.jdbc.core.simple.JdbcClient.class,()->f.app);
+            context.registerBean(org.springframework.transaction.PlatformTransactionManager.class,
+                    ()->new org.springframework.jdbc.datasource.DataSourceTransactionManager(application));
+            context.registerBean(com.mimococo.marketops.shared.IdGenerator.class,()->UUID::randomUUID);
+            context.register(ExecutionTransactionConfiguration.class,
+                    Class.forName("com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository"),
+                    Class.forName("com.mimococo.marketops.operationsworkflow.internal.application.ListingExecutionJournalService"),
+                    Class.forName("com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ListingDescriptionCommandRepository"));
+            context.refresh();
+            var delivery=context.getBean(com.mimococo.marketops.operationsworkflow.ListingExecutionJournal.class);
+            assertThat(delivery.deliverPending(100)).isZero(); // No exact responsibility Task yet.
+            UUID task=UUID.randomUUID();
+            f.app.sql("""
+                    INSERT INTO ops.work_task(id,organization_id,recommendation_id,title,state,created_at,updated_at)
+                    VALUES(:id,:org,:rec,'Fictional execution responsibility','OPEN',clock_timestamp(),clock_timestamp())
+                    """).param("id",task).param("org",f.id("organization")).param("rec",f.id("recommendationOne")).update();
+            var tx=new org.springframework.transaction.support.TransactionTemplate(
+                    context.getBean(org.springframework.transaction.PlatformTransactionManager.class));
+            tx.executeWithoutResult(status->{assertThat(delivery.deliverPending(100)).isEqualTo(1);status.setRollbackOnly();});
+            assertThat(f.app.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id").param("id",task)
+                    .query(Integer.class).single()).isZero();
+            try (var workers=java.util.concurrent.Executors.newFixedThreadPool(2)) {
+                var start=new java.util.concurrent.CountDownLatch(1);
+                var first=workers.submit(()->{start.await();return delivery.deliverPending(100);});
+                var second=workers.submit(()->{start.await();return delivery.deliverPending(100);});
+                start.countDown();
+                assertThat(first.get(10,java.util.concurrent.TimeUnit.SECONDS)+second.get(10,java.util.concurrent.TimeUnit.SECONDS)).isEqualTo(1);
+            }
+            assertThat(delivery.deliverPending(100)).isZero();
+            var journal=context.getBean(com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository.class);
+            var entry=journal.journal(task).getFirst();
+            assertThat(entry.eventKind()).isEqualTo("EXECUTION_OBSERVED");
+            assertThat(entry.satisfiesActionStage()).isFalse(); assertThat(entry.outcome()).isFalse();
+            assertThat(entry.actorUserId()).isNull(); assertThat(entry.outcomeKind()).isNull();
+            assertThat(entry.evidenceReference()).isEqualTo("lc-execution:"+receipt);
+            var projection=context.getBean(com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ListingDescriptionCommandRepository.class)
+                    .view(command).orElseThrow().executionReceipts().getFirst();
+            assertThat(projection.id()).isEqualTo(receipt);
+            assertThat(projection.executionState()).isEqualTo("MANAGEMENT_VERIFIED");
+            assertThat(projection.taskEventId()).isEqualTo(entry.id());
+            assertThat(projection.nativeStatusAttemptId()).isNotNull();
+            assertThat(projection.gaps()).isEmpty();
+            assertThat(f.app.sql("SELECT task_event_id FROM ops.lc_execution_receipt WHERE id=:id")
+                    .param("id",receipt).query(UUID.class).single()).isEqualTo(entry.id());
+            assertThatThrownBy(()->f.app.sql("SELECT ops.acknowledge_lc_execution_delivery(:receipt,:event)")
+                    .param("receipt",receipt).param("event",UUID.randomUUID()).query(Boolean.class).single())
+                    .hasMessageContaining("exact journal event");
+        }
+    }
+    @org.springframework.context.annotation.Configuration(proxyBeanMethods=false)
+    @org.springframework.transaction.annotation.EnableTransactionManagement
+    static class ExecutionTransactionConfiguration { }
+
     private void configureUniqueQuery(ListingConversionFixture f) {
         f.seed.sql("UPDATE platform.platform_endpoint SET http_method='POST' WHERE capability_id=:id AND operation_function='DESCRIPTION_STATUS'")
                 .param("id",f.id("capability")).update();

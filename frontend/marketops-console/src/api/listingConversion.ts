@@ -158,7 +158,20 @@ export interface LaunchAnswer {
   readonly insufficientAxes: readonly string[];
 }
 
+export interface DescriptionExecutionReceipt {
+  readonly id: string;
+  readonly executionState: string;
+  readonly readbackId: string;
+  readonly mutationAttemptId: string | undefined;
+  readonly nativeStatusAttemptId: string | undefined;
+  readonly gaps: readonly string[];
+  readonly recordedAt: string;
+  readonly taskEventId: string | undefined;
+  readonly taskRecordedAt: string | undefined;
+}
+
 export interface DescriptionCommand {
+  readonly executionReceipts: readonly DescriptionExecutionReceipt[];
   readonly id: string;
   readonly actionId: string;
   readonly state: string;
@@ -740,6 +753,33 @@ export function parseDescriptionCommand(body: unknown): DescriptionCommand | und
       ? undefined
       : { id: attemptId, attemptNo: no, purpose, outcomeClass, errorCode: text(c?.errorCode) };
   });
+  const executionReceipts = list(r.executionReceipts, (item) => {
+    const c = row(item);
+    const receiptId = text(c?.id),
+      executionState = text(c?.executionState),
+      readbackId = text(c?.readbackId),
+      recordedAt = text(c?.recordedAt),
+      gaps = list(c?.gaps, text);
+    if (
+      receiptId === undefined ||
+      readbackId === undefined ||
+      recordedAt === undefined ||
+      gaps === undefined ||
+      (executionState !== 'MANAGEMENT_VERIFIED' && executionState !== 'NATIVE_COMPLETION_UNPROVEN')
+    )
+      return undefined;
+    return {
+      id: receiptId,
+      executionState,
+      readbackId,
+      recordedAt,
+      gaps,
+      mutationAttemptId: text(c?.mutationAttemptId),
+      nativeStatusAttemptId: text(c?.nativeStatusAttemptId),
+      taskEventId: text(c?.taskEventId),
+      taskRecordedAt: text(c?.taskRecordedAt),
+    };
+  });
   const readbacks = list(r.readbacks, (item) => {
     const c = row(item);
     const readbackId = text(c?.id),
@@ -760,7 +800,8 @@ export function parseDescriptionCommand(body: unknown): DescriptionCommand | und
     retryBudgetRemaining === undefined ||
     approvalExpiresAt === undefined ||
     attempts === undefined ||
-    readbacks === undefined
+    readbacks === undefined ||
+    executionReceipts === undefined
   )
     return undefined;
   return {
@@ -776,6 +817,7 @@ export function parseDescriptionCommand(body: unknown): DescriptionCommand | und
     approvalExpiresAt,
     attempts,
     readbacks,
+    executionReceipts,
   };
 }
 
