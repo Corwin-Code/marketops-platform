@@ -122,6 +122,8 @@ public class ConversionMeasurementService {
             }
             lineage.set("salesEvidence",sales.lineage());
             List<String> retained = sales.visitKeys();
+            lineage.set("sourceStrata",json.valueToTree(VisitConversion.sourceCounts(visits,retained)));
+            lineage.put("sourceStrataQualified",qualified && maturity && stratified);
             VisitConversion.Result whole = VisitConversion.compute(allVisits, retained, maturity, qualified);
             VisitConversion.Result result = VisitConversion.compute(visits, retained, maturity, qualified);
             lineage.put("wholeWindowVisitCount", whole.visitCount());

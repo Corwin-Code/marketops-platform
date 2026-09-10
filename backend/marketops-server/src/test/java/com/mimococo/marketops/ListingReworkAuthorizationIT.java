@@ -1,6 +1,7 @@
 package com.mimococo.marketops;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,6 +66,7 @@ class ListingReworkAuthorizationIT {
     @Autowired UserAdministrationService users;
     @Autowired com.mimococo.marketops.listingconversion.internal.application.CalibrationService calibration;
     @Autowired com.mimococo.marketops.operationsworkflow.ListingActionIntake listingIntake;
+    @Autowired com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence;
     private UUID providerId;
     private UUID userId;
     private String subject;
@@ -390,6 +392,43 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void lineageCannotBorrowCoverageFromAnotherWindowOrDropAQualifiedReceipt() throws Exception {
+        measurementGrants();
+        Instant end=Instant.now().minusSeconds(40L*86400).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Instant start=end.minusSeconds(86400);
+        for (Instant from:List.of(start,start.minusSeconds(86400))) {
+            postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",from.plusSeconds(86400).toString(),
+                    "retentionDays",30,"evidencePath","DETAIL","sourceCompleteThrough",end.plusSeconds(31L*86400).toString(),
+                    "sourceReference","evidence://synthetic/lineage-window","expectedVisitRows",0,"expectedLinkRows",0));
+        }
+        var measurement=postListing("/measurements",Map.of("windowStart",start.toString(),"windowEnd",end.toString(),
+                "retentionDays",30,"evidencePath","DETAIL"));
+        UUID measurementId=UUID.fromString(measurement.path("id").asText());
+        UUID wrongReceipt=jdbc.sql("SELECT id FROM core.lc_measurement_coverage WHERE platform_listing_id=:listing AND window_start=:start")
+                .param("listing",fixture.id("listing")).param("start",java.sql.Timestamp.from(start.minusSeconds(86400)))
+                .query(UUID.class).single();
+        String original=jdbc.sql("SELECT to_jsonb(l)::text FROM mart.lc_measurement_lineage l WHERE measurement_id=:id")
+                .param("id",measurementId).query(String.class).single();
+        // BEFORE INSERT must reject the forged binding before duplicate-ID
+        // handling; assert its domain SQLSTATE, not merely any SQL exception.
+        for (boolean missing:List.of(false,true)) {
+            assertThatThrownBy(()->jdbc.sql("""
+                    INSERT INTO mart.lc_measurement_lineage(measurement_id,coverage_id,input_digest,inputs,source_timezone,recorded_at)
+                    SELECT measurement_id,CAST(:receipt AS uuid),input_digest,inputs,source_timezone,recorded_at
+                    FROM mart.lc_measurement_lineage WHERE measurement_id=:id
+                    """).param("receipt",missing?null:wrongReceipt).param("id",measurementId).update())
+                    .hasRootCauseInstanceOf(java.sql.SQLException.class)
+                    .satisfies(failure->{
+                        Throwable root=failure;
+                        while (root.getCause()!=null) root=root.getCause();
+                        assertThat(((java.sql.SQLException)root).getSQLState()).isEqualTo(missing?"MO093":"MO092");
+                    });
+        }
+        assertThat(jdbc.sql("SELECT to_jsonb(l)::text FROM mart.lc_measurement_lineage l WHERE measurement_id=:id")
+                .param("id",measurementId).query(String.class).single()).isEqualTo(original);
+    }
+
+    @Test
     void lateSaleReversalCreatesANewMeasurementAndPreservesTheOriginalInputs() throws Exception {
         measurementGrants();
         Instant from=Instant.now().minusSeconds(42L*86400).truncatedTo(java.time.temporal.ChronoUnit.DAYS);
@@ -404,6 +443,8 @@ class ListingReworkAuthorizationIT {
         var request=Map.of("windowStart",from.toString(),"windowEnd",to.toString(),"retentionDays",30,"evidencePath","DETAIL");
         var original=postListing("/measurements",request);
         assertThat(original.path("primaryRatio").decimalValue()).isEqualByComparingTo("1");
+        assertThat(jdbc.sql("SELECT inputs->'sourceStrata'->'ORGANIC'->>'retained' FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",UUID.fromString(original.path("id").asText())).query(String.class).single()).isEqualTo("1");
         UUID reversal=seedSale(from.plusSeconds(3700),sale,true);
         var revised=postListing("/measurements",request);
         assertThat(revised.path("primaryRatio").decimalValue()).isEqualByComparingTo("0");
@@ -413,6 +454,17 @@ class ListingReworkAuthorizationIT {
         String lineage=jdbc.sql("SELECT inputs::text FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
                 .param("id",UUID.fromString(revised.path("id").asText())).query(String.class).single();
         assertThat(lineage).contains(sale.toString(),reversal.toString());
+        assertThat(jdbc.sql("SELECT inputs->'sourceStrata'->'ORGANIC'->>'retained' FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",UUID.fromString(revised.path("id").asText())).query(String.class).single()).isEqualTo("0");
+        assertThat(jdbc.sql("SELECT inputs->>'sourceStrataQualified' FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",UUID.fromString(revised.path("id").asText())).query(String.class).single()).isEqualTo("true");
+        assertThat(jdbc.sql("SELECT canonical_input_digest=encode(sha256(convert_to(inputs::text,'UTF8')),'hex') FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",UUID.fromString(revised.path("id").asText())).query(Boolean.class).single()).isTrue();
+        var source=measurementEvidence.measuredSourceStrata(UUID.fromString(revised.path("id").asText()),fixture.id("listing")).orElseThrow();
+        assertThat(source.qualified()).isTrue();
+        assertThat(source.counts().path("ORGANIC").path("visits").longValue()).isEqualTo(1);
+        assertThat(source.counts().path("ORGANIC").path("retained").longValue()).isZero();
+        assertThat(measurementEvidence.measuredSourceStrata(UUID.fromString(revised.path("id").asText()),fixture.id("listingTwo"))).isEmpty();
         assertThat(postListing("/measurements",request).path("primaryRatio").decimalValue()).isEqualByComparingTo("0");
     }
 

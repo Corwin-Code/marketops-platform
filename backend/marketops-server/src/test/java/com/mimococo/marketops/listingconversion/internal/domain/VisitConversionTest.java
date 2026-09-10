@@ -15,6 +15,16 @@ import org.junit.jupiter.api.Test;
  */
 class VisitConversionTest {
 
+    @Test
+    void sourceCountsKeepBothChannelsUnknownVisitsAndDistinctPurchaseVisits() {
+        var visits=List.of(visit("a","NO","ADVERTISING"),visit("a","NO","ADVERTISING"),
+                visit("b","YES","ORGANIC"),visit("c","YES","ORGANIC"),visit("d","YES","UNKNOWN"));
+        var counts=VisitConversion.sourceCounts(visits,List.of("a","a","b","d","outside-window"));
+        assertThat(counts.get("ADVERTISING")).isEqualTo(new VisitConversion.SourceCount(1,1));
+        assertThat(counts.get("ORGANIC")).isEqualTo(new VisitConversion.SourceCount(2,1));
+        assertThat(counts.get("UNKNOWN")).isEqualTo(new VisitConversion.SourceCount(1,1));
+    }
+
     private static VisitConversion.Visit visit(String key, String sellable, String channel) {
         return new VisitConversion.Visit(key, sellable, channel);
     }

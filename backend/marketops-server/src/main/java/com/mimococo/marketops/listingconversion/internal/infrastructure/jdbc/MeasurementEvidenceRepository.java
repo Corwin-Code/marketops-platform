@@ -26,6 +26,30 @@ public class MeasurementEvidenceRepository {
     public record Coverage(UUID id, Instant sourceThrough, Instant acquiredAt, String inputDigest,
                            UUID summaryId, UUID profileId) { }
 
+    /** Immutable measured input identity; method/window admission belongs to the frozen plan. */
+    public record MeasuredSourceStrata(UUID measurementId, UUID listingId, int definitionVersion,
+            Instant windowStart, Instant windowEnd, int retentionDays, boolean qualified,
+            JsonNode counts, String canonicalInputDigest, Instant computedAt) { }
+
+    public Optional<MeasuredSourceStrata> measuredSourceStrata(UUID measurementId, UUID listingId) {
+        return jdbc.sql("""
+                SELECT m.id,m.platform_listing_id,m.definition_version,m.window_start,m.window_end,
+                    m.retention_window_days,m.computed_at,
+                    (m.path_qualified AND m.maturity_reached AND m.source_stratified AND m.ratio_state='DEFINED'
+                     AND l.inputs->'sourceStrataQualified'='true'::jsonb) AS qualified,
+                    (l.inputs->'sourceStrata')::text AS counts,l.canonical_input_digest
+                FROM mart.lc_conversion_measurement m
+                JOIN mart.lc_measurement_lineage l ON l.measurement_id=m.id
+                WHERE m.id=:measurement AND m.platform_listing_id=:listing
+                """).param("measurement",measurementId).param("listing",listingId)
+                .query((rs,n)->new MeasuredSourceStrata(rs.getObject("id",UUID.class),rs.getObject("platform_listing_id",UUID.class),
+                        rs.getInt("definition_version"),ListingFactRepository.instant(rs,"window_start"),
+                        ListingFactRepository.instant(rs,"window_end"),rs.getInt("retention_window_days"),
+                        rs.getBoolean("qualified"),rs.getString("counts")==null?json.createObjectNode():json.readTree(rs.getString("counts")),
+                        rs.getString("canonical_input_digest"),ListingFactRepository.instant(rs,"computed_at")))
+                .optional();
+    }
+
     public Snapshot detailSnapshot(UUID listing, Instant from, Instant to, Instant at) {
         String body = jdbc.sql("""
                 SELECT jsonb_build_object(

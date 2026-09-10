@@ -45,3 +45,10 @@ The HTTP counterexample supplies a real synthetic source-summary measurement wit
 The exact-period Metric query is tested against actual canonical engine output and revisions. It rejects larger-period substitution, preserves a frozen period when a newer shifted period exists, and selects the latest unavailable same-period revision rather than an older favorable value. V0086 adds optional explicit zero tail and aligns SQL/Java necessary-dimension and known-failure precedence. Configured stop rules with no qualified upper comparison report UNDETERMINED, not CONTINUE.
 
 All results remain partial working-tree evidence. No finding is marked closed; no Controller approval or production enablement is claimed.
+
+
+## Canonical scope and measured source-stratum checkpoint
+
+`checkpoint-5-test-receipts.json`: targeted unit/architecture 91 passed; actual canonical Metric Engine/database 17 passed; signed listing HTTP/database 21 passed. The final HTTP run applies V0087 and validates exact lineage coverage and digest, late-reversal source strata, retained historical inputs and the measurement/listing read boundary. Two corrected failed runs and their actual causes remain recorded with local raw-log hashes.
+
+These results prove the local primitives and their exercised paths only. Canonical totals retain estimate/confidence metadata and do not certify a protection; measured source strata do not establish the frozen comparison method or full Description coverage. Required positive formal Outcome, plan admission and downstream control paths remain unfinished. No finding is closed by this checkpoint.

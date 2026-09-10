@@ -42,10 +42,12 @@
       "title": "版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Transition days consumed by metric inputs with source timezone, prior display carried across window, and as-of linked sale correction chain retained. Full target-version coverage, fixed-structure comparison and automatic Outcome revisions remain open."
+        "Transition days consumed by metric inputs with source timezone, prior display carried across window, and as-of linked sale correction chain retained. Full target-version coverage, fixed-structure comparison and automatic Outcome revisions remain open.",
+        "Actual detail-measurement lineage now retains both source channels and unknown visit counts over the exact filtered cohort; scoped reader and late sale-reversal evidence added. Fixed comparison plan/method execution still open."
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
+        "Checkpoint-5 signed HTTP/database subset 21 passed; original/revised source strata, immutable history, exact lineage coverage and foreign-listing read refusal covered."
       ]
     },
     {
@@ -53,10 +55,12 @@
       "title": "正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Legacy HTTP numeric assertions no longer manufacture formal MET or protection PASS/FAIL. Canonical Metric exact-period read added; qualified positive Outcome pipeline and full protections remain open."
+        "Legacy HTTP numeric assertions no longer manufacture formal MET or protection PASS/FAIL. Canonical Metric exact-period read added; qualified positive Outcome pipeline and full protections remain open.",
+        "Added same-authority canonical scope Metric projection with compatible whole-profit sum, weighted return counts, scoped identity checks and original confidence/provenance. Formal protection consumer still open."
       ],
       "executed_evidence": [
-        "Checkpoint-4 targeted receipts: 16 actual Metric Engine/database tests and 20 signed HTTP/database tests passed, including caller-number forgery. Positive canonical Outcome and full regression still required."
+        "Checkpoint-4 targeted receipts: 16 actual Metric Engine/database tests and 20 signed HTTP/database tests passed, including caller-number forgery. Positive canonical Outcome and full regression still required.",
+        "Checkpoint-5 actual Metric Engine subset 17 passed including available-to-unavailable scope profit revision and preserved historical projection. Unit/architecture subset 91 passed."
       ]
     },
     {

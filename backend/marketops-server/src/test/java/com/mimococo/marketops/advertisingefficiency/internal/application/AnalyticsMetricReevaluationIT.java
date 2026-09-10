@@ -140,6 +140,50 @@ class AnalyticsMetricReevaluationIT {
                 .isEqualTo(original);
     }
 
+    @Test void scopeProjectionConsumesActualCanonicalProfitAndItsLateUnavailableRevision() {
+        var scopeMetrics=context.getBean(com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.class);
+        UUID member=fixture.graph.id("listingVariant");
+        // The advertising fixture proves its own native report path. The
+        // shared Metric Engine additionally needs its canonical spend ledger
+        // and versioned tax input; publish these synthetic source facts through
+        // their existing repositories, never seed a computed profit value.
+        context.getBean(com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.InternalReferenceRepository.class)
+                .insertFinanceInput(UUID.randomUUID(),fixture.graph.id("organization"),"VARIABLE_TAX_RATE","ORGANIZATION",
+                        null,null,"RATE",new java.math.BigDecimal("0.05"),null,null,fixture.graph.id("provenance"),
+                        cohort.periodStart(),fixture.start);
+        context.getBean(com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactWriteRepository.class)
+                .insertAdvertising(UUID.randomUUID(),fixture.graph.id("organization"),fixture.graph.id("provenance"),member,
+                        fixture.graph.id("store"),"synthetic-scope-spend-"+UUID.randomUUID(),"synthetic-campaign","SYNTHETIC",
+                        cohort.periodStart(),cohort.periodEnd(),"RUB",new java.math.BigDecimal("6000"),100L,20L,10L,
+                        new java.math.BigDecimal("10000"));
+        fixture.clock.at=fixture.start.plusSeconds(1);
+        reevaluate();
+        Instant comparisonAt=fixture.clock.instant();
+        var beforeScope=new com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.Scope(
+                fixture.graph.id("organization"),fixture.graph.id("store"),java.util.List.of(member),MetricWindow.D30,
+                cohort.periodStart(),cohort.periodEnd(),comparisonAt,
+                com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.ProfitBasis.OPERATIONAL);
+        var before=scopeMetrics.project(beforeScope);
+        assertThat(before.contributionProfit().gaps()).isEmpty();
+        var canonical=fixture.metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,member,MetricWindow.D30,
+                cohort.periodStart(),cohort.periodEnd(),comparisonAt).get(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT);
+        assertThat(before.contributionProfit().components()).containsExactly(canonical);
+        assertThat(before.contributionProfit().value()).isEqualByComparingTo(canonical.numericValue());
+        fixture.clock.at=fixture.start.plus(Duration.ofDays(2));
+        closeOriginalCost(cohort.periodEnd().minusSeconds(3600));
+        reevaluate();
+        var revisedScope=new com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.Scope(
+                fixture.graph.id("organization"),fixture.graph.id("store"),java.util.List.of(member),MetricWindow.D30,
+                cohort.periodStart(),cohort.periodEnd(),fixture.clock.instant(),
+                com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.ProfitBasis.OPERATIONAL);
+        var revised=scopeMetrics.project(revisedScope);
+        assertThat(revised.contributionProfit().available()).isFalse();
+        assertThat(revised.contributionProfit().value()).isNull();
+        assertThat(revised.contributionProfit().gaps()).contains("OPERATIONAL_CONTRIBUTION_PROFIT_VALUE_UNAVAILABLE");
+        assertThat(revised.contributionProfit().components().getFirst().metricValueId()).isNotEqualTo(canonical.metricValueId());
+        assertThat(scopeMetrics.project(beforeScope)).isEqualTo(before);
+    }
+
     @Test void lateApplicableCostRevisionCreatesANewValueWithoutOverwritingItsPredecessor() {
         String originalRow=valueRow(original.metricValueId());
         fixture.clock.at=fixture.start.plus(Duration.ofDays(2));

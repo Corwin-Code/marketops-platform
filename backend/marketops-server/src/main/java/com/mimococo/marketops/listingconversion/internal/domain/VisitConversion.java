@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -54,6 +55,23 @@ public final class VisitConversion {
         public Result {
             sellableSplit = Map.copyOf(sellableSplit == null ? Map.of() : sellableSplit);
         }
+    }
+
+    public record SourceCount(long visits, long retained) { }
+
+    /** Exact diagnostic counts over the same filtered visit cohort as the primary result. */
+    public static Map<String, SourceCount> sourceCounts(Collection<Visit> visits,
+                                                       Collection<String> retainedVisitKeys) {
+        Map<String,Visit> distinct=new LinkedHashMap<>();
+        visits.forEach(visit->distinct.putIfAbsent(visit.visitKey(),visit));
+        Set<String> retained=new HashSet<>(retainedVisitKeys);
+        Map<String,SourceCount> counts=new LinkedHashMap<>();
+        for (String source : List.of("ADVERTISING","ORGANIC","UNKNOWN")) {
+            var members=distinct.values().stream().filter(visit->source.equals(
+                    Set.of("ADVERTISING","ORGANIC").contains(visit.sourceChannel())?visit.sourceChannel():"UNKNOWN")).toList();
+            counts.put(source,new SourceCount(members.size(),members.stream().filter(v->retained.contains(v.visitKey())).count()));
+        }
+        return java.util.Collections.unmodifiableMap(counts);
     }
 
     /**
