@@ -788,3 +788,9 @@ shared unit/architecture, 11 response/database, 7 waiting, 10 launch, 27 signed
 HTTP/database and 1 upgrade checks passed. Fixtures do not certify a provider.
 Controlled registry configuration and remaining business/runtime work continue;
 0/27 closed, final handoff NOT_READY, no production enablement.
+
+SLICE-V1-004 local rework update: controlled Description registry maintenance
+and independent verification have targeted evidence in `checkpoint-11-test-receipts.json`:
+76 architecture, 5 Description registry, 35 shared Registry, 11 response and
+27 signed listing HTTP/database checks passed. Only fictional attestation data
+was used. 0/27 closed; final handoff NOT_READY and all production enablement unchanged.

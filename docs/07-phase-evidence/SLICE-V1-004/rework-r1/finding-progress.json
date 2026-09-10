@@ -214,10 +214,12 @@
       "title": "请求guard没有绑定准确原生目标和正文节点，跨平台硬编码又拒绝合法Schema",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open."
+        "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open.",
+        "Checkpoint 11: Description metadata now flows through the existing scoped registry draft, revision and independent exact-configuration verification functions using CONTENT_WRITE. New/revised descriptors bind submitted evidence; renewed attestation preserves the existing verified definition. Runtime request guard and non-echo identity still remain open."
       ],
       "executed_evidence": [
-        "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure."
+        "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
+        "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure."
       ]
     },
     {
@@ -226,11 +228,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Native retry headers are preserved with exact units; waits are not capped. V0084 derives durable earliest-call time or explicit timing-unknown hold from retained transport evidence and guards leases, attempts and dispatch rechecks. HTTP 409 is inconclusive. Native task/object identity, per-purpose protocol and all scheduler/expiry coverage remain open.",
-        "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open."
+        "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open.",
+        "Checkpoint 11: Description metadata now flows through the existing scoped registry draft, revision and independent exact-configuration verification functions using CONTENT_WRITE. New/revised descriptors bind submitted evidence; renewed attestation preserves the existing verified definition. Runtime request guard and non-echo identity still remain open."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
-        "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure."
+        "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
+        "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure."
       ]
     },
     {
