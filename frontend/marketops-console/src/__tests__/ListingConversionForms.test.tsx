@@ -171,66 +171,84 @@ describe('every listing form posts what the operator entered', () => {
     expect(await screen.findByRole('region', { name: '健康队列' })).toBeInTheDocument();
   });
 
-  it('TC-UI-LC-F02 a candidate is prepared from the listing and becomes an exact action', async () => {
-    const candidate = {
-      id: 'c1',
-      storeId: STORE,
-      platformListingId: LISTING,
-      candidateKind: 'CONTENT_DESCRIPTION',
-      comparisonRoundKey: 'r',
-      state: 'OPEN',
-      version: 1,
-    };
-    const { context, calls } = backend([
-      [/\/health\/queue/u, [HEALTH]],
-      [
-        /\/health\/listings\//u,
-        {
-          listingId: LISTING,
-          storeId: STORE,
-          platformCode: 'P',
-          nativeListingKey: 'fictional-listing',
-          health: HEALTH,
-          measurements: [],
-        },
-      ],
-      [/\/candidates\/c1\/prepare$/u, action('DRAFT', 'API')],
-      [/\/candidates$/u, candidate],
-      [/\/candidates\?/u, [candidate]],
-      [/\/actions\/a1$/u, action('DRAFT', 'API')],
-      [/\/actions\?/u, []],
-    ]);
-    shell(context);
-    fireEvent.click(await screen.findByRole('button', { name: '打开' }));
-    fireEvent.click(await screen.findByRole('button', { name: '候选' }));
+  it.each([false, true])(
+    'TC-UI-LC-F02 prepares an exact action (restoration=%s)',
+    async (restoration) => {
+      const candidate = {
+        id: 'c1',
+        storeId: STORE,
+        platformListingId: LISTING,
+        candidateKind: 'CONTENT_DESCRIPTION',
+        comparisonRoundKey: 'r',
+        state: 'OPEN',
+        version: 1,
+      };
+      const { context, calls } = backend([
+        [/\/health\/queue/u, [HEALTH]],
+        [
+          /\/health\/listings\//u,
+          {
+            listingId: LISTING,
+            storeId: STORE,
+            platformCode: 'P',
+            nativeListingKey: 'fictional-listing',
+            health: HEALTH,
+            measurements: [],
+          },
+        ],
+        [/\/candidates\/c1\/prepare$/u, action('DRAFT', 'API')],
+        [/\/candidates$/u, candidate],
+        [/\/candidates\?/u, [candidate]],
+        [/\/actions\/a1$/u, action('DRAFT', 'API')],
+        [/\/actions\?/u, []],
+      ]);
+      shell(context);
+      fireEvent.click(await screen.findByRole('button', { name: '打开' }));
+      fireEvent.click(await screen.findByRole('button', { name: '候选' }));
 
-    const section = await screen.findByRole('region', { name: '候选' });
-    fireEvent.change(within(section).getByLabelText(/round/u), { target: { value: 'round-2' } });
-    fireEvent.change(within(section).getByLabelText(/证据引用/u), {
-      target: { value: 'fixture://evidence' },
-    });
-    fireEvent.click(within(section).getAllByRole('button', { name: '提交' })[0]!);
-    await waitFor(() => {
-      expect(
-        calls.find((call) => call.method === 'POST' && call.url.endsWith('/candidates'))?.body,
-      ).toContain('"roundKey":"round-2"');
-    });
+      const section = await screen.findByRole('region', { name: '候选' });
+      fireEvent.change(within(section).getByLabelText(/round/u), { target: { value: 'round-2' } });
+      fireEvent.change(within(section).getByLabelText(/证据引用/u), {
+        target: { value: 'fixture://evidence' },
+      });
+      fireEvent.click(within(section).getAllByRole('button', { name: '提交' })[0]!);
+      await waitFor(() => {
+        expect(
+          calls.find((call) => call.method === 'POST' && call.url.endsWith('/candidates'))?.body,
+        ).toContain('"roundKey":"round-2"');
+      });
 
-    const prepare = await screen.findByRole('form', { name: 'c1' });
-    fireEvent.change(within(prepare).getByRole('textbox', { name: /目标俄语描述/u }), {
-      target: { value: 'Новый текст' },
-    });
-    fireEvent.change(within(prepare).getByLabelText(/КИЗ 标记声明/u), { target: { value: 'yes' } });
-    fireEvent.change(within(prepare).getByPlaceholderText('0.10'), { target: { value: '0.15' } });
-    fireEvent.click(within(prepare).getByRole('button', { name: '提交' }));
+      const prepare = await screen.findByRole('form', { name: 'c1' });
+      fireEvent.change(within(prepare).getByRole('textbox', { name: /目标俄语描述/u }), {
+        target: { value: 'Новый текст' },
+      });
+      const source = 'e8427a26-0229-438f-b33c-b35c49ad1b40';
+      if (restoration) {
+        fireEvent.change(within(prepare).getByLabelText(/恢复来源命令 ID/u), {
+          target: { value: source },
+        });
+        expect(within(prepare).getByRole('textbox', { name: /目标俄语描述/u })).toBeDisabled();
+        expect(within(prepare).getByText(/本次恢复需要独立的新审核/u)).toBeInTheDocument();
+      }
+      fireEvent.change(within(prepare).getByLabelText(/КИЗ 标记声明/u), {
+        target: { value: 'yes' },
+      });
+      fireEvent.change(within(prepare).getByPlaceholderText('0.10'), { target: { value: '0.15' } });
+      fireEvent.click(within(prepare).getByRole('button', { name: '提交' }));
 
-    await waitFor(() => {
-      expect(calls.find((call) => call.url.endsWith('/candidates/c1/prepare'))?.body).toContain(
-        '"kizMarkedDeclared":true',
-      );
-    });
-    expect(await screen.findByText('缺少绑定')).toBeInTheDocument();
-  });
+      await waitFor(() => {
+        expect(calls.find((call) => call.url.endsWith('/candidates/c1/prepare'))?.body).toContain(
+          '"kizMarkedDeclared":true',
+        );
+      });
+      const request = JSON.parse(
+        calls.find((call) => call.url.endsWith('/candidates/c1/prepare'))!.body!,
+      ) as Record<string, unknown>;
+      expect(request.restoresCommandId).toBe(restoration ? source : null);
+      expect(request.targetText).toBe(restoration ? null : 'Новый текст');
+      expect(await screen.findByText('缺少绑定')).toBeInTheDocument();
+    },
+  );
 
   it('TC-UI-LC-F03 a draft is attested or returned, a cancel posts its reason, and the evaluation renders', async () => {
     const evaluation = {

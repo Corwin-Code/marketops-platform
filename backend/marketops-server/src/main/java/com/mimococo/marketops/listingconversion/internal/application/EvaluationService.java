@@ -96,8 +96,9 @@ public class EvaluationService {
         }
         ListingFactRepository.ListingContext listing = facts.listing(action.listingId())
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        Instant now = actions.databaseNow();
         CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
-                listing.storeId(), clock.instant());
+                listing.storeId(), now);
         if (!resolved.ok() || !resolved.resolved().packageId().equals(action.calibrationPackageId())
                 || !Integer.valueOf(resolved.resolved().version()).equals(action.calibrationVersion())) {
             throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
@@ -109,7 +110,6 @@ public class EvaluationService {
                 || !CalibrationService.hasExplicitStopRule(resolved.resolved())) {
             throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
         }
-        Instant now = clock.instant();
         Map<String, String> coverage = new LinkedHashMap<>();
         coverage.put("priorTextDigest", String.valueOf(action.currentTextDigest()));
         coverage.put("targetTextDigest", String.valueOf(action.targetTextDigest()));

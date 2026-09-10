@@ -137,8 +137,9 @@ public class ApprovalService {
         }
 
         Duration scope = listingScope == null ? AUTHORIZATION_SCOPE : listingScope.approvalValidity();
+        Instant decidedAt = listingScope == null ? now : approvals.databaseNow();
         UUID decisionId = record(proposal, "APPROVED", actor.userId(), null,
-                actor.authenticatedAt(), true, reason, now, scope);
+                actor.authenticatedAt(), true, reason, decidedAt, scope);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.APPROVED, null, expectedVersion);
         if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
@@ -150,7 +151,7 @@ public class ApprovalService {
             // with the earliest expiry of every bound authority. Nothing later
             // extends it.
             listingDecisions.bindApproval(recommendationId, decisionId, verdict.evaluationId(),
-                    now.plus(scope));
+                    decidedAt.plus(scope));
             listingIntake.recordTaskAction(actor, recommendationId, "DECISION_APPROVED",
                     "approval-decision:" + decisionId, reason);
         }

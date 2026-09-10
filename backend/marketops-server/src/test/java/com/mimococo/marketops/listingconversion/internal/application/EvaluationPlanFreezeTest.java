@@ -39,6 +39,7 @@ class EvaluationPlanFreezeTest {
             mock(ListingScopeAuthorization.class),mock(ListingDisclosureService.class),json);
 
     @BeforeEach void exactActionAndAcceptedPackage() {
+        when(actions.databaseNow()).thenReturn(at);
         when(action.id()).thenReturn(actionId);
         when(action.state()).thenReturn("DRAFT");
         when(action.organizationId()).thenReturn(organization);

@@ -208,6 +208,7 @@ function CandidatePreparation({
   const [evidence, setEvidence] = useState('');
   const [path, setPath] = useState('API');
   const [targetText, setTargetText] = useState('');
+  const [restoresCommandId, setRestoresCommandId] = useState('');
   const [kiz, setKiz] = useState<'undeclared' | 'yes' | 'no'>('undeclared');
   const [exposureShare, setExposureShare] = useState('');
 
@@ -308,6 +309,7 @@ function CandidatePreparation({
                       targetText,
                       kiz === 'undeclared' ? undefined : kiz === 'yes',
                       exposureShare,
+                      restoresCommandId.trim() || undefined,
                     ).then((outcome) => {
                       if (outcome.ok) {
                         onPrepared(outcome.value.id);
@@ -332,8 +334,23 @@ function CandidatePreparation({
                         </select>
                       </label>
                       <label>
+                        {t('restoresCommandId', language)}
+                        <input
+                          value={restoresCommandId}
+                          onChange={(e) => {
+                            setRestoresCommandId(e.target.value);
+                          }}
+                          placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                          pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                        />
+                      </label>
+                      {restoresCommandId.trim() !== '' && (
+                        <p>{t('restorationApproval', language)}</p>
+                      )}
+                      <label>
                         {t('targetText', language)}
                         <textarea
+                          disabled={restoresCommandId.trim() !== ''}
                           value={targetText}
                           onChange={(e) => {
                             setTargetText(e.target.value);
@@ -465,6 +482,12 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
             <dt>{t('version', language)}</dt>
             <dd>{action.version}</dd>
           </dl>
+          {action.restoresCommandId !== undefined && (
+            <p>
+              {t('restoresCommandId', language)}: <code>{action.restoresCommandId}</code> ·{' '}
+              {t('restorationApproval', language)}
+            </p>
+          )}
           {action.targetText !== undefined && (
             <details>
               <summary>{t('targetText', language)}</summary>

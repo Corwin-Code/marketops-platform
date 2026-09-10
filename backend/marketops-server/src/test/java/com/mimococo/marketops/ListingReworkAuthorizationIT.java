@@ -100,11 +100,12 @@ class ListingReworkAuthorizationIT {
     }
 
     @BeforeEach
-    void graph() throws Exception {
+    void graph(org.junit.jupiter.api.TestInfo info) throws Exception {
         fixture = new ListingConversionFixture(
                 new DriverManagerDataSource(DATABASE.getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()),
                 new DriverManagerDataSource(DATABASE.getJdbcUrl(), TestDatabase.applicationRole(), TestDatabase.applicationPassword()),
-                new DriverManagerDataSource(DATABASE.getJdbcUrl(), DATABASE.getUsername(), DATABASE.getPassword()));
+                new DriverManagerDataSource(DATABASE.getJdbcUrl(), DATABASE.getUsername(), DATABASE.getPassword()),
+                info.getTestMethod().orElseThrow().getName().equals("restorationRejectsACompletedSourceWhoseCapturedPriorIsMissing"));
         subject = "listing-rework-" + UUID.randomUUID();
         userId = users.provision(OPERATOR, fixture.id("organization"), providerId, subject, null, "Listing operator", null).id();
         jdbc.sql("UPDATE iam.user_account SET credentials_valid_from = now() - interval '1 hour' WHERE id = :id")
@@ -337,6 +338,23 @@ class ListingReworkAuthorizationIT {
         postListing("/facts/visit", Map.of("visitKey", "unaccounted-visit", "visitedAt", from.plusSeconds(60).toString(),
                 "sellable", "YES", "channel", "ORGANIC"));
         assertThat(postListing("/measurements", request).path("ratioState").asText()).isEqualTo("NOT_AVAILABLE");
+    }
+
+    @Test
+    void preparationChronologyUsesDatabaseTimeDespiteAnApplicationClockAheadByOneMinute() throws Exception {
+        Object actionService=org.springframework.test.util.AopTestUtils.getUltimateTargetObject(applicationContext.getBean("listingActionService"));
+        Object evaluation=org.springframework.test.util.AopTestUtils.getUltimateTargetObject(applicationContext.getBean("evaluationService"));
+        Object actionClock=org.springframework.test.util.ReflectionTestUtils.getField(actionService,"clock");
+        Object evaluationClock=org.springframework.test.util.ReflectionTestUtils.getField(evaluation,"clock");
+        try {
+            var ahead=java.time.Clock.offset(java.time.Clock.systemUTC(),java.time.Duration.ofMinutes(1));
+            org.springframework.test.util.ReflectionTestUtils.setField(actionService,"clock",ahead);
+            org.springframework.test.util.ReflectionTestUtils.setField(evaluation,"clock",ahead);
+            normalPreparationFreezesTheEvaluationPlanBeforeAnyReviewOrApproval();
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(actionService,"clock",actionClock);
+            org.springframework.test.util.ReflectionTestUtils.setField(evaluation,"clock",evaluationClock);
+        }
     }
 
     @Test
@@ -599,6 +617,196 @@ class ListingReworkAuthorizationIT {
         loopback.stop();
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"SYNC","ASYNC","CRASH","LATER_CHANGE","MISSING_VERSION","EXPIRED_APPROVAL","VERSION_CONFLICT"})
+    void exactRestorationUsesNewPreparationIndependentReviewApprovalAndConditionalWorker(String scenario) throws Exception {
+        // This positive fixture budgets for both the original residual occupation and restoration.
+        // Neither obligation is released merely to make an opposite action fit.
+        fixture.seed.sql("UPDATE ops.lc_exposure_allowance SET limit_value=2 WHERE id=:id")
+                .param("id",fixture.id("allowanceConcurrent")).update();
+        // Establish the real isolated source execution through the same connected chain.
+        oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole("SYNC");
+        fixture.seed.sql("UPDATE ops.approval_decision SET scope_expires_at=clock_timestamp()+interval '100 milliseconds' WHERE id=:id")
+                .param("id",fixture.id("approvalOne")).update();
+        var json=new tools.jackson.databind.ObjectMapper();
+        UUID source=jdbc.sql("SELECT id FROM ops.lc_description_command WHERE action_id=:id")
+                .param("id",fixture.id("actionOne")).query(UUID.class).single();
+        for (var scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.COMMAND_RESOLVE))
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post("/api/v1/console/listing-description-commands/"+source+"/compensation")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"reason\":\"An opposite old approval cannot authorize restoration\"}"))
+                .andExpect(status().isConflict());
+        mvc.perform(post("/api/v1/console/listing/health/listings/"+fixture.id("listing")+"/facts/description")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("text",ListingConversionFixture.TARGET_TEXT_ONE,"languageCode","ru",
+                    "kizMarkedDeclared",false,"note","Synthetic operator observation, not official provider provenance"))))
+                .andExpect(status().isOk());
+        var candidateResponse=mvc.perform(post("/api/v1/console/listing/actions/candidates")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("listingId",fixture.id("listing"),"candidateKind","CONTENT_DESCRIPTION",
+                    "roundKey","exact-restoration","evidenceReferences",List.of("evidence://synthetic/restoration")))))
+                .andExpect(status().isOk()).andReturn();
+        String candidate=json.readTree(candidateResponse.getResponse().getContentAsString()).path("id").asText();
+        for (Map<String,Object> invalid:List.<Map<String,Object>>of(
+                Map.of("executionPath","API","restoresCommandId",UUID.randomUUID(),"kizMarkedDeclared",false),
+                Map.of("executionPath","API","restoresCommandId",source,"targetText","","kizMarkedDeclared",false))) {
+            mvc.perform(post("/api/v1/console/listing/actions/candidates/"+candidate+"/prepare")
+                    .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(invalid))).andExpect(status().isConflict());
+        }
+        var prepared=mvc.perform(post("/api/v1/console/listing/actions/candidates/"+candidate+"/prepare")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("executionPath","API","restoresCommandId",source,
+                    "kizMarkedDeclared",false,"exposureShare",new java.math.BigDecimal("0.01")))))
+                .andExpect(result->assertThat(result.getResponse().getStatus()).withFailMessage("Restoration preparation: %s",result.getResolvedException()).isEqualTo(200))
+                .andExpect(jsonPath("$.state").value("DRAFT"))
+                .andExpect(jsonPath("$.targetText").value(ListingConversionFixture.PRIOR_TEXT_ONE))
+                .andExpect(jsonPath("$.restoresCommandId").value(source.toString())).andReturn();
+        UUID action=UUID.fromString(json.readTree(prepared.getResponse().getContentAsString()).path("id").asText());
+        UUID recommendation=jdbc.sql("SELECT recommendation_id FROM ops.lc_action WHERE id=:id")
+                .param("id",action).query(UUID.class).single();
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/launch")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content("{\"axes\":{}}"))
+                .andExpect(status().isConflict());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
+                .param("id",action).query(Integer.class).single()).isZero();
+        String authorToken=bearer();
+        subject="restoration-reviewer-"+UUID.randomUUID();
+        UUID reviewer=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Restoration reviewer",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",reviewer).update();
+        users.assignRole(OPERATOR,reviewer,BusinessRoleCode.OWNER,null);
+        for(var scope:List.of(ActionScopeCode.LISTING_ACTION_REVIEW,ActionScopeCode.LISTING_ACTION_APPROVE_MATERIAL,
+                ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY,ActionScopeCode.LISTING_CONVERSION_VIEW))
+            users.grantScope(OPERATOR,reviewer,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"verdict\":\"ATTESTED\",\"reason\":\"Independently verify exact restoration source and full target\"}"))
+                .andExpect(status().isOk());
+        long version=jdbc.sql("SELECT version FROM ops.recommendation WHERE id=:id").param("id",recommendation).query(Long.class).single();
+        mvc.perform(post("/api/v1/console/workflow/recommendations/"+recommendation+"/approval")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("expectedVersion",version,"reason","New exact restoration business approval"))))
+                .andExpect(result->assertThat(result.getResponse().getStatus()).withFailMessage("Restoration approval: %s",result.getResolvedException()).isEqualTo(200));
+        if (scenario.equals("ASYNC")) configureConnectedAsyncProtocol();
+        fixture.seed.sql("UPDATE platform.capability_operation SET conditional_write_header='If-Match' WHERE capability_id=:id AND operation='RESTORE'")
+                .param("id",fixture.id("capability")).update();
+        fixture.seed.sql("UPDATE platform.capability_operation SET version_token_header='etag' WHERE capability_id=:id AND operation='READBACK'")
+                .param("id",fixture.id("capability")).update();
+        fixture.seed.sql("UPDATE platform.registry_verification_case SET endpoint_ids=ARRAY(SELECT endpoint_id FROM platform.capability_operation WHERE capability_id=:id),configuration_snapshot=platform.registry_configuration_snapshot(capability_id),submitted_configuration_snapshot=platform.registry_configuration_snapshot(capability_id) WHERE capability_id=:id")
+                .param("id",fixture.id("capability")).update();
+        var launched=mvc.perform(post("/api/v1/console/listing/actions/"+action+"/launch")
+                .header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON).content("{\"axes\":{}}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.launched").value(true)).andReturn();
+        UUID restored=UUID.fromString(json.readTree(launched.getResponse().getContentAsString()).path("commandId").asText());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE allowance_id=:id AND state<>'RELEASED'")
+                .param("id",fixture.id("allowanceConcurrent")).query(Integer.class).single()).isEqualTo(2);
+        assertThat(restored).isNotEqualTo(source);
+        String nativeKey=jdbc.sql("SELECT native_listing_key FROM core.platform_listing WHERE id=:id")
+                .param("id",fixture.id("listing")).query(String.class).single();
+        loopback.openRestoration(nativeKey,ListingConversionFixture.TARGET_TEXT_ONE,ListingConversionFixture.PRIOR_TEXT_ONE,scenario);
+        assertThat(jdbc.sql("SELECT scope_expires_at<clock_timestamp() FROM ops.approval_decision WHERE id=:id")
+                .param("id",fixture.id("approvalOne")).query(Boolean.class).single()).isTrue();
+        UUID newApproval=jdbc.sql("SELECT approval_decision_id FROM ops.lc_description_command WHERE id=:id")
+                .param("id",restored).query(UUID.class).single();
+        assertThat(newApproval).isNotEqualTo(fixture.id("approvalOne"));
+        assertThatThrownBy(()->jdbc.sql("UPDATE ops.lc_description_command SET approval_decision_id=:old WHERE id=:id")
+                .param("old",fixture.id("approvalOne")).param("id",restored).update()).isInstanceOf(org.springframework.dao.DataAccessException.class);
+        Object worker=applicationContext.getBean("listingDescriptionCommandWorker");
+        if(scenario.equals("EXPIRED_APPROVAL")) {
+            fixture.seed.sql("UPDATE ops.approval_decision SET scope_expires_at=clock_timestamp()+interval '100 milliseconds' WHERE id=:id")
+                    .param("id",newApproval).update();
+            Thread.sleep(150);
+            assertThat(fixture.gateReasons(restored)).contains("AUTHORIZATION_INVALID_OR_EXPIRED");
+            assertThat(runConnectedWorker(worker)).isZero();
+            assertThat(loopback.received).isEmpty();
+            return;
+        }
+        assertThat(fixture.gateReasons(restored)).isEmpty();
+        if(scenario.equals("CRASH")) {
+            assertThatThrownBy(()->runConnectedWorker(applicationContext.getBean("listingDescriptionCommandWorker")))
+                    .isInstanceOf(ListingDescriptionLoopback.SimulatedProcessLoss.class);
+            fixture.seed.sql("UPDATE ops.lc_description_command SET lease_expires_at=clock_timestamp()-interval '1 second' WHERE id=:id")
+                    .param("id",restored).update();
+            worker=applicationContext.getAutowireCapableBeanFactory().createBean(Class.forName(
+                    "com.mimococo.marketops.marketplaceintegration.internal.application.ListingDescriptionCommandWorker"));
+            assertThat(runConnectedWorker(worker)).isZero();
+            assertThat(loopback.received).hasSize(2);
+            mvc.perform(post("/api/v1/console/listing-description-commands/"+restored+"/readback")
+                    .header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"reason\":\"Observe interrupted restoration without another mutation\"}"))
+                    .andExpect(status().isOk());
+            assertThat(runConnectedWorker(worker)).isEqualTo(1);
+        } else {
+            assertThat(runConnectedWorker(worker)).isEqualTo(1);
+            if(scenario.equals("ASYNC")) {
+                for(int poll=0;poll<2;poll++) {
+                    awaitConnectedCommandDue(restored);
+                    assertThat(runConnectedWorker(worker)).isEqualTo(1);
+                }
+            }
+        }
+        if(scenario.equals("VERSION_CONFLICT")) {
+            mvc.perform(get("/api/v1/console/listing-description-commands/"+restored).header(HttpHeaders.AUTHORIZATION,authorToken))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("UNKNOWN_REQUIRES_READBACK"))
+                    .andExpect(jsonPath("$.executionReceipts").isEmpty());
+            assertThat(loopback.received).containsExactly("GET /fixture/descriptions/"+nativeKey,"POST /fixture/descriptions");
+            assertThat(runConnectedWorker(worker)).isZero();
+            assertThat(loopback.received).hasSize(2);
+            return;
+        }
+        if(scenario.equals("LATER_CHANGE") || scenario.equals("MISSING_VERSION")) {
+            String expected=scenario.equals("LATER_CHANGE")?"LATER_CHANGE_OR_MISMATCH_INVESTIGATION":"READBACK_MISMATCH";
+            mvc.perform(get("/api/v1/console/listing-description-commands/"+restored).header(HttpHeaders.AUTHORIZATION,authorToken))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.state").value(expected))
+                    .andExpect(jsonPath("$.executionReceipts").isEmpty());
+            assertThat(loopback.received).containsExactly("GET /fixture/descriptions/"+nativeKey);
+            return;
+        }
+        assertThat(jdbc.sql("SELECT state FROM ops.lc_description_command WHERE id=:id").param("id",restored).query(String.class).single())
+                .withFailMessage("Restoration did not settle: wire=%s, attempts=%s",loopback.received,
+                    jdbc.sql("SELECT purpose,outcome_class,error_code FROM ops.lc_description_command_attempt WHERE command_id=:id ORDER BY attempt_no")
+                        .param("id",restored).query().listOfRows()).isEqualTo("READBACK_MATCHED");
+        mvc.perform(get("/api/v1/console/listing-description-commands/"+restored).header(HttpHeaders.AUTHORIZATION,authorToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("READBACK_MATCHED"))
+                .andExpect(jsonPath("$.executionReceipts[0].executionState").value(
+                    scenario.equals("CRASH")?"NATIVE_COMPLETION_UNPROVEN":"MANAGEMENT_VERIFIED"));
+        var purposes=jdbc.sql("SELECT purpose FROM ops.lc_description_command_attempt WHERE command_id=:id ORDER BY attempt_no")
+                .param("id",restored).query(String.class).list();
+        assertThat(purposes.stream().filter("RESTORE"::equals).count()).isEqualTo(1);
+        assertThat(purposes).doesNotContain("APPLY");
+        if(scenario.equals("ASYNC")) assertThat(purposes).containsExactly("READBACK","RESTORE","STATUS_ENQUIRY","STATUS_ENQUIRY","READBACK");
+        else assertThat(purposes).containsExactly("READBACK","RESTORE","READBACK");
+        assertThat(loopback.received.stream().filter("POST /fixture/descriptions"::equals).count()).isEqualTo(1);
+    }
+
+    @Test
+    void restorationRejectsACompletedSourceWhoseCapturedPriorIsMissing() throws Exception {
+        oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole("EMPTY_SOURCE");
+        UUID source=jdbc.sql("SELECT id FROM ops.lc_description_command WHERE action_id=:id AND prior_text IS NULL")
+                .param("id",fixture.id("actionOne")).query(UUID.class).single();
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_ACTION_PREPARE,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        var json=new tools.jackson.databind.ObjectMapper();
+        mvc.perform(post("/api/v1/console/listing/health/listings/"+fixture.id("listing")+"/facts/description")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("text",ListingConversionFixture.TARGET_TEXT_ONE,"languageCode","ru",
+                    "kizMarkedDeclared",false,"note","Synthetic operator observation after empty prior was changed"))))
+                .andExpect(status().isOk());
+        var proposed=mvc.perform(post("/api/v1/console/listing/actions/candidates")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("listingId",fixture.id("listing"),"candidateKind","CONTENT_DESCRIPTION",
+                    "roundKey","missing-captured-prior","evidenceReferences",List.of("evidence://synthetic/empty-prior")))))
+                .andExpect(status().isOk()).andReturn();
+        String candidate=json.readTree(proposed.getResponse().getContentAsString()).path("id").asText();
+        mvc.perform(post("/api/v1/console/listing/actions/candidates/"+candidate+"/prepare")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("executionPath","API","restoresCommandId",source,"kizMarkedDeclared",false))))
+                .andExpect(status().isConflict()).andExpect(jsonPath("$.title").value("RESTORE_UNSUPPORTED"));
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_action WHERE candidate_id=:id").param("id",UUID.fromString(candidate))
+                .query(Integer.class).single()).isZero();
+        assertThat(loopback.received).hasSize(2);
+    }
+
     private int runConnectedWorker(Object worker) {
         Integer advanced=org.springframework.test.util.ReflectionTestUtils.invokeMethod(worker,"runOnce",Instant.now(),10);
         return advanced==null?0:advanced;
@@ -642,7 +850,13 @@ class ListingReworkAuthorizationIT {
     }
 
     @org.junit.jupiter.api.AfterEach
-    void stopConnectedServer() { loopback.stop(); }
+    void stopConnectedServer() {
+        loopback.stop();
+        // Each scenario owns one fictional organization. Retained pending evidence must
+        // not become runnable work for the next scenario's differently bound server.
+        if (fixture!=null) fixture.seed.sql("UPDATE ops.lc_description_command SET next_attempt_at='infinity' WHERE organization_id=:org")
+                .param("org",fixture.id("organization")).update();
+    }
 
     @Test
     void oneSignedApiLaunchCreatesAndReturnsItsOnlyCommandBeforeCommit() throws Exception {

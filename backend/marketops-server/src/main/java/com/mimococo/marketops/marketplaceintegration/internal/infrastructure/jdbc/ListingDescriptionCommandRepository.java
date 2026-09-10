@@ -241,14 +241,16 @@ public class ListingDescriptionCommandRepository {
         return joined == null || joined.isBlank() ? List.of() : List.of(joined.split(","));
     }
 
+    public boolean isExactRestoration(UUID commandId) {
+        return Boolean.TRUE.equals(jdbc.sql("""
+                SELECT a.restores_command_id IS NOT NULL FROM ops.lc_description_command c
+                  JOIN ops.lc_action a ON a.id=c.action_id WHERE c.id=:id
+                """).param("id", commandId).query(Boolean.class).single());
+    }
+
     public Optional<String> restoreVersionToken(UUID commandId) {
-        return jdbc.sql("""
-                SELECT obs.version_token
-                  FROM ops.lc_description_command_readback rb
-                  JOIN raw.lc_description_response_observation obs ON obs.id = rb.raw_observation_id
-                 WHERE rb.command_id = :commandId
-                 ORDER BY rb.observed_at DESC LIMIT 1
-                """).param("commandId", commandId).query(String.class).optional();
+        return jdbc.sql("SELECT ops.lc_restoration_preflight_version(:id)")
+                .param("id", commandId).query(String.class).optional();
     }
 
     /** How many commands of a store are neither terminal nor waiting on a person. */

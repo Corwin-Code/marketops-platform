@@ -73,17 +73,10 @@ public class ListingDescriptionResolutionService {
 
     @Transactional
     public ListingDescriptionCommandView compensate(AuthenticatedActor actor, UUID commandId, String reason) {
-        ListingDescriptionCommandRepository.CommandRow command = require(actor, commandId);
-        String validReason = MetadataFieldPolicy.requireText("reason", reason);
-        if (command.priorText() == null) {
-            // An empty or missing prior value never becomes a space, a placeholder
-            // or a full import. There is nothing precise to restore.
-            throw OperationRejectedException.of(ErrorCode.RESTORE_UNSUPPORTED);
-        }
-        commands.transition(commandId, command.fenceToken(), command.leaseOwner(),
-                ListingDescriptionCommandState.COMPENSATION_PENDING.name(), null, null, null);
-        record(actor, commandId, command.state(), ListingDescriptionCommandState.COMPENSATION_PENDING, validReason);
-        return commands.view(commandId).orElseThrow();
+        require(actor, commandId);
+        MetadataFieldPolicy.requireText("reason", reason);
+        // Historical endpoint retained for explicit refusal; restoration uses new Action preparation.
+        throw OperationRejectedException.of(ErrorCode.RESTORE_UNSUPPORTED);
     }
 
     @Transactional

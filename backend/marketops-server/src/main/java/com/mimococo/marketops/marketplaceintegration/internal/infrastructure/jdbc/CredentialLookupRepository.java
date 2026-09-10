@@ -93,4 +93,15 @@ public class CredentialLookupRepository {
                 .query(String.class)
                 .optional();
     }
+    public java.util.Optional<String> restorationAttributeKey(java.util.UUID capabilityId) {
+        return jdbc.sql("""
+                SELECT description_attribute_key FROM platform.capability_operation
+                 WHERE capability_id = :capabilityId AND operation = 'RESTORE'
+                   AND status = 'ACTIVE' AND verification_state = 'VERIFIED'
+                   AND description_attribute_key IS NOT NULL
+                """)
+                .param("capabilityId", capabilityId)
+                .query(String.class)
+                .optional();
+    }
 }

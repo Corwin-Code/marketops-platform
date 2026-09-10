@@ -42,7 +42,8 @@ public record ListingActionView(
         List<String> bindingGaps,
         Instant createdAt,
         Instant updatedAt,
-        long version) {
+        long version,
+        UUID restoresCommandId) {
 
     public record Review(UUID id, UUID reviewerUserId, String verdict, String reason, Instant reviewedAt,
                          String evaluationPlanDigest) {

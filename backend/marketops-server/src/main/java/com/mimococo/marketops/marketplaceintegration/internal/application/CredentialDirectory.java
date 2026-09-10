@@ -38,4 +38,7 @@ public class CredentialDirectory {
     public Optional<String> descriptionAttributeKey(UUID capabilityId) {
         return credentials.descriptionAttributeKey(capabilityId);
     }
+    public Optional<String> restorationAttributeKey(UUID capabilityId) {
+        return credentials.restorationAttributeKey(capabilityId);
+    }
 }

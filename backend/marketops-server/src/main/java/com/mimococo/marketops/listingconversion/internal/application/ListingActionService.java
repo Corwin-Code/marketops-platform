@@ -144,7 +144,7 @@ public class ListingActionService {
 
     /** What preparation needs beyond the candidate. */
     public record Preparation(ExecutionPath path, String targetText, Boolean kizMarkedDeclared, BigDecimal exposureShare,
-                              Map<String, String> expectedEffect, String riskLabel) {
+                              Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId) {
     }
 
     @Transactional
@@ -156,11 +156,11 @@ public class ListingActionService {
         if (!"OPEN".equals(candidate.state())) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
-        Instant now = clock.instant();
+        Instant now = actions.databaseNow();
         boolean description = candidate.candidateKind() == CandidateKind.CONTENT_DESCRIPTION;
         ActionKind kind = description ? ActionKind.LISTING_DESCRIPTION_CHANGE : ActionKind.LISTING_PROMOTION_ACTION;
         ExecutionPath path = preparation.path() == null ? ExecutionPath.MANUAL : preparation.path();
-        if (!description && path == ExecutionPath.API) {
+        if (!description && (path == ExecutionPath.API || preparation.restoresCommandId()!=null)) {
             throw OperationRejectedException.of(ErrorCode.EXECUTION_PATH_MISMATCH);
         }
         ListingHealthService.FrozenSet set = health.freezeAffectedSet(candidate.platformListingId());
@@ -175,7 +175,17 @@ public class ListingActionService {
             if (current.isEmpty()) {
                 throw OperationRejectedException.of(ErrorCode.RAW_EVIDENCE_MISSING);
             }
-            targetText = com.mimococo.marketops.listingconversion.internal.domain.DescriptionText.requireTarget(preparation.targetText());
+            String requestedTarget=preparation.targetText();
+            if (preparation.restoresCommandId()!=null) {
+                var source=actions.restorationSource(preparation.restoresCommandId(),listing.organizationId(),listing.id())
+                        .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESTORE_UNSUPPORTED));
+                if (!source.appliedTextDigest().equals(current.get().textDigest())
+                        || (requestedTarget!=null && !requestedTarget.equals(source.priorText()))) {
+                    throw OperationRejectedException.of(ErrorCode.RESTORE_UNSUPPORTED);
+                }
+                requestedTarget=source.priorText();
+            }
+            targetText = com.mimococo.marketops.listingconversion.internal.domain.DescriptionText.requireTarget(requestedTarget);
             if (targetText.equals(current.get().descriptionText())) {
                 throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
             }
@@ -206,6 +216,7 @@ public class ListingActionService {
         parameters.put("candidateId", candidateId.toString());
         parameters.put("executionPath", path.name());
         parameters.put("affectedSetDigest", set.digest());
+        if (preparation.restoresCommandId()!=null) parameters.put("restoresCommandId",preparation.restoresCommandId().toString());
         if (targetDigest != null) {
             parameters.put("targetTextDigest", targetDigest);
         }
@@ -222,7 +233,7 @@ public class ListingActionService {
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse(null), targetText, targetDigest, kiz,
                 classification.contentAxisMaterial(), classification.exposureAxisMaterial(), classification.route(),
                 unresolved ? null : resolved.resolved().packageId(), unresolved ? null : resolved.resolved().version(),
-                actor.userId(), now);
+                actor.userId(), now, preparation.restoresCommandId());
         if (!unresolved) {
             evaluation.freezePlan(actions.action(actionId).orElseThrow());
         }
@@ -250,8 +261,8 @@ public class ListingActionService {
     @Transactional
     public ListingActionView review(AuthenticatedActor actor, UUID actionId, String verdict, String reason) {
         ListingActionRepository.ActionRow action = requireAction(actor, actionId, ActionScopeCode.LISTING_ACTION_REVIEW);
-        Instant now = clock.instant();
-        if (!actor.stepUpSatisfiedAt(now)) {
+        Instant now = actions.databaseNow();
+        if (!actor.stepUpSatisfiedAt(clock.instant())) {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
         }
         if (actor.userId().equals(action.authorUserId())) {
@@ -403,7 +414,7 @@ public class ListingActionService {
                 row.authorUserId(), ListingActionState.valueOf(row.state()), actions.reviews(row.id()),
                 actions.binding(row.id()).orElse(null), actions.launch(row.id()).orElse(null), actions.occupations(row.id()),
                 actions.binding(row.id()).isPresent() ? actions.bindingGaps(row.id()) : List.of(),
-                row.createdAt(), row.updatedAt(), row.version());
+                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId());
     }
 
     ListingActionRepository.ActionRow requireAction(AuthenticatedActor actor, UUID actionId, ActionScopeCode scope) {

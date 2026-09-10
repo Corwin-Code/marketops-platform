@@ -150,7 +150,7 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
         if (!"REVIEWED".equals(action.state()) || action.calibrationPackageId() == null) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
-        Instant now = clock.instant();
+        Instant now = actions.databaseNow();
         Map<String, String> evidenceVersions = Map.of(
                 "currentDescriptionObservationId", String.valueOf(action.currentObservationId()),
                 "affectedSetId", action.affectedSetId().toString(),

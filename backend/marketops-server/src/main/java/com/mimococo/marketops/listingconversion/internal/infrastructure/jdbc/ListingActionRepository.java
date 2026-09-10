@@ -105,7 +105,12 @@ public class ListingActionRepository {
                             String targetTextDigest, Boolean kizMarkedDeclared, Boolean contentAxisMaterial,
                             Boolean exposureAxisMaterial, String materialityRoute, UUID calibrationPackageId,
                             Integer calibrationVersion, UUID authorUserId, String state, Instant createdAt,
-                            Instant updatedAt, long version) {
+                            Instant updatedAt, long version, UUID restoresCommandId) {
+    }
+
+    /** One database clock for the persisted preparation/plan/review/binding chronology. */
+    public Instant databaseNow() {
+        return jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
     }
 
     public void insertAction(UUID id, UUID organizationId, UUID storeId, UUID listingId, UUID candidateId,
@@ -113,16 +118,16 @@ public class ListingActionRepository {
                              ExecutionPath path, UUID currentObservationId, String currentTextDigest, String targetText,
                              String targetTextDigest, Boolean kizMarked, Boolean contentAxis, Boolean exposureAxis,
                              MaterialityRoute route, UUID calibrationPackageId, Integer calibrationVersion,
-                             UUID authorUserId, Instant now) {
+                             UUID authorUserId, Instant now, UUID restoresCommandId) {
         jdbc.sql("""
                 INSERT INTO ops.lc_action (id, organization_id, store_id, platform_listing_id, candidate_id, recommendation_id,
                     affected_set_id, affected_set_digest, action_kind, execution_path, current_description_observation_id,
                     current_text_digest, target_text, target_text_digest, target_language_code, kiz_marked_declared,
                     content_axis_material, exposure_axis_material, materiality_route, calibration_package_id,
-                    calibration_version, author_user_id, state, created_at, updated_at, version)
+                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id)
                 VALUES (:id, :org, :store, :listing, :candidate, :recommendation, :set, :digest, :kind, :path, :observation,
                     :currentDigest, :text, :textDigest, :language, :kiz, :content, :exposure, :route, :package, :packageVersion,
-                    :author, 'DRAFT', :now, :now, 0)
+                    :author, 'DRAFT', :now, :now, 0, :restores)
                 """).param("id", id).param("org", organizationId).param("store", storeId).param("listing", listingId)
                 .param("candidate", candidateId).param("recommendation", recommendationId).param("set", affectedSetId)
                 .param("digest", affectedSetDigest).param("kind", actionKind).param("path", path.name())
@@ -131,7 +136,23 @@ public class ListingActionRepository {
                 .param("language", targetText == null ? null : "ru").param("kiz", kizMarked)
                 .param("content", contentAxis).param("exposure", exposureAxis).param("route", route.name())
                 .param("package", calibrationPackageId).param("packageVersion", calibrationVersion)
-                .param("author", authorUserId).param("now", Timestamp.from(now)).update();
+                .param("author", authorUserId).param("now", Timestamp.from(now)).param("restores",restoresCommandId).update();
+    }
+
+    public record RestorationSource(UUID commandId,String priorText,String appliedTextDigest) { }
+
+    public Optional<RestorationSource> restorationSource(UUID commandId,UUID organizationId,UUID listingId) {
+        return jdbc.sql("""
+                SELECT c.id,c.prior_text,c.target_text_digest FROM ops.lc_description_command c
+                  JOIN ops.lc_action a ON a.id=c.action_id
+                 WHERE c.id=:id AND c.organization_id=:org AND c.platform_listing_id=:listing
+                   AND c.state='READBACK_MATCHED' AND c.prior_text IS NOT NULL AND c.prior_text<>''
+                   AND a.state IN ('VERIFIED','CONTAINED','CLOSED')
+                   AND EXISTS (SELECT 1 FROM ops.lc_execution_receipt r WHERE r.command_id=c.id
+                       AND r.execution_state='MANAGEMENT_VERIFIED')
+                """).param("id",commandId).param("org",organizationId).param("listing",listingId)
+                .query((rs,n)->new RestorationSource(rs.getObject("id",UUID.class),rs.getString("prior_text"),
+                        rs.getString("target_text_digest"))).optional();
     }
 
     public Optional<ActionRow> action(UUID id) {
@@ -170,7 +191,7 @@ public class ListingActionRepository {
                    a.current_description_observation_id, a.current_text_digest, a.target_text, a.target_text_digest,
                    a.kiz_marked_declared, a.content_axis_material, a.exposure_axis_material, a.materiality_route,
                    a.calibration_package_id, a.calibration_version, a.author_user_id, a.state, a.created_at, a.updated_at,
-                   a.version
+                   a.version, a.restores_command_id
               FROM ops.lc_action a
             """;
 
@@ -187,7 +208,7 @@ public class ListingActionRepository {
                 rs.getObject("calibration_package_id", UUID.class), rs.getObject("calibration_version", Integer.class),
                 rs.getObject("author_user_id", UUID.class), rs.getString("state"),
                 ListingFactRepository.instant(rs, "created_at"), ListingFactRepository.instant(rs, "updated_at"),
-                rs.getLong("version"));
+                rs.getLong("version"),rs.getObject("restores_command_id",UUID.class));
     }
 
     // ------------------------------------------------------------------ reviews, bindings, plans

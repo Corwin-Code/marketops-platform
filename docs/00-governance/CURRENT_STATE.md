@@ -794,3 +794,16 @@ and independent verification have targeted evidence in `checkpoint-11-test-recei
 76 architecture, 5 Description registry, 35 shared Registry, 11 response and
 27 signed listing HTTP/database checks passed. Only fictional attestation data
 was used. 0/27 closed; final handoff NOT_READY and all production enablement unchanged.
+
+SLICE-V1-004 continuous local rework update: checkpoint-16 receipts now cover
+new exact restoration through normal preparation, independent review, current
+approval, execution Guardrail, allowance and the sole Description Worker/Raw
+path. The former command-compensation authority cannot reuse the opposite
+approval. Controlled database-clock chronology fixes the earlier preparation
+refusal without relaxing plan-before-review constraints. Targeted results:
+39 signed HTTP/database, 132 unit/architecture, 21 response identity, 7 timing,
+8 Gate, 1 historical upgrade, 22 UI; frontend typecheck/lint/build pass.
+See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-16-test-receipts.json`.
+This supersedes earlier partial-path limitations only to that measured extent;
+all 27 findings remain open for final closure. No Level-2, remote publication,
+real-account verification, shared migration or production enablement occurred.

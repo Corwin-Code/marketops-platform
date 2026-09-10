@@ -73,8 +73,12 @@ class ListingActionIntakeService implements ListingActionIntake {
     @Override
     @Transactional
     public UUID proposeListingAction(ListingActionProposal proposal) {
-        if (!recommendations.liveFor(SubjectKind.PLATFORM_LISTING, proposal.platformListingId(),
-                proposal.actionKind()).isEmpty()) {
+        String sourceReference=proposal.proposedParameters().get("restoresCommandId");
+        UUID sourceRecommendation=sourceReference==null?null:recommendations.restorationSourceRecommendation(
+                proposal.organizationId(),proposal.platformListingId(),UUID.fromString(sourceReference))
+                .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESTORE_UNSUPPORTED));
+        if (recommendations.liveFor(SubjectKind.PLATFORM_LISTING, proposal.platformListingId(),
+                proposal.actionKind()).stream().anyMatch(id->!id.equals(sourceRecommendation))) {
             // One primary change per listing per round. A second live proposal
             // would make the version-attributed window unattributable.
             throw OperationRejectedException.of(ErrorCode.DUPLICATE_IDENTITY);

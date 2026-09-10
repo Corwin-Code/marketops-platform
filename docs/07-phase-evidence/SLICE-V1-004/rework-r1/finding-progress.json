@@ -77,7 +77,8 @@
         "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open.",
         "Full structured methods and critical group rules retained; explicit empty stop/zero tail permitted, missing stop remains unresolved. NOT_MET is no longer an automatic stop. Real qualified upper-bound/node schedule integration remains open.",
         "Normal DRAFT preparation now freezes the plan before review. V0088 binds review and approval to its exact digest/chronology and rejects legacy unbound approval reuse. Full frozen definition is available on read; complete windows/method/node execution remain open.",
-        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open."
+        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open.",
+        "Checkpoint 16: controlled application +60s clock reproduces plan freeze refusal; persisted listing preparation/plan/review/approval/binding uses one database clock. The original strict chronology constraints are unchanged."
       ],
       "executed_evidence": [
         "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending.",
@@ -197,7 +198,8 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Checkpoint 9: one launch transaction creates exactly one API command through the sole creator, or rolls back action, launch and all allowance axes. Manual launch creates none. Historic orphan launches cannot gain a command retrospectively; current actor authority precedes idempotent reads. Qualified result-to-business closure remains open.",
-        "Checkpoint 14: qualified native completion + exact subsequent management readback atomically produce an immutable receipt and verify only its still-launched API action; the existing workflow journal consumes receipts transactionally without human/outcome conflation. Full connected launch/worker/HTTP/custody/Console verification remains open."
+        "Checkpoint 14: qualified native completion + exact subsequent management readback atomically produce an immutable receipt and verify only its still-launched API action; the existing workflow journal consumes receipts transactionally without human/outcome conflation. Full connected launch/worker/HTTP/custody/Console verification remains open.",
+        "Checkpoint 16: normal launch now performs the existing EXECUTION Guardrail evaluation in its transaction. New restoration exercises actual preparation/review/approval through Worker, not a preseeded execution PASS."
       ],
       "executed_evidence": [
         "Checkpoint-9 receipts: 76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and 1 V0090-to-V0091 upgrade tests passed. All local and targeted; no finding closure.",
@@ -208,9 +210,13 @@
     {
       "id": "S4-DR-R1-020",
       "title": "精确恢复复用原命令和原批准，COMMAND_RESOLVE被扩成新的业务恢复授权",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Checkpoint 16: exact source-bound new restoration Action follows existing independent review/current approval/Guardrail/allowance/atomic launch and RESTORE worker. Legacy opposite-approval compensation is refused; conditional current-version control and RESTORE result custody are connected."
+      ],
+      "executed_evidence": [
+        "checkpoint-16-test-receipts.json: 39 signed HTTP/database cases include 7 connected restoration scenarios and missing captured prior, plus 132 unit/architecture, 21 native identity, 7 timing, 8 Gate, 1 upgrade and 22 UI checks. Targeted local evidence; no final closure."
+      ]
     },
     {
       "id": "S4-DR-R1-021",
@@ -242,7 +248,8 @@
         "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
         "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure.",
         "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
-        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim."
+        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim.",
+        "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred."
       ]
     },
     {
@@ -286,7 +293,8 @@
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
         "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only.",
         "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
-        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim."
+        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim.",
+        "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred."
       ]
     }
   ],

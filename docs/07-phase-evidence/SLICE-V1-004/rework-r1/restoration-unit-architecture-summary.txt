@@ -1,0 +1,6 @@
+Command: ./mvnw -B -ntp test '-Dtest=EvaluationPlanFreezeTest,ListingGuardrailTest,ListingDescriptionCommandWorkerTest,DescriptionExactRequestTest,DescriptionChangeGuardTest,*Approval*Test,*ArchitectureTest'
+Working directory: backend/marketops-server
+Result: PASS (exit 0)
+Tests: 132
+Raw local log SHA-256: 33e087803ddb1e41c6afdeb3ac2af858d16be7c6884086a865ccfd2d63b4a7da
+Scope: targeted local synthetic verification; not final Slice closure.

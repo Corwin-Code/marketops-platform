@@ -23,13 +23,15 @@ final class ListingDescriptionLoopback implements OutboundHttp,AutoCloseable {
     private String current;
     private String mode;
     private int polls;
+    private boolean conditional;
+    private boolean omitVersion;
     final List<String> received=new CopyOnWriteArrayList<>();
     final List<byte[]> bodies=new CopyOnWriteArrayList<>();
 
     void open(String nativeKey,String exactTarget,String scenario) throws IOException {
         if (server!=null) throw new IllegalStateException("fixture already open");
-        key=nativeKey;target=exactTarget;mode=scenario;current=ListingConversionFixture.PRIOR_TEXT_ONE;polls=0;
-        received.clear();bodies.clear();
+        key=nativeKey;target=exactTarget;mode=scenario;current=scenario.equals("EMPTY_SOURCE")?"":ListingConversionFixture.PRIOR_TEXT_ONE;polls=0;
+        received.clear();bodies.clear();conditional=false;omitVersion=false;
         server=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0);
         server.createContext("/fixture/descriptions",exchange->{
             byte[] body=exchange.getRequestBody().readAllBytes();
@@ -37,6 +39,11 @@ final class ListingDescriptionLoopback implements OutboundHttp,AutoCloseable {
             boolean mutation=exchange.getRequestMethod().equals("POST");
             Object answer;
             if (mutation) {
+                // A separate native edit after preflight changes the required conditional version.
+                String currentVersion=mode.equals("VERSION_CONFLICT")?"\"fixture-version-3\"":"\"fixture-version-2\"";
+                if (conditional && !currentVersion.equals(exchange.getRequestHeaders().getFirst("If-Match"))) {
+                    exchange.sendResponseHeaders(412,-1);exchange.close();return;
+                }
                 var submitted=json.readTree(body);
                 if (!submitted.path("offer_id").asString().equals(key)
                         || !submitted.path("attributes").get(0).path("values").get(0).path("value").asString().equals(target)) {
@@ -46,6 +53,7 @@ final class ListingDescriptionLoopback implements OutboundHttp,AutoCloseable {
                 answer=mode.equals("ASYNC")?Map.of("accepted",true,"task_id","fixture-task")
                         :Map.of("items",List.of(Map.of("offer_id",key,"accepted",true)));
             } else answer=Map.of("items",List.of(Map.of("offer_id",key,"description",current,"kizMarked",false)));
+            if (conditional && !omitVersion) exchange.getResponseHeaders().add("ETag","\"fixture-version-2\"");
             byte[] response=json.writeValueAsBytes(answer);
             exchange.sendResponseHeaders(200,response.length);exchange.getResponseBody().write(response);exchange.close();
         });
@@ -61,6 +69,11 @@ final class ListingDescriptionLoopback implements OutboundHttp,AutoCloseable {
             exchange.sendResponseHeaders(200,response.length);exchange.getResponseBody().write(response);exchange.close();
         });
         server.start();
+    }
+    void openRestoration(String nativeKey,String appliedText,String restorationText,String scenario) throws IOException {
+        open(nativeKey,restorationText,scenario.equals("CRASH")?"CRASH_AFTER_APPLY":scenario);
+        current=scenario.equals("LATER_CHANGE")?"Позднейшее законное описание":appliedText;
+        conditional=true;omitVersion=scenario.equals("MISSING_VERSION");
     }
     private record LocalPlan(Destination destination) implements Plan { }
     @Override public Plan prepare(Destination destination) {

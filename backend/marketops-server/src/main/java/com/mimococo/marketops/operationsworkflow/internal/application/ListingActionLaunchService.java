@@ -43,6 +43,8 @@ class ListingActionLaunchService implements ListingActionLaunch {
     static final String ENTITY_TYPE = "lc-action";
 
     private final JdbcClient jdbc;
+    private final RecommendationService recommendations;
+    private final GuardrailService guardrails;
     private final AuthenticatedInvocationIssuer issuer;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder auditRecorder;
@@ -52,8 +54,11 @@ class ListingActionLaunchService implements ListingActionLaunch {
 
     ListingActionLaunchService(JdbcClient jdbc, AuthenticatedInvocationIssuer issuer,
                                BusinessAuthorization authorization, MetadataAuditRecorder auditRecorder,
-                               IdGenerator ids, Clock clock, ObjectMapper json) {
+                               IdGenerator ids, Clock clock, ObjectMapper json,
+                               RecommendationService recommendations, GuardrailService guardrails) {
         this.jdbc = jdbc;
+        this.recommendations = recommendations;
+        this.guardrails = guardrails;
         this.issuer = issuer;
         this.authorization = authorization;
         this.auditRecorder = auditRecorder;
@@ -97,6 +102,12 @@ class ListingActionLaunchService implements ListingActionLaunch {
                 }
                 axes.put(MetadataFieldPolicy.requireText("axis", axis), value.toPlainString());
             });
+        }
+        // The atomic launcher replaced a second command-creation endpoint; it must also
+        // perform that endpoint's current execution evaluation before acquiring occupations.
+        if (!guardrails.evaluate(recommendations.require(context.recommendationId()), null,
+                com.mimococo.marketops.operationsworkflow.GuardrailPurpose.EXECUTION).passed()) {
+            throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
         }
         String proof = proof("LISTING_ACTION_LAUNCH", context.recommendationId(), context.approvalDecisionId());
         UUID launchId = ids.newId();

@@ -88,6 +88,10 @@ public final class ListingConversionFixture {
     final AdvertisingR1Fixture.Graph graph;
 
     public ListingConversionFixture(DataSource migration, DataSource application, DataSource admin) throws Exception {
+        this(migration,application,admin,false);
+    }
+
+    ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,boolean emptyPrior) throws Exception {
         this.migration = migration;
         this.application = application;
         this.admin = admin;
@@ -102,6 +106,7 @@ public final class ListingConversionFixture {
         });
         String source = new ClassPathResource("listing/lc-fictional-positive.sql")
                 .getContentAsString(StandardCharsets.UTF_8);
+        if (emptyPrior) source=source.replace(PRIOR_TEXT_ONE,"");
         var uuid = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}").matcher(source);
         String sql = uuid.replaceAll(match -> replacement.computeIfAbsent(match.group(),
                         ignored -> UUID.randomUUID().toString()))

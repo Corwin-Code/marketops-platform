@@ -108,6 +108,7 @@ export interface ListingAction {
   readonly currentTextDigest: string | undefined;
   readonly targetText: string | undefined;
   readonly targetTextDigest: string | undefined;
+  readonly restoresCommandId?: string | undefined;
   readonly kizMarkedDeclared: boolean | undefined;
   readonly materialityRoute: string;
   readonly contentAxisMaterial: boolean | undefined;
@@ -658,6 +659,7 @@ export function parseListingAction(body: unknown): ListingAction | undefined {
     currentTextDigest: text(r.currentTextDigest),
     targetText: text(r.targetText),
     targetTextDigest: text(r.targetTextDigest),
+    restoresCommandId: text(r.restoresCommandId),
     kizMarkedDeclared: bool(r.kizMarkedDeclared),
     materialityRoute,
     contentAxisMaterial: bool(r.contentAxisMaterial),
@@ -1243,6 +1245,7 @@ export function prepareAction(
   targetText: string,
   kizMarkedDeclared: boolean | undefined,
   exposureShare: string,
+  restoresCommandId?: string,
 ): Promise<ConsoleOutcome<ListingAction>> {
   return request(
     context,
@@ -1250,7 +1253,8 @@ export function prepareAction(
     parseListingAction,
     post({
       executionPath,
-      targetText,
+      targetText: restoresCommandId ? null : targetText,
+      restoresCommandId: restoresCommandId === '' ? null : (restoresCommandId ?? null),
       kizMarkedDeclared: kizMarkedDeclared ?? null,
       exposureShare: exposureShare === '' ? null : exposureShare,
       expectedEffect: {},

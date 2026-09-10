@@ -1,0 +1,6 @@
+Command: ./mvnw -B -ntp test -Dtest=ListingDescriptionWriteGateIT
+Working directory: backend/marketops-server
+Result: PASS (exit 0)
+Tests: 8
+Raw local log SHA-256: b23038976ed7abc2072786be21c94ca54578f97a778fd915bff03c78ee384ac2
+Scope: targeted local synthetic verification; not final Slice closure.

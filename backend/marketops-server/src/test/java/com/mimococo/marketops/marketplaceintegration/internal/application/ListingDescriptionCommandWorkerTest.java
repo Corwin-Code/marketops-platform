@@ -338,52 +338,61 @@ class ListingDescriptionCommandWorkerTest {
     }
 
     @Nested
-    @DisplayName("TC-LC-WORKER-004 compensation restores exactly the captured prior text or nothing")
-    class Compensation {
-
+    @DisplayName("TC-LC-WORKER-004 restoration uses a new action and current conditional preflight")
+    class Restoration {
         @Test
-        @DisplayName("a command with no captured prior text goes to a person, not to a blank write")
-        void missingPriorIsNeverRestored() {
-            claim("COMPENSATION_PENDING", null);
-
+        void legacyCompensationNeverDispatchesEvenWithCapturedPrior() {
+            claim("COMPENSATION_PENDING");
             worker.runOnce(Instant.now(), 10);
-
             verify(writePort, never()).perform(any());
             verify(commands).transition(eq(COMMAND), anyLong(), anyString(), eq("MANUAL_RESOLUTION"),
-                    eq("restore_unsupported"), any(), any());
+                    eq("new_restoration_action_required"), any(), any());
         }
 
         @Test
-        @DisplayName("a restore is sent only while the platform still holds this command's text")
-        void restoreOnlyWhenCurrentOwnerProven() {
-            claim("COMPENSATION_PENDING");
-            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.ACCEPTED, null));
+        void newRestorationWritesItsOwnApprovedTargetAndCurrentVersion() {
+            claim("PENDING");
+            when(commands.isExactRestoration(COMMAND)).thenReturn(true);
+            when(commands.restoreVersionToken(COMMAND)).thenReturn(Optional.of("\"version-2\""));
+            when(credentials.restorationAttributeKey(any())).thenReturn(Optional.of("description-field"));
             when(commands.transitionReadback(any(), any(), anyLong(), anyString()))
-                    .thenReturn("MATCHES_TARGET", "MATCHES_PRIOR");
-
+                    .thenReturn("MATCHES_PRIOR", "MATCHES_TARGET");
+            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.ACCEPTED, null));
             worker.runOnce(Instant.now(), 10);
-
-            ArgumentCaptor<DescriptionWriteRequest> request = ArgumentCaptor.forClass(DescriptionWriteRequest.class);
-            verify(writePort, org.mockito.Mockito.times(3)).perform(request.capture());
-            assertThat(request.getAllValues()).extracting(DescriptionWriteRequest::operation)
-                    .containsExactly(DescriptionWriteRequest.Operation.READBACK,
-                            DescriptionWriteRequest.Operation.RESTORE, DescriptionWriteRequest.Operation.READBACK);
-            assertThat(request.getAllValues().get(1).descriptionText()).isEqualTo(PRIOR);
-            verify(commands).transition(eq(COMMAND), anyLong(), anyString(), eq("COMPENSATED"), any(), any(), any());
+            ArgumentCaptor<DescriptionWriteRequest> requests=ArgumentCaptor.forClass(DescriptionWriteRequest.class);
+            verify(writePort, org.mockito.Mockito.times(3)).perform(requests.capture());
+            assertThat(requests.getAllValues()).extracting(DescriptionWriteRequest::operation).containsExactly(
+                    DescriptionWriteRequest.Operation.READBACK, DescriptionWriteRequest.Operation.RESTORE,
+                    DescriptionWriteRequest.Operation.READBACK);
+            DescriptionWriteRequest mutation=requests.getAllValues().get(1);
+            assertThat(mutation.descriptionText()).isEqualTo(TARGET);
+            assertThat(mutation.expectedVersionToken()).isEqualTo("\"version-2\"");
+            assertThat(mutation.descriptionAttributeKey()).isEqualTo("description-field");
+            assertThat(mutation.idempotencyKey()).isEqualTo(DescriptionWriteRequest.operationIdempotencyKey(
+                    DescriptionWriteRequest.Operation.RESTORE,"lcd-"+"0".repeat(32)));
+            verify(commands).transition(eq(COMMAND),anyLong(),anyString(),eq("READBACK_MATCHED"),any(),any(),any());
         }
 
         @Test
-        @DisplayName("a third party's text is never overwritten by a restore")
-        void thirdPartyTextIsNotOverwritten() {
-            claim("COMPENSATION_PENDING");
-            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.ACCEPTED, null));
+        void laterLegitimateTextPreventsRestoration() {
+            claim("PENDING");
+            when(commands.isExactRestoration(COMMAND)).thenReturn(true);
             when(commands.transitionReadback(any(), any(), anyLong(), anyString())).thenReturn("DIFFERENT");
-
+            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.ACCEPTED, null));
             worker.runOnce(Instant.now(), 10);
+            verify(writePort).perform(org.mockito.ArgumentMatchers.argThat(r -> r.operation()==DescriptionWriteRequest.Operation.READBACK));
+            verify(commands).transition(eq(COMMAND),anyLong(),anyString(),eq("LATER_CHANGE_OR_MISMATCH_INVESTIGATION"),any(),any(),any());
+        }
 
-            verify(writePort).perform(any());
-            verify(commands).transition(eq(COMMAND), anyLong(), anyString(), eq("MANUAL_RESOLUTION"),
-                    eq("compensation_current_owner_not_proven"), any(), any());
+        @Test
+        void MissingConditionalVersionPreventsRestoration() {
+            claim("PENDING");
+            when(commands.isExactRestoration(COMMAND)).thenReturn(true);
+            when(commands.transitionReadback(any(), any(), anyLong(), anyString())).thenReturn("MATCHES_PRIOR");
+            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.ACCEPTED, null));
+            worker.runOnce(Instant.now(), 10);
+            verify(writePort).perform(org.mockito.ArgumentMatchers.argThat(r -> r.operation()==DescriptionWriteRequest.Operation.READBACK));
+            verify(commands,never()).transition(eq(COMMAND),anyLong(),anyString(),eq("EXECUTING"),any(),any(),any());
         }
     }
 

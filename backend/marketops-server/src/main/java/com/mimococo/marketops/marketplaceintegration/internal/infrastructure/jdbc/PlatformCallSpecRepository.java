@@ -328,6 +328,7 @@ public class PlatformCallSpecRepository {
                            AS query_binding_required
                   FROM ops.lc_description_command_attempt a
                   JOIN ops.lc_description_command c ON c.id=a.command_id
+                  JOIN ops.lc_action action ON action.id=c.action_id
                   JOIN core.store store ON store.id=c.store_id
                   JOIN core.platform_listing listing ON listing.id=c.platform_listing_id
                       AND listing.organization_id=c.organization_id
@@ -347,9 +348,9 @@ public class PlatformCallSpecRepository {
                        THEN encode(sha256(convert_to(c.idempotency_key||chr(31)||'RESTORE'||chr(31),'UTF8')),'hex')
                        ELSE c.idempotency_key END
                    AND (a.purpose NOT IN ('APPLY','RESTORE') OR (
-                       CAST(:textDigest AS text)=CASE WHEN a.purpose='RESTORE'
-                           THEN encode(sha256(convert_to(c.prior_text,'UTF8')),'hex')
-                           ELSE c.target_text_digest END
+                       CAST(:textDigest AS text)=c.target_text_digest
+                       AND ((a.purpose='RESTORE' AND action.restores_command_id IS NOT NULL)
+                           OR (a.purpose='APPLY' AND action.restores_command_id IS NULL))
                        AND CAST(:attributeKey AS text)=operation.description_attribute_key
                        AND CAST(:kizMarked AS boolean)=c.kiz_marked_declared))
                    AND CASE WHEN a.purpose='STATUS_ENQUIRY'
@@ -361,7 +362,7 @@ public class PlatformCallSpecRepository {
                        ELSE CAST(:task AS text) IS NULL END
                    AND c.fence_token=a.fence_token AND c.lease_owner=a.lease_owner
                    AND c.lease_expires_at > clock_timestamp()
-                   AND (a.purpose<>'APPLY' OR c.approval_expires_at > clock_timestamp())
+                   AND (a.purpose NOT IN ('APPLY','RESTORE') OR c.approval_expires_at > clock_timestamp())
                    AND a.expected_version_token IS NOT DISTINCT FROM CAST(:precondition AS text)
                    AND (a.operation_snapshot-'responseIdentity')=platform.lc_description_operation_snapshot(c.capability_id,a.purpose)
                    AND platform.capability_evidence_current(store.marketplace_account_id,c.capability_id,

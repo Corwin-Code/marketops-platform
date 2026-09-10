@@ -89,16 +89,18 @@ class ListingDescriptionCommandWorker {
     private boolean apply(UUID commandId, String owner, boolean retry) {
         long fence = commands.lease(commandId, owner, properties.getLeaseSeconds());
         ListingDescriptionCommandRepository.CommandRow command = commands.row(commandId).orElseThrow();
-        if (retry) {
+        boolean restoration = commands.isExactRestoration(commandId);
+        if (retry || restoration) {
             commands.transition(commandId, fence, owner, "READBACK_PENDING", null, null, null);
-            if (!observe(command, fence, owner, true)) {
+            if (!observe(command, fence, owner, true, restoration && !retry)) {
                 return true;
             }
         } else {
             commands.transition(commandId, fence, owner, "EXECUTING", null, null, null);
         }
         DescriptionWriteResult result = call(command, fence, owner,
-                DescriptionWriteRequest.Operation.APPLY, command.targetText(), null);
+                restoration ? DescriptionWriteRequest.Operation.RESTORE : DescriptionWriteRequest.Operation.APPLY,
+                command.targetText(), restoration ? commands.restoreVersionToken(commandId).orElseThrow() : null);
         return switch (result.outcome()) {
             case ACCEPTED -> {
                 if (result.nativeTaskKey() != null) {
@@ -168,12 +170,12 @@ class ListingDescriptionCommandWorker {
     }
 
     private void observe(ListingDescriptionCommandRepository.CommandRow command, long fence, String owner) {
-        observe(command, fence, owner, false);
+        observe(command, fence, owner, false, false);
     }
 
     /** True only when a fresh retry-lease readback authorizes the next APPLY. */
     private boolean observe(ListingDescriptionCommandRepository.CommandRow command, long fence, String owner,
-                            boolean retryPreflight) {
+                            boolean retryPreflight, boolean initialRestoration) {
         if (commands.providerWaitActive(command.id())) {
             commands.deferObservation(command.id(), fence, owner, properties.getRetryDelaySeconds());
             return false;
@@ -194,6 +196,10 @@ class ListingDescriptionCommandWorker {
             case "MATCHES_TARGET" -> commands.transition(command.id(), fence, owner,
                     "READBACK_MATCHED", null, null, readbackId);
             case "MATCHES_PRIOR" -> {
+                if (initialRestoration && commands.restoreVersionToken(command.id()).isPresent()) {
+                    commands.transition(command.id(), fence, owner, "EXECUTING", null, null, null);
+                    return true;
+                }
                 if (commands.retryIsProven(command.id())) {
                     if (retryPreflight) {
                         if (commands.providerWaitActive(command.id())) {
@@ -217,70 +223,12 @@ class ListingDescriptionCommandWorker {
         return false;
     }
 
-    /** Compensation observations never use original-action success transitions. */
+    /** Historical compensation requests cannot reuse the opposite business approval. */
     private boolean compensate(UUID commandId, String owner) {
         long fence = commands.leaseCompensation(commandId, owner, properties.getLeaseSeconds());
-        ListingDescriptionCommandRepository.CommandRow command = commands.row(commandId).orElseThrow();
-        if (command.priorText() == null) {
-            commands.transition(commandId, fence, owner, "MANUAL_RESOLUTION", "restore_unsupported", null, null);
-            return true;
-        }
-        if (!commands.restoreAlreadyAttempted(commandId)) {
-            if (!"MATCHES_TARGET".equals(observeCompensation(command, fence, owner))) {
-                commands.transition(commandId, fence, owner, "MANUAL_RESOLUTION",
-                        "compensation_current_owner_not_proven", null, null);
-                return true;
-            }
-            if (commands.providerWaitActive(commandId)) {
-                commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
-                return true;
-            }
-            DescriptionWriteResult restore = call(command, fence, owner,
-                    DescriptionWriteRequest.Operation.RESTORE, command.priorText(),
-                    commands.restoreVersionToken(commandId).orElse(null));
-            if (restore.outcome() != DescriptionWriteResult.Outcome.ACCEPTED) {
-                commands.transition(commandId, fence, owner,
-                        restore.outcome() == DescriptionWriteResult.Outcome.REJECTED
-                                ? "COMPENSATION_FAILED" : "MANUAL_RESOLUTION",
-                        "restore_result_requires_resolution", null, null);
-                return true;
-            }
-            if (restore.nativeTaskKey() != null || commands.providerWaitActive(commandId)) {
-                commands.deferObservation(commandId, fence, owner, delayFor(restore));
-                return true;
-            }
-        } else if (commands.nativeTaskKey(commandId).isPresent()) {
-            DescriptionWriteResult status = call(command, fence, owner,
-                    DescriptionWriteRequest.Operation.STATUS_ENQUIRY, null, null);
-            if (status.outcome() == DescriptionWriteResult.Outcome.RETRIABLE_ERROR) {
-                commands.deferObservation(commandId, fence, owner, delayFor(status));
-                return true;
-            }
-            if (status.outcome() != DescriptionWriteResult.Outcome.ACCEPTED) {
-                commands.transition(commandId, fence, owner, "MANUAL_RESOLUTION",
-                        "restore_native_state_unresolved", null, null);
-                return true;
-            }
-        }
-        if (commands.providerWaitActive(commandId)) {
-            commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
-            return true;
-        }
-        String match = observeCompensation(command, fence, owner);
-        commands.transition(commandId, fence, owner,
-                "MATCHES_PRIOR".equals(match) ? "COMPENSATED" : "MANUAL_RESOLUTION",
-                "MATCHES_PRIOR".equals(match) ? null : "restore_readback_not_exact", null, null);
+        commands.transition(commandId, fence, owner, "MANUAL_RESOLUTION",
+                "new_restoration_action_required", null, null);
         return true;
-    }
-
-    private String observeCompensation(ListingDescriptionCommandRepository.CommandRow command,
-                                       long fence, String owner) {
-        DescriptionWriteResult result = call(command, fence, owner,
-                DescriptionWriteRequest.Operation.READBACK, null, null);
-        if (result.response() == null) {
-            return "UNREADABLE";
-        }
-        return commands.transitionReadback(ids.newId(), command.id(), fence, owner);
     }
 
     /** The platform's own wait, converted, or the configured default when it gave none. */
@@ -303,7 +251,9 @@ class ListingDescriptionCommandWorker {
             return DescriptionWriteResult.refusedBeforeDispatch("credential_reference_absent",
                     java.time.Instant.EPOCH);
         }
-        String attributeKey = credentials.descriptionAttributeKey(command.capabilityId()).orElse(null);
+        String attributeKey = (operation == DescriptionWriteRequest.Operation.RESTORE
+                ? credentials.restorationAttributeKey(command.capabilityId())
+                : credentials.descriptionAttributeKey(command.capabilityId())).orElse(null);
         DescriptionWriteRequest request = new DescriptionWriteRequest(
                 operation, command.capabilityId(), credentialId, command.nativeListingKey(), null,
                 text, attributeKey, command.kizMarkedDeclared(),

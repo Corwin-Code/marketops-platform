@@ -1,0 +1,6 @@
+Command: ./mvnw -q -Dtest=ListingReworkAuthorizationIT test
+Working directory: backend/marketops-server
+Result: PASS (exit 0)
+Tests: 39
+Raw local log SHA-256: 53b84e9099963a83ce89ac02295fdf591db09999c577fbd697fc7bb83ff67a49
+Scope: targeted local synthetic verification; not final Slice closure.
