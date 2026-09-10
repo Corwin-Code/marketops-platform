@@ -38,7 +38,7 @@ final class RequestTemplate {
             "cursor", "limit", "accountKey", "endpointCode", "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
             "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",
-            "descriptionText", "descriptionAttributeKey");
+            "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared");
 
     /** How a substituted value is escaped for the position it occupies. */
     enum Escaping {

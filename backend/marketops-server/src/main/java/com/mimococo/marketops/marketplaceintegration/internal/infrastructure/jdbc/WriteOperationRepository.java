@@ -42,6 +42,7 @@ public class WriteOperationRepository {
                                operation.description_observed_text_pointer,
                                operation.description_kiz_marked_pointer,
                                operation.description_attribute_key,
+                               operation.description_request_guard,
                                endpoint.id AS endpoint_id, endpoint.endpoint_code,
                                profile.base_url, endpoint.http_method, endpoint.path_template,
                                endpoint.query_template, endpoint.body_template,
@@ -111,7 +112,10 @@ public class WriteOperationRepository {
                 java.util.Set.of((String[]) rows.getArray("task_pending_values").getArray()),
                 rows.getString("description_observed_text_pointer"),
                 rows.getString("description_kiz_marked_pointer"),
-                rows.getString("description_attribute_key"));
+                rows.getString("description_attribute_key"),
+                rows.getString("description_request_guard") == null ? null
+                    : com.mimococo.marketops.shared.JsonValues.read(tools.jackson.databind.json.JsonMapper.builder().build(),
+                            rows.getString("description_request_guard")));
     }
 
 }

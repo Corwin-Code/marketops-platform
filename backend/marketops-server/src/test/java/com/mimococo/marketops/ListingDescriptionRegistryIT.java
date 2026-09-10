@@ -15,6 +15,14 @@ class ListingDescriptionRegistryIT {
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE=TestDatabase.isolatedContainer();
     private static DataSource migration,application,admin;
     private static final String REFERENCE="evidence://synthetic/description-protocol";
+    private static final String REQUEST_GUARD="""
+            {"schema":"DESCRIPTION_REQUEST_V1","evidenceRef":"evidence://synthetic/description-protocol",
+             "mutationSemantics":"PARTIAL_ATTRIBUTE","markingPolicy":"REQUIRED","body":{
+               "offer_id":{"$bind":"LISTING_KEY","$type":"string"},
+               "attributes":[{"id":{"$bind":"ATTRIBUTE_KEY","$type":"integer"},
+                  "values":[{"value":{"$bind":"DESCRIPTION_TEXT","$type":"string"}}]}],
+               "kizMarked":{"$bind":"KIZ_MARKED","$type":"boolean"}}}
+            """;
 
     @BeforeAll static void database() {
         migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
@@ -68,6 +76,16 @@ class ListingDescriptionRegistryIT {
     @Test void priceCredentialPurposeCannotCertifyDescriptionProtocol() throws Exception {
         var f=fixture(); UUID header=configure(f,"PRICE_WRITE"); UUID evidence=submit(f,header);
         assertThatThrownBy(() -> review(f,evidence,f.id("verifierUser"))).hasMessageContaining("complete protocol semantics missing");
+    }
+
+    @Test void absentOrUnprovedWholeCardRequestSchemaCannotBeApproved() throws Exception {
+        for (String guard:new String[] {null,REQUEST_GUARD.replace("PARTIAL_ATTRIBUTE","WHOLE_CARD_REPLACEMENT")}) {
+            var f=fixture(); UUID header=configure(f,"CONTENT_WRITE");
+            configureOperation(f,"APPLY",false,guard);
+            UUID evidence=submit(f,header);
+            assertThatThrownBy(() -> review(f,evidence,f.id("verifierUser")))
+                    .hasMessageContaining("Description exact request schema is incomplete or unsupported");
+        }
     }
 
     @Test void draftCannotUseAnUnscopedOperatorOrUnknownDefinitionField() throws Exception {
@@ -125,6 +143,9 @@ class ListingDescriptionRegistryIT {
         return header;
     }
     private void configureOperation(ListingConversionFixture f,String operation,boolean missing) {
+        configureOperation(f,operation,missing,REQUEST_GUARD);
+    }
+    private void configureOperation(ListingConversionFixture f,String operation,boolean missing,String requestGuard) {
         f.app.sql("""
                 SELECT platform.configure_registry_draft(:account,:capability,:actor,'OPERATION',o.id,o.version,
                     (SELECT jsonb_object_agg(key,value) FROM jsonb_each(to_jsonb(o)) WHERE key=ANY(ARRAY[
@@ -134,12 +155,17 @@ class ListingDescriptionRegistryIT {
                         'description_observed_text_pointer','description_kiz_marked_pointer','description_attribute_key']))||
                     jsonb_build_object('conditional_write_header',CASE WHEN o.operation='RESTORE' THEN 'If-Match' END,
                         'version_token_header',CASE WHEN o.operation='READBACK' THEN 'etag' END,
+                        'request_template',CASE WHEN o.operation IN ('APPLY','RESTORE') THEN
+                            '{"offer_id":"{nativeListingKey}","attributes":[{"id":{descriptionAttributeKey},"values":[{"value":"{descriptionText}"}]}],"kizMarked":{kizMarkedDeclared}}'
+                            ELSE o.request_template END,
+                        'description_request_guard',CASE WHEN o.operation IN ('APPLY','RESTORE') THEN CAST(:requestGuard AS jsonb) END,
                         'description_response_binding',CASE WHEN :missing THEN NULL ELSE jsonb_build_object(
                             'schema','DESCRIPTION_RESPONSE_IDENTITY_V1','evidenceRef',CAST(:ref AS text),'mode','EXACT_OBJECT',
                             'selection','OBJECT','payloadPointer','','listingKeyPointer','/offer_id','listingKeyType','string') END),
                     'synthetic-operation') FROM platform.capability_operation o WHERE capability_id=:capability AND operation=:operation
                 """).param("account",f.id("account")).param("capability",f.id("capability")).param("actor",f.id("ownerUser"))
-                .param("operation",operation).param("missing",missing).param("ref",REFERENCE).query(UUID.class).single();
+                .param("operation",operation).param("missing",missing).param("ref",REFERENCE)
+                .param("requestGuard",requestGuard).query(UUID.class).single();
     }
     private UUID submit(ListingConversionFixture f,UUID header) {
         return submit(f,header,REFERENCE);

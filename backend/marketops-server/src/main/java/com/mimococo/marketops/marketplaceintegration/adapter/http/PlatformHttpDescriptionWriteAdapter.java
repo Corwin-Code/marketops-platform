@@ -95,16 +95,6 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
 
         List<char[]> resolvedSecrets = new ArrayList<>();
         try {
-            Map<String, String> headers = new LinkedHashMap<>();
-            for (AuthHeaderSpec header : authHeaders) {
-                Optional<String> value = headerValue(header, request, resolvedSecrets);
-                if (value.isEmpty()) {
-                    return DescriptionWriteResult.refusedBeforeDispatch(
-                            "credential_unresolvable", clock.instant());
-                }
-                headers.put(header.headerName(), value.get());
-            }
-
             boolean mutating = request.operation() == DescriptionWriteRequest.Operation.APPLY
                     || request.operation() == DescriptionWriteRequest.Operation.RESTORE;
             if (mutating && (operation.descriptionAttributeKey() == null
@@ -135,11 +125,30 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
                     rendered = null;
                 }
                 Optional<String> refusal = DescriptionChangeGuard.refusal(rendered,
-                        request.descriptionAttributeKey(), request.descriptionText(),
-                        request.kizMarkedDeclared(), context.lengthBoundMin(), context.lengthBoundMax());
+                        operation.descriptionRequestGuard(), new DescriptionChangeGuard.Expected(
+                                request.nativeListingKey(), request.descriptionAttributeKey(), request.descriptionText(),
+                                request.kizMarkedDeclared(), context.lengthBoundMin(), context.lengthBoundMax()));
                 if (refusal.isPresent()) {
                     return DescriptionWriteResult.refusedBeforeDispatch(refusal.get(), clock.instant());
                 }
+            }
+
+            String conditionalHeader = operation.conditionalWriteHeader();
+            String version = request.expectedVersionToken();
+            boolean conditional = mutating && (conditionalHeader != null || version != null
+                    || request.operation() == DescriptionWriteRequest.Operation.RESTORE);
+            if ((!mutating && version != null) || (conditional && !validPrecondition(conditionalHeader, version))) {
+                return DescriptionWriteResult.refusedBeforeDispatch("conditional_write_unbound", clock.instant());
+            }
+            var headerNames = new java.util.TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+            if (body != null) headerNames.add("Content-Type");
+            for (AuthHeaderSpec header : authHeaders) {
+                if (!headerNames.add(header.headerName())) {
+                    return DescriptionWriteResult.refusedBeforeDispatch("duplicate_auth_header", clock.instant());
+                }
+            }
+            if (conditional && !headerNames.add(conditionalHeader)) {
+                return DescriptionWriteResult.refusedBeforeDispatch("conditional_header_collision", clock.instant());
             }
 
             OutboundHttp.Destination destination = new OutboundHttp.Destination(
@@ -147,7 +156,7 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
                     java.net.URI.create(operation.endpoint().baseUrl() + path
                             + (query == null || query.isBlank() ? "" : "?" + query)),
                     operation.endpoint().httpMethod(),
-                    headers.keySet(),
+                    headerNames,
                     body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
                     operation.endpoint().requestTimeoutMillis(),
                     (int) Math.min(operation.endpoint().maxResponseBytes(), Integer.MAX_VALUE));
@@ -155,14 +164,22 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
             OutboundHttp.Response response;
             try {
                 OutboundHttp.Plan plan = http.prepare(destination);
+                Map<String, String> headers = new LinkedHashMap<>();
+                if (body != null) headers.put("Content-Type", "application/json");
+                for (AuthHeaderSpec header : authHeaders) {
+                    Optional<String> value = headerValue(header, request, resolvedSecrets);
+                    if (value.isEmpty()) {
+                        return DescriptionWriteResult.refusedBeforeDispatch("credential_unresolvable", clock.instant());
+                    }
+                    OutboundHttp.requireHeaderTemplate(value.get());
+                    headers.put(header.headerName(), value.get());
+                }
+                if (conditional) headers.put(conditionalHeader, version);
                 if (specs.descriptionAttemptContext(request).isEmpty()) {
                     return DescriptionWriteResult.refusedBeforeDispatch(
                             "attempt_authority_not_current", clock.instant());
                 }
                 response = http.exchange(plan, headers);
-            } catch (IllegalArgumentException destinationRefused) {
-                return DescriptionWriteResult.refusedBeforeDispatch(
-                        "outbound_destination_refused", clock.instant());
             } catch (java.io.IOException | InterruptedException interrupted) {
                 if (interrupted instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
@@ -171,9 +188,23 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
                         null, null, null, clock.instant(), "provider_did_not_answer", null, null);
             }
             return classify(request, operation.platformCode(), response);
+        } catch (IllegalArgumentException destinationRefused) {
+            return DescriptionWriteResult.refusedBeforeDispatch("outbound_destination_refused", clock.instant());
         } finally {
             resolvedSecrets.forEach(secret -> Arrays.fill(secret, '\0'));
         }
+    }
+
+    /** A single exact version, never the wildcard/list alternatives permitted by general HTTP. */
+    private static boolean validPrecondition(String header, String token) {
+        if (header == null || !header.matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+")
+                || token == null || token.isBlank() || token.length() > 8192
+                || token.chars().anyMatch(Character::isISOControl)) return false;
+        if (!header.equalsIgnoreCase("If-Match")) return true;
+        // RFC 9110 §§8.8.3 / 13.1.1: one strong entity-tag. Commas inside its opaque value are valid.
+        if (token.length() < 2 || token.charAt(0) != '"' || token.charAt(token.length()-1) != '"') return false;
+        return token.substring(1, token.length()-1).chars()
+                .allMatch(c -> c == 0x21 || (c >= 0x23 && c <= 0x7e) || (c >= 0x80 && c <= 0xff));
     }
 
     private DescriptionWriteResult classify(DescriptionWriteRequest request, String platformCode,
@@ -240,6 +271,7 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
             values.put("nativeVariantKey", request.nativeVariantKey());
         }
         values.put("idempotencyKey", request.idempotencyKey());
+        values.put("kizMarkedDeclared", Boolean.toString(request.kizMarkedDeclared()));
         if (request.descriptionText() != null) {
             values.put("descriptionText", request.descriptionText());
         }
