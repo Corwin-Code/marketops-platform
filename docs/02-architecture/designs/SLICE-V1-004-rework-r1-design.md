@@ -1,0 +1,277 @@
+# SLICE-V1-004 R1 root-cause rework design
+
+Status: IN_PROGRESS. This is an evolvable implementation design, not an amendment or a Controller verdict. The exact starting identities and sole frozen input are in `docs/07-phase-evidence/SLICE-V1-004/rework-r1/TAKEOVER_RECEIPT.md`.
+
+## Implementation boundaries
+
+Keep the original Contract and annex byte-identical. Extend the existing identity/grant, canonical fact/metric, Policy/Approval, Task, Command/outbox and audit authorities. Existing migrations are immutable; the next migration is V0080. Use only isolated synthetic sources, fake providers and local HTTP/browser tests. No remote writes or real provider/account calls. Default provider writes remain disabled.
+
+Work is continuous across the following dependent chains:
+
+1. Current object/purpose authorization and financial projections; exact text preservation.
+2. Independent detail/summary qualification, immutable input lineage, version windows, effective sale revisions and fixed comparison structure.
+3. Frozen plan/method evaluation, independent protections/current safety, semantic/exposure classification and governed calibration publication.
+4. Exact launch/allowance and promotion terms, purpose-bound release proofs, manual/display/deviation evidence and dependency-based containment.
+5. One launch into the command outbox; new exact recovery authority; verified wire schema and asynchronous/retry semantics.
+6. Durable recalculation and Task clocks, on-demand AI/feedback/reports, complete bilingual desktop journeys.
+7. Whole regression, application-role attacks, concurrent/crash recovery, clean/upgrade migration verification, evidence/traceability/runbooks and final local checkpoint.
+
+An implementation change is not closure until its full required observable correction and relevant regression are exercised. Domain tests, compilation, mock components and schema-shape checks are labelled at that granularity. The final artifact will identify the exact tested tree and local Head; no test result is inferred from earlier Slice evidence. Deferred real-world obligations remain at their original consuming gates.
+
+## Frozen finding obligations
+
+### S4-DR-R1-001 — Outcome写入口遗漏业务授权与对象边界，读权限检查不能覆盖写入口
+
+在唯一应用权威上验证当前身份、组织、店铺及评价写权限，并把measurement绑定到准确行动、窗口和阶段；未授权请求必须零业务副作用且不泄漏EvaluationView。不是仅在按钮上隐藏。
+
+Required evidence:
+
+- 通过实际Console HTTP分别测试未登录、跨店、撤权、只读角色、不同对象measurement；拒绝后核对所有业务表/Task事件未变化。
+- 同类扫描所有新增POST/GET与服务入口，避免修一个路由后其他入口仍可调用。
+
+### S4-DR-R1-002 — 最小授权投影未落实到模拟明细与已发人工包的当前访问
+
+查看与写入用途分开，明细按既有财务/Data Scope投影；列表与按ID读取均检查当前权限。保留既有合格导出控制，不新增本Slice专用导出。
+
+Required evidence:
+
+- HTTP角色矩阵校验成本、利润、关联受限字段不经列表/模拟/包入口泄漏。
+- 撤权后旧包仍保留审计，但当前API不返回其受限内容；获准专业角色能够取得职责所需完整材料。
+
+### S4-DR-R1-003 — 两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立
+
+两路径分别证明同一语义、覆盖、成熟和修订资格；零购买和资料缺失明确区分。只能使用与证据profile和请求范围匹配的汇总，不裁小矛盾分子来生成比例。
+
+Required evidence:
+
+- 正常角色/来源入口证明独立DETAIL、独立等价SUMMARY及完整0购买均按定义计算。
+- 不完整窗口、错summaryKind、重放/冲突分子、超界分子必须明确限用途，不伪造值。
+
+### S4-DR-R1-004 — 版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现
+
+按事前窗口规则选择真实合格访问群组并保留过渡期全部经营责任；采用来源有效版本/as-of修订和固定可比流量结构；保留真正source/acquisition时间及输入引用。
+
+Required evidence:
+
+- 实际计算链验证排除仅影响适用效果口径、不删除风险/利润事实；跨时区和粗粒度完整窗口不做比例拆分。
+- 后到退货/撤销使原受影响measurement与Outcome形成新版本；同一输入可重算，来源结构变化不能冒充提升。
+
+### S4-DR-R1-005 — 正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据
+
+正式Outcome必须来自绑定范围/时点/版本的合格改善与独立保护证据，缺失bound不得自动用点估计填补。Operational/Settled分别验证实际阶段；critical groups和关键Variant用自身冻结标准。确定性金额不强制制造统计区间，但比较/推断不得省略其资格。
+
+Required evidence:
+
+- HTTP到真实DB验证无改善但绝对率高、未给bound、任意保护数、伪SETTLED、错对象measurement不能获正式成功。
+- 分别覆盖主目标达标/保护未定/已失败、关键组不恶化但不增长、关键Variant自身参照；保留真实未确定结果。
+
+### S4-DR-R1-006 — 评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定
+
+评价按原计划/版本、允许节点、独立方法资格与有限期限运行；必要后到事实只修订原范围。效果不足分支是可选且需自身合格依据及既定人的决定，不是成功条件取反。无依赖的活动不强制附加后续窗口。
+
+Required evidence:
+
+- 冻结v1后激活v2，旧Outcome仍用v1、新安全用当前政策；提前/越界节点拒绝正式判定。
+- P06反例不得触发停止；只有明确满足冻结futility条件才取得停止资格。无需stop/tail的合法计划可用。
+
+### S4-DR-R1-007 — 启动Gate用结构性Listing Health代替利润、退货、供给与用途保障
+
+把各领域唯一权威的必要保护与准确用途接入预览、批准及启动的当前Gate；硬失败不可被健康标签抵消。按已接受目的层次提供有限合法工作，不靠放宽全部Gate或伪造PASS。
+
+Required evidence:
+
+- 同一合格action在库存/利润/退货/需求证据变化后必须限域拒绝并说明原因。
+- 正面证明安全纠错/有界人工探索与正式改善路径分别可达，缺主目标资料不自动扩大为全功能关闭。
+
+### S4-DR-R1-008 — 普通/重大分类用字符差额和发起人暴露数字替代内容含义与真实经营暴露
+
+按已接受的内容含义触发条件与经证据支持的实际暴露独立分类，任一重大则Owner路线；无法分类保持未决。专业审核可提供结构化证据，不要求建设通用NLP或让AI裁决。促销按实际商业影响分类。
+
+Required evidence:
+
+- 语义否定/限制/商品事实改变的短编辑不能靠字符比率降级；暴露字段篡改不得影响权威分类。
+- 普通小额促销与重大促销各走正确路线，作者、专业审核与最终批准权限按原矩阵。
+
+### S4-DR-R1-009 — 正文误用512字符元数据校验并strip，合法长文被拒绝且准确文本被改写
+
+使用适合正文的准确值处理与平台/类别长度依据；保存原值、显示值和已接受表示等价各自语义，不能静默截断/strip。保留必要Secret/PII防护，不为支持长文取消敏感字段控制。
+
+Required evidence:
+
+- 按文档资格测试长文、多字节/码点、换行/首尾空白、超长拒绝与原值hash；管理回读与恢复均保持准确前值。
+
+### S4-DR-R1-010 — 完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要
+
+通过既有身份/能力权威证明原生作用边界与完整性，绑定影响集合及实际消费的映射有效版本；变化仅失效真实依赖，不把局部集合当完整、不建立第二套映射权威。
+
+Required evidence:
+
+- 不完整分页/未证成原生范围必须明确INCOMPLETE；合法多Variant完整集合可以推进。
+- 映射重绑定、成员增删、不同原生作用粒度的同类扫描，验证旧审批/保护不得误用。
+
+### S4-DR-R1-011 — Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续
+
+在既有Policy/Approval边界交付准确校准的受治理生命周期和完整组合验证；不授予任意写表，不自动生成生产数值。按范围/用途/实际依赖处理有效期和延续，历史结果使用冻结包。
+
+Required evidence:
+
+- 真实DB+HTTP以专业人员和Owner完成合成包验证/接受/激活/冲突/到期/替换；拒绝自批、缺证与越界。
+- 只有受影响或无法证明的未执行批准重新处理，独立依赖经当前复核可以延续。
+
+### S4-DR-R1-012 — 累计额度未绑定完整轴集合和准确需求，换版本可能把现存承担从余额中清零
+
+同一累计权威维护跨配置版本的实际承担和所有必要轴；启动需求由准确动作证据确定。层级适用关系须来自接受的Policy，不靠选择一行消除仍有效约束。取得额度前不得进入外部承担。
+
+Required evidence:
+
+- 真实DB并发100/70/70、版本切换、未决旧占用、缺轴、请求篡改、不同批次与人工/API同余额测试。
+- 预算不足保留批准但拒绝启动；合格启动不重复预占/实际占用，不引入Q085已拒绝的提前预占。
+
+### S4-DR-R1-013 — 占用释放只验证有一条观察/旧值匹配，不能证明已经停止或不可能应用
+
+每个轴的停止/历史义务解除/明确未应用应由用途匹配且独立合格证据证明；Unknown保持占用。所有可写DB入口绑定真实调用身份/目的及可验证事实，不能依任意数值缩减占用。
+
+Required evidence:
+
+- 应用角色负面测试仍运行、异步旧值、无关观察、跨动作证据、无调用证明、0改写、错误轴不得释放。
+- 确已停止新增与确已解除历史义务分别释放相应占用，不能统归一种全部释放。
+
+### S4-DR-R1-014 — 促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担
+
+把准确条款、费用、并存背景、退出条件、完整集合及剩余承担在预览/批准/启动前共同绑定；人工记录真实事实与资格区分。存量先计实际承担，合格接管不补历史；退出仅消费适用准确授权且独立核验。
+
+Required evidence:
+
+- 从Console/HTTP完成两类促销的真实本地合成端到端；修改已批条款、伪原因、缺原授权、未核验停止/残留解除都不能取得相应资格。
+- 已有不明活动可记录但不作安全PASS；新旧共同额度不重复、不遗漏；无需新增促销API。
+
+### S4-DR-R1-015 — 促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效
+
+复用统一经济口径，支持合同内有限但完整的费用/时间/并存条件，正算反算一致；费用阶梯选择按接受规则。必要保守情景及输入资格由证据/Policy验证，不接受前端布尔自证，不新增通用价格优化器。
+
+Required evidence:
+
+- 正算反算共享固定费/阶梯/退款影响/平台承担/未知费/币种单位，反例正确且无重复扣费。
+- 不保守或未证成必要场景不能支撑准入；无可行解与无法判定区分；负数量/越界折扣拒绝。
+
+### S4-DR-R1-016 — 人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用
+
+管理、展示、人工报告分别验证自己的来源、范围、版本、时间和职责。事实接收不能被禁止以隐藏偏离，但不得升级其使用资格。促销核验使用准确活动条款，而不是Description digest的共用空目标。
+
+Required evidence:
+
+- 真实DB/HTTP负测跨Listing展示证据、早于动作的证据、覆盖不完整、执行者自证、过期操作和晚报；不同阶段的状态明确且不相互冒充。
+- 同时证明合法人工更新可完成完整闭环，不以所有结果UNKNOWN掩盖功能缺失。
+
+### S4-DR-R1-017 — 运行期偏离与跨域处理缺少权威证据闭环，任意核验ID可成为关闭依据
+
+核验引用必须证明与原事件的准确关联与处理结果；合法迟报补证不重批，未获准偏离保留历史并消费真正前瞻批准，未决继续限制。跨域跟踪止于本Slice实际依赖得到重算，不接管长期专业整改。
+
+Required evidence:
+
+- 合法迟报/未授权变化/Unknown三分支、错事件核验、无效前瞻批准、处理报告不等于依赖恢复的HTTP+DB场景。
+- 拒绝靠重导入/改名存量抹去历史；真正独立范围不因一项受阻一起等待。
+
+### S4-DR-R1-018 — 限域隔离的依赖传播与重新启用未消费当前原因和调用权威
+
+按合格原因和实际用途依赖落实限制及解除；有资格的技术/经营人员可独立关闭，解除保留双方独立当前责任。复用原控制权威、校验调用主体，不新增一轮Owner普遍签批或全店连坐。
+
+Required evidence:
+
+- 真实应用角色/HTTP验证缺proof、错actor、撤权、过期依据、单人双身份与原因仍在时不能解除。
+- 局部原因只限域；共同K7消费者均受限，独立K9范围不受牵连；对应Outcome失败须联动准确隔离。
+
+### S4-DR-R1-019 — 一次明确启动没有接通Description Command，命令结果也未闭合业务动作
+
+一次准确启动在当前全部条件成立且取得额度后，进入唯一Command/Outbox链；采用事务/outbox等普通工程方式确保失败/重放不产生重复承担。平台接受、管理核验、展示和Outcome仍分开回流业务状态。
+
+Required evidence:
+
+- 完整HTTP→DB→worker→本地fake→Raw/readback→Console正向与故障链；单次启动恰好一个逻辑Command，多点/重试不重复。
+- 命令完成/失败/未决在同一行动可追溯，不能仅测独立domain函数。
+
+### S4-DR-R1-020 — 精确恢复复用原命令和原批准，COMMAND_RESOLVE被扩成新的业务恢复授权
+
+仅恢复捕获完整前值仍需新的准确处置目标、当前复核及适用批准；技术尝试连续处理不重复签字，但不能借原改变的批准授权相反动作。利用所证明的条件写/冲突控制，未证成恢复用途保持限制。
+
+Required evidence:
+
+- 无新恢复批准、错批准对象、已过期原批准、后来合法版本、空前值、RESTORE超时/异步多次轮询均有真实DB+fakeHTTP负测。
+- 合法精确恢复正向完成且不影响无关字段；不得通过关闭所有恢复功能“修复”。
+
+### S4-DR-R1-021 — 请求guard没有绑定准确原生目标和正文节点，跨平台硬编码又拒绝合法Schema
+
+由已核验平台Schema/profile验证目标身份、属性数量、准确正文、非目标字段和适用声明，不能靠子串/任意leaf数。文档未证成的WB覆盖写可以保持该路径禁用，不能因此损坏另一合格平台；不新增写字段。
+
+Required evidence:
+
+- 实际adapter+本地HTTP捕获wire payload：错native目标、第二目标、重复属性、正文只作子串、伪声明均在socket前拒绝。
+- 至少一个合成验证profile下的合法文档形状可准确发送；能力资料仍不得标成真实VERIFIED。
+
+### S4-DR-R1-022 — 等待头和异步结果的完整协议语义未落实，可能提前重试或误认终局
+
+保留并验证真正相关的响应头和单位，不短于官方最早允许时间；超过批准有效期则停止而非延长权威。严格区分传输、任务受理、最终应用和读回；仅已证明的幂等/未应用可以支持再次提交。
+
+Required evidence:
+
+- adapter/worker/真实DB状态测试覆盖合同API-T08/T11/T15/T18；等待必须观察实际scheduler最早时间，而非只测单位helper。
+- 原生任务/商品匹配依已验证Schema或查询唯一性，拒绝矛盾身份及不存在的任务关系；不虚构供应商保证。
+
+### S4-DR-R1-023 — 5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复
+
+复用既有调度/租约权威完成原5/15/60内部责任，当前指标/保护/授权消费者准确重算和版本化；证明实际领取及围栏，崩溃可恢复且幂等。关闭默认flag是安全初态，不是本项缺失行为的替代。
+
+Required evidence:
+
+- 多worker、crash窗口、过期worker、同事件重放与队列无事件完整周期的真实DB测试。
+- 以迟到退货/当前必要证据失效验证实际消费者在期限内更新，核对source/acquisition/processing时间不混。
+
+### S4-DR-R1-024 — 责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立
+
+在现有Task和Policy权威落实两阶段人工SLO、覆盖日历、有限停钟/暂缓及确定性激活排序；不增加通知渠道或新工单系统。跨域承接/回流消费同一原责任，不因转派重置时钟。
+
+Required evidence:
+
+- 通过运行工作流与可控Clock/Calendar验证连续风险和普通覆盖不同计时、合格hold有限停止/恢复、转派不重置、到期自动复核。
+- 新证据产生一项合格Case/Task且重放不重复；弱信号仅观察，已受理责任不因UI刷新丢失。
+
+### S4-DR-R1-025 — 必需的按需AI、原文主题纠正、日周复盘与经验复用未形成实际业务路径
+
+复用现有Gateway和Raw/Metric/Task权威补上有限按需功能、原文关联/修订和本Slice日周输出；保留事实/推断/未知，模型不可计算正式利润、授权或自动调用。知识复用不复制效果与批准。不新建AI平台/通用报告平台。
+
+Required evidence:
+
+- 本地fake模型经真实业务入口验证字段白名单/证据引用/拒绝输入/人修订/输出校验/不可自执行。
+- 原反馈去重与否定误分类修订、日周材料同一版本、阶段性经验适用/失效回收端到端。
+
+### S4-DR-R1-026 — 双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口
+
+以既有Console或必要共享页面形成完整、可下钻、权限正确的中俄桌面旅程；不必每屏复制资料、不强制新增某个页面框架。精确单项批准不能只看hash/数量。手机、邮件、专用导出仍不是本Slice新增必达。
+
+Required evidence:
+
+- 浏览器E2E从来源/候选到预览审核批准启动核验评价复盘，覆盖两语言与不同角色/普通重大/人工API/批次部分受阻。
+- 核对真实网络和数据库结果，不仅Mock组件；无权限材料不可见，缺必要材料不可批准。
+
+### S4-DR-R1-027 — 验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺
+
+同一返工中修复代码并强化测试，按criterion→执行路径→真实命令/结果/环境回写证据，诚实分开完整通过、局部与未运行；不得降阈值/删场景/只断言默认禁用变绿。外部生产义务仍按合同保留，不能要求真实业务增长补工程证明。 纠正OQ-121/124与原请求的映射，不新建重复证据登记。
+
+Required evidence:
+
+- 本地隔离完整后端单元/架构/权限与真实DB clean-install+从base升级、调用链与并发崩溃测试；frontend lint/typecheck/build/unit和浏览器E2E。
+- 核对历史迁移不改、基线共享价格/广告/身份/Raw/审批回归；列出适用性能/恢复场景的实际证据和明确未满足项。
+- 独立重放本Frozen Set全部反例；本轮Controller环境无法运行项不作为产品错误的证明，但Final closure必须取得其适用证据。
+- OQ与F-M01/F-M02、F-W01/F-W02、F-S01逐项用途追踪一致，保持原受影响Gate，不扩大问诊。
+
+
+
+## Implemented checkpoint: current authorization and measured source coverage
+
+Outcome evaluation has its own role-and-scope permission, checked before business mutation. Simulation disclosure uses the product scope captured at computation and current store/product evidence grants. Unknown historical scope is masked. Executor identity does not preserve access after current store visibility is revoked.
+
+The Console preserves full description Unicode text and digest, separates human-entry provenance from batch-import provenance, and passes the authenticated requester through the canonical calculation ledger for manual runs. Read auditing retains its mandatory transaction contract.
+
+V0080 adds narrowly eligible scopes without provisioning any grants. V0081 adds immutable source-window coverage receipts and measurement input lineage. Each receipt binds exact listing, evidence path, window, retention definition, completeness watermark and input digest; official receipts also bind the exact summary and available equivalence profile. Database checks reject borrowed provenance, foreign summaries and profile scope mismatches. Historical aggregates without the new explicit retention definition do not retroactively acquire qualification. Missing source rows differ from certified empty sets. Contradictory counts remain in lineage and cannot be clamped into a usable ratio.
+
+Measurement inputs now consume source-calendar transition exclusions and preserve the whole-window figures in lineage. Linked sales resolve as-of immutable correction chains; the chain and effective IDs are retained, and conflicting successors prevent qualification. These changes do not yet complete the frozen target-version plan, comparison, canonical protection or automatic Outcome-revision work. The final design and evidence will be synchronized with those remaining chains before handoff.

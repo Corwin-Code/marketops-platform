@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,6 +67,7 @@ class ListingHealthConsoleController {
         this.audit = audit;
     }
 
+    @Transactional
     @GetMapping(value = "/queue", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ListingHealthView> queue(AuthenticatedActor actor,
                                   @RequestParam(required = false) String necessaryState,
@@ -76,6 +78,7 @@ class ListingHealthConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/listings/{listingId}", produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, Object> listing(AuthenticatedActor actor, @PathVariable UUID listingId,
                                 @RequestParam(defaultValue = "12") @Min(1) @Max(100) int measurementLimit) {
@@ -92,6 +95,7 @@ class ListingHealthConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/listings/{listingId}/measurements", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ConversionMeasurementView> history(AuthenticatedActor actor, @PathVariable UUID listingId,
                                             @RequestParam(defaultValue = "12") @Min(1) @Max(100) int limit) {
@@ -104,7 +108,7 @@ class ListingHealthConsoleController {
     @PostMapping(value = "/listings/{listingId}/recompute", produces = MediaType.APPLICATION_JSON_VALUE)
     ListingHealthView recompute(AuthenticatedActor actor, @PathVariable UUID listingId) {
         listings.require(actor, listingId, ActionScopeCode.LISTING_ACTION_PREPARE);
-        return health.recompute(listingId, "OPERATOR_REQUEST");
+        return health.recompute(listingId, "MANUAL", actor.userId());
     }
 
     @PostMapping(value = "/listings/{listingId}/measurements", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -113,7 +117,7 @@ class ListingHealthConsoleController {
                                       @Valid @RequestBody MeasureRequest request) {
         listings.require(actor, listingId, ActionScopeCode.LISTING_ACTION_PREPARE);
         return measurements.measure(listingId, request.windowStart(), request.windowEnd(), request.retentionDays(),
-                request.evidencePath(), "OPERATOR_REQUEST");
+                request.evidencePath(), "MANUAL", actor.userId());
     }
 
     @PostMapping(value = "/listings/{listingId}/facts/description", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -149,7 +153,7 @@ class ListingHealthConsoleController {
                                             @Valid @RequestBody OfficialSummaryRequest request) {
         return Map.of("observationId", facts.recordOfficialSummary(actor, listingId, request.periodStart(),
                 request.periodEnd(), request.visits(), request.retainedPurchases(), request.label(),
-                request.observedAt()));
+                request.observedAt(), request.retentionDays()));
     }
 
     @PostMapping(value = "/listings/{listingId}/facts/feedback-theme", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -158,6 +162,19 @@ class ListingHealthConsoleController {
         return Map.of("themeId", facts.recordFeedbackTheme(actor, listingId, request.periodStart(),
                 request.periodEnd(), request.themeCode(), request.mentionCount(), request.observedAt()));
     }
+
+    @PostMapping(value = "/listings/{listingId}/facts/measurement-coverage", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Map<String, UUID> recordMeasurementCoverage(AuthenticatedActor actor, @PathVariable UUID listingId,
+                                               @Valid @RequestBody CoverageRequest request) {
+        return Map.of("coverageId", facts.recordMeasurementCoverage(actor, listingId, request.evidencePath(),
+                request.windowStart(), request.windowEnd(), request.retentionDays(), request.sourceCompleteThrough(),
+                request.sourceReference(), request.expectedVisitRows(), request.expectedLinkRows(), request.summaryObservationId()));
+    }
+
+    record CoverageRequest(@NotNull EvidencePath evidencePath, @NotNull Instant windowStart,
+                           @NotNull Instant windowEnd, @Min(7) @Max(30) int retentionDays,
+                           @NotNull Instant sourceCompleteThrough, @NotBlank String sourceReference,
+                           Long expectedVisitRows, Long expectedLinkRows, UUID summaryObservationId) { }
 
     private void auditRead(AuthenticatedActor actor, String entityType, UUID entityId, String reason) {
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.LISTING_CONVERSION,
@@ -184,7 +201,7 @@ class ListingHealthConsoleController {
     }
 
     record OfficialSummaryRequest(@NotNull Instant periodStart, @NotNull Instant periodEnd, Long visits,
-                                  Long retainedPurchases, String label, Instant observedAt) {
+                                  Long retainedPurchases, String label, Instant observedAt, @NotNull Integer retentionDays) {
     }
 
     record FeedbackThemeRequest(@NotNull Instant periodStart, @NotNull Instant periodEnd, @NotBlank String themeCode,

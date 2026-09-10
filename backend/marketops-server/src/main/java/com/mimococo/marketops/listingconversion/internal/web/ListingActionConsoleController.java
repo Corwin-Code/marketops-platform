@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,6 +70,7 @@ class ListingActionConsoleController {
 
     // ------------------------------------------------------------------ candidates
 
+    @Transactional
     @GetMapping(value = "/candidates", produces = MediaType.APPLICATION_JSON_VALUE)
     List<CandidateView> candidates(AuthenticatedActor actor, @RequestParam UUID listingId,
                                    @RequestParam(required = false) String roundKey) {
@@ -116,16 +118,18 @@ class ListingActionConsoleController {
         return evaluations.simulate(actor, candidateId, inputs, scenarios, request.referenceProfitLine());
     }
 
+    @Transactional
     @GetMapping(value = "/candidates/{candidateId}/simulations", produces = MediaType.APPLICATION_JSON_VALUE)
     List<SimulationView> simulations(AuthenticatedActor actor, @PathVariable UUID candidateId) {
         actions.candidate(actor, candidateId);
-        List<SimulationView> result = evaluations.simulations(candidateId);
+        List<SimulationView> result = evaluations.simulations(actor, candidateId);
         auditRead(actor, "lc-simulation", candidateId, "simulations");
         return result;
     }
 
     // ------------------------------------------------------------------ actions
 
+    @Transactional
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     List<ListingActionView> actions(AuthenticatedActor actor, @RequestParam(required = false) String state,
                                     @RequestParam(defaultValue = "50") @Min(1) @Max(200) int limit) {
@@ -135,6 +139,7 @@ class ListingActionConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/{actionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ListingActionView action(AuthenticatedActor actor, @PathVariable UUID actionId) {
         ListingActionView result = actions.require(actor, actionId);
@@ -180,10 +185,11 @@ class ListingActionConsoleController {
 
     // ------------------------------------------------------------------ evaluation
 
+    @Transactional
     @GetMapping(value = "/{actionId}/evaluation", produces = MediaType.APPLICATION_JSON_VALUE)
     EvaluationView evaluation(AuthenticatedActor actor, @PathVariable UUID actionId) {
         actions.require(actor, actionId);
-        EvaluationView result = evaluations.view(actionId)
+        EvaluationView result = evaluations.view(actor, actionId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         auditRead(actor, "lc-evaluation", actionId, "evaluation");
         return result;

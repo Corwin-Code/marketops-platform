@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,7 @@ class ListingManualConsoleController {
 
     // ------------------------------------------------------------------ packets
 
+    @Transactional
     @GetMapping(value = "/packets", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ManualPacketView> myPackets(AuthenticatedActor actor,
                                      @RequestParam(defaultValue = "50") @Min(1) @Max(200) int limit) {
@@ -66,6 +68,7 @@ class ListingManualConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/packets/{packetId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ManualPacketView packet(AuthenticatedActor actor, @PathVariable UUID packetId) {
         ManualPacketView result = manual.packet(actor, packetId);
@@ -73,6 +76,7 @@ class ListingManualConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/actions/{actionId}/packets", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ManualPacketView> packetsForAction(AuthenticatedActor actor, @PathVariable UUID actionId) {
         List<ManualPacketView> result = manual.packetsForAction(actor, actionId);
@@ -105,6 +109,7 @@ class ListingManualConsoleController {
 
     // ------------------------------------------------------------------ engagements
 
+    @Transactional
     @GetMapping(value = "/engagements", produces = MediaType.APPLICATION_JSON_VALUE)
     List<PromotionEngagementView> engagements(AuthenticatedActor actor, @RequestParam UUID listingId) {
         List<PromotionEngagementView> result = manual.engagements(actor, listingId);
@@ -112,6 +117,7 @@ class ListingManualConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/engagements/{engagementId}", produces = MediaType.APPLICATION_JSON_VALUE)
     PromotionEngagementView engagement(AuthenticatedActor actor, @PathVariable UUID engagementId) {
         PromotionEngagementView result = manual.engagement(engagementId)

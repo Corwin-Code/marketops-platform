@@ -104,7 +104,7 @@ public class ListingActionService {
         Instant now = clock.instant();
         UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(),
                 listing.storeId(), "MANUAL", MetricWindow.D30, now.minus(Duration.ofDays(30)), now,
-                Digest.ofText("lc-candidate-1"), 1, 1, true, null, now));
+                Digest.ofText("lc-candidate-1"), 1, 1, true, null, now, actor.userId()));
         UUID id = ids.newId();
         actions.insertCandidate(id, listing.organizationId(), listing.storeId(), listingId, runId,
                 healthRows.latestHealthId(listingId).orElse(null), kind,
@@ -175,8 +175,8 @@ public class ListingActionService {
             if (current.isEmpty()) {
                 throw OperationRejectedException.of(ErrorCode.RAW_EVIDENCE_MISSING);
             }
-            targetText = MetadataFieldPolicy.requireText("targetText", preparation.targetText());
-            if (targetText.length() > 65536 || targetText.equals(current.get().descriptionText())) {
+            targetText = com.mimococo.marketops.listingconversion.internal.domain.DescriptionText.requireTarget(preparation.targetText());
+            if (targetText.equals(current.get().descriptionText())) {
                 throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
             }
             targetDigest = Digest.ofText(targetText);
@@ -211,8 +211,7 @@ public class ListingActionService {
         }
         UUID recommendationId = intake.proposeListingAction(new ListingActionProposal(actor.userId().toString(),
                 listing.organizationId(), listing.storeId(), candidate.platformListingId(), kind,
-                healthRows.latestHealthId(candidate.platformListingId()).isPresent()
-                        ? runFor(listing, now) : runFor(listing, now),
+                runFor(listing, now, actor.userId()),
                 MetricWindow.D30, BigDecimal.ZERO, parameters,
                 preparation.expectedEffect() == null ? Map.of() : preparation.expectedEffect(),
                 preparation.riskLabel() == null ? "MEDIUM" : preparation.riskLabel(), 30, entityVersion, List.of()));
@@ -239,10 +238,10 @@ public class ListingActionService {
         return view(actionId).orElseThrow();
     }
 
-    private UUID runFor(ListingFactRepository.ListingContext listing, Instant now) {
+    private UUID runFor(ListingFactRepository.ListingContext listing, Instant now, UUID requestedByUserId) {
         return ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(), listing.storeId(),
                 "MANUAL", MetricWindow.D30, now.minus(Duration.ofDays(30)), now, Digest.ofText("lc-action-1"), 1, 1, true,
-                null, now));
+                null, now, requestedByUserId));
     }
 
     @Transactional

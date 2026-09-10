@@ -119,6 +119,12 @@ public enum ActionScopeCode {
     /** Read Listing Health, retained-visit conversion, candidates, actions and outcomes. */
     LISTING_CONVERSION_VIEW(false),
 
+    /** Record an evaluation using the frozen plan and qualified canonical evidence. */
+    LISTING_OUTCOME_EVALUATE(false),
+
+    /** Read the financial decision evidence of every affected product variant. */
+    LISTING_DECISION_EVIDENCE_VIEW(false),
+
     /** Author a candidate comparison or an exact listing action for review. */
     LISTING_ACTION_PREPARE(false),
 

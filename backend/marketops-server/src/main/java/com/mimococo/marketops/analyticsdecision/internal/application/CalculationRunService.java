@@ -33,7 +33,7 @@ class CalculationRunService implements CalculationRunLedger {
         metrics.openRun(runId, request.organizationId(), request.triggerKind(),
                 request.storeId() == null ? "ORGANIZATION" : "STORE", request.storeId(),
                 request.window().name(), request.periodStart(), request.periodEnd(),
-                request.definitionSetDigest(), null, request.completedAt(),
+                request.definitionSetDigest(), request.requestedByUserId(), request.completedAt(),
                 CorrelationId.current());
         metrics.closeRun(runId, request.succeeded() ? "SUCCEEDED" : "FAILED",
                 request.subjectCount(), request.valueCount(), request.failureCode(),

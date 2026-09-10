@@ -73,7 +73,7 @@ public class ListingHealthService {
     }
 
     @Transactional
-    public ListingHealthView recompute(UUID listingId, String triggerKind) {
+    public ListingHealthView recompute(UUID listingId, String triggerKind, UUID requestedByUserId) {
         ListingFactRepository.ListingContext listing = facts.listing(listingId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         Instant now = clock.instant();
@@ -104,7 +104,7 @@ public class ListingHealthService {
                         actions.scopeContained(listing.organizationId(), listingId)));
         UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(),
                 listing.storeId(), triggerKind, MetricWindow.D30, now.minus(LOOKBACK), now,
-                Digest.ofText(DEFINITION_VERSION), 1, 1, true, null, now));
+                Digest.ofText(DEFINITION_VERSION), 1, 1, true, null, now, requestedByUserId));
         UUID healthId = ids.newId();
         Instant sourceTime = description.map(ListingFactRepository.DescriptionRow::observedAt).orElse(null);
         Instant acquisitionTime = description.map(ListingFactRepository.DescriptionRow::acquiredAt).orElse(null);

@@ -56,10 +56,13 @@ public class EvaluationService {
     private final ListingActionIntake intake;
     private final IdGenerator ids;
     private final Clock clock;
+    private final ListingScopeAuthorization scopes;
+    private final ListingDisclosureService disclosure;
 
     EvaluationService(EvaluationRepository evaluations, ListingActionRepository actions, ListingHealthRepository measurements,
                       ListingFactRepository facts, CalibrationService calibration, CalculationRunLedger ledger,
-                      ListingActionIntake intake, IdGenerator ids, Clock clock) {
+                      ListingActionIntake intake, IdGenerator ids, Clock clock,
+                      ListingScopeAuthorization scopes, ListingDisclosureService disclosure) {
         this.evaluations = evaluations;
         this.actions = actions;
         this.measurements = measurements;
@@ -69,6 +72,8 @@ public class EvaluationService {
         this.intake = intake;
         this.ids = ids;
         this.clock = clock;
+        this.scopes = scopes;
+        this.disclosure = disclosure;
     }
 
     /** Freeze the plan from the bound calibration package, once. */
@@ -124,6 +129,7 @@ public class EvaluationService {
                                        String lateFactReference) {
         ListingActionRepository.ActionRow action = actions.action(actionId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        scopes.require(actor, action.listingId(), ActionScopeCode.LISTING_OUTCOME_EVALUATE);
         EvaluationRepository.PlanRow plan = evaluations.plan(actionId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION));
         JsonNode node = null;
@@ -139,10 +145,14 @@ public class EvaluationService {
         Instant now = clock.instant();
         Optional<ConversionMeasurementView> measurement = measurementId == null ? Optional.empty()
                 : measurements.measurement(measurementId);
+        if (measurementId != null && (measurement.isEmpty()
+                || !measurement.get().platformListingId().equals(action.listingId()))) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
         BigDecimal ratio = measurement.filter(m -> m.ratioState() == RatioState.DEFINED)
                 .map(ConversionMeasurementView::primaryRatio).orElse(null);
         boolean maturity = measurement.map(ConversionMeasurementView::maturityReached).orElse(false);
-        BigDecimal bound = ratio == null ? null : conservativeBound == null ? ratio : conservativeBound.min(ratio);
+        BigDecimal bound = ratio == null ? null : conservativeBound == null ? null : conservativeBound.min(ratio);
         NodeVerdict verdict = ProtectionVector.nodeVerdict(ratio, bound, threshold, maturity);
 
         ListingFactRepository.ListingContext listing = facts.listing(action.listingId()).orElseThrow();
@@ -172,7 +182,7 @@ public class EvaluationService {
 
         UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(action.organizationId(), action.storeId(),
                 lateFactReference == null ? "MANUAL" : "LATE_DATA", MetricWindow.D30, now.minus(Duration.ofDays(30)), now,
-                Digest.ofText("lc-node-1"), 1, 1, true, null, now));
+                Digest.ofText("lc-node-1"), 1, 1, true, null, now, actor.userId()));
         Optional<UUID> original = evaluations.latestResult(plan.id(), nodeCode, stage);
         int revision = evaluations.nextRevision(plan.id(), nodeCode, stage);
         UUID resultId = ids.newId();
@@ -187,7 +197,7 @@ public class EvaluationService {
         }
         intake.recordTaskOutcome(action.recommendationId(), "SETTLED".equals(stage) ? (original.isPresent() ? "SETTLED_REVISED" : "SETTLED") : "OPERATIONAL",
                 "lc-node-result:" + resultId, "node " + nodeCode + " " + verdict + " protections " + protection);
-        return view(actionId).orElseThrow();
+        return viewAuthorized(actionId).orElseThrow();
     }
 
     private static BigDecimal floor(BigDecimal prior, BigDecimal bound) {
@@ -199,7 +209,13 @@ public class EvaluationService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<EvaluationView> view(UUID actionId) {
+    public Optional<EvaluationView> view(AuthenticatedActor actor, UUID actionId) {
+        var action = actions.action(actionId).orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        scopes.require(actor, action.listingId(), ActionScopeCode.LISTING_CONVERSION_VIEW);
+        return viewAuthorized(actionId);
+    }
+
+    private Optional<EvaluationView> viewAuthorized(UUID actionId) {
         return evaluations.plan(actionId).map(plan -> {
             List<EvaluationView.Node> nodes = new ArrayList<>();
             plan.formalNodes().forEach(node -> nodes.add(new EvaluationView.Node(node.path("nodeCode").asText(),
@@ -224,6 +240,7 @@ public class EvaluationService {
                                    List<PromotionSimulator.Scenario> scenarios, BigDecimal referenceProfitLine) {
         var candidate = actions.candidate(candidateId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        scopes.require(actor, candidate.platformListingId(), ActionScopeCode.LISTING_ACTION_PREPARE);
         ListingFactRepository.ListingContext listing = facts.listing(candidate.platformListingId()).orElseThrow();
         Instant now = clock.instant();
         PromotionSimulator.Simulation simulation = PromotionSimulator.simulate(inputs, scenarios, referenceProfitLine);
@@ -243,17 +260,24 @@ public class EvaluationService {
         });
         UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(), listing.storeId(),
                 "MANUAL", MetricWindow.D30, now.minus(Duration.ofDays(30)), now, Digest.ofText("lc-simulation-1"), 1, 1, true,
-                null, now));
+                null, now, actor.userId()));
         String inputsDigest = Digest.ofComponents(List.of(inputs.toString(), scenarios.toString(), String.valueOf(referenceProfitLine)));
         UUID id = ids.newId();
+        var members = facts.members(candidate.platformListingId(), now);
+        List<UUID> evidenceScope = !members.isEmpty() && members.stream().allMatch(m -> !m.conflictOpen() && m.productVariantId() != null)
+                ? members.stream().map(m -> m.productVariantId()).distinct().toList() : List.of();
         evaluations.insertSimulation(id, listing.organizationId(), candidateId, runId, scenarioRows, inputsDigest, resultRows,
-                simulation.inverseMinimumQuantity(), simulation.inverseState(), simulation.demandGatePassed(), now);
-        return evaluations.simulations(candidateId).stream().filter(s -> s.id().equals(id)).findFirst().orElseThrow();
+                simulation.inverseMinimumQuantity(), simulation.inverseState(), simulation.demandGatePassed(), now, evidenceScope);
+        return disclosure.simulation(actor, candidate.platformListingId(),
+                evaluations.simulations(candidateId).stream().filter(s -> s.id().equals(id)).findFirst().orElseThrow());
     }
 
     @Transactional(readOnly = true)
-    public List<SimulationView> simulations(UUID candidateId) {
-        return evaluations.simulations(candidateId);
+    public List<SimulationView> simulations(AuthenticatedActor actor, UUID candidateId) {
+        var candidate = actions.candidate(candidateId).orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        scopes.require(actor, candidate.platformListingId(), ActionScopeCode.LISTING_CONVERSION_VIEW);
+        return evaluations.simulations(candidateId).stream()
+                .map(row -> disclosure.simulation(actor, candidate.platformListingId(), row)).toList();
     }
 
     static ActionScopeCode viewScope() {

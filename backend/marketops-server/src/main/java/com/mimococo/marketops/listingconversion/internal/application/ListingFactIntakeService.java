@@ -19,10 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Human and import intake of listing conversion facts, each with provenance.
+ * Authenticated human intake of listing conversion facts, each with provenance.
  *
  * <p>A person's observation is MANUAL_ENTRY provenance naming the person; an
- * import is INTERNAL_IMPORT. Marketplace-sourced evidence arrives through the
+ * batch import uses the separate import workflow. Marketplace-sourced evidence arrives through the
  * acquisition path with raw custody and is not entered here. Every accepted
  * fact queues an ORDINARY recalculation with the source time kept apart from
  * the acquisition time.
@@ -35,14 +35,53 @@ public class ListingFactIntakeService {
     private final BusinessAuthorization authorization;
     private final IdGenerator ids;
     private final Clock clock;
+    private final com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence;
 
     ListingFactIntakeService(ListingFactRepository facts, GovernanceRepository governance,
-                             BusinessAuthorization authorization, IdGenerator ids, Clock clock) {
+                             BusinessAuthorization authorization, IdGenerator ids, Clock clock,
+                             com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence) {
         this.facts = facts;
         this.governance = governance;
         this.authorization = authorization;
         this.ids = ids;
         this.clock = clock;
+        this.measurementEvidence = measurementEvidence;
+    }
+
+    /** Attest to a complete source window, including an explicitly complete zero-purchase set. */
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
+    public UUID recordMeasurementCoverage(AuthenticatedActor actor, UUID listingId,
+            com.mimococo.marketops.listingconversion.EvidencePath path, Instant from, Instant to, int days,
+            Instant through, String reference, Long expectedVisits, Long expectedLinks, UUID summaryId) {
+        var listing = require(actor, listingId, ActionScopeCode.INTERNAL_FACT_INTAKE);
+        Instant now = clock.instant();
+        if (path == null || from == null || to == null || !from.isBefore(to) || through == null
+                || through.isBefore(to) || through.isAfter(now) || (days != 7 && days != 14 && days != 30)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        reference = MetadataFieldPolicy.requireText("sourceReference", reference);
+        var snapshot = path == com.mimococo.marketops.listingconversion.EvidencePath.DETAIL
+                ? measurementEvidence.detailSnapshot(listingId, from, to, now)
+                : measurementEvidence.summarySnapshot(listingId, summaryId, from, to, days)
+                        .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED));
+        if (path == com.mimococo.marketops.listingconversion.EvidencePath.DETAIL) {
+            if (summaryId != null || expectedVisits == null || expectedLinks == null
+                    || expectedVisits != snapshot.visits() || expectedLinks != snapshot.links()) {
+                throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            }
+        } else if (expectedVisits != null || expectedLinks != null) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null,
+                through, now, actor.userId(), reference);
+        UUID id = ids.newId();
+        measurementEvidence.insertCoverage(id, listing.organizationId(), listingId, provenance, path, from, to,
+                days, through, reference, expectedVisits, expectedLinks, summaryId,
+                path == com.mimococo.marketops.listingconversion.EvidencePath.OFFICIAL_SUMMARY
+                        ? measurementEvidence.activeProfile(listingId, now).orElse(null) : null, snapshot.digest(), now);
+        governance.enqueue(ids.newId(), listing.organizationId(), listingId, RecalculationClass.ORDINARY,
+                "measurement-coverage:" + id, through, now);
+        return id;
     }
 
     @Transactional
@@ -51,8 +90,8 @@ public class ListingFactIntakeService {
         ListingFactRepository.ListingContext listing = require(actor, listingId, ActionScopeCode.LISTING_ACTION_PREPARE);
         Instant now = clock.instant();
         Instant observed = observedAt == null ? now : observedAt;
-        String validText = text == null ? "" : text;
-        if (validText.length() > 65536 || observed.isAfter(now)) {
+        String validText = com.mimococo.marketops.listingconversion.internal.domain.DescriptionText.observation(text);
+        if (validText == null || observed.isAfter(now)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null, observed,
@@ -75,6 +114,7 @@ public class ListingFactIntakeService {
         if (observed.isAfter(now)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
+        com.mimococo.marketops.listingconversion.internal.domain.DescriptionText.observation(displayedText);
         UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null, observed,
                 now, actor.userId(), null);
         UUID id = ids.newId();
@@ -99,7 +139,7 @@ public class ListingFactIntakeService {
         if (facts.visitFactByKey(listingId, visitKey).isPresent()) {
             throw OperationRejectedException.of(ErrorCode.DUPLICATE_IDENTITY);
         }
-        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "INTERNAL_IMPORT", null,
+        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null,
                 visitedAt, now, actor.userId(), null);
         UUID id = ids.newId();
         facts.insertVisitFact(id, listing.organizationId(), provenance, listing.storeId(), listingId, variantId,
@@ -114,7 +154,7 @@ public class ListingFactIntakeService {
         Instant now = clock.instant();
         UUID visitId = facts.visitFactByKey(listingId, visitKey)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
-        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "INTERNAL_IMPORT", null, now,
+        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null, now,
                 now, actor.userId(), null);
         UUID id = ids.newId();
         facts.insertVisitPurchaseLink(id, listing.organizationId(), provenance, visitId, salesFactId,
@@ -126,19 +166,22 @@ public class ListingFactIntakeService {
 
     @Transactional
     public UUID recordOfficialSummary(AuthenticatedActor actor, UUID listingId, Instant periodStart, Instant periodEnd,
-                                      Long visits, Long retained, String label, Instant observedAt) {
+                                      Long visits, Long retained, String label, Instant observedAt, int retentionDays) {
         ListingFactRepository.ListingContext listing = require(actor, listingId, ActionScopeCode.INTERNAL_FACT_INTAKE);
         Instant now = clock.instant();
         if (periodStart == null || periodEnd == null || !periodStart.isBefore(periodEnd)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         Instant observed = observedAt == null ? now : observedAt;
-        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "INTERNAL_IMPORT", null, observed,
+        if (observed.isAfter(now) || (retentionDays != 7 && retentionDays != 14 && retentionDays != 30)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null, observed,
                 now, actor.userId(), null);
         UUID id = ids.newId();
         facts.insertOfficialSummary(id, listing.organizationId(), provenance, listing.storeId(), listingId,
                 "summary:" + id, ConversionMeasurementService.SUMMARY_KIND, periodStart, periodEnd, visits, retained,
-                label, observed, now);
+                label, observed, now, retentionDays);
         governance.enqueue(ids.newId(), listing.organizationId(), listingId, RecalculationClass.ORDINARY,
                 "official-summary:" + id, observed, now);
         return id;
@@ -153,7 +196,7 @@ public class ListingFactIntakeService {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         Instant observed = observedAt == null ? now : observedAt;
-        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "INTERNAL_IMPORT", null, observed,
+        UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null, observed,
                 now, actor.userId(), null);
         UUID id = ids.newId();
         facts.insertFeedbackTheme(id, listing.organizationId(), provenance, listingId, "feedback:" + id, periodStart,

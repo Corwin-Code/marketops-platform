@@ -1,0 +1,105 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "reports": [
+    {
+      "report": "TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+      "sha256": "be3bead6b280dcbdc59fe1e82b2992a2cf189972a3366380e1cd106514d2366a",
+      "suite": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml",
+      "sha256": "3aad7ecca1ec966a1f972f45c7a07987b86a056bc111793ee1b9a9ebc7f5397b",
+      "suite": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest",
+      "tests": "34",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml",
+      "sha256": "3314555310318ce8cdf0f59fe4cd3a43a2394986a059f0c7389d104eca79460e",
+      "suite": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest",
+      "tests": "17",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+      "sha256": "07b3d5adeacdf119b11bee9ab1a9ba0fc2243afe59301c7867612932e2d385b6",
+      "suite": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualificationTest.xml",
+      "sha256": "a78929ce0fd7affea4b54f6c964ea10cd0d2036a35536246fc2e4112b4474eaf",
+      "suite": "com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualificationTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.listingconversion.internal.domain.VisitConversionTest.xml",
+      "sha256": "99f7186ba6a120bae7d8e44a2060539252354fd55565741151d65a974e86ea96",
+      "suite": "com.mimococo.marketops.listingconversion.internal.domain.VisitConversionTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml",
+      "sha256": "71053518192050a5648964d9e944ca35752d22d207edeb2864248e1a733caa99",
+      "suite": "com.mimococo.marketops.architecture.ModulithArchitectureTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.listingconversion.internal.domain.VersionWindowTest.xml",
+      "sha256": "b4cb26b9b0f685e8cab541849755122b0dfd97adcd7e4a0ff0f38b90defa66a2",
+      "suite": "com.mimococo.marketops.listingconversion.internal.domain.VersionWindowTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.listingconversion.internal.domain.DescriptionTextTest.xml",
+      "sha256": "1a6cb0b67bcd386c6857f08d2e43194bfec28cfe4885ed4840acc02d22169b1f",
+      "suite": "com.mimococo.marketops.listingconversion.internal.domain.DescriptionTextTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    },
+    {
+      "report": "TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml",
+      "sha256": "f86cc31edfd912cfc0882d66174756624f1d4e21c6c6dbc67b10e5140e6ce236",
+      "suite": "com.mimococo.marketops.ListingReworkAuthorizationIT",
+      "tests": "13",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": null
+    }
+  ]
+}

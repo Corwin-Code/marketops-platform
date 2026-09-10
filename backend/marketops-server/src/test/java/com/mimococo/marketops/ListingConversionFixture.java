@@ -105,7 +105,9 @@ public final class ListingConversionFixture {
         var uuid = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}").matcher(source);
         String sql = uuid.replaceAll(match -> replacement.computeIfAbsent(match.group(),
                         ignored -> UUID.randomUUID().toString()))
-                .replace("SYNTHETIC_AD", base.platform());
+                .replace("SYNTHETIC_AD", base.platform())
+                .replace("secret-ref://fictional/never-resolve-content",
+                        "secret-ref://fictional/content/" + named.get("credential"));
         try (Connection connection = migration.getConnection()) {
             connection.setAutoCommit(false);
             ScriptUtils.executeSqlScript(connection, new ByteArrayResource(sql.getBytes(StandardCharsets.UTF_8)));

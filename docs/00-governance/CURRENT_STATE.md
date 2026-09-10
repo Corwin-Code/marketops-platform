@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-09
+as_of: 2026-09-10
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -25,12 +25,20 @@ active_slice_annex_git_blob_sha1: 4d9e93c17e26deee5d2222c8fc51d61d619aa9c8
 slice_v1_004_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
 slice_v1_004_owner_acceptance_statement: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt
 slice_v1_004_owner_acceptance_statement_sha256: 2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3
-slice_v1_004_execution_authority: FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY
+slice_v1_004_execution_authority: CONTINUOUS_ROOT_CAUSE_REWORK_LEVEL_1_LOCAL_ONLY
 slice_v1_004_maker: CLAUDE
 slice_v1_004_source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
 slice_v1_004_source_base_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
-slice_v1_004_branch: claude/slice-v1-004-local-implementation-pmrr80
-slice_v1_004_implementation_state: LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING
+slice_v1_004_branch: codex/slice-v1-004-root-cause-rework-r1
+slice_v1_004_implementation_state: CONTROLLER_CHANGES_REQUIRED_ROOT_CAUSE_REWORK_IN_PROGRESS
+slice_v1_004_rework_agent: CODEX
+slice_v1_004_reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
+slice_v1_004_reviewed_tree: b04fc98b9a3e156cc66e00fe878569306972c638
+slice_v1_004_frozen_finding_set: docs/07-phase-evidence/SLICE-V1-004/rework-r1/01_FROZEN_FINDING_SET.json
+slice_v1_004_frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
+slice_v1_004_rework_progress: docs/07-phase-evidence/SLICE-V1-004/rework-r1/finding-progress.json
+slice_v1_004_rework_design: docs/02-architecture/designs/SLICE-V1-004-rework-r1-design.md
+slice_v1_004_rework_completion: NOT_CLAIMED
 slice_v1_004_controlled_write_target: LISTING_DESCRIPTION_CHANGE
 slice_v1_004_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_004_real_provider_calls: NONE

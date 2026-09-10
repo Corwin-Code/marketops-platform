@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Whether an evidence path qualifies for the standardised measurement.
+ * Whether an evidence path qualifies for the actual retained-visit total.
  *
- * <p>The detail path qualifies when individual visits with retained purchase
- * links exist and are source-stratified. The official-summary path qualifies
+ * <p>The detail path qualifies when the complete visit and purchase-link windows are evidenced,
+ * including complete empty sets. Source stratification is a separate comparison qualification. The official-summary path qualifies
  * only under a PROVEN equivalence profile that covers numerator, denominator,
  * time attribution, maturity and revision. Official labels alone never qualify,
  * and missing stratification blocks the standardised comparison while leaving
@@ -29,19 +29,16 @@ public final class EvidencePathQualification {
     }
 
     /** The reasons a path does not qualify; empty means qualified. */
-    public static List<String> disqualifications(EvidencePath path, boolean visitsPresent,
-                                                 boolean purchaseLinksPresent, boolean sourceStratified,
+    public static List<String> disqualifications(EvidencePath path, boolean visitsComplete,
+                                                 boolean purchaseLinksComplete, boolean sourceStratified,
                                                  SummaryProfile profile) {
         List<String> reasons = new ArrayList<>();
         if (path == EvidencePath.DETAIL) {
-            if (!visitsPresent) {
-                reasons.add("VISIT_FACTS_ABSENT");
+            if (!visitsComplete) {
+                reasons.add("VISIT_WINDOW_INCOMPLETE");
             }
-            if (!purchaseLinksPresent) {
-                reasons.add("PURCHASE_LINKS_ABSENT");
-            }
-            if (!sourceStratified) {
-                reasons.add("SOURCE_STRATIFICATION_MISSING");
+            if (!purchaseLinksComplete) {
+                reasons.add("PURCHASE_LINK_WINDOW_INCOMPLETE");
             }
             return List.copyOf(reasons);
         }
@@ -66,9 +63,6 @@ public final class EvidencePathQualification {
         }
         if (!profile.coversRevision()) {
             reasons.add("EQUIVALENCE_REVISION_UNCOVERED");
-        }
-        if (!sourceStratified) {
-            reasons.add("SOURCE_STRATIFICATION_MISSING");
         }
         return List.copyOf(reasons);
     }

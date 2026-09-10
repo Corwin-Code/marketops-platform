@@ -49,4 +49,15 @@ class VersionWindowTest {
 
         assertThat(attribution.excludedDays()).isEmpty();
     }
+    @Test
+    void previousVersionBeforeWindowStillMakesFirstChangedSourceDayATransition() {
+        var attribution = VersionWindow.attribute(List.of(
+                new VersionWindow.Display("old", START.minusSeconds(86400)),
+                new VersionWindow.Display("new", START.plusSeconds(17*3600))), START, END,
+                java.time.ZoneId.of("Asia/Taipei"));
+        assertThat(attribution.excludedDays()).containsExactly(LocalDate.of(2026,9,2));
+        assertThat(VersionWindow.excluded(attribution, START.plusSeconds(16*3600))).isTrue();
+        assertThat(VersionWindow.excluded(attribution, START.plusSeconds(15*3600))).isFalse();
+    }
+
 }

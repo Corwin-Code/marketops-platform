@@ -208,7 +208,11 @@ public class ListingFactRepository {
         return jdbc.sql("""
                 SELECT displayed_text_digest, observed_at FROM core.lc_display_observation
                  WHERE platform_listing_id = :listing AND display_state = 'DISPLAYED'
-                   AND observed_at >= :from AND observed_at < :to
+                   AND observed_at < :to
+                   AND (observed_at >= :from OR observed_at = (SELECT max(prior.observed_at)
+                     FROM core.lc_display_observation prior WHERE prior.platform_listing_id=:listing
+                      AND prior.display_state='DISPLAYED' AND prior.observed_at<:from))
+                 ORDER BY observed_at,id
                 """).param("listing", listingId).param("from", Timestamp.from(from)).param("to", Timestamp.from(to))
                 .query((rs, n) -> new VersionWindow.Display(rs.getString("displayed_text_digest"),
                         instant(rs, "observed_at")))
@@ -269,16 +273,51 @@ public class ListingFactRepository {
                 .list();
     }
 
-    public List<String> retainedVisitKeys(UUID listingId, Instant from, Instant to, int retentionDays) {
-        return jdbc.sql("""
-                SELECT DISTINCT v.visit_key
-                  FROM core.lc_visit_fact v
-                  JOIN core.lc_visit_purchase_link l ON l.visit_fact_id = v.id
-                  JOIN ledger.sales_fact s ON s.id = l.sales_fact_id
-                 WHERE v.platform_listing_id = :listing AND v.visited_at >= :from AND v.visited_at < :to
-                   AND s.sale_stage = 'RETAINED' AND s.retention_window_days = :retention
+    /** The effective immutable sale revisions, retaining the whole linked correction chain. */
+    public record RetainedEvidence(List<String> visitKeys, tools.jackson.databind.JsonNode lineage, boolean conflicted) { }
+
+    public RetainedEvidence retainedEvidence(UUID listingId, Instant from, Instant to, int retentionDays, Instant asOf) {
+        String body = jdbc.sql("""
+                WITH RECURSIVE versions AS (
+                  SELECT v.visit_key, s.id AS root_id, s.id, s.organization_id, s.platform_listing_variant_id,
+                         s.native_order_key, s.native_line_key, s.sale_stage, s.retention_window_days,
+                         s.quantity, s.adjustment_kind, s.supersedes_fact_id, s.provenance_id
+                    FROM core.lc_visit_fact v JOIN core.lc_visit_purchase_link l ON l.visit_fact_id=v.id
+                    JOIN ledger.sales_fact s ON s.id=l.sales_fact_id
+                    JOIN core.platform_listing_variant variant ON variant.id=s.platform_listing_variant_id
+                    JOIN core.fact_provenance p ON p.id=s.provenance_id
+                   WHERE v.platform_listing_id=:listing AND v.visited_at>=:from AND v.visited_at<:to
+                     AND v.acquired_at<=:asof AND l.linked_at<=:asof AND p.ingestion_time<=:asof
+                     AND s.organization_id=v.organization_id AND s.store_id=v.store_id
+                     AND variant.platform_listing_id=v.platform_listing_id
+                  UNION
+                  SELECT prior.visit_key, prior.root_id, s.id, s.organization_id, s.platform_listing_variant_id,
+                         s.native_order_key, s.native_line_key, s.sale_stage, s.retention_window_days,
+                         s.quantity, s.adjustment_kind, s.supersedes_fact_id, s.provenance_id
+                    FROM versions prior JOIN ledger.sales_fact s ON s.supersedes_fact_id=prior.id
+                    JOIN core.fact_provenance p ON p.id=s.provenance_id
+                   WHERE p.ingestion_time<=:asof AND s.organization_id=prior.organization_id
+                     AND s.platform_listing_variant_id=prior.platform_listing_variant_id
+                     AND s.native_order_key=prior.native_order_key
+                     AND s.native_line_key IS NOT DISTINCT FROM prior.native_line_key
+                ), leaves AS (
+                 SELECT current.* FROM versions current WHERE NOT EXISTS (SELECT 1 FROM ledger.sales_fact newer
+                       JOIN core.fact_provenance p ON p.id=newer.provenance_id
+                        WHERE newer.supersedes_fact_id=current.id AND p.ingestion_time<=:asof)
+                )
+                SELECT jsonb_build_object(
+                 'revisions',coalesce((SELECT jsonb_agg(to_jsonb(v) ORDER BY root_id,id) FROM versions v),'[]'::jsonb),
+                 'effectiveSaleIds',coalesce((SELECT jsonb_agg(id ORDER BY id) FROM leaves),'[]'::jsonb),
+                 'conflicted',EXISTS(SELECT 1 FROM leaves GROUP BY root_id HAVING count(DISTINCT id)>1),
+                 'retainedVisitKeys',coalesce((SELECT jsonb_agg(DISTINCT visit_key ORDER BY visit_key) FROM leaves
+                    WHERE sale_stage='RETAINED' AND retention_window_days=:retention
+                      AND quantity>0 AND adjustment_kind IS DISTINCT FROM 'REVERSAL'),'[]'::jsonb))::text
                 """).param("listing", listingId).param("from", Timestamp.from(from)).param("to", Timestamp.from(to))
-                .param("retention", retentionDays).query(String.class).list();
+                .param("retention", retentionDays).param("asof", Timestamp.from(asOf)).query(String.class).single();
+        var lineage = new tools.jackson.databind.ObjectMapper().readTree(body);
+        List<String> keys = new java.util.ArrayList<>();
+        lineage.path("retainedVisitKeys").forEach(k -> keys.add(k.asText()));
+        return new RetainedEvidence(List.copyOf(keys),lineage,lineage.path("conflicted").asBoolean());
     }
 
     public boolean purchaseLinksPresent(UUID listingId) {
@@ -312,7 +351,8 @@ public class ListingFactRepository {
                 SELECT id, summary_kind, reported_visits, reported_retained_purchases, reported_conversion_label,
                        period_start, period_end, observed_at
                   FROM core.lc_official_summary_observation
-                 WHERE platform_listing_id = :listing AND period_start >= :from AND period_end <= :to
+                 WHERE platform_listing_id = :listing AND period_start = :from AND period_end = :to
+                   AND summary_kind = 'VISITS_AND_RETAINED_PURCHASES'
                  ORDER BY observed_at DESC LIMIT 1
                 """).param("listing", listingId).param("from", Timestamp.from(from)).param("to", Timestamp.from(to))
                 .query((rs, n) -> new SummaryRow(rs.getObject("id", UUID.class), rs.getString("summary_kind"),
@@ -325,18 +365,18 @@ public class ListingFactRepository {
 
     public void insertOfficialSummary(UUID id, UUID organizationId, UUID provenanceId, UUID storeId, UUID listingId,
                                       String sourceFactKey, String summaryKind, Instant periodStart, Instant periodEnd,
-                                      Long visits, Long retained, String label, Instant observedAt, Instant acquiredAt) {
+                                      Long visits, Long retained, String label, Instant observedAt, Instant acquiredAt, int retentionDays) {
         jdbc.sql("""
                 INSERT INTO core.lc_official_summary_observation (id, organization_id, provenance_id, store_id,
                     platform_listing_id, source_fact_key, summary_kind, period_start, period_end, reported_visits,
-                    reported_retained_purchases, reported_conversion_label, observed_at, acquired_at)
+                    reported_retained_purchases, reported_conversion_label, observed_at, acquired_at, retention_window_days)
                 VALUES (:id, :org, :provenance, :store, :listing, :key, :kind, :start, :end, :visits, :retained,
-                    :label, :observed, :acquired)
+                    :label, :observed, :acquired, :days)
                 """).param("id", id).param("org", organizationId).param("provenance", provenanceId)
                 .param("store", storeId).param("listing", listingId).param("key", sourceFactKey)
                 .param("kind", summaryKind).param("start", Timestamp.from(periodStart))
                 .param("end", Timestamp.from(periodEnd)).param("visits", visits).param("retained", retained)
-                .param("label", label).param("observed", Timestamp.from(observedAt))
+                .param("label", label).param("days",retentionDays).param("observed", Timestamp.from(observedAt))
                 .param("acquired", Timestamp.from(acquiredAt)).update();
     }
 

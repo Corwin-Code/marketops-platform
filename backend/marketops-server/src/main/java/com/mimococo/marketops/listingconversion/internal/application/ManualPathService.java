@@ -165,7 +165,12 @@ public class ManualPathService {
 
     @Transactional(readOnly = true)
     public List<ManualPacketView> myPackets(AuthenticatedActor actor, int limit) {
-        return manual.packetsForExecutor(actor.organizationId(), actor.userId(), limit);
+        var stores = authorization.permittedStoreIds(actor, ActionScopeCode.LISTING_CONVERSION_VIEW);
+        return manual.packetsForExecutor(actor.organizationId(), actor.userId(), limit).stream()
+                .filter(packet -> actions.action(packet.actionId())
+                        .filter(action -> actor.organizationId().equals(action.organizationId())
+                                && stores.contains(action.storeId())).isPresent())
+                .toList();
     }
 
     // ------------------------------------------------------------------ engagements

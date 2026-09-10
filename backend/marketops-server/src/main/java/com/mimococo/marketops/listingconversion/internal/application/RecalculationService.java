@@ -51,7 +51,7 @@ public class RecalculationService {
         int finished = 0;
         for (GovernanceRepository.QueuedRow row : governance.claim(limit, clock.instant())) {
             try {
-                health.recompute(row.listingId(), "SCHEDULED");
+                health.recompute(row.listingId(), "SCHEDULED", null);
                 governance.finish(row.id(), null, null, clock.instant());
                 finished++;
             } catch (RuntimeException failure) {

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,6 +68,7 @@ class ListingGovernanceConsoleController {
 
     // ------------------------------------------------------------------ batches
 
+    @Transactional
     @GetMapping(value = "/batches", produces = MediaType.APPLICATION_JSON_VALUE)
     List<BatchView> batches(AuthenticatedActor actor, @RequestParam(defaultValue = "50") @Min(1) @Max(200) int limit) {
         List<UUID> stores = authorization.permittedStoreIds(actor, ActionScopeCode.LISTING_CONVERSION_VIEW);
@@ -75,6 +77,7 @@ class ListingGovernanceConsoleController {
         return result;
     }
 
+    @Transactional
     @GetMapping(value = "/batches/{batchId}", produces = MediaType.APPLICATION_JSON_VALUE)
     BatchView batch(AuthenticatedActor actor, @PathVariable UUID batchId) {
         BatchView result = governance.batch(actor, batchId);
@@ -108,6 +111,7 @@ class ListingGovernanceConsoleController {
 
     // ------------------------------------------------------------------ containment
 
+    @Transactional
     @GetMapping(value = "/containments", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ContainmentView> containments(AuthenticatedActor actor,
                                        @RequestParam(defaultValue = "true") boolean activeOnly,
@@ -148,6 +152,7 @@ class ListingGovernanceConsoleController {
         return Map.of("state", "RECORDED");
     }
 
+    @Transactional
     @GetMapping(value = "/isolation-scope/{listingId}", produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, Object> isolationScope(AuthenticatedActor actor, @PathVariable UUID listingId) {
         listings.require(actor, listingId, ActionScopeCode.LISTING_CONVERSION_VIEW);
@@ -158,6 +163,7 @@ class ListingGovernanceConsoleController {
 
     // ------------------------------------------------------------------ late association
 
+    @Transactional
     @GetMapping(value = "/listings/{listingId}/late-associations", produces = MediaType.APPLICATION_JSON_VALUE)
     List<LateAssociationView> lateAssociations(AuthenticatedActor actor, @PathVariable UUID listingId) {
         listings.require(actor, listingId, ActionScopeCode.LISTING_CONVERSION_VIEW);
@@ -184,6 +190,7 @@ class ListingGovernanceConsoleController {
 
     // ------------------------------------------------------------------ recalculation
 
+    @Transactional
     @GetMapping(value = "/recalculation-queue", produces = MediaType.APPLICATION_JSON_VALUE)
     List<RecalculationQueueView> recalculationQueue(AuthenticatedActor actor,
                                                     @RequestParam(defaultValue = "100") @Min(1) @Max(500) int limit) {

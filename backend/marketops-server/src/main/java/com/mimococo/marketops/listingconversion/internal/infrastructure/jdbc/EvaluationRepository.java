@@ -124,16 +124,22 @@ public class EvaluationRepository {
 
     public void insertSimulation(UUID id, UUID organizationId, UUID candidateId, UUID runId, List<Map<String, Object>> scenarios,
                                  String inputsDigest, List<Map<String, Object>> results, BigDecimal inverseMinimum,
-                                 String inverseState, Boolean gate, Instant now) {
+                                 String inverseState, Boolean gate, Instant now, List<UUID> evidenceScope) {
         jdbc.sql("""
                 INSERT INTO ops.lc_simulation (id, organization_id, candidate_id, calculation_run_id, scenario_set, inputs_digest,
-                    results, inverse_minimum_quantity, inverse_state, demand_gate_passed, computed_at)
+                    results, inverse_minimum_quantity, inverse_state, demand_gate_passed, computed_at, evidence_product_variant_ids)
                 VALUES (:id, :org, :candidate, :run, CAST(:scenarios AS jsonb), :digest, CAST(:results AS jsonb), :inverse,
-                    :state, :gate, :now)
+                    :state, :gate, :now, :scope)
                 """).param("id", id).param("org", organizationId).param("candidate", candidateId).param("run", runId)
                 .param("scenarios", json.writeValueAsString(scenarios)).param("digest", inputsDigest)
                 .param("results", json.writeValueAsString(results)).param("inverse", inverseMinimum).param("state", inverseState)
-                .param("gate", gate).param("now", Timestamp.from(now)).update();
+                .param("gate", gate).param("now", Timestamp.from(now))
+                .param("scope", evidenceScope == null || evidenceScope.isEmpty() ? null : evidenceScope.toArray(UUID[]::new)).update();
+    }
+
+    public List<UUID> simulationEvidenceScope(UUID id) {
+        return jdbc.sql("SELECT unnest(evidence_product_variant_ids) FROM ops.lc_simulation WHERE id = :id")
+                .param("id", id).query(UUID.class).list();
     }
 
     public List<SimulationView> simulations(UUID candidateId) {

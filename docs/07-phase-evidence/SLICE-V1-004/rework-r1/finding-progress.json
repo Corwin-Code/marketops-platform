@@ -1,0 +1,221 @@
+{
+  "status": "REWORK_IN_PROGRESS",
+  "source_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
+  "source_tree": "b04fc98b9a3e156cc66e00fe878569306972c638",
+  "frozen_set_sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
+  "findings": [
+    {
+      "id": "S4-DR-R1-001",
+      "title": "Outcome写入口遗漏业务授权与对象边界，读权限检查不能覆盖写入口",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Added independent current business scope before Outcome writes; foreign measurement listing rejected. Exact frozen measurement window/stage binding remains open."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+      ]
+    },
+    {
+      "id": "S4-DR-R1-002",
+      "title": "最小授权投影未落实到模拟明细与已发人工包的当前访问",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+      ]
+    },
+    {
+      "id": "S4-DR-R1-003",
+      "title": "两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Added exact source-window completeness receipt, explicit summary retention period, bound equivalence profile and full input lineage. Independent summary, complete zero purchase and missing-window HTTP/database checks pass. Correction/replay and full source-path closure remain open."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+      ]
+    },
+    {
+      "id": "S4-DR-R1-004",
+      "title": "版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Transition days consumed by metric inputs with source timezone, prior display carried across window, and as-of linked sale correction chain retained. Full target-version coverage, fixed-structure comparison and automatic Outcome revisions remain open."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+      ]
+    },
+    {
+      "id": "S4-DR-R1-005",
+      "title": "正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-006",
+      "title": "评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-007",
+      "title": "启动Gate用结构性Listing Health代替利润、退货、供给与用途保障",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-008",
+      "title": "普通/重大分类用字符差额和发起人暴露数字替代内容含义与真实经营暴露",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-009",
+      "title": "正文误用512字符元数据校验并strip，合法长文被拒绝且准确文本被改写",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Exact long Unicode description intake replaces metadata length handling; invalid Unicode and secret-like content rejected. Category/native contract validation still open."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+      ]
+    },
+    {
+      "id": "S4-DR-R1-010",
+      "title": "完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-011",
+      "title": "Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-012",
+      "title": "累计额度未绑定完整轴集合和准确需求，换版本可能把现存承担从余额中清零",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-013",
+      "title": "占用释放只验证有一条观察/旧值匹配，不能证明已经停止或不可能应用",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-014",
+      "title": "促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-015",
+      "title": "促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-016",
+      "title": "人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-017",
+      "title": "运行期偏离与跨域处理缺少权威证据闭环，任意核验ID可成为关闭依据",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-018",
+      "title": "限域隔离的依赖传播与重新启用未消费当前原因和调用权威",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-019",
+      "title": "一次明确启动没有接通Description Command，命令结果也未闭合业务动作",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-020",
+      "title": "精确恢复复用原命令和原批准，COMMAND_RESOLVE被扩成新的业务恢复授权",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-021",
+      "title": "请求guard没有绑定准确原生目标和正文节点，跨平台硬编码又拒绝合法Schema",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-022",
+      "title": "等待头和异步结果的完整协议语义未落实，可能提前重试或误认终局",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-023",
+      "title": "5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-024",
+      "title": "责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-025",
+      "title": "必需的按需AI、原文主题纠正、日周复盘与经验复用未形成实际业务路径",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-026",
+      "title": "双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口",
+      "status": "OPEN",
+      "implementation": [],
+      "executed_evidence": []
+    },
+    {
+      "id": "S4-DR-R1-027",
+      "title": "验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Isolated PostgreSQL and real signed Console requests execute. Found and fixed manual fact provenance, missing calculation requester, and read-audit transaction defects; no full regression or LOCAL_VERIFIED claim."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+      ]
+    }
+  ]
+}
