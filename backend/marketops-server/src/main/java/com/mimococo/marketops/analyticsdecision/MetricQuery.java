@@ -47,6 +47,18 @@ public interface MetricQuery {
                                                             Instant at);
 
     /**
+     * Latest canonical revisions for exactly this business period. A newer
+     * value over a larger or shifted period cannot substitute for the frozen
+     * comparison cohort. Retention maturity is a separate evidence condition.
+     */
+    Map<MetricCode, MetricValueView> currentValuesForPeriodAt(SubjectKind subjectKind,
+                                                            UUID subjectId,
+                                                            MetricWindow window,
+                                                            Instant periodFrom,
+                                                            Instant periodTo,
+                                                            Instant at);
+
+    /**
      * Every stored value of one metric for one subject, newest first.
      *
      * <p>This is how an operator sees that a figure moved because the facts

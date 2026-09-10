@@ -53,6 +53,11 @@ class ProtectionVectorTest {
         Map<String, ProtectionVerdict> missingKey = allPass();
         missingKey.remove("CRITICAL_VARIANT_RETURN");
         assertThat(ProtectionVector.verdictOf(missingKey)).isEqualTo(ProtectionVerdict.UNDETERMINED);
+        missingKey.put("SUPPLY_COVERAGE",ProtectionVerdict.FAIL);
+        assertThat(ProtectionVector.verdictOf(missingKey)).isEqualTo(ProtectionVerdict.FAIL);
+        var nullValue=allPass();
+        nullValue.put("SUPPLY_COVERAGE",null);
+        assertThat(ProtectionVector.verdictOf(nullValue)).isEqualTo(ProtectionVerdict.UNDETERMINED);
     }
 
     @Test
@@ -66,15 +71,23 @@ class ProtectionVectorTest {
                 new BigDecimal("0.04"), false)).isEqualTo(NodeVerdict.UNDETERMINED);
         assertThat(ProtectionVector.nodeVerdict(null, new BigDecimal("0.04"), new BigDecimal("0.04"), true))
                 .isEqualTo(NodeVerdict.UNDETERMINED);
+        assertThat(ProtectionVector.nodeVerdict(new BigDecimal("0.05"), new BigDecimal("0.04"), null, true))
+                .isEqualTo(NodeVerdict.UNDETERMINED);
     }
 
     @Test
-    @DisplayName("TC-LC-P05 the stop rule triggers only on an unmet target at a stop node after maturity")
+    @DisplayName("TC-LC-P05 a missed lower bound does not establish futility; a qualified upper bound may")
     void stopRuleIsNarrow() {
-        assertThat(ProtectionVector.stopTriggered(NodeVerdict.NOT_MET, true, true)).isTrue();
-        assertThat(ProtectionVector.stopTriggered(NodeVerdict.NOT_MET, false, true)).isFalse();
-        assertThat(ProtectionVector.stopTriggered(NodeVerdict.NOT_MET, true, false)).isFalse();
-        assertThat(ProtectionVector.stopTriggered(NodeVerdict.UNDETERMINED, true, true)).isFalse();
+        BigDecimal minimum = new BigDecimal("0.05");
+        assertThat(ProtectionVector.nodeVerdict(new BigDecimal("0.06"),new BigDecimal("0.01"),minimum,true))
+                .isEqualTo(NodeVerdict.NOT_MET);
+        assertThat(ProtectionVector.stopTriggered(new BigDecimal("0.20"),minimum,true,true,true)).isFalse();
+        assertThat(ProtectionVector.stopTriggered(null,minimum,true,true,true)).isFalse();
+        assertThat(ProtectionVector.stopTriggered(new BigDecimal("0.03"),minimum,true,true,true)).isTrue();
+        assertThat(ProtectionVector.stopTriggered(new BigDecimal("0.03"),minimum,false,true,true)).isFalse();
+        assertThat(ProtectionVector.stopTriggered(new BigDecimal("0.03"),minimum,true,false,true)).isFalse();
+        assertThat(ProtectionVector.stopTriggered(new BigDecimal("0.03"),minimum,true,true,false)).isFalse();
+        assertThat(ProtectionVector.stopTriggered(minimum,minimum,true,true,true)).isFalse();
         assertThat(ProtectionVector.toStrings(Map.of("SUPPLY_COVERAGE", ProtectionVerdict.FAIL)))
                 .containsEntry("SUPPLY_COVERAGE", "FAIL");
     }

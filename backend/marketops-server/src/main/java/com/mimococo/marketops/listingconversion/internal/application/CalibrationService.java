@@ -112,10 +112,15 @@ public class CalibrationService {
 
     public static Optional<Integer> crossPeriodWindowDays(Resolved resolved) {
         BigDecimal value = numeric(resolved, "CROSS_PERIOD_WINDOW");
-        return value == null ? Optional.empty() : Optional.of(value.intValue());
+        if (value == null || value.signum()<0 || value.compareTo(BigDecimal.valueOf(3660))>0) return Optional.empty();
+        try {
+            return Optional.of(value.intValueExact());
+        } catch (ArithmeticException fractional) {
+            return Optional.empty();
+        }
     }
 
-    /** The formal nodes as the package publishes them: code, maturity days, method and threshold. */
+    /** Preserve the whole accepted method/schedule, including structured qualification parameters. */
     public static List<Map<String, Object>> formalNodes(Resolved resolved) {
         CalibrationRepository.Value value = resolved.values().get("FORMAL_NODES");
         List<Map<String, Object>> nodes = new ArrayList<>();
@@ -123,10 +128,10 @@ public class CalibrationService {
             return nodes;
         }
         for (JsonNode node : value.json()) {
-            nodes.add(Map.of("nodeCode", node.path("nodeCode").asText(),
-                    "maturityDays", node.path("maturityDays").asInt(),
-                    "method", node.path("method").asText(),
-                    "threshold", node.path("threshold").asText()));
+            if (!node.isObject()) return List.of();
+            Map<String,Object> fields = new java.util.LinkedHashMap<>();
+            node.properties().forEach(entry -> fields.put(entry.getKey(),entry.getValue().deepCopy()));
+            nodes.add(java.util.Collections.unmodifiableMap(fields));
         }
         return nodes;
     }
@@ -137,18 +142,23 @@ public class CalibrationService {
             return Map.of();
         }
         Map<String, Object> rule = new java.util.LinkedHashMap<>();
-        value.json().properties().forEach(entry -> rule.put(entry.getKey(),
-                entry.getValue().isValueNode() ? entry.getValue().asText() : entry.getValue().toString()));
+        value.json().properties().forEach(entry -> rule.put(entry.getKey(),entry.getValue().deepCopy()));
         return rule;
     }
 
-    public static List<String> criticalGroups(Resolved resolved) {
+    /** An explicit empty object disables this optional rule; an absent value is unresolved. */
+    public static boolean hasExplicitStopRule(Resolved resolved) {
+        CalibrationRepository.Value value = resolved.values().get("STOP_RULE");
+        return value != null && value.json() != null && value.json().isObject();
+    }
+
+    /** Keep each group's own membership, protection bounds and qualification parameters. */
+    public static List<JsonNode> criticalGroupRules(Resolved resolved) {
         CalibrationRepository.Value value = resolved.values().get("CRITICAL_GROUP_RULE");
-        List<String> groups = new ArrayList<>();
-        if (value != null && value.json() != null && value.json().path("groups").isArray()) {
-            value.json().path("groups").forEach(group -> groups.add(group.asText()));
-        }
-        return groups;
+        if (value == null || value.json() == null || !value.json().path("groups").isArray()) return List.of();
+        List<JsonNode> groups = new ArrayList<>();
+        value.json().path("groups").forEach(group -> groups.add(group.deepCopy()));
+        return List.copyOf(groups);
     }
 
     public static List<String> allowanceAxes(Resolved resolved) {

@@ -64,6 +64,7 @@ class ListingReworkAuthorizationIT {
     @Autowired IdentityProviderService providers;
     @Autowired UserAdministrationService users;
     @Autowired com.mimococo.marketops.listingconversion.internal.application.CalibrationService calibration;
+    @Autowired com.mimococo.marketops.operationsworkflow.ListingActionIntake listingIntake;
     private UUID providerId;
     private UUID userId;
     private String subject;
@@ -288,6 +289,40 @@ class ListingReworkAuthorizationIT {
         postListing("/facts/visit", Map.of("visitKey", "unaccounted-visit", "visitedAt", from.plusSeconds(60).toString(),
                 "sellable", "YES", "channel", "ORGANIC"));
         assertThat(postListing("/measurements", request).path("ratioState").asText()).isEqualTo("NOT_AVAILABLE");
+    }
+
+    @Test
+    void callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio() throws Exception {
+        measurementGrants();
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Synthetic Outcome responsibility",Instant.now().plusSeconds(86400),Instant.now());
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_OUTCOME_EVALUATE,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        seedSummaryProfile();
+        Instant to=Instant.now().minusSeconds(40L*86400).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Instant from=to.minusSeconds(86400);
+        var summary=postListing("/facts/official-summary",Map.of("periodStart",from.toString(),"periodEnd",to.toString(),
+                "visits",100,"retainedPurchases",10,"retentionDays",30,"label","Synthetic absolute ratio",
+                "observedAt",to.plusSeconds(31L*86400).toString()));
+        postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY","sourceCompleteThrough",to.plusSeconds(31L*86400).toString(),
+                "sourceReference","evidence://synthetic/absolute-ratio-only","summaryObservationId",summary.path("observationId").asText()));
+        var measurement=postListing("/measurements",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY"));
+        assertThat(measurement.path("primaryRatio").decimalValue()).isEqualByComparingTo("0.1");
+        String request="""
+                {"nodeCode":"D14","stage":"OPERATIONAL","measurementId":"%s","conservativeBound":0.099,
+                 "directContributionProfit":999999,"linkedScopeProfit":999999,"overallReturnRate":0,
+                 "criticalVariantReturnRate":0,"supplyCoverageDays":999,"priorContributionProfit":0,
+                 "priorLinkedScopeProfit":0,"priorReturnRate":0.9,"minimumSupplyCoverageDays":0}
+                """.formatted(measurement.path("id").asText());
+        mvc.perform(post(endpoint()).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].verdict").value("UNDETERMINED"))
+                .andExpect(jsonPath("$.results[0].protectionVerdict").value("UNDETERMINED"))
+                .andExpect(jsonPath("$.results[0].stopVerdict").value("UNDETERMINED"));
+        assertThat(jdbc.sql("SELECT conservative_bound IS NULL FROM ops.lc_node_result WHERE plan_id=:plan")
+                .param("plan",fixture.id("planOne")).query(Boolean.class).single()).isTrue();
     }
 
     @Test

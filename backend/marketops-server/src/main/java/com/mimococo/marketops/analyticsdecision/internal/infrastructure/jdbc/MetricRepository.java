@@ -272,6 +272,20 @@ public class MetricRepository {
 
     private Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
             UUID subjectId, MetricWindow window, Instant at, Instant cohortFrom, Instant cohortTo) {
+        return currentValues(subjectKind,subjectId,window,at,cohortFrom,cohortTo,false);
+    }
+
+    public Map<MetricCode, MetricValueView> currentValuesForPeriodAt(SubjectKind subjectKind,
+            UUID subjectId, MetricWindow window, Instant periodFrom, Instant periodTo, Instant at) {
+        java.util.Objects.requireNonNull(periodFrom, "periodFrom");
+        java.util.Objects.requireNonNull(periodTo, "periodTo");
+        java.util.Objects.requireNonNull(at, "at");
+        if (!periodFrom.isBefore(periodTo) || periodTo.isAfter(at)) return Map.of();
+        return currentValues(subjectKind,subjectId,window,at,periodFrom,periodTo,true);
+    }
+
+    private Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
+            UUID subjectId, MetricWindow window, Instant at, Instant cohortFrom, Instant cohortTo, boolean exactPeriod) {
         List<MetricValueView> latest = jdbc.sql("""
                         SELECT DISTINCT ON (value.metric_code)
                                value.id, value.metric_code, value.definition_version,
@@ -290,6 +304,7 @@ public class MetricRepository {
                            AND (CAST(:cohortFrom AS timestamptz) IS NULL OR (
                                value.period_start <= :cohortFrom AND value.period_end >= :cohortTo
                                AND value.period_end <= :at))
+                           AND (NOT :exactPeriod OR (value.period_start = :cohortFrom AND value.period_end = :cohortTo))
                          ORDER BY value.metric_code, greatest(value.computed_at,proof.verified_at) DESC, value.computed_at DESC, value.id DESC
                         """)
                 .param("subjectKind", subjectKind.name())
@@ -298,6 +313,7 @@ public class MetricRepository {
                 .param("at", at == null ? null : Timestamp.from(at))
                 .param("cohortFrom", cohortFrom == null ? null : Timestamp.from(cohortFrom))
                 .param("cohortTo", cohortTo == null ? null : Timestamp.from(cohortTo))
+                .param("exactPeriod", exactPeriod)
                 .query(MetricRepository::mapValue)
                 .list();
 

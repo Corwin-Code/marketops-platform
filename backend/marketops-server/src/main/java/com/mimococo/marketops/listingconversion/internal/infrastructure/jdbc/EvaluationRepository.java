@@ -98,7 +98,8 @@ public class EvaluationRepository {
     public List<EvaluationView.NodeResult> results(UUID planId) {
         return jdbc.sql("""
                 SELECT id, node_code, stage, revision_no, primary_ratio, conservative_bound, accepted_threshold, verdict,
-                       protection_vector::text AS vector, protection_verdict, stop_triggered, evaluated_at
+                       protection_vector::text AS vector, protection_verdict, stop_triggered, evaluated_at,
+                       (SELECT p.stop_rule = '{}'::jsonb FROM ops.lc_evaluation_plan p WHERE p.id = plan_id) AS no_stop_rule
                   FROM ops.lc_node_result WHERE plan_id = :plan ORDER BY evaluated_at
                 """).param("plan", planId)
                 .query((rs, n) -> new EvaluationView.NodeResult(rs.getObject("id", UUID.class), rs.getString("node_code"),
@@ -106,7 +107,8 @@ public class EvaluationRepository {
                         rs.getBigDecimal("conservative_bound"), rs.getBigDecimal("accepted_threshold"),
                         NodeVerdict.valueOf(rs.getString("verdict")), ListingActionRepository.stringMap(rs.getString("vector")),
                         ProtectionVerdict.valueOf(rs.getString("protection_verdict")),
-                        rs.getBoolean("stop_triggered") ? "STOP" : "CONTINUE", ListingFactRepository.instant(rs, "evaluated_at")))
+                        rs.getBoolean("stop_triggered") ? "STOP" : rs.getBoolean("no_stop_rule") ? "NOT_CONFIGURED" : "UNDETERMINED",
+                        ListingFactRepository.instant(rs, "evaluated_at")))
                 .list();
     }
 

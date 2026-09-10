@@ -166,6 +166,35 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
         }
     }
 
+    @Test
+    void protectionRequiresEveryDimensionAndPreservesKnownFailure() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(single(connection,"SELECT ops.lc_protection_verdict_of('{}'::jsonb)")).isEqualTo("UNDETERMINED");
+            assertThat(single(connection,"SELECT ops.lc_protection_verdict_of(NULL)")).isEqualTo("UNDETERMINED");
+            assertThat(single(connection,"SELECT ops.lc_protection_verdict_of('[]'::jsonb)")).isEqualTo("UNDETERMINED");
+            assertThat(single(connection,"SELECT ops.lc_protection_verdict_of('{\"SUPPLY_COVERAGE\":\"FAIL\"}'::jsonb)"))
+                    .isEqualTo("FAIL");
+            String complete = """
+                    {"DIRECT_CONTRIBUTION_PROFIT":"PASS","LINKED_SCOPE_PROFIT":"PASS",
+                     "OVERALL_RETURN_RATE":"PASS","CRITICAL_VARIANT_RETURN":"PASS","SUPPLY_COVERAGE":"PASS"}
+                    """;
+            try (var statement=connection.prepareStatement("SELECT ops.lc_protection_verdict_of(?::jsonb)")) {
+                for (String invalid : List.of("null","42","\"UNKNOWN\"","{}")) {
+                    statement.setString(1, complete.replace("\"SUPPLY_COVERAGE\":\"PASS\"", "\"SUPPLY_COVERAGE\":"+invalid));
+                    try (var rows=statement.executeQuery()) {
+                        assertThat(rows.next()).isTrue();
+                        assertThat(rows.getString(1)).isEqualTo("UNDETERMINED");
+                    }
+                }
+                statement.setString(1,complete);
+                try (var rows=statement.executeQuery()) {
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getString(1)).isEqualTo("PASS");
+                }
+            }
+        }
+    }
+
     private static List<String> strings(Connection connection, String sql) throws SQLException {
         List<String> values = new java.util.ArrayList<>();
         try (var statement = connection.createStatement(); var rows = statement.executeQuery(sql)) {

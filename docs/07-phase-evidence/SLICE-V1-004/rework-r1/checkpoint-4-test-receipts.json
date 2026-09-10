@@ -1,0 +1,78 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "827df815d6c2c70234dccfc5ea911317e9cdce7c",
+  "input_identity": "Working-tree progress. Database subsets ran sequentially in separate Maven processes. Latest unit/architecture includes final exact calibration-version freeze guard; prior database subsets do not exercise that guard. Full exact-Head verification is still required.",
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ProtectionVectorTest,CalibrationSnapshotTest,EvaluationPlanFreezeTest,*ArchitectureTest,AnalyticsQueryServicePriorityTest'",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/frozen-evaluation-final-unit.log",
+      "raw_log_sha256": "ef2bdaef49a7bf505e4bad1c112c66ef47d528af5400abe5535f291649a5e073",
+      "summary_path": "frozen-evaluation-final-unit-summary.txt",
+      "summary_sha256": "04b55d289d920415edd27ba29e50d99ccce950ec3740813cdc06c7a226f0aa44",
+      "observed_log_mtime_utc": "2026-09-10T08:12:40.524384+00:00",
+      "tests": 91,
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingConversionSchemaIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/frozen-evaluation-schema.log",
+      "raw_log_sha256": "0949ac00aa01b8524b1ec7ed06e4dcc0cbb465bc4b6a0c957fdf4e5e5556be4b",
+      "summary_path": "frozen-evaluation-schema-summary.txt",
+      "summary_sha256": "67573c0454e5a287653f04bdf07f1491a9ec71b8af3dc0ff1150f9c1b112ab4a",
+      "observed_log_mtime_utc": "2026-09-10T08:04:07.073483+00:00",
+      "tests": 8,
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=AnalyticsMetricReevaluationIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/exact-period-metric-runtime.log",
+      "raw_log_sha256": "0058e641dd1e3dc11130530a4f148eff1c37f2a05af04430fc6ebad57ce00fca",
+      "summary_path": "exact-period-metric-runtime-summary.txt",
+      "summary_sha256": "76c885f06ba1db5e9a0fa32dfdbb6ddc660b213d498893d70bed2780d4ec4c56",
+      "observed_log_mtime_utc": "2026-09-10T08:05:09.926406+00:00",
+      "tests": 16,
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/frozen-outcome-authorization-runtime.log",
+      "raw_log_sha256": "127caeb6d9064f7984b3a069b3632be4f22a1e5127c7ce680d7ab092b258fbda",
+      "summary_path": "frozen-outcome-authorization-runtime-summary.txt",
+      "summary_sha256": "f06059776d6fda5c01b17c9e130c1b803021257dba5d8af35a9ca01c3ba076d3",
+      "observed_log_mtime_utc": "2026-09-10T08:10:29.449467+00:00",
+      "tests": 20,
+      "result": "PASS_TARGETED_ONLY"
+    }
+  ],
+  "retained_failed_runs": [
+    {
+      "path": "build/slice4-rework/frozen-evaluation-schema-stale-resource-failed.log",
+      "sha256": "ee10d3fecfc653ee0f5833c64cb9b54e8bc7de589fd49a7a1e5772836fd4d8d3",
+      "resolution": "Renamed not-yet-committed V0086 left the old generated resource under target/classes; removed only that generated file and reran."
+    },
+    {
+      "path": "build/slice4-rework/frozen-outcome-authorization-import-failed.log",
+      "sha256": "a5cd1cc45238d9f52eb0cd4e3b67c376ae787d6de0998206259ed526b54f6edf",
+      "resolution": "New test had an unresolved BigDecimal reference; corrected before runtime."
+    },
+    {
+      "path": "build/slice4-rework/frozen-outcome-authorization-missing-task-failed.log",
+      "sha256": "5540f84820462140b493cb4310b2deb807eac366466feedd3047e277bfa5aa42",
+      "resolution": "Synthetic action fixture had no responsibility task; added it through the actual shared task service."
+    },
+    {
+      "path": "build/slice4-rework/frozen-outcome-authorization-null-assertion-failed.log",
+      "sha256": "fd5d68d0bfd6aef4df3a70e48e75fb5d276e875b4a771572eae8737a74d66cc9",
+      "resolution": "HTTP passed; nullable JdbcClient.single assertion rejected SQL NULL. Replaced with an explicit IS NULL assertion."
+    }
+  ],
+  "limitations": [
+    "No qualified positive formal Outcome pipeline yet; interim service preserves measurement facts and returns UNDETERMINED without canonical comparison/protection evidence.",
+    "No full backend, frontend/browser, upgrade, performance or recovery closure claim.",
+    "No real provider/account calls, remote Git transport, shared/production migration or business effects."
+  ]
+}

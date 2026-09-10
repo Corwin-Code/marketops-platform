@@ -277,7 +277,7 @@ public class ListingActionRepository {
 
     public void insertPlan(UUID id, UUID organizationId, UUID actionId, UUID calibrationPackageId, int calibrationVersion,
                            Map<String, String> coverage, Instant latestBoundary, List<Map<String, Object>> nodes,
-                           Map<String, Object> stopRule, List<String> criticalGroups, String comparisonBasis,
+                           Map<String, Object> stopRule, List<JsonNode> criticalGroups, String comparisonBasis,
                            int crossPeriodWindowDays, String planDigest, Instant now) {
         jdbc.sql("""
                 INSERT INTO ops.lc_evaluation_plan (id, organization_id, action_id, calibration_package_id, calibration_version,

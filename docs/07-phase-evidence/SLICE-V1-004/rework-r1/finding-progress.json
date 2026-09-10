@@ -51,19 +51,26 @@
     {
       "id": "S4-DR-R1-005",
       "title": "正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Legacy HTTP numeric assertions no longer manufacture formal MET or protection PASS/FAIL. Canonical Metric exact-period read added; qualified positive Outcome pipeline and full protections remain open."
+      ],
+      "executed_evidence": [
+        "Checkpoint-4 targeted receipts: 16 actual Metric Engine/database tests and 20 signed HTTP/database tests passed, including caller-number forgery. Positive canonical Outcome and full regression still required."
+      ]
     },
     {
       "id": "S4-DR-R1-006",
       "title": "评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open."
+        "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open.",
+        "Full structured methods and critical group rules retained; explicit empty stop/zero tail permitted, missing stop remains unresolved. NOT_MET is no longer an automatic stop. Real qualified upper-bound/node schedule integration remains open."
       ],
       "executed_evidence": [
-        "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending."
+        "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending.",
+        "Protection/calibration unit and architecture subset: 88 passed before the latest HTTP authority removal. ListingConversionSchemaIT: 8 passed including mandatory protection dimensions and known-failure precedence. Partial evidence only.",
+        "Checkpoint-4: 91 unit/architecture tests including positive explicit no-stop/zero-tail freeze and exact package-version refusal. SQL schema subset 8 passed. No final closure claim."
       ]
     },
     {

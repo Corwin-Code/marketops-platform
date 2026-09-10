@@ -35,6 +35,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Freezes the evaluation plan before launch and records node results after it.
@@ -58,11 +59,12 @@ public class EvaluationService {
     private final Clock clock;
     private final ListingScopeAuthorization scopes;
     private final ListingDisclosureService disclosure;
+    private final ObjectMapper json;
 
     EvaluationService(EvaluationRepository evaluations, ListingActionRepository actions, ListingHealthRepository measurements,
                       ListingFactRepository facts, CalibrationService calibration, CalculationRunLedger ledger,
                       ListingActionIntake intake, IdGenerator ids, Clock clock,
-                      ListingScopeAuthorization scopes, ListingDisclosureService disclosure) {
+                      ListingScopeAuthorization scopes, ListingDisclosureService disclosure, ObjectMapper json) {
         this.evaluations = evaluations;
         this.actions = actions;
         this.measurements = measurements;
@@ -74,6 +76,7 @@ public class EvaluationService {
         this.clock = clock;
         this.scopes = scopes;
         this.disclosure = disclosure;
+        this.json = json;
     }
 
     /** Freeze the plan from the bound calibration package, once. */
@@ -90,13 +93,15 @@ public class EvaluationService {
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
                 listing.storeId(), clock.instant());
-        if (!resolved.ok() || !resolved.resolved().packageId().equals(action.calibrationPackageId())) {
+        if (!resolved.ok() || !resolved.resolved().packageId().equals(action.calibrationPackageId())
+                || !Integer.valueOf(resolved.resolved().version()).equals(action.calibrationVersion())) {
             throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
         }
         List<Map<String, Object>> nodes = CalibrationService.formalNodes(resolved.resolved());
         Map<String, Object> stopRule = CalibrationService.stopRule(resolved.resolved());
-        int crossPeriod = CalibrationService.crossPeriodWindowDays(resolved.resolved()).orElse(0);
-        if (nodes.isEmpty() || stopRule.isEmpty() || crossPeriod < 1) {
+        Integer crossPeriod = CalibrationService.crossPeriodWindowDays(resolved.resolved()).orElse(null);
+        if (nodes.isEmpty() || crossPeriod == null || crossPeriod < 0
+                || !CalibrationService.hasExplicitStopRule(resolved.resolved())) {
             throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
         }
         Instant now = clock.instant();
@@ -104,18 +109,30 @@ public class EvaluationService {
         coverage.put("priorTextDigest", String.valueOf(action.currentTextDigest()));
         coverage.put("targetTextDigest", String.valueOf(action.targetTextDigest()));
         coverage.put("affectedSetDigest", action.affectedSetDigest());
-        int longestMaturity = nodes.stream().mapToInt(node -> (Integer) node.get("maturityDays")).max().orElse(30);
+        int longestMaturity = 0;
+        for (Map<String, Object> node : nodes) {
+            Object value = node.get("maturityDays");
+            if (!(value instanceof JsonNode days) || !days.isIntegralNumber()
+                    || !java.util.Set.of(7, 14, 30).contains(days.asInt())) {
+                throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
+            }
+            longestMaturity = Math.max(longestMaturity, days.asInt());
+        }
         Instant boundary = now.plus(Duration.ofDays((long) longestMaturity + crossPeriod));
-        String digest = Digest.ofComponents(List.of(action.id().toString(), coverage.toString(), nodes.toString(),
-                stopRule.toString(), Integer.toString(crossPeriod), action.calibrationPackageId() + ":" + action.calibrationVersion()));
+        List<JsonNode> groups = CalibrationService.criticalGroupRules(resolved.resolved());
+        String digest = Digest.ofComponents(List.of("lc-frozen-plan-2", action.id().toString(),
+                json.writeValueAsString(coverage), json.writeValueAsString(nodes), json.writeValueAsString(stopRule),
+                json.writeValueAsString(groups), "PRIOR_VERSION_WINDOW", "EXCLUDE_TRANSITION_DAYS",
+                boundary.toString(), now.toString(), Integer.toString(crossPeriod),
+                action.calibrationPackageId() + ":" + action.calibrationVersion()));
         UUID planId = ids.newId();
         actions.insertPlan(planId, action.organizationId(), action.id(), action.calibrationPackageId(), action.calibrationVersion(),
-                coverage, boundary, nodes, stopRule, CalibrationService.criticalGroups(resolved.resolved()),
+                coverage, boundary, nodes, stopRule, groups,
                 "PRIOR_VERSION_WINDOW", crossPeriod, digest, now);
         return planId;
     }
 
-    /** What a node evaluation is told about the protections, each observed or unknown. */
+    /** Legacy request fields retained for wire compatibility; none is authoritative Outcome evidence. */
     public record ProtectionInputs(BigDecimal directContributionProfit, BigDecimal linkedScopeProfit,
                                    BigDecimal overallReturnRate, BigDecimal criticalVariantReturnRate,
                                    BigDecimal supplyCoverageDays, Map<String, BigDecimal> criticalGroupRatios,
@@ -152,33 +169,26 @@ public class EvaluationService {
         BigDecimal ratio = measurement.filter(m -> m.ratioState() == RatioState.DEFINED)
                 .map(ConversionMeasurementView::primaryRatio).orElse(null);
         boolean maturity = measurement.map(ConversionMeasurementView::maturityReached).orElse(false);
-        BigDecimal bound = ratio == null ? null : conservativeBound == null ? null : conservativeBound.min(ratio);
+        // A request number cannot be a qualified comparison bound. The measured
+        // absolute ratio stays visible as a fact, separately from improvement.
+        BigDecimal bound = null;
         NodeVerdict verdict = ProtectionVector.nodeVerdict(ratio, bound, threshold, maturity);
 
-        ListingFactRepository.ListingContext listing = facts.listing(action.listingId()).orElseThrow();
-        CalibrationService.Outcome resolved = calibration.resolveBound(listing.organizationId(), listing.platformCode(),
-                listing.storeId(), plan.calibrationPackageId(), plan.calibrationVersion(), plan.frozenAt());
-        BigDecimal profitBound = resolved.ok() ? CalibrationService.nonWorseningProfitBound(resolved.resolved()).orElse(null) : null;
-        BigDecimal returnBound = resolved.ok() ? CalibrationService.nonWorseningReturnBound(resolved.resolved()).orElse(null) : null;
+        // The frozen, canonical comparison and protection evidence must supply
+        // these dimensions. Until resolved, caller assertions cannot turn any
+        // missing dimension into PASS (or manufacture a FAIL).
         Map<String, ProtectionVerdict> vector = new LinkedHashMap<>();
-        vector.put("DIRECT_CONTRIBUTION_PROFIT", ProtectionVector.compare(protections.directContributionProfit(),
-                floor(protections.priorContributionProfit(), profitBound), false));
-        vector.put("LINKED_SCOPE_PROFIT", ProtectionVector.compare(protections.linkedScopeProfit(),
-                floor(protections.priorLinkedScopeProfit(), profitBound), false));
-        vector.put("OVERALL_RETURN_RATE", ProtectionVector.compare(protections.overallReturnRate(),
-                ceiling(protections.priorReturnRate(), returnBound), true));
-        vector.put("CRITICAL_VARIANT_RETURN", ProtectionVector.compare(protections.criticalVariantReturnRate(),
-                ceiling(protections.priorReturnRate(), returnBound), true));
-        vector.put("SUPPLY_COVERAGE", ProtectionVector.compare(protections.supplyCoverageDays(),
-                protections.minimumSupplyCoverageDays(), false));
+        ProtectionVector.REQUIRED.forEach(code -> vector.put(code, ProtectionVerdict.UNDETERMINED));
         for (JsonNode group : plan.criticalGroups()) {
-            String code = group.asText();
-            BigDecimal observed = protections.criticalGroupRatios() == null ? null : protections.criticalGroupRatios().get(code);
-            vector.put("CRITICAL_GROUP_" + code, ProtectionVector.compare(observed, threshold, false));
+            String code = group.isObject() ? group.path("code").asText() : group.asText();
+            vector.put("CRITICAL_GROUP_" + code, ProtectionVerdict.UNDETERMINED);
         }
         ProtectionVerdict protection = ProtectionVector.verdictOf(vector);
         boolean stopNode = nodeCode.equals(plan.stopRule().path("nodeCode").asText());
-        boolean stop = ProtectionVector.stopTriggered(verdict, stopNode, maturity);
+        // A lower bound that misses the target is not a futility proof. Until
+        // the exact frozen comparison supplies a qualified upper bound, this
+        // result cannot trigger the independent effect-shortfall stop rule.
+        boolean stop = ProtectionVector.stopTriggered(null, threshold, stopNode, maturity, false);
 
         UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(action.organizationId(), action.storeId(),
                 lateFactReference == null ? "MANUAL" : "LATE_DATA", MetricWindow.D30, now.minus(Duration.ofDays(30)), now,
@@ -200,14 +210,6 @@ public class EvaluationService {
         return viewAuthorized(actionId).orElseThrow();
     }
 
-    private static BigDecimal floor(BigDecimal prior, BigDecimal bound) {
-        return prior == null || bound == null ? null : prior.subtract(bound);
-    }
-
-    private static BigDecimal ceiling(BigDecimal prior, BigDecimal bound) {
-        return prior == null || bound == null ? null : prior.add(bound);
-    }
-
     @Transactional(readOnly = true)
     public Optional<EvaluationView> view(AuthenticatedActor actor, UUID actionId) {
         var action = actions.action(actionId).orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
@@ -221,7 +223,7 @@ public class EvaluationService {
             plan.formalNodes().forEach(node -> nodes.add(new EvaluationView.Node(node.path("nodeCode").asText(),
                     node.path("maturityDays").asInt(), node.path("method").asText(), new BigDecimal(node.path("threshold").asText()))));
             List<String> groups = new ArrayList<>();
-            plan.criticalGroups().forEach(group -> groups.add(group.asText()));
+            plan.criticalGroups().forEach(group -> groups.add(group.isObject() ? group.path("code").asText() : group.asText()));
             Map<String, String> stop = new LinkedHashMap<>();
             plan.stopRule().properties().forEach(entry -> stop.put(entry.getKey(), entry.getValue().asText()));
             Map<String, String> coverage = new LinkedHashMap<>();

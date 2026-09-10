@@ -102,6 +102,44 @@ class AnalyticsMetricReevaluationIT {
                 .query(Integer.class).single()).isEqualTo(1);
     }
 
+    @Test void exactPeriodDoesNotBorrowALargerCanonicalBusinessWindow() {
+        UUID subject=fixture.graph.id("listingVariant");
+        Instant smallerFrom=cohort.periodStart().plus(Duration.ofDays(1));
+        assertThat(fixture.metrics.currentValuesCoveringAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,
+                MetricWindow.D30,smallerFrom,cohort.periodEnd(),fixture.start)).containsKey(MetricCode.UNIT_COST);
+        assertThat(fixture.metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,
+                MetricWindow.D30,smallerFrom,cohort.periodEnd(),fixture.start)).isEmpty();
+        assertThat(fixture.metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,
+                MetricWindow.D30,cohort.periodStart(),cohort.periodEnd(),fixture.start).get(MetricCode.UNIT_COST))
+                .isEqualTo(original);
+    }
+
+    @Test void newerShiftedWindowCannotHideTheExactFrozenPeriod() {
+        fixture.clock.at=fixture.start.plus(Duration.ofDays(2));
+        var shifted=new FactWindow(cohort.periodStart().plus(Duration.ofDays(1)),cohort.periodEnd().plus(Duration.ofDays(1)));
+        fixture.analytics.runForWindow(fixture.graph.id("store"),MetricWindow.D30,shifted,"BACKFILL",null);
+        UUID subject=fixture.graph.id("listingVariant");
+        assertThat(fixture.metrics.currentValuesAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,MetricWindow.D30,
+                fixture.clock.instant()).get(MetricCode.UNIT_COST).periodStart()).isEqualTo(shifted.periodStart());
+        assertThat(fixture.metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,
+                MetricWindow.D30,cohort.periodStart(),cohort.periodEnd(),fixture.clock.instant()).get(MetricCode.UNIT_COST))
+                .isEqualTo(original);
+    }
+
+    @Test void exactPeriodKeepsLatestUnavailableRevisionInsteadOfEarlierFavorableValue() {
+        fixture.clock.at=fixture.start.plus(Duration.ofDays(2));
+        closeOriginalCost(cohort.periodEnd().minusSeconds(3600));
+        reevaluate();
+        UUID subject=fixture.graph.id("listingVariant");
+        var latest=fixture.metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,
+                MetricWindow.D30,cohort.periodStart(),cohort.periodEnd(),fixture.clock.instant()).get(MetricCode.UNIT_COST);
+        assertThat(latest.metricValueId()).isNotEqualTo(original.metricValueId());
+        assertThat(latest.available()).isFalse();
+        assertThat(fixture.metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,subject,
+                MetricWindow.D30,cohort.periodStart(),cohort.periodEnd(),fixture.start).get(MetricCode.UNIT_COST))
+                .isEqualTo(original);
+    }
+
     @Test void lateApplicableCostRevisionCreatesANewValueWithoutOverwritingItsPredecessor() {
         String originalRow=valueRow(original.metricValueId());
         fixture.clock.at=fixture.start.plus(Duration.ofDays(2));

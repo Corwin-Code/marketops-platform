@@ -1,0 +1,20 @@
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.705 s -- in com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsQueryServicePriorityTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.373 s -- in Additional code-quality architecture safeguards
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.726 s -- in com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.535 s -- in rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.165 s -- in com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.166 s -- in com.mimococo.marketops.architecture.ModulithArchitectureTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.137 s -- in Additional code-quality rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.438 s -- in com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.331 s -- in TC-AUTHORITY-003 owner-published policy has no writer in this product
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.167 s -- in TC-AUTHORITY-004 listingconversion writes nothing a function or another module owns
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.133 s -- in TC-AUTHORITY-002 command creation has exactly one route
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.669 s -- in com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.291 s -- in com.mimococo.marketops.listingconversion.internal.application.CalibrationSnapshotTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.467 s -- in com.mimococo.marketops.listingconversion.internal.application.EvaluationPlanFreezeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.listingconversion.internal.domain.ProtectionVectorTest
+[INFO] Tests run: 91, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  31.383 s
+[INFO] Finished at: 2026-09-10T16:12:40+08:00

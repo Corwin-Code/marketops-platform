@@ -34,3 +34,14 @@ The accepted original Contract, annex, V0001–V0079 and historical Maker artifa
 - `checkpoint-3-test-receipts.json` records sanitized summaries, local raw-log hashes, commands and resource digests. It is progress evidence; exact final-Head whole-scope verification is still required.
 
 No finding is closed by this checkpoint. Source-membership completeness, exact protocol/task identity, full frozen evaluation and protection, all remaining business/UI chains, and final regression/performance/recovery evidence remain in scope.
+
+
+## Frozen evaluation and canonical exact-period checkpoint
+
+`checkpoint-4-test-receipts.json` retains exact targeted commands, sanitized summaries, local raw-log hashes and corrected failed-run causes. Latest unit/architecture subset: 91 passed. Separate database processes: schema 8, canonical Metric re-evaluation 16, signed listing HTTP/authorization 20 passed. The new positive freeze test preserves structured method/group rules with an explicit empty stop and zero tail, and rejects missing stop, malformed maturity and a mismatched package version.
+
+The HTTP counterexample supplies a real synthetic source-summary measurement with absolute ratio 0.1 plus favorable forged profit, return, supply and bound numbers. It now produces UNDETERMINED and stores no caller-supplied conservative bound. This closes that unsafe input path only; the required positive qualified formal comparison/protection pipeline is still unfinished. Existing task-source fixtures were corrected through the actual responsibility-task service, not by weakening Outcome journal requirements.
+
+The exact-period Metric query is tested against actual canonical engine output and revisions. It rejects larger-period substitution, preserves a frozen period when a newer shifted period exists, and selects the latest unavailable same-period revision rather than an older favorable value. V0086 adds optional explicit zero tail and aligns SQL/Java necessary-dimension and known-failure precedence. Configured stop rules with no qualified upper comparison report UNDETERMINED, not CONTINUE.
+
+All results remain partial working-tree evidence. No finding is marked closed; no Controller approval or production enablement is claimed.

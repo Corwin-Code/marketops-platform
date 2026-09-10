@@ -36,15 +36,16 @@ public final class ProtectionVector {
 
     /** The vector's own verdict. */
     public static ProtectionVerdict verdictOf(Map<String, ProtectionVerdict> vector) {
+        if (vector == null) return ProtectionVerdict.UNDETERMINED;
+        if (vector.containsValue(ProtectionVerdict.FAIL)) {
+            return ProtectionVerdict.FAIL;
+        }
         for (String required : REQUIRED) {
             if (!vector.containsKey(required)) {
                 return ProtectionVerdict.UNDETERMINED;
             }
         }
-        if (vector.containsValue(ProtectionVerdict.FAIL)) {
-            return ProtectionVerdict.FAIL;
-        }
-        if (vector.containsValue(ProtectionVerdict.UNDETERMINED)) {
+        if (vector.containsValue(null) || vector.containsValue(ProtectionVerdict.UNDETERMINED)) {
             return ProtectionVerdict.UNDETERMINED;
         }
         return ProtectionVerdict.PASS;
@@ -53,7 +54,7 @@ public final class ProtectionVector {
     /** The node verdict from a conservative bound and the accepted threshold. */
     public static NodeVerdict nodeVerdict(BigDecimal primaryRatio, BigDecimal conservativeBound,
                                           BigDecimal acceptedThreshold, boolean maturityReached) {
-        if (primaryRatio == null || conservativeBound == null || !maturityReached) {
+        if (primaryRatio == null || conservativeBound == null || acceptedThreshold == null || !maturityReached) {
             return NodeVerdict.UNDETERMINED;
         }
         return conservativeBound.compareTo(acceptedThreshold) >= 0 ? NodeVerdict.MET : NodeVerdict.NOT_MET;
@@ -62,11 +63,15 @@ public final class ProtectionVector {
     /**
      * Whether the effect-shortfall stop rule triggers.
      *
-     * <p>A stop is a decision about an unmet target after maturity at a named
-     * node, never a protection failure in disguise.
+     * <p>Failure to establish improvement is not evidence of futility. The
+     * independently admitted stop method must establish an upper improvement
+     * bound below its frozen minimum meaningful effect at the exact stop node.
      */
-    public static boolean stopTriggered(NodeVerdict verdict, boolean stopNode, boolean maturityReached) {
-        return stopNode && maturityReached && verdict == NodeVerdict.NOT_MET;
+    public static boolean stopTriggered(BigDecimal qualifiedUpperImprovement, BigDecimal futilityThreshold,
+                                        boolean stopNode, boolean maturityReached, boolean stopMethodQualified) {
+        return stopNode && maturityReached && stopMethodQualified
+                && qualifiedUpperImprovement != null && futilityThreshold != null
+                && qualifiedUpperImprovement.compareTo(futilityThreshold) < 0;
     }
 
     public static Map<String, String> toStrings(Map<String, ProtectionVerdict> vector) {
