@@ -145,8 +145,15 @@ class ListingDescriptionCommandWorker {
                     commands.deferObservation(commandId, fence, owner, delayFor(result));
                 }
             }
-            case REJECTED -> commands.transition(commandId, fence, owner, "FAILED_FINAL",
-                    "native_task_rejected", null, null);
+            case REJECTED -> {
+                if (result.response() == null) {
+                    // A local inability to enquire says nothing about the accepted native task.
+                    commands.deferObservation(commandId, fence, owner, delayFor(result));
+                } else {
+                    commands.transition(commandId, fence, owner, "FAILED_FINAL",
+                            "native_task_rejected", null, null);
+                }
+            }
             case TIMEOUT, UNKNOWN_STATE -> commands.deferObservation(commandId, fence, owner, delayFor(result));
         }
         return true;
@@ -286,6 +293,10 @@ class ListingDescriptionCommandWorker {
     private DescriptionWriteResult call(ListingDescriptionCommandRepository.CommandRow command, long fence,
                                         String owner, DescriptionWriteRequest.Operation operation,
                                         String text, String versionToken) {
+        if (command.nativeListingKey() == null || command.nativeListingKey().isBlank()) {
+            return DescriptionWriteResult.refusedBeforeDispatch("command_native_identity_unbound",
+                    java.time.Instant.EPOCH);
+        }
         UUID attemptId = ids.newId();
         UUID credentialId = credentials.writeCredential(command.storeId(), command.capabilityId()).orElse(null);
         if (credentialId == null) {

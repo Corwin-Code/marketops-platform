@@ -326,7 +326,10 @@ public class PlatformCallSpecRepository {
                    AND a.purpose=:purpose AND c.capability_id=:capability
                    AND NOT c.provider_retry_timing_unknown
                    AND (c.provider_not_before IS NULL OR c.provider_not_before<=clock_timestamp())
-                   AND listing.native_listing_key=:listing AND listing.status='OBSERVED'
+                   AND c.native_listing_key=:listing AND listing.native_listing_key=c.native_listing_key
+                   AND a.operation_snapshot #>> '{responseIdentity,nativeListingKey}'=c.native_listing_key
+                   AND a.operation_snapshot #>> '{responseIdentity,commandId}'=c.id::text
+                   AND listing.status='OBSERVED'
                    AND :idempotency=CASE WHEN a.purpose='RESTORE'
                        THEN encode(sha256(convert_to(c.idempotency_key||chr(31)||'RESTORE'||chr(31),'UTF8')),'hex')
                        ELSE c.idempotency_key END
@@ -337,16 +340,17 @@ public class PlatformCallSpecRepository {
                        AND CAST(:attributeKey AS text)=operation.description_attribute_key
                        AND CAST(:kizMarked AS boolean)=c.kiz_marked_declared))
                    AND CASE WHEN a.purpose='STATUS_ENQUIRY'
-                       THEN CAST(:task AS text)=(SELECT prior.native_task_key
-                           FROM ops.lc_description_command_attempt prior
-                           WHERE prior.command_id=c.id AND prior.native_task_key IS NOT NULL
-                           ORDER BY prior.started_at DESC,prior.attempt_no DESC LIMIT 1)
+                       THEN CAST(:task AS text)=a.operation_snapshot #>> '{responseIdentity,task,nativeTaskKey}'
+                           AND a.operation_snapshot #>> '{responseIdentity,task,attemptId}'=(SELECT prior.id::text
+                               FROM ops.lc_description_command_attempt prior
+                               WHERE prior.command_id=c.id AND prior.purpose IN ('APPLY','RESTORE')
+                               ORDER BY prior.attempt_no DESC LIMIT 1)
                        ELSE CAST(:task AS text) IS NULL END
                    AND c.fence_token=a.fence_token AND c.lease_owner=a.lease_owner
                    AND c.lease_expires_at > clock_timestamp()
                    AND (a.purpose<>'APPLY' OR c.approval_expires_at > clock_timestamp())
                    AND a.expected_version_token IS NOT DISTINCT FROM CAST(:precondition AS text)
-                   AND a.operation_snapshot=platform.lc_description_operation_snapshot(c.capability_id,a.purpose)
+                   AND (a.operation_snapshot-'responseIdentity')=platform.lc_description_operation_snapshot(c.capability_id,a.purpose)
                    AND platform.capability_evidence_current(store.marketplace_account_id,c.capability_id,
                        (a.operation_snapshot #>> '{operation,endpoint_id}')::uuid)
                    AND credential.id=:credential AND credential.organization_id=c.organization_id

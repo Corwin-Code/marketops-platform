@@ -132,9 +132,11 @@ public class ListingDescriptionCommandRepository {
 
     public Optional<String> nativeTaskKey(UUID commandId) {
         return jdbc.sql("""
-                SELECT native_task_key FROM ops.lc_description_command_attempt
-                 WHERE command_id = :id AND native_task_key IS NOT NULL
-                 ORDER BY attempt_no DESC LIMIT 1
+                SELECT native_task_key FROM (
+                    SELECT native_task_key, outcome_class FROM ops.lc_description_command_attempt
+                     WHERE command_id = :id AND purpose IN ('APPLY', 'RESTORE')
+                     ORDER BY attempt_no DESC LIMIT 1
+                ) latest WHERE outcome_class = 'ACCEPTED' AND native_task_key IS NOT NULL
                 """).param("id", commandId).query(String.class).optional();
     }
 
@@ -330,7 +332,7 @@ public class ListingDescriptionCommandRepository {
 
     private static final String COMMAND_SELECT = """
             SELECT c.id, c.organization_id, c.recommendation_id, c.action_id, c.store_id,
-                   c.platform_listing_id, listing.native_listing_key, c.platform_code, c.capability_id,
+                   c.platform_listing_id, c.native_listing_key, c.platform_code, c.capability_id,
                    c.idempotency_key, c.prior_text, c.prior_text_digest, c.target_text,
                    c.target_text_digest, c.kiz_marked_declared, c.equivalence_rule,
                    c.length_bound_min, c.length_bound_max, c.affected_set_digest, c.state,

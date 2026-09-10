@@ -55,8 +55,12 @@ class ListingDescriptionCommandWorkerTest {
     private ListingDescriptionCommandWorker worker;
 
     private static ListingDescriptionCommandRepository.CommandRow row(String state, String priorText) {
+        return row(state, priorText, "listing-1");
+    }
+
+    private static ListingDescriptionCommandRepository.CommandRow row(String state, String priorText, String nativeKey) {
         return new ListingDescriptionCommandRepository.CommandRow(
-                COMMAND, COMMAND, COMMAND, COMMAND, COMMAND, COMMAND, "listing-1", "OZON", COMMAND,
+                COMMAND, COMMAND, COMMAND, COMMAND, COMMAND, COMMAND, nativeKey, "OZON", COMMAND,
                 "lcd-" + "0".repeat(32), priorText, "a".repeat(64), TARGET, "b".repeat(64), false, "EXACT",
                 10, 6000, "c".repeat(64), state, 0, 3, 1L, "worker", null,
                 Instant.parse("2026-09-05T00:00:00Z"));
@@ -106,6 +110,26 @@ class ListingDescriptionCommandWorkerTest {
     @Nested
     @DisplayName("TC-LC-WORKER-001 each answer moves the command somewhere different")
     class Answers {
+
+        @Test
+        void missingEnquiryCredentialCannotRejectAnExistingNativeTask() {
+            claim("PLATFORM_PENDING");
+            when(credentials.writeCredential(any(), any())).thenReturn(Optional.empty());
+            worker.runOnce(Instant.now(), 10);
+            verify(writePort, never()).perform(any());
+            verify(commands).deferObservation(eq(COMMAND), eq(1L), anyString(), anyInt());
+            verify(commands, never()).transition(any(), anyLong(), anyString(), eq("FAILED_FINAL"), any(), any(), any());
+        }
+
+        @Test
+        void historicalUnboundNativeIdentityStaysPendingWithoutAnEnquiryCall() {
+            claim("PLATFORM_PENDING");
+            when(commands.row(COMMAND)).thenReturn(Optional.of(row("PLATFORM_PENDING", PRIOR, null)));
+            worker.runOnce(Instant.now(), 10);
+            verify(writePort, never()).perform(any());
+            verify(commands).deferObservation(eq(COMMAND), eq(1L), anyString(), anyInt());
+            verify(commands, never()).transition(any(), anyLong(), anyString(), eq("FAILED_FINAL"), any(), any(), any());
+        }
 
         @Test
         void providerWaitDefersReadbackWithoutAnotherCall() {
