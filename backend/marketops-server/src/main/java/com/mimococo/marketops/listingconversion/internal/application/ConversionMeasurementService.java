@@ -69,8 +69,15 @@ public class ConversionMeasurementService {
         Instant now = clock.instant();
         var coverage = evidence.coverage(listingId, path, windowStart, windowEnd, retentionDays);
         var timezone = evidence.timezone(listingId).map(java.time.ZoneId::of);
+        var displayEvidence = evidence.displaySnapshot(listingId,windowStart,windowEnd,now);
+        List<VersionWindow.Display> knownDisplays = new java.util.ArrayList<>();
+        for (var display : displayEvidence) {
+            if ("DISPLAYED".equals(display.path("display_state").asText()))
+                knownDisplays.add(new VersionWindow.Display(display.path("displayed_text_digest").asText(),
+                        java.time.OffsetDateTime.parse(display.path("observed_at").asText()).toInstant()));
+        }
         VersionWindow.Attribution attribution = VersionWindow.attribute(
-                facts.displays(listingId, windowStart, windowEnd), windowStart, windowEnd,
+                knownDisplays, windowStart, windowEnd,
                 timezone.orElse(java.time.ZoneOffset.UTC));
         var detail = evidence.detailSnapshot(listingId, windowStart, windowEnd, now);
         var summary = coverage.filter(c -> c.summaryId() != null)
@@ -111,6 +118,9 @@ public class ConversionMeasurementService {
         RatioState state;
         Map<String, String> split;
         tools.jackson.databind.node.ObjectNode lineage = json.createObjectNode();
+        lineage.set("displayObservations",displayEvidence);
+        lineage.put("displayObservationAsOf",now.toString());
+        lineage.put("fullTargetVersionCoverageQualified",false);
         lineage.set("equivalenceProfile", boundProfile.orElseGet(json::createObjectNode));
         lineage.set("sourceInputs", path == EvidencePath.DETAIL ? detail.inputs()
                 : summary.map(s -> s.inputs()).orElseGet(() -> json.createObjectNode()));

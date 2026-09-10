@@ -107,20 +107,26 @@ public class ManualPathRepository {
                 .list();
         List<ManualPacketView.Verification> verifications = jdbc.sql("""
                 SELECT id, verifier_user_id, verification_basis, management_match, management_observation_id,
-                       display_observation_id, display_state, verified_at, note
+                       display_observation_id, display_state, verified_at, note, observation_binding::text AS binding
                   FROM ops.lc_manual_verification WHERE packet_id = :packet ORDER BY verified_at
                 """).param("packet", id)
                 .query((row, m) -> new ManualPacketView.Verification(row.getObject("id", UUID.class),
                         row.getObject("verifier_user_id", UUID.class), row.getString("verification_basis"),
                         row.getString("management_match"), row.getObject("management_observation_id", UUID.class),
                         row.getObject("display_observation_id", UUID.class), row.getString("display_state"),
-                        ListingFactRepository.instant(row, "verified_at"), row.getString("note")))
+                        ListingFactRepository.instant(row, "verified_at"), row.getString("note"),observationBinding(row.getString("binding"))))
                 .list();
         return new ManualPacketView(id, rs.getObject("action_id", UUID.class), rs.getObject("launch_id", UUID.class),
                 rs.getObject("executor_user_id", UUID.class), rs.getObject("issued_by_user_id", UUID.class),
                 ListingFactRepository.instant(rs, "issued_at"), ListingFactRepository.instant(rs, "expires_at"),
                 rs.getString("native_listing_key"), rs.getString("affected_set_digest"), rs.getString("target_text"),
                 rs.getString("state"), reports, verifications, rs.getLong("version"));
+    }
+
+    private Map<String,Object> observationBinding(String body) {
+        Map<String,Object> binding=new java.util.LinkedHashMap<>();
+        if (body!=null) json.readTree(body).properties().forEach(entry->binding.put(entry.getKey(),entry.getValue().deepCopy()));
+        return binding;
     }
 
     // ------------------------------------------------------------------ engagements

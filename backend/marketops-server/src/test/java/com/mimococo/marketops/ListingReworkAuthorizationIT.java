@@ -255,13 +255,57 @@ class ListingReworkAuthorizationIT {
     }
 
     private tools.jackson.databind.JsonNode postListing(String suffix, Map<String, ?> body) throws Exception {
+        return postForListing(fixture.id("listing"),suffix,body);
+    }
+
+    private tools.jackson.databind.JsonNode postForListing(UUID listing,String suffix,Map<String,?> body) throws Exception {
         var mapper = new tools.jackson.databind.ObjectMapper();
-        String response = mvc.perform(post("/api/v1/console/listing/health/listings/" + fixture.id("listing") + suffix)
+        String response = mvc.perform(post("/api/v1/console/listing/health/listings/" + listing + suffix)
                 .header(HttpHeaders.AUTHORIZATION, bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body)))
                 .andDo(r -> { if (r.getResolvedException() != null) throw r.getResolvedException(); })
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         return mapper.readTree(response);
+    }
+
+    @Test
+    void signedManualVerificationBindsIndependentExactObservationsAndExposesTheirExtent() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for (var scope:List.of(ActionScopeCode.LISTING_ACTION_LAUNCH,ActionScopeCode.LISTING_ACTION_PREPARE,
+                ActionScopeCode.LISTING_MANUAL_VERIFY,ActionScopeCode.LISTING_CONVERSION_VIEW))
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationTwo"),
+                "Synthetic manual verification responsibility",Instant.now().plusSeconds(86400),Instant.now());
+        assertThat(fixture.launch(UUID.randomUUID(),"actionTwo",fixture.id("ownerUser")).path("launched").asBoolean()).isTrue();
+        var json=new tools.jackson.databind.ObjectMapper();
+        var packetResponse=mvc.perform(post("/api/v1/console/listing/manual/actions/"+fixture.id("actionTwo")+"/packets")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("executorUserId",fixture.id("executorUser")))))
+                .andExpect(status().isOk()).andReturn();
+        var packet=json.readTree(packetResponse.getResponse().getContentAsString());
+        String target=packet.path("targetText").asText();
+        UUID listing=fixture.id("listingTwo");
+        var management=postForListing(listing,"/facts/description",Map.of("text",target,"languageCode","ru",
+                "kizMarkedDeclared",false,"note","Synthetic independent management observation"));
+        var foreignDisplay=postListing("/facts/display",Map.of("displayState","DISPLAYED","displayedText",target,
+                "evidenceReference","evidence://synthetic/wrong-listing-display"));
+        Map<String,Object> verification=new java.util.LinkedHashMap<>(Map.of("basis","INDEPENDENT_HUMAN",
+                "managementMatch","MATCHED_TARGET","managementObservationId",management.path("observationId").asText(),
+                "displayObservationId",foreignDisplay.path("observationId").asText(),"displayState","DISPLAYED",
+                "note","Synthetic independent verification"));
+        String route="/api/v1/console/listing/manual/packets/"+packet.path("id").asText()+"/verify";
+        mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_manual_verification WHERE packet_id=:packet")
+                .param("packet",UUID.fromString(packet.path("id").asText())).query(Integer.class).single()).isZero();
+        var display=postForListing(listing,"/facts/display",Map.of("displayState","DISPLAYED","displayedText",target,
+                "evidenceReference","evidence://synthetic/exact-listing-display"));
+        verification.put("displayObservationId",display.path("observationId").asText());
+        mvc.perform(post(route).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("VERIFIED"))
+                .andExpect(jsonPath("$.verifications[0].observationBinding.listingId").value(listing.toString()))
+                .andExpect(jsonPath("$.verifications[0].observationBinding.displayClaimExtent").value("OBSERVED_INSTANT_ONLY"));
     }
 
     @Test
@@ -559,6 +603,43 @@ class ListingReworkAuthorizationIT {
         assertThat(source.counts().path("ORGANIC").path("retained").longValue()).isZero();
         assertThat(measurementEvidence.measuredSourceStrata(UUID.fromString(revised.path("id").asText()),fixture.id("listingTwo"))).isEmpty();
         assertThat(postListing("/measurements",request).path("primaryRatio").decimalValue()).isEqualByComparingTo("0");
+    }
+
+    @Test
+    void displaySnapshotsRetainUnknownReportsAndRespectOriginalAcquisitionTime() throws Exception {
+        measurementGrants();
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_MANUAL_VERIFY,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        Instant from=Instant.now().minusSeconds(42L*86400).truncatedTo(java.time.temporal.ChronoUnit.DAYS);
+        Instant to=from.plusSeconds(86400);
+        var prior=postListing("/facts/display",Map.of("displayState","DISPLAYED","displayedText","Synthetic prior display",
+                "observedAt",from.minusSeconds(3600).toString(),"evidenceReference","evidence://synthetic/prior-display"));
+        postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","DETAIL","sourceCompleteThrough",to.plusSeconds(31L*86400).toString(),
+                "sourceReference","evidence://synthetic/empty-display-window","expectedVisitRows",0,"expectedLinkRows",0));
+        var request=Map.of("windowStart",from.toString(),"windowEnd",to.toString(),"retentionDays",30,"evidencePath","DETAIL");
+        var original=postListing("/measurements",request);
+        UUID originalId=UUID.fromString(original.path("id").asText());
+        var json=new tools.jackson.databind.ObjectMapper();
+        String retained=jdbc.sql("SELECT inputs::text FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",originalId).query(String.class).single();
+        var input=json.readTree(retained);
+        assertThat(input.path("displayObservations").size()).isEqualTo(1);
+        assertThat(input.path("displayObservations").get(0).path("id").asText()).isEqualTo(prior.path("observationId").asText());
+        Instant asOf=Instant.parse(input.path("displayObservationAsOf").asText());
+        var unknown=postListing("/facts/display",Map.of("displayState","UNKNOWN",
+                "observedAt",from.plusSeconds(3600).toString(),"evidenceReference","evidence://synthetic/late-unknown-display"));
+        assertThat(measurementEvidence.displaySnapshot(fixture.id("listing"),from,to,asOf))
+                .isEqualTo(input.path("displayObservations"));
+        var revised=postListing("/measurements",request);
+        var revisedInput=json.readTree(jdbc.sql("SELECT inputs::text FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",UUID.fromString(revised.path("id").asText())).query(String.class).single());
+        assertThat(revisedInput.path("displayObservations").size()).isEqualTo(2);
+        assertThat(revisedInput.path("displayObservations").get(1).path("id").asText()).isEqualTo(unknown.path("observationId").asText());
+        assertThat(revisedInput.path("displayObservations").get(1).path("display_state").asText()).isEqualTo("UNKNOWN");
+        assertThat(revisedInput.path("fullTargetVersionCoverageQualified").asBoolean()).isFalse();
+        assertThat(jdbc.sql("SELECT inputs::text FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
+                .param("id",originalId).query(String.class).single()).isEqualTo(retained);
     }
 
     private UUID seedSale(Instant occurred, UUID supersedes, boolean reversal) {

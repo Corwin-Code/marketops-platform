@@ -769,3 +769,9 @@ gaps and serialized revisions now have targeted local evidence in
 The receipt also preserves an unexplained intermittent preparation 403 for
 continued investigation. Qualified positive formal Outcome and complete root-cause
 closure remain unfinished: 0/27 findings closed, final handoff NOT_READY.
+
+SLICE-V1-004 local rework update: display input custody and exact manual
+verification now have 91 unit/architecture, 26 signed HTTP/database and 8
+application-role manual-evidence tests in `checkpoint-8-test-receipts.json`.
+Instant display evidence is explicitly distinguished from whole-window coverage.
+Final handoff remains NOT_READY, 0/27 findings closed; this is local progress only.

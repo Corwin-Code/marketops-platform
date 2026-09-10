@@ -2,7 +2,6 @@ package com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc;
 
 import com.mimococo.marketops.listingconversion.internal.domain.AffectedSetResolution;
 import com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualification;
-import com.mimococo.marketops.listingconversion.internal.domain.VersionWindow;
 import com.mimococo.marketops.listingconversion.internal.domain.VisitConversion;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -202,21 +201,6 @@ public class ListingFactRepository {
                 .param("acquired", Timestamp.from(acquiredAt)).param("grade", evidenceGrade)
                 .param("observer", observerUserId).param("state", displayState).param("digest", displayedTextDigest)
                 .param("text", displayedText).param("reference", evidenceReference).update();
-    }
-
-    public List<VersionWindow.Display> displays(UUID listingId, Instant from, Instant to) {
-        return jdbc.sql("""
-                SELECT displayed_text_digest, observed_at FROM core.lc_display_observation
-                 WHERE platform_listing_id = :listing AND display_state = 'DISPLAYED'
-                   AND observed_at < :to
-                   AND (observed_at >= :from OR observed_at = (SELECT max(prior.observed_at)
-                     FROM core.lc_display_observation prior WHERE prior.platform_listing_id=:listing
-                      AND prior.display_state='DISPLAYED' AND prior.observed_at<:from))
-                 ORDER BY observed_at,id
-                """).param("listing", listingId).param("from", Timestamp.from(from)).param("to", Timestamp.from(to))
-                .query((rs, n) -> new VersionWindow.Display(rs.getString("displayed_text_digest"),
-                        instant(rs, "observed_at")))
-                .list();
     }
 
     public List<DisplayRow> recentDisplays(UUID listingId, int limit) {

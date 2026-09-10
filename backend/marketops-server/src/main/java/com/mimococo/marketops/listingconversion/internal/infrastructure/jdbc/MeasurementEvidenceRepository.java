@@ -26,6 +26,22 @@ public class MeasurementEvidenceRepository {
     public record Coverage(UUID id, Instant sourceThrough, Instant acquiredAt, String inputDigest,
                            UUID summaryId, UUID profileId) { }
 
+    /** Include the latest pre-window observations (including ties/unknowns),
+     * and every in-window observation known at calculation time. A report is
+     * retained evidence, not automatically full-window display qualification. */
+    public JsonNode displaySnapshot(UUID listing, Instant from, Instant to, Instant at) {
+        String body = jdbc.sql("""
+                SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY d.observed_at,d.id),'[]'::jsonb)::text
+                FROM core.lc_display_observation d
+                WHERE d.platform_listing_id=:listing AND d.observed_at<:to AND d.acquired_at<=:at
+                  AND (d.observed_at>=:from OR d.observed_at=(
+                    SELECT max(prior.observed_at) FROM core.lc_display_observation prior
+                    WHERE prior.platform_listing_id=:listing AND prior.observed_at<:from AND prior.acquired_at<=:at))
+                """).param("listing",listing).param("from",Timestamp.from(from)).param("to",Timestamp.from(to))
+                .param("at",Timestamp.from(at)).query(String.class).single();
+        return json.readTree(body);
+    }
+
     /** Immutable measured input identity; method/window admission belongs to the frozen plan. */
     public record MeasuredSourceStrata(UUID measurementId, UUID listingId, int definitionVersion,
             Instant windowStart, Instant windowEnd, int retentionDays, boolean qualified,

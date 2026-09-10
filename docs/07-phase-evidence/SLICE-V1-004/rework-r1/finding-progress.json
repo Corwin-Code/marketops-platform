@@ -45,11 +45,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Transition days consumed by metric inputs with source timezone, prior display carried across window, and as-of linked sale correction chain retained. Full target-version coverage, fixed-structure comparison and automatic Outcome revisions remain open.",
-        "Actual detail-measurement lineage now retains both source channels and unknown visit counts over the exact filtered cohort; scoped reader and late sale-reversal evidence added. Fixed comparison plan/method execution still open."
+        "Actual detail-measurement lineage now retains both source channels and unknown visit counts over the exact filtered cohort; scoped reader and late sale-reversal evidence added. Fixed comparison plan/method execution still open.",
+        "Checkpoint 8 retains as-of display snapshots including unknown reports; exact manual verification binds listing/target/operation/acquisition time and independent observer provenance. Full interval coverage and downstream propagation remain open."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "Checkpoint-5 signed HTTP/database subset 21 passed; original/revised source strata, immutable history, exact lineage coverage and foreign-listing read refusal covered."
+        "Checkpoint-5 signed HTTP/database subset 21 passed; original/revised source strata, immutable history, exact lineage coverage and foreign-listing read refusal covered.",
+        "Checkpoint-8 receipts: 91 unit/architecture, 26 signed HTTP/database including normal packet/observation/verification/read, and 8 independent PostgreSQL application-role manual evidence tests passed. No closure claim."
       ]
     },
     {
@@ -163,9 +165,13 @@
     {
       "id": "S4-DR-R1-016",
       "title": "人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Checkpoint 8 retains as-of display snapshots including unknown reports; exact manual verification binds listing/target/operation/acquisition time and independent observer provenance. Full interval coverage and downstream propagation remain open."
+      ],
+      "executed_evidence": [
+        "Checkpoint-8 receipts: 91 unit/architecture, 26 signed HTTP/database including normal packet/observation/verification/read, and 8 independent PostgreSQL application-role manual evidence tests passed. No closure claim."
+      ]
     },
     {
       "id": "S4-DR-R1-017",

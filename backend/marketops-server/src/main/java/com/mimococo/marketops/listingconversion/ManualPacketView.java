@@ -2,6 +2,7 @@ package com.mimococo.marketops.listingconversion;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /** A governed manual packet with the executor's reports and the independent verifications. */
@@ -27,7 +28,8 @@ public record ManualPacketView(
 
     public record Verification(UUID id, UUID verifierUserId, String verificationBasis, String managementMatch,
                                UUID managementObservationId, UUID displayObservationId, String displayState,
-                               Instant verifiedAt, String note) {
+                               Instant verifiedAt, String note, Map<String,Object> observationBinding) {
+        public Verification { observationBinding=Map.copyOf(observationBinding==null?Map.of():observationBinding); }
     }
 
     public ManualPacketView {
