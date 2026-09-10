@@ -175,43 +175,37 @@ full-source verification or a cancelled/stale CI run into a passed gate. The
 central R1 matrices retain unresolved verification explicitly until the actual
 run, artifact and input identity are recorded.
 
-## 2e. SLICE-V1-004 Level 1 local rework in progress
+## 2e. SLICE-V1-004 Level 1 local implementation evidence
 
-This factual section supersedes the reviewed Maker implementation claims for
-Slice 004 only. The original matrix is preserved byte-for-byte under
-`docs/07-phase-evidence/SLICE-V1-004/rework-r1/historical-maker/` with its source
-Head and hash. All normative evidence requirements and predecessor closures
-remain unchanged.
+This factual status section leaves the evidence classes, minimum controls and
+review requirements unchanged. The accepted Contract, its normative annex and
+every predecessor's recorded verdict and closure stay protected.
 
 ```yaml
 slice: SLICE-V1-004
 contract_sha256: 5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983
 annex_sha256: c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
-reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
-frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
-implementation_state: LEVEL_1_ROOT_CAUSE_REWORK_IN_PROGRESS
-controller_final_closure: NOT_REQUESTED
-finding_count: 27
-closed_findings_claimed: 0
-remote_publication: NOT_AUTHORIZED
+source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
+implementation_state: LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING
+owner_authorization: FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY
+controller_verdict: NOT_ISSUED_FOR_LOCAL_CHECKPOINT
+remote_publication: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_write_enabled: false
-evidence_index: docs/07-phase-evidence/SLICE-V1-004/rework-r1/
+evidence_index: docs/07-phase-evidence/SLICE-V1-004/
 ```
 
-| Class | Current evidence boundary | Remaining requirement |
+| Class | Level 1 implementation and verification surface | Required final evidence |
 | --- | --- | --- |
-| `SRC` | Exact original Contract/annex/frozen findings and reviewed Head/tree verified; local forward-only rework checkpoints. | Complete 27-root-cause and transitive scope; final exact Head/tree and per-finding traceability. |
-| `UNIT` | Targeted domain, worker, transport and architecture checks are recorded in `INTERIM_VERIFICATION.md`. | Complete relevant backend verification and unchanged coverage controls at final Head. |
-| `RDB` / `SEC_NEG` | Partial signed-HTTP/current-grant, calibration lifecycle, measurement, mapping lineage and provider-timing tests on isolated PostgreSQL. | Full authorization/finance/role/identity negatives, concurrency, normal business journeys and clean/upgrade equivalence. |
-| `REPLAY` / `OPS` | Source-window/sale-revision preservation and command timing controls have targeted tests; no complete operational closure is claimed. | Durable queue/restart/replay, automatic Outcome revisions, dependency/containment and fault-matrix evidence. |
-| `BROWSER` | Original pages are subject to frozen finding 026. | Complete bilingual desktop journeys against a real isolated backend and PostgreSQL; rendered role/failure evidence. |
-| `PERF` / `DR` | No completed Slice 004 capacity or recovery proof is claimed. | Declared workload/resources, observed 5/15/60 latency and recovery drills. |
-| `AUDIT` | Partial audit/current-actor fixes and historical evidence preservation. | Exact final commands, results, input identity, artifact hashes and per-finding closure evidence for independent Controller. |
-| `OBJ` / `REAL_EXT` | Only synthetic local facts, protocols and isolated databases are authorized. | Existing external obligations remain assigned to their exact consuming Gate; no local fixture grants Gate EV, Gate E or release authority. |
-
-A targeted pass is not a complete acceptance-group pass. Infrastructure-startup
-failures and stale Maker claims are not promoted to LOCAL_VERIFIED. Final closure
-remains the independent Controller's verification on the eventual exact Head.
+| `SRC` | Byte-exact Contract, annex, statement and receipt in canonical places; exact base commit/tree; six forward-only migrations inventoried by digest and blob. | Exact local checkpoint commit/tree, remote PR and tested-merge identity once separately authorized. |
+| `UNIT` | Visit conversion, evidence-path qualification, version windows, materiality, three-layer Listing Health, allowance headroom, protection vector, promotion simulation, isolation scope, responsibility clocks, affected-set resolution, description change guard, retry-after units, listing guardrail and description worker. | Complete clean backend run and unchanged coverage gates on the exact checkpoint. |
+| `RDB` | Local isolated PostgreSQL 16 clean install of V0001–V0079; launch allowance, second-listing refusal, release and relaunch, description command creation, gate closed only by the Owner authority, containment and two-person re-enablement exercised through the application role; Testcontainers suites written and compiled. | Testcontainers execution where a container runtime exists: privilege, transition-graph, concurrency race, gate, containment and schema suites. |
+| `SEC_NEG` | Author cannot review or approve own action; executor cannot verify; one person cannot give both halves of a re-enablement; one-use proofs bound to actor, target and version; application role cannot insert commands, launches, occupations or containments. | Whole-surface API negatives, step-up and revocation runs on the checkpoint, repository security CI. |
+| `REPLAY` | Idempotent command per action, no `UNKNOWN → EXECUTING` edge, retry only with database proof, late association and recalculation queue classes. | Restart/replay/failure drills with recorded latencies against the recalculation targets. |
+| `BROWSER` | Console views for health, actions, manual path and governance in Chinese and Russian with a completeness test over every backend code family. | Playwright browser scenarios on a built console against an isolated backend. |
+| `PERF` | Recalculation queue with 5/15/60 minute targets recorded per entry. | Measured latency distributions under a declared workload. |
+| `DR` / `OPS` | Runbooks for description command resolution, launch and allowance, containment and re-enablement, manual path; kill switch for `listing-description-write`. | Executed fault matrix with observable refusals and recovery. |
+| `AUDIT` | Every console read and state change audited under the `listingconversion` domain; guardrail verdicts name the calibration package; approvals bind to the database authority snapshot. | Actor/evidence/commit manifest on the checkpoint. |
+| `OBJ` / `REAL_EXT` | Fictional platform, credential and listing fixtures only. | `F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02`, `E-04` remain open and production-blocking; no fixture grants Gate EV, Gate E or release evidence. |
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 

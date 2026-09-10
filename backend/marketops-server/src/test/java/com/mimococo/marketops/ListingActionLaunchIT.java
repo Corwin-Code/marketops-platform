@@ -125,8 +125,8 @@ class ListingActionLaunchIT {
         } finally {
             pool.shutdownNow();
         }
-        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE axis_code = 'CONCURRENT_LISTINGS' AND state <> 'RELEASED'")
-                .query(Integer.class).single()).isEqualTo(1);
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE organization_id=:org AND axis_code = 'CONCURRENT_LISTINGS' AND state <> 'RELEASED'")
+                .param("org",f.id("organization")).query(Integer.class).single()).isEqualTo(1);
     }
 
     @Test

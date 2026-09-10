@@ -44,7 +44,8 @@ public interface OutboundHttp {
         public Response {
             body = body.clone();
             Map<String, List<String>> copy = new java.util.LinkedHashMap<>();
-            headers.forEach((key, value) -> copy.put(key.toLowerCase(java.util.Locale.ROOT), List.copyOf(value)));
+            headers.forEach((key, value) -> copy.merge(key.toLowerCase(java.util.Locale.ROOT), List.copyOf(value),
+                    (left, right) -> java.util.stream.Stream.concat(left.stream(), right.stream()).toList()));
             headers = Map.copyOf(copy);
         }
         @Override public byte[] body() { return body.clone(); }

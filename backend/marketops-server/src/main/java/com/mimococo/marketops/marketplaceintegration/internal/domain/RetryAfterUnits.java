@@ -17,18 +17,16 @@ import java.util.Optional;
  */
 public final class RetryAfterUnits {
 
-    private static final long MAXIMUM_SECONDS = 3600;
-
     private RetryAfterUnits() {
     }
 
-    /** Seconds to wait, or empty when the platform or the value is unknown. */
+    /** Native header seconds, never shortened. Unrepresentable values are unknown. */
     public static Optional<Integer> seconds(String platformCode, String retryAfterValue) {
         if (platformCode == null || retryAfterValue == null) {
             return Optional.empty();
         }
         String trimmed = retryAfterValue.trim();
-        if (!trimmed.matches("^[0-9]{1,6}$")) {
+        if (!trimmed.matches("^[0-9]{1,10}$")) {
             return Optional.empty();
         }
         long value = Long.parseLong(trimmed);
@@ -37,9 +35,31 @@ public final class RetryAfterUnits {
             case "WILDBERRIES" -> value;
             default -> -1;
         };
-        if (seconds < 1) {
+        if (seconds < 0 || seconds > Integer.MAX_VALUE) {
             return Optional.empty();
         }
-        return Optional.of((int) Math.min(seconds, MAXIMUM_SECONDS));
+        return Optional.of((int) seconds);
+    }
+
+    /** Only the named native headers carry the native units. Standard Retry-After is seconds. */
+    public static Optional<Integer> secondsFromHeaders(String platformCode, java.util.Map<String, String> headers) {
+        String nativeName = platformCode == null ? "" : switch (platformCode.toUpperCase(Locale.ROOT)) {
+            case "OZON" -> "item-retry-after";
+            case "WILDBERRIES" -> "x-ratelimit-retry";
+            default -> "";
+        };
+        Integer delay = null;
+        for (var entry : headers.entrySet()) {
+            String name = entry.getKey().toLowerCase(Locale.ROOT);
+            if (name.equals(nativeName) || name.equals("retry-after")) {
+                // Dates and malformed/ambiguous timing are adjudicated by the
+                // durable database parser, not guessed by this worker hint.
+                Optional<Integer> parsed = seconds(name.equals("retry-after") ? "WILDBERRIES" : platformCode,
+                        entry.getValue());
+                if (parsed.isEmpty()) return Optional.empty();
+                delay = delay == null ? parsed.get() : Math.max(delay, parsed.get());
+            }
+        }
+        return Optional.ofNullable(delay);
     }
 }

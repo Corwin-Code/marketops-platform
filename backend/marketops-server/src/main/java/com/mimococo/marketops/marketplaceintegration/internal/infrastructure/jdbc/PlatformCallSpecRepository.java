@@ -324,6 +324,8 @@ public class PlatformCallSpecRepository {
                       ON credential.marketplace_account_id=store.marketplace_account_id
                  WHERE a.id=:attempt AND a.request_digest=:digest AND a.outcome_class='IN_FLIGHT'
                    AND a.purpose=:purpose AND c.capability_id=:capability
+                   AND NOT c.provider_retry_timing_unknown
+                   AND (c.provider_not_before IS NULL OR c.provider_not_before<=clock_timestamp())
                    AND listing.native_listing_key=:listing AND listing.status='OBSERVED'
                    AND :idempotency=CASE WHEN a.purpose='RESTORE'
                        THEN encode(sha256(convert_to(c.idempotency_key||chr(31)||'RESTORE'||chr(31),'UTF8')),'hex')

@@ -90,9 +90,9 @@ class ListingDescriptionWriteGateIT {
                 """).param("store", f.id("store")).update();
         assertThat(f.gateReasons(command)).contains("SCOPED_SWITCH_DISABLED", "PRODUCTION_WRITE_DISABLED");
 
-        f.seed.sql("UPDATE ops.approval_decision SET scope_expires_at = clock_timestamp() - interval '1 second' WHERE id = :id")
+        f.seed.sql("UPDATE ops.approval_decision SET decided_at=clock_timestamp()-interval '2 minutes', scope_expires_at = clock_timestamp() - interval '1 second' WHERE id = :id")
                 .param("id", f.id("approvalOne")).update();
-        f.seed.sql("UPDATE ops.lc_action_binding SET expires_at = clock_timestamp() - interval '1 second' WHERE id = :id")
+        f.seed.sql("UPDATE ops.lc_action_binding SET bound_at=clock_timestamp()-interval '2 minutes', expires_at = clock_timestamp() - interval '1 second' WHERE id = :id")
                 .param("id", f.id("bindingOne")).update();
         assertThat(f.gateReasons(command)).contains("AUTHORIZATION_INVALID_OR_EXPIRED", "BINDING_EXPIRED");
 
@@ -110,7 +110,8 @@ class ListingDescriptionWriteGateIT {
         f.launch(UUID.randomUUID(), "actionTwo", f.id("ownerUser"));
         assertThatThrownBy(() -> f.createCommand(f.id("actionTwo"), f.id("ownerUser")))
                 .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
-        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_description_command").query(Integer.class).single()).isZero();
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_description_command WHERE organization_id=:org")
+                .param("org",f.id("organization")).query(Integer.class).single()).isZero();
     }
 
     @Test
@@ -130,6 +131,25 @@ class ListingDescriptionWriteGateIT {
         assertThatThrownBy(() -> f.app.sql("SELECT ops.create_lc_description_command(:action, :actor, 999, 'listing-fixture')")
                 .param("action", f.id("actionOne")).param("actor", f.id("ownerUser")).query(UUID.class).single())
                 .satisfies(failure -> assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO090"));
+    }
+
+    @Test
+    void anotherScopeCannotLendEnablementOrImposeAStoreStop() throws Exception {
+        var f=launched();
+        var other=launched();
+        UUID command=f.createCommand(f.id("actionOne"),f.id("ownerUser"));
+        other.seed.sql("""
+                INSERT INTO platform.feature_flag(id,flag_code,flag_kind,scope_kind,store_id,state,status,reason,created_at,updated_at)
+                VALUES(gen_random_uuid(),'listing-description-write','WRITE_CAPABILITY','STORE',:store,'DISABLED','ACTIVE',
+                    'synthetic unrelated stop',now(),now())
+                """).param("store",other.id("store")).update();
+        assertThat(f.gateReasons(command)).containsExactly("PRODUCTION_WRITE_DISABLED");
+        f.seed.sql("UPDATE platform.feature_flag SET state='DISABLED' WHERE flag_code='listing-description-write' AND capability_id=:cap")
+                .param("cap",f.id("capability")).update();
+        assertThat(f.gateReasons(command)).contains("CAPABILITY_SWITCH_DISABLED");
+        f.seed.sql("UPDATE platform.feature_flag SET state='ENABLED' WHERE flag_code='listing-description-write' AND capability_id=:cap")
+                .param("cap",f.id("capability")).update();
+        assertThat(f.gateReasons(command)).containsExactly("PRODUCTION_WRITE_DISABLED");
     }
 
     @Test

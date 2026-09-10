@@ -30,7 +30,8 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
 
     private static final List<String> OWNER_PUBLISHED = List.of(
             "core.lc_calibration_package", "core.lc_calibration_value", "core.lc_calibration_category",
-            "core.lc_summary_equivalence_profile", "ops.lc_exposure_allowance", "ops.lc_gate_authority");
+            "core.lc_summary_equivalence_profile", "ops.lc_exposure_allowance", "ops.lc_gate_authority",
+            "ops.lc_calibration_governance", "ops.lc_calibration_event");
 
     private static PostgreSQLContainer container;
 
@@ -91,7 +92,8 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
                         "SELECT schema_name || '.' || table_name FROM platform.control_route_inventory"
                                 + " WHERE table_name LIKE 'lc\\_%' AND route_kind = 'NO_ROUTE' ORDER BY 1");
 
-                assertThat(tables).hasSize(43);
+                assertThat(tables).hasSize(47).contains("core.lc_measurement_coverage", "mart.lc_measurement_lineage",
+                        "ops.lc_calibration_governance", "ops.lc_calibration_event");
                 assertThat(inventoried).containsExactlyElementsOf(tables);
             }
         }

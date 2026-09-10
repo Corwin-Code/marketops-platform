@@ -35,7 +35,8 @@ public record DescriptionWriteResult(
                            String evidenceClass, boolean complete) {
 
         private static final Set<String> ALLOWED_HEADERS = Set.of(
-                "content-type", "retry-after", "x-request-id", "etag", "x-version-id");
+                "content-type", "retry-after", "item-retry-after", "x-ratelimit-retry",
+                "x-request-id", "etag", "x-version-id");
 
         public Response {
             Objects.requireNonNull(headers, "headers");
@@ -56,7 +57,7 @@ public record DescriptionWriteResult(
                             "a response header outside the recorded allowlist is not retained");
                 }
                 String value = header.getValue();
-                if (value == null || value.length() > 256
+                if (value == null || value.length() > 8192
                         || value.chars().anyMatch(Character::isISOControl)) {
                     throw new IllegalArgumentException("a response header value is out of bounds");
                 }

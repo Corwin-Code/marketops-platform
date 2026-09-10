@@ -167,8 +167,16 @@ class ListingDescriptionCommandWorker {
     /** True only when a fresh retry-lease readback authorizes the next APPLY. */
     private boolean observe(ListingDescriptionCommandRepository.CommandRow command, long fence, String owner,
                             boolean retryPreflight) {
+        if (commands.providerWaitActive(command.id())) {
+            commands.deferObservation(command.id(), fence, owner, properties.getRetryDelaySeconds());
+            return false;
+        }
         DescriptionWriteResult result = call(command, fence, owner,
                 DescriptionWriteRequest.Operation.READBACK, null, null);
+        if (result.outcome() != DescriptionWriteResult.Outcome.ACCEPTED && commands.providerWaitActive(command.id())) {
+            commands.deferObservation(command.id(), fence, owner, properties.getRetryDelaySeconds());
+            return false;
+        }
         if (result.response() == null) {
             commands.transition(command.id(), fence, owner, "UNKNOWN_REQUIRES_READBACK", null, null, null);
             return false;
@@ -181,6 +189,10 @@ class ListingDescriptionCommandWorker {
             case "MATCHES_PRIOR" -> {
                 if (commands.retryIsProven(command.id())) {
                     if (retryPreflight) {
+                        if (commands.providerWaitActive(command.id())) {
+                            commands.deferObservation(command.id(), fence, owner, properties.getRetryDelaySeconds());
+                            return false;
+                        }
                         commands.transition(command.id(), fence, owner, "EXECUTING", null, null, null);
                         return true;
                     }
@@ -212,6 +224,10 @@ class ListingDescriptionCommandWorker {
                         "compensation_current_owner_not_proven", null, null);
                 return true;
             }
+            if (commands.providerWaitActive(commandId)) {
+                commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
+                return true;
+            }
             DescriptionWriteResult restore = call(command, fence, owner,
                     DescriptionWriteRequest.Operation.RESTORE, command.priorText(),
                     commands.restoreVersionToken(commandId).orElse(null));
@@ -222,7 +238,7 @@ class ListingDescriptionCommandWorker {
                         "restore_result_requires_resolution", null, null);
                 return true;
             }
-            if (restore.nativeTaskKey() != null) {
+            if (restore.nativeTaskKey() != null || commands.providerWaitActive(commandId)) {
                 commands.deferObservation(commandId, fence, owner, delayFor(restore));
                 return true;
             }
@@ -238,6 +254,10 @@ class ListingDescriptionCommandWorker {
                         "restore_native_state_unresolved", null, null);
                 return true;
             }
+        }
+        if (commands.providerWaitActive(commandId)) {
+            commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
+            return true;
         }
         String match = observeCompensation(command, fence, owner);
         commands.transition(commandId, fence, owner,
@@ -259,7 +279,7 @@ class ListingDescriptionCommandWorker {
     /** The platform's own wait, converted, or the configured default when it gave none. */
     private int delayFor(DescriptionWriteResult result) {
         return result.retryAfterSeconds() == null ? properties.getRetryDelaySeconds()
-                : Math.max(1, Math.min(result.retryAfterSeconds(), 3600));
+                : Math.max(1, result.retryAfterSeconds());
     }
 
     /** One call: record the attempt, make it, record what came back. */

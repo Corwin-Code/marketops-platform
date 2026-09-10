@@ -8,5 +8,10 @@
     "path": "controller-handoff.md",
     "source_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
     "sha256": "273de111132eee9da6f23e7bfbc7f5136457b7955273fc3e8a7f6866f5b1a855"
+  },
+  {
+    "path": "V1_PRODUCTION_ASSURANCE_MATRIX.md",
+    "source_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
+    "sha256": "8cab7c27fa87baaa5f7659954203ca4be83e499e022b4a6af1dc0912b187e6ab"
   }
 ]

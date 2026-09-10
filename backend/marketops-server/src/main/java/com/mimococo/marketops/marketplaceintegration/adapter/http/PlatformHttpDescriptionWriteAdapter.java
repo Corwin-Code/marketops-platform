@@ -181,7 +181,10 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
         Map<String, String> retained = new HashMap<>();
         response.headers().forEach((name, values) -> {
             if (!values.isEmpty()) {
-                retained.put(name.toLowerCase(Locale.ROOT), values.getFirst());
+                // Preserve multiplicity. A duplicate numeric delay becomes
+                // explicit ambiguous evidence, never a silently selected value.
+                retained.merge(name.toLowerCase(Locale.ROOT), String.join(", ", values),
+                        (left, right) -> left + ", " + right);
             }
         });
         DescriptionWriteResult.Response transport;
@@ -193,7 +196,7 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
             return new DescriptionWriteResult(DescriptionWriteResult.Outcome.UNKNOWN_STATE,
                     null, null, null, clock.instant(), "provider_evidence_missing_or_unbound", null, null);
         }
-        Integer retryAfter = RetryAfterUnits.seconds(platformCode, retained.get("retry-after")).orElse(null);
+        Integer retryAfter = RetryAfterUnits.secondsFromHeaders(platformCode, retained).orElse(null);
         DescriptionWriteResult.Outcome proposed = response.complete() && response.statusCode() < 300
                 ? DescriptionWriteResult.Outcome.ACCEPTED
                 : DescriptionWriteResult.Outcome.UNKNOWN_STATE;
@@ -203,9 +206,10 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
 
     private static Map<String, String> filterRetainable(Map<String, String> headers) {
         Map<String, String> retained = new LinkedHashMap<>();
-        for (String name : List.of("content-type", "retry-after", "x-request-id", "etag", "x-version-id")) {
+        for (String name : List.of("content-type", "retry-after", "item-retry-after", "x-ratelimit-retry",
+                "x-request-id", "etag", "x-version-id")) {
             String value = headers.get(name);
-            if (value != null && value.length() <= 256) {
+            if (value != null) {
                 retained.put(name, value);
             }
         }

@@ -108,6 +108,42 @@ class ListingDescriptionCommandWorkerTest {
     class Answers {
 
         @Test
+        void providerWaitDefersReadbackWithoutAnotherCall() {
+            claim("PENDING");
+            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.RETRIABLE_ERROR, null));
+            when(commands.providerWaitActive(COMMAND)).thenReturn(true);
+            assertThat(worker.runOnce(Instant.now(), 10)).isEqualTo(1);
+            verify(writePort, org.mockito.Mockito.times(1)).perform(any());
+            verify(commands).deferObservation(eq(COMMAND),eq(1L),anyString(),anyInt());
+            verify(commands,never()).transitionReadback(any(),any(),anyLong(),anyString());
+        }
+
+        @Test
+        void nativeWaitLongerThanOneHourIsNotShortenedByWorker() {
+            claim("PLATFORM_PENDING");
+            when(writePort.perform(any())).thenAnswer(call -> {
+                DescriptionWriteRequest request=call.getArgument(0);
+                return new DescriptionWriteResult(DescriptionWriteResult.Outcome.RETRIABLE_ERROR,"429",null,
+                        new byte[]{1},Instant.now(),null,7200,
+                        new DescriptionWriteResult.Response(429,Map.of("item-retry-after","120"),request.digest(),
+                                "PROTOCOL_FIXTURE",true));
+            });
+            assertThat(worker.runOnce(Instant.now(),10)).isEqualTo(1);
+            verify(commands).deferObservation(eq(COMMAND),eq(1L),anyString(),eq(7200));
+        }
+
+        @Test
+        void throttledReadbackIsParkedForLaterObservation() {
+            claim("UNKNOWN_REQUIRES_READBACK");
+            when(commands.providerWaitActive(COMMAND)).thenReturn(false,true);
+            when(writePort.perform(any())).thenAnswer(answering(DescriptionWriteResult.Outcome.RETRIABLE_ERROR,null));
+            assertThat(worker.runOnce(Instant.now(),10)).isEqualTo(1);
+            verify(commands).deferObservation(eq(COMMAND),eq(1L),anyString(),anyInt());
+            verify(commands,never()).transitionReadback(any(),any(),anyLong(),anyString());
+            verify(writePort,org.mockito.Mockito.times(1)).perform(any());
+        }
+
+        @Test
         @DisplayName("an acceptance with a task handle waits for the platform")
         void acceptedWithATaskWaits() {
             claim("PENDING");

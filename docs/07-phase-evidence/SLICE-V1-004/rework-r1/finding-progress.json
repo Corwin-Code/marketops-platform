@@ -94,9 +94,13 @@
     {
       "id": "S4-DR-R1-010",
       "title": "完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "V0083 captures immutable identity lineage and includes mapping target, effective interval/version, product status and conflicts in the affected-set digest. Binding checks now detect dependent mapping/member changes; original snapshots remain intact. Native source-membership completeness proof is still open."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence."
+      ]
     },
     {
       "id": "S4-DR-R1-011",
@@ -154,9 +158,13 @@
     {
       "id": "S4-DR-R1-018",
       "title": "限域隔离的依赖传播与重新启用未消费当前原因和调用权威",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "V0085 corrects capability enablement and platform/account/store stop matching in the description Gate, including current flag lifecycle. Full K7/K9 cause/dependency propagation and two-part re-enablement remain open."
+      ],
+      "executed_evidence": [
+        "ListingDescriptionWriteGateIT includes unrelated-store stop and other-capability enablement negatives; broader closure remains unverified."
+      ]
     },
     {
       "id": "S4-DR-R1-019",
@@ -182,9 +190,13 @@
     {
       "id": "S4-DR-R1-022",
       "title": "等待头和异步结果的完整协议语义未落实，可能提前重试或误认终局",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Native retry headers are preserved with exact units; waits are not capped. V0084 derives durable earliest-call time or explicit timing-unknown hold from retained transport evidence and guards leases, attempts and dispatch rechecks. HTTP 409 is inconclusive. Native task/object identity, per-purpose protocol and all scheduler/expiry coverage remain open."
+      ],
+      "executed_evidence": [
+        "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence."
+      ]
     },
     {
       "id": "S4-DR-R1-023",

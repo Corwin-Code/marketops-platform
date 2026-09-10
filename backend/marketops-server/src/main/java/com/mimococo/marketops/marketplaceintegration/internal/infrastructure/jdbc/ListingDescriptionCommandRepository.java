@@ -71,17 +71,28 @@ public class ListingDescriptionCommandRepository {
     public List<UUID> claimable(Instant now, int limit) {
         return jdbc.sql("""
                 SELECT id FROM ops.lc_description_command
-                 WHERE (state IN ('PENDING', 'RETRY_WAIT')
+                 WHERE NOT provider_retry_timing_unknown
+                   AND (provider_not_before IS NULL OR provider_not_before <= clock_timestamp())
+                   AND ((state IN ('PENDING', 'RETRY_WAIT')
                         AND (next_attempt_at IS NULL OR next_attempt_at <= :now)
                         AND retry_budget_remaining > 0)
-                    OR (state = 'UNKNOWN_REQUIRES_READBACK' AND requested_operation = 'READBACK')
-                    OR (state IN ('COMPENSATION_PENDING', 'PLATFORM_PENDING') AND lease_owner IS NULL
+                    OR (state = 'UNKNOWN_REQUIRES_READBACK' AND requested_operation = 'READBACK'
                         AND (next_attempt_at IS NULL OR next_attempt_at <= :now))
+                    OR (state IN ('COMPENSATION_PENDING', 'PLATFORM_PENDING') AND lease_owner IS NULL
+                        AND (next_attempt_at IS NULL OR next_attempt_at <= :now)))
                  ORDER BY created_at
                  LIMIT :limit
                 """)
                 .param("now", ts(now)).param("limit", limit)
                 .query(UUID.class).list();
+    }
+
+    /** Durable provider timing survives leases, transitions and worker restarts. */
+    public boolean providerWaitActive(UUID commandId) {
+        return jdbc.sql("""
+                SELECT provider_retry_timing_unknown OR coalesce(provider_not_before > clock_timestamp(),false)
+                  FROM ops.lc_description_command WHERE id=:id
+                """).param("id", commandId).query(Boolean.class).optional().orElse(false);
     }
 
     public long lease(UUID commandId, String owner, int seconds) {

@@ -54,7 +54,7 @@ public class ListingHealthService {
     }
 
     /** The current complete affected set of a listing, frozen if it is new. */
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
     public FrozenSet freezeAffectedSet(UUID listingId) {
         ListingFactRepository.ListingContext listing = facts.listing(listingId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));

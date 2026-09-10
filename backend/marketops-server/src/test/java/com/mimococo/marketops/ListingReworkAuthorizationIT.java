@@ -398,6 +398,74 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void mappingRebindingInvalidatesOnlyDependentActionsAndKeepsOriginalLineage() {
+        UUID listing = fixture.id("listing"), variant = fixture.id("listingVariant");
+        String original = affectedDigest(listing);
+        String other = affectedDigest(fixture.id("listingTwo"));
+        String lineage = jdbc.sql("SELECT identity_lineage::text FROM core.lc_affected_set WHERE id=:id")
+                .param("id",fixture.id("affectedSetOne")).query(String.class).single();
+        assertThat(lineage).contains(fixture.id("productVariant").toString(), "mappingId", "mappingVersion");
+        assertThat(bindingGaps("actionOne")).doesNotContain("AFFECTED_SET_DIGEST_CHANGED");
+        // Synthetic canonical correction: end the old mapping, create its
+        // effective-dated successor; never mutate the old frozen evidence.
+        fixture.seed.sql("""
+                WITH ended AS (
+                    UPDATE core.listing_mapping SET status='ENDED',effective_to=statement_timestamp(),
+                        updated_at=statement_timestamp(),version=version+1
+                    WHERE platform_listing_variant_id=:variant AND status='ACTIVE' RETURNING *
+                ) INSERT INTO core.listing_mapping (id,organization_id,platform_listing_variant_id,
+                    product_variant_id,effective_from,status,confirmed_by_user_id,reason,created_at,updated_at)
+                SELECT gen_random_uuid(),organization_id,platform_listing_variant_id,:product,
+                    effective_to,'ACTIVE',confirmed_by_user_id,'synthetic correction',effective_to,effective_to FROM ended
+                """).param("variant",variant).param("product",fixture.id("productVariantTwo")).update();
+        assertThat(affectedDigest(listing)).isNotEqualTo(original);
+        assertThat(affectedDigest(fixture.id("listingTwo"))).isEqualTo(other);
+        assertThat(bindingGaps("actionOne")).contains("AFFECTED_SET_DIGEST_CHANGED");
+        assertThat(bindingGaps("actionTwo")).doesNotContain("AFFECTED_SET_DIGEST_CHANGED");
+        assertThat(jdbc.sql("SELECT identity_lineage::text FROM core.lc_affected_set WHERE id=:id")
+                .param("id",fixture.id("affectedSetOne")).query(String.class).single()).isEqualTo(lineage);
+    }
+
+    @Test
+    void mappingVersionAndNativeMembershipChangesAreVisibleToBindingChecks() {
+        UUID listing = fixture.id("listing");
+        String original = affectedDigest(listing);
+        fixture.seed.sql("UPDATE core.listing_mapping SET version=version+1 WHERE platform_listing_variant_id=:id")
+                .param("id",fixture.id("listingVariant")).update();
+        assertThat(affectedDigest(listing)).isNotEqualTo(original);
+        String afterVersion = affectedDigest(listing);
+        fixture.seed.sql("UPDATE core.platform_listing_variant SET status='ARCHIVED' WHERE id=:id")
+                .param("id",fixture.id("listingVariant")).update();
+        assertThat(affectedDigest(listing)).isNotEqualTo(afterVersion);
+        assertThat(bindingGaps("actionOne")).contains("AFFECTED_SET_DIGEST_CHANGED");
+    }
+
+    @Test
+    void identityDigestDoesNotDependOnSessionTimezone() throws Exception {
+        String original = affectedDigest(fixture.id("listing"));
+        try (var connection=fixture.application.getConnection(); var statement=connection.createStatement()) {
+            statement.execute("SET TIME ZONE 'Asia/Taipei'");
+            try (var query=connection.prepareStatement("SELECT core.lc_listing_affected_set_digest(?)")) {
+                query.setObject(1,fixture.id("listing"));
+                try (var rows=query.executeQuery()) {
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getString(1)).isEqualTo(original);
+                }
+            }
+        }
+    }
+
+    private String affectedDigest(UUID listing) {
+        return jdbc.sql("SELECT core.lc_listing_affected_set_digest(:id)").param("id",listing)
+                .query(String.class).single();
+    }
+
+    private List<String> bindingGaps(String action) {
+        return jdbc.sql("SELECT unnest(ops.lc_binding_gaps(:id))").param("id",fixture.id(action))
+                .query(String.class).list();
+    }
+
+    @Test
     void historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion() {
         Instant frozen=jdbc.sql("SELECT clock_timestamp()").query(java.time.OffsetDateTime.class).single().toInstant();
         UUID org=fixture.id("organization"), store=fixture.id("store"), pack=fixture.id("calibrationPackage");
