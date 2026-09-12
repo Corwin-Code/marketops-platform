@@ -147,18 +147,22 @@ public class EvaluationRepository {
                 .list();
     }
 
-    public void insertSimulation(UUID id, UUID organizationId, UUID candidateId, UUID runId, List<Map<String, Object>> scenarios,
-                                 String inputsDigest, List<Map<String, Object>> results, BigDecimal inverseMinimum,
-                                 String inverseState, Boolean gate, Instant now, List<UUID> evidenceScope) {
+    public void insertSimulation(UUID id, UUID organizationId, UUID candidateId, List<Map<String, Object>> scenarios,
+                                 List<Map<String, Object>> results, BigDecimal inverseMinimum,
+                                 String inverseState, Instant now, List<UUID> evidenceScope, String modelVersion,
+                                 Map<String, Object> snapshot, Boolean conditionalComparison) {
         jdbc.sql("""
-                INSERT INTO ops.lc_simulation (id, organization_id, candidate_id, calculation_run_id, scenario_set, inputs_digest,
-                    results, inverse_minimum_quantity, inverse_state, demand_gate_passed, computed_at, evidence_product_variant_ids)
-                VALUES (:id, :org, :candidate, :run, CAST(:scenarios AS jsonb), :digest, CAST(:results AS jsonb), :inverse,
-                    :state, :gate, :now, :scope)
-                """).param("id", id).param("org", organizationId).param("candidate", candidateId).param("run", runId)
-                .param("scenarios", json.writeValueAsString(scenarios)).param("digest", inputsDigest)
+                INSERT INTO ops.lc_simulation (id, organization_id, candidate_id, scenario_set, inputs_digest,
+                    results, inverse_minimum_quantity, inverse_state, computed_at, evidence_product_variant_ids,
+                    model_version, input_snapshot, conditional_scenarios_passed)
+                VALUES (:id, :org, :candidate, CAST(:scenarios AS jsonb),
+                    encode(sha256(convert_to(CAST(:snapshot AS jsonb)::text,'UTF8')),'hex'), CAST(:results AS jsonb), :inverse,
+                    :state, :now, :scope, :model, CAST(:snapshot AS jsonb), :comparison)
+                """).param("id", id).param("org", organizationId).param("candidate", candidateId)
+                .param("scenarios", json.writeValueAsString(scenarios))
                 .param("results", json.writeValueAsString(results)).param("inverse", inverseMinimum).param("state", inverseState)
-                .param("gate", gate).param("now", Timestamp.from(now))
+                .param("now", Timestamp.from(now)).param("model", modelVersion)
+                .param("snapshot", json.writeValueAsString(snapshot)).param("comparison", conditionalComparison)
                 .param("scope", evidenceScope == null || evidenceScope.isEmpty() ? null : evidenceScope.toArray(UUID[]::new)).update();
     }
 
@@ -169,7 +173,8 @@ public class EvaluationRepository {
 
     public List<SimulationView> simulations(UUID candidateId) {
         return jdbc.sql("""
-                SELECT id, candidate_id, results::text AS results, inverse_minimum_quantity, inverse_state, inputs_digest, computed_at
+                SELECT id, candidate_id, results::text AS results, inverse_minimum_quantity, inverse_state, inputs_digest, computed_at,
+                       model_version, input_snapshot::text AS input_snapshot, conditional_scenarios_passed
                   FROM ops.lc_simulation WHERE candidate_id = :candidate ORDER BY computed_at DESC
                 """).param("candidate", candidateId).query(this::mapSimulation).list();
     }
@@ -185,7 +190,9 @@ public class EvaluationRepository {
         }
         return new SimulationView(rs.getObject("id", UUID.class), rs.getObject("candidate_id", UUID.class), scenarios,
                 rs.getBigDecimal("inverse_minimum_quantity"), rs.getString("inverse_state"), rs.getString("inputs_digest"),
-                ListingFactRepository.instant(rs, "computed_at"));
+                ListingFactRepository.instant(rs, "computed_at"), rs.getString("model_version"),
+                rs.getString("input_snapshot") == null ? null : JsonValues.read(json, rs.getString("input_snapshot")),
+                rs.getObject("conditional_scenarios_passed", Boolean.class), "UNQUALIFIED");
     }
 
     private static BigDecimal decimal(JsonNode node) {

@@ -24,7 +24,8 @@
       "implementation": [
         "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification.",
         "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
-        "Checkpoint 19: existing promotion list/detail and entry/adoption/exit/release responses all apply current financial projection; raw public actorless detail read removed. Missing historical adoption product scope requires organization-wide financial coverage, not assumed current mapping."
+        "Checkpoint 19: existing promotion list/detail and entry/adoption/exit/release responses all apply current financial projection; raw public actorless detail read removed. Missing historical adoption product scope requires organization-wide financial coverage, not assumed current mapping.",
+        "Checkpoint 21: new full simulation input/context/source snapshot and conditional comparison use the existing current Store/every-recorded-product financial projection; revocation masks both fields."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
@@ -180,8 +181,12 @@
       "id": "S4-DR-R1-015",
       "title": "促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效",
       "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "implementation": [
+        "Checkpoint 21: conditional simulator reuses canonical Money contribution-profit arithmetic, selects greatest applicable fee floor, retains fixed commitment and explicit canonical expense families/currency, and keeps missing fees unknown. Conservative arithmetic comparison is separate from unqualified admission; full snapshot and declared period replace lossy toString/fabricated D30 evidence. Complete source/Policy, payer/timing/coexistence and actual approval consumers remain open."
+      ],
+      "executed_evidence": [
+        "checkpoint-21-test-receipts.json: 44 signed HTTP/database, 100 domain/metric/architecture, 1 historical V90-to-V101 upgrade and 9 schema/role tests pass. P04/P05, fixed 600, explicit expenses, unknown fees, currency/discount/quantity validation, same Money rounding, snapshot hash, no published metric, database gate rejection and current financial revocation covered. No closure claim."
+      ]
     },
     {
       "id": "S4-DR-R1-016",

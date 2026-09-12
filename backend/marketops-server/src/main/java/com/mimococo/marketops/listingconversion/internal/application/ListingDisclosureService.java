@@ -37,6 +37,6 @@ public class ListingDisclosureService {
         }
         // Inverse quantities and pass/fail conditions also reveal financial inputs.
         return new SimulationView(value.id(), value.candidateId(), List.of(), null,
-                "MASKED", null, value.computedAt());
+                "MASKED", null, value.computedAt(), value.modelVersion(), null, null, value.qualificationState());
     }
 }

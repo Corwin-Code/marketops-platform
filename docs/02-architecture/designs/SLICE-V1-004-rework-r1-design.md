@@ -486,3 +486,29 @@ Manual participation qualification consumes the exact packet's frozen declaratio
 The existing description verification checks remain in their forward function replacements. VERIFIED for a promotion requires a bound PARTICIPATION receipt with an observed participating exact declaration; its claim is one observed instant. The existing Task journal records manual execution verification and retains occupations. This is not customer-display coverage, current perpetual participation, exit authority, new-transaction cessation, residual clearing or business effect. Those responsibilities remain open. Generated Action digest columns are not read in BEFORE UPDATE; the existing pure canonical digest function evaluates the new declaration there.
 
 The bilingual Console reuses its bounded declaration fields for independently entered observation facts. Commercial conditions may remain explicitly unknown. The observation receipt is not labelled independent verification on intake. Existing manual verification forms now send the explicit description, display or promotion observation references; backend constraints reject cross-purpose mixing. No provider endpoint, queue, approval owner, pricing optimizer or production flag is added.
+
+### Checkpoint 21 work in progress — conditional promotion economics (root 015)
+
+The current conditional simulator shares contribution-profit arithmetic with the
+existing analytics owner. The adapter retains explicit currency, per-unit fee
+families and one fixed promotion commitment; it selects price tiers by their
+floor, including decreasing fees. An absent schedule, uncovered price or absent
+expense family is unknown. Explicit zero remains an input assertion and is not
+source qualification. The inverse uses the same fixed commitment and unit
+amounts as the forward calculation, with integer quantities and no iterative
+optimizer. This model does not flatten unsupported quantity tiers, refund
+schedules, payer conditions or coexistence rules into linear assumptions.
+
+Conditional comparisons and admission qualification are separate. Caller flags
+cannot establish governed conservatism or a demand gate. New conditional records
+retain exact input JSON, stated period, source references, assumptions, observed
+members, submitting actor and model version. References remain unqualified; an
+observed member list does not establish the native universe. Historical lossy
+snapshots are not reconstructed. Conditional results do not publish a D30 metric
+or borrow a fabricated past-30-day calculation window. Financial access checks
+also mask the new snapshot and conditional comparison.
+
+This is an implementation boundary, not root closure. Qualified canonical input
+resolution, accepted scenario Policy, full commercial scope and approval/launch
+consumers remain required before root 015 can close. No platform write or new
+product decision is introduced.

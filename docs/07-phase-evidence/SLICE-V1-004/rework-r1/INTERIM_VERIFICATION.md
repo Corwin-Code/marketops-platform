@@ -166,3 +166,30 @@ The existing manual packet/report/verification and Action transition consume an 
 The Console reuses its bounded commercial fields for observation capture in both languages, with explicit unknown terms and a receipt labelled unverified. Manual verification forms submit actual description, display or participation observation IDs instead of posting only match labels. This repairs a transitive UI omission while backend checks keep evidence purposes separate.
 
 The initial connected probe exposed a new BEFORE UPDATE trigger reading a generated Action digest before calculation; it was corrected to use the existing canonical digest function over the pending declaration. A follow-up same-class check made NULL target matching explicitly false and retained unknown terms without qualifying them. The final signed class includes both promotion kinds with independent verification, source/actor/native/time/terms negatives, immutable facts and current finance revocation. Separate description manual/architecture tests preserve the original branch. Commands/results, final source/log hashes and precise limitations are in `checkpoint-20-test-receipts.json`; no root is CLOSED.
+
+## Checkpoint 21 — conditional promotion arithmetic and retained basis
+
+The simulator now shares the analytics contribution-profit Money arithmetic.
+Price tiers choose the greatest applicable floor, including decreasing fees;
+missing or uncovered fees remain unknown. Fixed commitment and explicit return,
+advertising and variable-tax inputs use the same currency and calculation in
+both directions. Nonconservative necessary scenarios cannot pass the conditional
+comparison. Integer quantity, discount, duplicate tier/scenario and currency
+validation prevent ambiguous inputs. The inverse handles zero-volume fixed
+commitments and negative reference lines without a search loop.
+
+V0101 retains complete conditional input/context/scenario/scope snapshots and a
+JSONB-derived SHA-256. Stated periods replace the fabricated past-30-day window;
+conditional simulations publish no canonical metric run. New demand gates stay
+null, with database refusal of a forged positive gate. Financial projection
+masks the new snapshot and comparison after current grant revocation. Legacy
+records preserve their original contents and get no reconstructed snapshot or
+qualification.
+
+Final affected checks: 44 signed HTTP/database, 100 domain/metric/architecture,
+1 historical upgrade, 9 schema/role; all pass. The earlier 99 and 1 runs overlap
+these and are not additive coverage. An edit-script cwd error was caught before
+its missing changes were claimed; the diagnostic and final source hashes are
+recorded in `checkpoint-21-test-receipts.json`. Full commercial conditions,
+canonical source/accepted Policy qualification and actual admission consumers
+remain open. No root is CLOSED and no simulation UI journey is claimed.

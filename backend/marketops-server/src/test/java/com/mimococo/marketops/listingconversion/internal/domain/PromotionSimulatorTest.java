@@ -1,86 +1,156 @@
 package com.mimococo.marketops.listingconversion.internal.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.mimococo.marketops.shared.Money;
+import com.mimococo.marketops.shared.OperationRejectedException;
 import java.math.BigDecimal;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** Decimal money, the discount applied once, stepwise fees, and an honest UNDETERMINED. */
 class PromotionSimulatorTest {
-
+    private static BigDecimal decimal(String value) { return new BigDecimal(value); }
+    private static Money rub(String value) { return Money.of(decimal(value), "RUB"); }
+    private static PromotionSimulator.Expenses expenses(String fixed) {
+        return new PromotionSimulator.Expenses(rub(fixed), rub("0"), rub("0"), rub("0"));
+    }
     private static PromotionSimulator.Inputs complete() {
-        return new PromotionSimulator.Inputs(new BigDecimal("1000"), new BigDecimal("0.10"), false,
-                new BigDecimal("500"), List.of(new PromotionSimulator.FeeStep(BigDecimal.ZERO, new BigDecimal("100")),
-                        new PromotionSimulator.FeeStep(new BigDecimal("800"), new BigDecimal("150"))), true);
+        return inputs("1000", "0.1", "500", List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("100")),
+                new PromotionSimulator.FeeStep(decimal("800"), decimal("150"))), expenses("0"));
+    }
+    private static PromotionSimulator.Inputs inputs(String price, String discount, String cost,
+                                                     List<PromotionSimulator.FeeStep> fees, PromotionSimulator.Expenses expenses) {
+        return new PromotionSimulator.Inputs(decimal(price), decimal(discount), false, decimal(cost), fees, true, "RUB", expenses);
+    }
+    private static PromotionSimulator.Scenario scenario(String code, String quantity, boolean conservative) {
+        return new PromotionSimulator.Scenario(code, decimal(quantity), true, conservative);
     }
 
     @Test
-    @DisplayName("TC-LC-S01 a complete scenario computes net revenue and contribution profit exactly")
-    void completeScenarioComputes() {
-        var simulation = PromotionSimulator.simulate(complete(),
-                List.of(new PromotionSimulator.Scenario("BASE", BigDecimal.TEN, true, false)),
-                new BigDecimal("2000"));
-
-        var base = simulation.scenarios().get(0);
-        assertThat(base.state()).isEqualTo("COMPUTED");
-        assertThat(base.netRevenue()).isEqualByComparingTo("9000.0000");
-        assertThat(base.contributionProfit()).isEqualByComparingTo("2500.0000");
-        assertThat(simulation.demandGatePassed()).isTrue();
-        assertThat(simulation.inverseState()).isEqualTo("COMPUTED");
-        assertThat(simulation.inverseMinimumQuantity()).isEqualByComparingTo("8");
+    void completeConditionalScenarioAndInverseUseSameProfit() {
+        var result = PromotionSimulator.simulate(complete(), List.of(scenario("BASE", "10", true)), decimal("2000"));
+        assertThat(result.scenarios().getFirst().netRevenue()).isEqualByComparingTo("9000");
+        assertThat(result.scenarios().getFirst().contributionProfit()).isEqualByComparingTo("2500");
+        assertThat(result.conditionalScenariosPassed()).isTrue();
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("8");
     }
 
     @Test
-    @DisplayName("TC-LC-S02 the discount is applied once, and not at all when the source already carries it")
-    void discountAppliedOnce() {
-        assertThat(PromotionSimulator.netPrice(complete())).isEqualByComparingTo("900.0000");
-        var carried = new PromotionSimulator.Inputs(new BigDecimal("1000"), new BigDecimal("0.10"), true,
-                new BigDecimal("500"), List.of(), true);
-        assertThat(PromotionSimulator.netPrice(carried)).isEqualByComparingTo("1000");
+    void highestApplicableFloorWinsEvenWhenItsFeeDecreases() {
+        var input = inputs("200", "0", "100", List.of(new PromotionSimulator.FeeStep(decimal("100"), decimal("5")),
+                new PromotionSimulator.FeeStep(decimal("0"), decimal("20"))), expenses("0"));
+        var result = PromotionSimulator.simulate(input, List.of(scenario("P04", "1", true)), decimal("95"));
+        assertThat(result.scenarios().getFirst().contributionProfit()).isEqualByComparingTo("95");
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("1");
     }
 
     @Test
-    @DisplayName("TC-LC-S03 a missing cost or fee schedule is UNDETERMINED with the missing inputs named")
-    void missingInputsAreNamed() {
-        var noCost = new PromotionSimulator.Inputs(new BigDecimal("1000"), null, false, null, List.of(), false);
-
-        var simulation = PromotionSimulator.simulate(noCost,
-                List.of(new PromotionSimulator.Scenario("BASE", BigDecimal.TEN, true, false),
-                        new PromotionSimulator.Scenario("OPEN", null, false, false)),
-                new BigDecimal("2000"));
-
-        assertThat(simulation.scenarios().get(0).state()).isEqualTo("UNDETERMINED");
-        assertThat(simulation.scenarios().get(0).missingInputs()).containsExactly("UNIT_COST", "FEE_SCHEDULE");
-        assertThat(simulation.scenarios().get(1).missingInputs()).containsExactly("QUANTITY", "UNIT_COST",
-                "FEE_SCHEDULE");
-        assertThat(simulation.demandGatePassed()).isNull();
-        assertThat(simulation.inverseState()).isEqualTo("UNDETERMINED");
+    void nonConservativeNecessaryScenarioCannotPass() {
+        var result = PromotionSimulator.simulate(complete(), List.of(scenario("P05", "10", false)), decimal("1"));
+        assertThat(result.scenarios().getFirst().state()).isEqualTo("COMPUTED");
+        assertThat(result.conditionalScenariosPassed()).isNull();
     }
 
     @Test
-    @DisplayName("TC-LC-S04 a necessary scenario below the reference line fails the demand gate")
-    void necessaryScenarioBelowTheLineFails() {
-        var simulation = PromotionSimulator.simulate(complete(),
-                List.of(new PromotionSimulator.Scenario("BASE", BigDecimal.TEN, true, false),
-                        new PromotionSimulator.Scenario("UPSIDE", new BigDecimal("100"), false, false)),
-                new BigDecimal("2600"));
-
-        assertThat(simulation.demandGatePassed()).isFalse();
-        assertThat(simulation.inverseMinimumQuantity()).isEqualByComparingTo("11");
+    void fixedCommitmentIsChargedOnceInBothDirectionsIncludingZeroSales() {
+        var input = inputs("100", "0", "50", List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("0"))), expenses("600"));
+        var result = PromotionSimulator.simulate(input, List.of(scenario("ZERO", "0", true), scenario("BELOW", "13", true),
+                scenario("MINIMUM", "14", true)), decimal("100"));
+        assertThat(result.scenarios()).extracting(r -> r.contributionProfit().toPlainString())
+                .containsExactly("-600.0000", "50.0000", "100.0000");
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("14");
+        assertThat(result.conditionalScenariosPassed()).isFalse();
     }
 
     @Test
-    @DisplayName("TC-LC-S05 a non-positive unit profit has no inverse solution")
-    void nonPositiveProfitHasNoSolution() {
-        var losing = new PromotionSimulator.Inputs(new BigDecimal("1000"), new BigDecimal("0.10"), false,
-                new BigDecimal("1000"), List.of(), true);
+    void explicitCanonicalExpensesAffectBothDirections() {
+        var input = inputs("100", "0", "50", List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("10"))),
+                new PromotionSimulator.Expenses(rub("100"), rub("5"), rub("3"), rub("2")));
+        var result = PromotionSimulator.simulate(input, List.of(scenario("ALL_FAMILIES", "10", true)), decimal("200"));
+        assertThat(result.scenarios().getFirst().contributionProfit()).isEqualByComparingTo("200");
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("10");
+    }
 
-        var simulation = PromotionSimulator.simulate(losing, List.of(), new BigDecimal("1"));
+    @Test
+    void noApplicableOrEmptyFeeTierIsUnknownEvenWhenCallerSaysKnown() {
+        for (var fees : List.of(List.<PromotionSimulator.FeeStep>of(),
+                List.of(new PromotionSimulator.FeeStep(decimal("200"), decimal("10"))))) {
+            var result = PromotionSimulator.simulate(inputs("100", "0", "50", fees, expenses("0")),
+                    List.of(scenario("MISSING", "1", true)), decimal("1"));
+            assertThat(result.scenarios().getFirst().missingInputs()).containsExactly("FEE_SCHEDULE");
+            assertThat(result.inverseState()).isEqualTo("UNDETERMINED");
+            assertThat(result.conditionalScenariosPassed()).isNull();
+        }
+    }
 
-        assertThat(simulation.inverseState()).isEqualTo("NO_SOLUTION");
-        assertThat(simulation.inverseMinimumQuantity()).isNull();
-        assertThat(simulation.demandGatePassed()).isNull();
+    @Test
+    void missingComponentsAndCurrencyAreNamedWithoutDefaults() {
+        var input = new PromotionSimulator.Inputs(decimal("1000"), null, false, null, List.of(), false, null, null);
+        var result = PromotionSimulator.simulate(input, List.of(new PromotionSimulator.Scenario("MISSING", null, true, true)), decimal("1"));
+        assertThat(result.scenarios().getFirst().missingInputs()).containsExactly("QUANTITY", "CURRENCY", "SELLER_DISCOUNT", "UNIT_COST",
+                "FEE_SCHEDULE", "FIXED_PROMOTION_FEE", "RETURN_LOSS", "ADVERTISING", "VARIABLE_TAX");
+        assertThat(result.scenarios().getFirst().contributionProfit()).isNull();
+        assertThat(result.inverseState()).isEqualTo("UNDETERMINED");
+    }
+
+    @Test
+    void netRevenueDoesNotDeductCarriedSellerDiscountTwice() {
+        var base = complete();
+        var carried = new PromotionSimulator.Inputs(decimal("900"), decimal("0.1"), true, base.unitCost(),
+                base.stepFees(), true, "RUB", base.expenses());
+        assertThat(PromotionSimulator.simulate(carried, List.of(scenario("NET", "10", true)), decimal("2000")))
+                .isEqualTo(PromotionSimulator.simulate(base, List.of(scenario("NET", "10", true)), decimal("2000")));
+    }
+
+    @Test
+    void canonicalHalfUpRoundingIsUsedBeforeIntegerQuantityMultiplication() {
+        var input = inputs("1.00005", "0", "0", List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("0"))), expenses("0"));
+        var result = PromotionSimulator.simulate(input, List.of(scenario("ROUND", "2", true)), decimal("2.0002"));
+        assertThat(result.scenarios().getFirst().contributionProfit()).isEqualByComparingTo("2.0002");
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("2");
+    }
+
+    @Test
+    void referenceUsesSameMoneyScaleInForwardComparisonAndInverse() {
+        var input = inputs("1", "0", "0", List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("0"))), expenses("0"));
+        var result = PromotionSimulator.simulate(input, List.of(scenario("REFERENCE", "1", true)), decimal("1.00004"));
+        assertThat(result.conditionalScenariosPassed()).isTrue();
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("1");
+    }
+
+    @Test
+    void zeroSalesCanAlreadyMeetNegativeReferenceEvenWithNonPositiveSlope() {
+        var input = inputs("100", "0", "120", List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("0"))), expenses("600"));
+        assertThat(PromotionSimulator.simulate(input, List.of(), decimal("-600")).inverseMinimumQuantity()).isEqualByComparingTo("0");
+        assertThat(PromotionSimulator.simulate(input, List.of(), decimal("-599")).inverseState()).isEqualTo("NO_SOLUTION");
+    }
+
+    @Test
+    void necessaryFailureIsNotHiddenByOtherUnknownOrProfitableScenario() {
+        var result = PromotionSimulator.simulate(complete(), List.of(scenario("FAIL", "1", true),
+                new PromotionSimulator.Scenario("UNKNOWN", null, true, true),
+                new PromotionSimulator.Scenario("UPSIDE", decimal("100"), false, false)), decimal("2600"));
+        assertThat(result.conditionalScenariosPassed()).isFalse();
+        assertThat(result.inverseMinimumQuantity()).isEqualByComparingTo("11");
+    }
+
+    @Test
+    void currencyMismatchCannotBeComputedOrConverted() {
+        assertThatThrownBy(() -> inputs("100", "0", "50", List.of(),
+                new PromotionSimulator.Expenses(Money.of(decimal("1"), "USD"), rub("0"), rub("0"), rub("0"))))
+                .isInstanceOf(OperationRejectedException.class);
+    }
+
+    @Test
+    void ambiguousFeesInvalidDiscountNegativeAndFractionalQuantityAreRejected() {
+        var duplicates = List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("1")),
+                new PromotionSimulator.FeeStep(decimal("0.0"), decimal("2")));
+        assertThatThrownBy(() -> inputs("100", "0", "50", duplicates, expenses("0"))).isInstanceOf(OperationRejectedException.class);
+        assertThatThrownBy(() -> inputs("100", "1.1", "50", List.of(), expenses("0"))).isInstanceOf(OperationRejectedException.class);
+        assertThatThrownBy(() -> scenario("NEGATIVE", "-1", true)).isInstanceOf(OperationRejectedException.class);
+        assertThatThrownBy(() -> scenario("FRACTION", "0.1", true)).isInstanceOf(OperationRejectedException.class);
+        assertThatThrownBy(() -> PromotionSimulator.simulate(complete(), List.of(scenario("DUP", "1", true),
+                scenario("DUP", "2", false)), decimal("0"))).isInstanceOf(OperationRejectedException.class);
     }
 }

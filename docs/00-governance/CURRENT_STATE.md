@@ -859,3 +859,14 @@ Results: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role,
 `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-20-test-receipts.json`.
 0/27 CLOSED; remaining economic, exit, adoption/residual and final verification
 work continues. No production enablement or real provider call occurred.
+
+SLICE-V1-004 continuous local rework update: checkpoint-21 repairs conditional
+promotion arithmetic, fixed-fee/inverse consistency, missing inputs and Money
+currency/rounding, and retains exact unqualified simulation basis in V0101.
+Conditional comparisons cannot grant admission or publish fabricated D30 metric
+runs. Current finance revocation masks new snapshots and comparisons; historical
+rows remain unqualified without invented inputs. Results: 44 signed HTTP/database,
+100 domain/metric/architecture, 1 historical upgrade, 9 schema/role; all pass.
+See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-21-test-receipts.json`.
+Source/Policy, full payer/timing/coexistence and approval consumers continue;
+0/27 CLOSED, final Controller handoff NOT_READY, platform writes default OFF.

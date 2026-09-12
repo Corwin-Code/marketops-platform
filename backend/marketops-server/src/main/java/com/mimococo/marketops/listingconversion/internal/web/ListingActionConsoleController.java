@@ -111,11 +111,11 @@ class ListingActionConsoleController {
                 : request.stepFees().stream().map(f -> new PromotionSimulator.FeeStep(f.priceFloor(), f.feePerUnit())).toList();
         PromotionSimulator.Inputs inputs = new PromotionSimulator.Inputs(request.listPrice(),
                 request.sellerDiscountRate(), request.discountAlreadyInNetRevenue(), request.unitCost(), fees,
-                request.feesKnown());
+                request.feesKnown(), request.currencyCode(), request.expenses());
         List<PromotionSimulator.Scenario> scenarios = request.scenarios().stream()
                 .map(s -> new PromotionSimulator.Scenario(s.code(), s.quantity(), s.necessary(), s.conservative()))
                 .toList();
-        return evaluations.simulate(actor, candidateId, inputs, scenarios, request.referenceProfitLine());
+        return evaluations.simulate(actor, candidateId, inputs, scenarios, request.referenceProfitLine(), request.context());
     }
 
     @Transactional
@@ -236,14 +236,16 @@ class ListingActionConsoleController {
     record FeeStepRequest(@NotNull BigDecimal priceFloor, @NotNull BigDecimal feePerUnit) {
     }
 
-    record ScenarioRequest(@NotBlank String code, @NotNull BigDecimal quantity, boolean necessary,
+    record ScenarioRequest(@NotBlank String code, BigDecimal quantity, boolean necessary,
                            boolean conservative) {
     }
 
     record SimulationRequest(@NotNull BigDecimal listPrice, BigDecimal sellerDiscountRate,
                              boolean discountAlreadyInNetRevenue, BigDecimal unitCost,
                              List<@Valid FeeStepRequest> stepFees, boolean feesKnown,
-                             @NotEmpty List<@Valid ScenarioRequest> scenarios, BigDecimal referenceProfitLine) {
+                             @NotEmpty List<@Valid ScenarioRequest> scenarios, BigDecimal referenceProfitLine,
+                             String currencyCode, PromotionSimulator.Expenses expenses,
+                             @NotNull @Valid com.mimococo.marketops.listingconversion.SimulationAssumptions context) {
     }
 
     record ReviewRequest(@NotBlank String verdict, String reason) {

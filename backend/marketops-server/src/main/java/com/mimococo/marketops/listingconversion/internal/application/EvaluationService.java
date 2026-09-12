@@ -10,6 +10,7 @@ import com.mimococo.marketops.listingconversion.NodeVerdict;
 import com.mimococo.marketops.listingconversion.ProtectionVerdict;
 import com.mimococo.marketops.listingconversion.RatioState;
 import com.mimococo.marketops.listingconversion.SimulationView;
+import com.mimococo.marketops.listingconversion.SimulationAssumptions;
 import com.mimococo.marketops.listingconversion.internal.domain.ProtectionVector;
 import com.mimococo.marketops.listingconversion.internal.domain.FrozenComparisonMethod;
 import com.mimococo.marketops.listingconversion.internal.domain.FrozenNodeWindow;
@@ -292,12 +293,14 @@ public class EvaluationService {
 
     @Transactional
     public SimulationView simulate(AuthenticatedActor actor, UUID candidateId, PromotionSimulator.Inputs inputs,
-                                   List<PromotionSimulator.Scenario> scenarios, BigDecimal referenceProfitLine) {
+                                   List<PromotionSimulator.Scenario> scenarios, BigDecimal referenceProfitLine,
+                                   SimulationAssumptions context) {
         var candidate = actions.candidate(candidateId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         scopes.require(actor, candidate.platformListingId(), ActionScopeCode.LISTING_ACTION_PREPARE);
         ListingFactRepository.ListingContext listing = facts.listing(candidate.platformListingId()).orElseThrow();
         Instant now = clock.instant();
+        if (context == null) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         PromotionSimulator.Simulation simulation = PromotionSimulator.simulate(inputs, scenarios, referenceProfitLine);
         List<Map<String, Object>> scenarioRows = new ArrayList<>();
         scenarios.forEach(s -> scenarioRows.add(Map.of("code", s.code(), "quantity", String.valueOf(s.quantity()),
@@ -313,16 +316,29 @@ public class EvaluationService {
             row.put("missingInputs", r.missingInputs());
             resultRows.add(row);
         });
-        UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(), listing.storeId(),
-                "MANUAL", MetricWindow.D30, now.minus(Duration.ofDays(30)), now, Digest.ofText("lc-simulation-1"), 1, 1, true,
-                null, now, actor.userId()));
-        String inputsDigest = Digest.ofComponents(List.of(inputs.toString(), scenarios.toString(), String.valueOf(referenceProfitLine)));
         UUID id = ids.newId();
         var members = facts.members(candidate.platformListingId(), now);
         List<UUID> evidenceScope = !members.isEmpty() && members.stream().allMatch(m -> !m.conflictOpen() && m.productVariantId() != null)
                 ? members.stream().map(m -> m.productVariantId()).distinct().toList() : List.of();
-        evaluations.insertSimulation(id, listing.organizationId(), candidateId, runId, scenarioRows, inputsDigest, resultRows,
-                simulation.inverseMinimumQuantity(), simulation.inverseState(), simulation.demandGatePassed(), now, evidenceScope);
+        Map<String, Object> snapshot = new LinkedHashMap<>();
+        snapshot.put("modelVersion", PromotionSimulator.MODEL_VERSION);
+        snapshot.put("sourceKind", "CALLER_ASSUMPTIONS");
+        snapshot.put("qualificationState", "UNQUALIFIED");
+        snapshot.put("organizationId", listing.organizationId());
+        snapshot.put("listingId", candidate.platformListingId());
+        snapshot.put("candidateId", candidateId);
+        snapshot.put("submittedBy", actor.userId());
+        snapshot.put("submittedAt", now);
+        snapshot.put("inputs", inputs);
+        snapshot.put("context", context);
+        snapshot.put("scenarios", scenarios);
+        snapshot.put("referenceProfitLine", referenceProfitLine);
+        snapshot.put("observedMembers", members);
+        snapshot.put("nativeUniverseQualification", "NOT_ESTABLISHED_BY_SIMULATION");
+        // A conditional calculator does not publish a D30 metric or confer demand admission.
+        evaluations.insertSimulation(id, listing.organizationId(), candidateId, scenarioRows, resultRows,
+                simulation.inverseMinimumQuantity(), simulation.inverseState(), now, evidenceScope,
+                PromotionSimulator.MODEL_VERSION, snapshot, simulation.conditionalScenariosPassed());
         return disclosure.simulation(actor, candidate.platformListingId(),
                 evaluations.simulations(candidateId).stream().filter(s -> s.id().equals(id)).findFirst().orElseThrow());
     }

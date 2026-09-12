@@ -400,8 +400,8 @@ public class MetricEngine {
                     append(states, "currencyCompatible=false"));
         }
 
-        Money profit = sales.netAmount().minus(cost).minus(fees.total())
-                .minus(returns.lossAmount()).minus(advertising.spendAmount()).minus(tax);
+        Money profit = com.mimococo.marketops.analyticsdecision.ContributionProfitCalculation.calculate(
+                sales.netAmount(),cost,fees.total(),returns.lossAmount(),advertising.spendAmount(),tax);
         ConfidenceState confidence;
         if (variableTax.confidenceState() == ConfidenceState.ESTIMATED_EXPLAINED) {
             confidence = ConfidenceState.ESTIMATED_EXPLAINED;

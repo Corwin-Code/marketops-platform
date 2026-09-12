@@ -195,6 +195,70 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void conditionalSimulationRetainsExactBasisWithoutPublishingMetricOrGrantingAdmission() throws Exception {
+        users.assignRole(OPERATOR, userId, BusinessRoleCode.OWNER, null);
+        for (var code : List.of(ActionScopeCode.LISTING_ACTION_PREPARE, ActionScopeCode.LISTING_CONVERSION_VIEW,
+                ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW)) {
+            users.grantScope(OPERATOR, userId, code, ResourceScopeType.STORE, fixture.id("store"), null);
+        }
+        var finance = users.grantScope(OPERATOR, userId, ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScopeType.PRODUCT_VARIANT, fixture.id("productVariant"), null);
+        String url = "/api/v1/console/listing/actions/candidates/" + fixture.id("candidateOne");
+        String request = """
+                {"listPrice":100,"sellerDiscountRate":0,"discountAlreadyInNetRevenue":false,"unitCost":50,
+                 "stepFees":[{"priceFloor":0,"feePerUnit":0}],"feesKnown":true,"currencyCode":"RUB",
+                 "expenses":{"fixedPromotionFee":{"amount":600,"currencyCode":"RUB"},
+                    "returnLossPerUnit":{"amount":0,"currencyCode":"RUB"},
+                    "advertisingPerUnit":{"amount":0,"currencyCode":"RUB"},
+                    "variableTaxPerUnit":{"amount":0,"currencyCode":"RUB"}},
+                 "scenarios":[{"code":"MINIMUM","quantity":14,"necessary":true,"conservative":true}],
+                 "referenceProfitLine":100,
+                 "context":{"periodStart":"2026-09-01T00:00:00Z","periodEnd":"2026-10-01T00:00:00Z",
+                    "sourceReferences":{"fixedPromotionFee":"  fixture:explicit-fixed-fee-600  "},
+                    "assumptions":"Declared single price tier and fixed commitment; synthetic conditional input"}}
+                """;
+        Long runsBefore = jdbc.sql("SELECT count(*) FROM mart.calculation_run WHERE organization_id=:org")
+                .param("org", fixture.id("organization")).query(Long.class).single();
+        var response = mvc.perform(post(url + "/simulate").header(HttpHeaders.AUTHORIZATION, bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(request))
+                .andDo(r -> { if (r.getResolvedException() != null) throw r.getResolvedException(); })
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.inverseMinimumQuantity").value(14))
+                .andExpect(jsonPath("$.scenarios[0].contributionProfit").value(100))
+                .andExpect(jsonPath("$.conditionalScenariosPassed").value(true))
+                .andExpect(jsonPath("$.qualificationState").value("UNQUALIFIED"))
+                .andExpect(jsonPath("$.inputSnapshot.context.sourceReferences.fixedPromotionFee").value("  fixture:explicit-fixed-fee-600  "))
+                .andExpect(jsonPath("$.inputSnapshot.inputs.currencyCode").value("RUB"))
+                .andExpect(jsonPath("$.inputSnapshot.sourceKind").value("CALLER_ASSUMPTIONS"))
+                .andReturn().getResponse().getContentAsString();
+        UUID simulation = UUID.fromString(new tools.jackson.databind.ObjectMapper().readTree(response).path("id").asText());
+        assertThat(jdbc.sql("SELECT count(*) FROM mart.calculation_run WHERE organization_id=:org")
+                .param("org", fixture.id("organization")).query(Long.class).single()).isEqualTo(runsBefore);
+        assertThat(jdbc.sql("""
+                SELECT calculation_run_id IS NULL AND demand_gate_passed IS NULL
+                  AND inputs_digest=encode(sha256(convert_to(input_snapshot::text,'UTF8')),'hex')
+                  AND input_snapshot->>'submittedBy'=:actor FROM ops.lc_simulation WHERE id=:id
+                """).param("actor", userId.toString()).param("id", simulation).query(Boolean.class).single()).isTrue();
+        assertThatThrownBy(() -> jdbc.sql("""
+                INSERT INTO ops.lc_simulation (id, organization_id, candidate_id, scenario_set, inputs_digest,
+                    results, inverse_minimum_quantity, inverse_state, demand_gate_passed, computed_at,
+                    model_version, input_snapshot, conditional_scenarios_passed)
+                SELECT :newId, organization_id, candidate_id, scenario_set, inputs_digest, results,
+                    inverse_minimum_quantity, inverse_state, true, computed_at, model_version, input_snapshot,
+                    conditional_scenarios_passed FROM ops.lc_simulation WHERE id=:id
+                """).param("newId", UUID.randomUUID()).param("id", simulation).update())
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        mvc.perform(post(url + "/simulate").header(HttpHeaders.AUTHORIZATION, bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(request.replace("\"quantity\":14", "\"quantity\":-1")))
+                .andExpect(status().is4xxClientError());
+        users.revokeScope(OPERATOR, finance.id(), "withdraw simulation financial access", finance.version());
+        mvc.perform(get(url + "/simulations").header(HttpHeaders.AUTHORIZATION, bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].inverseState").value("MASKED"))
+                .andExpect(jsonPath("$[0].inputSnapshot").doesNotExist())
+                .andExpect(jsonPath("$[0].conditionalScenariosPassed").doesNotExist());
+    }
+
+    @Test
     void financialProjectionRequiresEveryAffectedProductScopeAndRevokesImmediately() throws Exception {
         users.assignRole(OPERATOR, userId, BusinessRoleCode.OWNER, null);
         users.grantScope(OPERATOR, userId, ActionScopeCode.LISTING_CONVERSION_VIEW,

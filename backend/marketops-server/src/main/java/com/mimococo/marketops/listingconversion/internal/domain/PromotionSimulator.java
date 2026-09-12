@@ -1,156 +1,199 @@
 package com.mimococo.marketops.listingconversion.internal.domain;
 
+import com.mimococo.marketops.analyticsdecision.ContributionProfitCalculation;
+import com.mimococo.marketops.shared.ErrorCode;
+import com.mimococo.marketops.shared.Money;
+import com.mimococo.marketops.shared.MetadataFieldPolicy;
+import com.mimococo.marketops.shared.OperationRejectedException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * Forward scenarios and the inverse minimum quantity from the same profit inputs.
- *
- * <p>Step fees stay stepwise, a seller discount already inside net revenue is
- * not deducted again, a missing fee stays missing, and an answer that cannot
- * be computed is NO_SOLUTION or UNDETERMINED rather than a fabricated number.
- * Demand gating requires every necessary conservative scenario to pass on its
- * own.
+ * Finite conditional calculations, never demand forecasts or admission authority.
+ * Price tiers select the greatest applicable floor. Within that price tier, the
+ * declared per-unit amounts and one fixed commitment apply to the whole scenario.
+ * Unknown or unsupported fee terms must remain absent, not be flattened to zero.
  */
 public final class PromotionSimulator {
+    public static final String MODEL_VERSION = "LC_CONDITIONAL_PROFIT_2";
+    private static final BigDecimal MAX_QUANTITY = new BigDecimal("99999999999999");
 
-    private static final int SCALE = 4;
+    private PromotionSimulator() { }
 
-    private PromotionSimulator() {
+    /** Fee amounts use the explicitly stated input currency. Zero needs an explicit tier. */
+    public record FeeStep(BigDecimal priceFloor, BigDecimal feePerUnit) {
+        public FeeStep {
+            requireNonNegative(priceFloor, false);
+            requireNonNegative(feePerUnit, false);
+        }
     }
 
-    /** One fee step: applies to the unit when the net price is at or above the floor. */
-    public record FeeStep(BigDecimal priceFloor, BigDecimal feePerUnit) {
+    /** Additional canonical expense families; a null component means unknown. */
+    public record Expenses(Money fixedPromotionFee, Money returnLossPerUnit,
+                           Money advertisingPerUnit, Money variableTaxPerUnit) {
+        public Expenses {
+            for (Money value : new Money[] { fixedPromotionFee, returnLossPerUnit, advertisingPerUnit, variableTaxPerUnit }) {
+                if (value != null) requireNonNegative(value.amount(), false);
+            }
+        }
     }
 
     /**
-     * The profit inputs of one listing under one promotion.
-     *
-     * @param listPrice the price before the promotion
-     * @param sellerDiscountRate the seller's discount, 0..1, or {@code null} when none
-     * @param discountAlreadyInNetRevenue whether the source net revenue already carries the discount
-     * @param unitCost the unit cost, or {@code null} when unknown
-     * @param stepFees the platform's stepwise fees, empty when unknown
-     * @param feesKnown whether the fee schedule is complete
+     * Declared assumptions only. Neither feesKnown nor any scenario flag qualifies a source.
+     * A null discount is unknown; explicit zero means no additional seller discount.
+     * When already net, the supplied revenue is used without deducting that discount again.
      */
     public record Inputs(BigDecimal listPrice, BigDecimal sellerDiscountRate, boolean discountAlreadyInNetRevenue,
-                         BigDecimal unitCost, List<FeeStep> stepFees, boolean feesKnown) {
+                         BigDecimal unitCost, List<FeeStep> stepFees, boolean feesKnown,
+                         String currencyCode, Expenses expenses) {
         public Inputs {
-            Objects.requireNonNull(listPrice, "listPrice");
+            requireNonNegative(listPrice, false);
+            requireNonNegative(unitCost, true);
+            requireNonNegative(sellerDiscountRate, true);
+            if (sellerDiscountRate != null && sellerDiscountRate.compareTo(BigDecimal.ONE) > 0) invalid();
             stepFees = List.copyOf(stepFees == null ? List.of() : stepFees);
+            if (stepFees.size() > 128) invalid();
+            var floors = new HashSet<BigDecimal>();
+            for (FeeStep step : stepFees) {
+                if (!floors.add(step.priceFloor().stripTrailingZeros())) invalid();
+            }
+            if (currencyCode != null) {
+                Money.zero(currencyCode); // Validate currency, not a substituted input fact.
+                if (expenses != null) {
+                    for (Money amount : new Money[] { expenses.fixedPromotionFee(), expenses.returnLossPerUnit(),
+                            expenses.advertisingPerUnit(), expenses.variableTaxPerUnit() }) {
+                        if (amount != null && !currencyCode.equals(amount.currencyCode())) {
+                            throw OperationRejectedException.of(ErrorCode.CURRENCY_MISMATCH);
+                        }
+                    }
+                }
+            }
         }
     }
 
-    /** One scenario: a demand assumption with whether it is necessary for the gate. */
     public record Scenario(String code, BigDecimal quantity, boolean necessary, boolean conservative) {
+        public Scenario {
+            if (code == null || code.isBlank() || code.length() > 64) invalid();
+            MetadataFieldPolicy.requireText("simulationScenarioCode", code);
+            requireNonNegative(quantity, true);
+            if (quantity != null && (quantity.stripTrailingZeros().scale() > 0 || quantity.compareTo(MAX_QUANTITY) > 0)) invalid();
+        }
     }
 
-    /** A scenario's answer. */
     public record ScenarioResult(String code, String state, BigDecimal quantity, BigDecimal netRevenue,
                                  BigDecimal contributionProfit, List<String> missingInputs) {
-        public ScenarioResult {
-            missingInputs = List.copyOf(missingInputs == null ? List.of() : missingInputs);
-        }
+        public ScenarioResult { missingInputs = List.copyOf(missingInputs); }
     }
 
+    /** conditionalScenariosPassed is only an arithmetic comparison, never a qualified demand gate. */
     public record Simulation(List<ScenarioResult> scenarios, BigDecimal inverseMinimumQuantity,
-                             String inverseState, Boolean demandGatePassed) {
-        public Simulation {
-            scenarios = List.copyOf(scenarios);
-        }
+                             String inverseState, Boolean conditionalScenariosPassed) {
+        public Simulation { scenarios = List.copyOf(scenarios); }
     }
 
     public static Simulation simulate(Inputs inputs, List<Scenario> scenarios, BigDecimal referenceProfitLine) {
+        if (inputs == null || scenarios == null || scenarios.size() > 64) invalid();
+        if (referenceProfitLine != null && (referenceProfitLine.precision() > 38
+                || Math.abs((long) referenceProfitLine.scale()) > 18)) invalid();
+        var codes = new HashSet<String>();
         List<ScenarioResult> results = new ArrayList<>();
+        boolean necessary = false;
+        boolean unknown = false;
+        boolean failed = false;
         for (Scenario scenario : scenarios) {
-            results.add(scenarioResult(inputs, scenario));
+            if (scenario == null || !codes.add(scenario.code())) invalid();
+            var result = scenarioResult(inputs, scenario);
+            results.add(result);
+            if (scenario.necessary()) {
+                necessary = true;
+                if (!scenario.conservative() || !"COMPUTED".equals(result.state()) || referenceProfitLine == null) unknown = true;
+                if ("COMPUTED".equals(result.state()) && referenceProfitLine != null
+                        && result.contributionProfit().compareTo(Money.of(referenceProfitLine, inputs.currencyCode()).amount()) < 0) failed = true;
+            }
         }
-        BigDecimal unitProfit = unitProfit(inputs);
         BigDecimal minimum = null;
-        String inverseState;
-        if (unitProfit == null || referenceProfitLine == null) {
-            inverseState = "UNDETERMINED";
-        } else if (unitProfit.signum() <= 0) {
-            inverseState = "NO_SOLUTION";
-        } else {
-            minimum = referenceProfitLine.divide(unitProfit, 0, RoundingMode.CEILING).max(BigDecimal.ZERO);
-            inverseState = "COMPUTED";
-        }
-        Boolean gate = null;
-        boolean anyNecessary = scenarios.stream().anyMatch(Scenario::necessary);
-        if (anyNecessary && referenceProfitLine != null) {
-            boolean allPass = true;
-            boolean determined = true;
-            for (ScenarioResult result : results) {
-                Scenario scenario = scenarios.stream().filter(s -> s.code().equals(result.code())).findFirst().orElseThrow();
-                if (!scenario.necessary()) {
-                    continue;
-                }
-                if (!"COMPUTED".equals(result.state())) {
-                    determined = false;
-                } else if (result.contributionProfit().compareTo(referenceProfitLine) < 0) {
-                    allPass = false;
+        String inverseState = "UNDETERMINED";
+        if (missingInputs(inputs).isEmpty() && referenceProfitLine != null) {
+            Money target = Money.of(referenceProfitLine, inputs.currencyCode());
+            Money atZero = profit(inputs, BigDecimal.ZERO);
+            if (atZero.compareTo(target) >= 0) {
+                minimum = BigDecimal.ZERO;
+                inverseState = "COMPUTED";
+            } else {
+                BigDecimal slope = profit(inputs, BigDecimal.ONE).minus(atZero).amount();
+                if (slope.signum() <= 0) {
+                    inverseState = "NO_SOLUTION";
+                } else {
+                    BigDecimal needed = target.minus(atZero).amount().divide(slope, 0, RoundingMode.CEILING);
+                    // No search loop, optimizer or invented support beyond the finite storage domain.
+                    if (needed.compareTo(MAX_QUANTITY) <= 0) {
+                        minimum = needed;
+                        inverseState = "COMPUTED";
+                    }
                 }
             }
-            gate = determined ? allPass : null;
         }
-        return new Simulation(results, minimum, inverseState, gate);
+        Boolean comparison = failed ? Boolean.FALSE : necessary && !unknown ? Boolean.TRUE : null;
+        return new Simulation(results, minimum, inverseState, comparison);
     }
 
     private static ScenarioResult scenarioResult(Inputs inputs, Scenario scenario) {
         List<String> missing = new ArrayList<>();
-        if (scenario.quantity() == null) {
-            missing.add("QUANTITY");
-        }
-        if (inputs.unitCost() == null) {
-            missing.add("UNIT_COST");
-        }
-        if (!inputs.feesKnown()) {
-            missing.add("FEE_SCHEDULE");
-        }
-        if (!missing.isEmpty()) {
-            return new ScenarioResult(scenario.code(), "UNDETERMINED", scenario.quantity(), null, null, missing);
-        }
-        BigDecimal netPrice = netPrice(inputs);
-        BigDecimal revenue = netPrice.multiply(scenario.quantity()).setScale(SCALE, RoundingMode.HALF_EVEN);
-        BigDecimal profit = unitProfit(inputs).multiply(scenario.quantity()).setScale(SCALE, RoundingMode.HALF_EVEN);
-        return new ScenarioResult(scenario.code(), "COMPUTED", scenario.quantity(), revenue, profit, List.of());
+        if (scenario.quantity() == null) missing.add("QUANTITY");
+        missing.addAll(missingInputs(inputs));
+        if (!missing.isEmpty()) return new ScenarioResult(scenario.code(), "UNDETERMINED", scenario.quantity(), null, null, missing);
+        return new ScenarioResult(scenario.code(), "COMPUTED", scenario.quantity(),
+                money(inputs, netPrice(inputs)).times(scenario.quantity()).amount(),
+                profit(inputs, scenario.quantity()).amount(), List.of());
     }
 
-    /** The net price after the seller discount, applied once. */
+    private static List<String> missingInputs(Inputs inputs) {
+        var missing = new ArrayList<String>();
+        if (inputs.currencyCode() == null) missing.add("CURRENCY");
+        if (!inputs.discountAlreadyInNetRevenue() && inputs.sellerDiscountRate() == null) missing.add("SELLER_DISCOUNT");
+        if (inputs.unitCost() == null) missing.add("UNIT_COST");
+        if (!inputs.feesKnown() || netPrice(inputs) == null || stepFee(inputs, netPrice(inputs)) == null) missing.add("FEE_SCHEDULE");
+        Expenses expenses = inputs.expenses();
+        if (expenses == null || expenses.fixedPromotionFee() == null) missing.add("FIXED_PROMOTION_FEE");
+        if (expenses == null || expenses.returnLossPerUnit() == null) missing.add("RETURN_LOSS");
+        if (expenses == null || expenses.advertisingPerUnit() == null) missing.add("ADVERTISING");
+        if (expenses == null || expenses.variableTaxPerUnit() == null) missing.add("VARIABLE_TAX");
+        return missing;
+    }
+
     static BigDecimal netPrice(Inputs inputs) {
-        if (inputs.sellerDiscountRate() == null || inputs.discountAlreadyInNetRevenue()) {
-            return inputs.listPrice();
-        }
+        if (inputs.discountAlreadyInNetRevenue()) return inputs.listPrice().setScale(Money.SCALE, RoundingMode.HALF_UP);
+        if (inputs.sellerDiscountRate() == null) return null;
         return inputs.listPrice().multiply(BigDecimal.ONE.subtract(inputs.sellerDiscountRate()))
-                .setScale(SCALE, RoundingMode.HALF_EVEN);
+                .setScale(Money.SCALE, RoundingMode.HALF_UP);
     }
 
-    /** Fee per unit at the net price: the highest step whose floor the price reaches. */
-    static BigDecimal stepFee(Inputs inputs, BigDecimal netPrice) {
-        BigDecimal fee = null;
+    static BigDecimal stepFee(Inputs inputs, BigDecimal price) {
+        FeeStep selected = null;
         for (FeeStep step : inputs.stepFees()) {
-            if (netPrice.compareTo(step.priceFloor()) >= 0 && (fee == null || step.feePerUnit().compareTo(fee) > 0)) {
-                fee = step.feePerUnit();
-            }
+            if (price.compareTo(step.priceFloor()) >= 0 && (selected == null || step.priceFloor().compareTo(selected.priceFloor()) > 0)) selected = step;
         }
-        return fee;
+        return selected == null ? null : selected.feePerUnit();
     }
 
-    static BigDecimal unitProfit(Inputs inputs) {
-        if (inputs.unitCost() == null || !inputs.feesKnown()) {
-            return null;
-        }
-        BigDecimal netPrice = netPrice(inputs);
-        // A complete schedule that reaches no step, or an empty complete
-        // schedule, is a declared zero fee; only an unknown schedule is unknown.
-        BigDecimal fee = stepFee(inputs, netPrice);
-        if (fee == null) {
-            fee = BigDecimal.ZERO;
-        }
-        return netPrice.subtract(fee).subtract(inputs.unitCost()).setScale(SCALE, RoundingMode.HALF_EVEN);
+    private static Money profit(Inputs inputs, BigDecimal quantity) {
+        var expenses = inputs.expenses();
+        return ContributionProfitCalculation.calculate(money(inputs, netPrice(inputs)).times(quantity),
+                money(inputs, inputs.unitCost()).times(quantity),
+                money(inputs, stepFee(inputs, netPrice(inputs))).times(quantity).plus(expenses.fixedPromotionFee()),
+                expenses.returnLossPerUnit().times(quantity), expenses.advertisingPerUnit().times(quantity),
+                expenses.variableTaxPerUnit().times(quantity));
     }
+
+    private static Money money(Inputs inputs, BigDecimal value) { return Money.of(value, inputs.currencyCode()); }
+
+    private static void requireNonNegative(BigDecimal value, boolean nullable) {
+        if (value == null) { if (!nullable) invalid(); return; }
+        if (value.signum() < 0 || value.precision() > 38 || Math.abs((long) value.scale()) > 18) invalid();
+    }
+
+    private static void invalid() { throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED); }
 }

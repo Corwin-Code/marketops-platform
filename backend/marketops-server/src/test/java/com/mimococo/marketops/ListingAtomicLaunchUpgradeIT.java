@@ -24,7 +24,26 @@ class ListingAtomicLaunchUpgradeIT {
         assertThat(legacy.app.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:action")
                 .param("action",legacy.id("actionOne")).query(Integer.class).single()).isZero();
 
+        UUID simulation = UUID.randomUUID();
+        legacy.seed.sql("""
+                INSERT INTO ops.lc_simulation (id,organization_id,candidate_id,calculation_run_id,scenario_set,
+                    inputs_digest,results,inverse_minimum_quantity,inverse_state,demand_gate_passed,computed_at)
+                VALUES (:id,:org,:candidate,:run,'[]',repeat('b',64),'[]',8,'COMPUTED',true,now())
+                """).param("id",simulation).param("org",legacy.id("organization"))
+                .param("candidate",legacy.id("candidateOne")).param("run",legacy.id("calculationRun")).update();
+        String simulationBefore = legacy.app.sql("SELECT to_jsonb(s)::text FROM ops.lc_simulation s WHERE id=:id")
+                .param("id",simulation).query(String.class).single();
+
         Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
+
+        assertThat(legacy.app.sql("""
+                SELECT (to_jsonb(s)-'model_version'-'input_snapshot'-'conditional_scenarios_passed')::text
+                  FROM ops.lc_simulation s WHERE id=:id
+                """).param("id",simulation).query(String.class).single()).isEqualTo(simulationBefore);
+        assertThat(legacy.app.sql("""
+                SELECT model_version='LEGACY_UNQUALIFIED' AND input_snapshot IS NULL
+                  AND conditional_scenarios_passed IS NULL FROM ops.lc_simulation WHERE id=:id
+                """).param("id",simulation).query(Boolean.class).single()).isTrue();
 
         assertThat(legacy.app.sql("SELECT (to_jsonb(l)-'created_transaction_id')::text FROM ops.lc_launch l WHERE id=:id")
                 .param("id",launch).query(String.class).single()).isEqualTo(before);
