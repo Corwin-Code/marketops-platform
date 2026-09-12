@@ -357,6 +357,119 @@ class ListingReworkAuthorizationIT {
         }
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"OFFICIAL_PROMOTION_PARTICIPATION","SELLER_DIRECT_DISCOUNT"})
+    void promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry(String kind) throws Exception {
+        var json=new tools.jackson.databind.ObjectMapper();
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for(var scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.LISTING_ACTION_LAUNCH,
+                ActionScopeCode.LISTING_CONVERSION_VIEW,ActionScopeCode.LISTING_PROMOTION_MANAGE))
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post("/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/cancel")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"reason\":\"Replace unused synthetic action with a promotion declaration\"}"))
+                .andExpect(status().isOk());
+        var candidateResponse=mvc.perform(post("/api/v1/console/listing/actions/candidates")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("listingId",fixture.id("listing"),"candidateKind",kind,
+                    "roundKey","promotion-terms-"+kind.toLowerCase(java.util.Locale.ROOT).replace('_','-'),"evidenceReferences",List.of("fixture://commercial-terms"),"expectedEffect",Map.of()))))
+                .andExpect(result->assertThat(result.getResponse().getStatus()).withFailMessage("Promotion candidate: %s",result.getResolvedException()).isEqualTo(200)).andReturn();
+        UUID candidate=UUID.fromString(json.readTree(candidateResponse.getResponse().getContentAsString()).path("id").asText());
+        Map<String,Object> terms=Map.of("engagementKind",kind,"nativePromotionKey","fixture-promotion-17",
+                "terms",Map.of("finalPrice","200.0000","currency","RUB","period","2026-10-01/2026-10-07",
+                    "feeSchedule","fixture://commercial-fees","coexistence","fixture://known-existing-offer"),
+                "priceFreeze",true,"autoParticipation",false,"termsEvidenceReference"," fixture://exact-promotion-source ",
+                "obligations",Map.of("fixedFee","600.0000","exitTerms","fixture://bounded-exit-and-residual"));
+        String prepare="/api/v1/console/listing/actions/candidates/"+candidate+"/prepare";
+        mvc.perform(post(prepare).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"executionPath\":\"MANUAL\",\"exposureShare\":0.01}"))
+                .andExpect(status().isBadRequest());
+        for(String flag:List.of("priceFreeze","autoParticipation")) {
+            var missingFlag=new java.util.LinkedHashMap<>(terms);missingFlag.remove(flag);
+            mvc.perform(post(prepare).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(Map.of("executionPath","MANUAL","promotionTerms",missingFlag))))
+                    .andExpect(status().isBadRequest());
+        }
+        var response=mvc.perform(post(prepare).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("executionPath","MANUAL","exposureShare",0.01,"promotionTerms",terms))))
+                .andExpect(result->assertThat(result.getResponse().getStatus()).withFailMessage("Promotion preparation: %s",result.getResolvedException()).isEqualTo(200))
+                .andExpect(jsonPath("$.state").value("DRAFT")).andReturn();
+        var prepared=json.readTree(response.getResponse().getContentAsString());
+        UUID action=UUID.fromString(prepared.path("id").asText());
+        UUID recommendation=UUID.fromString(prepared.path("recommendationId").asText());
+        String digest=prepared.path("promotionTermsDigest").asText();
+        assertThat(digest).matches("[0-9a-f]{64}");
+        String actionPath="/api/v1/console/listing/actions/"+action;
+        mvc.perform(get(actionPath+"/promotion-terms").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(false))
+                .andExpect(jsonPath("$.terms").isEmpty()).andExpect(jsonPath("$.digest").value(digest));
+        assertThat(jdbc.sql("SELECT proposed_parameters->>'promotionTermsDigest' FROM ops.recommendation WHERE id=:id")
+                .param("id",recommendation).query(String.class).single()).isEqualTo(digest);
+        String authorToken=bearer();
+        subject="promotion-independent-reviewer-"+UUID.randomUUID();
+        UUID reviewer=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Promotion reviewer",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",reviewer).update();
+        users.assignRole(OPERATOR,reviewer,BusinessRoleCode.OWNER,null);
+        for(var scope:List.of(ActionScopeCode.LISTING_ACTION_REVIEW,ActionScopeCode.LISTING_ACTION_APPROVE_MATERIAL,
+                ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY,ActionScopeCode.LISTING_CONVERSION_VIEW))
+            users.grantScope(OPERATOR,reviewer,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post(actionPath+"/review").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"verdict\":\"ATTESTED\",\"reason\":\"Review the exact proposed commercial declaration\"}"))
+                .andExpect(status().isForbidden());
+        users.grantScope(OPERATOR,reviewer,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScopeType.STORE,fixture.id("store"),null);
+        mvc.perform(get(actionPath+"/promotion-terms").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(false))
+                .andExpect(jsonPath("$.terms").isEmpty());
+        var productDisclosure=users.grantScope(OPERATOR,reviewer,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScopeType.PRODUCT_VARIANT,fixture.id("productVariant"),null);
+        mvc.perform(get(actionPath+"/promotion-terms").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(true))
+                .andExpect(jsonPath("$.terms.terms.finalPrice").value("200.0000"));
+        mvc.perform(post(actionPath+"/review").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"verdict\":\"ATTESTED\",\"reason\":\"Review exact declaration; not a real provider qualification\"}"))
+                .andExpect(status().isOk());
+        long version=jdbc.sql("SELECT version FROM ops.recommendation WHERE id=:id").param("id",recommendation).query(Long.class).single();
+        mvc.perform(post("/api/v1/console/workflow/recommendations/"+recommendation+"/approval")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("expectedVersion",version,"reason","Approve exact synthetic promotion declaration"))))
+                .andExpect(result->assertThat(result.getResponse().getStatus()).withFailMessage("Promotion approval: %s",result.getResolvedException()).isEqualTo(200));
+        mvc.perform(post(actionPath+"/launch").header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"axes\":{}}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.launched").value(true)).andExpect(jsonPath("$.commandId").isEmpty());
+        assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_action SET promotion_terms=jsonb_set(promotion_terms,'{terms,finalPrice}','\"1\"') WHERE id=:id")
+                .param("id",action).update()).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        var packetResponse=mvc.perform(post("/api/v1/console/listing/manual/actions/"+action+"/packets")
+                .header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("executorUserId",fixture.id("executorUser")))))
+                .andExpect(status().isOk()).andReturn();
+        UUID packet=UUID.fromString(json.readTree(packetResponse.getResponse().getContentAsString()).path("id").asText());
+        assertThat(jdbc.sql("SELECT promotion_terms_digest FROM ops.lc_manual_packet WHERE id=:id")
+                .param("id",packet).query(String.class).single()).isEqualTo(digest);
+        var altered=new java.util.LinkedHashMap<>(terms);altered.put("terms",Map.of("finalPrice","1","currency","RUB"));
+        String entry="/api/v1/console/listing/manual/actions/"+action+"/engagements";
+        mvc.perform(post(entry).header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(altered))).andExpect(status().isForbidden());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_promotion_engagement WHERE action_id=:id")
+                .param("id",action).query(Integer.class).single()).isZero();
+        mvc.perform(post(entry).header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(terms))).andExpect(status().isOk())
+                .andExpect(jsonPath("$.terms.finalPrice").value("200.0000"));
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
+                .param("id",action).query(Integer.class).single()).isZero();
+        assertThat(loopback.received).isEmpty();
+        assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_promotion_engagement SET terms=jsonb_set(terms,'{finalPrice}','\"1\"') WHERE action_id=:id")
+                .param("id",action).update()).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_promotion_engagement SET obligations='{}'::jsonb WHERE action_id=:id")
+                .param("id",action).update()).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        users.revokeScope(OPERATOR,productDisclosure.id(),"Withdraw current financial disclosure",productDisclosure.version());
+        mvc.perform(get(actionPath+"/promotion-terms").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(false))
+                .andExpect(jsonPath("$.terms").isEmpty());
+        // This test establishes exact declaration identity only. Independent actual participation,
+        // exit authorization, financial qualification and staged obligation release remain separate roots.
+    }
+
     @Test
     void signedAllowancePreviewUsesCanonicalDemandAndShowsMissingRequiredAxes() throws Exception {
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);

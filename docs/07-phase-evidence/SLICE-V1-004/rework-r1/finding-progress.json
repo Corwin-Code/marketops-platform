@@ -22,10 +22,12 @@
       "title": "最小授权投影未落实到模拟明细与已发人工包的当前访问",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification."
+        "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification.",
+        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed."
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
+        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations."
       ]
     },
     {
@@ -162,9 +164,13 @@
     {
       "id": "S4-DR-R1-014",
       "title": "促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed."
+      ],
+      "executed_evidence": [
+        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations."
+      ]
     },
     {
       "id": "S4-DR-R1-015",
@@ -288,10 +294,12 @@
       "title": "双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Allowance preview exposes unresolved required axes and each applied scope in Chinese/Russian; rows with the same axis in multiple scopes retain separate keys. It uses the shared canonical projection."
+        "Allowance preview exposes unresolved required axes and each applied scope in Chinese/Russian; rows with the same axis in multiple scopes retain separate keys. It uses the shared canonical projection.",
+        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed."
       ],
       "executed_evidence": [
-        "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open."
+        "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
+        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations."
       ]
     },
     {

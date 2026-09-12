@@ -206,7 +206,7 @@ public class ManualPathService {
         manual.insertEngagement(id, action.organizationId(), action.storeId(), action.listingId(), actionId,
                 MetadataFieldPolicy.requireText("engagementKind", request.engagementKind()), request.nativePromotionKey(),
                 request.terms() == null ? Map.of() : request.terms(), request.priceFreeze(), request.autoParticipation(),
-                MetadataFieldPolicy.requireText("termsEvidenceReference", request.termsEvidenceReference()), false,
+                exactTermsReference(request.termsEvidenceReference()), false,
                 request.obligations() == null ? Map.of() : request.obligations(), clock.instant());
         recordAudit(actor, "lc-promotion-engagement", id, AuditAction.CREATE, Map.of("actionId", new FieldChange(null, actionId.toString())), null);
         return manual.engagement(id).orElseThrow();
@@ -262,6 +262,11 @@ public class ManualPathService {
     @Transactional(readOnly = true)
     public Optional<PromotionEngagementView> engagement(UUID id) {
         return manual.engagement(id);
+    }
+
+    private static String exactTermsReference(String reference) {
+        MetadataFieldPolicy.requireText("termsEvidenceReference", reference);
+        return reference;
     }
 
     // ------------------------------------------------------------------ helpers

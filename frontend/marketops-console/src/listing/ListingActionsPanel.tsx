@@ -24,6 +24,7 @@ import {
   reviewAction,
 } from '../api/listingConversion';
 import { Code, ListingProblem, When, YesNo } from './ListingCommon';
+import { PromotionDeclaration, PromotionPreparationForm } from './ListingPromotionTerms';
 import { useLanguage } from './i18n/language';
 import { t, type UiKey } from './i18n/ui';
 
@@ -297,7 +298,15 @@ function CandidatePreparation({
               <Code family="candidateKind" code={candidate.candidateKind} /> ·{' '}
               {candidate.comparisonRoundKey} ·{' '}
               <Code family="candidateState" code={candidate.state} />
-              {candidate.state === 'OPEN' && (
+              {candidate.state === 'OPEN' && candidate.candidateKind !== 'CONTENT_DESCRIPTION' && (
+                <PromotionPreparationForm
+                  context={context}
+                  candidateId={candidate.id}
+                  kind={candidate.candidateKind}
+                  onPrepared={onPrepared}
+                />
+              )}
+              {candidate.state === 'OPEN' && candidate.candidateKind === 'CONTENT_DESCRIPTION' && (
                 <form
                   aria-label={candidate.id}
                   onSubmit={(event) => {
@@ -319,59 +328,55 @@ function CandidatePreparation({
                     });
                   }}
                 >
-                  {candidate.candidateKind === 'CONTENT_DESCRIPTION' && (
-                    <>
-                      <label>
-                        {t('path', language)}
-                        <select
-                          value={path}
-                          onChange={(e) => {
-                            setPath(e.target.value);
-                          }}
-                        >
-                          <option value="API">API</option>
-                          <option value="MANUAL">MANUAL</option>
-                        </select>
-                      </label>
-                      <label>
-                        {t('restoresCommandId', language)}
-                        <input
-                          value={restoresCommandId}
-                          onChange={(e) => {
-                            setRestoresCommandId(e.target.value);
-                          }}
-                          placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                          pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-                        />
-                      </label>
-                      {restoresCommandId.trim() !== '' && (
-                        <p>{t('restorationApproval', language)}</p>
-                      )}
-                      <label>
-                        {t('targetText', language)}
-                        <textarea
-                          disabled={restoresCommandId.trim() !== ''}
-                          value={targetText}
-                          onChange={(e) => {
-                            setTargetText(e.target.value);
-                          }}
-                        />
-                      </label>
-                      <label>
-                        {t('kiz', language)}
-                        <select
-                          value={kiz}
-                          onChange={(e) => {
-                            setKiz(e.target.value as 'undeclared' | 'yes' | 'no');
-                          }}
-                        >
-                          <option value="undeclared">{t('undeclared', language)}</option>
-                          <option value="yes">{t('yes', language)}</option>
-                          <option value="no">{t('no', language)}</option>
-                        </select>
-                      </label>
-                    </>
-                  )}
+                  <>
+                    <label>
+                      {t('path', language)}
+                      <select
+                        value={path}
+                        onChange={(e) => {
+                          setPath(e.target.value);
+                        }}
+                      >
+                        <option value="API">API</option>
+                        <option value="MANUAL">MANUAL</option>
+                      </select>
+                    </label>
+                    <label>
+                      {t('restoresCommandId', language)}
+                      <input
+                        value={restoresCommandId}
+                        onChange={(e) => {
+                          setRestoresCommandId(e.target.value);
+                        }}
+                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                        pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                      />
+                    </label>
+                    {restoresCommandId.trim() !== '' && <p>{t('restorationApproval', language)}</p>}
+                    <label>
+                      {t('targetText', language)}
+                      <textarea
+                        disabled={restoresCommandId.trim() !== ''}
+                        value={targetText}
+                        onChange={(e) => {
+                          setTargetText(e.target.value);
+                        }}
+                      />
+                    </label>
+                    <label>
+                      {t('kiz', language)}
+                      <select
+                        value={kiz}
+                        onChange={(e) => {
+                          setKiz(e.target.value as 'undeclared' | 'yes' | 'no');
+                        }}
+                      >
+                        <option value="undeclared">{t('undeclared', language)}</option>
+                        <option value="yes">{t('yes', language)}</option>
+                        <option value="no">{t('no', language)}</option>
+                      </select>
+                    </label>
+                  </>
                   <label>
                     {t('materiality', language)}{' '}
                     <input
@@ -456,6 +461,14 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
             <Code family="executionPath" code={action.executionPath} /> ·{' '}
             <Code family="materialityRoute" code={action.materialityRoute} />
           </h3>
+          {action.actionKind === 'LISTING_PROMOTION_ACTION' && (
+            <PromotionDeclaration
+              key={actionId}
+              context={context}
+              actionId={actionId}
+              digest={action.promotionTermsDigest}
+            />
+          )}
           <dl>
             <dt>{t('author', language)}</dt>
             <dd>{action.authorUserId}</dd>

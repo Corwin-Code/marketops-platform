@@ -821,3 +821,18 @@ Qualified monetary demand, preexisting promotion obligations and independent
 stop/historical-clearing flows remain in the continuous rework. 0/27 CLOSED;
 no production enablement, real-account call, shared migration or remote Git
 publication has occurred.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-18 freezes the existing
+two-kind promotion declaration before review, binds its exact digest to normal
+recommendation approval and manual packets, and refuses different entry terms
+or replacement of bound commitments. Full declaration reads recheck current
+store and every frozen product financial scope; bilingual preparation/read is
+available. Results: 42 signed HTTP/database, 102 launch/calibration/architecture,
+1 historical upgrade, 27 frontend; final exact-reference correction passes
+2 connected promotion cases and 8 manual-verification tests. Lint/build pass.
+See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-18-test-receipts.json`
+for overlapping coverage, failure diagnoses and source/log hashes. Native
+participation, exact conditional exit, economics, adoption and residual release
+remain in progress. 0/27 CLOSED; final Controller handoff NOT_READY. All new
+platform writes remain default OFF; no Level-2 or remote publication occurred.

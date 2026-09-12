@@ -91,6 +91,23 @@ export interface ActionOccupation {
   readonly releaseBasis: string | undefined;
 }
 
+export interface PromotionTerms {
+  readonly engagementKind: string;
+  readonly nativePromotionKey: string;
+  readonly terms: Readonly<Record<string, string>>;
+  readonly priceFreeze: boolean;
+  readonly autoParticipation: boolean;
+  readonly termsEvidenceReference: string;
+  readonly obligations: Readonly<Record<string, string>>;
+}
+
+export interface PromotionTermsView {
+  readonly actionId: string;
+  readonly digest: string | undefined;
+  readonly fullDisclosure: boolean;
+  readonly terms: PromotionTerms | undefined;
+}
+
 export interface ListingAction {
   readonly id: string;
   readonly storeId: string;
@@ -109,6 +126,7 @@ export interface ListingAction {
   readonly targetText: string | undefined;
   readonly targetTextDigest: string | undefined;
   readonly restoresCommandId?: string | undefined;
+  readonly promotionTermsDigest?: string | undefined;
   readonly kizMarkedDeclared: boolean | undefined;
   readonly materialityRoute: string;
   readonly contentAxisMaterial: boolean | undefined;
@@ -661,6 +679,7 @@ export function parseListingAction(body: unknown): ListingAction | undefined {
     targetText: text(r.targetText),
     targetTextDigest: text(r.targetTextDigest),
     restoresCommandId: text(r.restoresCommandId),
+    promotionTermsDigest: text(r.promotionTermsDigest),
     kizMarkedDeclared: bool(r.kizMarkedDeclared),
     materialityRoute,
     contentAxisMaterial: bool(r.contentAxisMaterial),
@@ -1247,6 +1266,7 @@ export function prepareAction(
   kizMarkedDeclared: boolean | undefined,
   exposureShare: string,
   restoresCommandId?: string,
+  promotionTerms?: PromotionTerms,
 ): Promise<ConsoleOutcome<ListingAction>> {
   return request(
     context,
@@ -1254,7 +1274,8 @@ export function prepareAction(
     parseListingAction,
     post({
       executionPath,
-      targetText: restoresCommandId ? null : targetText,
+      ...(promotionTerms === undefined ? {} : { promotionTerms }),
+      targetText: restoresCommandId || promotionTerms ? null : targetText,
       restoresCommandId: restoresCommandId === '' ? null : (restoresCommandId ?? null),
       kizMarkedDeclared: kizMarkedDeclared ?? null,
       exposureShare: exposureShare === '' ? null : exposureShare,
@@ -1549,4 +1570,63 @@ export function fetchRecalculationQueue(
   return request(context, `${GOVERNANCE}/recalculation-queue?limit=100`, (body) =>
     list(body, parseRecalculationEntry),
   );
+}
+
+/** Financial details are returned only through the current all-member scope check. */
+export function fetchPromotionTerms(
+  context: ConsoleRequest,
+  actionId: string,
+): Promise<ConsoleOutcome<PromotionTermsView>> {
+  return request(context, `${ACTIONS}/${id(actionId)}/promotion-terms`, parsePromotionTermsView);
+}
+
+export function parsePromotionTermsView(body: unknown): PromotionTermsView | undefined {
+  const r = row(body);
+  const actionId = text(r?.actionId),
+    digest = text(r?.digest),
+    fullDisclosure = bool(r?.fullDisclosure);
+  if (actionId === undefined || fullDisclosure === undefined) return undefined;
+  if (!fullDisclosure) return { actionId, digest, fullDisclosure, terms: undefined };
+  const p = row(r?.terms);
+  // Historical actions have no invented declaration.
+  if (p === undefined && digest === undefined)
+    return { actionId, digest, fullDisclosure, terms: undefined };
+  const engagementKind = text(p?.engagementKind),
+    nativePromotionKey = text(p?.nativePromotionKey),
+    termsEvidenceReference = text(p?.termsEvidenceReference),
+    priceFreeze = bool(p?.priceFreeze),
+    autoParticipation = bool(p?.autoParticipation);
+  const exactMap = (value: unknown): Record<string, string> | undefined => {
+    const object = row(value);
+    if (object === undefined || Object.values(object).some((v) => typeof v !== 'string'))
+      return undefined;
+    return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, value as string]));
+  };
+  const terms = exactMap(p?.terms),
+    obligations = exactMap(p?.obligations);
+  if (
+    digest === undefined ||
+    engagementKind === undefined ||
+    nativePromotionKey === undefined ||
+    termsEvidenceReference === undefined ||
+    priceFreeze === undefined ||
+    autoParticipation === undefined ||
+    terms === undefined ||
+    obligations === undefined
+  )
+    return undefined;
+  return {
+    actionId,
+    digest,
+    fullDisclosure,
+    terms: {
+      engagementKind,
+      nativePromotionKey,
+      termsEvidenceReference,
+      priceFreeze,
+      autoParticipation,
+      terms,
+      obligations,
+    },
+  };
 }

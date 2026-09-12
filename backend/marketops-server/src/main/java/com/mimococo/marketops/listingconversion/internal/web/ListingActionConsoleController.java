@@ -99,7 +99,7 @@ class ListingActionConsoleController {
                                     @Valid @RequestBody PrepareRequest request) {
         return actions.prepareAction(actor, candidateId, new ListingActionService.Preparation(request.executionPath(),
                 request.targetText(), request.kizMarkedDeclared(), request.exposureShare(), request.expectedEffect(),
-                request.riskLabel(), request.restoresCommandId()));
+                request.riskLabel(), request.restoresCommandId(), request.promotionTerms()));
     }
 
     @PostMapping(value = "/candidates/{candidateId}/simulate", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -144,6 +144,14 @@ class ListingActionConsoleController {
     ListingActionView action(AuthenticatedActor actor, @PathVariable UUID actionId) {
         ListingActionView result = actions.require(actor, actionId);
         auditRead(actor, "lc-action", actionId, "action");
+        return result;
+    }
+
+    @Transactional
+    @GetMapping(value = "/{actionId}/promotion-terms", produces = MediaType.APPLICATION_JSON_VALUE)
+    com.mimococo.marketops.listingconversion.PromotionTermsView promotionTerms(AuthenticatedActor actor,@PathVariable UUID actionId) {
+        var result=actions.promotionTerms(actor,actionId);
+        auditRead(actor,"lc-action",actionId,"exact promotion declaration");
         return result;
     }
 
@@ -221,7 +229,8 @@ class ListingActionConsoleController {
     }
 
     record PrepareRequest(@NotNull ExecutionPath executionPath, String targetText, Boolean kizMarkedDeclared,
-                          BigDecimal exposureShare, Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId) {
+                          BigDecimal exposureShare, Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId,
+                          com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms) {
     }
 
     record FeeStepRequest(@NotNull BigDecimal priceFloor, @NotNull BigDecimal feePerUnit) {

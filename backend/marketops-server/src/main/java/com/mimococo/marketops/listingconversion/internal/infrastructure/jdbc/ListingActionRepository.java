@@ -105,7 +105,7 @@ public class ListingActionRepository {
                             String targetTextDigest, Boolean kizMarkedDeclared, Boolean contentAxisMaterial,
                             Boolean exposureAxisMaterial, String materialityRoute, UUID calibrationPackageId,
                             Integer calibrationVersion, UUID authorUserId, String state, Instant createdAt,
-                            Instant updatedAt, long version, UUID restoresCommandId) {
+                            Instant updatedAt, long version, UUID restoresCommandId, String promotionTermsDigest) {
     }
 
     /** One database clock for the persisted preparation/plan/review/binding chronology. */
@@ -118,16 +118,17 @@ public class ListingActionRepository {
                              ExecutionPath path, UUID currentObservationId, String currentTextDigest, String targetText,
                              String targetTextDigest, Boolean kizMarked, Boolean contentAxis, Boolean exposureAxis,
                              MaterialityRoute route, UUID calibrationPackageId, Integer calibrationVersion,
-                             UUID authorUserId, Instant now, UUID restoresCommandId) {
+                             UUID authorUserId, Instant now, UUID restoresCommandId,
+                             com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms) {
         jdbc.sql("""
                 INSERT INTO ops.lc_action (id, organization_id, store_id, platform_listing_id, candidate_id, recommendation_id,
                     affected_set_id, affected_set_digest, action_kind, execution_path, current_description_observation_id,
                     current_text_digest, target_text, target_text_digest, target_language_code, kiz_marked_declared,
                     content_axis_material, exposure_axis_material, materiality_route, calibration_package_id,
-                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id)
+                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id, promotion_terms)
                 VALUES (:id, :org, :store, :listing, :candidate, :recommendation, :set, :digest, :kind, :path, :observation,
                     :currentDigest, :text, :textDigest, :language, :kiz, :content, :exposure, :route, :package, :packageVersion,
-                    :author, 'DRAFT', :now, :now, 0, :restores)
+                    :author, 'DRAFT', :now, :now, 0, :restores, CAST(:promotion AS jsonb))
                 """).param("id", id).param("org", organizationId).param("store", storeId).param("listing", listingId)
                 .param("candidate", candidateId).param("recommendation", recommendationId).param("set", affectedSetId)
                 .param("digest", affectedSetDigest).param("kind", actionKind).param("path", path.name())
@@ -136,7 +137,28 @@ public class ListingActionRepository {
                 .param("language", targetText == null ? null : "ru").param("kiz", kizMarked)
                 .param("content", contentAxis).param("exposure", exposureAxis).param("route", route.name())
                 .param("package", calibrationPackageId).param("packageVersion", calibrationVersion)
-                .param("author", authorUserId).param("now", Timestamp.from(now)).param("restores",restoresCommandId).update();
+                .param("author", authorUserId).param("now", Timestamp.from(now)).param("restores",restoresCommandId)
+                .param("promotion",promotionTerms==null?null:json.writeValueAsString(promotionTerms)).update();
+    }
+
+    public String promotionTermsDigest(com.mimococo.marketops.listingconversion.PromotionTerms terms) {
+        return jdbc.sql("SELECT ops.lc_promotion_terms_digest(CAST(:terms AS jsonb))")
+                .param("terms",json.writeValueAsString(terms)).query(String.class).single();
+    }
+
+    public record FrozenPromotion(String digest,com.mimococo.marketops.listingconversion.PromotionTerms terms) { }
+
+    public FrozenPromotion promotionTerms(UUID actionId) {
+        return jdbc.sql("SELECT promotion_terms_digest,promotion_terms::text FROM ops.lc_action WHERE id=:id")
+                .param("id",actionId).query((rs,n)->new FrozenPromotion(rs.getString(1),rs.getString(2)==null?null:
+                    json.readValue(rs.getString(2),com.mimococo.marketops.listingconversion.PromotionTerms.class))).single();
+    }
+
+    public List<UUID> promotionEvidenceProducts(UUID actionId) {
+        return jdbc.sql("""
+                SELECT DISTINCT member FROM ops.lc_action a JOIN core.lc_affected_set s ON s.id=a.affected_set_id,
+                  unnest(s.product_variant_ids) member WHERE a.id=:id AND s.resolution_state='COMPLETE'
+                """).param("id",actionId).query(UUID.class).list();
     }
 
     public record RestorationSource(UUID commandId,String priorText,String appliedTextDigest) { }
@@ -191,7 +213,7 @@ public class ListingActionRepository {
                    a.current_description_observation_id, a.current_text_digest, a.target_text, a.target_text_digest,
                    a.kiz_marked_declared, a.content_axis_material, a.exposure_axis_material, a.materiality_route,
                    a.calibration_package_id, a.calibration_version, a.author_user_id, a.state, a.created_at, a.updated_at,
-                   a.version, a.restores_command_id
+                   a.version, a.restores_command_id, a.promotion_terms_digest
               FROM ops.lc_action a
             """;
 
@@ -208,7 +230,7 @@ public class ListingActionRepository {
                 rs.getObject("calibration_package_id", UUID.class), rs.getObject("calibration_version", Integer.class),
                 rs.getObject("author_user_id", UUID.class), rs.getString("state"),
                 ListingFactRepository.instant(rs, "created_at"), ListingFactRepository.instant(rs, "updated_at"),
-                rs.getLong("version"),rs.getObject("restores_command_id",UUID.class));
+                rs.getLong("version"),rs.getObject("restores_command_id",UUID.class),rs.getString("promotion_terms_digest"));
     }
 
     // ------------------------------------------------------------------ reviews, bindings, plans

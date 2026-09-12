@@ -2,6 +2,33 @@ import type { Language } from './language';
 
 /** Every string the listing console shows that is not a backend code. */
 const STRINGS = {
+  promotionDeclaration: { zh: '拟执行促销条款', ru: 'Предлагаемые условия акции' },
+  promotionDeclarationHelp: {
+    zh: '逐项填写准确条款、费用、期限及退出后的义务，并注明来源。保存后，修改条款需要新的操作和批准。',
+    ru: 'Укажите точные условия, сборы, сроки и обязательства после выхода, а также источник. Изменение сохранённых условий требует нового действия и одобрения.',
+  },
+  promotionNativeKey: { zh: '平台促销标识', ru: 'Идентификатор акции на площадке' },
+  promotionTerms: { zh: '商业条款', ru: 'Коммерческие условия' },
+  promotionObligations: { zh: '承诺与退出后义务', ru: 'Обязательства, в том числе после выхода' },
+  promotionPriceFreeze: { zh: '是否锁定价格', ru: 'Фиксируется ли цена' },
+  promotionAutoParticipation: { zh: '是否自动参与', ru: 'Автоматическое участие' },
+  promotionFieldName: { zh: '条款名称', ru: 'Название условия' },
+  promotionFieldValue: { zh: '条款原值', ru: 'Точное значение условия' },
+  promotionAddTerm: { zh: '添加条款', ru: 'Добавить условие' },
+  promotionDuplicateTerm: {
+    zh: '条款名称不得重复。',
+    ru: 'Названия условий не должны повторяться.',
+  },
+  promotionReadTerms: { zh: '读取本次操作的准确条款', ru: 'Прочитать точные условия действия' },
+  promotionTermsRestricted: {
+    zh: '当前权限不足以查看全部受影响产品的财务条款。',
+    ru: 'Текущие права не позволяют просматривать финансовые условия всех затронутых товаров.',
+  },
+  promotionTermsMissing: {
+    zh: '此历史操作未绑定条款。',
+    ru: 'Историческое действие не связано с условиями.',
+  },
+  promotionDeclarationIdentity: { zh: '条款摘要', ru: 'Отпечаток условий' },
   executionObservation: { zh: '执行观察', ru: 'Наблюдение исполнения' },
   executionBoundary: {
     zh: '管理端完成、买家端展示与业务效果分别取证。此记录不代表业务效果达标。',

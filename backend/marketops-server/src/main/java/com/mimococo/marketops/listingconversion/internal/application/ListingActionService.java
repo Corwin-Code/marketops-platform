@@ -144,7 +144,8 @@ public class ListingActionService {
 
     /** What preparation needs beyond the candidate. */
     public record Preparation(ExecutionPath path, String targetText, Boolean kizMarkedDeclared, BigDecimal exposureShare,
-                              Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId) {
+                              Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId,
+                              com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms) {
     }
 
     @Transactional
@@ -163,6 +164,11 @@ public class ListingActionService {
         if (!description && (path == ExecutionPath.API || preparation.restoresCommandId()!=null)) {
             throw OperationRejectedException.of(ErrorCode.EXECUTION_PATH_MISMATCH);
         }
+        if (description != (preparation.promotionTerms()==null)
+                || (!description && !candidate.candidateKind().name().equals(preparation.promotionTerms().engagementKind()))) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        String promotionDigest=preparation.promotionTerms()==null?null:actions.promotionTermsDigest(preparation.promotionTerms());
         ListingHealthService.FrozenSet set = health.freezeAffectedSet(candidate.platformListingId());
         if (!"COMPLETE".equals(set.resolution().state())) {
             throw OperationRejectedException.of(ErrorCode.AFFECTED_SET_INCOMPLETE);
@@ -216,6 +222,7 @@ public class ListingActionService {
         parameters.put("candidateId", candidateId.toString());
         parameters.put("executionPath", path.name());
         parameters.put("affectedSetDigest", set.digest());
+        if (promotionDigest!=null) parameters.put("promotionTermsDigest",promotionDigest);
         if (preparation.restoresCommandId()!=null) parameters.put("restoresCommandId",preparation.restoresCommandId().toString());
         if (targetDigest != null) {
             parameters.put("targetTextDigest", targetDigest);
@@ -233,7 +240,7 @@ public class ListingActionService {
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse(null), targetText, targetDigest, kiz,
                 classification.contentAxisMaterial(), classification.exposureAxisMaterial(), classification.route(),
                 unresolved ? null : resolved.resolved().packageId(), unresolved ? null : resolved.resolved().version(),
-                actor.userId(), now, preparation.restoresCommandId());
+                actor.userId(), now, preparation.restoresCommandId(), preparation.promotionTerms());
         if (!unresolved) {
             evaluation.freezePlan(actions.action(actionId).orElseThrow());
         }
@@ -261,6 +268,9 @@ public class ListingActionService {
     @Transactional
     public ListingActionView review(AuthenticatedActor actor, UUID actionId, String verdict, String reason) {
         ListingActionRepository.ActionRow action = requireAction(actor, actionId, ActionScopeCode.LISTING_ACTION_REVIEW);
+        if ("LISTING_PROMOTION_ACTION".equals(action.actionKind()) && !maySeePromotionTerms(actor,action)) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
         Instant now = actions.databaseNow();
         if (!actor.stepUpSatisfiedAt(clock.instant())) {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
@@ -376,6 +386,23 @@ public class ListingActionService {
     }
 
     @Transactional(readOnly = true)
+    public com.mimococo.marketops.listingconversion.PromotionTermsView promotionTerms(AuthenticatedActor actor, UUID actionId) {
+        var action=requireAction(actor,actionId,ActionScopeCode.LISTING_CONVERSION_VIEW);
+        var frozen=actions.promotionTerms(actionId);
+        boolean full=maySeePromotionTerms(actor,action);
+        return new com.mimococo.marketops.listingconversion.PromotionTermsView(actionId,frozen.digest(),
+                full?frozen.terms():null,full);
+    }
+
+    private boolean maySeePromotionTerms(AuthenticatedActor actor,ListingActionRepository.ActionRow action) {
+        var products=actions.promotionEvidenceProducts(action.id());
+        return authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScope.store(action.storeId())).permitted() && !products.isEmpty()
+                && products.stream().allMatch(product->authorization.evaluate(actor,
+                    ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,ResourceScope.productVariant(product)).permitted());
+    }
+
+    @Transactional(readOnly = true)
     public ListingActionView require(AuthenticatedActor actor, UUID actionId) {
         return toView(requireAction(actor, actionId, ActionScopeCode.LISTING_CONVERSION_VIEW));
     }
@@ -399,7 +426,7 @@ public class ListingActionService {
                 row.authorUserId(), ListingActionState.valueOf(row.state()), actions.reviews(row.id()),
                 actions.binding(row.id()).orElse(null), actions.launch(row.id()).orElse(null), actions.occupations(row.id()),
                 actions.binding(row.id()).isPresent() ? actions.bindingGaps(row.id()) : List.of(),
-                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId());
+                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId(), row.promotionTermsDigest());
     }
 
     ListingActionRepository.ActionRow requireAction(AuthenticatedActor actor, UUID actionId, ActionScopeCode scope) {

@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ConsoleRequest } from '../api/console';
 import { ListingConversionShell } from '../listing/ListingConversionShell';
 import { YesNo } from '../listing/ListingCommon';
+import { PromotionDeclaration, PromotionPreparationForm } from '../listing/ListingPromotionTerms';
+import { t } from '../listing/i18n/ui';
 import { LanguageProvider } from '../listing/i18n/language';
 
 const LISTING = 'aa14dd95-b455-5db2-924c-8a3972e6f9d2';
@@ -465,5 +467,101 @@ describe('every listing form posts what the operator entered', () => {
     expect(screen.getByText('Да')).toBeInTheDocument();
     expect(screen.getByText('Нет')).toBeInTheDocument();
     expect(screen.getByText('Не заявлено')).toBeInTheDocument();
+  });
+});
+
+describe('exact promotion declarations', () => {
+  it.each(['zh', 'ru'] as const)(
+    'requires explicit flags and preserves commercial values in %s',
+    async (language) => {
+      const { context, calls } = backend([[/\/prepare$/u, action('DRAFT', 'MANUAL')]]);
+      const onPrepared = vi.fn();
+      render(
+        <LanguageProvider initial={language}>
+          <PromotionPreparationForm
+            context={context}
+            candidateId="promotion-candidate"
+            kind="SELLER_DIRECT_DISCOUNT"
+            onPrepared={onPrepared}
+          />
+        </LanguageProvider>,
+      );
+      const form = screen.getByRole('form', { name: 'promotion-candidate' });
+      fireEvent.change(screen.getByLabelText(t('promotionNativeKey', language)), {
+        target: { value: ' exact/native-key ' },
+      });
+      fireEvent.change(screen.getByLabelText(t('evidence', language)), {
+        target: { value: 'fixture://exact-source' },
+      });
+      for (const [group, name, value] of [
+        ['promotionTerms', 'Цена', '200.0000'],
+        ['promotionObligations', '固定承诺', '600.0000'],
+      ] as const) {
+        const fieldset = within(screen.getByRole('group', { name: t(group, language) }));
+        fireEvent.change(fieldset.getByLabelText(`${t('promotionFieldName', language)} 1`), {
+          target: { value: name },
+        });
+        fireEvent.change(fieldset.getByLabelText(`${t('promotionFieldValue', language)} 1`), {
+          target: { value },
+        });
+      }
+      fireEvent.submit(form);
+      expect(calls).toHaveLength(0);
+      fireEvent.change(screen.getByLabelText(t('promotionPriceFreeze', language)), {
+        target: { value: 'yes' },
+      });
+      fireEvent.change(screen.getByLabelText(t('promotionAutoParticipation', language)), {
+        target: { value: 'no' },
+      });
+      fireEvent.submit(form);
+      await waitFor(() => {
+        expect(onPrepared).toHaveBeenCalledWith('a1');
+      });
+      expect(JSON.parse(calls[0]?.body ?? '{}')).toMatchObject({
+        executionPath: 'MANUAL',
+        targetText: null,
+        promotionTerms: {
+          engagementKind: 'SELLER_DIRECT_DISCOUNT',
+          nativePromotionKey: ' exact/native-key ',
+          terms: { Цена: '200.0000' },
+          obligations: { 固定承诺: '600.0000' },
+          priceFreeze: true,
+          autoParticipation: false,
+          termsEvidenceReference: 'fixture://exact-source',
+        },
+      });
+    },
+  );
+
+  it('clears disclosed terms when a subsequent current permission check masks them', async () => {
+    let allowed = true;
+    const { context } = backend([
+      [
+        /\/promotion-terms$/u,
+        () => ({
+          actionId: 'a1',
+          digest: 'd',
+          fullDisclosure: allowed,
+          terms: allowed
+            ? {
+                engagementKind: 'SELLER_DIRECT_DISCOUNT',
+                nativePromotionKey: 'p',
+                terms: { price: '200.0000' },
+                obligations: { fee: '600.0000' },
+                priceFreeze: true,
+                autoParticipation: false,
+                termsEvidenceReference: 'fixture://source',
+              }
+            : null,
+        }),
+      ],
+    ]);
+    render(<PromotionDeclaration context={context} actionId="a1" digest="d" />);
+    fireEvent.click(screen.getByRole('button', { name: t('promotionReadTerms', 'zh') }));
+    expect(await screen.findByText('600.0000')).toBeInTheDocument();
+    allowed = false;
+    fireEvent.click(screen.getByRole('button', { name: t('promotionReadTerms', 'zh') }));
+    expect(screen.queryByText('600.0000')).not.toBeInTheDocument();
+    expect(await screen.findByText(t('promotionTermsRestricted', 'zh'))).toBeInTheDocument();
   });
 });
