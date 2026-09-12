@@ -263,3 +263,25 @@ coverage. The final review additionally requires the original package scope to
 match before permitting any recheck. No historical calibration-dependency bytes
 are backfilled. Explicit correction/exploration preparation, purpose-specific
 complete combinations and all transitive late-evidence consumers remain open.
+
+
+## Checkpoint 24 — required calibration categories follow declared purpose
+
+V0104 replaces global all-20 presence with the bounded category dependencies of
+the existing purposes. Common safety rules remain required. The current read
+port takes an explicit purpose, and governed package detail exposes required
+categories. Historical package bytes, lifecycle and exact acceptance remain.
+No calibration values, grants or platform switches are generated.
+
+The signed connected case removes the four unrelated growth categories from a
+correction draft, professionally validates it and has an independent authenticated
+Owner accept and activate it. It resolves for correction, retains safety values,
+does not supply promotion authority and expires at its accepted boundary. The
+missing-component negative now removes APPROVAL_VALIDITY explicitly and checks
+that exact missing safety category, rather than relying on array position or an
+unrelated growth parameter. An incorrect exact digest remains refused.
+
+This is category dependency selection. It does not claim completed semantic
+validation for every structured rule, native-scope resolution for every purpose,
+independent correction/exploration action preparation or business safety. Results
+and exact source/log hashes are recorded in `checkpoint-24-test-receipts.json`.

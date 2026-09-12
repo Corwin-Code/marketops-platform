@@ -34,10 +34,10 @@ public class CalibrationRepository {
                         Integer windowDays, String evidenceReference) {
     }
 
-    public Resolution resolve(UUID organizationId, String platformCode, UUID storeId, Instant at) {
-        return jdbc.sql("SELECT package_id, package_version, resolution_state FROM core.lc_resolve_calibration(:org, :platform, :store, :at)")
+    public Resolution resolve(UUID organizationId, String platformCode, UUID storeId, Instant at, String purpose) {
+        return jdbc.sql("SELECT package_id, package_version, resolution_state FROM core.lc_resolve_calibration_for(:org, :platform, :store, :at, :purpose)")
                 .param("org", organizationId).param("platform", platformCode).param("store", storeId)
-                .param("at", Timestamp.from(at))
+                .param("at", Timestamp.from(at)).param("purpose",purpose)
                 .query((rs, n) -> new Resolution(rs.getObject("package_id", UUID.class),
                         rs.getObject("package_version", Integer.class), rs.getString("resolution_state")))
                 .single();

@@ -42,7 +42,12 @@ public class CalibrationService {
 
     @Transactional(readOnly = true)
     public Outcome resolve(UUID organizationId, String platformCode, UUID storeId, Instant at) {
-        CalibrationRepository.Resolution resolution = calibration.resolve(organizationId, platformCode, storeId, at);
+        return resolve(organizationId,platformCode,storeId,at,"LISTING_CONVERSION");
+    }
+
+    @Transactional(readOnly = true)
+    public Outcome resolve(UUID organizationId, String platformCode, UUID storeId, Instant at, String purpose) {
+        CalibrationRepository.Resolution resolution = calibration.resolve(organizationId, platformCode, storeId, at, purpose);
         if (!resolution.resolved()) {
             return new Outcome(null, resolution.state());
         }

@@ -1746,6 +1746,25 @@ class ListingReworkAuthorizationIT {
                 .isEqualTo("CALIBRATION_UNRESOLVED");
     }
 
+    @Test
+    void correctionCalibrationDoesNotRequireGrowthClaimsButRetainsSafetyRules() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        var draft=calibrationDraft("synthetic-correction-without-growth-evidence");
+        var values=(tools.jackson.databind.node.ArrayNode)draft.path("values");
+        var unused=java.util.Set.of("MATERIAL_IMPROVEMENT_BOUND","DEMAND_SCENARIO_SET","FORMAL_NODES","STOP_RULE");
+        for(int index=values.size()-1;index>=0;index--) if(unused.contains(values.get(index).path("categoryCode").asText())) values.remove(index);
+        String id=activateSyntheticCalibrationWithIndependentOwner(draft);
+        var resolved=calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now(),"DESCRIPTION_CORRECTION");
+        assertThat(resolved.ok()).isTrue();assertThat(resolved.resolved().packageId()).isEqualTo(UUID.fromString(id));
+        assertThat(resolved.resolved().values()).doesNotContainKeys(unused.toArray(String[]::new));
+        assertThat(resolved.resolved().values()).containsKeys("NON_WORSENING_PROFIT_BOUND","NON_WORSENING_RETURN_BOUND",
+                "CRITICAL_GROUP_RULE","FRESHNESS_RULE","RESPONSIBILITY_COVERAGE","APPROVAL_VALIDITY","ALLOWANCE_AXES");
+        assertThat(calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now(),"PROMOTION").ok()).isFalse();
+        assertThat(calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now())
+                .resolved().packageId()).isEqualTo(fixture.id("calibrationPackage"));
+        assertThat(calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now().plusSeconds(2*86400),"DESCRIPTION_CORRECTION").ok()).isFalse();
+    }
+
     private String activateSyntheticCalibrationWithIndependentOwner(tools.jackson.databind.node.ObjectNode draft) throws Exception {
         for(var action:List.of(ActionScopeCode.LISTING_CALIBRATION_PREPARE,ActionScopeCode.LISTING_CALIBRATION_VALIDATE))
             users.grantScope(OPERATOR,userId,action,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
@@ -1790,10 +1809,11 @@ class ListingReworkAuthorizationIT {
         }
         var json=new tools.jackson.databind.ObjectMapper();
         var draft=calibrationDraft("synthetic-incomplete-calibration");
-        ((tools.jackson.databind.node.ArrayNode) draft.path("values")).remove(0);
+        var values=(tools.jackson.databind.node.ArrayNode)draft.path("values");
+        for(int index=values.size()-1;index>=0;index--) if(values.get(index).path("categoryCode").asText().equals("APPROVAL_VALIDITY")) values.remove(index);
         var created=postCalibration("",draft);
         String id=created.path("package").path("id").asText();
-        assertThat(created.path("combinationFailures").isEmpty()).isFalse();
+        assertThat(created.path("combinationFailures").toString()).contains("APPROVAL_VALIDITY");
         mvc.perform(post("/api/v1/console/listing/calibrations/"+id+"/validate")
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(Map.of("digest",created.path("governance").path("draft_digest").asText(),

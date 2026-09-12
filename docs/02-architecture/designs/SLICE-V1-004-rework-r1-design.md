@@ -594,3 +594,30 @@ This checkpoint does not yet supply action-purpose preparation for independent
 correction/exploration, purpose-specific complete-combination activation or all
 late-evidence consumers. Those remain explicit root 007/011/017 work. Current
 historical packages and outputs remain retained. New writes remain default OFF.
+
+
+### Checkpoint 24 work in progress — purpose-specific required categories (root 011)
+
+V0104 replaces the all-catalog presence check with a closed required-category
+selection for the four existing declared purposes. A listing-conversion package
+has no promotion demand consumer. A promotion package has no description
+serialization/readback consumer. Correction does not claim material growth,
+promotion demand, formal growth nodes or effect-shortfall stopping. Bounded
+exploration does not claim the formal material-growth threshold or growth nodes;
+its safety, demand applicability and stopping responsibilities remain.
+
+All shared safety categories remain required: profit/return bounds, critical
+scope, freshness, responsibility, materiality, approval, allowance and relevant
+time bounds. Values, units and evidence still go through the existing professional
+validation and independent exact Owner acceptance. No default value is supplied,
+and optional absent rules are not converted to zero. Supplied categories still
+undergo the existing combination checks. The detail response now exposes the
+required category names derived from the declared purpose.
+
+The read port accepts an explicit purpose and preserves current scope and effective
+period resolution. Existing consumers retain their existing declared/default
+behavior until their purpose-specific preparation and safeguard path is connected.
+A qualified correction package is not a promotion package or an execution permit.
+This patch addresses category dependency selection, not all JSON-rule semantic
+validation or complete correction/exploration business workflows. Those remaining
+requirements are not represented as closed by a successful activation test.

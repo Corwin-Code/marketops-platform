@@ -99,8 +99,12 @@
       "id": "S4-DR-R1-007",
       "title": "启动Gate用结构性Listing Health代替利润、退货、供给与用途保障",
       "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "implementation": [
+        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open."
+      ],
+      "executed_evidence": [
+        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim."
+      ]
     },
     {
       "id": "S4-DR-R1-008",
@@ -141,13 +145,15 @@
         "V0082 adds sealed prepare/validate/accept/activate Policy operations, current role/scope checks, independent Owner acceptance, exact digests, lifecycle events, purpose-specific resolution and explicit replacement identity. App role remains read-only on calibration tables.",
         "The existing signed professional/independent Owner calibration lifecycle now also exercises explicit ALL_APPLICABLE allowance scope composition without modifying an accepted package.",
         "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open."
+        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open.",
+        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open."
       ],
       "executed_evidence": [
         "Signed HTTP plus real PostgreSQL completed draft, professional validation, independent Owner acceptance and activation; self-acceptance, missing components and incorrect digest refused. Replacement/concurrency/expiry/dependency-continuation and full Console remain pending.",
         "Checkpoint 17 signed HTTP/database regression passes 40 tests, including exact policy composition acceptance and active resolution. Purpose-dependent consumers and continuation remain open.",
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim."
+        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim.",
+        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim."
       ]
     },
     {
@@ -343,7 +349,8 @@
         "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished.",
         "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open.",
         "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open."
+        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open.",
+        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
@@ -353,9 +360,10 @@
         "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred.",
         "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim."
+        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim.",
+        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim."
       ]
     }
   ],
-  "convergence_control": "Owner 2026-09-10: monitor active runs; diagnose before rerun; rerun a passed check only for relevant changes/new evidence/final exact-head verification; every addition maps to a frozen root and an observable required outcome; prioritize connected acceptance paths."
+  "convergence_control": "Owner reiterated 2026-09-13: monitor active runs and inspect terminal results; stop after bounded relevant checks pass. Every change must map to a frozen root and observable acceptance outcome; every rerun needs a relevant source change, new evidence or diagnosed failure. Inspect actual consumers and sole-owner boundaries before adding logic. No unused speculative abstraction or repeated authority."
 }

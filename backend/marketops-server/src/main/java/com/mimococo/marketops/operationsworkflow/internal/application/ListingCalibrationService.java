@@ -84,6 +84,7 @@ public class ListingCalibrationService {
         if (!visible) throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
         String body=jdbc.sql("""
                 SELECT jsonb_build_object('package',to_jsonb(p),'governance',to_jsonb(g),
+                 'requiredCategories',to_jsonb(core.lc_calibration_required_categories(p.purpose_code)),
                  'combinationFailures',to_jsonb(ops.lc_calibration_combination_failures(p.id)),
                  'values',(SELECT jsonb_agg(to_jsonb(v) ORDER BY v.category_code) FROM core.lc_calibration_value v WHERE v.package_id=p.id),
                  'events',(SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY e.occurred_at,e.id),'[]'::jsonb)
@@ -127,7 +128,9 @@ public class ListingCalibrationService {
         for (String field:List.of("purposeCode","scopeKind","evidenceReference","rationale","impact","differences","effectiveFrom")) {
             MetadataFieldPolicy.requireText(field,draft.path(field).asText());
         }
-        if (!List.of("ORGANIZATION","PLATFORM","STORE").contains(draft.path("scopeKind").asText())
+        if (!List.of("LISTING_CONVERSION","DESCRIPTION_CORRECTION","BOUNDED_EXPLORATION","PROMOTION")
+                    .contains(draft.path("purposeCode").asText())
+                || !List.of("ORGANIZATION","PLATFORM","STORE").contains(draft.path("scopeKind").asText())
                 || !draft.path("version").isIntegralNumber() || !draft.path("version").canConvertToInt() || draft.path("version").asInt()<1
                 || !draft.path("values").isArray() || draft.path("values").isEmpty()) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);

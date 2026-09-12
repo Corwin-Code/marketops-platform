@@ -29,3 +29,20 @@ Historical plans and results retain their original package and rules.
 Independent correction/exploration preparation and purpose-specific complete
 combination activation are still being connected. Do not use this checkpoint as
 evidence that those remaining journeys or all 27 findings are closed.
+
+
+## Required categories by declared purpose
+
+Calibration detail exposes `requiredCategories` from the existing Policy owner.
+The professional supplies the categories actually required for the declared
+purpose; absent optional growth fields are not filled with demonstration values.
+For correction, material-improvement, promotion-demand and formal-growth-node
+parameters are not required. Profit, return, scope, freshness, responsibility,
+approval, allowance and description safety parameters remain necessary.
+
+An accepted correction package resolves only for correction within its accepted
+scope and effective period. It cannot satisfy a missing promotion package or
+extend an expired period. Category completeness does not itself qualify sources,
+prove a comparison method or authorize correction/exploration execution. The
+remaining business-purpose preparation and complete semantic validation are
+still part of this continuous rework.

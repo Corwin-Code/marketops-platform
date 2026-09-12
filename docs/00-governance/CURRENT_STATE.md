@@ -897,3 +897,15 @@ HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identit
 has 2 overlapping connected checks. Exact stages are in rework evidence
 `checkpoint-23-test-receipts.json`. Purpose preparation and complete combinations
 continue; 0/27 CLOSED, final Controller handoff NOT_READY, platform writes OFF.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-24 selects calibration
+category dependencies by declared purpose. Correction can omit growth-only
+parameters while preserving required safety categories. Exact-purpose read
+resolution and required-category detail are connected. Results: 48 signed
+HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical
+upgrade PASS, with no failing/retried run in this source stage. Evidence:
+`checkpoint-24-test-receipts.json`. Structured-rule semantics and actual
+correction/exploration safeguards remain in progress. 0/27 CLOSED, final
+Controller handoff NOT_READY; no production enablement or remote publication.
+Owner's reiterated convergence constraints are retained in finding-progress.json.
