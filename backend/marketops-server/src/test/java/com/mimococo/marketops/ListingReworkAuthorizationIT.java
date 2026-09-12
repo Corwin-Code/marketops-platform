@@ -452,9 +452,20 @@ class ListingReworkAuthorizationIT {
                 .content(json.writeValueAsString(altered))).andExpect(status().isForbidden());
         assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_promotion_engagement WHERE action_id=:id")
                 .param("id",action).query(Integer.class).single()).isZero();
-        mvc.perform(post(entry).header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+        var entered=mvc.perform(post(entry).header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(terms))).andExpect(status().isOk())
-                .andExpect(jsonPath("$.terms.finalPrice").value("200.0000"));
+                .andExpect(jsonPath("$.fullDisclosure").value(false)).andExpect(jsonPath("$.terms").isEmpty())
+                .andExpect(jsonPath("$.obligations").isEmpty()).andExpect(jsonPath("$.termsEvidenceReference").isEmpty()).andReturn();
+        String engagementId=json.readTree(entered.getResponse().getContentAsString()).path("id").asText();
+        String engagementPath="/api/v1/console/listing/manual/engagements/"+engagementId;
+        String engagementsPath="/api/v1/console/listing/manual/engagements?listingId="+fixture.id("listing");
+        mvc.perform(get(engagementPath).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(true))
+                .andExpect(jsonPath("$.terms.finalPrice").value("200.0000"))
+                .andExpect(jsonPath("$.obligations.fixedFee").value("600.0000"));
+        mvc.perform(get(engagementsPath).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].fullDisclosure").value(true))
+                .andExpect(jsonPath("$[0].terms.finalPrice").value("200.0000"));
         assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
                 .param("id",action).query(Integer.class).single()).isZero();
         assertThat(loopback.received).isEmpty();
@@ -466,8 +477,48 @@ class ListingReworkAuthorizationIT {
         mvc.perform(get(actionPath+"/promotion-terms").header(HttpHeaders.AUTHORIZATION,bearer()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(false))
                 .andExpect(jsonPath("$.terms").isEmpty());
+        mvc.perform(get(engagementPath).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(false))
+                .andExpect(jsonPath("$.terms").isEmpty()).andExpect(jsonPath("$.obligations").isEmpty());
+        mvc.perform(get(engagementsPath).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].fullDisclosure").value(false))
+                .andExpect(jsonPath("$[0].terms").isEmpty()).andExpect(jsonPath("$[0].obligations").isEmpty());
         // This test establishes exact declaration identity only. Independent actual participation,
         // exit authorization, financial qualification and staged obligation release remain separate roots.
+    }
+
+    @Test
+    void adoptedPromotionWithoutHistoricalProductScopeRequiresOrganizationFinancialDisclosure() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_PROMOTION_MANAGE,
+                ResourceScopeType.STORE,fixture.id("store"),null);
+        var viewGrant=users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_CONVERSION_VIEW,
+                ResourceScopeType.STORE,fixture.id("store"),null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScopeType.STORE,fixture.id("store"),null);
+        var json=new tools.jackson.databind.ObjectMapper();
+        var response=mvc.perform(post("/api/v1/console/listing/manual/listings/"+fixture.id("listing")+"/engagements")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("engagementKind","SELLER_DIRECT_DISCOUNT",
+                    "nativePromotionKey","observed-existing-promotion","terms",Map.of("price","200.0000"),
+                    "priceFreeze",false,"autoParticipation",false,"termsEvidenceReference","fixture://observed-existing",
+                    "obligations",Map.of("knownCommitment","600.0000")))))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.adopted").value(true))
+                .andExpect(jsonPath("$.fullDisclosure").value(false)).andExpect(jsonPath("$.terms").isEmpty())
+                .andExpect(jsonPath("$.obligations").isEmpty()).andReturn();
+        String id=json.readTree(response.getResponse().getContentAsString()).path("id").asText();
+        String path="/api/v1/console/listing/manual/engagements/"+id;
+        var financial=users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(get(path).header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullDisclosure").value(true)).andExpect(jsonPath("$.terms.price").value("200.0000"))
+                .andExpect(jsonPath("$.obligations.knownCommitment").value("600.0000"));
+        users.revokeScope(OPERATOR,financial.id(),"Withdraw organization financial scope",financial.version());
+        mvc.perform(get(path).header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullDisclosure").value(false)).andExpect(jsonPath("$.terms").isEmpty());
+        users.revokeScope(OPERATOR,viewGrant.id(),"Withdraw current view scope",viewGrant.version());
+        mvc.perform(get(path).header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isForbidden());
+        // Recorded observed terms do not establish historical authorization or qualified adoption.
     }
 
     @Test

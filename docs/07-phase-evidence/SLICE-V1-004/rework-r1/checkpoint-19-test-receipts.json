@@ -1,0 +1,73 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "9e61654a0090e0212303c58440be918dd4bef6ed",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/PromotionEngagementView.java": "3bd3d5dcc1795449715f0559028fb970351a7b8e0a66c7c8d3e659af93496f56",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ManualPathService.java": "c969ca48590ab7a66f374afd3406594705498886c0f9c0720deab00dd8169349",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ManualPathRepository.java": "63c21336bd886fde9cd0b7214e9975975469156fe3968b4ae1063f272d6a5a7e",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingManualConsoleController.java": "e3eaac09fa3d750215c13cc2dddfab4bed27b4e2a61109ba774684b8d8c82a64",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "fa5d3aa619de63b28cca159587b2f97df2bf0dac674110b621969d6a16190690",
+    "frontend/marketops-console/src/__tests__/ListingConversionApi.test.ts": "e07868a7c548107bc12413dde8318896b2ab259b5f9c64f7eda26ef94cf9b818",
+    "frontend/marketops-console/src/__tests__/ListingConversionForms.test.tsx": "2d294bfafd5bfa2e5cb2390004b6540797a0598239c356d11fd7d453da2ec55c",
+    "frontend/marketops-console/src/api/listingConversion.ts": "b725826d275dbf99e62c73863245c6c629efa78d86a84477b78cb44141d1a35e",
+    "frontend/marketops-console/src/listing/ListingManualPanel.tsx": "6346c3aebe0632b9acac34700bfe1461efeba087b8cabe1b15ce50323d281d46"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 43,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-disclosure-authorization.log",
+      "raw_log_sha256": "bcac742018c48af127e79eb9b30d983b86821b47a8ebc6aff66783610c3f9d2e",
+      "summary_path": "promotion-disclosure-authorization-summary.txt",
+      "summary_sha256": "5705ea016ce9aec25c966bf49fccc0e4800a67cd64a6454aef39e4c71b7141f3"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 76,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-disclosure-architecture.log",
+      "raw_log_sha256": "8ee52e151cb69b318a8bf2a967377b3c7b0abb098d4b32f3173676b9f275f439",
+      "summary_path": "promotion-disclosure-architecture-summary.txt",
+      "summary_sha256": "aa27e83b2bf7e590e3015b418dd073725210c1ab710d75fb441f3c9a19567e4c"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 27,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-disclosure-frontend.log",
+      "raw_log_sha256": "b8ea1d849446e5acab2fb482f2a788c99dc50c7dc788c2a20d9c7d09eb908620",
+      "summary_path": "promotion-disclosure-frontend-summary.txt",
+      "summary_sha256": "030598524a5701185e776eac0e3c090caadffb09019bc8c00761d97ff000f678"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-disclosure-lint.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "promotion-disclosure-lint-summary.txt",
+      "summary_sha256": "ebbcdbd1f16c901a128f9793b88b6916bc14c5cf854dcf669dd362c91ebbcd05"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-disclosure-build.log",
+      "raw_log_sha256": "d7d478908e5c1ddd09bb97f2636db474d0e1fb0226b6c12a23c1c22fe8a354b4",
+      "summary_path": "promotion-disclosure-build-summary.txt",
+      "summary_sha256": "241999d87a6e651447182d37946dbf6d7dcb9dfbb555d25366f08d1f8a3a9a1d"
+    }
+  ],
+  "limitations": [
+    "0/27 CLOSED. Disclosure correction does not qualify historical adoption, economics, native participation, exit or residual release.",
+    "The initial two-case connected pass overlaps the final 43 authorization cases and is not additional unique coverage.",
+    "No migration or transport changes; unchanged upgrade/launch/provider tests were not repeated.",
+    "All verification is isolated and synthetic; no real provider calls, production enablement or remote Git publication."
+  ]
+}

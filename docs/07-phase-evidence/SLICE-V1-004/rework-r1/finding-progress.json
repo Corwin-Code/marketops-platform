@@ -23,11 +23,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification.",
-        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed."
+        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
+        "Checkpoint 19: existing promotion list/detail and entry/adoption/exit/release responses all apply current financial projection; raw public actorless detail read removed. Missing historical adoption product scope requires organization-wide financial coverage, not assumed current mapping."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations."
+        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
+        "checkpoint-19-test-receipts.json: 43 signed HTTP/database, 76 architecture and 27 frontend checks pass; list/detail/mutation masking, exact authorized contents, product/org financial revocation and ordinary view revocation are exercised. Lint/build pass. No full-root closure."
       ]
     },
     {

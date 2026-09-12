@@ -24,7 +24,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
@@ -190,7 +189,7 @@ public class ManualPathService {
                 MetadataFieldPolicy.requireText("termsEvidenceReference", request.termsEvidenceReference()), true,
                 request.obligations() == null ? Map.of() : request.obligations(), clock.instant());
         recordAudit(actor, "lc-promotion-engagement", id, AuditAction.CREATE, Map.of("adopted", new FieldChange(null, "true")), null);
-        return manual.engagement(id).orElseThrow();
+        return disclose(actor,manual.engagement(id).orElseThrow());
     }
 
     @Transactional
@@ -209,7 +208,7 @@ public class ManualPathService {
                 exactTermsReference(request.termsEvidenceReference()), false,
                 request.obligations() == null ? Map.of() : request.obligations(), clock.instant());
         recordAudit(actor, "lc-promotion-engagement", id, AuditAction.CREATE, Map.of("actionId", new FieldChange(null, actionId.toString())), null);
-        return manual.engagement(id).orElseThrow();
+        return disclose(actor,manual.engagement(id).orElseThrow());
     }
 
     @Transactional
@@ -229,7 +228,7 @@ public class ManualPathService {
         manual.authorizeExit(engagementId, actor.userId(), proof, reasonCode);
         recordAudit(actor, "lc-promotion-engagement", engagementId, AuditAction.STATUS_CHANGE,
                 Map.of("state", new FieldChange(engagement.state(), "EXITING"), "exitReason", new FieldChange(null, reasonCode)), null);
-        return manual.engagement(engagementId).orElseThrow();
+        return disclose(actor,manual.engagement(engagementId).orElseThrow());
     }
 
     /** The two separate releases: new transactions stopped, then obligations cleared. */
@@ -250,18 +249,35 @@ public class ManualPathService {
         }
         recordAudit(actor, "lc-promotion-engagement", engagementId, AuditAction.STATUS_CHANGE,
                 Map.of("state", new FieldChange(engagement.state(), to)), null);
-        return manual.engagement(engagementId).orElseThrow();
+        return disclose(actor,manual.engagement(engagementId).orElseThrow());
     }
 
     @Transactional(readOnly = true)
     public List<PromotionEngagementView> engagements(AuthenticatedActor actor, UUID listingId) {
         requireListing(actor, listingId, ActionScopeCode.LISTING_CONVERSION_VIEW);
-        return manual.engagements(listingId);
+        return manual.engagements(listingId).stream().map(engagement->disclose(actor,engagement)).toList();
     }
 
     @Transactional(readOnly = true)
-    public Optional<PromotionEngagementView> engagement(UUID id) {
-        return manual.engagement(id);
+    public PromotionEngagementView engagement(AuthenticatedActor actor,UUID id) {
+        return disclose(actor,requireEngagement(actor,id,ActionScopeCode.LISTING_CONVERSION_VIEW));
+    }
+
+    private PromotionEngagementView disclose(AuthenticatedActor actor,PromotionEngagementView engagement) {
+        boolean permitted;
+        if(engagement.actionId()==null) {
+            // Old adopted facts have no frozen product scope. Organization-wide financial
+            // access covers that uncertainty; a store grant cannot stand in for missing lineage.
+            permitted=authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                    ResourceScope.organization(actor.organizationId())).permitted();
+        } else {
+            var products=actions.promotionEvidenceProducts(engagement.actionId());
+            permitted=authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                    ResourceScope.store(engagement.storeId())).permitted() && !products.isEmpty()
+                    && products.stream().allMatch(product->authorization.evaluate(actor,
+                        ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,ResourceScope.productVariant(product)).permitted());
+        }
+        return engagement.withFinancialDisclosure(permitted);
     }
 
     private static String exactTermsReference(String reference) {

@@ -291,6 +291,7 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
               </>
             )}
           </h4>
+          {!engagement.fullDisclosure && <p>{t('promotionTermsRestricted', language)}</p>}
           {engagement.state === 'ACTIVE' && (
             <>
               <label>

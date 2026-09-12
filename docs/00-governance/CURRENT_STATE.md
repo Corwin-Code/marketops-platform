@@ -836,3 +836,12 @@ for overlapping coverage, failure diagnoses and source/log hashes. Native
 participation, exact conditional exit, economics, adoption and residual release
 remain in progress. 0/27 CLOSED; final Controller handoff NOT_READY. All new
 platform writes remain default OFF; no Level-2 or remote publication occurred.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-19 extends current
+financial disclosure to existing promotion engagement reads and every mutation
+response, removing the actorless public detail route. Unknown historical product
+scope in adopted records is not replaced with current store mappings. Results:
+43 signed HTTP/database, 76 architecture, 27 frontend; lint/build pass. See
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-19-test-receipts.json`.
+No migration or transport change; 0/27 CLOSED, final Controller handoff NOT_READY.

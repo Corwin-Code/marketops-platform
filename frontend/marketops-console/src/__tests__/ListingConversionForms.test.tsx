@@ -340,6 +340,7 @@ describe('every listing form posts what the operator entered', () => {
       id: 'e1',
       platformListingId: LISTING,
       engagementKind: 'OFFICIAL_PROMOTION_PARTICIPATION',
+      fullDisclosure: false,
       priceFreeze: true,
       autoParticipation: false,
       adopted: false,

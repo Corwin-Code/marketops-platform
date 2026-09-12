@@ -24,7 +24,15 @@ public record PromotionEngagementView(
         Instant newTransactionsStoppedAt,
         Instant obligationsClearedAt,
         String state,
-        long version) {
+        long version,
+        boolean fullDisclosure) {
+
+    public PromotionEngagementView withFinancialDisclosure(boolean permitted) {
+        return new PromotionEngagementView(id,storeId,platformListingId,actionId,engagementKind,nativePromotionKey,
+                permitted?terms:Map.of(),priceFreeze,autoParticipation,permitted?termsEvidenceReference:null,adopted,
+                permitted?obligations:Map.of(),exitReasonCode,exitAuthorizedByUserId,exitAuthorizedAt,
+                newTransactionsStoppedAt,obligationsClearedAt,state,version,permitted);
+    }
 
     public PromotionEngagementView {
         terms = Map.copyOf(terms == null ? Map.of() : terms);

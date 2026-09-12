@@ -89,6 +89,7 @@ const ENGAGEMENT = {
   id: 'e1',
   platformListingId: LISTING,
   engagementKind: 'SELLER_DIRECT_DISCOUNT',
+  fullDisclosure: false,
   priceFreeze: false,
   autoParticipation: false,
   adopted: true,

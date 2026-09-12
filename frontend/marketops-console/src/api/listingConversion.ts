@@ -278,6 +278,7 @@ export interface PromotionEngagement {
   readonly priceFreeze: boolean;
   readonly autoParticipation: boolean;
   readonly adopted: boolean;
+  readonly fullDisclosure: boolean;
   readonly exitReasonCode: string | undefined;
   readonly state: string;
   readonly version: number;
@@ -982,6 +983,7 @@ export function parsePromotionEngagement(body: unknown): PromotionEngagement | u
     priceFreeze = bool(r.priceFreeze),
     autoParticipation = bool(r.autoParticipation),
     adopted = bool(r.adopted),
+    fullDisclosure = bool(r.fullDisclosure),
     state = text(r.state),
     version = number(r.version);
   if (
@@ -991,6 +993,7 @@ export function parsePromotionEngagement(body: unknown): PromotionEngagement | u
     priceFreeze === undefined ||
     autoParticipation === undefined ||
     adopted === undefined ||
+    fullDisclosure === undefined ||
     state === undefined ||
     version === undefined
   )
@@ -1004,6 +1007,7 @@ export function parsePromotionEngagement(body: unknown): PromotionEngagement | u
     priceFreeze,
     autoParticipation,
     adopted,
+    fullDisclosure,
     exitReasonCode: text(r.exitReasonCode),
     state,
     version,

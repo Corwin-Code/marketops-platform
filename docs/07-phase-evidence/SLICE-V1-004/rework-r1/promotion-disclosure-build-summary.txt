@@ -1,0 +1,6 @@
+fnm exec --using 24.19.0 npm run build
+Working directory: frontend/marketops-console
+> tsc --noEmit && vite build
+✓ built in 112ms
+Exit status: 0
+Local synthetic verification only; no final closure.

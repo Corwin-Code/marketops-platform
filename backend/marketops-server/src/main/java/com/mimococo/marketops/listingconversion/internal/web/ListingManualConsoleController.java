@@ -8,11 +8,8 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.listingconversion.ManualPacketView;
 import com.mimococo.marketops.listingconversion.PromotionEngagementView;
-import com.mimococo.marketops.listingconversion.internal.application.ListingScopeAuthorization;
 import com.mimococo.marketops.listingconversion.internal.application.ManualPathService;
 import com.mimococo.marketops.shared.ConsoleApi;
-import com.mimococo.marketops.shared.ErrorCode;
-import com.mimococo.marketops.shared.OperationRejectedException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -47,13 +44,11 @@ import org.springframework.web.bind.annotation.RestController;
 class ListingManualConsoleController {
 
     private final ManualPathService manual;
-    private final ListingScopeAuthorization listings;
     private final MetadataAuditRecorder audit;
 
-    ListingManualConsoleController(ManualPathService manual, ListingScopeAuthorization listings,
+    ListingManualConsoleController(ManualPathService manual,
                                    MetadataAuditRecorder audit) {
         this.manual = manual;
-        this.listings = listings;
         this.audit = audit;
     }
 
@@ -120,9 +115,7 @@ class ListingManualConsoleController {
     @Transactional
     @GetMapping(value = "/engagements/{engagementId}", produces = MediaType.APPLICATION_JSON_VALUE)
     PromotionEngagementView engagement(AuthenticatedActor actor, @PathVariable UUID engagementId) {
-        PromotionEngagementView result = manual.engagement(engagementId)
-                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
-        listings.require(actor, result.platformListingId(), ActionScopeCode.LISTING_CONVERSION_VIEW);
+        PromotionEngagementView result = manual.engagement(actor,engagementId);
         auditRead(actor, "lc-promotion-engagement", engagementId, "engagement");
         return result;
     }

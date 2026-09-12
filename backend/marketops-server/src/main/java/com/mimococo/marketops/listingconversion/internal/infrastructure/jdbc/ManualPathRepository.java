@@ -196,6 +196,6 @@ public class ManualPathRepository {
                 rs.getObject("exit_authorized_by_user_id", UUID.class),
                 ListingFactRepository.instant(rs, "exit_authorized_at"),
                 ListingFactRepository.instant(rs, "new_transactions_stopped_at"),
-                ListingFactRepository.instant(rs, "obligations_cleared_at"), rs.getString("state"), rs.getLong("version"));
+                ListingFactRepository.instant(rs, "obligations_cleared_at"), rs.getString("state"), rs.getLong("version"),true);
     }
 }
