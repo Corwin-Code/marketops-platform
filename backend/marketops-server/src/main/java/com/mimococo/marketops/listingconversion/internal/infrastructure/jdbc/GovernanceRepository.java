@@ -244,38 +244,60 @@ public class GovernanceRepository {
                 .param("source", ListingFactRepository.ts(sourceTime)).param("accepted", Timestamp.from(acceptedAt)).update();
     }
 
-    public record QueuedRow(UUID id, UUID organizationId, UUID listingId, RecalculationClass triggerClass) {
+    public record QueuedRow(UUID id, UUID organizationId, UUID listingId, RecalculationClass triggerClass,
+                            long leaseGeneration) {
     }
 
-    public List<QueuedRow> claim(int limit, Instant now) {
-        List<QueuedRow> claimed = jdbc.sql("""
-                SELECT id, organization_id, platform_listing_id, trigger_class FROM ops.lc_recalculation_queue
-                 WHERE state = 'QUEUED'
-                 ORDER BY CASE trigger_class WHEN 'RISK' THEN 0 WHEN 'ORDINARY' THEN 1 ELSE 2 END, accepted_at
-                 LIMIT :limit
-                """).param("limit", limit)
-                .query((rs, n) -> new QueuedRow(rs.getObject("id", UUID.class), rs.getObject("organization_id", UUID.class),
-                        rs.getObject("platform_listing_id", UUID.class), RecalculationClass.valueOf(rs.getString("trigger_class"))))
-                .list();
-        for (QueuedRow row : claimed) {
-            jdbc.sql("UPDATE ops.lc_recalculation_queue SET state = 'RUNNING', started_at = :now WHERE id = :id AND state = 'QUEUED'")
-                    .param("id", row.id()).param("now", Timestamp.from(now)).update();
-        }
-        return claimed;
+    /** The existing queue is the sole lease authority. A statement claims only rows it actually updates. */
+    public List<QueuedRow> claim(int limit) {
+        if (limit < 1 || limit > 1000) throw new IllegalArgumentException("invalid recalculation limit");
+        return jdbc.sql("""
+                WITH tick AS MATERIALIZED (SELECT clock_timestamp() AS at)
+                UPDATE ops.lc_recalculation_queue q
+                   SET state='RUNNING', started_at=coalesce(q.started_at,tick.at),
+                       lease_generation=coalesce(q.lease_generation,0)+1,
+                       leased_until=tick.at+interval '120 seconds'
+                  FROM (SELECT pending.id FROM ops.lc_recalculation_queue pending CROSS JOIN tick
+                         WHERE pending.accepted_at<=tick.at AND (pending.state='QUEUED' OR (pending.state='RUNNING' AND
+                             (pending.leased_until IS NULL OR pending.leased_until<=tick.at)))
+                         ORDER BY CASE pending.trigger_class WHEN 'RISK' THEN 0 WHEN 'ORDINARY' THEN 1 ELSE 2 END,
+                                  pending.accepted_at,pending.id
+                         LIMIT :limit FOR UPDATE OF pending SKIP LOCKED) ready, tick
+                 WHERE q.id=ready.id
+                RETURNING q.id,q.organization_id,q.platform_listing_id,q.trigger_class,q.lease_generation
+                """).param("limit",limit)
+                .query((rs,n)->new QueuedRow(rs.getObject("id",UUID.class),rs.getObject("organization_id",UUID.class),
+                        rs.getObject("platform_listing_id",UUID.class),RecalculationClass.valueOf(rs.getString("trigger_class")),
+                        rs.getLong("lease_generation"))).list();
     }
 
-    public void finish(UUID id, UUID runId, String failureCode, Instant now) {
-        jdbc.sql("""
-                UPDATE ops.lc_recalculation_queue SET state = :state, finished_at = :now, calculation_run_id = :run, failure_code = :failure
-                 WHERE id = :id AND state = 'RUNNING'
-                """).param("id", id).param("state", failureCode == null ? "FINISHED" : "FAILED").param("now", Timestamp.from(now))
-                .param("run", runId).param("failure", failureCode).update();
+    /** Hold the lease row through result publication; an expired worker must roll its entire result back. */
+    public boolean lockClaim(QueuedRow row) {
+        return jdbc.sql("""
+                SELECT id FROM ops.lc_recalculation_queue WHERE id=:id AND state='RUNNING'
+                   AND lease_generation=:generation AND leased_until>clock_timestamp()
+                 FOR UPDATE
+                """).param("id",row.id()).param("generation",row.leaseGeneration()).query(UUID.class).optional().isPresent();
+    }
+
+    public boolean finish(QueuedRow row, UUID healthId, String failureCode) {
+        return jdbc.sql("""
+                UPDATE ops.lc_recalculation_queue q
+                   SET state=CASE WHEN :failure IS NULL THEN 'FINISHED' ELSE 'FAILED' END,
+                       finished_at=clock_timestamp(),health_result_id=:health,
+                       calculation_run_id=(SELECT calculation_run_id FROM mart.lc_listing_health WHERE id=:health),
+                       failure_code=:failure,leased_until=NULL
+                 WHERE q.id=:id AND q.state='RUNNING' AND q.lease_generation=:generation
+                   AND q.leased_until>clock_timestamp()
+                """).param("id",row.id()).param("generation",row.leaseGeneration())
+                .param("health",new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.OTHER,healthId))
+                .param("failure",new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.VARCHAR,failureCode)).update()==1;
     }
 
     public List<RecalculationQueueView> queue(UUID organizationId, int limit) {
         return jdbc.sql("""
                 SELECT id, trigger_class, target_minutes, platform_listing_id, trigger_reference, source_time, accepted_at,
-                       started_at, finished_at, state
+                       started_at, finished_at, state, health_result_id, calculation_run_id
                   FROM ops.lc_recalculation_queue WHERE organization_id = :org ORDER BY accepted_at DESC LIMIT :limit
                 """).param("org", organizationId).param("limit", limit)
                 .query((rs, n) -> {
@@ -288,7 +310,10 @@ public class GovernanceRepository {
                             rs.getObject("platform_listing_id", UUID.class), rs.getString("trigger_reference"),
                             ListingFactRepository.instant(rs, "source_time"), accepted,
                             ListingFactRepository.instant(rs, "started_at"), finished, rs.getString("state"), latency,
-                            latency != null && latency <= target * 60);
+                            "FINISHED".equals(rs.getString("state")) && rs.getObject("health_result_id") != null
+                                    && rs.getObject("calculation_run_id") != null
+                                    && finished != null && !finished.isBefore(accepted)
+                                    && java.time.Duration.between(accepted, finished).compareTo(java.time.Duration.ofMinutes(target)) <= 0);
                 })
                 .list();
     }

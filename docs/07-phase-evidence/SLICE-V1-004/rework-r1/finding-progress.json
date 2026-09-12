@@ -304,9 +304,13 @@
     {
       "id": "S4-DR-R1-023",
       "title": "5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Checkpoint 25: existing queue atomically claims by generation with expiry recovery; exact Health and calculation run publish in the same fenced transaction. Listing lock serializes versions; stale completion/failure is rejected, missing results and failed latency cannot be successful. One database tick excludes future accepted times without rewriting source/entry evidence. Periodic full review and canonical measurement/protection/authorization consumers remain OPEN."
+      ],
+      "executed_evidence": [
+        "checkpoint-25-test-receipts.json: final 93 queue/domain/architecture, 48 signed authorization, 10 schema/privilege, 1 historical upgrade PASS; six real PostgreSQL queue cases included in 93."
+      ]
     },
     {
       "id": "S4-DR-R1-024",
@@ -361,7 +365,8 @@
         "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
         "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim.",
-        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim."
+        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim.",
+        "checkpoint-25-test-receipts.json: bounded relevant checks and two diagnosed failures preserved; no root closure or complete LOCAL_VERIFIED claim."
       ]
     }
   ],

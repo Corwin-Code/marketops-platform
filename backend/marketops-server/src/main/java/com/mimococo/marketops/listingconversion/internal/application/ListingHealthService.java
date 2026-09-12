@@ -12,7 +12,6 @@ import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.shared.OperationRejectedException;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -40,17 +39,15 @@ public class ListingHealthService {
     private final CalibrationService calibration;
     private final CalculationRunLedger ledger;
     private final IdGenerator ids;
-    private final Clock clock;
 
     ListingHealthService(ListingFactRepository facts, ListingHealthRepository health, ListingActionRepository actions,
-                         CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids, Clock clock) {
+                         CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids) {
         this.facts = facts;
         this.health = health;
         this.actions = actions;
         this.calibration = calibration;
         this.ledger = ledger;
         this.ids = ids;
-        this.clock = clock;
     }
 
     /** The current complete affected set of a listing, frozen if it is new. */
@@ -81,7 +78,8 @@ public class ListingHealthService {
     public ListingHealthView recompute(UUID listingId, String triggerKind, UUID requestedByUserId) {
         ListingFactRepository.ListingContext listing = facts.listing(listingId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
-        Instant now = clock.instant();
+        health.lockListing(listingId);
+        Instant now = actions.databaseNow();
         FrozenSet set = freezeAffectedSet(listingId);
         Optional<ListingFactRepository.DescriptionRow> description = facts.latestDescription(listingId);
         List<com.mimococo.marketops.listingconversion.internal.domain.VisitConversion.Visit> visits =

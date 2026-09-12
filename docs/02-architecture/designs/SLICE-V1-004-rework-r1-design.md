@@ -621,3 +621,28 @@ A qualified correction package is not a promotion package or an execution permit
 This patch addresses category dependency selection, not all JSON-rule semantic
 validation or complete correction/exploration business workflows. Those remaining
 requirements are not represented as closed by a successful activation test.
+
+### Checkpoint 25 — bounded queue claim and result publication (root 023, partial)
+
+The existing `ops.lc_recalculation_queue` remains the only work/lease authority.
+Use the established PostgreSQL `UPDATE … FROM … FOR UPDATE SKIP LOCKED` pattern,
+with a monotonically increasing generation and an expired-lease recovery branch.
+The 120-second technical lease bounds one local transaction; it is not a product
+freshness threshold or a substitute for the accepted 5/15/60-minute obligations.
+No generic scheduler, second queue, platform adapter or external write is added.
+
+A worker locks its current generation, invokes the existing Health consumer and
+publishes that exact Health ID and calculation-run ID in the same transaction.
+Expiration rejects publication and rolls back its projection. A previous generation
+cannot complete or fail a successor. Interactive and queued Health computations
+serialize on their existing listing before allocating a version. Historical queue
+receipts retain their original bytes and missing result references; abandoned old
+RUNNING rows become claimable without inventing prior success. Failed tasks and
+historical unbound receipts cannot report successful completion latency.
+
+Bounded verification: isolated PostgreSQL competition, crash recovery, expired
+publication rollback, exact-result/replay and false-success negatives; then the
+relevant authorization, architecture, fresh-schema and upgrade checks once.
+Root 023 remains open for periodic whole-scope scheduling and actual canonical
+measurement/protection/authorization recomputation. A Health-only receipt proves
+only its named consumer, not full review or business safety.

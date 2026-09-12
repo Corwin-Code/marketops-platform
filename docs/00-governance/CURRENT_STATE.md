@@ -909,3 +909,13 @@ upgrade PASS, with no failing/retried run in this source stage. Evidence:
 correction/exploration safeguards remain in progress. 0/27 CLOSED, final
 Controller handoff NOT_READY; no production enablement or remote publication.
 Owner's reiterated convergence constraints are retained in finding-progress.json.
+
+SLICE-V1-004 continuous local rework update: checkpoint-25 fences the existing
+queue and publishes exact Health/calculation results atomically. Expired claims
+are recoverable; stale generations cannot acknowledge successors. Future accepted
+times remain queued without rewriting their clocks, and failed/unbound receipts
+do not satisfy latency. Results: 93 queue/domain/architecture, 48 signed
+authorization, 10 schema/role and 1 historical upgrade PASS. Two diagnosed initial
+failures are retained in `checkpoint-25-test-receipts.json`. Periodic full review
+and the full canonical consumer chain remain open. 0/27 CLOSED; Controller Final
+Closure Verification NOT_READY; platform writes OFF and no remote publication.

@@ -285,3 +285,26 @@ This is category dependency selection. It does not claim completed semantic
 validation for every structured rule, native-scope resolution for every purpose,
 independent correction/exploration action preparation or business safety. Results
 and exact source/log hashes are recorded in `checkpoint-24-test-receipts.json`.
+
+## Checkpoint 25 — fenced queue result publication, partial root 023
+
+V0105 and the existing queue worker bind atomic claims to a lease generation,
+recover expired claims and publish the exact Health/calculation result in one
+transaction. Stale or expired workers cannot acknowledge successors; expired
+publication rolls back its result. Interactive and queued Health versions share
+a listing lock. Failed and historical unbound receipts do not pass latency.
+The upgrade preserves an old FINISHED receipt without fabricating result IDs.
+
+Two diagnostics were resolved before advancing the bounded verification:
+missing column-specific update grants on the three new queue fields; then an
+approximately 0.1-millisecond application/database clock difference that violated
+accepted-before-start ordering. Grants remain column-specific. One database tick
+now supplies claim eligibility/start/expiry, and a future accepted time stays
+queued unchanged. Six isolated PostgreSQL cases cover claims, crashes, rollback,
+replay, missing-result failure, and future accepted time. Receipt 25 distinguishes
+the successful initial five-case probe from final sources and wider checks.
+
+No new scheduling authority, platform capability or production switch is added.
+Health-only completion is not whole-scope or business-safety completion. Periodic
+full review and canonical measurement/protection/authorization consumers remain
+open; no root closure or complete LOCAL_VERIFIED status is claimed.

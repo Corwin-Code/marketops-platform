@@ -30,12 +30,17 @@ public class RecalculationService {
     private final ListingHealthService health;
     private final IdGenerator ids;
     private final Clock clock;
+    private final org.springframework.transaction.support.TransactionTemplate transaction;
 
-    RecalculationService(GovernanceRepository governance, ListingHealthService health, IdGenerator ids, Clock clock) {
+    RecalculationService(GovernanceRepository governance, ListingHealthService health, IdGenerator ids, Clock clock,
+                         org.springframework.transaction.PlatformTransactionManager transactions) {
         this.governance = governance;
         this.health = health;
         this.ids = ids;
         this.clock = clock;
+        this.transaction = new org.springframework.transaction.support.TransactionTemplate(transactions);
+        this.transaction.setPropagationBehavior(org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        this.transaction.setTimeout(120);
     }
 
     @Transactional
@@ -49,15 +54,22 @@ public class RecalculationService {
     @Transactional(propagation = Propagation.NEVER)
     public int runOnce(int limit) {
         int finished = 0;
-        for (GovernanceRepository.QueuedRow row : governance.claim(limit, clock.instant())) {
+        for (GovernanceRepository.QueuedRow row : governance.claim(limit)) {
             try {
-                health.recompute(row.listingId(), "SCHEDULED", null);
-                governance.finish(row.id(), null, null, clock.instant());
-                finished++;
+                Boolean completed = transaction.execute(status -> {
+                    if (!governance.lockClaim(row)) return false;
+                    var result = health.recompute(row.listingId(), "SCHEDULED", null);
+                    if (!governance.finish(row, result.id(), null)) {
+                        throw new IllegalStateException("recalculation lease expired before publication");
+                    }
+                    return true;
+                });
+                if (Boolean.TRUE.equals(completed)) finished++;
             } catch (RuntimeException failure) {
                 log.warn("event=lc_recalculation_failed queueId={} failureType={}", row.id(),
                         failure.getClass().getSimpleName());
-                governance.finish(row.id(), null, "recalculation_failed", clock.instant());
+                // A stale worker cannot fail a successor's claim. An expired lease remains recoverable.
+                transaction.executeWithoutResult(status -> governance.finish(row, null, "recalculation_failed"));
             }
         }
         return finished;

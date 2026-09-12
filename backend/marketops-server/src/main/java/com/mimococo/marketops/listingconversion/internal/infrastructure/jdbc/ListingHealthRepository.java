@@ -33,6 +33,12 @@ public class ListingHealthRepository {
         this.json = json;
     }
 
+    /** Serializes version allocation across queued and interactive computations of the same listing. */
+    public void lockListing(UUID listingId) {
+        jdbc.sql("SELECT id FROM core.platform_listing WHERE id=:id FOR UPDATE")
+                .param("id",listingId).query(UUID.class).single();
+    }
+
     public int nextHealthVersion(UUID listingId) {
         return jdbc.sql("SELECT coalesce(max(health_version), 0) + 1 FROM mart.lc_listing_health WHERE platform_listing_id = :listing")
                 .param("listing", listingId).query(Integer.class).single();

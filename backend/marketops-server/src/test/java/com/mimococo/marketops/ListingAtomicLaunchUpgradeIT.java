@@ -34,7 +34,26 @@ class ListingAtomicLaunchUpgradeIT {
         String simulationBefore = legacy.app.sql("SELECT to_jsonb(s)::text FROM ops.lc_simulation s WHERE id=:id")
                 .param("id",simulation).query(String.class).single();
 
+        UUID historicalQueue=UUID.randomUUID();
+        legacy.app.sql("""
+                INSERT INTO ops.lc_recalculation_queue(id,organization_id,platform_listing_id,trigger_class,target_minutes,
+                    trigger_reference,accepted_at,started_at,finished_at,state)
+                VALUES (:id,:org,:listing,'RISK',5,'synthetic historical unbound receipt',now(),now(),now(),'FINISHED')
+                """).param("id",historicalQueue).param("org",legacy.id("organization"))
+                .param("listing",legacy.id("listing")).update();
+        String queueBefore=legacy.app.sql("SELECT to_jsonb(q)::text FROM ops.lc_recalculation_queue q WHERE id=:id")
+                .param("id",historicalQueue).query(String.class).single();
+
         Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
+        assertThat(legacy.app.sql("""
+                SELECT (to_jsonb(q)-'lease_generation'-'leased_until'-'health_result_id')::text
+                  FROM ops.lc_recalculation_queue q WHERE id=:id
+                """).param("id",historicalQueue).query(String.class).single()).isEqualTo(queueBefore);
+        assertThat(legacy.app.sql("""
+                SELECT lease_generation IS NULL AND leased_until IS NULL AND health_result_id IS NULL
+                  AND calculation_run_id IS NULL FROM ops.lc_recalculation_queue WHERE id=:id
+                """).param("id",historicalQueue).query(Boolean.class).single()).isTrue();
+
 
         assertThat(legacy.app.sql("""
                 SELECT (to_jsonb(s)-'model_version'-'input_snapshot'-'conditional_scenarios_passed')::text

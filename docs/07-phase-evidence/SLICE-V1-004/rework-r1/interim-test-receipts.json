@@ -115,6 +115,11 @@
       "checkpoint": 24,
       "receipt": "checkpoint-24-test-receipts.json",
       "status": "PASS_AFFECTED_SCOPE_ONLY_NOT_FINAL_CLOSURE"
+    },
+    {
+      "checkpoint": 25,
+      "receipt": "checkpoint-25-test-receipts.json",
+      "status": "PASS_AFFECTED_SCOPE_ONLY_NOT_FINAL_CLOSURE"
     }
   ]
 }
