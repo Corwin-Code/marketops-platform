@@ -26,7 +26,7 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
     private static final List<String> FUNCTION_ONLY = List.of(
             "ops.lc_launch", "ops.lc_exposure_occupation", "ops.lc_containment", "ops.lc_containment_attestation",
             "ops.lc_description_command", "ops.lc_description_command_attempt", "ops.lc_description_command_readback",
-            "ops.lc_description_command_transition", "raw.lc_description_response_observation");
+            "ops.lc_description_command_transition", "raw.lc_description_response_observation", "ops.lc_execution_receipt");
 
     private static final List<String> OWNER_PUBLISHED = List.of(
             "core.lc_calibration_package", "core.lc_calibration_value", "core.lc_calibration_category",
@@ -69,6 +69,18 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
             }
         }
 
+        @Test
+        @DisplayName("promotion observations remain append-only, including column privileges")
+        void promotionObservationsAreAppendOnly() throws SQLException {
+            try(Connection connection=asApplicationRole(container)) {
+                for(String privilege:List.of("SELECT","INSERT")) {
+                    assertThat(singleBoolean(connection,"SELECT has_table_privilege(current_user,'core.lc_promotion_observation','"+privilege+"')")).isTrue();
+                }
+                assertThat(singleBoolean(connection,"SELECT has_any_column_privilege(current_user,'core.lc_promotion_observation','UPDATE')")).isFalse();
+                assertThat(singleBoolean(connection,"SELECT has_table_privilege(current_user,'core.lc_promotion_observation','DELETE')")).isFalse();
+            }
+        }
+
         private void assertReadOnly(Connection connection, String table) throws SQLException {
             assertThat(singleBoolean(connection, "SELECT has_table_privilege('" + APPLICATION_ROLE + "', '"
                     + table + "', 'SELECT')")).describedAs("%s readable", table).isTrue();
@@ -92,8 +104,9 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
                         "SELECT schema_name || '.' || table_name FROM platform.control_route_inventory"
                                 + " WHERE table_name LIKE 'lc\\_%' AND route_kind = 'NO_ROUTE' ORDER BY 1");
 
-                assertThat(tables).hasSize(47).contains("core.lc_measurement_coverage", "mart.lc_measurement_lineage",
-                        "ops.lc_calibration_governance", "ops.lc_calibration_event");
+                assertThat(tables).hasSize(49).contains("core.lc_measurement_coverage", "mart.lc_measurement_lineage",
+                        "ops.lc_calibration_governance", "ops.lc_calibration_event",
+                        "ops.lc_execution_receipt", "core.lc_promotion_observation");
                 assertThat(inventoried).containsExactlyElementsOf(tables);
             }
         }

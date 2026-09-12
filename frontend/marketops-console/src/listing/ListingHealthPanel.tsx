@@ -1,3 +1,4 @@
+import { PromotionObservationForm } from './ListingPromotionTerms';
 import { useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import type { ConversionMeasurement, ListingDetail, ListingHealth } from '../api/listingConversion';
@@ -316,6 +317,7 @@ function ListingDetailView({
             </label>
             <button type="submit">{t('measure', language)}</button>
           </form>
+          <PromotionObservationForm context={context} listingId={listingId} />
           <form
             aria-label={t('targetText', language)}
             onSubmit={(event) => {

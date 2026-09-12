@@ -127,6 +127,13 @@ class ListingHealthConsoleController {
                 request.languageCode(), request.kizMarkedDeclared(), request.observedAt(), request.note()));
     }
 
+    @PostMapping(value="/listings/{listingId}/facts/promotion",consumes=MediaType.APPLICATION_JSON_VALUE)
+    Map<String,UUID> recordPromotion(AuthenticatedActor actor,@PathVariable UUID listingId,
+                                    @Valid @RequestBody PromotionFactRequest request) {
+        return Map.of("observationId",facts.recordPromotion(actor,listingId,request.declaration(),request.engagementKind(),request.nativePromotionKey(),
+                request.participationState(),request.observedAt(),request.evidenceReference()));
+    }
+
     @PostMapping(value = "/listings/{listingId}/facts/display", consumes = MediaType.APPLICATION_JSON_VALUE)
     Map<String, UUID> recordDisplay(AuthenticatedActor actor, @PathVariable UUID listingId,
                                     @Valid @RequestBody DisplayFactRequest request) {
@@ -188,6 +195,10 @@ class ListingHealthConsoleController {
     record DescriptionFactRequest(@NotNull String text, @NotBlank String languageCode, Boolean kizMarkedDeclared,
                                   Instant observedAt, String note) {
     }
+
+    record PromotionFactRequest(com.mimococo.marketops.listingconversion.PromotionTerms declaration,
+                                @NotBlank String engagementKind,@NotBlank String nativePromotionKey,
+                                @NotBlank String participationState,@NotNull Instant observedAt,@NotBlank String evidenceReference) { }
 
     record DisplayFactRequest(@NotBlank String displayState, String displayedText, Instant observedAt,
                               @NotBlank String evidenceReference) {

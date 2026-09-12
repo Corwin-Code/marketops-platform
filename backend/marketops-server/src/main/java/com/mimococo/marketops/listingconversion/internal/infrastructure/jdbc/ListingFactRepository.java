@@ -23,9 +23,11 @@ import org.springframework.stereotype.Repository;
 public class ListingFactRepository {
 
     private final JdbcClient jdbc;
+    private final tools.jackson.databind.ObjectMapper json;
 
-    ListingFactRepository(JdbcClient jdbc) {
+    ListingFactRepository(JdbcClient jdbc,tools.jackson.databind.ObjectMapper json) {
         this.jdbc = jdbc;
+        this.json = json;
     }
 
     public record ListingContext(UUID id, UUID organizationId, UUID storeId, UUID marketplaceAccountId,
@@ -168,6 +170,19 @@ public class ListingFactRepository {
                 .param("source", ts(sourceTime)).param("ingestion", Timestamp.from(ingestionTime))
                 .param("user", recordedByUserId).param("note", note).update();
         return id;
+    }
+
+    public void insertPromotionObservation(UUID id,UUID organizationId,UUID provenanceId,UUID listingId,
+            Instant observedAt,Instant acquiredAt,String state,String kind,String nativeKey,
+            com.mimococo.marketops.listingconversion.PromotionTerms declaration,String reference) {
+        jdbc.sql("""
+                INSERT INTO core.lc_promotion_observation(id,organization_id,provenance_id,platform_listing_id,
+                    observed_at,acquired_at,participation_state,engagement_kind,native_promotion_key,declaration,evidence_reference)
+                VALUES(:id,:org,:provenance,:listing,:observed,:acquired,:state,:kind,:nativeKey,CAST(:declaration AS jsonb),:reference)
+                """).param("id",id).param("org",organizationId).param("provenance",provenanceId).param("listing",listingId)
+                .param("observed",Timestamp.from(observedAt)).param("acquired",Timestamp.from(acquiredAt))
+                .param("state",state).param("kind",kind).param("nativeKey",nativeKey)
+                .param("declaration",declaration==null?null:json.writeValueAsString(declaration)).param("reference",reference).update();
     }
 
     public void insertDescriptionObservation(UUID id, UUID organizationId, UUID provenanceId, UUID listingId,

@@ -1184,6 +1184,30 @@ function parseIdentifier(key: string): (body: unknown) => string | undefined {
   return (body) => text(row(body)?.[key]);
 }
 
+export function recordPromotionFact(
+  context: ConsoleRequest,
+  listingId: string,
+  declaration: PromotionTerms | null,
+  participationState: string,
+  observedAt: string,
+  evidenceReference: string,
+  nativeIdentity?: { engagementKind: string; nativePromotionKey: string },
+): Promise<ConsoleOutcome<string>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/facts/promotion`,
+    parseIdentifier('observationId'),
+    post({
+      declaration,
+      engagementKind: declaration?.engagementKind ?? nativeIdentity?.engagementKind,
+      nativePromotionKey: declaration?.nativePromotionKey ?? nativeIdentity?.nativePromotionKey,
+      participationState,
+      observedAt,
+      evidenceReference,
+    }),
+  );
+}
+
 export function recordDescriptionFact(
   context: ConsoleRequest,
   listingId: string,
@@ -1429,12 +1453,17 @@ export function verifyPacket(
   managementMatch: string,
   displayState: string,
   note: string,
+  evidence: {
+    managementObservationId?: string;
+    displayObservationId?: string;
+    promotionObservationId?: string;
+  } = {},
 ): Promise<ConsoleOutcome<ManualPacket>> {
   return request(
     context,
     `${MANUAL}/packets/${id(packetId)}/verify`,
     parseManualPacket,
-    post({ basis, managementMatch, displayState, note }),
+    post({ basis, managementMatch, displayState, note, ...evidence }),
   );
 }
 

@@ -1,36 +1,81 @@
 # Listing manual execution path
 
-Applying an approved description by hand, and verifying it independently.
+This is the current local rework behavior. SLICE-V1-004 remains NOT_READY for
+Controller final closure; these receipts do not enable production execution.
+The immutable Contract and accepted decisions remain the normative authority.
 
-## The packet
+## Packet and executor report
 
-A packet is issued from a launched `MANUAL` action to one executor. It carries
-exactly the bound material: the affected-set digest and the full approved
-Russian text, and it expires no later than the approval binding. The executor
-applies the text in the platform's own console and reports the operation time
-and the result (`APPLIED`, `NOT_APPLIED`, `PARTIAL`) with a note.
+Issue a packet from an exact launched `MANUAL` Action to one executor. A
+description packet binds its affected set and approved Russian text. A promotion
+packet binds the commercial declaration digest frozen before independent review
+and normal approval. The packet expires no later than its approval binding.
+Changes to the bound promotion declaration require a new exact Action.
 
-## Verification
+The executor reports actual operation time and result. A report is attributed to
+the authenticated executor and does not independently verify external execution.
+Late facts retain their real times; they do not acquire backdated authority.
 
-A different person verifies. The database refuses the executor and any
-reporter as verifier. The verification records:
+## Independent description verification
 
-- the basis: `INDEPENDENT_HUMAN`, or `OFFICIAL_EVIDENCE` backed by a
-  marketplace-sourced description observation;
-- the management match: `MATCHED_TARGET`, `MATCHED_PRIOR`, `DIFFERENT` or
-  `UNKNOWN`, checked against the observation digest when one is named;
-- the display state.
+Use current verification scope and provide actual management and, separately,
+customer-display observation IDs. The database checks exact organization,
+listing, packet, text digest, custody and observation time after the operation.
+The executor, reporters and their own captured evidence cannot supply independent
+verification. Human capture is not official marketplace Raw.
 
-`MATCHED_TARGET` closes the action as `VERIFIED`; `MATCHED_PRIOR` proves the
-change was not applied and allows the occupation to be released with
-`NOT_APPLIED_PROVEN`; `DIFFERENT` is a later change by someone else and goes to
-investigation.
+`MATCHED_TARGET` can establish management execution and make the Action
+`VERIFIED`. Display is a separate claim; without its own evidence it remains
+`UNKNOWN`. A point display observation is not whole-window coverage or business
+success. `MATCHED_PRIOR` only reports the observed prior text; it does not prove
+that no mutation was submitted and cannot release exposure by itself. A differing
+value needs investigation and preserves actual facts and responsibilities.
 
-## Promotion engagements
+## Promotion declaration and participation observation
 
-Official promotion participation and seller direct discount are never written
-through this product. An engagement is adopted (already running) or entered
-(from an approved action) with its terms and evidence, exited only with a
-pre-approved exit reason and a one-use proof, and released in two steps:
-`NEW_TRANSACTIONS_STOPPED`, then `OBLIGATIONS_CLEARED`. Residual obligations are
-recorded, never assumed gone.
+The two accepted kinds are existing official promotion participation and seller
+single-product direct discount; both use the governed manual path. Prepare the
+exact declaration before review. It includes native promotion identity,
+commercial conditions, explicit lock/automatic-participation values, sources and
+commitments. Entry cannot borrow the authority of a different declaration.
+
+The Action exposes a digest; complete terms require current financial access to
+the store and every frozen product. Engagement list/detail and mutation responses
+apply the same financial projection. Adopted records without historical product
+lineage require organization-wide financial coverage for full disclosure; a
+current store mapping does not replace unknown historical scope.
+
+Record what was actually observed on the Listing detail page. Supply native kind
+and key, participation state, actual observation time and evidence reference.
+Complete commercial conditions may remain unknown. When complete conditions were
+observed, enter them explicitly; do not copy an approved target as a substitute
+for observation. The intake returns an observation ID with MANUAL_ENTRY
+provenance, not independent verification.
+
+For verification, supply that promotion observation ID through the existing
+manual packet form and keep unrelated description/display IDs empty. The
+executor's reported operation must fall within the packet authority interval.
+Independent observation must match the exact native promotion after that
+operation and have been acquired by verification time. Current verification and
+full financial access are required. Self-observation, another native promotion,
+unknown/incomplete/different terms and nonparticipating status cannot be marked
+as a matched approved target. Human evidence cannot be labelled official.
+
+Successful participation verification records `PARTICIPATION` and
+`OBSERVED_INSTANT_ONLY` in the observation binding and preserves occupations.
+It proves neither buyer display nor ongoing participation after that instant,
+economic eligibility, exit or historical obligation clearance.
+
+## Exit, adoption and residual responsibility
+
+The continuous rework still must connect applicable exact conditional exit
+approval, independent cessation/clearing evidence and qualified adoption of
+existing commitments. Existing exit/release endpoint labels are not proof of
+those conditions. An observed existing activity can be recorded without
+inventing historical approval, a Command or an experiment plan. Its financial
+projection does not mean qualified takeover or absence of residual exposure.
+
+Use `listing-launch-and-allowance.md` for the currently executable release basis.
+Do not equate Task closure, evaluation completion, an exit request or an internal
+engagement state with external cessation or vanished costs. No new promotion
+provider API is part of this Slice.

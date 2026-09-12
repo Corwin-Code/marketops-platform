@@ -118,7 +118,7 @@ public class ManualPathService {
 
     @Transactional
     public ManualPacketView verify(AuthenticatedActor actor, UUID packetId, String basis, String managementMatch,
-                                   UUID managementObservationId, UUID displayObservationId, String displayState, String note) {
+                                   UUID managementObservationId, UUID displayObservationId, String displayState, String note, UUID promotionObservationId) {
         ManualPacketView packet = requirePacket(actor, packetId, ActionScopeCode.LISTING_MANUAL_VERIFY);
         Instant now = clock.instant();
         if (!actor.stepUpSatisfiedAt(now)) {
@@ -128,12 +128,17 @@ public class ManualPathService {
                 || packet.reports().stream().anyMatch(report -> report.reporterUserId().equals(actor.userId()))) {
             throw OperationRejectedException.of(ErrorCode.INDEPENDENCE_REQUIRED);
         }
+        var verifiedAction=actions.action(packet.actionId()).orElseThrow();
+        if("LISTING_PROMOTION_ACTION".equals(verifiedAction.actionKind())
+                && !promotionFinancialAccess(actor,verifiedAction.id(),verifiedAction.storeId())) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
         boolean human = "INDEPENDENT_HUMAN".equals(basis);
         UUID id = ids.newId();
         manual.insertVerification(id, actor.organizationId(), packetId, human ? actor.userId() : null,
                 MetadataFieldPolicy.requireText("basis", basis), MetadataFieldPolicy.requireText("managementMatch", managementMatch),
                 managementObservationId, displayObservationId, MetadataFieldPolicy.requireText("displayState", displayState),
-                now, MetadataFieldPolicy.requireText("note", note));
+                now, MetadataFieldPolicy.requireText("note", note),promotionObservationId);
         var action = actions.action(packet.actionId()).orElseThrow();
         if ("MATCHED_TARGET".equals(managementMatch)) {
             manual.movePacket(packetId, "VERIFIED", manual.packet(packetId).orElseThrow().version(), now);
@@ -271,13 +276,17 @@ public class ManualPathService {
             permitted=authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
                     ResourceScope.organization(actor.organizationId())).permitted();
         } else {
-            var products=actions.promotionEvidenceProducts(engagement.actionId());
-            permitted=authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
-                    ResourceScope.store(engagement.storeId())).permitted() && !products.isEmpty()
-                    && products.stream().allMatch(product->authorization.evaluate(actor,
-                        ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,ResourceScope.productVariant(product)).permitted());
+            permitted=promotionFinancialAccess(actor,engagement.actionId(),engagement.storeId());
         }
         return engagement.withFinancialDisclosure(permitted);
+    }
+
+    private boolean promotionFinancialAccess(AuthenticatedActor actor,UUID actionId,UUID storeId) {
+        var products=actions.promotionEvidenceProducts(actionId);
+        return authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScope.store(storeId)).permitted() && !products.isEmpty()
+                && products.stream().allMatch(product->authorization.evaluate(actor,
+                    ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,ResourceScope.productVariant(product)).permitted());
     }
 
     private static String exactTermsReference(String reference) {

@@ -99,7 +99,7 @@ class ListingManualConsoleController {
                             @Valid @RequestBody VerifyRequest request) {
         return manual.verify(actor, packetId, request.basis(), request.managementMatch(),
                 request.managementObservationId(), request.displayObservationId(), request.displayState(),
-                request.note());
+                request.note(),request.promotionObservationId());
     }
 
     // ------------------------------------------------------------------ engagements
@@ -160,7 +160,7 @@ class ListingManualConsoleController {
     }
 
     record VerifyRequest(@NotBlank String basis, @NotBlank String managementMatch, UUID managementObservationId,
-                         UUID displayObservationId, String displayState, String note) {
+                         UUID displayObservationId, String displayState, String note, UUID promotionObservationId) {
     }
 
     record EngagementRequest(@NotBlank String engagementKind, @NotBlank String nativePromotionKey,

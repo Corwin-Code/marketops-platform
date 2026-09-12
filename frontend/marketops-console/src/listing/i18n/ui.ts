@@ -2,6 +2,51 @@ import type { Language } from './language';
 
 /** Every string the listing console shows that is not a backend code. */
 const STRINGS = {
+  promotionTermsObserved: {
+    zh: '本次已观察到完整商业条款',
+    ru: 'Полные коммерческие условия наблюдались',
+  },
+  promotionKind: { zh: '促销类型', ru: 'Вид акции' },
+  promotionObservation: { zh: '记录促销参与观察', ru: 'Записать наблюдение участия в акции' },
+  promotionObservationHelp: {
+    zh: '填写实际观察到的条款及参与状态。此记录只是来源事实，须由独立人员核验；不证明买家展示或义务已解除。',
+    ru: 'Введите фактически наблюдаемые условия и статус участия. Запись является исходным фактом и требует независимой проверки; она не подтверждает показ покупателю или прекращение обязательств.',
+  },
+  promotionDeclarationSource: {
+    zh: '所观察商业条款的来源',
+    ru: 'Источник наблюдаемых коммерческих условий',
+  },
+  promotionObservationReference: {
+    zh: '本次观察的证据引用',
+    ru: 'Ссылка на доказательство наблюдения',
+  },
+  promotionObservedAt: {
+    zh: '实际观察时间（本地时间）',
+    ru: 'Фактическое время наблюдения (местное)',
+  },
+  promotionParticipationState: { zh: '观察到的参与状态', ru: 'Наблюдаемый статус участия' },
+  promotionParticipating: { zh: '参与中', ru: 'Участвует' },
+  promotionNotParticipating: { zh: '未参与', ru: 'Не участвует' },
+  promotionOfficialKind: { zh: '既有官方活动参与', ru: 'Участие в существующей акции площадки' },
+  promotionSellerKind: { zh: '卖家单商品直接优惠', ru: 'Прямая скидка продавца на один товар' },
+  promotionObservationRequired: {
+    zh: '需填写促销类型、实际观察时间及证据引用。',
+    ru: 'Укажите вид акции, фактическое время наблюдения и ссылку на доказательство.',
+  },
+  promotionObservationSaved: {
+    zh: '观察记录编号（尚未独立核验）',
+    ru: 'Номер наблюдения (ещё не проверено независимо)',
+  },
+  promotionObservationId: { zh: '促销参与观察编号', ru: 'Номер наблюдения участия в акции' },
+  descriptionObservationId: {
+    zh: '管理端正文观察编号',
+    ru: 'Номер наблюдения описания в кабинете',
+  },
+  displayObservationId: { zh: '买家端展示观察编号', ru: 'Номер наблюдения показа покупателю' },
+  promotionVerificationExtent: {
+    zh: '促销参与核验使用独立参与观察；正文和展示观察不能替代。未单独取证的买家展示应保持未知。',
+    ru: 'Участие проверяется по независимому наблюдению акции. Наблюдения описания и показа его не заменяют; показ покупателю без отдельного доказательства остаётся неизвестным.',
+  },
   promotionDeclaration: { zh: '拟执行促销条款', ru: 'Предлагаемые условия акции' },
   promotionDeclarationHelp: {
     zh: '逐项填写准确条款、费用、期限及退出后的义务，并注明来源。保存后，修改条款需要新的操作和批准。',

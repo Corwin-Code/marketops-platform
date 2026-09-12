@@ -36,6 +36,9 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
   const [reportState, setReportState] = useState('APPLIED');
   const [note, setNote] = useState('');
   const [basis, setBasis] = useState('INDEPENDENT_HUMAN');
+  const [managementObservation, setManagementObservation] = useState('');
+  const [displayObservation, setDisplayObservation] = useState('');
+  const [promotionObservation, setPromotionObservation] = useState('');
   const [managementMatch, setManagementMatch] = useState('MATCHED_TARGET');
   const [displayState, setDisplayState] = useState('DISPLAYED');
   const [listingId, setListingId] = useState('');
@@ -188,16 +191,47 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
               aria-label={`${t('verify', language)} ${packet.id}`}
               onSubmit={(event) => {
                 event.preventDefault();
-                void verifyPacket(
-                  context,
-                  packet.id,
-                  basis,
-                  managementMatch,
-                  displayState,
-                  note,
-                ).then(settle);
+                void verifyPacket(context, packet.id, basis, managementMatch, displayState, note, {
+                  ...(managementObservation === ''
+                    ? {}
+                    : { managementObservationId: managementObservation }),
+                  ...(displayObservation === ''
+                    ? {}
+                    : { displayObservationId: displayObservation }),
+                  ...(promotionObservation === ''
+                    ? {}
+                    : { promotionObservationId: promotionObservation }),
+                }).then(settle);
               }}
             >
+              <p>{t('promotionVerificationExtent', language)}</p>
+              <label>
+                {t('descriptionObservationId', language)}
+                <input
+                  value={managementObservation}
+                  onChange={(e) => {
+                    setManagementObservation(e.target.value);
+                  }}
+                />
+              </label>
+              <label>
+                {t('displayObservationId', language)}
+                <input
+                  value={displayObservation}
+                  onChange={(e) => {
+                    setDisplayObservation(e.target.value);
+                  }}
+                />
+              </label>
+              <label>
+                {t('promotionObservationId', language)}
+                <input
+                  value={promotionObservation}
+                  onChange={(e) => {
+                    setPromotionObservation(e.target.value);
+                  }}
+                />
+              </label>
               <label>
                 <Code family="verificationBasis" code={basis} />
                 <select

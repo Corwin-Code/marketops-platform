@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
-import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import type { ConsoleFailure, ConsoleRequest, ConsoleOutcome } from '../api/console';
 import {
   fetchPromotionTerms,
   prepareAction,
+  recordPromotionFact,
+  type PromotionTerms,
   type PromotionTermsView,
 } from '../api/listingConversion';
 import { ListingProblem, YesNo } from './ListingCommon';
@@ -14,20 +16,27 @@ interface TermRow {
   value: string;
 }
 
-/** The two contract promotion kinds share one exact declaration form. */
-export function PromotionPreparationForm({
-  context,
-  candidateId,
+/** One exact declaration form for preparation and independently entered observations. */
+function PromotionTermsForm({
+  label,
   kind,
-  onPrepared,
+  onSave,
+  onSaved,
+  onUnknown,
+  observation = false,
+  children,
 }: {
-  readonly context: ConsoleRequest;
-  readonly candidateId: string;
+  readonly label: string;
   readonly kind: string;
-  readonly onPrepared: (id: string) => void;
+  readonly onSave: (terms: PromotionTerms) => Promise<ConsoleOutcome<string>>;
+  readonly onSaved: (id: string) => void;
+  readonly onUnknown?: (nativeKey: string) => Promise<ConsoleOutcome<string>>;
+  readonly observation?: boolean;
+  readonly children?: React.ReactNode;
 }): React.JSX.Element {
   const { language } = useLanguage();
   const [nativeKey, setNativeKey] = useState('');
+  const [termsKnown, setTermsKnown] = useState(!observation);
   const [source, setSource] = useState('');
   const [freeze, setFreeze] = useState('');
   const [auto, setAuto] = useState('');
@@ -84,28 +93,33 @@ export function PromotionPreparationForm({
   );
   return (
     <form
-      aria-label={candidateId}
+      aria-label={label}
       onSubmit={(event) => {
         event.preventDefault();
-        if (pending || duplicate || freeze === '' || auto === '') return;
+        if (pending || (termsKnown && (duplicate || freeze === '' || auto === ''))) return;
+        if (!termsKnown && onUnknown === undefined) return;
         setPending(true);
-        void prepareAction(context, candidateId, 'MANUAL', '', undefined, '', undefined, {
-          engagementKind: kind,
-          nativePromotionKey: nativeKey,
-          termsEvidenceReference: source,
-          priceFreeze: freeze === 'yes',
-          autoParticipation: auto === 'yes',
-          terms: Object.fromEntries(terms.map((r) => [r.name, r.value])),
-          obligations: Object.fromEntries(obligations.map((r) => [r.name, r.value])),
-        }).then((outcome) => {
+        const saving = termsKnown
+          ? onSave({
+              engagementKind: kind,
+              nativePromotionKey: nativeKey,
+              termsEvidenceReference: source,
+              priceFreeze: freeze === 'yes',
+              autoParticipation: auto === 'yes',
+              terms: Object.fromEntries(terms.map((r) => [r.name, r.value])),
+              obligations: Object.fromEntries(obligations.map((r) => [r.name, r.value])),
+            })
+          : onUnknown?.(nativeKey);
+        void saving?.then((outcome) => {
           setPending(false);
-          if (outcome.ok) onPrepared(outcome.value.id);
+          if (outcome.ok) onSaved(outcome.value);
           else setFailure(outcome.failure);
         });
       }}
     >
-      <h4>{t('promotionDeclaration', language)}</h4>
-      <p>{t('promotionDeclarationHelp', language)}</p>
+      <h4>{t(observation ? 'promotionObservation' : 'promotionDeclaration', language)}</h4>
+      {children}
+      <p>{t(observation ? 'promotionObservationHelp' : 'promotionDeclarationHelp', language)}</p>
       {failure !== undefined && <ListingProblem failure={failure} />}
       <label>
         {t('promotionNativeKey', language)}
@@ -118,52 +132,212 @@ export function PromotionPreparationForm({
           }}
         />
       </label>
-      <label>
-        {t('evidence', language)}
-        <input
-          required
-          maxLength={512}
-          value={source}
-          onChange={(e) => {
-            setSource(e.target.value);
-          }}
-        />
-      </label>
-      {fields(terms, setTerms, 'promotionTerms')}
-      {fields(obligations, setObligations, 'promotionObligations')}
-      <label>
-        {t('promotionPriceFreeze', language)}
-        <select
-          required
-          value={freeze}
-          onChange={(e) => {
-            setFreeze(e.target.value);
-          }}
-        >
-          <option value="">{t('undeclared', language)}</option>
-          <option value="yes">{t('yes', language)}</option>
-          <option value="no">{t('no', language)}</option>
-        </select>
-      </label>
-      <label>
-        {t('promotionAutoParticipation', language)}
-        <select
-          required
-          value={auto}
-          onChange={(e) => {
-            setAuto(e.target.value);
-          }}
-        >
-          <option value="">{t('undeclared', language)}</option>
-          <option value="yes">{t('yes', language)}</option>
-          <option value="no">{t('no', language)}</option>
-        </select>
-      </label>
-      {duplicate && <p role="alert">{t('promotionDuplicateTerm', language)}</p>}
-      <button type="submit" disabled={pending || duplicate}>
+      {observation && (
+        <label>
+          {t('promotionTermsObserved', language)}
+          <input
+            type="checkbox"
+            checked={termsKnown}
+            onChange={(e) => {
+              setTermsKnown(e.target.checked);
+            }}
+          />
+        </label>
+      )}
+      {termsKnown && (
+        <>
+          <label>
+            {t(observation ? 'promotionDeclarationSource' : 'evidence', language)}
+            <input
+              required
+              maxLength={512}
+              value={source}
+              onChange={(e) => {
+                setSource(e.target.value);
+              }}
+            />
+          </label>
+          {fields(terms, setTerms, 'promotionTerms')}
+          {fields(obligations, setObligations, 'promotionObligations')}
+          <label>
+            {t('promotionPriceFreeze', language)}
+            <select
+              required
+              value={freeze}
+              onChange={(e) => {
+                setFreeze(e.target.value);
+              }}
+            >
+              <option value="">{t('undeclared', language)}</option>
+              <option value="yes">{t('yes', language)}</option>
+              <option value="no">{t('no', language)}</option>
+            </select>
+          </label>
+          <label>
+            {t('promotionAutoParticipation', language)}
+            <select
+              required
+              value={auto}
+              onChange={(e) => {
+                setAuto(e.target.value);
+              }}
+            >
+              <option value="">{t('undeclared', language)}</option>
+              <option value="yes">{t('yes', language)}</option>
+              <option value="no">{t('no', language)}</option>
+            </select>
+          </label>
+        </>
+      )}
+      {termsKnown && duplicate && <p role="alert">{t('promotionDuplicateTerm', language)}</p>}
+      <button type="submit" disabled={pending || (termsKnown && duplicate)}>
         {t('submit', language)}
       </button>
     </form>
+  );
+}
+
+export function PromotionPreparationForm({
+  context,
+  candidateId,
+  kind,
+  onPrepared,
+}: {
+  readonly context: ConsoleRequest;
+  readonly candidateId: string;
+  readonly kind: string;
+  readonly onPrepared: (id: string) => void;
+}): React.JSX.Element {
+  return (
+    <PromotionTermsForm
+      label={candidateId}
+      kind={kind}
+      onSaved={onPrepared}
+      onSave={async (terms) => {
+        const outcome = await prepareAction(
+          context,
+          candidateId,
+          'MANUAL',
+          '',
+          undefined,
+          '',
+          undefined,
+          terms,
+        );
+        return outcome.ok ? { ok: true, value: outcome.value.id } : outcome;
+      }}
+    />
+  );
+}
+
+export function PromotionObservationForm({
+  context,
+  listingId,
+}: {
+  readonly context: ConsoleRequest;
+  readonly listingId: string;
+}): React.JSX.Element {
+  const { language } = useLanguage();
+  const [kind, setKind] = useState('');
+  const [state, setState] = useState('UNKNOWN');
+  const [observedAt, setObservedAt] = useState('');
+  const [reference, setReference] = useState('');
+  const [saved, setSaved] = useState<string>();
+  const save = (
+    declaration: PromotionTerms | null,
+    nativeKey: string,
+  ): Promise<ConsoleOutcome<string>> => {
+    setSaved(undefined);
+    const time = new Date(observedAt);
+    if (kind === '' || reference.trim() === '' || !Number.isFinite(time.valueOf())) {
+      return Promise.resolve({
+        ok: false,
+        failure: {
+          kind: 'refused',
+          status: 400,
+          detail: t('promotionObservationRequired', language),
+        },
+      });
+    }
+    return recordPromotionFact(
+      context,
+      listingId,
+      declaration,
+      state,
+      time.toISOString(),
+      reference,
+      { engagementKind: kind, nativePromotionKey: nativeKey },
+    );
+  };
+  return (
+    <section>
+      <PromotionTermsForm
+        label={t('promotionObservation', language)}
+        kind={kind}
+        observation
+        onSaved={setSaved}
+        onSave={(declaration) => save(declaration, declaration.nativePromotionKey)}
+        onUnknown={(nativeKey) => save(null, nativeKey)}
+      >
+        <label>
+          {t('promotionKind', language)}
+          <select
+            required
+            value={kind}
+            onChange={(e) => {
+              setKind(e.target.value);
+            }}
+          >
+            <option value="">{t('undeclared', language)}</option>
+            <option value="OFFICIAL_PROMOTION_PARTICIPATION">
+              {t('promotionOfficialKind', language)}
+            </option>
+            <option value="SELLER_DIRECT_DISCOUNT">{t('promotionSellerKind', language)}</option>
+          </select>
+        </label>
+        <label>
+          {t('promotionParticipationState', language)}
+          <select
+            value={state}
+            onChange={(e) => {
+              setState(e.target.value);
+            }}
+          >
+            <option value="UNKNOWN">{t('undeclared', language)}</option>
+            <option value="PARTICIPATING">{t('promotionParticipating', language)}</option>
+            <option value="NOT_PARTICIPATING">{t('promotionNotParticipating', language)}</option>
+          </select>
+        </label>
+        <label>
+          {t('promotionObservedAt', language)}
+          <input
+            required
+            type="datetime-local"
+            step="any"
+            value={observedAt}
+            onChange={(e) => {
+              setObservedAt(e.target.value);
+            }}
+          />
+        </label>
+        <label>
+          {t('promotionObservationReference', language)}
+          <input
+            required
+            maxLength={512}
+            value={reference}
+            onChange={(e) => {
+              setReference(e.target.value);
+            }}
+          />
+        </label>
+      </PromotionTermsForm>
+      {saved !== undefined && (
+        <p role="status">
+          {t('promotionObservationSaved', language)}: {saved}
+        </p>
+      )}
+    </section>
   );
 }
 

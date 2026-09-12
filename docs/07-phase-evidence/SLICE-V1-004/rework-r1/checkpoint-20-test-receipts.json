@@ -1,0 +1,141 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "f47249d7d69d991d53d28ebc2cd081fac3098de4",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingFactIntakeService.java": "a08b8d6d40e07e60dd129eb719e246cc8f7ceda9d490320dcfa0d48c36393a62",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ManualPathService.java": "b287d47bb9ae66cbfa5ec5fa62fd5621004db1dcb1f86d12fa270f576c6c62aa",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingFactRepository.java": "677505640c44340ee5391416359f9d852c8c3b34b637e5d5661bc49d25e9330f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ManualPathRepository.java": "556fc0a1073e5556beb444686df038199c1c077a584f52b0cfe365165a9db15c",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingHealthConsoleController.java": "42cbc723b54153bf37c292872bc20ad99edfead400b89eda610700acbfbcbfaf",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingManualConsoleController.java": "a90abacbf8bd0091b57435d4df10f0bdd7b9a40d658dcad2c282760f6719acbe",
+    "backend/marketops-server/src/main/resources/db/migration/V0100__bind_manual_promotion_participation_to_independent_observations.sql": "0b9c271be9db0665c8a84d50ebd6ba3d9c7b12ffc7f8b7a885a85f174db378f1",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "e3900587d88ef293b167718fd930e5af3a10bc9c17106aa7904d41cf34b8e0d3",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/database/ListingConversionSchemaIT.java": "05069e9609c6def2351452ebc29ec57a5616fa070ba649724115b8c7cf0ff3a0",
+    "frontend/marketops-console/src/__tests__/ListingConversionForms.test.tsx": "c56f9189053266534482ae467f9856809b63ee3838be43335246c3ba7f5d54bf",
+    "frontend/marketops-console/src/api/listingConversion.ts": "65e0c8106e71dc33e6435b15173e1f3590c9be40a67d85b3bd0e42d4933b70b7",
+    "frontend/marketops-console/src/listing/ListingHealthPanel.tsx": "2fb10e66712f1fc389a234eed3c5f369e1556849d518cc46744c1afbdd39b466",
+    "frontend/marketops-console/src/listing/ListingManualPanel.tsx": "ef6fe4a376b97556d10da2f03763a0a22541e4799af3dd3e6bb527ab195f1775",
+    "frontend/marketops-console/src/listing/ListingPromotionTerms.tsx": "a8eff748c9733707a24a72957503b10950c59f9bfd86172da4d235ab589e77a5",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "f2c2f542acc470c48b1e9a55ac655e7ff5c0a063bb5ff126f2fd556cd9df6edc"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 43,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-authorization-final.log",
+      "raw_log_sha256": "dcaa1a7b1d9eef5484a3099d1b62b94775c7816777f6fc267dcb9e0735685947",
+      "summary_path": "promotion-participation-authorization-final-summary.txt",
+      "summary_sha256": "21bb3cdbf3ba6e2affc9de34cedcec0ee2f15ca10fdf8b27f2c704ff39716a26"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingManualVerificationIT,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 84,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-manual-architecture.log",
+      "raw_log_sha256": "ed6b9040c2a05dc7e8742ae374fd8c894a4c149b1fc0acc6804af9eb7d7b817b",
+      "summary_path": "promotion-participation-manual-architecture-summary.txt",
+      "summary_sha256": "4f4632638fc7190281097026acee575721b10c1158a0d3f4bc6c72693597127d"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingConversionSchemaIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 9,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-schema-corrected.log",
+      "raw_log_sha256": "2e74a2403a753430658300f6c3b8de1bfe4d5a0697ce6f36ebb5a34314f39cad",
+      "summary_path": "promotion-participation-schema-corrected-summary.txt",
+      "summary_sha256": "5b8e2cb17997507456be3b9480bc42b30b6aa36719fcd9688698ea175ebe8500"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-upgrade.log",
+      "raw_log_sha256": "b836b692c6da0401d2c9c353dcd8db2c239418b3b47801cc89587d25021b33e1",
+      "summary_path": "promotion-participation-upgrade-summary.txt",
+      "summary_sha256": "4d891d109f9710a8d777990e3af4990907706f9bfd09c96aee66927485b378f4"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 30,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-frontend.log",
+      "raw_log_sha256": "7c5b96ffd36502f4813406aced4323d19c1e5c13d8616abf2296a5309e4892ac",
+      "summary_path": "promotion-participation-frontend-summary.txt",
+      "summary_sha256": "44780627f84ec078cb3550c99e72730fd436bf92c6c273337add7f51ecd90910"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-lint.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "promotion-participation-lint-summary.txt",
+      "summary_sha256": "ebbcdbd1f16c901a128f9793b88b6916bc14c5cf854dcf669dd362c91ebbcd05"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-build.log",
+      "raw_log_sha256": "3ffb021d9069dd84fdc24472b5ee8e5240a7045ee4a680fdfa8a290a8f40ee4c",
+      "summary_path": "promotion-participation-build-summary.txt",
+      "summary_sha256": "78297217f0f38ae5c7c20087b12700b69a0ce54d88cad1476646f565a17d5cbb"
+    }
+  ],
+  "diagnosed_runs": [
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-connected-probe.log",
+      "raw_log_sha256": "872a70c61638e21734997c1c3cb498e54fbdc3f48c450f545bb7adcf3d48fbe6",
+      "diagnosis": "Two cases reached valid observation binding but new BEFORE UPDATE guard read an uncomputed generated digest. Corrected by the existing pure canonical digest function; historical unbound rejection retained."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-connected-corrected.log",
+      "raw_log_sha256": "53cb94342e5567c1af824dc5e979f5451c5fcd2c11c14db10a03cc40bfbcf87d",
+      "diagnosis": "Two connected cases passed before adding unknown commercial terms and additional adversarial coverage; overlaps final 43."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-unknown-terms.log",
+      "raw_log_sha256": "93e9c64620e2666b9c14d1cc688cf5f8b386e7fc2a3e29fd6e72bef41a905255",
+      "diagnosis": "Two cases passed with explicitly unknown declarations and NULL-safe target matching, before final native/time/official-source/revocation negatives; overlaps final 43."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-participation-schema.log",
+      "raw_log_sha256": "264f002c7591ce70aff0b772ae02c21227da7562ddea988acfeae12dde782fe5",
+      "diagnosis": "One of eight tests failed on stale 47-table count. Exact table inventory was 49: existing execution receipt plus new promotion observation. Added those explicit expectations, receipt read-only and observation append-only checks; final nine pass."
+    }
+  ],
+  "reports": [
+    {
+      "local_path": "build/slice4-rework/promotion-participation-reports/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml",
+      "sha256": "fbf4948c9e6f2f90431b4e642dff3cc16cf251b471e7d88f05fb8726b0e78f40"
+    },
+    {
+      "local_path": "build/slice4-rework/promotion-participation-reports/TEST-com.mimococo.marketops.ListingManualVerificationIT.xml",
+      "sha256": "7039d7bbe96aed5eb94a7030288c7050c3ffe40981ab37911ff5031a5522abd2"
+    },
+    {
+      "local_path": "build/slice4-rework/promotion-participation-reports/TEST-com.mimococo.marketops.ListingAtomicLaunchUpgradeIT.xml",
+      "sha256": "c1995f0dd0aa192415f0ed31ba375f81b5480463bb56a05d43e229f2ae1624f6"
+    },
+    {
+      "local_path": "build/slice4-rework/promotion-participation-reports/TEST-com.mimococo.marketops.database.ListingConversionSchemaIT.xml",
+      "sha256": "5be5824c62bfa100b991c28680d21cf7678f48f6489a52afc90419be47423775"
+    }
+  ],
+  "limitations": [
+    "0/27 findings CLOSED. Participation qualification is one observed instant, not customer display, economic qualification, ongoing participation, exit, residual release or a business Outcome.",
+    "Human intake records MANUAL_ENTRY. The qualified positive is synthetic independent human evidence; no real provider or new promotion endpoint was qualified or called.",
+    "The current connected verification uses the executor report within packet authority. Other lawful late-association/source paths remain in root 017 and are not declared complete.",
+    "Historical upgrade preserves the existing V0090 orphan launch through V0100; not full baseline parity or historical promotion qualification.",
+    "No browser-to-real-backend journey is claimed by frontend component tests. Broader clean/upgrade/security/performance/DR/SBOM and final exact-Head verification remain outstanding.",
+    "No shared migration, Level-2 action, Gate EV/E, remote Git publication or production enablement."
+  ]
+}

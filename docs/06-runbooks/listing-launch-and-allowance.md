@@ -1,46 +1,58 @@
 # Listing launch and allowance
 
-Why an approved listing action did not launch, and what to do about it.
+Current local rework behavior; final Controller closure remains NOT_READY.
+The Contract and accepted decisions define the unchanged business boundaries.
 
-## What launch is
+## Atomic launch
 
-Launch is one database function called with a one-use proof issued for exactly
-this person, this recommendation and this approval. It checks that the approval
-binding still applies (`bindingGaps` empty), that an evaluation plan is frozen,
-that the latest Listing Health passes its necessary conditions and that the
-scope is not contained, and then acquires every published allowance axis
-under a per-allowance lock. Either every axis is acquired and the action is
-`LAUNCHED`, or none is and the action is `APPROVED_NOT_LAUNCHABLE` with the
-short axes named.
+Launch consumes a one-use proof for the current actor, exact recommendation and
+approval. The normal service evaluates the existing execution Guardrail. The
+database rechecks binding, frozen plan, Health and containment after taking the
+stable organization lock, and prevents allowance configuration from changing
+while acquisition commits. API launch and its sole Description Command commit
+together; manual launch creates no platform command.
 
-## `APPROVED_NOT_LAUNCHABLE`
+Preview and acquisition use one policy projection. It checks every required
+accepted axis, reserve and applicable scope constraint. Multiple scope levels
+require explicit accepted composition; no implicit most-specific override is
+assumed. All axes commit or none do. Shortfalls or unresolved requirements leave
+`APPROVED_NOT_LAUNCHABLE` with explicit gaps.
 
-Use "额度预览 / Предпросмотр лимита" on the action. Each axis shows limit,
-reserve, occupied and headroom. The usual cause is `CONCURRENT_LISTINGS`: another
-launched action holds the one slot. Nothing here overrides the allowance; the
-Owner publishes it (`ops.lc_exposure_allowance` has no writer in this product).
+## Reading a shortfall
 
-`ALLOWANCE_UNRESOLVED` means no allowance is published for this organization
-and listing at all; `<AXIS>:REQUEST_UNSTATED` means the launch request did not
-state a value for an axis the allowance names (revenue exposure or category
-share).
+The Console preview shows each constraint's scope, limit, reserve, occupied
+amount, requested increment and sufficiency. Outstanding listing/native-variant
+identities accumulate across allowance configuration IDs and versions. Repeated
+work on an identity does not create another distinct identity, but its remaining
+obligations cannot disappear when another Action is released. Unknown and actual
+occupations remain included, even if historical stored amounts were zero.
 
-## Releasing an occupation
+Request numbers cannot establish canonical demand. Missing required axes,
+ambiguous scope composition, insufficient reserve or unknown identity lineage
+remain explicit gaps. Monetary/category demand and existing promotion
+commitments still need their qualified canonical consumers in this rework; do
+not supply arbitrary request amounts to turn an unresolved result into a pass.
+Allowance publication remains outside this product's runtime writer.
 
-An occupation is released with a basis and evidence, never by time:
+## Current release evidence
 
-- `STOP_EVIDENCE`: a display or description observation after the acquisition
-  shows the change is live (or explicitly not displayed);
-- `OBLIGATION_CLEARED`: the promotion engagement's obligations are recorded as
-  cleared;
-- `NOT_APPLIED_PROVEN`: an independent manual verification recorded
-  `MATCHED_PRIOR`.
+The executable positive basis currently implemented is `NOT_APPLIED_PROVEN` for
+an exact API Action whose command terminated before admitting any APPLY/RESTORE
+attempt and which has no linked promotion obligation. Release checks current
+actor/scope and consumed proof, serializes with acquisition and retains the
+Action/command/axis/purpose evidence.
 
-The release needs the launch scope and a step-up, and it is audited with the
-evidence reference.
+Description or display observations, matched prior text, a Task closure and an
+engagement's internal `CLEARED` flag do not establish this basis. The application
+cannot use the former arbitrary numeric observation function to decrease an
+occupation. Independent cessation of new exposure and historical obligation
+clearing remain separate positive flows to complete; no generic state change,
+exit request, elapsed time or caller zero may stand in for that evidence.
 
-## A launch refused outright
+## Other launch refusals
 
-A refusal (not a shortfall) names its rule: the binding no longer applies, the
-plan is missing, Listing Health failed, the scope is contained, or the proof
-belongs to someone else. Fix the named condition; the action stays `APPROVED`.
+A stale/inapplicable binding, missing plan, failed Health, containment or foreign
+proof is a separate refusal. Resolve the stated current condition under the
+existing authority. Creating another request does not repair it, restore an
+expired approval or erase an unknown external result. All new platform writes
+remain default OFF; local implementation and verification do not enable them.

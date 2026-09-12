@@ -845,3 +845,17 @@ scope in adopted records is not replaced with current store mappings. Results:
 43 signed HTTP/database, 76 architecture, 27 frontend; lint/build pass. See
 `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-19-test-receipts.json`.
 No migration or transport change; 0/27 CLOSED, final Controller handoff NOT_READY.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-20 binds independent
+promotion participation to exact native/approved terms, actual operation and
+source custody in the existing manual verification chain. Unknown commercial
+terms remain facts and cannot pass target matching. Evidence states are kept
+separate from display, economics and release; occupations remain. Console
+observation capture and explicit verification IDs are connected. The manual
+and allowance runbooks no longer recommend old-text/internal-state release.
+Results: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role,
+1 historical upgrade, 30 frontend; lint/build pass. See
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-20-test-receipts.json`.
+0/27 CLOSED; remaining economic, exit, adoption/residual and final verification
+work continues. No production enablement or real provider call occurred.

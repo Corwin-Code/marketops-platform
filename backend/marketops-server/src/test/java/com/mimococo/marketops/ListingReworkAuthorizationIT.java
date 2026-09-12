@@ -363,7 +363,8 @@ class ListingReworkAuthorizationIT {
         var json=new tools.jackson.databind.ObjectMapper();
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
         for(var scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.LISTING_ACTION_LAUNCH,
-                ActionScopeCode.LISTING_CONVERSION_VIEW,ActionScopeCode.LISTING_PROMOTION_MANAGE))
+                ActionScopeCode.LISTING_CONVERSION_VIEW,ActionScopeCode.LISTING_PROMOTION_MANAGE,
+                ActionScopeCode.LISTING_MANUAL_EXECUTE,ActionScopeCode.LISTING_MANUAL_VERIFY))
             users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
         mvc.perform(post("/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/cancel")
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
@@ -411,7 +412,7 @@ class ListingReworkAuthorizationIT {
         jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",reviewer).update();
         users.assignRole(OPERATOR,reviewer,BusinessRoleCode.OWNER,null);
         for(var scope:List.of(ActionScopeCode.LISTING_ACTION_REVIEW,ActionScopeCode.LISTING_ACTION_APPROVE_MATERIAL,
-                ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY,ActionScopeCode.LISTING_CONVERSION_VIEW))
+                ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY,ActionScopeCode.LISTING_CONVERSION_VIEW,ActionScopeCode.LISTING_MANUAL_VERIFY))
             users.grantScope(OPERATOR,reviewer,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
         mvc.perform(post(actionPath+"/review").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"verdict\":\"ATTESTED\",\"reason\":\"Review the exact proposed commercial declaration\"}"))
@@ -441,7 +442,7 @@ class ListingReworkAuthorizationIT {
                 .param("id",action).update()).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
         var packetResponse=mvc.perform(post("/api/v1/console/listing/manual/actions/"+action+"/packets")
                 .header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("executorUserId",fixture.id("executorUser")))))
+                .content(json.writeValueAsString(Map.of("executorUserId",userId))))
                 .andExpect(status().isOk()).andReturn();
         UUID packet=UUID.fromString(json.readTree(packetResponse.getResponse().getContentAsString()).path("id").asText());
         assertThat(jdbc.sql("SELECT promotion_terms_digest FROM ops.lc_manual_packet WHERE id=:id")
@@ -473,7 +474,82 @@ class ListingReworkAuthorizationIT {
                 .param("id",action).update()).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
         assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_promotion_engagement SET obligations='{}'::jsonb WHERE action_id=:id")
                 .param("id",action).update()).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        Instant operation=Instant.now();
+        String packetPath="/api/v1/console/listing/manual/packets/"+packet;
+        mvc.perform(post(packetPath+"/report").header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("operationTime",operation.toString(),"reportState","APPLIED",
+                    "note","Synthetic executor report, not independent proof")))).andExpect(status().isOk());
+        String factPath="/api/v1/console/listing/health/listings/"+fixture.id("listing")+"/facts/promotion";
+        Map<String,Object> observed=Map.of("declaration",terms,"engagementKind",kind,"nativePromotionKey","fixture-promotion-17","participationState","PARTICIPATING",
+                "observedAt",operation.plusNanos(1).toString(),"evidenceReference","fixture://independent-native-participation");
+        var selfObserved=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(observed))).andExpect(status().isOk()).andReturn();
+        String selfObservation=json.readTree(selfObserved.getResponse().getContentAsString()).path("observationId").asText();
+        var verification=new java.util.LinkedHashMap<String,Object>();
+        verification.put("basis","INDEPENDENT_HUMAN");verification.put("managementMatch","MATCHED_TARGET");
+        verification.put("displayState","UNKNOWN");verification.put("note","Independently verify exact participation only");
+        verification.put("promotionObservationId",selfObservation);
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,authorToken).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
+        for(String state:List.of("UNKNOWN","NOT_PARTICIPATING")) {
+            var different=new java.util.LinkedHashMap<>(observed);different.put("participationState",state);
+            var observation=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(different))).andExpect(status().isOk()).andReturn();
+            verification.put("promotionObservationId",json.readTree(observation.getResponse().getContentAsString()).path("observationId").asText());
+            mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(verification))).andExpect(status().isBadRequest());
+        }
+        var incomplete=new java.util.LinkedHashMap<>(observed);incomplete.remove("declaration");
+        var unknownTerms=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(incomplete))).andExpect(status().isOk()).andReturn();
+        verification.put("promotionObservationId",json.readTree(unknownTerms.getResponse().getContentAsString()).path("observationId").asText());
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isBadRequest());
+        var changed=new java.util.LinkedHashMap<>(observed);changed.put("declaration",altered);
+        var differentTerms=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(changed))).andExpect(status().isOk()).andReturn();
+        verification.put("promotionObservationId",json.readTree(differentTerms.getResponse().getContentAsString()).path("observationId").asText());
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isBadRequest());
+        var stale=new java.util.LinkedHashMap<>(observed);stale.put("observedAt",operation.minusSeconds(1).toString());
+        var staleFact=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(stale))).andExpect(status().isOk()).andReturn();
+        verification.put("promotionObservationId",json.readTree(staleFact.getResponse().getContentAsString()).path("observationId").asText());
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
+        var foreignDeclaration=new java.util.LinkedHashMap<>(terms);foreignDeclaration.put("nativePromotionKey","different-native-promotion");
+        var foreignObserved=new java.util.LinkedHashMap<>(observed);foreignObserved.put("declaration",foreignDeclaration);
+        foreignObserved.put("nativePromotionKey","different-native-promotion");
+        var foreignFact=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(foreignObserved))).andExpect(status().isOk()).andReturn();
+        verification.put("promotionObservationId",json.readTree(foreignFact.getResponse().getContentAsString()).path("observationId").asText());
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
+        var qualified=mvc.perform(post(factPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(observed))).andExpect(status().isOk()).andReturn();
+        String observationId=json.readTree(qualified.getResponse().getContentAsString()).path("observationId").asText();
+        verification.put("promotionObservationId",observationId);
+        verification.put("basis","OFFICIAL_EVIDENCE");
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
+        verification.put("basis","INDEPENDENT_HUMAN");
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification)))
+                .andExpect(result->assertThat(result.getResponse().getStatus()).withFailMessage("Promotion verification: %s",result.getResolvedException()).isEqualTo(200))
+                .andExpect(jsonPath("$.state").value("VERIFIED"))
+                .andExpect(jsonPath("$.verifications[0].observationBinding.purpose").value("PARTICIPATION"))
+                .andExpect(jsonPath("$.verifications[0].observationBinding.claimExtent").value("OBSERVED_INSTANT_ONLY"));
+        assertThat(jdbc.sql("SELECT state FROM ops.lc_action WHERE id=:id").param("id",action).query(String.class).single()).isEqualTo("VERIFIED");
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE action_id=:id AND state<>'RELEASED'")
+                .param("id",action).query(Integer.class).single()).isPositive();
+        assertThatThrownBy(()->jdbc.sql("UPDATE core.lc_promotion_observation SET participation_state='UNKNOWN' WHERE id=:id")
+                .param("id",UUID.fromString(observationId)).update())
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("42501"));
         users.revokeScope(OPERATOR,productDisclosure.id(),"Withdraw current financial disclosure",productDisclosure.version());
+        mvc.perform(post(packetPath+"/verify").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(verification))).andExpect(status().isForbidden());
         mvc.perform(get(actionPath+"/promotion-terms").header(HttpHeaders.AUTHORIZATION,bearer()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(false))
                 .andExpect(jsonPath("$.terms").isEmpty());
@@ -483,8 +559,8 @@ class ListingReworkAuthorizationIT {
         mvc.perform(get(engagementsPath).header(HttpHeaders.AUTHORIZATION,bearer()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$[0].fullDisclosure").value(false))
                 .andExpect(jsonPath("$[0].terms").isEmpty()).andExpect(jsonPath("$[0].obligations").isEmpty());
-        // This test establishes exact declaration identity only. Independent actual participation,
-        // exit authorization, financial qualification and staged obligation release remain separate roots.
+        // Exact independent participation is an instant claim, not customer display, financial
+        // qualification, exit authorization, staged release or a business Outcome.
     }
 
     @Test

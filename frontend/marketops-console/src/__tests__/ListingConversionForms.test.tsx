@@ -3,7 +3,12 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ConsoleRequest } from '../api/console';
 import { ListingConversionShell } from '../listing/ListingConversionShell';
 import { YesNo } from '../listing/ListingCommon';
-import { PromotionDeclaration, PromotionPreparationForm } from '../listing/ListingPromotionTerms';
+import { ListingManualPanel } from '../listing/ListingManualPanel';
+import {
+  PromotionDeclaration,
+  PromotionPreparationForm,
+  PromotionObservationForm,
+} from '../listing/ListingPromotionTerms';
 import { t } from '../listing/i18n/ui';
 import { LanguageProvider } from '../listing/i18n/language';
 
@@ -564,5 +569,122 @@ describe('exact promotion declarations', () => {
     fireEvent.click(screen.getByRole('button', { name: t('promotionReadTerms', 'zh') }));
     expect(screen.queryByText('600.0000')).not.toBeInTheDocument();
     expect(await screen.findByText(t('promotionTermsRestricted', 'zh'))).toBeInTheDocument();
+  });
+});
+
+describe('promotion source observations and their independent verification reference', () => {
+  it.each(['zh', 'ru'] as const)(
+    'retains unknown commercial terms and separately captures complete terms in %s',
+    async (language) => {
+      const { context, calls } = backend([
+        [/\/facts\/promotion$/u, { observationId: 'promotion-observation-1' }],
+      ]);
+      render(
+        <LanguageProvider initial={language}>
+          <PromotionObservationForm context={context} listingId={LISTING} />
+        </LanguageProvider>,
+      );
+      fireEvent.change(screen.getByLabelText(t('promotionKind', language)), {
+        target: { value: 'SELLER_DIRECT_DISCOUNT' },
+      });
+      fireEvent.change(screen.getByLabelText(t('promotionNativeKey', language)), {
+        target: { value: ' exact/native-key ' },
+      });
+      fireEvent.change(screen.getByLabelText(t('promotionParticipationState', language)), {
+        target: { value: 'PARTICIPATING' },
+      });
+      fireEvent.change(screen.getByLabelText(t('promotionObservedAt', language)), {
+        target: { value: '2026-09-13T02:00' },
+      });
+      fireEvent.change(screen.getByLabelText(t('promotionObservationReference', language)), {
+        target: { value: 'fixture://actual-observation' },
+      });
+      const form = screen.getByRole('form', { name: t('promotionObservation', language) });
+      fireEvent.submit(form);
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        t('promotionObservationSaved', language),
+      );
+      expect(JSON.parse(calls[0]?.body ?? '{}')).toMatchObject({
+        declaration: null,
+        nativePromotionKey: ' exact/native-key ',
+        engagementKind: 'SELLER_DIRECT_DISCOUNT',
+        participationState: 'PARTICIPATING',
+        evidenceReference: 'fixture://actual-observation',
+      });
+      fireEvent.click(screen.getByLabelText(t('promotionTermsObserved', language)));
+      fireEvent.change(screen.getByLabelText(t('promotionDeclarationSource', language)), {
+        target: { value: 'fixture://commercial-source' },
+      });
+      for (const [group, name, value] of [
+        ['promotionTerms', 'price', '200.0000'],
+        ['promotionObligations', 'fixedFee', '600.0000'],
+      ] as const) {
+        const fields = within(screen.getByRole('group', { name: t(group, language) }));
+        fireEvent.change(fields.getByLabelText(`${t('promotionFieldName', language)} 1`), {
+          target: { value: name },
+        });
+        fireEvent.change(fields.getByLabelText(`${t('promotionFieldValue', language)} 1`), {
+          target: { value },
+        });
+      }
+      fireEvent.change(screen.getByLabelText(t('promotionPriceFreeze', language)), {
+        target: { value: 'yes' },
+      });
+      fireEvent.change(screen.getByLabelText(t('promotionAutoParticipation', language)), {
+        target: { value: 'no' },
+      });
+      fireEvent.submit(form);
+      await waitFor(() => {
+        expect(calls).toHaveLength(2);
+      });
+      expect(JSON.parse(calls[1]?.body ?? '{}')).toMatchObject({
+        declaration: {
+          terms: { price: '200.0000' },
+          obligations: { fixedFee: '600.0000' },
+          priceFreeze: true,
+          autoParticipation: false,
+        },
+        evidenceReference: 'fixture://actual-observation',
+      });
+    },
+  );
+
+  it('passes the exact independent participation observation without inventing description or display evidence', async () => {
+    const packet = {
+      id: 'p1',
+      actionId: 'a1',
+      executorUserId: 'u1',
+      issuedAt: 't',
+      expiresAt: 't',
+      nativeListingKey: 'k',
+      state: 'REPORTED',
+      reports: [],
+      verifications: [],
+      version: 1,
+    };
+    const { context, calls } = backend([
+      [/\/packets\?/u, [packet]],
+      [/\/packets\/p1\/verify$/u, { ...packet, state: 'VERIFIED' }],
+    ]);
+    render(<ListingManualPanel context={context} />);
+    const form = await screen.findByRole('form', { name: `${t('verify', 'zh')} p1` });
+    fireEvent.change(within(form).getByLabelText(t('promotionObservationId', 'zh')), {
+      target: { value: 'promotion-observation-1' },
+    });
+    fireEvent.change(within(form).getByDisplayValue('DISPLAYED'), { target: { value: 'UNKNOWN' } });
+    fireEvent.change(within(form).getByLabelText(t('note', 'zh')), {
+      target: { value: 'Independent participation only' },
+    });
+    fireEvent.submit(form);
+    await waitFor(() => {
+      expect(calls.some((call) => call.url.endsWith('/verify'))).toBe(true);
+    });
+    expect(JSON.parse(calls.find((call) => call.url.endsWith('/verify'))?.body ?? '{}')).toEqual({
+      basis: 'INDEPENDENT_HUMAN',
+      managementMatch: 'MATCHED_TARGET',
+      displayState: 'UNKNOWN',
+      note: 'Independent participation only',
+      promotionObservationId: 'promotion-observation-1',
+    });
   });
 });

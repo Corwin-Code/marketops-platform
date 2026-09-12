@@ -78,15 +78,15 @@ public class ManualPathRepository {
 
     public void insertVerification(UUID id, UUID organizationId, UUID packetId, UUID verifierUserId, String basis,
                                    String managementMatch, UUID managementObservationId, UUID displayObservationId,
-                                   String displayState, Instant verifiedAt, String note) {
+                                   String displayState, Instant verifiedAt, String note, UUID promotionObservationId) {
         jdbc.sql("""
                 INSERT INTO ops.lc_manual_verification (id, organization_id, packet_id, verifier_user_id, verification_basis,
-                    management_match, management_observation_id, display_observation_id, display_state, verified_at, note)
-                VALUES (:id, :org, :packet, :verifier, :basis, :match, :management, :display, :displayState, :verified, :note)
+                    management_match, management_observation_id, display_observation_id, display_state, verified_at, note, promotion_observation_id)
+                VALUES (:id, :org, :packet, :verifier, :basis, :match, :management, :display, :displayState, :verified, :note, :promotion)
                 """).param("id", id).param("org", organizationId).param("packet", packetId).param("verifier", verifierUserId)
                 .param("basis", basis).param("match", managementMatch).param("management", managementObservationId)
                 .param("display", displayObservationId).param("displayState", displayState)
-                .param("verified", Timestamp.from(verifiedAt)).param("note", note).update();
+                .param("verified", Timestamp.from(verifiedAt)).param("note", note).param("promotion",promotionObservationId).update();
     }
 
     private static final String PACKET_SELECT = """

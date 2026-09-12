@@ -106,6 +106,32 @@ public class ListingFactIntakeService {
     }
 
     @Transactional
+    public UUID recordPromotion(AuthenticatedActor actor,UUID listingId,
+            com.mimococo.marketops.listingconversion.PromotionTerms declaration,String kind,String nativeKey,String state,
+            Instant observedAt,String evidenceReference) {
+        var listing=require(actor,listingId,ActionScopeCode.LISTING_MANUAL_VERIFY);
+        Instant now=clock.instant();
+        if(kind==null || !java.util.Set.of("OFFICIAL_PROMOTION_PARTICIPATION","SELLER_DIRECT_DISCOUNT").contains(kind)
+                || nativeKey==null || nativeKey.length()>128 || observedAt==null || observedAt.isAfter(now) || state==null
+                || !java.util.Set.of("PARTICIPATING","NOT_PARTICIPATING","UNKNOWN").contains(state)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        MetadataFieldPolicy.requireText("nativePromotionKey",nativeKey);
+        if(declaration!=null && (!kind.equals(declaration.engagementKind()) || !nativeKey.equals(declaration.nativePromotionKey()))) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        MetadataFieldPolicy.requireText("evidenceReference",evidenceReference);
+        UUID provenance=facts.insertProvenance(ids.newId(),listing.organizationId(),"MANUAL_ENTRY",null,
+                observedAt,now,actor.userId(),null);
+        UUID id=ids.newId();
+        facts.insertPromotionObservation(id,listing.organizationId(),provenance,listingId,observedAt,now,state,kind,nativeKey,
+                declaration,evidenceReference);
+        governance.enqueue(ids.newId(),listing.organizationId(),listingId,RecalculationClass.ORDINARY,
+                "promotion-observation:"+id,observedAt,now);
+        return id;
+    }
+
+    @Transactional
     public UUID recordDisplay(AuthenticatedActor actor, UUID listingId, String displayState, String displayedText,
                               Instant observedAt, String evidenceReference) {
         ListingFactRepository.ListingContext listing = require(actor, listingId, ActionScopeCode.LISTING_MANUAL_VERIFY);

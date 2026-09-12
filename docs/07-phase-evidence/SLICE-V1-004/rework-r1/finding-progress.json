@@ -168,10 +168,12 @@
       "title": "促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed."
+        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
+        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
       ],
       "executed_evidence": [
-        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations."
+        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
+        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
       ]
     },
     {
@@ -186,10 +188,12 @@
       "title": "人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Checkpoint 8 retains as-of display snapshots including unknown reports; exact manual verification binds listing/target/operation/acquisition time and independent observer provenance. Full interval coverage and downstream propagation remain open."
+        "Checkpoint 8 retains as-of display snapshots including unknown reports; exact manual verification binds listing/target/operation/acquisition time and independent observer provenance. Full interval coverage and downstream propagation remain open.",
+        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
       ],
       "executed_evidence": [
-        "Checkpoint-8 receipts: 91 unit/architecture, 26 signed HTTP/database including normal packet/observation/verification/read, and 8 independent PostgreSQL application-role manual evidence tests passed. No closure claim."
+        "Checkpoint-8 receipts: 91 unit/architecture, 26 signed HTTP/database including normal packet/observation/verification/read, and 8 independent PostgreSQL application-role manual evidence tests passed. No closure claim.",
+        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
       ]
     },
     {
@@ -297,11 +301,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Allowance preview exposes unresolved required axes and each applied scope in Chinese/Russian; rows with the same axis in multiple scopes retain separate keys. It uses the shared canonical projection.",
-        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed."
+        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
+        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
       ],
       "executed_evidence": [
         "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
-        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations."
+        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
+        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
       ]
     },
     {
@@ -311,14 +317,16 @@
       "implementation": [
         "Isolated PostgreSQL and real signed Console requests execute. Found and fixed manual fact provenance, missing calculation requester, and read-audit transaction defects; no full regression or LOCAL_VERIFIED claim.",
         "Checkpoint 12: governed closed request schema with exact typed native identity/attribute/Unicode/conditional marking; destination-before-secret, final authority check, exact conditional header and JSON media type. Restoration business authority and combined runtime still unfinished.",
-        "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished."
+        "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished.",
+        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
         "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only.",
         "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
         "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim.",
-        "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred."
+        "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred.",
+        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
       ]
     }
   ],
