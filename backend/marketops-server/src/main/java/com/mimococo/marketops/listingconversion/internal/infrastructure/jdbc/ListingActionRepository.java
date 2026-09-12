@@ -237,17 +237,60 @@ public class ListingActionRepository {
 
     // ------------------------------------------------------------------ reviews, bindings, plans
 
+    public com.mimococo.marketops.listingconversion.MeaningReviewBasis meaningBasis(UUID actionId) {
+        return jdbc.sql("""
+                SELECT a.id,ops.lc_meaning_review_basis_digest(a.id) AS basis_digest,o.description_text,a.target_text,
+                       core.lc_meaning_catalog(a.calibration_package_id,a.action_kind)::text AS conditions,
+                       a.promotion_terms::text AS terms
+                FROM ops.lc_action a LEFT JOIN core.lc_description_observation o ON o.id=a.current_description_observation_id
+                WHERE a.id=:id
+                """).param("id",actionId).query((rs,n)->{
+                    var conditions=new ArrayList<com.mimococo.marketops.listingconversion.MeaningReviewBasis.Condition>();
+                    if (rs.getString("conditions")!=null) for (var item:json.readTree(rs.getString("conditions"))) {
+                        conditions.add(new com.mimococo.marketops.listingconversion.MeaningReviewBasis.Condition(
+                                item.path("code").asText(),item.path("condition").asText(),item.path("axis").asText()));
+                    }
+                    return new com.mimococo.marketops.listingconversion.MeaningReviewBasis(actionId,rs.getString("basis_digest"),
+                            conditions.isEmpty()?"MEANING_RULE_UNQUALIFIED":"QUALIFIED",rs.getString("description_text"),rs.getString("target_text"),
+                            rs.getString("terms")==null?null:json.readValue(rs.getString("terms"),com.mimococo.marketops.listingconversion.PromotionTerms.class),conditions);
+                }).single();
+    }
+
+    public Boolean meaningAxis(UUID actionId,com.mimococo.marketops.listingconversion.MeaningAssessment assessment) {
+        return jdbc.sql("SELECT ops.lc_review_meaning_axis(:id,CAST(:assessment AS jsonb))")
+                .param("id",actionId).param("assessment",assessment==null?null:json.writeValueAsString(assessment))
+                .query((rs,n)->rs.getObject(1,Boolean.class)).optional().orElse(null);
+    }
+
+    public boolean applyReviewedClassification(ActionRow action,
+            com.mimococo.marketops.listingconversion.internal.domain.MaterialityClassifier.Classification classification) {
+        return jdbc.sql("""
+                UPDATE ops.lc_action SET content_axis_material=:meaning,exposure_axis_material=:exposure,materiality_route=:route
+                WHERE id=:id AND state='DRAFT' AND version=:version
+                """).param("id",action.id()).param("version",action.version())
+                .param("meaning",classification.contentAxisMaterial()).param("exposure",classification.exposureAxisMaterial())
+                .param("route",classification.route().name()).update()==1;
+    }
+
     public void insertReview(UUID id, UUID organizationId, UUID actionId, UUID reviewerUserId, String targetDigest,
                              String currentDigest, String affectedSetDigest, String factsDigest, String verdict,
-                             String reason, Instant now) {
+                             String reason, Instant now,com.mimococo.marketops.listingconversion.MeaningAssessment assessment,
+                             Map<String,Object> exposureEvidence,
+                             com.mimococo.marketops.listingconversion.internal.domain.MaterialityClassifier.Classification classification) {
         jdbc.sql("""
                 INSERT INTO ops.lc_action_review (id, organization_id, action_id, reviewer_user_id, attested_target_text_digest,
-                    attested_current_text_digest, attested_affected_set_digest, facts_digest, verdict, reason, reviewed_at)
-                VALUES (:id, :org, :action, :reviewer, :target, :current, :set, :facts, :verdict, :reason, :now)
+                    attested_current_text_digest, attested_affected_set_digest, facts_digest, verdict, reason, reviewed_at,
+                    meaning_assessment,exposure_evidence,content_axis_material,exposure_axis_material,materiality_route)
+                VALUES (:id, :org, :action, :reviewer, :target, :current, :set, :facts, :verdict, :reason, :now,
+                    CAST(:meaning AS jsonb),CAST(:exposureEvidence AS jsonb),:meaningAxis,:exposureAxis,:route)
                 """).param("id", id).param("org", organizationId).param("action", actionId).param("reviewer", reviewerUserId)
                 .param("target", targetDigest).param("current", currentDigest).param("set", affectedSetDigest)
                 .param("facts", factsDigest).param("verdict", verdict).param("reason", reason)
-                .param("now", Timestamp.from(now)).update();
+                .param("now", Timestamp.from(now)).param("meaning",assessment==null?null:json.writeValueAsString(assessment))
+                .param("exposureEvidence",json.writeValueAsString(exposureEvidence))
+                .param("meaningAxis",classification==null?null:classification.contentAxisMaterial())
+                .param("exposureAxis",classification==null?null:classification.exposureAxisMaterial())
+                .param("route",classification==null?null:classification.route().name()).update();
     }
 
     public List<ListingActionView.Review> reviews(UUID actionId) {

@@ -1,6 +1,5 @@
 package com.mimococo.marketops.listingconversion.internal.application;
 
-import com.mimococo.marketops.listingconversion.internal.domain.MaterialityClassifier;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.CalibrationRepository;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -79,12 +78,6 @@ public class CalibrationService {
         }
         UUID id=UUID.fromString(check.path("currentPackageId").asText());
         return new ActionRecheck(new Outcome(new Resolved(id,check.path("currentVersion").asInt(),calibration.values(id)),state),evidence);
-    }
-
-    public static MaterialityClassifier.Triggers triggers(Resolved resolved) {
-        return new MaterialityClassifier.Triggers(numeric(resolved, "ORDINARY_TRIGGER_CONTENT"),
-                numeric(resolved, "MATERIAL_TRIGGER_CONTENT"), numeric(resolved, "ORDINARY_TRIGGER_EXPOSURE"),
-                numeric(resolved, "MATERIAL_TRIGGER_EXPOSURE"));
     }
 
     /** Approval validity in the unit the package states; empty when absent or unusable. */

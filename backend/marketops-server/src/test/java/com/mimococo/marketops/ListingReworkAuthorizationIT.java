@@ -574,8 +574,9 @@ class ListingReworkAuthorizationIT {
     }
 
     @org.junit.jupiter.params.ParameterizedTest
-    @org.junit.jupiter.params.provider.ValueSource(strings={"OFFICIAL_PROMOTION_PARTICIPATION","SELLER_DIRECT_DISCOUNT"})
-    void promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry(String kind) throws Exception {
+    @org.junit.jupiter.params.provider.CsvSource({"OFFICIAL_PROMOTION_PARTICIPATION,true","OFFICIAL_PROMOTION_PARTICIPATION,false",
+            "SELLER_DIRECT_DISCOUNT,true","SELLER_DIRECT_DISCOUNT,false"})
+    void promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry(String kind,boolean major) throws Exception {
         var json=new tools.jackson.databind.ObjectMapper();
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
         for(var scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.LISTING_ACTION_LAUNCH,
@@ -595,8 +596,8 @@ class ListingReworkAuthorizationIT {
         Map<String,Object> terms=Map.of("engagementKind",kind,"nativePromotionKey","fixture-promotion-17",
                 "terms",Map.of("finalPrice","200.0000","currency","RUB","period","2026-10-01/2026-10-07",
                     "feeSchedule","fixture://commercial-fees","coexistence","fixture://known-existing-offer"),
-                "priceFreeze",true,"autoParticipation",false,"termsEvidenceReference"," fixture://exact-promotion-source ",
-                "obligations",Map.of("fixedFee","600.0000","exitTerms","fixture://bounded-exit-and-residual"));
+                "priceFreeze",major,"autoParticipation",false,"termsEvidenceReference"," fixture://exact-promotion-source ",
+                "obligations",Map.of("fixedFee",major?"600.0000":"0.0000","exitTerms","fixture://bounded-exit-and-residual"));
         String prepare="/api/v1/console/listing/actions/candidates/"+candidate+"/prepare";
         mvc.perform(post(prepare).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"executionPath\":\"MANUAL\",\"exposureShare\":0.01}"))
@@ -644,8 +645,8 @@ class ListingReworkAuthorizationIT {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(true))
                 .andExpect(jsonPath("$.terms.terms.finalPrice").value("200.0000"));
         mvc.perform(post(actionPath+"/review").header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"verdict\":\"ATTESTED\",\"reason\":\"Review exact declaration; not a real provider qualification\"}"))
-                .andExpect(status().isOk());
+                .content(meaningReviewRequest(action,major)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.materialityRoute").value(major?"MATERIAL_IMPACT":"ORDINARY_IMPACT"));
         long version=jdbc.sql("SELECT version FROM ops.recommendation WHERE id=:id").param("id",recommendation).query(Long.class).single();
         mvc.perform(post("/api/v1/console/workflow/recommendations/"+recommendation+"/approval")
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
@@ -679,7 +680,7 @@ class ListingReworkAuthorizationIT {
         mvc.perform(get(engagementPath).header(HttpHeaders.AUTHORIZATION,bearer()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.fullDisclosure").value(true))
                 .andExpect(jsonPath("$.terms.finalPrice").value("200.0000"))
-                .andExpect(jsonPath("$.obligations.fixedFee").value("600.0000"));
+                .andExpect(jsonPath("$.obligations.fixedFee").value(major?"600.0000":"0.0000"));
         mvc.perform(get(engagementsPath).header(HttpHeaders.AUTHORIZATION,bearer()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$[0].fullDisclosure").value(true))
                 .andExpect(jsonPath("$[0].terms.finalPrice").value("200.0000"));
@@ -841,6 +842,10 @@ class ListingReworkAuthorizationIT {
     }
 
     private UUID prepareDescriptionForExposure(java.math.BigDecimal reportedExposure) throws Exception {
+        return prepareDescriptionForExposure(reportedExposure,ListingConversionFixture.PRIOR_TEXT_ONE+".");
+    }
+
+    private UUID prepareDescriptionForExposure(java.math.BigDecimal reportedExposure,String targetText) throws Exception {
         var json=new tools.jackson.databind.ObjectMapper();
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
         for (ActionScopeCode scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.LISTING_CONVERSION_VIEW)) {
@@ -858,7 +863,7 @@ class ListingReworkAuthorizationIT {
         String candidate=json.readTree(candidateResponse.getResponse().getContentAsString()).path("id").asText();
         var actionResponse=mvc.perform(post("/api/v1/console/listing/actions/candidates/"+candidate+"/prepare")
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("executionPath","MANUAL","targetText",ListingConversionFixture.PRIOR_TEXT_ONE+".",
+                .content(json.writeValueAsString(Map.of("executionPath","MANUAL","targetText",targetText,
                         "kizMarkedDeclared",false,"exposureShare",reportedExposure))))
                 .andExpect(result -> assertThat(result.getResponse().getStatus())
                         .withFailMessage("Preparation failed: %s", result.getResolvedException()).isEqualTo(200))
@@ -916,7 +921,7 @@ class ListingReworkAuthorizationIT {
         users.grantScope(OPERATOR,reviewer,ActionScopeCode.LISTING_ACTION_REVIEW,
                 ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
         mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review").header(HttpHeaders.AUTHORIZATION,bearer())
-                .contentType(MediaType.APPLICATION_JSON).content("{\"verdict\":\"ATTESTED\",\"reason\":\"Cannot attest away missing canonical exposure\"}"))
+                .contentType(MediaType.APPLICATION_JSON).content(meaningReviewRequest(action,false)))
                 .andExpect(result->assertThat(result.getResolvedException()).isInstanceOfSatisfying(
                     com.mimococo.marketops.shared.OperationRejectedException.class,
                     failure->assertThat(failure.errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.MATERIALITY_UNRESOLVED)));
@@ -924,10 +929,121 @@ class ListingReworkAuthorizationIT {
         assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_action_review WHERE action_id=:id").param("id",action).query(Long.class).single()).isZero();
     }
 
+    private UUID independentMeaningReviewer() {
+        subject="meaning-reviewer-"+UUID.randomUUID();
+        UUID reviewer=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Meaning reviewer",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",reviewer).update();
+        users.assignRole(OPERATOR,reviewer,BusinessRoleCode.OWNER,null);
+        for(var scope:List.of(ActionScopeCode.LISTING_ACTION_REVIEW,ActionScopeCode.LISTING_CONVERSION_VIEW,
+                ActionScopeCode.LISTING_ACTION_APPROVE_MATERIAL,ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY))
+            users.grantScope(OPERATOR,reviewer,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        return reviewer;
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(booleans={false,true})
+    void acceptedMeaningConditionsDetermineRouteWithTheSameSmallExposure(boolean major) throws Exception {
+        var json=new tools.jackson.databind.ObjectMapper();
+        String original="Не использовать для детей. " + "Мягкая ткань. ".repeat(60);
+        String target=major?original.substring(3):original+"\n";
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OPERATIONS,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_ACTION_PREPARE,
+                ResourceScopeType.STORE,fixture.id("store"),null);
+        mvc.perform(post("/api/v1/console/listing/health/listings/"+fixture.id("listing")+"/facts/description")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("text",original,"languageCode","ru")))).andExpect(status().isOk());
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ONE,target);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_ACTION_REVIEW,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        String authorRequest=meaningReviewRequest(action,major);
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content(authorRequest))
+                .andExpect(status().isForbidden());
+        UUID reviewer=independentMeaningReviewer();
+        mvc.perform(get("/api/v1/console/listing/actions/"+action+"/review-basis").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.currentText").value(original))
+                .andExpect(jsonPath("$.targetText").value(target));
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content(meaningReviewRequest(action,major)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.state").value("REVIEWED"))
+                .andExpect(jsonPath("$.materialityRoute").value(major?"MATERIAL_IMPACT":"ORDINARY_IMPACT"));
+        assertThat(jdbc.sql("""
+                SELECT r.reviewer_user_id=:reviewer AND r.content_axis_material=:major AND NOT r.exposure_axis_material
+                  AND (r.exposure_evidence#>>'{projection,share}')::numeric=0.0001
+                  AND ops.lc_action_has_meaning_review(a.id,statement_timestamp())
+                FROM ops.lc_action a JOIN ops.lc_action_review r ON r.action_id=a.id WHERE a.id=:id
+                """).param("reviewer",reviewer).param("major",major).param("id",action).query(Boolean.class).single()).isTrue();
+        String reviewerToken=bearer();
+        subject="meaning-ops-lead-"+UUID.randomUUID();
+        UUID opsLead=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Meaning Ops Lead",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",opsLead).update();
+        users.assignRole(OPERATOR,opsLead,BusinessRoleCode.OPS_LEAD,null);
+        for(var scope:List.of(ActionScopeCode.LISTING_ACTION_APPROVE_ORDINARY,ActionScopeCode.LISTING_ACTION_APPROVE_MATERIAL))
+            users.grantScope(OPERATOR,opsLead,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        UUID recommendation=jdbc.sql("SELECT recommendation_id FROM ops.lc_action WHERE id=:id").param("id",action).query(UUID.class).single();
+        long version=jdbc.sql("SELECT version FROM ops.recommendation WHERE id=:id").param("id",recommendation).query(Long.class).single();
+        String approvalRequest=json.writeValueAsString(Map.of("expectedVersion",version,"reason","Approve exact reviewed meaning and scope"));
+        String approvalPath="/api/v1/console/workflow/recommendations/"+recommendation+"/approval";
+        mvc.perform(post(approvalPath).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content(approvalRequest))
+                .andExpect(major?status().isForbidden():status().isOk());
+        if (major) mvc.perform(post(approvalPath).header(HttpHeaders.AUTHORIZATION,reviewerToken)
+                .contentType(MediaType.APPLICATION_JSON).content(approvalRequest)).andExpect(status().isOk());
+        assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_action SET content_axis_material=NOT content_axis_material WHERE id=:id")
+                .param("id",action).update()).satisfies(f->assertThat(ListingConversionFixture.sqlState(f)).isEqualTo("MO107"));
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"UNKNOWN","MISSING","DUPLICATE","EXTRA","STALE_BASIS","INCOMPLETE","NO_APPLICABLE","NO_EVIDENCE","MISSING_ASSESSMENT","SECRET_TEXT"})
+    void incompleteOrUnboundMeaningCannotAdvanceDraft(String caseCode) throws Exception {
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ZERO);
+        independentMeaningReviewer();
+        var json=new tools.jackson.databind.ObjectMapper();
+        var request=(tools.jackson.databind.node.ObjectNode)json.readTree(meaningReviewRequest(action,false));
+        var assessment=(tools.jackson.databind.node.ObjectNode)request.path("meaningAssessment");
+        var answers=(tools.jackson.databind.node.ArrayNode)assessment.path("answers");
+        switch(caseCode) {
+            case "UNKNOWN" -> ((tools.jackson.databind.node.ObjectNode)answers.get(0)).put("state","UNKNOWN");
+            case "MISSING" -> answers.remove(0);
+            case "DUPLICATE" -> answers.set(1,answers.get(0).deepCopy());
+            case "EXTRA" -> answers.add(answers.get(0).deepCopy());
+            case "STALE_BASIS" -> assessment.put("basisDigest","f".repeat(64));
+            case "INCOMPLETE" -> assessment.put("complete",false);
+            case "NO_APPLICABLE" -> answers.forEach(a->((tools.jackson.databind.node.ObjectNode)a).put("state","DOES_NOT_APPLY"));
+            case "NO_EVIDENCE" -> assessment.put("evidenceReference","");
+            case "MISSING_ASSESSMENT" -> request.remove("meaningAssessment");
+            case "SECRET_TEXT" -> ((tools.jackson.databind.node.ObjectNode)answers.get(0)).put("reason","password=synthetic-refusal-only");
+            default -> throw new AssertionError(caseCode);
+        }
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(request)))
+                .andExpect(result->assertThat(result.getResolvedException()).isInstanceOfSatisfying(
+                    com.mimococo.marketops.shared.OperationRejectedException.class,
+                    failure->assertThat(failure.errorCode()).isEqualTo(caseCode.equals("SECRET_TEXT")?com.mimococo.marketops.shared.ErrorCode.SECRET_MATERIAL_SUSPECTED
+                        :com.mimococo.marketops.shared.ErrorCode.MATERIALITY_UNRESOLVED)));
+        assertThat(jdbc.sql("SELECT state='DRAFT' AND content_axis_material IS NULL FROM ops.lc_action WHERE id=:id")
+                .param("id",action).query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_action_review WHERE action_id=:id").param("id",action).query(Long.class).single()).isZero();
+    }
+
+    private String meaningReviewRequest(UUID action,boolean major) throws Exception {
+        var json=new tools.jackson.databind.ObjectMapper();
+        var basisResponse=mvc.perform(get("/api/v1/console/listing/actions/"+action+"/review-basis")
+                .header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.ruleState").value("QUALIFIED")).andReturn();
+        var basis=json.readTree(basisResponse.getResponse().getContentAsString());
+        var answers=new java.util.ArrayList<Map<String,String>>();
+        for(var condition:basis.path("conditions")) answers.add(Map.of("code",condition.path("code").asText(),
+                "state",condition.path("axis").asText().equals("MATERIAL")==major?"APPLIES":"DOES_NOT_APPLY",
+                "reason","Explicit synthetic professional assessment of the complete proposed change"));
+        return json.writeValueAsString(Map.of("verdict","ATTESTED","reason","Independent structured review",
+                "meaningAssessment",Map.of("model","LC_MEANING_REVIEW_1","basisDigest",basis.path("basisDigest").asText(),
+                    "complete",true,"evidenceReference","evidence://synthetic/meaning-review","answers",answers)));
+    }
+
     @Test void fabricatedHighExposureCannotUpgradeAKnownSmallExposure() throws Exception {
         UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ONE);
         assertThat(jdbc.sql("""
-                SELECT materiality_route='ORDINARY_IMPACT' AND NOT exposure_axis_material
+                SELECT materiality_route='MATERIALITY_UNRESOLVED' AND content_axis_material IS NULL AND NOT exposure_axis_material
                   AND (materiality_evidence#>>'{projection,share}')::numeric=0.0001
                 FROM ops.lc_action WHERE id=:id
                 """).param("id",action).query(Boolean.class).single()).isTrue();
@@ -1220,7 +1336,7 @@ class ListingReworkAuthorizationIT {
             users.grantScope(OPERATOR,reviewer,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
         mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review")
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"verdict\":\"ATTESTED\",\"reason\":\"Independently verify exact restoration source and full target\"}"))
+                .content(meaningReviewRequest(action,true)))
                 .andExpect(status().isOk());
         long version=jdbc.sql("SELECT version FROM ops.recommendation WHERE id=:id").param("id",recommendation).query(Long.class).single();
         mvc.perform(post("/api/v1/console/workflow/recommendations/"+recommendation+"/approval")

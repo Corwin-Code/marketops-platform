@@ -396,3 +396,56 @@ describe('the listing client covers every console route', () => {
     expect(api.parseListingAction({ ...ACTION, occupations: [{ id: 'x' }] })).toBeUndefined();
   });
 });
+
+describe('exact meaning review basis', () => {
+  const basis = {
+    actionId: 'a1',
+    basisDigest: 'basis',
+    ruleState: 'QUALIFIED',
+    currentText: 'Не использовать для детей.\r\n',
+    targetText: 'Использовать для детей.\r\n',
+    conditions: [
+      { code: 'SAFETY_CHANGE', condition: 'Изменение ограничений безопасности', axis: 'MATERIAL' },
+    ],
+  };
+  it('preserves full Russian text and rejects incomplete or duplicate conditions', () => {
+    expect(api.parseMeaningReviewBasis(basis)?.currentText).toBe(basis.currentText);
+    expect(api.parseMeaningReviewBasis(basis)?.targetText).toBe(basis.targetText);
+    expect(
+      api.parseMeaningReviewBasis({
+        ...basis,
+        conditions: [basis.conditions[0], basis.conditions[0]],
+      }),
+    ).toBeUndefined();
+    expect(
+      api.parseMeaningReviewBasis({ ...basis, conditions: [{ code: 'A', axis: 'MATERIAL' }] }),
+    ).toBeUndefined();
+    expect(
+      api.parseMeaningReviewBasis({
+        ...basis,
+        conditions: [{ ...basis.conditions[0], axis: 'GUESS' }],
+      }),
+    ).toBeUndefined();
+    expect(
+      api.parseMeaningReviewBasis({ ...basis, promotionTerms: { priceFreeze: false } }),
+    ).toBeUndefined();
+  });
+  it('sends the explicit condition answers and exact basis in the review request', async () => {
+    const { context, calls } = backend();
+    const meaningAssessment: api.MeaningAssessment = {
+      model: 'LC_MEANING_REVIEW_1',
+      basisDigest: 'basis',
+      complete: true,
+      evidenceReference: 'evidence://synthetic/meaning',
+      answers: [{ code: 'SAFETY_CHANGE', state: 'APPLIES', reason: 'Удалено отрицание' }],
+    };
+    expect(
+      (await api.reviewAction(context, 'a1', 'ATTESTED', 'Complete review', meaningAssessment)).ok,
+    ).toBe(true);
+    expect(JSON.parse(calls.find((c) => c.url.endsWith('/review'))!.body!)).toEqual({
+      verdict: 'ATTESTED',
+      reason: 'Complete review',
+      meaningAssessment,
+    });
+  });
+});

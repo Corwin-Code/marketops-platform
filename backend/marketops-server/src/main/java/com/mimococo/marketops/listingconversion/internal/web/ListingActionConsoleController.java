@@ -155,11 +155,19 @@ class ListingActionConsoleController {
         return result;
     }
 
+    @Transactional
+    @GetMapping(value="/{actionId}/review-basis",produces=MediaType.APPLICATION_JSON_VALUE)
+    com.mimococo.marketops.listingconversion.MeaningReviewBasis reviewBasis(AuthenticatedActor actor,@PathVariable UUID actionId) {
+        var result=actions.reviewBasis(actor,actionId);
+        auditRead(actor,"lc-action",actionId,"exact structured meaning review basis");
+        return result;
+    }
+
     @PostMapping(value = "/{actionId}/review", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     ListingActionView review(AuthenticatedActor actor, @PathVariable UUID actionId,
                              @Valid @RequestBody ReviewRequest request) {
-        return actions.review(actor, actionId, request.verdict(), request.reason());
+        return actions.review(actor, actionId, request.verdict(), request.reason(), request.meaningAssessment());
     }
 
     @PostMapping(value = "/{actionId}/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -248,7 +256,8 @@ class ListingActionConsoleController {
                              @NotNull @Valid com.mimococo.marketops.listingconversion.SimulationAssumptions context) {
     }
 
-    record ReviewRequest(@NotBlank String verdict, String reason) {
+    record ReviewRequest(@NotBlank String verdict, String reason,
+                         com.mimococo.marketops.listingconversion.MeaningAssessment meaningAssessment) {
     }
 
     record ReasonRequest(@NotBlank String reason) {

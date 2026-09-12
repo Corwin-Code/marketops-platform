@@ -1,0 +1,154 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "9b7d82836ae981b49d06d2380bcc52ed22233561",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/CanonicalScopeMetricQuery.java": "d6f7acdcb2fc462b6227c3a367a29f5029961eaf942b4a06a5f24ada48954bd5",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/MeaningAssessment.java": "367c590604c9eedd3dc1c8f12641c2ad688afd261dc433b2c31134aa76b04c48",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/MeaningReviewBasis.java": "14c8f731debbdbad49745b8c8e67c7f3fcbdf0ed6ec3ad0c60f810758a13d5ee",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/CalibrationService.java": "ae29370c1117f5bbc2b44fa50283a1f368604060e6fd29a3aeff0eaa4ca8a1ba",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java": "c9edfc30f2a1b8442ab9dd93f255960afd8d2909b434abb64f11079c6f563dc5",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/MaterialityClassifier.java": "c0b75ea1c60a52dd07d03a13728ecc560ec5468e1e16adb016dc6aff694c48d8",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingActionRepository.java": "b30096ab7471b5512dc232a11bfe9dee1cbedf5080d3b9230d1050e3ad508c91",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingActionConsoleController.java": "c54953b7a878fa9f87160a0d0357b37b3f85b6da26b82b7c6c348a6ad96d5486",
+    "backend/marketops-server/src/main/resources/db/migration/V0107__bind_listing_classification_to_structured_meaning_review.sql": "f4cdeba111deb8dab4e78a31ba7844e9f6f9478611eefa84df208be9fca0e133",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingAtomicLaunchUpgradeIT.java": "cc386a1e4ecd337ef49b0d398cafede8356d3c07d00c4629d86246855dade496",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingConversionFixture.java": "ca14ca22259d6b6da460f1ae1512afae1258f60eac4ebdb7f81d26f439ef415c",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingMeaningReviewIT.java": "7c519188e6b80e3fee89879585f80b73e9e49aa18faf7f4e8c5c5687f938e9e0",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "9624b8181c3e7144a6168bb5be633849612d483a50cdd45e01b9d30a080fd611",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/listingconversion/internal/domain/MaterialityClassifierTest.java": "2052e1e093ec29db4c710358742f3feadef1c77a4df90b2bf07d231acf30c7ec",
+    "frontend/marketops-console/src/__tests__/ListingConversionApi.test.ts": "6e9da61a71853de93f67dcb8fbd6f794423a002c43b2b26cb945f9bc5c5a28e1",
+    "frontend/marketops-console/src/__tests__/ListingConversionForms.test.tsx": "4a357540f8336f31742f653a5766e2556c337031ef0372b5dc6ba59ab396d588",
+    "frontend/marketops-console/src/api/listingConversion.ts": "7e2725a47ded255286f356ee12198650163ac3645b4c036e390037b43bb7bdc1",
+    "frontend/marketops-console/src/listing/ListingActionsPanel.tsx": "5d0d3beedd826fd58847a357470ffa904c8a2eba7b763612b29880e547934610",
+    "frontend/marketops-console/src/listing/ListingMeaningReview.tsx": "702694be782e5f0b719fe84e83c9dcc2574036709835ec1783baad16bc0f9a10",
+    "frontend/marketops-console/src/listing/ListingPromotionTerms.tsx": "c9a038676d974a3876d2a83949dc21518987ffd0166703334f239b651753925e",
+    "frontend/marketops-console/src/listing/i18n/backend-codes.json": "e3d7948fd7ee4d82a4611c349c35eb522b7e6b076e27f7c46eadbc4e31b44b4a",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "124e92ebd2804f0af1ca45113d26f8387c185b35dc49238f054c841d8ac763ca"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 66,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-auth-final.log",
+      "raw_log_sha256": "f6ce2a5bc2239a5336cd6a6bb209473368a5da437e248eced1f041ee47c51250",
+      "summary_path": "meaning-review-auth-final-summary.txt",
+      "summary_sha256": "533b4c05d314b72493b0e2b420d4c1c9a2b8c7a27ec3e2701c402b4a1e9f50a5"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingMeaningReviewIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 2,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-database.log",
+      "raw_log_sha256": "afc9ef8da7dd0ab543985ccf8791149fffe93dfa47a2a7d7f2e7783c3aded6e1",
+      "summary_path": "meaning-review-database-summary.txt",
+      "summary_sha256": "efa774c5954d33156dad37f81ac85008efb5a1258b2a6fb58bcfe9d9766db419"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingActionLaunchIT,CanonicalScopeMetricServiceTest,MaterialityClassifierTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 113,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-launch-domain-architecture.log",
+      "raw_log_sha256": "9f59e989d38cc8d68c1704e0df42aaa738982a98f22ef4bb6bc62ebe7a68b09b",
+      "summary_path": "meaning-review-launch-domain-architecture-summary.txt",
+      "summary_sha256": "4766799ecd2a499691878fcc1dc53bd351c297b1bad9d82595f5d2a18c954539"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingConversionSchemaIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 10,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-schema.log",
+      "raw_log_sha256": "e93fa8dbf3ad72fa488455326919b9673ee8be7ff22f602479ab7bd97bc1e1fe",
+      "summary_path": "meaning-review-schema-summary.txt",
+      "summary_sha256": "414114a7a825ec70b771eb3efa54b93170356521d6595f3e130524e2612aa34c"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingAtomicLaunchUpgradeIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-upgrade.log",
+      "raw_log_sha256": "12002843b9bda89f161c558414634234d24d78d499bd070d543beff3baf93af3",
+      "summary_path": "meaning-review-upgrade-summary.txt",
+      "summary_sha256": "81c0459ab2921769f468e507fa1a1a6fe4251b20243e65a822ec00982e0e1e69"
+    }
+  ],
+  "frontend": [
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-build-verified.log",
+      "raw_log_sha256": "0abaaac6daa4f2023f0599b4ee2516d314d082767650c44f68e2f2a94fd55221"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "result": "35_PASS",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-tests-final.log",
+      "raw_log_sha256": "61f4a05be029f30f4c75cf000bdc958af911e0473388d26d5dd2d3975c319cdc"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-lint-confirmed.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run test -- src/__tests__/ListingConversionForms.test.tsx -t 'discards a late review basis'",
+      "working_directory": "frontend/marketops-console",
+      "result": "1_PASS_16_INTENTIONALLY_FILTERED",
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-stale-context-confirmed.log",
+      "raw_log_sha256": "0436bed123594009bc07de1f6eb539a0218b975e7b506eddd31b1db1be2ed221"
+    }
+  ],
+  "diagnostics": [
+    {
+      "raw_log_local_path": "build/slice4-rework/meaning-review-auth-initial.log",
+      "raw_log_sha256": "b69fe2c5ad8e6902bcd6f836017d583b22599c0cdd8791866e25f6da8e669c71",
+      "resolution": "New PL/pgSQL trigger comparison needed parentheses around CASE; syntax corrected before schema tests."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/meaning-review-auth-cases.log",
+      "raw_log_sha256": "1fb351d0f16f780f821253ebc6a415e9ec5263a30b05ad3e4d09992168c1d523",
+      "resolution": "64 cases: 54 passed; 2 fixture errors from duplicate Owner assignment and 8 failures exposed nullable JDBC single() throwing instead of business UNKNOWN. Fixed distinct test grants and optional().orElse(null), verified all ten targeted cases before the final 66-case run."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-build.log",
+      "raw_log_sha256": "8d36015cf7cdab41237c047c7d862cca7c87aba3ea8fb52b41b2abe9aeff08a5",
+      "resolution": "Parser inferred axis as string; constrained list element type to the validated union."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-lint.log",
+      "raw_log_sha256": "84375f2cbb4f1cc788a30bc450f7b326afbe8dc03dab569e5e051bbfb5ae2c5f",
+      "resolution": "Optional-chain and redundant narrowing diagnostics corrected without changing route rules."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-lint-verified.log",
+      "raw_log_sha256": "d6d8592d5ce5d610f2faca955a222946b87245cc1bc2e7883f985fc3b5fbae44",
+      "resolution": "Async React act test callback had no await; diagnosed test-only issue."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/meaning-review-console-lint-clean.log",
+      "raw_log_sha256": "7a91e1fbfaca8c5b9c6997ff9340ec0871a421f73e19746cc1e702c79c9fa98b",
+      "resolution": "Sync act overload could not be awaited; final test awaits the actual deferred HTTP promise in async act. Final typed lint and this case passed."
+    }
+  ],
+  "scope": {
+    "roots": [
+      "S4-DR-R1-008",
+      "S4-DR-R1-011",
+      "S4-DR-R1-026",
+      "S4-DR-R1-027"
+    ],
+    "implemented": "Finite accepted meaning conditions, independent exact-action review, current review-time canonical exposure, immutable classification, exact binding guard, Chinese/Russian review form. No semantic model, provider, new role or platform write enablement.",
+    "remaining": "Current canonical exposure/classification at approval and launch, complete scoped meaning/evidence history and remaining root/transitive verification; no root closure claimed."
+  },
+  "verification_discipline": "Each rerun follows a diagnosed failure or changed source/test. Separate database ITs run in distinct Maven processes; set -e stops the finite sequence on failure. 192 backend cases and 35 distinct frontend cases in affected scope, with only the modified late-context test repeated after its test-only async fix. Every process terminal; no repeated broad verification after pass."
+}

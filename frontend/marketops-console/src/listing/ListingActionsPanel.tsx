@@ -24,6 +24,7 @@ import {
   reviewAction,
 } from '../api/listingConversion';
 import { Code, ListingProblem, When, YesNo } from './ListingCommon';
+import { ListingMeaningReview } from './ListingMeaningReview';
 import { PromotionDeclaration, PromotionPreparationForm } from './ListingPromotionTerms';
 import { useLanguage } from './i18n/language';
 import { t, type UiKey } from './i18n/ui';
@@ -517,14 +518,12 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
           </label>
           {action.state === 'DRAFT' && (
             <>
-              <button
-                type="button"
-                onClick={() => {
-                  void reviewAction(context, actionId, 'ATTESTED', reason).then(settle);
-                }}
-              >
-                {t('attest', language)}
-              </button>
+              <ListingMeaningReview
+                context={context}
+                actionId={actionId}
+                reason={reason}
+                onOutcome={settle}
+              />
               <button
                 type="button"
                 onClick={() => {

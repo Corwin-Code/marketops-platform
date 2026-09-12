@@ -207,16 +207,8 @@ public class ListingActionService {
         CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
                 listing.storeId(), now);
         var exposure=exposureBasis(listing,set,resolved,now);
-        MaterialityClassifier.Classification classification;
-        if (resolved.ok()) {
-            BigDecimal contentShare = description
-                    ? MaterialityClassifier.contentChangeShare(current.get().descriptionText(), targetText)
-                    : BigDecimal.ONE;
-            classification = MaterialityClassifier.classifyWithExposureAxis(CalibrationService.triggers(resolved.resolved()),
-                    contentShare, exposure.material());
-        } else {
-            classification = new MaterialityClassifier.Classification(MaterialityRoute.MATERIALITY_UNRESOLVED, null, null);
-        }
+        // Meaning remains unknown until an independent reviewer answers the accepted conditions.
+        var classification=MaterialityClassifier.classify(null,exposure.material());
         String entityVersion = Digest.ofComponents(List.of(set.digest(),
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse("NO_DESCRIPTION"),
                 targetDigest == null ? "NO_TARGET" : targetDigest,
@@ -296,7 +288,12 @@ public class ListingActionService {
                 rule.path("maximumPeriodEndAgeSeconds").asLong()));
         basis.put("state",result.available()?"QUALIFIED":"EXPOSURE_UNRESOLVED");
         basis.put("projection",result);
-        return new ExposureBasis(result.reaches(material.numeric()),basis);
+        Integer materialComparison=result.compareWith(material.numeric());
+        Integer ordinaryComparison=result.compareWith(ordinary.numeric());
+        Boolean axis=materialComparison==null || ordinaryComparison==null?null
+                : materialComparison>=0?Boolean.TRUE:ordinaryComparison<=0?Boolean.FALSE:null;
+        if (axis==null && result.available()) basis.put("state","EXPOSURE_BETWEEN_ACCEPTED_BOUNDS");
+        return new ExposureBasis(axis,basis);
     }
 
     private UUID runFor(ListingFactRepository.ListingContext listing, Instant now, UUID requestedByUserId) {
@@ -305,8 +302,22 @@ public class ListingActionService {
                 null, now, requestedByUserId));
     }
 
+    @Transactional(readOnly=true)
+    public com.mimococo.marketops.listingconversion.MeaningReviewBasis reviewBasis(AuthenticatedActor actor,UUID actionId) {
+        var action=requireAction(actor,actionId,ActionScopeCode.LISTING_ACTION_REVIEW);
+        if ("LISTING_PROMOTION_ACTION".equals(action.actionKind()) && !maySeePromotionTerms(actor,action)) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        var basis=actions.meaningBasis(actionId);
+        var current=calibration.recheckAction(actionId,actions.databaseNow());
+        return current.outcome().ok()?basis:new com.mimococo.marketops.listingconversion.MeaningReviewBasis(
+                basis.actionId(),basis.basisDigest(),current.outcome().state(),basis.currentText(),basis.targetText(),
+                basis.promotionTerms(),basis.conditions());
+    }
+
     @Transactional
-    public ListingActionView review(AuthenticatedActor actor, UUID actionId, String verdict, String reason) {
+    public ListingActionView review(AuthenticatedActor actor, UUID actionId, String verdict, String reason,
+                                    com.mimococo.marketops.listingconversion.MeaningAssessment assessment) {
         ListingActionRepository.ActionRow action = requireAction(actor, actionId, ActionScopeCode.LISTING_ACTION_REVIEW);
         if ("LISTING_PROMOTION_ACTION".equals(action.actionKind()) && !maySeePromotionTerms(actor,action)) {
             throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
@@ -325,20 +336,51 @@ public class ListingActionService {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
+        if (assessment!=null) {
+            com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret("meaningModel",assessment.model());
+            com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret("meaningEvidenceReference",assessment.evidenceReference());
+            if (assessment.basisDigest()!=null && !assessment.basisDigest().matches("[0-9a-f]{64}"))
+                throw OperationRejectedException.of(ErrorCode.MATERIALITY_UNRESOLVED);
+            for (var answer:assessment.answers()) {
+                com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret("meaningConditionCode",answer.code());
+                com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret("meaningConditionState",answer.state());
+                com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret("meaningConditionReason",answer.reason());
+            }
+        }
         Optional<String> planDigest = evaluation.frozenPlanDigest(actionId);
         if ("ATTESTED".equals(verdict) && planDigest.isEmpty()) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
+        MaterialityClassifier.Classification reviewedClassification=null;
+        Map<String,Object> reviewedExposure=Map.of();
+        if ("ATTESTED".equals(verdict)) {
+            Boolean meaning=actions.meaningAxis(actionId,assessment);
+            var currentCalibration=calibration.recheckAction(actionId,now);
+            var listing=facts.listing(action.listingId()).orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+            var currentSet=health.freezeAffectedSet(action.listingId());
+            if (!"COMPLETE".equals(currentSet.resolution().state()) || !currentSet.digest().equals(action.affectedSetDigest())) {
+                throw OperationRejectedException.of(ErrorCode.AFFECTED_SET_INCOMPLETE);
+            }
+            if ("LISTING_DESCRIPTION_CHANGE".equals(action.actionKind()) && !facts.latestDescription(action.listingId())
+                    .map(row->row.textDigest().equals(action.currentTextDigest())).orElse(false)) {
+                throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+            }
+            var exposure=exposureBasis(listing,currentSet,currentCalibration.outcome(),now);
+            if (meaning==null || exposure.material()==null) throw OperationRejectedException.of(ErrorCode.MATERIALITY_UNRESOLVED);
+            reviewedClassification=MaterialityClassifier.classify(meaning,exposure.material());
+            reviewedExposure=exposure.evidence();
+            if (!actions.applyReviewedClassification(action,reviewedClassification)) {
+                throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+            }
         }
         String factsDigest = Digest.ofComponents(List.of(action.affectedSetDigest(),
                 String.valueOf(action.currentTextDigest()), String.valueOf(action.targetTextDigest()),
                 String.valueOf(action.calibrationPackageId()), String.valueOf(action.calibrationVersion()),
                 planDigest.orElse("NO_FROZEN_PLAN")));
         actions.insertReview(ids.newId(), action.organizationId(), actionId, actor.userId(), action.targetTextDigest(),
-                action.currentTextDigest(), action.affectedSetDigest(), factsDigest, verdict, validReason, now);
+                action.currentTextDigest(), action.affectedSetDigest(), factsDigest, verdict, validReason, now,
+                assessment,reviewedExposure,reviewedClassification);
         if ("ATTESTED".equals(verdict)) {
-            if (action.materialityRoute().equals(MaterialityRoute.MATERIALITY_UNRESOLVED.name())) {
-                throw OperationRejectedException.of(ErrorCode.MATERIALITY_UNRESOLVED);
-            }
             if (!actions.moveAction(actionId, "REVIEWED", action.version(), now)) {
                 throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
             }

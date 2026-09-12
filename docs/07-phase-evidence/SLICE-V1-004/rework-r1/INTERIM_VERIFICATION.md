@@ -335,3 +335,24 @@ classification; two frontend tests still targeting the removed field. No
 production control was relaxed to satisfy these cases. Frozen original contracts
 and historical migrations remain unchanged. Full content/commercial meaning,
 current classification rechecks and complete root closure remain open.
+
+## Structured independent meaning review checkpoint 27
+
+Finite accepted ordinary/material conditions replace character-ratio and blanket
+promotion classification. The normal independent review records exact basis,
+all condition answers and reasons, complete coverage and review-time canonical
+exposure; immutable axes and structured proof are required by approval binding
+and launch-gap checks. The bilingual Console reads exact before/after Russian
+text and scoped commercial terms and rejects unknown or stale actor results.
+
+66 signed HTTP, 2 PostgreSQL condition/binding, 113 launch/domain/architecture,
+10 schema and 1 historical upgrade cases passed (192 backend cases). 35 distinct
+frontend cases, build and typed lint passed. Only the late-context test was
+repeated after its test-only async correction. SQL CASE syntax, nullable JDBC
+UNKNOWN handling, duplicate test-role setup and frontend static diagnostics are
+retained with hashes and resolutions in `checkpoint-27-test-receipts.json`.
+No accepted input or committed historical migration changed.
+
+Review-time proof does not establish current exposure at subsequent approval or
+launch. That consumer recheck and full scoped review history remain open along
+with the other frozen roots. All processes ended; 0/27 formally closed.

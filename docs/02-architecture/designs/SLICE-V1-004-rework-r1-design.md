@@ -673,3 +673,36 @@ before approval/launch remain open. No new Metric engine, semantic model,
 Provider write, permission role or production setting is added. Relevant tests
 include signed request tampering, missing actual values, immutable snapshots,
 original upgrade preservation, owner arithmetic boundaries and the affected UI.
+
+### Checkpoint 27 work — structured independent meaning review (root 008)
+
+New calibration drafts carry finite ordinary/material condition documents under
+`LC_MEANING_CONDITIONS_1`, with separate applicable description/promotion arrays.
+Each accepted condition has a unique code and an explicit meaning statement.
+Both ordinary and material conditions are required for the applicable action
+kind, with at most 16 conditions per kind per category.
+The existing independent professional reviewer must answer every applicable
+condition with evidence; missing, duplicated, unknown or unmatched answers do
+not resolve the meaning axis. Numeric historical character-ratio parameters are
+retained but cannot supply this consumer. They do not disable unrelated accepted
+package consumers such as native-scope freshness.
+
+The existing review flow receives `LC_MEANING_REVIEW_1`: exact basis digest,
+coverage attestation, source reference and condition-by-condition reasons. The
+basis binds current/target Russian text digests, promotion terms, complete scope,
+calibration and condition catalog. No generic NLP, AI verdict or new approval
+role is introduced. Ordinary requires two known ordinary axes; either known
+material axis routes to Owner, while professional attestation still requires
+complete meaning and current exposure evidence. Exposure between accepted
+ordinary/material bounds remains unresolved.
+
+Preparation no longer infers meaning from characters or promotion kind. Review
+rechecks the original exact action, current scope/text, consumed calibration
+rules and Metric-owner exposure before recording classification. The existing
+approval-binding and launch-gap paths require the exact structured review;
+historical absent proof is not fabricated. Reviewed classification is immutable.
+The scoped review-basis endpoint supplies exact Russian before/after text and
+accepted conditions; promotion terms retain the existing financial-scope gate.
+The connected tests and Console flow are recorded in checkpoint 27. Full
+current classification at approval/launch remains a distinct remaining
+dependency; a preparation/review snapshot does not supply that proof.

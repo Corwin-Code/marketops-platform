@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ConsoleRequest } from '../api/console';
 import { ListingConversionShell } from '../listing/ListingConversionShell';
 import { YesNo } from '../listing/ListingCommon';
+import { ListingMeaningReview } from '../listing/ListingMeaningReview';
 import { ListingManualPanel } from '../listing/ListingManualPanel';
 import {
   PromotionDeclaration,
@@ -283,6 +284,28 @@ describe('every listing form posts what the operator entered', () => {
       ],
     };
     const { context, calls } = backend([
+      [
+        /\/actions\/a1\/review-basis$/u,
+        {
+          actionId: 'a1',
+          basisDigest: 'meaning-basis',
+          ruleState: 'QUALIFIED',
+          currentText: 'Не использовать для детей.',
+          targetText: 'Использовать для детей.',
+          conditions: [
+            {
+              code: 'SAFETY_CHANGE',
+              condition: 'Изменение ограничений безопасности',
+              axis: 'MATERIAL',
+            },
+            {
+              code: 'LIMITED_CLARIFICATION',
+              condition: 'Уточнение без изменения смысла',
+              axis: 'ORDINARY',
+            },
+          ],
+        },
+      ],
       [/\/actions\/a1\/review$/u, action('REVIEWED')],
       [/\/actions\/a1\/cancel$/u, { state: 'CANCELLED' }],
       [/\/actions\/a1\/evaluation$/u, evaluation],
@@ -294,12 +317,43 @@ describe('every listing form posts what the operator entered', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Открыть' }));
 
     fireEvent.change(await screen.findByLabelText(/Причина/u), { target: { value: 'verified' } });
+    expect(
+      screen.getByRole('button', { name: 'Подтвердить (независимая проверка)' }),
+    ).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Загрузить основания проверки смысла' }));
+    expect(await screen.findByText('Не использовать для детей.')).toBeInTheDocument();
+    expect(screen.getByText('Использовать для детей.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('SAFETY_CHANGE'), { target: { value: 'APPLIES' } });
+    fireEvent.change(screen.getByLabelText('Основание оценки условия 1'), {
+      target: { value: 'Удалено отрицание' },
+    });
+    fireEvent.change(screen.getByLabelText('Основание оценки условия 2'), {
+      target: { value: 'Смысл изменён' },
+    });
+    fireEvent.change(screen.getByLabelText('Ссылка на доказательство проверки смысла'), {
+      target: { value: 'evidence://synthetic/meaning' },
+    });
+    fireEvent.click(
+      screen.getByLabelText(
+        'Я проверил полный текст или коммерческие условия и все условия оценки',
+      ),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Подтвердить (независимая проверка)' }),
+    ).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('LIMITED_CLARIFICATION'), {
+      target: { value: 'DOES_NOT_APPLY' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Подтвердить (независимая проверка)' }));
     await waitFor(() => {
       expect(calls.find((call) => call.url.endsWith('/review'))?.body).toContain(
         '"verdict":"ATTESTED"',
       );
     });
+    expect(calls.find((call) => call.url.endsWith('/review'))?.body).toContain(
+      '"basisDigest":"meaning-basis"',
+    );
+    expect(calls.find((call) => call.url.endsWith('/review'))?.body).toContain('Удалено отрицание');
     fireEvent.click(screen.getByRole('button', { name: 'Вернуть автору' }));
     fireEvent.click(screen.getByRole('button', { name: 'Отменить действие' }));
     fireEvent.click(screen.getByRole('button', { name: 'План и результаты оценки' }));
@@ -739,4 +793,45 @@ describe('promotion source observations and their independent verification refer
       expect(screen.getByLabelText(t('nativeMemberKeys', language))).toHaveValue('');
     },
   );
+});
+
+it('discards a late review basis when the authenticated context changes', async () => {
+  let resolve: ((response: Response) => void) | undefined;
+  const pending = new Promise<Response>((done) => {
+    resolve = done;
+  });
+  const fetchImpl = vi.fn(() => pending) as unknown as typeof fetch;
+  const context: ConsoleRequest = {
+    apiBaseUrl: 'http://127.0.0.1:8080',
+    accessToken: 'synthetic-first',
+    fetchImpl,
+  };
+  const onOutcome = vi.fn();
+  const form = (ctx: ConsoleRequest) => (
+    <LanguageProvider initial="zh">
+      <ListingMeaningReview context={ctx} actionId="a1" reason="Review" onOutcome={onOutcome} />
+    </LanguageProvider>
+  );
+  const view = render(form(context));
+  fireEvent.click(screen.getByRole('button', { name: '读取含义审核依据' }));
+  view.rerender(form({ ...context, accessToken: 'synthetic-second' }));
+  await act(async () => {
+    resolve?.(
+      new Response(
+        JSON.stringify({
+          actionId: 'a1',
+          basisDigest: 'old-basis',
+          ruleState: 'QUALIFIED',
+          currentText: 'Старый закрытый текст',
+          conditions: [{ code: 'CHECK', condition: 'Old condition', axis: 'MATERIAL' }],
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    await pending;
+  });
+  expect(screen.queryByText('Старый закрытый текст')).not.toBeInTheDocument();
+  expect(screen.queryByText('Old condition')).not.toBeInTheDocument();
+  expect(onOutcome).not.toHaveBeenCalled();
+  expect(screen.getByRole('button', { name: t('attest', 'zh') })).toBeDisabled();
 });

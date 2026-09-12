@@ -44,7 +44,20 @@ class ListingAtomicLaunchUpgradeIT {
         String queueBefore=legacy.app.sql("SELECT to_jsonb(q)::text FROM ops.lc_recalculation_queue q WHERE id=:id")
                 .param("id",historicalQueue).query(String.class).single();
 
+        String meaningValuesBefore=legacy.app.sql("""
+                SELECT jsonb_agg(to_jsonb(v) ORDER BY v.category_code)::text FROM core.lc_calibration_value v
+                  WHERE package_id=:id AND category_code IN ('ORDINARY_TRIGGER_CONTENT','MATERIAL_TRIGGER_CONTENT')
+                """).param("id",legacy.id("calibrationPackage")).query(String.class).single();
         Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
+        assertThat(legacy.app.sql("""
+                SELECT jsonb_agg(to_jsonb(v) ORDER BY v.category_code)::text FROM core.lc_calibration_value v
+                  WHERE package_id=:id AND category_code IN ('ORDINARY_TRIGGER_CONTENT','MATERIAL_TRIGGER_CONTENT')
+                """).param("id",legacy.id("calibrationPackage")).query(String.class).single()).isEqualTo(meaningValuesBefore);
+        assertThat(legacy.app.sql("SELECT core.lc_meaning_catalog(:id,'LISTING_DESCRIPTION_CHANGE') IS NULL")
+                .param("id",legacy.id("calibrationPackage")).query(Boolean.class).single()).isTrue();
+        assertThat(legacy.app.sql("SELECT NOT ops.lc_action_has_meaning_review(:id,statement_timestamp())")
+                .param("id",legacy.id("actionOne")).query(Boolean.class).single()).isTrue();
+
         assertThat(legacy.app.sql("""
                 SELECT (to_jsonb(q)-'lease_generation'-'leased_until'-'health_result_id')::text
                   FROM ops.lc_recalculation_queue q WHERE id=:id

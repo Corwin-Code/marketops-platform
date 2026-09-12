@@ -929,3 +929,11 @@ architecture, 10 schema/role, 1 historical upgrade, 32 frontend tests and lint/
 build PASS. See `checkpoint-26-test-receipts.json` for exact sources and resolved
 diagnostics. Semantic classification and current approval/launch rechecks remain
 open; 0/27 CLOSED, final Controller handoff NOT_READY, platform writes OFF.
+
+SLICE-V1-004 continuous local rework update: checkpoint-27 replaces character
+proxy and blanket-promotion meaning with finite accepted conditions and exact
+independent review, with a bilingual scoped review form and immutable binding
+proof. 192 affected backend cases, 35 frontend cases, build and typed lint pass;
+see `checkpoint-27-test-receipts.json`. Current-evidence recheck at approval/launch
+and remaining frozen-root closure are still pending. Level 1 local authority
+continues; no real platform write or remote Git operation occurred.

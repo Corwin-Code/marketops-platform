@@ -1337,17 +1337,99 @@ export function prepareAction(
   );
 }
 
+export interface MeaningAssessment {
+  readonly model: 'LC_MEANING_REVIEW_1';
+  readonly basisDigest: string;
+  readonly complete: boolean;
+  readonly evidenceReference: string;
+  readonly answers: readonly {
+    readonly code: string;
+    readonly state: 'APPLIES' | 'DOES_NOT_APPLY' | 'UNKNOWN';
+    readonly reason: string;
+  }[];
+}
+
+export interface MeaningReviewBasis {
+  readonly actionId: string;
+  readonly basisDigest: string;
+  readonly ruleState: string;
+  readonly currentText: string | undefined;
+  readonly targetText: string | undefined;
+  readonly promotionTerms: PromotionTerms | undefined;
+  readonly conditions: readonly {
+    readonly code: string;
+    readonly condition: string;
+    readonly axis: 'ORDINARY' | 'MATERIAL';
+  }[];
+}
+
+export function parseMeaningReviewBasis(body: unknown): MeaningReviewBasis | undefined {
+  const r = row(body);
+  const actionId = text(r?.actionId),
+    basisDigest = text(r?.basisDigest),
+    ruleState = text(r?.ruleState);
+  const conditions = list<MeaningReviewBasis['conditions'][number]>(r?.conditions, (item) => {
+    const c = row(item);
+    const code = text(c?.code),
+      condition = text(c?.condition),
+      axis = text(c?.axis);
+    if (
+      code === undefined ||
+      condition === undefined ||
+      (axis !== 'ORDINARY' && axis !== 'MATERIAL')
+    )
+      return undefined;
+    return { code, condition, axis };
+  });
+  if (
+    actionId === undefined ||
+    basisDigest === undefined ||
+    ruleState === undefined ||
+    conditions === undefined
+  )
+    return undefined;
+  if (new Set(conditions.map((c) => c.code)).size !== conditions.length) return undefined;
+  let promotionTerms: PromotionTerms | undefined;
+  if (r?.promotionTerms !== undefined && r.promotionTerms !== null) {
+    const parsed = parsePromotionTermsView({
+      actionId,
+      digest: basisDigest,
+      fullDisclosure: true,
+      terms: r.promotionTerms,
+    });
+    if (parsed?.terms === undefined) return undefined;
+    promotionTerms = parsed.terms;
+  }
+  return {
+    actionId,
+    basisDigest,
+    ruleState,
+    currentText: text(r?.currentText),
+    targetText: text(r?.targetText),
+    promotionTerms,
+    conditions,
+  };
+}
+
+export function fetchMeaningReviewBasis(
+  context: ConsoleRequest,
+  actionId: string,
+): Promise<ConsoleOutcome<MeaningReviewBasis>> {
+  return request(context, `${ACTIONS}/${id(actionId)}/review-basis`, parseMeaningReviewBasis);
+}
+
 export function reviewAction(
   context: ConsoleRequest,
   actionId: string,
   verdict: 'ATTESTED' | 'RETURNED',
   reason: string,
+  meaningAssessment?: MeaningAssessment,
 ): Promise<ConsoleOutcome<ListingAction>> {
   return request(
     context,
     `${ACTIONS}/${id(actionId)}/review`,
     parseListingAction,
-    post({ verdict, reason }),
+    post({ verdict, reason, ...(meaningAssessment === undefined ? {} : { meaningAssessment }) }),
   );
 }
 

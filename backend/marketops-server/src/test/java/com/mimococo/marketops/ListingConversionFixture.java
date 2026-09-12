@@ -87,6 +87,13 @@ public final class ListingConversionFixture {
     final JdbcClient app;
     final AdvertisingR1Fixture.Graph graph;
 
+    static final String MEANING_ORDINARY="""
+            {"model":"LC_MEANING_CONDITIONS_1","description":[{"code":"LIMITED_CLARIFICATION","condition":"Ограниченное уточнение без изменения свойств, применения, ограничений или предупреждений."}],"promotion":[{"code":"LIMITED_SIMPLE_PROMOTION","condition":"Простая акция в принятой ограниченной коммерческой области без нового существенного обязательства."}]}
+            """.strip();
+    static final String MEANING_MATERIAL="""
+            {"model":"LC_MEANING_CONDITIONS_1","description":[{"code":"SAFETY_OR_PRODUCT_FACT_CHANGE","condition":"Изменены отрицание, ограничения, безопасность, существенные свойства или назначение товара."}],"promotion":[{"code":"MATERIAL_COMMERCIAL_CHANGE","condition":"Существенно изменены цена, плательщик расходов, заморозка, участие, сочетание, срок или остаточные обязательства."}]}
+            """.strip();
+
     public ListingConversionFixture(DataSource migration, DataSource application, DataSource admin) throws Exception {
         this(migration,application,admin,false);
     }
@@ -117,6 +124,14 @@ public final class ListingConversionFixture {
         });
         String source = new ClassPathResource("listing/lc-fictional-positive.sql")
                 .getContentAsString(StandardCharsets.UTF_8);
+        boolean structuredMeaning=Boolean.TRUE.equals(seed.sql("SELECT to_regprocedure('core.lc_meaning_catalog(uuid,text)') IS NOT NULL")
+                .query(Boolean.class).single());
+        if (structuredMeaning) {
+            source=source.replace("'ORDINARY_TRIGGER_CONTENT',0.100000,NULL,NULL,'RATIO'",
+                    "'ORDINARY_TRIGGER_CONTENT',NULL,NULL,'"+MEANING_ORDINARY+"','CONDITIONS'")
+                .replace("'MATERIAL_TRIGGER_CONTENT',0.400000,NULL,NULL,'RATIO'",
+                    "'MATERIAL_TRIGGER_CONTENT',NULL,NULL,'"+MEANING_MATERIAL+"','CONDITIONS'");
+        }
         if (emptyPrior) source=source.replace(PRIOR_TEXT_ONE,"");
         if (allowanceAxes!=null) source=source.replace(
                 "'[\"CONCURRENT_LISTINGS\", \"AFFECTED_VARIANTS\"]'",
@@ -188,6 +203,21 @@ public final class ListingConversionFixture {
                 FROM native_scope_source s JOIN scope_provenance p ON p.id=s.provenance_id;
                 INSERT INTO core.lc_affected_set(
                 """);
+        }
+        if (structuredMeaning) {
+            source=source.replace("facts_digest,verdict,reason,reviewed_at)",
+                    "facts_digest,verdict,reason,reviewed_at,meaning_assessment,exposure_evidence,content_axis_material,exposure_axis_material,materiality_route)");
+            source=source.replace("'ATTESTED','synthetic independent review',now()", """
+                    'ATTESTED','synthetic independent review',now(),
+                    jsonb_build_object('model','LC_MEANING_REVIEW_1','basisDigest',ops.lc_meaning_review_basis_digest(a.id),
+                      'complete',true,'evidenceReference','fixture://synthetic/independent-meaning',
+                      'answers',(SELECT jsonb_agg(jsonb_build_object('code',r->>'code','state',
+                        CASE WHEN (r->>'axis'='MATERIAL')=a.content_axis_material THEN 'APPLIES' ELSE 'DOES_NOT_APPLY' END,
+                        'reason','Synthetic exact-action professional assessment'))
+                        FROM jsonb_array_elements(core.lc_meaning_catalog(a.calibration_package_id,a.action_kind)) r)),
+                    jsonb_build_object('state','QUALIFIED','fixture','Synthetic authority for unrelated launch and worker fixtures'),
+                    a.content_axis_material,a.exposure_axis_material,a.materiality_route
+                    """);
         }
         var uuid = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}").matcher(source);
         String sql = uuid.replaceAll(match -> replacement.computeIfAbsent(match.group(),

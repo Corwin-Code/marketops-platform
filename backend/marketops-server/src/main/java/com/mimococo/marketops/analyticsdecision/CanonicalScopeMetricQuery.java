@@ -47,10 +47,14 @@ public interface CanonicalScopeMetricQuery {
         public boolean available() { return share!=null && gaps.isEmpty(); }
         /** Compare the unrounded ratio by cross multiplication; display rounding cannot change a route. */
         public Boolean reaches(BigDecimal threshold) {
+            Integer comparison=compareWith(threshold);
+            return comparison==null?null:comparison>=0;
+        }
+        public Integer compareWith(BigDecimal threshold) {
             if (!available() || threshold==null) return null;
             BigDecimal numerator=memberValues.stream().map(MetricValueView::numericValue)
                     .reduce(BigDecimal.ZERO,BigDecimal::add);
-            return numerator.compareTo(storeValue.numericValue().multiply(threshold))>=0;
+            return numerator.compareTo(storeValue.numericValue().multiply(threshold));
         }
     }
 

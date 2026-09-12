@@ -392,43 +392,57 @@ export function PromotionDeclaration({
       )}
       {terms !== undefined && (
         <>
-          <dl>
-            <dt>{t('promotionNativeKey', language)}</dt>
-            <dd>{terms.nativePromotionKey}</dd>
-            <dt>{t('evidence', language)}</dt>
-            <dd>{terms.termsEvidenceReference}</dd>
-            <dt>{t('promotionPriceFreeze', language)}</dt>
-            <dd>
-              <YesNo value={terms.priceFreeze} />
-            </dd>
-            <dt>{t('promotionAutoParticipation', language)}</dt>
-            <dd>
-              <YesNo value={terms.autoParticipation} />
-            </dd>
-          </dl>
-          {(['terms', 'obligations'] as const).map((key) => (
-            <table key={key}>
-              <caption>
-                {t(key === 'terms' ? 'promotionTerms' : 'promotionObligations', language)}
-              </caption>
-              <thead>
-                <tr>
-                  <th>{t('promotionFieldName', language)}</th>
-                  <th>{t('promotionFieldValue', language)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(terms[key]).map(([name, value]) => (
-                  <tr key={name}>
-                    <th>{name}</th>
-                    <td>{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ))}
+          <PromotionTermsDetails terms={terms} />
         </>
       )}
     </section>
+  );
+}
+
+/** The same full declaration is used by viewing and structured independent review. */
+export function PromotionTermsDetails({
+  terms,
+}: {
+  readonly terms: PromotionTerms;
+}): React.JSX.Element {
+  const { language } = useLanguage();
+  return (
+    <>
+      <dl>
+        <dt>{t('promotionNativeKey', language)}</dt>
+        <dd>{terms.nativePromotionKey}</dd>
+        <dt>{t('evidence', language)}</dt>
+        <dd>{terms.termsEvidenceReference}</dd>
+        <dt>{t('promotionPriceFreeze', language)}</dt>
+        <dd>
+          <YesNo value={terms.priceFreeze} />
+        </dd>
+        <dt>{t('promotionAutoParticipation', language)}</dt>
+        <dd>
+          <YesNo value={terms.autoParticipation} />
+        </dd>
+      </dl>
+      {(['terms', 'obligations'] as const).map((key) => (
+        <table key={key}>
+          <caption>
+            {t(key === 'terms' ? 'promotionTerms' : 'promotionObligations', language)}
+          </caption>
+          <thead>
+            <tr>
+              <th>{t('promotionFieldName', language)}</th>
+              <th>{t('promotionFieldValue', language)}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(terms[key]).map(([name, value]) => (
+              <tr key={name}>
+                <th>{name}</th>
+                <td>{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ))}
+    </>
   );
 }
