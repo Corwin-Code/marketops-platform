@@ -193,3 +193,38 @@ its missing changes were claimed; the diagnostic and final source hashes are
 recorded in `checkpoint-21-test-receipts.json`. Full commercial conditions,
 canonical source/accepted Policy qualification and actual admission consumers
 remain open. No root is CLOSED and no simulation UI journey is claimed.
+
+
+## Checkpoint 22 — native universe and mapping dependency
+
+V0102 adds native enumeration receipts under the existing productlisting owner,
+then composes them with canonical effective-dated mapping identities. Whole
+listing, single variant, partial pagination, unknown scope, source freshness and
+verification expiry remain distinct. An all-mapped observed subset cannot prove
+native completeness. Unchanged fresh re-observation reuses the semantic frozen
+set, while actual membership or mapping changes invalidate dependent authority.
+Current manual intake records exact human source custody; it does not assert an
+official provider enumeration. Historical sets get no invented receipt.
+
+Connected cases exercise current scope denial, exact whitespace, append-only
+rights, full and partial enumeration, variant-only evidence, changed membership,
+old approval refusal, and rerecording a stale source with a later expiry. Both
+source age and declared expiry are enforced. Existing mapping-rebinding tests
+and real multi-variant launch/allowance cases remain in the affected suites.
+Conditional simulation basis and promotion financial reads now retain or require
+proven native membership instead of treating observed mappings as a universe.
+
+The freshness integration uncovered two related preparation failures: fixture
+acceptance initially hashed absent governance rationale, and the existing Policy
+digest serialized timestamps according to session time zone. The fixture now
+constructs its complete synthetic authority before freezing sets; V0102 fixes
+canonical digest serialization. A connected UTC/Asia-Taipei assertion verifies
+stability. Historical acceptance bytes are retained without automatic reacceptance.
+Earlier pagination-fixture, refusal-assertion, bilingual-provider-prop and form
+lint failures remain diagnostic records, not passing evidence.
+
+Final commands, source/log hashes, overlap and limitations are recorded in
+`checkpoint-22-test-receipts.json`. Scope qualification by decision purpose,
+qualified official native acquisition and complete evidence-review journeys
+remain tracked in roots 010/011/026. This is continuous local progress, not
+Controller Final Closure Verification or production enablement.

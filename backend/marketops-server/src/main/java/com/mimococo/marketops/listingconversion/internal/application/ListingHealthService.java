@@ -58,9 +58,14 @@ public class ListingHealthService {
     public FrozenSet freezeAffectedSet(UUID listingId) {
         ListingFactRepository.ListingContext listing = facts.listing(listingId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
-        Instant now = clock.instant();
-        AffectedSetResolution.Resolution resolution = AffectedSetResolution.resolve(facts.members(listingId, now));
-        String digest = facts.currentAffectedSetDigest(listingId);
+        Instant now = actions.databaseNow();
+        var snapshot=facts.identitySnapshot(listingId,now);
+        var nativeScope=snapshot.identityLineage().path("nativeScope");
+        var reasons=new java.util.ArrayList<String>();
+        nativeScope.path("reasonCodes").forEach(reason -> reasons.add(reason.asText()));
+        AffectedSetResolution.Resolution resolution = AffectedSetResolution.resolve(
+                ListingFactRepository.snapshotMembers(snapshot.identityLineage()),nativeScope.path("state").asText(),reasons);
+        String digest = snapshot.digest();
         UUID setId = facts.affectedSet(listingId, digest).orElseGet(() -> {
             UUID id = ids.newId();
             facts.insertAffectedSet(id, listing.organizationId(), listingId, digest, resolution, now);

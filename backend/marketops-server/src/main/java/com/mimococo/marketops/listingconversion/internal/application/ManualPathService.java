@@ -283,6 +283,8 @@ public class ManualPathService {
 
     private boolean promotionFinancialAccess(AuthenticatedActor actor,UUID actionId,UUID storeId) {
         var products=actions.promotionEvidenceProducts(actionId);
+        if(authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScope.organization(actor.organizationId())).permitted()) return true;
         return authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
                 ResourceScope.store(storeId)).permitted() && !products.isEmpty()
                 && products.stream().allMatch(product->authorization.evaluate(actor,

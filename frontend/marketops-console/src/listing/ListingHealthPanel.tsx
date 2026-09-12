@@ -1,4 +1,5 @@
 import { PromotionObservationForm } from './ListingPromotionTerms';
+import { NativeScopeObservationForm } from './ListingNativeScope';
 import { useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import type { ConversionMeasurement, ListingDetail, ListingHealth } from '../api/listingConversion';
@@ -317,6 +318,7 @@ function ListingDetailView({
             </label>
             <button type="submit">{t('measure', language)}</button>
           </form>
+          <NativeScopeObservationForm context={context} listingId={listingId} />
           <PromotionObservationForm context={context} listingId={listingId} />
           <form
             aria-label={t('targetText', language)}

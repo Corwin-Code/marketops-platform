@@ -158,6 +158,7 @@ public class ListingActionRepository {
         return jdbc.sql("""
                 SELECT DISTINCT member FROM ops.lc_action a JOIN core.lc_affected_set s ON s.id=a.affected_set_id,
                   unnest(s.product_variant_ids) member WHERE a.id=:id AND s.resolution_state='COMPLETE'
+                    AND s.native_scope_observation_id IS NOT NULL AND s.identity_lineage#>>'{nativeScope,state}'='COMPLETE'
                 """).param("id",actionId).query(UUID.class).list();
     }
 

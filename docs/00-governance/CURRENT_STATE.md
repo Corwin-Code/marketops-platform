@@ -870,3 +870,17 @@ rows remain unqualified without invented inputs. Results: 44 signed HTTP/databas
 See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-21-test-receipts.json`.
 Source/Policy, full payer/timing/coexistence and approval consumers continue;
 0/27 CLOSED, final Controller handoff NOT_READY, platform writes default OFF.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-22 separates native
+universe evidence from observed mappings. Partial, unknown, conflicting or stale
+scope cannot be COMPLETE; unchanged qualified refresh preserves the semantic
+set. Native/mapping changes invalidate dependencies. Manual custody, financial
+scope and bilingual intake are connected. Policy digests use canonical UTC;
+historical acceptance is not rewritten. Results: 46 signed HTTP/database, 101
+launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS; frontend
+32 then final overlapping 16 forms, lint/build PASS. See the rework evidence
+`checkpoint-22-test-receipts.json`. Purpose qualification, official acquisition
+and full review journeys continue; 0/27 CLOSED, Controller Final Closure
+Verification NOT_READY. Platform writes default OFF; no remote publication
+or real-account call.

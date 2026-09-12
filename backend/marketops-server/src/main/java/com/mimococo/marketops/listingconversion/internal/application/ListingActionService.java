@@ -396,6 +396,8 @@ public class ListingActionService {
 
     private boolean maySeePromotionTerms(AuthenticatedActor actor,ListingActionRepository.ActionRow action) {
         var products=actions.promotionEvidenceProducts(action.id());
+        if(authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScope.organization(actor.organizationId())).permitted()) return true;
         return authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
                 ResourceScope.store(action.storeId())).permitted() && !products.isEmpty()
                 && products.stream().allMatch(product->authorization.evaluate(actor,

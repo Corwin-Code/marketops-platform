@@ -25,12 +25,14 @@
         "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification.",
         "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
         "Checkpoint 19: existing promotion list/detail and entry/adoption/exit/release responses all apply current financial projection; raw public actorless detail read removed. Missing historical adoption product scope requires organization-wide financial coverage, not assumed current mapping.",
-        "Checkpoint 21: new full simulation input/context/source snapshot and conditional comparison use the existing current Store/every-recorded-product financial projection; revocation masks both fields."
+        "Checkpoint 21: new full simulation input/context/source snapshot and conditional comparison use the existing current Store/every-recorded-product financial projection; revocation masks both fields.",
+        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
         "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
-        "checkpoint-19-test-receipts.json: 43 signed HTTP/database, 76 architecture and 27 frontend checks pass; list/detail/mutation masking, exact authorized contents, product/org financial revocation and ordinary view revocation are exercised. Lint/build pass. No full-root closure."
+        "checkpoint-19-test-receipts.json: 43 signed HTTP/database, 76 architecture and 27 frontend checks pass; list/detail/mutation masking, exact authorized contents, product/org financial revocation and ordinary view revocation are exercised. Lint/build pass. No full-root closure.",
+        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
       ]
     },
     {
@@ -123,10 +125,12 @@
       "title": "完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要",
       "status": "IN_PROGRESS",
       "implementation": [
-        "V0083 captures immutable identity lineage and includes mapping target, effective interval/version, product status and conflicts in the affected-set digest. Binding checks now detect dependent mapping/member changes; original snapshots remain intact. Native source-membership completeness proof is still open."
+        "V0083 captures immutable identity lineage and includes mapping target, effective interval/version, product status and conflicts in the affected-set digest. Binding checks now detect dependent mapping/member changes; original snapshots remain intact. Native source-membership completeness proof is still open.",
+        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence."
+        "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
+        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
       ]
     },
     {
@@ -135,11 +139,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "V0082 adds sealed prepare/validate/accept/activate Policy operations, current role/scope checks, independent Owner acceptance, exact digests, lifecycle events, purpose-specific resolution and explicit replacement identity. App role remains read-only on calibration tables.",
-        "The existing signed professional/independent Owner calibration lifecycle now also exercises explicit ALL_APPLICABLE allowance scope composition without modifying an accepted package."
+        "The existing signed professional/independent Owner calibration lifecycle now also exercises explicit ALL_APPLICABLE allowance scope composition without modifying an accepted package.",
+        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
       ],
       "executed_evidence": [
         "Signed HTTP plus real PostgreSQL completed draft, professional validation, independent Owner acceptance and activation; self-acceptance, missing components and incorrect digest refused. Replacement/concurrency/expiry/dependency-continuation and full Console remain pending.",
-        "Checkpoint 17 signed HTTP/database regression passes 40 tests, including exact policy composition acceptance and active resolution. Purpose-dependent consumers and continuation remain open."
+        "Checkpoint 17 signed HTTP/database regression passes 40 tests, including exact policy composition acceptance and active resolution. Purpose-dependent consumers and continuation remain open.",
+        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
       ]
     },
     {
@@ -182,10 +188,12 @@
       "title": "促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效",
       "status": "OPEN",
       "implementation": [
-        "Checkpoint 21: conditional simulator reuses canonical Money contribution-profit arithmetic, selects greatest applicable fee floor, retains fixed commitment and explicit canonical expense families/currency, and keeps missing fees unknown. Conservative arithmetic comparison is separate from unqualified admission; full snapshot and declared period replace lossy toString/fabricated D30 evidence. Complete source/Policy, payer/timing/coexistence and actual approval consumers remain open."
+        "Checkpoint 21: conditional simulator reuses canonical Money contribution-profit arithmetic, selects greatest applicable fee floor, retains fixed commitment and explicit canonical expense families/currency, and keeps missing fees unknown. Conservative arithmetic comparison is separate from unqualified admission; full snapshot and declared period replace lossy toString/fabricated D30 evidence. Complete source/Policy, payer/timing/coexistence and actual approval consumers remain open.",
+        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
       ],
       "executed_evidence": [
-        "checkpoint-21-test-receipts.json: 44 signed HTTP/database, 100 domain/metric/architecture, 1 historical V90-to-V101 upgrade and 9 schema/role tests pass. P04/P05, fixed 600, explicit expenses, unknown fees, currency/discount/quantity validation, same Money rounding, snapshot hash, no published metric, database gate rejection and current financial revocation covered. No closure claim."
+        "checkpoint-21-test-receipts.json: 44 signed HTTP/database, 100 domain/metric/architecture, 1 historical V90-to-V101 upgrade and 9 schema/role tests pass. P04/P05, fixed 600, explicit expenses, unknown fees, currency/discount/quantity validation, same Money rounding, snapshot hash, no published metric, database gate rejection and current financial revocation covered. No closure claim.",
+        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
       ]
     },
     {
@@ -307,12 +315,14 @@
       "implementation": [
         "Allowance preview exposes unresolved required axes and each applied scope in Chinese/Russian; rows with the same axis in multiple scopes retain separate keys. It uses the shared canonical projection.",
         "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
-        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
+        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open.",
+        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
       ],
       "executed_evidence": [
         "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
         "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
-        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
+        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
+        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
       ]
     },
     {
@@ -323,7 +333,8 @@
         "Isolated PostgreSQL and real signed Console requests execute. Found and fixed manual fact provenance, missing calculation requester, and read-audit transaction defects; no full regression or LOCAL_VERIFIED claim.",
         "Checkpoint 12: governed closed request schema with exact typed native identity/attribute/Unicode/conditional marking; destination-before-secret, final authority check, exact conditional header and JSON media type. Restoration business authority and combined runtime still unfinished.",
         "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished.",
-        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
+        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open.",
+        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
@@ -331,7 +342,8 @@
         "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
         "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim.",
         "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred.",
-        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
+        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
+        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
       ]
     }
   ],

@@ -1184,6 +1184,32 @@ function parseIdentifier(key: string): (body: unknown) => string | undefined {
   return (body) => text(row(body)?.[key]);
 }
 
+export interface NativeScopeCapture {
+  readonly scopeKind: string;
+  readonly nativeScopeKey: string;
+  readonly nativeVariantKeys: readonly string[];
+  readonly coverageState: string;
+  readonly expectedMemberCount: number | null;
+  readonly continuationReference: string | null;
+  readonly sourceReference: string;
+  readonly scopeBasisReference: string;
+  readonly observedAt: string;
+  readonly verificationExpiresAt: string;
+}
+
+export function recordNativeScope(
+  context: ConsoleRequest,
+  listingId: string,
+  capture: NativeScopeCapture,
+): Promise<ConsoleOutcome<string>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/facts/native-scope`,
+    parseIdentifier('observationId'),
+    post(capture),
+  );
+}
+
 export function recordPromotionFact(
   context: ConsoleRequest,
   listingId: string,

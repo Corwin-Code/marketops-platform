@@ -24,10 +24,13 @@ public class ListingFactRepository {
 
     private final JdbcClient jdbc;
     private final tools.jackson.databind.ObjectMapper json;
+    private final com.mimococo.marketops.productlisting.ListingScopeEvidence identity;
 
-    ListingFactRepository(JdbcClient jdbc,tools.jackson.databind.ObjectMapper json) {
+    ListingFactRepository(JdbcClient jdbc,tools.jackson.databind.ObjectMapper json,
+                          com.mimococo.marketops.productlisting.ListingScopeEvidence identity) {
         this.jdbc = jdbc;
         this.json = json;
+        this.identity = identity;
     }
 
     public record ListingContext(UUID id, UUID organizationId, UUID storeId, UUID marketplaceAccountId,
@@ -73,23 +76,26 @@ public class ListingFactRepository {
                 .query(UUID.class).list();
     }
 
-    /** Every observed variant of the listing with its internal identity and conflict state. */
+    /** Read the identity owner's exact native scope and mapping versions; do not choose a latest mapping here. */
+    public com.mimococo.marketops.productlisting.ListingScopeEvidence.Snapshot identitySnapshot(UUID listingId, Instant at) {
+        return identity.snapshot(listingId, at);
+    }
+
     public List<AffectedSetResolution.Member> members(UUID listingId, Instant at) {
-        return jdbc.sql("""
-                SELECT v.id AS variant_id,
-                       (SELECT m.product_variant_id FROM core.listing_mapping m
-                         WHERE m.platform_listing_variant_id = v.id AND m.status = 'ACTIVE'
-                           AND m.effective_from <= :at AND (m.effective_to IS NULL OR m.effective_to > :at)
-                         ORDER BY m.effective_from DESC LIMIT 1) AS product_variant_id,
-                       EXISTS (SELECT 1 FROM core.mapping_conflict c
-                                WHERE c.platform_listing_variant_id = v.id AND c.state = 'OPEN') AS conflict_open
-                  FROM core.platform_listing_variant v
-                 WHERE v.platform_listing_id = :listing AND v.status = 'OBSERVED'
-                 ORDER BY v.id
-                """).param("listing", listingId).param("at", Timestamp.from(at))
-                .query((rs, n) -> new AffectedSetResolution.Member(rs.getObject("variant_id", UUID.class),
-                        rs.getObject("product_variant_id", UUID.class), rs.getBoolean("conflict_open")))
-                .list();
+        return snapshotMembers(identitySnapshot(listingId, at).identityLineage());
+    }
+
+    public static List<AffectedSetResolution.Member> snapshotMembers(tools.jackson.databind.JsonNode snapshot) {
+        var members = new java.util.ArrayList<AffectedSetResolution.Member>();
+        for (var member : snapshot.path("members")) {
+            var mappings=member.path("mappings");
+            boolean conflict=!member.path("openConflicts").isEmpty() || mappings.size()>1;
+            UUID product=mappings.size()==1?UUID.fromString(mappings.get(0).path("productVariantId").asText()):null;
+            boolean active=mappings.size()==1 && "ACTIVE".equals(mappings.get(0).path("productStatus").asText())
+                    && "ACTIVE".equals(mappings.get(0).path("productVariantStatus").asText());
+            members.add(new AffectedSetResolution.Member(UUID.fromString(member.path("listingVariantId").asText()),product,conflict,active));
+        }
+        return List.copyOf(members);
     }
 
     public String currentAffectedSetDigest(UUID listingId) {

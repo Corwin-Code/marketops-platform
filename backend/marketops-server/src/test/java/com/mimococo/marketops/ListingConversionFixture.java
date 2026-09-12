@@ -145,6 +145,47 @@ public final class ListingConversionFixture {
             source=source.replace("ARRAY['5c000000-0000-5000-8000-000000000023']::uuid[]",
                     "(SELECT array_agg(id ORDER BY id) FROM core.platform_listing_variant WHERE platform_listing_id='5c000000-0000-5000-8000-000000000022')");
         }
+        if (Boolean.TRUE.equals(seed.sql("SELECT to_regclass('core.platform_listing_scope_observation') IS NOT NULL")
+                .query(Boolean.class).single())) {
+            source=source.replace("UPDATE core.lc_calibration_package SET status = 'ACTIVE'", """
+                UPDATE core.lc_calibration_value SET value_json=
+                 '{"nativeScope":{"MANUAL_ENTRY":{"maximumAgeSeconds":3600},"MARKETPLACE_RAW":{"maximumAgeSeconds":3600}}}'
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001' AND category_code='FRESHNESS_RULE';
+                UPDATE core.lc_calibration_package SET status = 'ACTIVE'
+                """);
+            source=source.replace("INSERT INTO core.lc_affected_set(","""
+                INSERT INTO ops.lc_calibration_governance(package_id,rationale,impact,differences,
+                  drafted_by_user_id,drafted_at,draft_digest,validated_by_user_id,validated_at,validated_digest,
+                  validation_reference,accepted_by_user_id,accepted_at,accepted_digest,acceptance_reference)
+                SELECT id,'Synthetic fixture only','Synthetic scope','Synthetic initial version',
+                  '0998716b-6f78-56da-bbea-554b20cfd093',published_at,ops.lc_calibration_digest(id),
+                  '8ec704dd-3aa5-529c-93db-def4bbf39260',published_at,ops.lc_calibration_digest(id),'fixture://synthetic/professional',
+                  '9264ceb0-c29a-5837-9339-c84bfe73a444',activated_at,ops.lc_calibration_digest(id),'fixture://synthetic/owner'
+                 FROM core.lc_calibration_package WHERE id='5c000000-0000-5000-8000-000000000001';
+                -- The canonical digest includes the governance rationale, which exists only after INSERT.
+                UPDATE ops.lc_calibration_governance SET
+                  draft_digest=ops.lc_calibration_digest(package_id),
+                  validated_digest=ops.lc_calibration_digest(package_id),accepted_digest=ops.lc_calibration_digest(package_id)
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001';
+                WITH native_scope_source AS MATERIALIZED (
+                 SELECT l.*,gen_random_uuid() AS provenance_id FROM core.platform_listing l
+                 WHERE l.id IN ('aa14dd95-b455-5db2-924c-8a3972e6f9d2','5c000000-0000-5000-8000-000000000022')),
+                scope_provenance AS (
+                 INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,recorded_by_user_id,evidence_note)
+                 SELECT provenance_id,organization_id,'MANUAL_ENTRY',now(),now(),
+                   '8ec704dd-3aa5-529c-93db-def4bbf39260','Synthetic native enumeration for unrelated launch fixtures'
+                 FROM native_scope_source RETURNING id)
+                INSERT INTO core.platform_listing_scope_observation(id,organization_id,platform_listing_id,provenance_id,
+                  scope_kind,native_scope_key,native_variant_keys,coverage_state,expected_member_count,
+                  source_reference,scope_basis_reference,observed_at,recorded_at,verification_expires_at)
+                SELECT gen_random_uuid(),s.organization_id,s.id,p.id,'WHOLE_LISTING',s.native_listing_key,
+                  ARRAY(SELECT v.native_variant_key FROM core.platform_listing_variant v WHERE v.platform_listing_id=s.id AND v.status='OBSERVED' ORDER BY v.native_variant_key),
+                  'COMPLETE',(SELECT count(*)::integer FROM core.platform_listing_variant v WHERE v.platform_listing_id=s.id AND v.status='OBSERVED'),
+                  'fixture://synthetic/native-enumeration','fixture://synthetic/whole-listing-scope',now(),now(),now()+interval '1 day'
+                FROM native_scope_source s JOIN scope_provenance p ON p.id=s.provenance_id;
+                INSERT INTO core.lc_affected_set(
+                """);
+        }
         var uuid = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}").matcher(source);
         String sql = uuid.replaceAll(match -> replacement.computeIfAbsent(match.group(),
                         ignored -> UUID.randomUUID().toString()))
@@ -164,6 +205,7 @@ public final class ListingConversionFixture {
                   drafted_by_user_id,drafted_at,draft_digest)
                 SELECT id,'Synthetic fixture only','Synthetic scope','Synthetic initial version',
                   :drafter,published_at,repeat('0',64) FROM core.lc_calibration_package WHERE id=:id
+                ON CONFLICT (package_id) DO NOTHING
                 """).param("id",id("calibrationPackage")).param("drafter",id("executorUser")).update();
         seed.sql("""
                 UPDATE ops.lc_calibration_governance g SET draft_digest=ops.lc_calibration_digest(g.package_id),

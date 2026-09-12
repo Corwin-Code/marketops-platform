@@ -45,6 +45,12 @@ class ListingAtomicLaunchUpgradeIT {
                   AND conditional_scenarios_passed IS NULL FROM ops.lc_simulation WHERE id=:id
                 """).param("id",simulation).query(Boolean.class).single()).isTrue();
 
+        assertThat(legacy.app.sql("""
+                SELECT core.lc_listing_identity_snapshot(:listing,statement_timestamp())#>>'{nativeScope,state}'
+                """).param("listing",legacy.id("listing")).query(String.class).single()).isEqualTo("INCOMPLETE");
+        assertThat(legacy.app.sql("SELECT native_scope_observation_id IS NULL FROM core.lc_affected_set WHERE id=:id")
+                .param("id",legacy.id("affectedSetOne")).query(Boolean.class).single()).isTrue();
+
         assertThat(legacy.app.sql("SELECT (to_jsonb(l)-'created_transaction_id')::text FROM ops.lc_launch l WHERE id=:id")
                 .param("id",launch).query(String.class).single()).isEqualTo(before);
         assertThat(legacy.app.sql("SELECT created_transaction_id IS NULL FROM ops.lc_launch WHERE id=:id")

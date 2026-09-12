@@ -4,20 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * The complete affected set of a listing, resolved from what the platform says.
- *
- * <p>Complete when every observed variant has an internal identity and no
- * conflict; incomplete when a variant is unmapped; conflicted when a mapping
- * conflict is open. An incomplete set blocks only the purposes that need
- * completeness and stays visible with its gap.
- */
+/** Resolve only the native scope and mappings retained by the existing identity authority. */
 public final class AffectedSetResolution {
 
     private AffectedSetResolution() {
     }
 
-    public record Member(UUID listingVariantId, UUID productVariantId, boolean conflictOpen) {
+    public record Member(UUID listingVariantId, UUID productVariantId, boolean conflictOpen, boolean identityActive) {
+        public Member(UUID listingVariantId, UUID productVariantId, boolean conflictOpen) {
+            this(listingVariantId,productVariantId,conflictOpen,true);
+        }
     }
 
     public record Resolution(String state, List<UUID> listingVariantIds, List<UUID> productVariantIds,
@@ -29,12 +25,13 @@ public final class AffectedSetResolution {
         }
     }
 
-    public static Resolution resolve(List<Member> members) {
+    public static Resolution resolve(List<Member> members, String nativeScopeState, List<String> nativeScopeReasons) {
         List<UUID> listingVariants = new ArrayList<>();
         List<UUID> productVariants = new ArrayList<>();
         List<String> reasons = new ArrayList<>();
         boolean conflicted = false;
         boolean unmapped = false;
+        boolean inactive = false;
         for (Member member : members) {
             listingVariants.add(member.listingVariantId());
             if (member.conflictOpen()) {
@@ -43,6 +40,7 @@ public final class AffectedSetResolution {
                 unmapped = true;
             } else {
                 productVariants.add(member.productVariantId());
+                inactive |= !member.identityActive();
             }
         }
         if (members.isEmpty()) {
@@ -57,6 +55,11 @@ public final class AffectedSetResolution {
             reasons.add("VARIANT_UNMAPPED");
             return new Resolution("INCOMPLETE", listingVariants, productVariants, reasons);
         }
-        return new Resolution("COMPLETE", listingVariants, productVariants, reasons);
+        if (inactive) reasons.add("IDENTITY_NOT_ACTIVE");
+        if (!"COMPLETE".equals(nativeScopeState)) {
+            reasons.addAll(nativeScopeReasons.isEmpty()?List.of("NATIVE_SCOPE_UNPROVEN"):nativeScopeReasons);
+        }
+        return new Resolution("CONFLICTED".equals(nativeScopeState)?"CONFLICTED":reasons.isEmpty()?"COMPLETE":"INCOMPLETE",
+                listingVariants, productVariants.stream().distinct().toList(), reasons);
     }
 }

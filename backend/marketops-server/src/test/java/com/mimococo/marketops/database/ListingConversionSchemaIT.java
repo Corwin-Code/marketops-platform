@@ -81,6 +81,18 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
             }
         }
 
+        @Test
+        void nativeScopeEvidenceIsAppendOnlyAndInventoriedByItsIdentityOwner() throws SQLException {
+            try(Connection connection=asApplicationRole(container)) {
+                for(String privilege:List.of("SELECT","INSERT")) {
+                    assertThat(singleBoolean(connection,"SELECT has_table_privilege(current_user,'core.platform_listing_scope_observation','"+privilege+"')")).isTrue();
+                }
+                assertThat(singleBoolean(connection,"SELECT has_any_column_privilege(current_user,'core.platform_listing_scope_observation','UPDATE')")).isFalse();
+                assertThat(singleBoolean(connection,"SELECT has_table_privilege(current_user,'core.platform_listing_scope_observation','DELETE')")).isFalse();
+                assertThat(singleBoolean(connection,"SELECT EXISTS(SELECT 1 FROM platform.control_route_inventory WHERE schema_name='core' AND table_name='platform_listing_scope_observation' AND route_kind='NO_ROUTE')")).isTrue();
+            }
+        }
+
         private void assertReadOnly(Connection connection, String table) throws SQLException {
             assertThat(singleBoolean(connection, "SELECT has_table_privilege('" + APPLICATION_ROLE + "', '"
                     + table + "', 'SELECT')")).describedAs("%s readable", table).isTrue();

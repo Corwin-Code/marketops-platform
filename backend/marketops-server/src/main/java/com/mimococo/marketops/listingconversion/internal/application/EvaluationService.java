@@ -317,8 +317,10 @@ public class EvaluationService {
             resultRows.add(row);
         });
         UUID id = ids.newId();
-        var members = facts.members(candidate.platformListingId(), now);
-        List<UUID> evidenceScope = !members.isEmpty() && members.stream().allMatch(m -> !m.conflictOpen() && m.productVariantId() != null)
+        var identitySnapshot = facts.identitySnapshot(candidate.platformListingId(), now);
+        var members = ListingFactRepository.snapshotMembers(identitySnapshot.identityLineage());
+        boolean nativeComplete = "COMPLETE".equals(identitySnapshot.identityLineage().path("nativeScope").path("state").asText());
+        List<UUID> evidenceScope = nativeComplete && !members.isEmpty() && members.stream().allMatch(m -> !m.conflictOpen() && m.productVariantId() != null)
                 ? members.stream().map(m -> m.productVariantId()).distinct().toList() : List.of();
         Map<String, Object> snapshot = new LinkedHashMap<>();
         snapshot.put("modelVersion", PromotionSimulator.MODEL_VERSION);
@@ -334,7 +336,9 @@ public class EvaluationService {
         snapshot.put("scenarios", scenarios);
         snapshot.put("referenceProfitLine", referenceProfitLine);
         snapshot.put("observedMembers", members);
-        snapshot.put("nativeUniverseQualification", "NOT_ESTABLISHED_BY_SIMULATION");
+        snapshot.put("nativeUniverseQualification", nativeComplete ? "COMPLETE_IDENTITY_SOURCE" : "INCOMPLETE_IDENTITY_SOURCE");
+        snapshot.put("nativeIdentityLineage", identitySnapshot.identityLineage());
+        snapshot.put("nativeIdentityDigest", identitySnapshot.digest());
         // A conditional calculator does not publish a D30 metric or confer demand admission.
         evaluations.insertSimulation(id, listing.organizationId(), candidateId, scenarioRows, resultRows,
                 simulation.inverseMinimumQuantity(), simulation.inverseState(), now, evidenceScope,

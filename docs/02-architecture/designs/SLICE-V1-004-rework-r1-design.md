@@ -512,3 +512,51 @@ This is an implementation boundary, not root closure. Qualified canonical input
 resolution, accepted scenario Policy, full commercial scope and approval/launch
 consumers remain required before root 015 can close. No platform write or new
 product decision is introduced.
+
+
+### Checkpoint 22 — native universe evidence (root 010)
+
+The existing productlisting owner retains an append-only native enumeration
+receipt. WHOLE_LISTING and NATIVE_VARIANT are distinct evidence purposes.
+Complete enumeration requires exact native keys, an explicit total and no
+continuation. Current manual intake records the authenticated actual observer
+and separate source/acquisition times as MANUAL_ENTRY. It never constructs a
+universe from mapped members, modifies mappings or claims official API evidence.
+No new provider acquisition adapter is introduced by this checkpoint.
+
+The affected-set snapshot composes that source with the existing effective-dated
+mapping identities and versions. It checks accepted source-kind freshness,
+verification expiry, conflicting same-time observations, missing identities,
+newer outside members and active internal products. Missing or partial native
+proof cannot produce COMPLETE even if every observed member is mapped. An
+explicit later complete source may exclude historical observed members without
+deleting them. Single-variant proof cannot qualify a whole-listing action.
+
+The frozen record retains its original receipt reference. Its semantic digest
+includes actual native membership, qualification and mapping dependencies, not
+new custody IDs or refresh timestamps. An unchanged qualified refresh reuses
+the set; a native or mapping change invalidates dependent approval through the
+existing digest checks. Existing historical sets are retained with no fabricated
+receipt. Snapshot construction and capture share one database time.
+
+Freshness comes from accepted FRESHNESS_RULE.nativeScope.<sourceKind>.
+maximumAgeSeconds, with no application default. Extending a declared verification
+expiry or re-entering old evidence cannot renew its source time. This consumer
+still uses the existing LISTING_CONVERSION purpose resolver; dependency-qualified
+purpose composition remains in root 011. Future official normalization must
+provide qualified native boundary/custody evidence through the existing identity
+and capability owners; the reserved Raw source kind is not an implemented or
+qualified provider path.
+
+Simulation basis and promotion financial projection consume proven frozen
+membership. Unknown historical membership requires organization-wide financial
+scope for full declaration disclosure. The bilingual Console exposes explicit
+manual native-scope intake with unknown/partial states and exact references.
+Its save receipt is not a qualification verdict. Full evidence review and the
+remaining Console journeys are tracked in root 026.
+
+The existing calibration digest now serializes timestamp values in UTC with an
+explicit date style, so a scope snapshot cannot reinterpret acceptance according
+to the caller's session time zone. Historical accepted bytes are not rewritten.
+If an old acceptance hash differs, it remains unqualified for current use; this
+change does not confer a new Owner acceptance or reconstruct historical evidence.

@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** An affected set is complete only when every observed variant maps without an open conflict. */
+/** An affected set is complete only when the native universe is proven and every member maps without conflict. */
 class AffectedSetResolutionTest {
 
     private static final UUID V1 = UUID.fromString("00000000-0000-0000-0000-000000000001");
@@ -16,10 +16,10 @@ class AffectedSetResolutionTest {
     private static final UUID P2 = UUID.fromString("00000000-0000-0000-0000-000000000012");
 
     @Test
-    @DisplayName("TC-LC-AS01 every variant mapped is COMPLETE")
+    @DisplayName("TC-LC-AS01 proven full native scope with mapped members is COMPLETE")
     void allMappedIsComplete() {
         var resolution = AffectedSetResolution.resolve(List.of(
-                new AffectedSetResolution.Member(V1, P1, false), new AffectedSetResolution.Member(V2, P2, false)));
+                new AffectedSetResolution.Member(V1, P1, false), new AffectedSetResolution.Member(V2, P2, false)),"COMPLETE",List.of());
 
         assertThat(resolution.state()).isEqualTo("COMPLETE");
         assertThat(resolution.productVariantIds()).containsExactly(P1, P2);
@@ -30,7 +30,7 @@ class AffectedSetResolutionTest {
     @DisplayName("TC-LC-AS02 an open mapping conflict is CONFLICTED before anything else")
     void conflictWins() {
         var resolution = AffectedSetResolution.resolve(List.of(
-                new AffectedSetResolution.Member(V1, P1, false), new AffectedSetResolution.Member(V2, null, true)));
+                new AffectedSetResolution.Member(V1, P1, false), new AffectedSetResolution.Member(V2, null, true)),"COMPLETE",List.of());
 
         assertThat(resolution.state()).isEqualTo("CONFLICTED");
         assertThat(resolution.reasonCodes()).containsExactly("MAPPING_CONFLICT_OPEN");
@@ -39,9 +39,18 @@ class AffectedSetResolutionTest {
     @Test
     @DisplayName("TC-LC-AS03 an unmapped variant or no variant at all is INCOMPLETE")
     void unmappedOrEmptyIsIncomplete() {
-        assertThat(AffectedSetResolution.resolve(List.of(new AffectedSetResolution.Member(V1, null, false)))
+        assertThat(AffectedSetResolution.resolve(List.of(new AffectedSetResolution.Member(V1, null, false)),"COMPLETE",List.of())
                 .reasonCodes()).containsExactly("VARIANT_UNMAPPED");
-        assertThat(AffectedSetResolution.resolve(List.of()).state()).isEqualTo("INCOMPLETE");
-        assertThat(AffectedSetResolution.resolve(List.of()).reasonCodes()).containsExactly("NO_OBSERVED_VARIANTS");
+        assertThat(AffectedSetResolution.resolve(List.of(),"INCOMPLETE",List.of("NATIVE_SCOPE_UNPROVEN")).state()).isEqualTo("INCOMPLETE");
+        assertThat(AffectedSetResolution.resolve(List.of(),"INCOMPLETE",List.of("NATIVE_SCOPE_UNPROVEN")).reasonCodes()).containsExactly("NO_OBSERVED_VARIANTS");
     }
+    @Test
+    void observedAndMappedDoesNotEstablishNativeScope() {
+        var members=List.of(new AffectedSetResolution.Member(V1,P1,false),new AffectedSetResolution.Member(V2,P2,false));
+        assertThat(AffectedSetResolution.resolve(members,"INCOMPLETE",List.of("NATIVE_SCOPE_UNPROVEN")).state()).isEqualTo("INCOMPLETE");
+        assertThat(AffectedSetResolution.resolve(members,"CONFLICTED",List.of("NATIVE_SCOPE_CONFLICT")).state()).isEqualTo("CONFLICTED");
+        assertThat(AffectedSetResolution.resolve(List.of(new AffectedSetResolution.Member(V1,P1,false,false)),"COMPLETE",List.of())
+                .reasonCodes()).containsExactly("IDENTITY_NOT_ACTIVE");
+    }
+
 }

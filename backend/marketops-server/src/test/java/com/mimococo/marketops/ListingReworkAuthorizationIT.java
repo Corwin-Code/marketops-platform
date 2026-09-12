@@ -195,6 +195,158 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void nativeScopeNeedsCompleteEnumerationAndUnchangedRefreshPreservesTheDependency() throws Exception {
+        var identity=applicationContext.getBean(com.mimococo.marketops.productlisting.ListingScopeEvidence.class);
+        var health=applicationContext.getBean(com.mimococo.marketops.listingconversion.internal.application.ListingHealthService.class);
+        UUID listing=fixture.id("listing");
+        String nativeListing=jdbc.sql("SELECT native_listing_key FROM core.platform_listing WHERE id=:id")
+                .param("id",listing).query(String.class).single();
+        String nativeVariant=jdbc.sql("SELECT native_variant_key FROM core.platform_listing_variant WHERE id=:id")
+                .param("id",fixture.id("listingVariant")).query(String.class).single();
+        // Native scope resolution must not reinterpret accepted Policy when a session time zone changes.
+        try(var connection=fixture.application.getConnection(); var statement=connection.createStatement()) {
+            String utc,local;
+            statement.execute("SET TIME ZONE 'UTC'");
+            try(var row=statement.executeQuery("SELECT ops.lc_calibration_digest('"+fixture.id("calibrationPackage")+"')")) {
+                row.next();utc=row.getString(1);
+            }
+            statement.execute("SET TIME ZONE 'Asia/Taipei'");
+            try(var row=statement.executeQuery("SELECT ops.lc_calibration_digest('"+fixture.id("calibrationPackage")+"')")) {
+                row.next();local=row.getString(1);
+            }
+            assertThat(local).isEqualTo(utc);
+        }
+        String original=identity.snapshot(listing,Instant.now()).digest();
+        String url="/api/v1/console/listing/health/listings/"+listing+"/facts/native-scope";
+        var mapper=new tools.jackson.databind.ObjectMapper();
+        java.util.function.BiFunction<String,String,Map<String,Object>> capture=(kind,state)->{
+            Map<String,Object> body=new java.util.LinkedHashMap<>();
+            body.put("scopeKind",kind); body.put("nativeScopeKey",kind.equals("WHOLE_LISTING")?nativeListing:nativeVariant);
+            body.put("nativeVariantKeys",List.of(nativeVariant)); body.put("coverageState",state);
+            body.put("expectedMemberCount",state.equals("COMPLETE")?1:2);
+            body.put("continuationReference",state.equals("COMPLETE")?null:"fixture:next-page");
+            body.put("sourceReference","  fixture:actual-native-enumeration  ");
+            body.put("scopeBasisReference","fixture:whole-listing-management-boundary");
+            body.put("observedAt",Instant.now().toString());
+            body.put("verificationExpiresAt",Instant.now().plusSeconds(3600).toString());
+            return body;
+        };
+        long before=count("core.platform_listing_scope_observation");
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_CONVERSION_VIEW,ResourceScopeType.STORE,fixture.id("store"),null);
+        mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(capture.apply("WHOLE_LISTING","COMPLETE")))).andExpect(status().isForbidden());
+        assertThat(count("core.platform_listing_scope_observation")).isEqualTo(before);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_MANUAL_VERIFY,ResourceScopeType.STORE,fixture.id("store"),null);
+        var response=mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(capture.apply("WHOLE_LISTING","COMPLETE"))))
+                .andDo(r->{if(r.getResolvedException()!=null) throw r.getResolvedException();})
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        UUID observation=UUID.fromString(mapper.readTree(response).path("observationId").asText());
+        assertThat(identity.snapshot(listing,Instant.now()).digest()).isEqualTo(original);
+        assertThat(health.freezeAffectedSet(listing).id()).isEqualTo(fixture.id("affectedSetOne"));
+        assertThat(jdbc.sql("SELECT source_reference FROM core.platform_listing_scope_observation WHERE id=:id")
+                .param("id",observation).query(String.class).single()).isEqualTo("  fixture:actual-native-enumeration  ");
+        assertThatThrownBy(()->jdbc.sql("UPDATE core.platform_listing_scope_observation SET coverage_state='UNKNOWN' WHERE id=:id")
+                .param("id",observation).update()).isInstanceOf(org.springframework.dao.DataAccessException.class);
+        assertThat(identity.snapshot(listing,Instant.now().plusSeconds(3601)).identityLineage().path("nativeScope").path("reasonCodes").toString())
+                .contains("NATIVE_SCOPE_VERIFICATION_EXPIRED");
+
+        mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(capture.apply("WHOLE_LISTING","PARTIAL")))).andExpect(status().isOk());
+        assertThat(health.freezeAffectedSet(listing).resolution().state()).isEqualTo("INCOMPLETE");
+        assertThatThrownBy(()->fixture.launch(UUID.randomUUID(),"actionOne",fixture.id("ownerUser")))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(capture.apply("NATIVE_VARIANT","COMPLETE")))).andExpect(status().isOk());
+        assertThat(health.freezeAffectedSet(listing).resolution().state()).isEqualTo("INCOMPLETE");
+        Map<String,Object> incompletePage=capture.apply("WHOLE_LISTING","COMPLETE");
+        incompletePage.put("continuationReference","fixture:more-pages");
+        mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(incompletePage))).andExpect(status().is4xxClientError());
+
+        UUID additional=UUID.randomUUID();
+        fixture.seed.sql("""
+                INSERT INTO core.platform_listing_variant(id,organization_id,platform_listing_id,native_variant_key,
+                    first_seen_at,last_seen_at,status,created_at,updated_at,version)
+                VALUES(:id,:org,:listing,'new-native-member',now(),now(),'OBSERVED',now(),now(),0)
+                """).param("id",additional).param("org",fixture.id("organization")).param("listing",listing).update();
+        fixture.seed.sql("""
+                INSERT INTO core.listing_mapping(id,organization_id,platform_listing_variant_id,product_variant_id,
+                    effective_from,status,confirmed_by_user_id,reason,created_at,updated_at,version)
+                VALUES(:id,:org,:variant,:product,now(),'ACTIVE',:user,'synthetic native member',now(),now(),0)
+                """).param("id",UUID.randomUUID()).param("org",fixture.id("organization")).param("variant",additional)
+                .param("product",fixture.id("productVariant")).param("user",fixture.id("ownerUser")).update();
+        Map<String,Object> full=capture.apply("WHOLE_LISTING","COMPLETE");
+        full.put("nativeVariantKeys",List.of(nativeVariant,"new-native-member"));full.put("expectedMemberCount",2);
+        mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(full))).andExpect(status().isOk());
+        var complete=health.freezeAffectedSet(listing);
+        assertThat(complete.resolution().state()).isEqualTo("COMPLETE");
+        assertThat(complete.resolution().listingVariantIds()).containsExactlyInAnyOrder(fixture.id("listingVariant"),additional);
+        assertThat(complete.digest()).isNotEqualTo(original);
+        assertThatThrownBy(()->fixture.launch(UUID.randomUUID(),"actionOne",fixture.id("ownerUser")))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
+                .param("id",fixture.id("actionOne")).query(Integer.class).single()).isZero();
+    }
+
+    @Test
+    void reacquiringOldNativeEnumerationCannotRenewItsSourceFreshness() throws Exception {
+        var identity=applicationContext.getBean(com.mimococo.marketops.productlisting.ListingScopeEvidence.class);
+        UUID listing=UUID.randomUUID(), variant=UUID.randomUUID();
+        fixture.seed.sql("""
+                INSERT INTO core.platform_listing(id,organization_id,store_id,marketplace_account_id,platform_code,
+                    native_listing_key,first_seen_at,last_seen_at,status,created_at,updated_at,version)
+                SELECT :id,organization_id,store_id,marketplace_account_id,platform_code,
+                    :key,now()-interval '3 hours',now()-interval '3 hours','OBSERVED',now(),now(),0
+                FROM core.platform_listing WHERE id=:source
+                """).param("id",listing).param("key",listing.toString()).param("source",fixture.id("listing")).update();
+        fixture.seed.sql("""
+                INSERT INTO core.platform_listing_variant(id,organization_id,platform_listing_id,native_variant_key,
+                    first_seen_at,last_seen_at,status,created_at,updated_at,version)
+                VALUES(:id,:org,:listing,'stale-native-member',now()-interval '3 hours',now()-interval '3 hours',
+                    'OBSERVED',now(),now(),0)
+                """).param("id",variant).param("org",fixture.id("organization")).param("listing",listing).update();
+        fixture.seed.sql("""
+                INSERT INTO core.listing_mapping(id,organization_id,platform_listing_variant_id,product_variant_id,
+                    effective_from,status,confirmed_by_user_id,reason,created_at,updated_at,version)
+                VALUES(:id,:org,:variant,:product,now()-interval '3 hours','ACTIVE',:user,
+                    'Synthetic stale source fixture',now(),now(),0)
+                """).param("id",UUID.randomUUID()).param("org",fixture.id("organization")).param("variant",variant)
+                .param("product",fixture.id("productVariant")).param("user",fixture.id("ownerUser")).update();
+        assertThat(identity.snapshot(listing,Instant.now()).identityLineage().path("nativeScope").path("reasonCodes").toString())
+                .contains("NATIVE_SCOPE_UNPROVEN");
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_MANUAL_VERIFY,ResourceScopeType.STORE,fixture.id("store"),null);
+        Instant observed=Instant.now().minusSeconds(7200).truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+        var mapper=new tools.jackson.databind.ObjectMapper();
+        Map<String,Object> capture=new java.util.LinkedHashMap<>();
+        capture.put("scopeKind","WHOLE_LISTING"); capture.put("nativeScopeKey",listing.toString());
+        capture.put("nativeVariantKeys",List.of("stale-native-member")); capture.put("coverageState","COMPLETE");
+        capture.put("expectedMemberCount",1); capture.put("sourceReference","fixture:unchanged-old-enumeration");
+        capture.put("scopeBasisReference","fixture:whole-native-listing"); capture.put("observedAt",observed.toString());
+        String digest=null;
+        for(int days=1;days<=2;days++) {
+            capture.put("verificationExpiresAt",Instant.now().plusSeconds(days*86400L).toString());
+            mvc.perform(post("/api/v1/console/listing/health/listings/"+listing+"/facts/native-scope")
+                    .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(capture))).andExpect(status().isOk());
+            var snapshot=identity.snapshot(listing,Instant.now());
+            assertThat(snapshot.identityLineage().path("nativeScope").path("state").asText()).isEqualTo("INCOMPLETE");
+            assertThat(snapshot.identityLineage().path("nativeScope").path("reasonCodes").toString())
+                    .contains("NATIVE_SCOPE_SOURCE_STALE").doesNotContain("NATIVE_SCOPE_VERIFICATION_EXPIRED");
+            if(digest!=null) assertThat(snapshot.digest()).isEqualTo(digest);
+            digest=snapshot.digest();
+        }
+        assertThat(jdbc.sql("""
+                SELECT count(*) FROM core.platform_listing_scope_observation s JOIN core.fact_provenance p ON p.id=s.provenance_id
+                 WHERE s.platform_listing_id=:listing AND s.observed_at=:observed AND p.source_time=s.observed_at
+                  AND p.ingestion_time=s.recorded_at AND s.recorded_at>s.observed_at
+                """).param("listing",listing).param("observed",java.sql.Timestamp.from(observed)).query(Integer.class).single()).isEqualTo(2);
+    }
+
+    @Test
     void conditionalSimulationRetainsExactBasisWithoutPublishingMetricOrGrantingAdmission() throws Exception {
         users.assignRole(OPERATOR, userId, BusinessRoleCode.OWNER, null);
         for (var code : List.of(ActionScopeCode.LISTING_ACTION_PREPARE, ActionScopeCode.LISTING_CONVERSION_VIEW,

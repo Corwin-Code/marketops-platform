@@ -105,6 +105,13 @@ class ListingHealthConsoleController {
         return result;
     }
 
+    @PostMapping(value = "/listings/{listingId}/facts/native-scope", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    Map<String,UUID> nativeScope(AuthenticatedActor actor,@PathVariable UUID listingId,
+            @Valid @RequestBody com.mimococo.marketops.productlisting.ListingScopeEvidence.Capture request) {
+        return Map.of("observationId",facts.recordNativeScope(actor,listingId,request));
+    }
+
     @PostMapping(value = "/listings/{listingId}/recompute", produces = MediaType.APPLICATION_JSON_VALUE)
     ListingHealthView recompute(AuthenticatedActor actor, @PathVariable UUID listingId) {
         listings.require(actor, listingId, ActionScopeCode.LISTING_ACTION_PREPARE);

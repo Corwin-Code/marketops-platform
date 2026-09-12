@@ -35,17 +35,37 @@ public class ListingFactIntakeService {
     private final BusinessAuthorization authorization;
     private final IdGenerator ids;
     private final Clock clock;
+    private final com.mimococo.marketops.productlisting.ListingScopeEvidence nativeScope;
     private final com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence;
 
     ListingFactIntakeService(ListingFactRepository facts, GovernanceRepository governance,
                              BusinessAuthorization authorization, IdGenerator ids, Clock clock,
-                             com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence) {
+                             com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence,
+                             com.mimococo.marketops.productlisting.ListingScopeEvidence nativeScope) {
         this.facts = facts;
         this.governance = governance;
         this.authorization = authorization;
         this.ids = ids;
         this.clock = clock;
         this.measurementEvidence = measurementEvidence;
+        this.nativeScope = nativeScope;
+    }
+
+    /** A qualified human records the actual native enumeration, including partial and unknown captures. */
+    @Transactional
+    public UUID recordNativeScope(AuthenticatedActor actor, UUID listingId,
+                                  com.mimococo.marketops.productlisting.ListingScopeEvidence.Capture capture) {
+        var listing=require(actor,listingId,ActionScopeCode.LISTING_MANUAL_VERIFY);
+        Instant now=clock.instant();
+        if(capture==null || capture.observedAt().isAfter(now) || !now.isBefore(capture.verificationExpiresAt())) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        UUID provenance=facts.insertProvenance(ids.newId(),listing.organizationId(),"MANUAL_ENTRY",null,
+                capture.observedAt(),now,actor.userId(),null);
+        UUID id=nativeScope.record(listing.organizationId(),listingId,provenance,now,capture);
+        governance.enqueue(ids.newId(),listing.organizationId(),listingId,RecalculationClass.RISK,
+                "native-scope-observation:"+id,capture.observedAt(),now);
+        return id;
     }
 
     /** Attest to a complete source window, including an explicitly complete zero-purchase set. */

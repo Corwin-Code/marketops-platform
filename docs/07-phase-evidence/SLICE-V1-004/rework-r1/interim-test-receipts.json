@@ -100,6 +100,11 @@
       "errors": "0",
       "skipped": "0",
       "timestamp": null
+    },
+    {
+      "checkpoint": 22,
+      "receipt": "checkpoint-22-test-receipts.json",
+      "status": "PASS_AFFECTED_SCOPE_ONLY_NOT_FINAL_CLOSURE"
     }
   ]
 }

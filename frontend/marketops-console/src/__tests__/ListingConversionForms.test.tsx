@@ -10,6 +10,7 @@ import {
   PromotionObservationForm,
 } from '../listing/ListingPromotionTerms';
 import { t } from '../listing/i18n/ui';
+import { NativeScopeObservationForm } from '../listing/ListingNativeScope';
 import { LanguageProvider } from '../listing/i18n/language';
 
 const LISTING = 'aa14dd95-b455-5db2-924c-8a3972e6f9d2';
@@ -687,4 +688,53 @@ describe('promotion source observations and their independent verification refer
       promotionObservationId: 'promotion-observation-1',
     });
   });
+  it.each(['zh', 'ru'] as const)(
+    'preserves the source enumeration and partial paging in %s',
+    async (language) => {
+      const { context, calls } = backend([
+        [/facts\/native-scope$/, { observationId: 'scope-observation-1' }],
+      ]);
+      const view = render(
+        <LanguageProvider initial={language}>
+          <NativeScopeObservationForm context={context} listingId={LISTING} />
+        </LanguageProvider>,
+      );
+      const change = (key: Parameters<typeof t>[0], value: string) => {
+        fireEvent.change(screen.getByLabelText(t(key, language)), { target: { value } });
+      };
+      expect(screen.getByLabelText(t('nativeMemberKeys', language))).toHaveValue('');
+      change('nativeScopeKind', 'WHOLE_LISTING');
+      change('nativeScopeKey', ' native-listing ');
+      change('nativeMemberKeys', ' native-one \nnative-two');
+      change('nativeCoverage', 'PARTIAL');
+      change('nativeExpectedCount', '3');
+      change('nativeContinuation', ' next-page ');
+      change('nativeScopeSource', ' fixture:source ');
+      change('nativeScopeBasis', 'fixture:whole-card');
+      change('nativeScopeObserved', '2026-09-13T02:00');
+      change('nativeScopeExpires', '2026-09-13T03:00');
+      fireEvent.submit(screen.getByRole('form', { name: t('nativeScopeCapture', language) }));
+      expect(await screen.findByRole('status')).toHaveTextContent(t('nativeScopeSaved', language));
+      expect(JSON.parse(calls[0]?.body ?? '{}')).toMatchObject({
+        scopeKind: 'WHOLE_LISTING',
+        nativeScopeKey: ' native-listing ',
+        nativeVariantKeys: [' native-one ', 'native-two'],
+        coverageState: 'PARTIAL',
+        expectedMemberCount: 3,
+        continuationReference: ' next-page ',
+        sourceReference: ' fixture:source ',
+        scopeBasisReference: 'fixture:whole-card',
+      });
+      view.rerender(
+        <LanguageProvider initial={language}>
+          <NativeScopeObservationForm
+            context={{ ...context, accessToken: 'replacement-user' }}
+            listingId={LISTING}
+          />
+        </LanguageProvider>,
+      );
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.getByLabelText(t('nativeMemberKeys', language))).toHaveValue('');
+    },
+  );
 });
