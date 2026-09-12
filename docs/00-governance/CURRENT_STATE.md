@@ -919,3 +919,13 @@ authorization, 10 schema/role and 1 historical upgrade PASS. Two diagnosed initi
 failures are retained in `checkpoint-25-test-receipts.json`. Periodic full review
 and the full canonical consumer chain remain open. 0/27 CLOSED; Controller Final
 Closure Verification NOT_READY; platform writes OFF and no remote publication.
+
+SLICE-V1-004 continuous local rework update: checkpoint-26 replaces caller
+exposure with the Metric owner's full affected-member/store same-window retained
+sales evidence. Exact threshold comparison, explicit qualification, immutable
+snapshot and missing-exposure review refusal are connected. The Console no
+longer requests the input. Results: 52 signed HTTP/database, 114 launch/domain/
+architecture, 10 schema/role, 1 historical upgrade, 32 frontend tests and lint/
+build PASS. See `checkpoint-26-test-receipts.json` for exact sources and resolved
+diagnostics. Semantic classification and current approval/launch rechecks remain
+open; 0/27 CLOSED, final Controller handoff NOT_READY, platform writes OFF.

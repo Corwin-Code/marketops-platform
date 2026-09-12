@@ -220,7 +220,6 @@ export function PromotionPreparationForm({
           'MANUAL',
           '',
           undefined,
-          '',
           undefined,
           terms,
         );

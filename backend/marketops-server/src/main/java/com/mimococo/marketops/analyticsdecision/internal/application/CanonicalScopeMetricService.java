@@ -44,20 +44,7 @@ public class CanonicalScopeMetricService implements CanonicalScopeMetricQuery {
                 || new HashSet<>(scope.listingVariantIds()).size()!=scope.listingVariantIds().size()) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
-        var store=organizations.store(scope.storeId())
-                .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED));
-        if (!store.organizationId().equals(scope.organizationId())) {
-            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
-        }
-        // Check every member before reading any metric. The scope cannot lend
-        // another store's or organization's figures to this comparison.
-        for (UUID member:scope.listingVariantIds()) {
-            var identity=identities.variantContext(member,scope.asOf())
-                    .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED));
-            if (!identity.storeId().equals(scope.storeId())) {
-                throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
-            }
-        }
+        requireMembers(scope.organizationId(),scope.storeId(),scope.listingVariantIds(),scope.asOf());
         MetricCode profit=scope.profitBasis()==ProfitBasis.SETTLED
                 ? MetricCode.SETTLED_CONTRIBUTION_PROFIT : MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT;
         Map<MetricCode,List<MetricValueView>> components=new EnumMap<>(MetricCode.class);
@@ -95,6 +82,72 @@ public class CanonicalScopeMetricService implements CanonicalScopeMetricQuery {
         var returnComponents=new ArrayList<>(returnRows);
         returnComponents.addAll(completedRows);
         return new Projection(scope,profitObservation,new Observation(returnRate,null,returnGaps,returnComponents));
+    }
+
+    @Override
+    @Transactional(readOnly=true, isolation=Isolation.REPEATABLE_READ)
+    public Exposure exposure(ExposureScope scope) {
+        if (scope==null || scope.organizationId()==null || scope.storeId()==null || scope.window()==null
+                || scope.asOf()==null || scope.maximumVerificationAgeSeconds()<=0 || scope.maximumPeriodEndAgeSeconds()<=0
+                || new HashSet<>(scope.listingVariantIds()).size()!=scope.listingVariantIds().size()) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        requireMembers(scope.organizationId(),scope.storeId(),scope.listingVariantIds(),scope.asOf());
+        var denominator=metrics.currentValuesAt(SubjectKind.STORE,scope.storeId(),scope.window(),scope.asOf())
+                .get(MetricCode.RETAINED_NET_SALES);
+        var gaps=new ArrayList<String>();
+        var members=new ArrayList<MetricValueView>();
+        if (scope.listingVariantIds().isEmpty()) gaps.add("EXPOSURE_SCOPE_EMPTY");
+        if (!qualifiedExposureValue(denominator,scope)) gaps.add("EXPOSURE_STORE_VALUE_UNQUALIFIED");
+        if (denominator!=null) {
+            for (UUID member:scope.listingVariantIds().stream().sorted().toList()) {
+                var value=metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,member,scope.window(),
+                        denominator.periodStart(),denominator.periodEnd(),scope.asOf()).get(MetricCode.RETAINED_NET_SALES);
+                if (value==null) { gaps.add("EXPOSURE_MEMBER_VALUE_MISSING"); continue; }
+                members.add(value);
+                if (!qualifiedExposureValue(value,scope)) gaps.add("EXPOSURE_MEMBER_VALUE_UNQUALIFIED");
+                if (value.definitionVersion()!=denominator.definitionVersion()
+                        || !java.util.Objects.equals(value.currencyCode(),denominator.currencyCode())
+                        || !value.periodStart().equals(denominator.periodStart())
+                        || !value.periodEnd().equals(denominator.periodEnd())) gaps.add("EXPOSURE_BASIS_MISMATCH");
+            }
+        }
+        BigDecimal share=null;
+        if (gaps.isEmpty()) {
+            BigDecimal total=denominator.numericValue(), affected=sum(members);
+            if (total.signum()<=0) gaps.add("EXPOSURE_DENOMINATOR_NONPOSITIVE");
+            else if (affected.signum()<0 || affected.compareTo(total)>0) gaps.add("EXPOSURE_TOTAL_CONFLICTED");
+            else share=affected.divide(total,18,RoundingMode.UP);
+        }
+        return new Exposure(scope,share,gaps.stream().distinct().toList(),denominator,members);
+    }
+
+    private static boolean qualifiedExposureValue(MetricValueView value,ExposureScope scope) {
+        return value!=null && value.available() && value.numericValue()!=null && value.numericValue().signum()>=0
+                && value.currencyCode()!=null && !value.estimated()
+                && value.confidenceState()==com.mimococo.marketops.analyticsdecision.ConfidenceState.CANONICAL_CONFIRMED
+                && value.verificationRunId()!=null && value.verifiedAt()!=null
+                && !value.verifiedAt().isAfter(scope.asOf()) && !value.periodEnd().isAfter(scope.asOf())
+                && java.time.Duration.between(value.verifiedAt(),scope.asOf()).compareTo(
+                    java.time.Duration.ofSeconds(scope.maximumVerificationAgeSeconds()))<=0
+                && java.time.Duration.between(value.periodEnd(),scope.asOf()).compareTo(
+                    java.time.Duration.ofSeconds(scope.maximumPeriodEndAgeSeconds()))<=0
+                && !value.evidenceRefs().isEmpty();
+    }
+
+    private void requireMembers(UUID organizationId,UUID storeId,List<UUID> members,java.time.Instant asOf) {
+        var store=organizations.store(storeId)
+                .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED));
+        if (!store.organizationId().equals(organizationId)) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        for (UUID member:members) {
+            var identity=identities.variantContext(member,asOf)
+                    .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED));
+            if (!identity.storeId().equals(storeId)) {
+                throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+            }
+        }
     }
 
     private static List<String> gaps(Scope scope,List<MetricValueView> rows,MetricCode code) {

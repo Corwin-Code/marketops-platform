@@ -69,6 +69,7 @@ public class ListingActionService {
     private final ListingActionIntake intake;
     private final ListingActionLaunch launcher;
     private final CalculationRunLedger ledger;
+    private final com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery scopeMetrics;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
     private final IdGenerator ids;
@@ -77,7 +78,8 @@ public class ListingActionService {
     ListingActionService(ListingFactRepository facts, ListingActionRepository actions, ListingHealthRepository healthRows,
                          GovernanceRepository governance, ListingHealthService health, CalibrationService calibration,
                          EvaluationService evaluation, ListingActionIntake intake, ListingActionLaunch launcher,
-                         CalculationRunLedger ledger, BusinessAuthorization authorization, MetadataAuditRecorder audit,
+                         CalculationRunLedger ledger, com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery scopeMetrics,
+                         BusinessAuthorization authorization, MetadataAuditRecorder audit,
                          IdGenerator ids, Clock clock) {
         this.facts = facts;
         this.actions = actions;
@@ -89,6 +91,7 @@ public class ListingActionService {
         this.intake = intake;
         this.launcher = launcher;
         this.ledger = ledger;
+        this.scopeMetrics = scopeMetrics;
         this.authorization = authorization;
         this.audit = audit;
         this.ids = ids;
@@ -203,21 +206,21 @@ public class ListingActionService {
         }
         CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
                 listing.storeId(), now);
+        var exposure=exposureBasis(listing,set,resolved,now);
         MaterialityClassifier.Classification classification;
         if (resolved.ok()) {
             BigDecimal contentShare = description
                     ? MaterialityClassifier.contentChangeShare(current.get().descriptionText(), targetText)
                     : BigDecimal.ONE;
-            classification = MaterialityClassifier.classify(CalibrationService.triggers(resolved.resolved()),
-                    contentShare, preparation.exposureShare());
+            classification = MaterialityClassifier.classifyWithExposureAxis(CalibrationService.triggers(resolved.resolved()),
+                    contentShare, exposure.material());
         } else {
             classification = new MaterialityClassifier.Classification(MaterialityRoute.MATERIALITY_UNRESOLVED, null, null);
         }
-        boolean unresolved = classification.route() == MaterialityRoute.MATERIALITY_UNRESOLVED;
         String entityVersion = Digest.ofComponents(List.of(set.digest(),
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse("NO_DESCRIPTION"),
                 targetDigest == null ? "NO_TARGET" : targetDigest,
-                unresolved ? "CALIBRATION_UNRESOLVED" : resolved.resolved().packageId() + ":" + resolved.resolved().version()));
+                !resolved.ok() ? "CALIBRATION_UNRESOLVED" : resolved.resolved().packageId() + ":" + resolved.resolved().version()));
         Map<String, String> parameters = new java.util.LinkedHashMap<>();
         parameters.put("candidateId", candidateId.toString());
         parameters.put("executionPath", path.name());
@@ -239,9 +242,9 @@ public class ListingActionService {
                 current.map(ListingFactRepository.DescriptionRow::id).orElse(null),
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse(null), targetText, targetDigest, kiz,
                 classification.contentAxisMaterial(), classification.exposureAxisMaterial(), classification.route(),
-                unresolved ? null : resolved.resolved().packageId(), unresolved ? null : resolved.resolved().version(),
-                actor.userId(), now, preparation.restoresCommandId(), preparation.promotionTerms());
-        if (!unresolved) {
+                resolved.ok() ? resolved.resolved().packageId() : null, resolved.ok() ? resolved.resolved().version() : null,
+                actor.userId(), now, preparation.restoresCommandId(), preparation.promotionTerms(), exposure.evidence());
+        if (resolved.ok()) {
             evaluation.freezePlan(actions.action(actionId).orElseThrow());
         }
         if (!actions.moveCandidate(candidateId, "OPEN", "SELECTED", candidate.version(), now)) {
@@ -257,6 +260,43 @@ public class ListingActionService {
                 "materialityRoute", new FieldChange(null, classification.route().name()),
                 "affectedSetDigest", new FieldChange(null, set.digest())), null);
         return view(actionId).orElseThrow();
+    }
+
+    private record ExposureBasis(Boolean material,Map<String,Object> evidence) { }
+
+    private ExposureBasis exposureBasis(ListingFactRepository.ListingContext listing,ListingHealthService.FrozenSet set,
+                                        CalibrationService.Outcome calibration,Instant at) {
+        Map<String,Object> basis=new java.util.LinkedHashMap<>();
+        basis.put("model","LC_RETAINED_SALES_EXPOSURE_1");
+        basis.put("affectedSetDigest",set.digest());
+        basis.put("assessedAt",at);
+        if (!calibration.ok()) {
+            basis.put("state","CALIBRATION_UNRESOLVED");
+            return new ExposureBasis(null,basis);
+        }
+        var ordinary=calibration.resolved().values().get("ORDINARY_TRIGGER_EXPOSURE");
+        var material=calibration.resolved().values().get("MATERIAL_TRIGGER_EXPOSURE");
+        var freshness=calibration.resolved().values().get("FRESHNESS_RULE");
+        var rule=freshness==null || freshness.json()==null?null:freshness.json().get("materialityExposure");
+        if (ordinary==null || material==null || ordinary.windowDays()==null
+                || !ordinary.windowDays().equals(material.windowDays())
+                || !List.of(7,14,30).contains(ordinary.windowDays()) || rule==null
+                || !rule.path("maximumVerificationAgeSeconds").isIntegralNumber()
+                || !rule.path("maximumPeriodEndAgeSeconds").isIntegralNumber()
+                || !rule.path("maximumVerificationAgeSeconds").canConvertToLong()
+                || !rule.path("maximumPeriodEndAgeSeconds").canConvertToLong()
+                || rule.path("maximumVerificationAgeSeconds").asLong()<=0
+                || rule.path("maximumPeriodEndAgeSeconds").asLong()<=0) {
+            basis.put("state","EXPOSURE_RULE_UNQUALIFIED");
+            return new ExposureBasis(null,basis);
+        }
+        var result=scopeMetrics.exposure(new com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.ExposureScope(
+                listing.organizationId(),listing.storeId(),set.resolution().listingVariantIds(),
+                MetricWindow.valueOf("D"+ordinary.windowDays()),at,rule.path("maximumVerificationAgeSeconds").asLong(),
+                rule.path("maximumPeriodEndAgeSeconds").asLong()));
+        basis.put("state",result.available()?"QUALIFIED":"EXPOSURE_UNRESOLVED");
+        basis.put("projection",result);
+        return new ExposureBasis(result.reaches(material.numeric()),basis);
     }
 
     private UUID runFor(ListingFactRepository.ListingContext listing, Instant now, UUID requestedByUserId) {

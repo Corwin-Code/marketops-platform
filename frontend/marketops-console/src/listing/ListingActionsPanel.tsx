@@ -211,7 +211,6 @@ function CandidatePreparation({
   const [targetText, setTargetText] = useState('');
   const [restoresCommandId, setRestoresCommandId] = useState('');
   const [kiz, setKiz] = useState<'undeclared' | 'yes' | 'no'>('undeclared');
-  const [exposureShare, setExposureShare] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -317,7 +316,6 @@ function CandidatePreparation({
                       candidate.candidateKind === 'CONTENT_DESCRIPTION' ? path : 'MANUAL',
                       targetText,
                       kiz === 'undeclared' ? undefined : kiz === 'yes',
-                      exposureShare,
                       restoresCommandId.trim() || undefined,
                     ).then((outcome) => {
                       if (outcome.ok) {
@@ -377,16 +375,7 @@ function CandidatePreparation({
                       </select>
                     </label>
                   </>
-                  <label>
-                    {t('materiality', language)}{' '}
-                    <input
-                      value={exposureShare}
-                      onChange={(e) => {
-                        setExposureShare(e.target.value);
-                      }}
-                      placeholder="0.10"
-                    />
-                  </label>
+                  <p>{t('exposureEvidence', language)}</p>
                   <button type="submit">{t('submit', language)}</button>
                 </form>
               )}

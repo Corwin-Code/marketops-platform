@@ -241,7 +241,8 @@ describe('every listing form posts what the operator entered', () => {
       fireEvent.change(within(prepare).getByLabelText(/КИЗ 标记声明/u), {
         target: { value: 'yes' },
       });
-      fireEvent.change(within(prepare).getByPlaceholderText('0.10'), { target: { value: '0.15' } });
+      expect(within(prepare).queryByPlaceholderText('0.10')).not.toBeInTheDocument();
+      expect(within(prepare).getByText(/经营暴露根据完整影响范围/u)).toBeInTheDocument();
       fireEvent.click(within(prepare).getByRole('button', { name: '提交' }));
 
       await waitFor(() => {
@@ -252,6 +253,7 @@ describe('every listing form posts what the operator entered', () => {
       const request = JSON.parse(
         calls.find((call) => call.url.endsWith('/candidates/c1/prepare'))!.body!,
       ) as Record<string, unknown>;
+      expect(request).not.toHaveProperty('exposureShare');
       expect(request.restoresCommandId).toBe(restoration ? source : null);
       expect(request.targetText).toBe(restoration ? null : 'Новый текст');
       expect(await screen.findByText('缺少绑定')).toBeInTheDocument();

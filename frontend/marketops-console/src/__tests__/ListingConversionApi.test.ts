@@ -264,7 +264,7 @@ describe('the listing client covers every console route', () => {
       api.fetchAction(context, 'a1'),
       api.fetchCandidates(context, LISTING),
       api.prepareCandidate(context, LISTING, 'CONTENT_DESCRIPTION', 'r', ['e']),
-      api.prepareAction(context, 'c1', 'API', 'текст', true, ''),
+      api.prepareAction(context, 'c1', 'API', 'текст', true),
       api.reviewAction(context, 'a1', 'ATTESTED', 'ok'),
       api.cancelAction(context, 'a1', 'why'),
       api.previewAllowance(context, 'a1'),
@@ -296,6 +296,9 @@ describe('the listing client covers every console route', () => {
       expect(answer.ok, `answer ${String(index)}: ${JSON.stringify(answer)}`).toBe(true);
     }
     expect(calls).toHaveLength(answers.length);
+    expect(calls.find((call) => call.url.endsWith('/candidates/c1/prepare'))?.body).not.toContain(
+      'exposureShare',
+    );
     expect(calls.filter((call) => call.method === 'POST')).toHaveLength(22);
     expect(calls.find((call) => call.url.includes('/facts/description'))?.body).toContain(
       '"languageCode":"ru"',

@@ -35,5 +35,25 @@ public interface CanonicalScopeMetricQuery {
 
     record Projection(Scope scope, Observation contributionProfit, Observation returnRate) { }
 
+    record ExposureScope(UUID organizationId, UUID storeId, List<UUID> listingVariantIds,
+                         MetricWindow window, Instant asOf, long maximumVerificationAgeSeconds, long maximumPeriodEndAgeSeconds) {
+        public ExposureScope { listingVariantIds=List.copyOf(listingVariantIds); }
+    }
+
+    /** Same-window retained-sales share; absent or unqualified members never become zero. */
+    record Exposure(ExposureScope scope, BigDecimal share, List<String> gaps,
+                    MetricValueView storeValue, List<MetricValueView> memberValues) {
+        public Exposure { gaps=List.copyOf(gaps); memberValues=List.copyOf(memberValues); }
+        public boolean available() { return share!=null && gaps.isEmpty(); }
+        /** Compare the unrounded ratio by cross multiplication; display rounding cannot change a route. */
+        public Boolean reaches(BigDecimal threshold) {
+            if (!available() || threshold==null) return null;
+            BigDecimal numerator=memberValues.stream().map(MetricValueView::numericValue)
+                    .reduce(BigDecimal.ZERO,BigDecimal::add);
+            return numerator.compareTo(storeValue.numericValue().multiply(threshold))>=0;
+        }
+    }
+
     Projection project(Scope scope);
+    Exposure exposure(ExposureScope scope);
 }

@@ -42,10 +42,17 @@ public final class MaterialityClassifier {
         if (triggers == null || !triggers.complete() || contentChangeShare == null || exposureShare == null) {
             return new Classification(MaterialityRoute.MATERIALITY_UNRESOLVED, null, null);
         }
-        boolean content = contentChangeShare.compareTo(triggers.materialContent()) >= 0;
-        boolean exposure = exposureShare.compareTo(triggers.materialExposure()) >= 0;
-        return new Classification(content || exposure ? MaterialityRoute.MATERIAL_IMPACT
-                : MaterialityRoute.ORDINARY_IMPACT, content, exposure);
+        return classifyWithExposureAxis(triggers,contentChangeShare,exposureShare.compareTo(triggers.materialExposure())>=0);
+    }
+
+    /** The Metric owner compares the actual ratio before display rounding. */
+    public static Classification classifyWithExposureAxis(Triggers triggers,BigDecimal contentChangeShare,Boolean exposure) {
+        if (triggers==null || !triggers.complete() || contentChangeShare==null || exposure==null) {
+            return new Classification(MaterialityRoute.MATERIALITY_UNRESOLVED,null,null);
+        }
+        boolean content=contentChangeShare.compareTo(triggers.materialContent())>=0;
+        return new Classification(content || exposure?MaterialityRoute.MATERIAL_IMPACT:MaterialityRoute.ORDINARY_IMPACT,
+                content,exposure);
     }
 
     /**

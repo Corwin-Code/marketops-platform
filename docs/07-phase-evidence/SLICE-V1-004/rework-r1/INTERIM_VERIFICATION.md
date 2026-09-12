@@ -308,3 +308,30 @@ No new scheduling authority, platform capability or production switch is added.
 Health-only completion is not whole-scope or business-safety completion. Periodic
 full review and canonical measurement/protection/authorization consumers remain
 open; no root closure or complete LOCAL_VERIFIED status is claimed.
+
+## Checkpoint 26 — actual canonical exposure, partial root 008
+
+Action preparation now reads the existing Metric owner's exact-window retained
+sales projection for every affected member and the store. Caller exposureShare
+is ignored and the Console input removed. Accepted window/freshness rules,
+confirmed and evidenced values, currency/definition consistency, nonpositive
+store sales and impossible totals are explicit qualifications. Original metric
+IDs and values are retained in immutable V0106 materiality evidence, kept out
+of the ordinary Action response. Exact cross multiplication prevents display
+rounding from crossing a classification threshold.
+
+The schema now distinguishes a valid calibration from available current
+exposure. An unresolved action may retain the package and plan for further work;
+the separate DRAFT/CANCELLED gate and independent review refusal remain intact.
+Historical missing materiality snapshots remain missing. Signed tests show
+request values 0 and 1 cannot alter a known material exposure, a fabricated high
+value cannot upgrade a known small exposure, and missing member metrics cannot
+borrow the request's zero or be attested away by an independent reviewer.
+
+Diagnostics are preserved: missing synthetic manual calculation requester;
+a reused constant fixture input digest when its actual values changed; the old
+schema's incorrect equivalence between missing calibration and unresolved
+classification; two frontend tests still targeting the removed field. No
+production control was relaxed to satisfy these cases. Frozen original contracts
+and historical migrations remain unchanged. Full content/commercial meaning,
+current classification rechecks and complete root closure remain open.

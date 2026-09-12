@@ -119,16 +119,16 @@ public class ListingActionRepository {
                              String targetTextDigest, Boolean kizMarked, Boolean contentAxis, Boolean exposureAxis,
                              MaterialityRoute route, UUID calibrationPackageId, Integer calibrationVersion,
                              UUID authorUserId, Instant now, UUID restoresCommandId,
-                             com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms) {
+                             com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms, Map<String,Object> materialityEvidence) {
         jdbc.sql("""
                 INSERT INTO ops.lc_action (id, organization_id, store_id, platform_listing_id, candidate_id, recommendation_id,
                     affected_set_id, affected_set_digest, action_kind, execution_path, current_description_observation_id,
                     current_text_digest, target_text, target_text_digest, target_language_code, kiz_marked_declared,
                     content_axis_material, exposure_axis_material, materiality_route, calibration_package_id,
-                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id, promotion_terms)
+                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id, promotion_terms, materiality_evidence)
                 VALUES (:id, :org, :store, :listing, :candidate, :recommendation, :set, :digest, :kind, :path, :observation,
                     :currentDigest, :text, :textDigest, :language, :kiz, :content, :exposure, :route, :package, :packageVersion,
-                    :author, 'DRAFT', :now, :now, 0, :restores, CAST(:promotion AS jsonb))
+                    :author, 'DRAFT', :now, :now, 0, :restores, CAST(:promotion AS jsonb), CAST(:materiality AS jsonb))
                 """).param("id", id).param("org", organizationId).param("store", storeId).param("listing", listingId)
                 .param("candidate", candidateId).param("recommendation", recommendationId).param("set", affectedSetId)
                 .param("digest", affectedSetDigest).param("kind", actionKind).param("path", path.name())
@@ -138,7 +138,8 @@ public class ListingActionRepository {
                 .param("content", contentAxis).param("exposure", exposureAxis).param("route", route.name())
                 .param("package", calibrationPackageId).param("packageVersion", calibrationVersion)
                 .param("author", authorUserId).param("now", Timestamp.from(now)).param("restores",restoresCommandId)
-                .param("promotion",promotionTerms==null?null:json.writeValueAsString(promotionTerms)).update();
+                .param("promotion",promotionTerms==null?null:json.writeValueAsString(promotionTerms))
+                .param("materiality",json.writeValueAsString(materialityEvidence)).update();
     }
 
     public String promotionTermsDigest(com.mimococo.marketops.listingconversion.PromotionTerms terms) {

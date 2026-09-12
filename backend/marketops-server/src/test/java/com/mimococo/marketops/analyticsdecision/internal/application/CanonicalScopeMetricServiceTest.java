@@ -100,6 +100,86 @@ class CanonicalScopeMetricServiceTest {
         verifyNoInteractions(metrics);
     }
 
+    private CanonicalScopeMetricQuery.ExposureScope exposureScope() {
+        return new CanonicalScopeMetricQuery.ExposureScope(org,store,List.of(a,b),MetricWindow.D7,asOf,3600,86400);
+    }
+    private void exposureValues(String denominator) {
+        var value=new MetricValueView(UUID.randomUUID(),MetricCode.RETAINED_NET_SALES,2,SubjectKind.STORE,
+                store,MetricWindow.D7,start,end,ValueState.AVAILABLE,new BigDecimal(denominator),"RUB",
+                ConfidenceState.CANONICAL_CONFIRMED,false,end,0L,"b".repeat(64),asOf,
+                List.of(UUID.randomUUID()),asOf,UUID.randomUUID());
+        when(metrics.currentValuesAt(SubjectKind.STORE,store,MetricWindow.D7,asOf))
+                .thenReturn(Map.of(MetricCode.RETAINED_NET_SALES,value));
+        put(a,MetricCode.RETAINED_NET_SALES,"2","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        put(b,MetricCode.RETAINED_NET_SALES,"3","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+    }
+
+    @Test void actualExposureUsesAllMembersAndTheSameStoreWindow() {
+        exposureValues("100");
+        var result=service.exposure(exposureScope());
+        assertThat(result.available()).isTrue();
+        assertThat(result.share()).isEqualByComparingTo("0.05");
+        assertThat(result.memberValues()).hasSize(2);
+        assertThat(result.storeValue().subjectKind()).isEqualTo(SubjectKind.STORE);
+        assertThat(result.storeValue().periodStart()).isEqualTo(start);
+        put(b,MetricCode.RETAINED_NET_SALES,"30","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(service.exposure(exposureScope()).share()).isEqualByComparingTo("0.32");
+    }
+
+    @Test void displayRoundingDoesNotCrossTheMaterialityThreshold() {
+        exposureValues("5000000000000000");
+        put(a,MetricCode.RETAINED_NET_SALES,"999999999999999.99999999","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        put(b,MetricCode.RETAINED_NET_SALES,"0","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        var result=service.exposure(exposureScope());
+        assertThat(result.share()).isEqualByComparingTo("0.2");
+        assertThat(result.reaches(new BigDecimal("0.2"))).isFalse();
+        put(a,MetricCode.RETAINED_NET_SALES,"1000000000000000","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(service.exposure(exposureScope()).reaches(new BigDecimal("0.2"))).isTrue();
+    }
+
+    @Test void missingMemberOrUnconfirmedExposureNeverBecomesZero() {
+        exposureValues("100");
+        rows.get(b).remove(MetricCode.RETAINED_NET_SALES);
+        assertThat(service.exposure(exposureScope()).gaps()).contains("EXPOSURE_MEMBER_VALUE_MISSING");
+        assertThat(service.exposure(exposureScope()).share()).isNull();
+        for (var state:List.of(ConfidenceState.CANONICAL_PENDING_SETTLEMENT,ConfidenceState.ESTIMATED_EXPLAINED,
+                ConfidenceState.STALE,ConfidenceState.CONFLICTED,ConfidenceState.INCOMPLETE,ConfidenceState.UNKNOWN)) {
+            put(b,MetricCode.RETAINED_NET_SALES,"3","RUB",2,state);
+            assertThat(service.exposure(exposureScope()).gaps()).contains("EXPOSURE_MEMBER_VALUE_UNQUALIFIED");
+        }
+    }
+
+    @Test void nonpositiveDenominatorAndImpossibleScopeTotalAreUnknown() {
+        exposureValues("0");
+        assertThat(service.exposure(exposureScope()).gaps()).contains("EXPOSURE_DENOMINATOR_NONPOSITIVE");
+        exposureValues("4");
+        assertThat(service.exposure(exposureScope()).gaps()).contains("EXPOSURE_TOTAL_CONFLICTED");
+        exposureValues("100");
+        put(a,MetricCode.RETAINED_NET_SALES,"0","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        put(b,MetricCode.RETAINED_NET_SALES,"0","RUB",2,ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(service.exposure(exposureScope()).share()).isEqualByComparingTo("0");
+    }
+
+    @Test void mixedExposureCurrencyOrDefinitionsRemainUnresolved() {
+        exposureValues("100");
+        put(b,MetricCode.RETAINED_NET_SALES,"3","USD",2,ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(service.exposure(exposureScope()).gaps()).contains("EXPOSURE_BASIS_MISMATCH");
+        put(b,MetricCode.RETAINED_NET_SALES,"3","RUB",3,ConfidenceState.CANONICAL_CONFIRMED);
+        assertThat(service.exposure(exposureScope()).share()).isNull();
+    }
+
+    @Test void oldPeriodCannotBecomeCurrentByReverificationAlone() {
+        exposureValues("100");
+        var narrowed=new CanonicalScopeMetricQuery.ExposureScope(org,store,List.of(a,b),MetricWindow.D7,asOf,3600,86399);
+        assertThat(service.exposure(narrowed).gaps()).contains("EXPOSURE_STORE_VALUE_UNQUALIFIED","EXPOSURE_MEMBER_VALUE_UNQUALIFIED");
+    }
+
+    @Test void foreignExposureScopeIsRefusedBeforeReadingMetrics() {
+        when(identities.variantContext(b,asOf)).thenReturn(Optional.of(identity(b,UUID.randomUUID())));
+        assertThatThrownBy(()->service.exposure(exposureScope())).isInstanceOf(OperationRejectedException.class);
+        verifyNoInteractions(metrics);
+    }
+
     private CanonicalScopeMetricQuery.Scope scope(CanonicalScopeMetricQuery.ProfitBasis basis) {
         return new CanonicalScopeMetricQuery.Scope(org,store,List.of(a,b),MetricWindow.D7,start,end,asOf,basis);
     }

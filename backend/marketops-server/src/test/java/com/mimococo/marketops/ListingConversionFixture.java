@@ -149,8 +149,11 @@ public final class ListingConversionFixture {
                 .query(Boolean.class).single())) {
             source=source.replace("UPDATE core.lc_calibration_package SET status = 'ACTIVE'", """
                 UPDATE core.lc_calibration_value SET value_json=
-                 '{"nativeScope":{"MANUAL_ENTRY":{"maximumAgeSeconds":3600},"MARKETPLACE_RAW":{"maximumAgeSeconds":3600}}}'
+                 '{"nativeScope":{"MANUAL_ENTRY":{"maximumAgeSeconds":3600},"MARKETPLACE_RAW":{"maximumAgeSeconds":3600}},"materialityExposure":{"maximumVerificationAgeSeconds":3600,"maximumPeriodEndAgeSeconds":86400}}'
                  WHERE package_id='5c000000-0000-5000-8000-000000000001' AND category_code='FRESHNESS_RULE';
+                UPDATE core.lc_calibration_value SET window_days=30
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001'
+                   AND category_code IN ('ORDINARY_TRIGGER_EXPOSURE','MATERIAL_TRIGGER_EXPOSURE');
                 UPDATE core.lc_calibration_package SET status = 'ACTIVE'
                 """);
             source=source.replace("INSERT INTO core.lc_affected_set(","""
@@ -215,6 +218,47 @@ public final class ListingConversionFixture {
                   validation_reference='fixture://synthetic/professional',acceptance_reference='fixture://synthetic/owner'
                 FROM core.lc_calibration_package p WHERE p.id=g.package_id AND g.package_id=:id
                 """).param("id",id("calibrationPackage")).param("verifier",id("verifierUser")).param("owner",id("ownerUser")).update();
+        if (Boolean.TRUE.equals(seed.sql("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='ops' AND table_name='lc_action' AND column_name='materiality_evidence')")
+                .query(Boolean.class).single())) {
+            seedRetainedSalesExposure(new java.math.BigDecimal("100"),new java.math.BigDecimal("1000000"));
+        }
+    }
+
+    /** Published canonical fixtures for the actual exposure consumer; not a caller-supplied classification. */
+    void seedRetainedSalesExposure(java.math.BigDecimal memberSales,java.math.BigDecimal storeSales) {
+        seed.sql("""
+                WITH basis AS MATERIALIZED (
+                 SELECT gen_random_uuid() AS run_id,clock_timestamp() AS at,
+                   date_trunc('day',now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC' AS period_end),
+                run AS (
+                 INSERT INTO mart.calculation_run(id,organization_id,trigger_kind,scope_kind,store_ref_id,
+                  window_code,period_start,period_end,definition_set_digest,state,subject_count,value_count,
+                  correlation_id,started_at,completed_at,requested_by_user_id)
+                 SELECT run_id,:org,'MANUAL','STORE',:store,'D30',period_end-interval '30 days',period_end,
+                   repeat('c',64),'SUCCEEDED',1,1,'synthetic-materiality-exposure',at,at,:requester FROM basis RETURNING id),
+                subjects AS (
+                 SELECT 'STORE'::text AS kind,:store::uuid AS id,:storeSales::numeric AS amount
+                 UNION ALL
+                 SELECT 'PLATFORM_LISTING_VARIANT',v.id,:memberSales::numeric FROM core.platform_listing_variant v
+                   JOIN core.platform_listing l ON l.id=v.platform_listing_id WHERE l.store_id=:store),
+                observed_values AS (
+                 INSERT INTO mart.metric_value(id,organization_id,calculation_run_id,metric_code,definition_version,
+                  subject_kind,subject_id,window_code,period_start,period_end,value_state,numeric_value,currency_code,
+                  confidence_state,estimated,oldest_source_time,freshness_seconds,input_digest,computed_at)
+                 SELECT gen_random_uuid(),:org,run.id,'RETAINED_NET_SALES',
+                   (SELECT max(definition_version) FROM mart.metric_definition WHERE metric_code='RETAINED_NET_SALES'),
+                   s.kind,s.id,'D30',b.period_end-interval '30 days',b.period_end,'AVAILABLE',s.amount,'RUB',
+                   'CANONICAL_CONFIRMED',false,b.at,0,
+                   encode(sha256(convert_to(s.kind||':'||s.id::text||':'||s.amount::text,'UTF8')),'hex'),b.at
+                   FROM basis b CROSS JOIN run CROSS JOIN subjects s
+                 ON CONFLICT (metric_code,definition_version,subject_kind,subject_id,window_code,period_start,period_end,input_digest)
+                   DO NOTHING
+                 RETURNING id)
+                INSERT INTO mart.metric_input_reference(id,metric_value_id,reference_kind,reference_id)
+                 SELECT gen_random_uuid(),id,'FACT_PROVENANCE',:provenance FROM observed_values
+                """).param("org",id("organization")).param("store",id("store"))
+                .param("memberSales",memberSales).param("storeSales",storeSales).param("provenance",id("provenance"))
+                .param("requester",id("executorUser")).update();
     }
 
     public UUID id(String name) {

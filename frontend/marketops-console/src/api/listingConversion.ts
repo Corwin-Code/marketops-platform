@@ -1318,7 +1318,6 @@ export function prepareAction(
   executionPath: string,
   targetText: string,
   kizMarkedDeclared: boolean | undefined,
-  exposureShare: string,
   restoresCommandId?: string,
   promotionTerms?: PromotionTerms,
 ): Promise<ConsoleOutcome<ListingAction>> {
@@ -1332,7 +1331,6 @@ export function prepareAction(
       targetText: restoresCommandId || promotionTerms ? null : targetText,
       restoresCommandId: restoresCommandId === '' ? null : (restoresCommandId ?? null),
       kizMarkedDeclared: kizMarkedDeclared ?? null,
-      exposureShare: exposureShare === '' ? null : exposureShare,
       expectedEffect: {},
       riskLabel: 'LOW',
     }),

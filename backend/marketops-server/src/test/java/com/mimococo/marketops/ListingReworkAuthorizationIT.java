@@ -837,6 +837,10 @@ class ListingReworkAuthorizationIT {
 
     @Test
     void normalPreparationFreezesTheEvaluationPlanBeforeAnyReviewOrApproval() throws Exception {
+        prepareDescriptionForExposure(new java.math.BigDecimal("0.01"));
+    }
+
+    private UUID prepareDescriptionForExposure(java.math.BigDecimal reportedExposure) throws Exception {
         var json=new tools.jackson.databind.ObjectMapper();
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
         for (ActionScopeCode scope:List.of(ActionScopeCode.LISTING_ACTION_PREPARE,ActionScopeCode.LISTING_CONVERSION_VIEW)) {
@@ -855,7 +859,7 @@ class ListingReworkAuthorizationIT {
         var actionResponse=mvc.perform(post("/api/v1/console/listing/actions/candidates/"+candidate+"/prepare")
                 .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(Map.of("executionPath","MANUAL","targetText",ListingConversionFixture.PRIOR_TEXT_ONE+".",
-                        "kizMarkedDeclared",false,"exposureShare",new java.math.BigDecimal("0.01")))))
+                        "kizMarkedDeclared",false,"exposureShare",reportedExposure))))
                 .andExpect(result -> assertThat(result.getResponse().getStatus())
                         .withFailMessage("Preparation failed: %s", result.getResolvedException()).isEqualTo(200))
                 .andExpect(jsonPath("$.state").value("DRAFT")).andReturn();
@@ -870,6 +874,63 @@ class ListingReworkAuthorizationIT {
         mvc.perform(get("/api/v1/console/listing/actions/"+actionId+"/evaluation").header(HttpHeaders.AUTHORIZATION,bearer()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.formalNodes[0].nodeCode").value("D14"))
                 .andExpect(jsonPath("$.frozenDefinition.formalNodes[0].maturityDays").value(14));
+        return actionId;
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"0","1"})
+    void requestExposureCannotLowerOrRaiseCanonicalClassification(String reported) throws Exception {
+        fixture.seedRetainedSalesExposure(new java.math.BigDecimal("300000"),new java.math.BigDecimal("1000000"));
+        UUID action=prepareDescriptionForExposure(new java.math.BigDecimal(reported));
+        assertThat(jdbc.sql("""
+                SELECT materiality_route='MATERIAL_IMPACT' AND exposure_axis_material
+                  AND materiality_evidence->>'state'='QUALIFIED'
+                  AND (materiality_evidence#>>'{projection,share}')::numeric=0.3
+                  AND jsonb_array_length(materiality_evidence#>'{projection,memberValues}')=1
+                FROM ops.lc_action WHERE id=:id
+                """).param("id",action).query(Boolean.class).single()).isTrue();
+        assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_action SET materiality_evidence='{}' WHERE id=:id")
+                .param("id",action).update()).hasMessageContaining("prepared materiality evidence is immutable");
+        mvc.perform(get("/api/v1/console/listing/actions/"+action).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.materialityEvidence").doesNotExist());
+    }
+
+    @Test void missingMemberExposureCannotBorrowTheRequestsZero() throws Exception {
+        fixture.seed.sql("""
+                DELETE FROM mart.metric_input_reference WHERE metric_value_id IN (
+                  SELECT id FROM mart.metric_value WHERE subject_id=:member AND metric_code='RETAINED_NET_SALES')
+                """).param("member",fixture.id("listingVariant")).update();
+        fixture.seed.sql("DELETE FROM mart.metric_value WHERE subject_id=:member AND metric_code='RETAINED_NET_SALES'")
+                .param("member",fixture.id("listingVariant")).update();
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ZERO);
+        assertThat(jdbc.sql("""
+                SELECT materiality_route='MATERIALITY_UNRESOLVED' AND exposure_axis_material IS NULL
+                  AND materiality_evidence->>'state'='EXPOSURE_UNRESOLVED'
+                  AND jsonb_exists(materiality_evidence#>'{projection,gaps}','EXPOSURE_MEMBER_VALUE_MISSING')
+                FROM ops.lc_action WHERE id=:id
+                """).param("id",action).query(Boolean.class).single()).isTrue();
+        subject="exposure-independent-reviewer-"+UUID.randomUUID();
+        UUID reviewer=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Exposure reviewer",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",reviewer).update();
+        users.assignRole(OPERATOR,reviewer,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,reviewer,ActionScopeCode.LISTING_ACTION_REVIEW,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"verdict\":\"ATTESTED\",\"reason\":\"Cannot attest away missing canonical exposure\"}"))
+                .andExpect(result->assertThat(result.getResolvedException()).isInstanceOfSatisfying(
+                    com.mimococo.marketops.shared.OperationRejectedException.class,
+                    failure->assertThat(failure.errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.MATERIALITY_UNRESOLVED)));
+        assertThat(jdbc.sql("SELECT state FROM ops.lc_action WHERE id=:id").param("id",action).query(String.class).single()).isEqualTo("DRAFT");
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_action_review WHERE action_id=:id").param("id",action).query(Long.class).single()).isZero();
+    }
+
+    @Test void fabricatedHighExposureCannotUpgradeAKnownSmallExposure() throws Exception {
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ONE);
+        assertThat(jdbc.sql("""
+                SELECT materiality_route='ORDINARY_IMPACT' AND NOT exposure_axis_material
+                  AND (materiality_evidence#>>'{projection,share}')::numeric=0.0001
+                FROM ops.lc_action WHERE id=:id
+                """).param("id",action).query(Boolean.class).single()).isTrue();
     }
 
     @Test

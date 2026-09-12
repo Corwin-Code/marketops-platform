@@ -646,3 +646,30 @@ relevant authorization, architecture, fresh-schema and upgrade checks once.
 Root 023 remains open for periodic whole-scope scheduling and actual canonical
 measurement/protection/authorization recomputation. A Health-only receipt proves
 only its named consumer, not full review or business safety.
+
+### Checkpoint 26 work — canonical actual exposure (root 008, partial)
+
+Preparation reads actual retained-net-sales exposure through the existing Metric
+owner. The accepted exposure thresholds must name the same supported window;
+`FRESHNESS_RULE.materialityExposure` supplies positive explicit
+`maximumVerificationAgeSeconds` and `maximumPeriodEndAgeSeconds`. No default age,
+window or missing-member zero is introduced. The store's current published
+window anchors the numerator: every native affected member must have a verified,
+confirmed, non-estimated, evidenced value for exactly that window and definition,
+in the same currency. Zero store sales, inconsistent totals and incomplete
+membership remain unresolved. Reverification cannot refresh an old period.
+
+The owner sums member values and compares thresholds by cross multiplication;
+rounded display shares cannot change a route. Preparation ignores the retained
+legacy request field and freezes its exact projection in `materiality_evidence`.
+That financial snapshot is not exposed by the ordinary Action response. The
+Console removes the manual exposure input and explains the evidence dependency
+in Chinese and Russian. An unresolved classification can retain a valid frozen
+calibration/plan for subsequent work; it still cannot pass current review.
+
+This replaces the unsafe exposure source, not the remaining content/commercial
+meaning classifier. Structured independent review and current-evidence recheck
+before approval/launch remain open. No new Metric engine, semantic model,
+Provider write, permission role or production setting is added. Relevant tests
+include signed request tampering, missing actual values, immutable snapshots,
+original upgrade preservation, owner arithmetic boundaries and the affected UI.
