@@ -59,9 +59,21 @@ public class CalibrationService {
         return new Outcome(new Resolved(packageId,version,calibration.values(packageId)),"RESOLVED");
     }
 
+    public record ActionRecheck(Outcome outcome, Map<String,String> evidence) {
+        public ActionRecheck { evidence=Map.copyOf(evidence); }
+    }
+
     @Transactional(readOnly = true)
-    public boolean active(UUID packageId, int version) {
-        return calibration.active(packageId, version);
+    public ActionRecheck recheckAction(UUID actionId, Instant at) {
+        JsonNode check=calibration.recheckAction(actionId,at);
+        Map<String,String> evidence=new java.util.LinkedHashMap<>();
+        check.properties().forEach(entry -> { if(!entry.getValue().isNull()) evidence.put(entry.getKey(),entry.getValue().asText()); });
+        String state=check.path("state").asText();
+        if(!List.of("CURRENT","UNCHANGED_DEPENDENCIES").contains(state)) {
+            return new ActionRecheck(new Outcome(null,state),evidence);
+        }
+        UUID id=UUID.fromString(check.path("currentPackageId").asText());
+        return new ActionRecheck(new Outcome(new Resolved(id,check.path("currentVersion").asInt(),calibration.values(id)),state),evidence);
     }
 
     public static MaterialityClassifier.Triggers triggers(Resolved resolved) {

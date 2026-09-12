@@ -76,7 +76,7 @@ class ListingGuardrailTest {
     private static ListingDecisionScope scope(String route, boolean reviewAttested) {
         return new ListingDecisionScope(ID, ID, ID, ID, ID, 1L, ActionKind.LISTING_DESCRIPTION_CHANGE, "API",
                 "REVIEWED", route, false, false, PACKAGE, 3, Duration.ofHours(48), DIGEST, DIGEST, DIGEST, 120,
-                Boolean.FALSE, AUTHOR, null, reviewAttested, "{\"calibrationPackageId\":\"" + PACKAGE + "\"}");
+                Boolean.FALSE, AUTHOR, null, reviewAttested, "{\"calibrationPackageId\":\"" + PACKAGE + "\"}", Map.of("state","CURRENT"));
     }
 
     @BeforeEach

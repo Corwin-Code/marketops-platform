@@ -200,6 +200,7 @@ public class GuardrailService {
         detail.put("targetTextDigest", String.valueOf(scope.targetTextDigest()));
         detail.put("calibrationPackageId", String.valueOf(scope.calibrationPackageId()));
         detail.put("calibrationVersion", String.valueOf(scope.calibrationVersion()));
+        scope.calibrationRecheck().forEach((key,value)->detail.put("calibrationRecheck."+key,value));
         detail.put("reviewAttested", Boolean.toString(scope.reviewAttested()));
         if (!unresolved.isEmpty()) {
             detail.put("listingBlockers", String.join(",", unresolved));

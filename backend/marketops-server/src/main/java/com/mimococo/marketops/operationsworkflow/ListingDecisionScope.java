@@ -36,9 +36,11 @@ public record ListingDecisionScope(
         UUID authorUserId,
         UUID reviewerUserId,
         boolean reviewAttested,
-        String authorityDocument) {
+        String authorityDocument,
+        java.util.Map<String,String> calibrationRecheck) {
 
     public ListingDecisionScope {
+        calibrationRecheck=java.util.Map.copyOf(calibrationRecheck);
         Objects.requireNonNull(recommendationId, "recommendationId");
         Objects.requireNonNull(organizationId, "organizationId");
         Objects.requireNonNull(storeId, "storeId");

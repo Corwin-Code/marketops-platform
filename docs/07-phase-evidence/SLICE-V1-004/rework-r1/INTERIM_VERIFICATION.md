@@ -228,3 +228,38 @@ Final commands, source/log hashes, overlap and limitations are recorded in
 qualified official native acquisition and complete evidence-review journeys
 remain tracked in roots 010/011/026. This is continuous local progress, not
 Controller Final Closure Verification or production enablement.
+
+
+## Checkpoint 23 — recheck exact rule dependencies across accepted packages
+
+V0103 captures an immutable closed rule projection at Action preparation. It
+preserves the original accepted package, approval, and evaluation plan. A current
+accepted package is resolved for the original purpose and actual action scope;
+unchanged consumed rules may continue through the existing checks. Description
+work excludes unused promotion demand scenarios; promotion work excludes unused
+description serialization/readback rules. Value, unit, period and evidence
+changes remain dependency changes. Historical absent projections cannot grant
+cross-package continuation. No package status alone can prove current validity.
+
+Java decision scope, SQL binding checks and allowance projection share this
+recheck. Existing Guardrail detail retains current and bound package references,
+purpose, result and dependency digest. Original authority snapshot comparisons
+remain intact. Expiry, inapplicable/revoked authorization, scope changes, current
+text, containment and Provider preflight remain separate required checks.
+
+A signed HTTP case prepares/validates two exact synthetic replacements and uses
+an independent authenticated Owner to accept/activate each. Changing an unused
+promotion demand parameter permits the original description action to launch
+with its original plan. Changing consumed approval validity blocks the other
+pending action and invalidates the launched action's remaining binding use.
+Current-package expiry remains unresolved. The first probe's fixture reassigned
+an already active Owner role on the second replacement; the exclusion constraint
+correctly refused it. The helper now preserves that role and provisions a new
+independent accepting Owner for each exact draft.
+
+The affected suites and final bounded scope-guard probe are recorded separately
+in `checkpoint-23-test-receipts.json`; overlapping probes are not additive test
+coverage. The final review additionally requires the original package scope to
+match before permitting any recheck. No historical calibration-dependency bytes
+are backfilled. Explicit correction/exploration preparation, purpose-specific
+complete combinations and all transitive late-evidence consumers remain open.

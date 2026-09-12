@@ -48,6 +48,8 @@ class ListingAtomicLaunchUpgradeIT {
         assertThat(legacy.app.sql("""
                 SELECT core.lc_listing_identity_snapshot(:listing,statement_timestamp())#>>'{nativeScope,state}'
                 """).param("listing",legacy.id("listing")).query(String.class).single()).isEqualTo("INCOMPLETE");
+        assertThat(legacy.app.sql("SELECT calibration_dependencies IS NULL FROM ops.lc_action WHERE id=:id")
+                .param("id",legacy.id("actionOne")).query(Boolean.class).single()).isTrue();
         assertThat(legacy.app.sql("SELECT native_scope_observation_id IS NULL FROM core.lc_affected_set WHERE id=:id")
                 .param("id",legacy.id("affectedSetOne")).query(Boolean.class).single()).isTrue();
 

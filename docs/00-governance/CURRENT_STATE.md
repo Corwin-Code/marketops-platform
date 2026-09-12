@@ -884,3 +884,16 @@ launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS; frontend
 and full review journeys continue; 0/27 CLOSED, Controller Final Closure
 Verification NOT_READY. Platform writes default OFF; no remote publication
 or real-account call.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-23 rechecks actual rule
+dependencies across exact accepted packages. Unchanged consumed rules can retain
+an original approval after current checks; changed or unproved dependencies stop
+related work. Original authority/plan remains frozen; historical NULL is not
+backfilled. Java decision, SQL binding and allowance paths share the recheck,
+with current package evidence in existing Guardrail records. Results: 47 signed
+HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity,
+10 schema/role, 1 historical upgrade PASS; final original-package scope predicate
+has 2 overlapping connected checks. Exact stages are in rework evidence
+`checkpoint-23-test-receipts.json`. Purpose preparation and complete combinations
+continue; 0/27 CLOSED, final Controller handoff NOT_READY, platform writes OFF.

@@ -78,10 +78,8 @@ public class CalibrationRepository {
                 .query(Boolean.class).single());
     }
 
-    public boolean active(UUID packageId, int version) {
-        return Boolean.TRUE.equals(jdbc.sql("""
-                SELECT EXISTS (SELECT 1 FROM core.lc_calibration_package
-                                WHERE id = :id AND package_version = :version AND status = 'ACTIVE')
-                """).param("id", packageId).param("version", version).query(Boolean.class).single());
+    public JsonNode recheckAction(UUID actionId, Instant at) {
+        return json.readTree(jdbc.sql("SELECT ops.lc_action_calibration_recheck(:action,:at)::text")
+                .param("action",actionId).param("at",Timestamp.from(at)).query(String.class).single());
     }
 }

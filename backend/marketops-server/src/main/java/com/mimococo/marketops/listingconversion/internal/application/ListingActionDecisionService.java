@@ -58,11 +58,9 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
     public Optional<ListingDecisionScope> decisionScope(UUID recommendationId) {
         return actions.actionForRecommendation(recommendationId).map(action -> {
             Optional<UUID> reviewer = actions.attestingReviewer(action.id());
-            Duration validity = null;
-            if (action.calibrationPackageId() != null) {
-                CalibrationService.Outcome resolved = resolvedFor(action);
-                validity = resolved.ok() ? CalibrationService.approvalValidity(resolved.resolved()).orElse(null) : null;
-            }
+            var recheck=calibration.recheckAction(action.id(),clock.instant());
+            CalibrationService.Outcome resolved=recheck.outcome();
+            Duration validity=resolved.ok()?CalibrationService.approvalValidity(resolved.resolved()).orElse(null):null;
             String document = actions.authoritySnapshot(recommendationId).orElse("{}");
             return new ListingDecisionScope(recommendationId, action.organizationId(), action.storeId(), action.listingId(),
                     action.id(), action.version(), ActionKind.valueOf(action.actionKind()), action.executionPath(),
@@ -71,7 +69,7 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
                     action.calibrationVersion(), validity, action.affectedSetDigest(), action.targetTextDigest(),
                     action.currentTextDigest(), action.targetText() == null ? 0 : action.targetText().length(),
                     action.kizMarkedDeclared(), action.authorUserId(), reviewer.orElse(null), reviewer.isPresent(),
-                    document);
+                    document,recheck.evidence());
         });
     }
 
@@ -96,10 +94,6 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
         CalibrationService.Outcome resolved = resolvedFor(action);
         if (!resolved.ok()) {
             reasons.add(resolved.state());
-        } else if (action.calibrationPackageId() != null
-                && (!action.calibrationPackageId().equals(resolved.resolved().packageId())
-                    || action.calibrationVersion() != resolved.resolved().version())) {
-            reasons.add("ENTITY_VERSION_CHANGED");
         }
         Optional<ListingFactRepository.AffectedSetRow> set = facts.affectedSetById(action.affectedSetId());
         if (set.isEmpty() || !"COMPLETE".equals(set.get().resolutionState())) {
@@ -193,10 +187,6 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
     }
 
     private CalibrationService.Outcome resolvedFor(ListingActionRepository.ActionRow action) {
-        ListingFactRepository.ListingContext listing = facts.listing(action.listingId()).orElse(null);
-        if (listing == null) {
-            return new CalibrationService.Outcome(null, "CALIBRATION_UNRESOLVED");
-        }
-        return calibration.resolve(listing.organizationId(), listing.platformCode(), listing.storeId(), clock.instant());
+        return calibration.recheckAction(action.id(),clock.instant()).outcome();
     }
 }

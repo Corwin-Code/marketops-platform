@@ -560,3 +560,37 @@ explicit date style, so a scope snapshot cannot reinterpret acceptance according
 to the caller's session time zone. Historical accepted bytes are not rewritten.
 If an old acceptance hash differs, it remains unqualified for current use; this
 change does not confer a new Owner acceptance or reconstruct historical evidence.
+
+
+### Checkpoint 23 work in progress — current rule dependency recheck (roots 011/017)
+
+V0103 captures a versioned rule projection on each newly prepared Action inside
+the existing Policy boundary. It uses a closed inventory of existing categories,
+retaining values, units, periods and source evidence. Description actions do not
+consume promotion demand scenarios; promotion actions do not serialize or
+read back description text. Those specific unrelated categories are excluded.
+No generic dependency graph, second approval authority or tunable policy engine
+is introduced. All other existing rule dependencies remain conservatively bound.
+
+Current recheck resolves an accepted effective package for the bound package's
+exact purpose and action scope. The existing package is CURRENT only while that
+resolution still qualifies it. A replacement may be UNCHANGED_DEPENDENCIES only
+when the original accepted projection is retained and still provable, its rule
+values match the current complete package, and the original activation applies
+to Action preparation. Package ID, version or rationale alone does not change
+actual rule values. Missing historical projection, changed evidence, changed
+rules or missing current authority stays unqualified. Historical NULL dependency
+records are never backfilled to grant continuation.
+
+The same recheck is consumed by Java decision scope, SQL binding gaps and the
+existing allowance projection. Guardrail detail records the bound/current package,
+purpose, state and dependency digest while the original authority snapshot,
+approval and evaluation plan remain frozen. Existing expiry, revoked/inapplicable
+binding, current actor, containment, native scope, current text and execution
+checks remain necessary. A continuity result cannot revive them. No original
+approval period is extended. An unused status-only active() helper is removed.
+
+This checkpoint does not yet supply action-purpose preparation for independent
+correction/exploration, purpose-specific complete-combination activation or all
+late-evidence consumers. Those remain explicit root 007/011/017 work. Current
+historical packages and outputs remain retained. New writes remain default OFF.

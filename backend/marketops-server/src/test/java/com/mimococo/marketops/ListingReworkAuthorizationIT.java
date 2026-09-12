@@ -1685,6 +1685,84 @@ class ListingReworkAuthorizationIT {
                 .resolved().packageId()).isEqualTo(fixture.id("calibrationPackage"));
     }
 
+    @Test
+    void governedReplacementContinuesUnchangedDependenciesAndStopsChangedOnes() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        var decisions=applicationContext.getBean(com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority.class);
+        var json=new tools.jackson.databind.ObjectMapper();
+        UUID old=fixture.id("calibrationPackage");
+        String originalPlan=jdbc.sql("SELECT to_jsonb(p)::text FROM ops.lc_evaluation_plan p WHERE action_id=:id")
+                .param("id",fixture.id("actionOne")).query(String.class).single();
+        String originalDependencies=jdbc.sql("SELECT calibration_dependencies::text FROM ops.lc_action WHERE id=:id")
+                .param("id",fixture.id("actionOne")).query(String.class).single();
+        assertThat(originalDependencies).doesNotContain("DEMAND_SCENARIO_SET");
+        var replacement=calibrationDraft("synthetic-unchanged-action-rules");
+        replacement.put("purposeCode","LISTING_CONVERSION");replacement.put("version",2);
+        replacement.put("replacesPackageId",old.toString());
+        for(var value:replacement.path("values")) {
+            if(value.path("categoryCode").asText().equals("DEMAND_SCENARIO_SET")) {
+                ((tools.jackson.databind.node.ObjectNode)value).set("json",json.readTree(
+                        "{\"scenarios\":[{\"code\":\"CHANGED_PROMOTION_ONLY\",\"quantity\":20,\"necessary\":true,\"conservative\":true}]}"));
+            }
+        }
+        String current=activateSyntheticCalibrationWithIndependentOwner(replacement);
+        var check=calibration.recheckAction(fixture.id("actionOne"),Instant.now());
+        assertThat(check.outcome().state()).isEqualTo("UNCHANGED_DEPENDENCIES");
+        assertThat(check.outcome().resolved().packageId()).isEqualTo(UUID.fromString(current));
+        assertThat(decisions.unresolvedReasons(fixture.id("recommendationOne"))).doesNotContain("ENTITY_VERSION_CHANGED");
+        assertThat(bindingGaps("actionOne")).isEmpty();
+        assertThatThrownBy(()->jdbc.sql("UPDATE ops.lc_action SET calibration_dependencies='{}' WHERE id=:id")
+                .param("id",fixture.id("actionOne")).update()).isInstanceOf(org.springframework.dao.DataAccessException.class);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_ACTION_LAUNCH,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Synthetic continued approved action",Instant.now().plusSeconds(86400),Instant.now());
+        mvc.perform(post("/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/launch")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content("{\"axes\":{}}"))
+                .andDo(r->{if(r.getResolvedException()!=null)throw r.getResolvedException();})
+                .andExpect(status().isOk()).andExpect(jsonPath("$.launched").value(true));
+        assertThat(jdbc.sql("SELECT to_jsonb(p)::text FROM ops.lc_evaluation_plan p WHERE action_id=:id")
+                .param("id",fixture.id("actionOne")).query(String.class).single()).isEqualTo(originalPlan);
+        assertThat(jdbc.sql("SELECT calibration_dependencies::text FROM ops.lc_action WHERE id=:id")
+                .param("id",fixture.id("actionOne")).query(String.class).single()).isEqualTo(originalDependencies);
+        assertThat(decisions.decisionScope(fixture.id("recommendationTwo")).orElseThrow().calibrationRecheck())
+                .containsEntry("currentPackageId",current).containsEntry("state","UNCHANGED_DEPENDENCIES");
+
+        var changed=calibrationDraft("synthetic-changed-action-rules");
+        changed.put("purposeCode","LISTING_CONVERSION");changed.put("version",3);changed.put("replacesPackageId",current);
+        for(var value:changed.path("values")) if(value.path("categoryCode").asText().equals("APPROVAL_VALIDITY"))
+            ((tools.jackson.databind.node.ObjectNode)value).put("numeric",47);
+        activateSyntheticCalibrationWithIndependentOwner(changed);
+        assertThat(calibration.recheckAction(fixture.id("actionTwo"),Instant.now()).outcome().state())
+                .isEqualTo("CALIBRATION_DEPENDENCIES_CHANGED");
+        assertThat(bindingGaps("actionTwo")).contains("CALIBRATION_NOT_CURRENT");
+        assertThat(bindingGaps("actionOne")).contains("CALIBRATION_NOT_CURRENT");
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_ACTION_LAUNCH,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post("/api/v1/console/listing/actions/"+fixture.id("actionTwo")+"/launch")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content("{\"axes\":{}}"))
+                .andExpect(status().is4xxClientError());
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
+                .param("id",fixture.id("actionTwo")).query(Integer.class).single()).isZero();
+        assertThat(calibration.recheckAction(fixture.id("actionTwo"),Instant.now().plusSeconds(2*86400)).outcome().state())
+                .isEqualTo("CALIBRATION_UNRESOLVED");
+    }
+
+    private String activateSyntheticCalibrationWithIndependentOwner(tools.jackson.databind.node.ObjectNode draft) throws Exception {
+        for(var action:List.of(ActionScopeCode.LISTING_CALIBRATION_PREPARE,ActionScopeCode.LISTING_CALIBRATION_VALIDATE))
+            users.grantScope(OPERATOR,userId,action,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        var created=postCalibration("",draft);
+        String id=created.path("package").path("id").asText();
+        Map<String,String> decision=Map.of("digest",created.path("governance").path("draft_digest").asText(),
+                "evidenceReference","fixture:exact-synthetic-replacement");
+        postCalibration("/"+id+"/validate",decision);
+        subject="calibration-replacement-owner-"+UUID.randomUUID();
+        userId=users.provision(OPERATOR,fixture.id("organization"),providerId,subject,null,"Synthetic replacement Owner",null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 hour' WHERE id=:id").param("id",userId).update();
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_CALIBRATION_ACCEPT,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        postCalibration("/"+id+"/accept",decision);postCalibration("/"+id+"/activate",decision);
+        return id;
+    }
+
     private tools.jackson.databind.node.ObjectNode calibrationDraft(String code) {
         var json=new tools.jackson.databind.ObjectMapper();
         var draft=json.createObjectNode();
