@@ -74,11 +74,9 @@ minutes count elapsed time even outside the ordinary operating calendar; missing
 Reading this list does not acknowledge. Its acknowledgement control checks the
 exact Listing and the shared Task's current store permission. The Task's cause
 must be resolved in retained diagnosis before closure; a click or caller-labelled
-action is insufficient. A later failed diagnosis reopens the same Task. Scope
-change fencing, cross-domain action attribution, qualified dependency hold and complete
-opportunity activation remain unfinished at this intermediate checkpoint.
-No clock display releases occupations, closes an Outcome, lifts containment or
-enables a platform write.
+action is insufficient. A later failed diagnosis reopens the same Task. No clock
+display releases occupations, closes an Outcome, lifts containment or enables a
+platform write.
 
 
 Finite deferral uses the original Task policy's explicit `maximumDeferMinutes`,
@@ -96,6 +94,20 @@ failed review does not invent a review result or permit renewal; inspect the
 existing recalculation failure receipt. Do not enable a worker or retry a provider
 as a consequence of this local verification. The worker remains default OFF.
 
-This local mechanism does not yet qualify all reasons, major business changes,
-protections or opportunities. Qualified dependency pause/recovery and staffed
-release coverage remain open; a handover record alone cannot qualify a pause.
+## Task behavior
+
+The original Task distinguishes necessary-risk and qualified-opportunity lanes, retains its
+first clocks across recalculation/reopen, and exposes deterministic risk/deadline/
+identity ordering. Actual source changes enter the existing recalculation queue;
+subsequent qualified diagnosis, Action, Command and Outcome events return to the
+same Task history rather than creating a parallel case.
+
+A dependency hold requires an exact open Task and dependency Task, current scoped
+authority, evidence, a finite duration within the original accepted policy and an
+acyclic dependency graph. It pauses only the substantive-action stage; original
+acknowledgement, outcome deadlines and Task age continue. Expiry/recovery binds its
+subsequent scoped Health/queue result, so a handover label or repeated request cannot
+renew or close it.
+
+The source cannot prove real staffing coverage; that external evidence remains an
+explicit limitation. No clock, hold or queue event enables a platform write.

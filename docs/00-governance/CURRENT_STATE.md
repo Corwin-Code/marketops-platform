@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-13
+as_of: 2026-09-14
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -25,12 +25,12 @@ active_slice_annex_git_blob_sha1: 4d9e93c17e26deee5d2222c8fc51d61d619aa9c8
 slice_v1_004_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
 slice_v1_004_owner_acceptance_statement: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt
 slice_v1_004_owner_acceptance_statement_sha256: 2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3
-slice_v1_004_execution_authority: CONTINUOUS_ROOT_CAUSE_REWORK_LEVEL_1_LOCAL_ONLY
+slice_v1_004_execution_authority: FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY
 slice_v1_004_maker: CLAUDE
 slice_v1_004_source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
 slice_v1_004_source_base_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
 slice_v1_004_branch: codex/slice-v1-004-root-cause-rework-r1
-slice_v1_004_implementation_state: CONTROLLER_CHANGES_REQUIRED_ROOT_CAUSE_REWORK_IN_PROGRESS
+slice_v1_004_implementation_state: LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING
 slice_v1_004_rework_agent: CODEX
 slice_v1_004_reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
 slice_v1_004_reviewed_tree: b04fc98b9a3e156cc66e00fe878569306972c638
@@ -38,7 +38,14 @@ slice_v1_004_frozen_finding_set: docs/07-phase-evidence/SLICE-V1-004/rework-r1/0
 slice_v1_004_frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
 slice_v1_004_rework_progress: docs/07-phase-evidence/SLICE-V1-004/rework-r1/finding-progress.json
 slice_v1_004_rework_design: docs/02-architecture/designs/SLICE-V1-004-rework-r1-design.md
-slice_v1_004_rework_completion: NOT_CLAIMED
+slice_v1_004_rework_completion: ENGINEERING_VERIFIED_CONTROLLER_PENDING
+slice_v1_004_verified_source_head: 16eda4bf7e5f561b60d10c19a9a157bd62d21d6e
+slice_v1_004_verified_source_tree: 98b9ff7d692eb869fb1f7bf704980259426e09f1
+slice_v1_004_engineering_finding_status: 27_OF_27_ENGINEERING_VERIFIED_CONTROLLER_PENDING
+slice_v1_004_focused_regression: 113_OF_113_PASS
+slice_v1_004_full_verification: PASS_LOCAL_LAYER_RECEIPTS_WITH_BROWSER_DETERMINISTIC_CLOSURE
+slice_v1_004_controller_verdict: PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION
+slice_v1_004_rework_migrations: V0080_THROUGH_V0123
 slice_v1_004_controlled_write_target: LISTING_DESCRIPTION_CHANGE
 slice_v1_004_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_004_real_provider_calls: NONE
@@ -50,7 +57,7 @@ slice_v1_004_owner_decision_count: 85
 slice_v1_004_decision_085: B
 slice_v1_004_scope_deltas_not_required: DELTA_01_DELTA_02_DELTA_03
 slice_v1_004_evidence_obligations_open: F_M01_F_M02_F_S01_F_W01_F_W02_E_04
-slice_v1_004_migrations: V0074_THROUGH_V0110
+slice_v1_004_migrations: V0074_THROUGH_V0079
 slice_v1_004_as_built_design: docs/02-architecture/designs/SLICE-V1-004-design.md
 slice_v1_004_acceptance_status: docs/07-phase-evidence/SLICE-V1-004/acceptance-status.md
 slice_v1_004_executable_evidence: docs/07-phase-evidence/SLICE-V1-004/executable-evidence.md
@@ -998,3 +1005,19 @@ qualification. Root 024 and whole-scope closure remain open; 23 IN_PROGRESS,
 verification: 206 distinct backend and 45 frontend cases, build/lint/typecheck
 pass; all handles ended. Prior 109 migrations and three immutable inputs remain byte exact;
 V0110 is forward-only. Level 1 restrictions and default-OFF platform writes hold.
+
+SLICE-V1-004 terminal Level 1 local rework update (2026-09-14): this terminal
+record supersedes the progress counts in checkpoints 01–33. The verified
+implementation source is Head `16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`,
+Tree `98b9ff7d692eb869fb1f7bf704980259426e09f1`; all 27 frozen findings are
+`ENGINEERING_VERIFIED_CONTROLLER_PENDING`, with zero findings claimed closed by
+the Controller. Backend and frontend terminal matrices passed. The complete
+browser run supplied 24/26 passing receipts; its two directly diagnosed failures
+then passed together 2/2 at the verified source, so all 26 distinct scenarios
+have a passing receipt without claiming a single all-green full invocation.
+Acceptance classification is 54 engineering verified / 12 external evidence
+pending / 3 not applicable at Level 1. Independent Controller Final Closure
+Verification remains pending. No Level 2, remote publication, real Provider or
+account call, Gate-EV, Gate-E, production migration or real business side effect
+was authorized or executed; all new platform writes remain default OFF. Exact
+receipts are in `docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json`.

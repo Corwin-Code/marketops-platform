@@ -1,9 +1,5 @@
 # Listing manual execution path
 
-This is the current local rework behavior. SLICE-V1-004 remains NOT_READY for
-Controller final closure; these receipts do not enable production execution.
-The immutable Contract and accepted decisions remain the normative authority.
-
 ## Packet and executor report
 
 Issue a packet from an exact launched `MANUAL` Action to one executor. A
@@ -66,16 +62,22 @@ Successful participation verification records `PARTICIPATION` and
 It proves neither buyer display nor ongoing participation after that instant,
 economic eligibility, exit or historical obligation clearance.
 
-## Exit, adoption and residual responsibility
+## Promotion operation lifecycle
 
-The continuous rework still must connect applicable exact conditional exit
-approval, independent cessation/clearing evidence and qualified adoption of
-existing commitments. Existing exit/release endpoint labels are not proof of
-those conditions. An observed existing activity can be recorded without
-inventing historical approval, a Command or an experiment plan. Its financial
-projection does not mean qualified takeover or absence of residual exposure.
+The owning context intake distinguishes `QUALIFIED_COMPLETE`, `KNOWN_RECORDS_ONLY` and
+`UNQUALIFIED` enumeration and produces a stable digest. A complete record binds
+the exact declaration/terms, applicability period, participation, new-transaction
+and residual states and any required original authority/current stewardship.
 
-Use `listing-launch-and-allowance.md` for the currently executable release basis.
-Do not equate Task closure, evaluation completion, an exit request or an internal
-engagement state with external cessation or vanished costs. No new promotion
-provider API is part of this Slice.
+Existing engagement adoption requires complete current independent enumeration
+and exact authority. Exit freezes the reason, actor authority and evidence; later
+independent observations prove STOP_NEW and residual clearing separately. An
+executor report records `AUTHORIZED`, lawful late work or `DEVIATION`; only an
+exact `APPLIED` report plus independent target verification progresses an Action.
+Late-association closure binds the exact Listing, target and later verification,
+and a deviation additionally requires a subsequent Action/approval/launch.
+
+These paths reuse the manual packet, allowance, verification and governance
+authorities. Do not equate Task closure, evaluation completion, an exit request
+or an internal engagement state with external cessation or vanished costs. No
+provider endpoint or implicit platform observation was added.

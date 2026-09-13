@@ -106,28 +106,50 @@ The `rework-r1` assessment artefacts are historical and pinned by exact bytes;
 they are no longer re-derived from live source. `S3-REL-001..024` stay
 production-blocking and `production_write_enabled` remains `false`.
 
-## SLICE-V1-004 Level 1 local checkpoint record
+## SLICE-V1-004 evidence records
 
 SLICE-V1-004 is the active Slice. The Human Owner accepted the exact Contract
 and bound annex and granted Contract §15 Level 1 local implementation authority
-only. Its entry points are:
+only.
 
-- [`controller-handoff.md`](SLICE-V1-004/controller-handoff.md) — the single
-  Level 1 handoff to the Controller: identities, change scope, migration chain,
-  clause–source–test–evidence mapping, commands and results, impact analysis
-  and unmet external obligations;
+### Historical Maker Level 1 checkpoint
+
+The original Maker record for reviewed Head
+`f91d107c53a0cf3964ae43c0e8353e0c244a2b59` is preserved only as historical
+input under `rework-r1/historical-maker/`. Its entry points are:
+
+- [`controller-handoff.md`](SLICE-V1-004/rework-r1/historical-maker/controller-handoff.md);
+- [`acceptance-status.md`](SLICE-V1-004/rework-r1/historical-maker/acceptance-status.md);
+- [`V1_PRODUCTION_ASSURANCE_MATRIX.md`](SLICE-V1-004/rework-r1/historical-maker/V1_PRODUCTION_ASSURANCE_MATRIX.md);
+- [`manifest.json`](SLICE-V1-004/rework-r1/historical-maker/manifest.json), which
+  binds those preserved bytes to the reviewed Head.
+
+Those files retain the Maker's then-current claims for review provenance. They
+are not the current canonical status or Controller entry points.
+
+### Current R1 canonical entry points
+
+- [`controller-handoff.md`](SLICE-V1-004/controller-handoff.md) — the terminal
+  local engineering handoff for independent Controller verification;
 - [`acceptance-status.md`](SLICE-V1-004/acceptance-status.md) and
-  [`S4-AC-STATUS.json`](SLICE-V1-004/S4-AC-STATUS.json) — 36 functional groups,
-  6 non-functional groups and 27 official-API scenarios, each `LOCAL_VERIFIED`,
-  `LOCAL_PARTIAL` or `NOT_RUN`;
-- [`executable-evidence.md`](SLICE-V1-004/executable-evidence.md) — exact
-  commands, isolated environments and results, including what was not run;
-- [`MIGRATION-INVENTORY.json`](SLICE-V1-004/MIGRATION-INVENTORY.json) —
-  V0074–V0079 bytes, lines and SHA-256 over byte-preserved V0001–V0073;
-- [`CONTRACT-NAVIGATION-INDEX.md`](SLICE-V1-004/CONTRACT-NAVIGATION-INDEX.md)
-  — heading index of the accepted Contract.
+  [`S4-AC-STATUS.json`](SLICE-V1-004/S4-AC-STATUS.json) — current
+  evidence-grounded criterion status;
+- [`executable-evidence.md`](SLICE-V1-004/executable-evidence.md) — the canonical
+  command/result summary bound to the verified implementation source;
+- [`finding-progress.json`](SLICE-V1-004/rework-r1/finding-progress.json) and
+  [`rework-r1/executable-evidence.md`](SLICE-V1-004/rework-r1/executable-evidence.md)
+  — all 27 Frozen IDs, correction/evidence/limits mapping and exact rework receipt;
+- [`FINAL_LEVEL1_LOCAL_VERIFICATION.json`](SLICE-V1-004/rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json)
+  — machine-readable terminal commands, counts, hashes and authority boundary;
+- [`MIGRATION-INVENTORY.json`](SLICE-V1-004/MIGRATION-INVENTORY.json) — the
+  reviewed predecessor chain and forward migration inventory;
+- [`API_CROSSCHECK.md`](SLICE-V1-004/rework-r1/API_CROSSCHECK.md) — official
+  snapshot interpretation without live Provider qualification.
 
-No Controller verdict, remote publication, Level 2 environment, Gate EV, Gate E,
-Pilot or real Provider evidence is claimed. Testcontainers integration tests are
-`NOT_RUN` in the Level 1 session; every new write path is disabled and
-structurally unreachable, and `production_write_enabled` remains `false`.
+The current engineering disposition is
+`ENGINEERING_VERIFIED_CONTROLLER_PENDING`, bound to implementation Head
+`16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`, Tree
+`98b9ff7d692eb869fb1f7bf704980259426e09f1`. All 27 findings have terminal local
+engineering evidence; none is represented as Controller-closed. S4-REL, every
+external evidence obligation, default-OFF writes and the prohibitions on remote
+publication, Level 2, real Provider/account use, Gate-EV and Gate-E are unchanged.

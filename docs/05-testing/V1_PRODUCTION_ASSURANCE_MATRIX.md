@@ -175,7 +175,7 @@ full-source verification or a cancelled/stale CI run into a passed gate. The
 central R1 matrices retain unresolved verification explicitly until the actual
 run, artifact and input identity are recorded.
 
-## 2e. SLICE-V1-004 Level 1 local rework in progress
+## 2e. SLICE-V1-004 engineering-verified rework; Controller pending
 
 This factual section supersedes the reviewed Maker implementation claims for
 Slice 004 only. The original matrix is preserved byte-for-byte under
@@ -189,8 +189,13 @@ contract_sha256: 5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc98
 annex_sha256: c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
 reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
 frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
-implementation_state: LEVEL_1_ROOT_CAUSE_REWORK_IN_PROGRESS
-controller_final_closure: NOT_REQUESTED
+implementation_state: ENGINEERING_VERIFIED_CONTROLLER_PENDING
+engineering_finding_status: 27_OF_27
+focused_regression: 113_OF_113_PASS
+verified_source_head: 16eda4bf7e5f561b60d10c19a9a157bd62d21d6e
+verified_source_tree: 98b9ff7d692eb869fb1f7bf704980259426e09f1
+full_verification_matrix: PASS_LOCAL_LAYER_RECEIPTS_WITH_BROWSER_DETERMINISTIC_CLOSURE
+controller_final_closure: PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION
 finding_count: 27
 closed_findings_claimed: 0
 remote_publication: NOT_AUTHORIZED
@@ -200,18 +205,18 @@ evidence_index: docs/07-phase-evidence/SLICE-V1-004/rework-r1/
 
 | Class | Current evidence boundary | Remaining requirement |
 | --- | --- | --- |
-| `SRC` | Exact original Contract/annex/frozen findings and reviewed Head/tree verified; local forward-only rework checkpoints. | Complete 27-root-cause and transitive scope; final exact Head/tree and per-finding traceability. |
-| `UNIT` | Targeted domain, worker, transport and architecture checks are recorded in `INTERIM_VERIFICATION.md`. | Complete relevant backend verification and unchanged coverage controls at final Head. |
-| `RDB` / `SEC_NEG` | Partial signed-HTTP/current-grant, calibration lifecycle, measurement, mapping lineage and provider-timing tests on isolated PostgreSQL. | Full authorization/finance/role/identity negatives, concurrency, normal business journeys and clean/upgrade equivalence. |
-| `REPLAY` / `OPS` | Source-window/sale-revision preservation and command timing controls have targeted tests; no complete operational closure is claimed. | Durable queue/restart/replay, automatic Outcome revisions, dependency/containment and fault-matrix evidence. |
-| `BROWSER` | Original pages are subject to frozen finding 026. | Complete bilingual desktop journeys against a real isolated backend and PostgreSQL; rendered role/failure evidence. |
-| `PERF` / `DR` | No completed Slice 004 capacity or recovery proof is claimed. | Declared workload/resources, observed 5/15/60 latency and recovery drills. |
-| `AUDIT` | Partial audit/current-actor fixes and historical evidence preservation. | Exact final commands, results, input identity, artifact hashes and per-finding closure evidence for independent Controller. |
+| `SRC` | All 27 frozen engineering roots and their identified same-class/transitive consumers have production and necessary test source; V0080–V0123 are forward-only. Contract, annex, Frozen Finding Set and source manifests were rechecked. | Independent Controller verification and any separately authorized transport. |
+| `UNIT` | Focused convergence passed 113/113. The final clean Maven verification declared 1,895 Surefire and 1,363 Failsafe tests with zero failures/errors/skips; JaCoCo line 86.880515%, branch 70.883436%. Frontend Vitest passed 418/418. | No remaining Level 1 engineering test gap is claimed. |
+| `RDB` / `SEC_NEG` | Clean verification exercised signed HTTP/current grants, actual isolated PostgreSQL, migrations, exact facts, formal Outcome, purpose/protection, promotion, Raw/feedback and security-negative paths. | Real identity/provider interoperability remains external. |
+| `REPLAY` / `OPS` | Specialized concurrency, lease, restart, late-revision, queue, atomic Command/loopback/readback, restoration and Task paths passed within clean verification. | Shared/production recovery evidence remains at its existing gate. |
+| `BROWSER` | The complete browser run passed 24/26. Its exact two deterministic failures were diagnosed and then passed together, 2/2, on the verified source. All 26 unique scenarios therefore have a passing receipt; no single all-green full invocation is claimed. | Real Provider/account behavior is not inferred from the synthetic local journey. |
+| `PERF` / `DR` | The clean backend run includes the declared representative local performance and recovery suites; `RepresentativePerformanceIT` ran against 616,000 rows. | Production workload, Yandex PITR and deployed-environment claims remain external. |
+| `AUDIT` | `finding-progress.json`, `executable-evidence.md` and `FINAL_LEVEL1_LOCAL_VERIFICATION.json` map 27/27 roots to corrections, commands, artifact hashes, scans and limits. | Controller retains final finding authority. |
 | `OBJ` / `REAL_EXT` | Only synthetic local facts, protocols and isolated databases are authorized. | Existing external obligations remain assigned to their exact consuming Gate; no local fixture grants Gate EV, Gate E or release authority. |
 
-A targeted pass is not a complete acceptance-group pass. Infrastructure-startup
-failures and stale Maker claims are not promoted to LOCAL_VERIFIED. Final closure
-remains the independent Controller's verification on the eventual exact Head.
+`27_OF_27` is the engineering finding status only. Controller verification remains
+pending on the exact checkpoint, and no local evidence changes external release
+obligations.
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 

@@ -1,6 +1,6 @@
 # SLICE-V1-004 R1 root-cause rework design
 
-Status: IN_PROGRESS. This is an evolvable implementation design, not an amendment or a Controller verdict. The exact starting identities and sole frozen input are in `docs/07-phase-evidence/SLICE-V1-004/rework-r1/TAKEOVER_RECEIPT.md`.
+Status: IMPLEMENTED AND LEVEL 1 LOCALLY VERIFIED — CONTROLLER VERIFICATION PENDING. This is an implementation design, not an amendment or a Controller verdict. The exact starting identities and sole frozen input are in `docs/07-phase-evidence/SLICE-V1-004/rework-r1/TAKEOVER_RECEIPT.md`.
 
 ## Implementation boundaries
 
@@ -881,3 +881,102 @@ is not evidence that those decisions have been implemented. Qualified cross-doma
 dependency HOLD, restoration, staffed coverage, full risk ordering and all-root
 closure remain required. Existing collaboration-link storage has no qualified
 producer and cannot by itself authorize a paused clock.
+
+## Final as-built design state
+
+This section supersedes earlier interim descriptions where they describe these
+paths as unfinished. It records the bounded V0111–V0123 design; verification
+results and Controller disposition remain in the canonical evidence package. No
+design statement enables a worker or Provider write.
+
+The terminal Level 1 evidence binds this as-built source to Head
+`16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`, Tree
+`98b9ff7d692eb869fb1f7bf704980259426e09f1`. Clean backend and frontend
+verification passed; all 26 unique browser scenarios have a passing receipt
+through the recorded complete run plus deterministic closure of its two failed
+tests. All 27 findings are engineering-verified and remain pending independent
+Controller verification. No real Provider or production capability was inferred.
+
+### A — purpose, current protection and atomic consumption
+
+Preparation now freezes the declared purpose, its accepted calibration projection,
+the purpose/use basis and, for promotion work, the exact selected qualified
+simulation. Description correction consumes its bounded correction basis; bounded
+exploration consumes its finite deadline and conditions; formal conversion and
+promotion consume their frozen evaluation plan. Content actions cannot borrow a
+promotion simulation, and promotion actions cannot omit or replace the selected
+simulation after preparation.
+
+The same current-protection service is consumed at review/approval and execution.
+It re-reads exact native scope and calibration, canonical direct and linked profit,
+overall and critical-variant returns, stage-matched unit floor, bounded supply
+scenarios and the selected simulation inputs. A stale purpose basis, protection,
+scope, simulation/context digest or source version remains failed/unknown rather
+than being repaired by a caller value. The existing organization/allowance locks,
+one-use invocation proof and single launch transaction retain the exact execution
+Guardrail row; no second launch or approval authority was added.
+
+### B — qualified measurement and formal Outcome
+
+Measurement intake and calculation retain independent DETAIL and equivalent
+SUMMARY source qualification, including explicit complete zero-purchase evidence,
+actual source/acquisition chronology, effective revisions, frozen description or
+promotion version coverage and fixed source strata. Formal comparison executes the
+exact method and node window frozen in the plan. It derives observed and conservative
+incremental differences from the frozen reference and target measurements, rather
+than accepting a request bound, and independently evaluates critical groups.
+
+Operational/Settled canonical protection, direct/linked accounting comparison,
+critical variants, unit floor and supply evidence feed the formal protection
+vector. V0122 binds the stored Outcome to the exact plan/node/stage/method/reference,
+measurement identities, qualified lower bound and frozen optional futility result.
+A disabled futility method creates no stop requirement; an enabled method can
+trigger only at its frozen node after maturity from its qualified upper bound.
+Later facts create revisions within the original boundary and do not rewrite the
+method or extend the plan.
+
+### C — complete promotion and post-operation lifecycle
+
+V0120 and the owning services distinguish complete current enumeration from known
+local records. A qualifying context has a stable digest and exact declaration,
+terms, applicability window, participation, new-transaction and residual-obligation
+states, plus original authority and current lifecycle evidence when an existing
+commitment is present. V0123 permits `QUALIFIED_CONDITIONAL_ECONOMICS` only for an
+allowed promotion purpose with the exact current complete context, matching
+package/version, six qualified economic evidence groups and all necessary
+conservative scenarios passing.
+
+Promotion engagement adoption requires complete/current/independent enumeration
+and exact original authority/current steward. Exit freezes its reason, authority
+and evidence. Independent proof that new transactions stopped releases only that
+axis; independent proof that residual obligations cleared releases the other.
+Manual reporting separates authorized work, lawful late reporting and deviation,
+and only an exact applied report followed by independent verification progresses
+the Action. Late-association closure binds its Listing, target and subsequent
+verification; a deviation additionally requires later Action/approval/launch.
+Shared-cause isolation and re-enablement use exact current dependency records and
+the existing independent repair/consent chain.
+
+### D — queue, Task, assistance and Console completion
+
+V0121 fans native-scope, mapping, listing facts, sales/return/fee/ad facts, internal
+stock/cost, governed finance and feedback changes into the sole recalculation queue.
+Queue completion records the consumer contract version, measurement identities,
+binding assessments and invalidations with its fenced generation. Periodic full
+review uses the same queue; it does not create a scheduler or a Provider path.
+
+The original Task authority now distinguishes necessary risk and qualified
+opportunity lanes, preserves original clocks and orders actionable work by risk,
+deadline and stable identity. A dependency hold is finite, policy-bounded,
+evidence-bound, cycle-free and pauses only the action stage; expiry/recovery returns
+through the existing queue and retained Task history. Command terminal states and
+Outcome results flow back through existing Task events instead of a parallel case
+system.
+
+The existing AI Gateway supplies only bounded on-demand assistance. Feedback keeps
+source identity, immutable label revisions and corrected themes. Operations review
+projects daily/weekly work from existing facts, and experience application binds a
+source Outcome stage to a current target scope and becomes inapplicable when that
+scope/evidence no longer matches. Existing Chinese/Russian Console surfaces expose
+these journeys under their current read/write permissions. No notification,
+general report, AI, Task or promotion platform was introduced.

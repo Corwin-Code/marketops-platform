@@ -45,3 +45,15 @@ A protection failure at a formal node isolates the listing and every listing
 reached through proven dependencies (`isolation-scope` on the governance API).
 An unmet target is not a failure and does not isolate; it may trigger the
 stop rule at a stop node after maturity.
+
+## Dependency isolation
+
+Dependency records now bind exact source/target Listings, cause/evidence and
+current applicability. Shared isolation expands only through current proven
+dependencies. Re-enablement rechecks that the same shared cause is currently
+repaired and retains the existing independent technical attestation and business
+consent sequence; an unrelated verification, import or later healthy timestamp
+cannot clear the scope. Local failure history remains immutable.
+
+A re-enable neither revives a contained Action nor releases an allowance
+occupation or calls a Provider.

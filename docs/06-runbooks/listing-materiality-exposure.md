@@ -91,9 +91,16 @@ financial amounts. Its database-owned authority snapshot remains unchanged and
 must still match its exact source. Do not add application fields to that snapshot
 or relax the database check to store this supplemental evidence.
 
-These are current read-time checks, not database-atomic fencing against a Metric
-publication racing with consumption. That dependency fencing and the wider
-lifecycle consumers remain part of the unfinished rework. Revenue share alone
-is not certification of full promotion economics, necessary protection,
-allowance or production qualification. All real platform writes remain disabled
-under the local-only authority.
+## Exposure consumption
+
+The source-change and execution chains now consume this projection together with
+the exact purpose, current native scope, accepted calibration and independent
+business protections. Relevant Metric/source revisions enqueue the existing
+recalculation record and invalidate affected prepared bindings; approval and launch
+still re-read current evidence in the owning Guardrail/launch flow. Promotion review
+uses the full commercial declaration and complete promotion-context digest in the
+same ordinary/material route.
+
+Revenue share remains only the exposure axis. It cannot replace profit, return,
+unit-floor, supply, simulation, allowance, manual-lifecycle or Outcome evidence.
+All real platform writes remain disabled under the local-only authority.

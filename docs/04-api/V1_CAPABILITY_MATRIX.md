@@ -166,7 +166,7 @@ declaration that is missing or differs from the declared value.
 | Field | Ozon | Wildberries |
 | --- | --- | --- |
 | Verification state | `UNVERIFIED`, fail-closed | `UNVERIFIED`, fail-closed |
-| Native method/endpoint | not recorded; requires `F-M01`/`F-M02` primary-source and account evidence | not recorded; requires `F-W01`/`F-W02` primary-source and account evidence |
+| Native method/endpoint | not recorded; requires `F-W01`/`F-W02` primary-source and account evidence | not recorded; requires `F-W01`/`F-W02` primary-source and account evidence |
 | Description attribute identity | not recorded; never guessed from documentation samples | not recorded; never guessed from documentation samples |
 | Marking (КИЗ) declaration semantics | not recorded; the command carries the declared value and the gate refuses an undeclared action | same |
 | Length bound | published only by an Owner calibration package (`DESCRIPTION_LENGTH_RULE`); no default | same |
@@ -175,10 +175,15 @@ declaration that is missing or differs from the declared value.
 | Gate authority | `ops.lc_gate_authority` has no Java writer; `production_write_enabled` is `false` | same |
 | Kill switch | `listing-description-write` GLOBAL and CAPABILITY flags must both be `ENABLED`; any scoped `DISABLED` closes the gate | same |
 
-Real evidence for this row is `F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02` and
-`E-04`; none was obtained in the Level 1 local session, and the isolated fixture
-that exercises the gate proves only that everything except the Owner gate
-authority is complete.
+The evidence mapping is exact: Description write capability and Adapter
+qualification consume `F-W01`/`F-W02`; real visit and purchase-attribution
+Metric sources consume `F-M01`/`F-M02`; `F-S01` covers only sample evidence and
+method adaptation for an actual formal Outcome claim.
+
+The local fixture proves only the structured gate and refusal path. It does not
+qualify a live endpoint or method, payload/schema, account permission, native
+result, Readback, Restore or a Gate-EV execution. Those Description capability
+facts remain open under `F-W01`/`F-W02` and `E-04`.
 
 ## 6. Gate-EV authority before write evidence
 

@@ -1,11 +1,5 @@
 # Listing promotion conditional simulation
 
-This is the local rework behavior introduced by V0101. Root 015 remains open
-until canonical source and accepted Policy qualification are connected to the
-actual approval and launch consumers. A computed scenario, a caller's
-`conservative` flag, a source reference, or an inverse quantity is not admission
-or a demand forecast. New simulations return `qualificationState=UNQUALIFIED`.
-
 Use the existing authenticated
 `POST /api/v1/console/listing/actions/candidates/{candidateId}/simulate` route
 with current candidate preparation and view authority. Read results through the
@@ -47,13 +41,35 @@ is undetermined, not claimed feasible.
 
 `conditionalScenariosPassed` is only the arithmetic comparison of all necessary
 conservative scenarios. A known necessary failure dominates an unknown scenario;
-a profitable nonconservative necessary scenario cannot pass. New rows leave
-`demand_gate_passed` null and do not publish a metric calculation run. The row
-stores the complete input/context/scenario/scope snapshot and a database-derived
-SHA-256 of its PostgreSQL JSONB text. Its model version is
+a profitable nonconservative necessary scenario cannot pass. Qualification does
+not publish a metric calculation run. The row stores the complete
+input/context/scenario/scope snapshot and a database-derived SHA-256 of its
+PostgreSQL JSONB text. Its model version is
 `LC_CONDITIONAL_PROFIT_2`. Historical rows retain `LEGACY_UNQUALIFIED` and an
 absent snapshot; historical gate booleans are not upgraded to qualification.
 
-This route grants no marketplace write, activity entry, exit, residual release
-or production enablement. Source qualification and the full governed promotion
-lifecycle are outstanding verification work, not implicit effects of a result.
+## Qualification
+
+A simulation can be `QUALIFIED_CONDITIONAL_ECONOMICS` only for
+`PROMOTION` or `BOUNDED_EXPLORATION` when the exact native affected scope is
+complete, the purpose-specific package/version is current, the promotion context
+has `QUALIFIED_COMPLETE` coverage, the governed fee/revenue/cost/demand evidence
+groups all qualify, and every necessary conservative scenario passes. V0123 binds
+the same simulation ID, input digest, purpose, package and context to the Action.
+
+The complete context enumerates applicable promotion records and preserves each
+record's declaration/terms, applicability interval, participation, new-transaction
+and residual-obligation states and, for an existing commitment, original authority
+and current lifecycle evidence. `KNOWN_RECORDS_ONLY`, an empty local list or an
+engagement flag cannot qualify coexistence. A source/context/package/scope change
+invalidates current use rather than rewriting the snapshot.
+
+The monetary sources remain the existing governed internal finance intake and
+price-economics profile, not values inferred from provider API pages. Fixed fee,
+buyer payment, seller revenue, explicit compensation, named fee bases and complete
+period/member costs are matched to exact identity, terms, currency, period,
+provenance and knowledge time. Missing is not zero; incompatible or late-known
+facts remain unqualified.
+
+Qualification is not a Provider call, demand forecast, activity mutation, exit
+proof, residual release, Gate-EV/Gate-E or production enablement.

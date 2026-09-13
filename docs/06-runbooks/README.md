@@ -32,9 +32,15 @@
 | `advertising-task-history.md` | Reading what actually happened to a piece of work, and what a page view is not |
 | `advertising-brief-and-review.md` | A brief that is missing, changed since you read it, or reporting a figure you doubt |
 | `listing-description-command-resolution.md` | A description change that will not progress: closed gate, unknown result, mismatch or an impossible restore |
+| `listing-action-purpose.md` | Choosing and preserving the exact formal, correction, bounded-exploration or promotion purpose and use basis |
+| `listing-calibration-continuation.md` | Replacing accepted Listing calibration while retaining only unchanged consumed dependencies |
 | `listing-launch-and-allowance.md` | An approved listing action that did not launch, and releasing an allowance with evidence |
 | `listing-containment-and-reenablement.md` | Stopping listing work at the right scope and restarting it with two people |
 | `listing-manual-path.md` | Applying an approved description by hand, independent verification and promotion engagements |
+| `listing-materiality-exposure.md` | Reviewing structured content meaning and canonical affected-scope exposure without caller estimates |
+| `listing-promotion-simulation.md` | Qualifying a bounded promotion simulation from governed exact-period economic inputs |
+| `listing-recalculation.md` | Operating the fenced Listing recalculation queue and reading exact consumer receipts |
+| `listing-responsibility-clocks.md` | Reading original Listing Task clocks, acknowledging responsibility and using finite holds/deferrals |
 
 Still required before V1 production enablement: credential expiry, schema
 change, inventory drift, finance mismatch and personal-data incident

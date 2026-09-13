@@ -1,7 +1,5 @@
 # Listing native scope evidence
 
-Local rework implementation; final Controller closure is pending.
-
 An observed listing with mapped variants is not proof that all native members
 have been acquired. In Listing Health, an authorized manual verifier records the
 actual source boundary, native listing key, exact native member keys, source

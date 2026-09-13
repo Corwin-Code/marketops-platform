@@ -1,424 +1,846 @@
 {
-  "status": "REWORK_IN_PROGRESS",
+  "schema": "marketops.slice-rework-finding-progress.v2",
+  "slice": "SLICE-V1-004",
+  "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
   "source_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
   "source_tree": "b04fc98b9a3e156cc66e00fe878569306972c638",
+  "work_in_progress_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
+  "work_in_progress_head_tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1",
+  "final_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
+  "final_tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1",
+  "contract_sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
+  "annex_sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d",
   "frozen_set_sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
+  "finding_count": 27,
+  "controller_verdict": "PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+  "closed_findings_claimed": 0,
+  "verification": {
+    "combined_regression": {
+      "status": "PASS",
+      "finished_at": "2026-09-13T22:40:00+08:00",
+      "command": "./mvnw -B -ntp -Dtest=ListingSimulationInputEvidenceTest,ListingReworkAuthorizationIT test",
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "build": "SUCCESS",
+      "composition": {
+        "ListingReworkAuthorizationIT": 104,
+        "ListingSimulationInputEvidenceTest": 9
+      }
+    },
+    "full_matrix": {
+      "status": "PASS_WITH_BROWSER_DETERMINISTIC_CLOSURE",
+      "backend": {
+        "command": "./mvnw -B -ntp clean verify",
+        "exit_code": 0,
+        "build": "SUCCESS",
+        "surefire_declared": 1895,
+        "failsafe_declared": 1363,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "jacoco_line_pct": 86.880515,
+        "jacoco_branch_pct": 70.883436
+      },
+      "frontend": {
+        "runtime": "Node 24.19.0",
+        "test_files": 29,
+        "tests": 418,
+        "passed": 418,
+        "failures": 0,
+        "pending": 0,
+        "lint": "PASS",
+        "format": "PASS",
+        "typecheck": "PASS",
+        "build": "PASS",
+        "bundle": "PASS"
+      },
+      "browser": {
+        "result": "PASS_BY_FULL_RUN_PLUS_DETERMINISTIC_FAILED_TEST_CLOSURE",
+        "full_run": {
+          "source_head": "fe98ecc82acbde02ade379b9944a3221f49c6ff2",
+          "passed": 24,
+          "failed": 2
+        },
+        "targeted_closure": {
+          "source_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
+          "passed": 2,
+          "failed": 0,
+          "tests": [
+            "health-shell.spec.ts",
+            "listing-operations-journey.spec.ts"
+          ]
+        },
+        "distinct_scenarios_with_pass_receipt": 26,
+        "receipt": "build/slice-v1-004-final-evidence/browser-summary.json",
+        "single_full_green_invocation_claimed": false
+      },
+      "canonical_document_validation": {
+        "status": "PASS",
+        "commands": [
+          "python3 scripts/validate_governance.py",
+          "python3 scripts/validate_production_readiness.py",
+          "git diff --check"
+        ],
+        "application_or_browser_suites_rerun": false
+      }
+    },
+    "final_git_checkpoint": {
+      "status": "VERIFIED_SOURCE_CHECKPOINT_RECORDED_EVIDENCE_CHECKPOINT_REPORTED_OUT_OF_BAND",
+      "head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
+      "tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1"
+    }
+  },
   "findings": [
     {
       "id": "S4-DR-R1-001",
+      "severity": "BLOCKER",
       "title": "Outcome写入口遗漏业务授权与对象边界，读权限检查不能覆盖写入口",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Added independent current business scope before Outcome writes; foreign measurement listing rejected. Exact frozen measurement window/stage binding remains open.",
-        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "Outcome 写入口在写入前消费当前 actor、组织、Store 和评价用途权限，并把 measurement 绑定到准确 Action、Listing、冻结节点窗口和阶段；拒绝发生在 calculation/result/Task 写入之前。",
+      "production_evidence": [
+        "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+        "V0089__retain_listing_node_evaluation_qualification.sql",
+        "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+        "EvaluationService",
+        "ListingActionService"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "Checkpoint-7: 104 unit/architecture, 24 signed HTTP/database including concurrent revision chain, and 8 schema/application-role tests passed. An earlier unexplained preparation 403 is retained for continued investigation. No closure claim."
+        "ListingReworkAuthorizationIT#unauthenticatedHasNoBusinessEffects",
+        "ListingReworkAuthorizationIT#viewGrantCannotWriteOutcome",
+        "ListingReworkAuthorizationIT#readOnlyRoleCannotEvaluateEvenWithMatchingGrant",
+        "ListingReworkAuthorizationIT#revokedGrantIsCheckedOnTheNextSignedRequest",
+        "ListingReworkAuthorizationIT#anotherOrganizationCannotEvaluateKnownAction",
+        "ListingReworkAuthorizationIT#anotherStoreGrantCannotEvaluateThisAction",
+        "ListingReworkAuthorizationIT#foreignListingMeasurementCannotWriteOutcomeOrReturnEvaluation",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 Console 写路由、EvaluationService 直达入口、measurement 读取及同语句授权到期；跨对象和拒绝后的 calculation/result/Task 计数均纳入同类反例。",
+      "limits": [
+        "Controller 尚未独立重放全部攻击场景。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-002",
+      "severity": "MAJOR",
       "title": "最小授权投影未落实到模拟明细与已发人工包的当前访问",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Added finance evidence projection over the stored affected-product scope, current grant checks, and current-store filtering of executor packets. Packet route and all transitive consumers still require verification.",
-        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
-        "Checkpoint 19: existing promotion list/detail and entry/adoption/exit/release responses all apply current financial projection; raw public actorless detail read removed. Missing historical adoption product scope requires organization-wide financial coverage, not assumed current mapping.",
-        "Checkpoint 21: new full simulation input/context/source snapshot and conditional comparison use the existing current Store/every-recorded-product financial projection; revocation masks both fields.",
-        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "模拟、Action 详情和人工包的受限经济字段统一使用当前 Store 与完整受影响 Product Variant 的财务/Data Scope；列表、按 ID 读取和历史执行者视图均在每次请求重检，撤权后只保留审计身份与摘要。",
+      "production_evidence": [
+        "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+        "ListingActionService",
+        "EvaluationService",
+        "ManualPathService",
+        "ListingActionConsoleController",
+        "ListingManualConsoleController"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
-        "checkpoint-19-test-receipts.json: 43 signed HTTP/database, 76 architecture and 27 frontend checks pass; list/detail/mutation masking, exact authorized contents, product/org financial revocation and ordinary view revocation are exercised. Lint/build pass. No full-root closure.",
-        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
+        "ListingReworkAuthorizationIT#financialProjectionRequiresEveryAffectedProductScopeAndRevokesImmediately",
+        "ListingReworkAuthorizationIT#issuedManualPacketRequiresCurrentExecutorStoreViewForListAndDetail",
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 candidate/simulation/action/packet 的 list/detail 两种读取以及执行者历史列表；受限成本、收入、费用和条款使用同一当前投影。",
+      "limits": [
+        "没有新增 Slice 专用导出；现有合格导出控制不在本次扩建。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-003",
+      "severity": "MAJOR",
       "title": "两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Added exact source-window completeness receipt, explicit summary retention period, bound equivalence profile and full input lineage. Independent summary, complete zero purchase and missing-window HTTP/database checks pass. Correction/replay and full source-path closure remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格；完整零购买保留为真实零，缺窗口或零分母状态不被改写为零比例，矛盾 summary 原样留存并拒绝资格。",
+      "production_evidence": [
+        "V0081__record_listing_measurement_coverage_and_lineage.sql",
+        "ConversionMeasurementService",
+        "MeasurementEvidenceRepository"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+        "ListingReworkAuthorizationIT#completeDetailWindowWithZeroPurchasesIsMeasurableButMissingCoverageIsNot",
+        "ListingReworkAuthorizationIT#officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow",
+        "ListingReworkAuthorizationIT#contradictorySummaryRetainsRawCountsAndNeverClampsTheNumerator",
+        "ListingReworkAuthorizationIT#zeroDenominatorIsUndefinedOnlyWhenTheWholeEmptySourceWindowIsComplete",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描两条路径对购买明细存在性的隐式依赖、summaryKind/profile/window 错配、超界分子和空来源窗口；两条路径不互相借证。",
+      "limits": [
+        "只证明本地来源资格语义；真实平台访问/购买归因与指标来源资格仍受 F-M01/F-M02。F-S01 仅覆盖样本证据与方法适配，不提供或替代真实指标来源。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-004",
+      "severity": "MAJOR",
       "title": "版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Transition days consumed by metric inputs with source timezone, prior display carried across window, and as-of linked sale correction chain retained. Full target-version coverage, fixed-structure comparison and automatic Outcome revisions remain open.",
-        "Actual detail-measurement lineage now retains both source channels and unknown visit counts over the exact filtered cohort; scoped reader and late sale-reversal evidence added. Fixed comparison plan/method execution still open.",
-        "Checkpoint 8 retains as-of display snapshots including unknown reports; exact manual verification binds listing/target/operation/acquisition time and independent observer provenance. Full interval coverage and downstream propagation remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "实际 measurement 消费冻结版本覆盖、过渡日、有效 sale 修订/as-of 链和同一 cohort 的固定广告/自然流量结构；迟到退货/撤销创建新 measurement/Outcome revision 并保留原输入。",
+      "production_evidence": [
+        "V0081__record_listing_measurement_coverage_and_lineage.sql",
+        "V0087__bind_listing_measurement_lineage_identity.sql",
+        "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+        "ConversionMeasurementService",
+        "RecalculationService",
+        "VersionWindow",
+        "ExactTrafficComparison"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "Checkpoint-5 signed HTTP/database subset 21 passed; original/revised source strata, immutable history, exact lineage coverage and foreign-listing read refusal covered.",
-        "Checkpoint-8 receipts: 91 unit/architecture, 26 signed HTTP/database including normal packet/observation/verification/read, and 8 independent PostgreSQL application-role manual evidence tests passed. No closure claim."
+        "ListingReworkAuthorizationIT#lineageCannotBorrowCoverageFromAnotherWindowOrDropAQualifiedReceipt",
+        "ListingReworkAuthorizationIT#frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts",
+        "ListingReworkAuthorizationIT#lateSaleReversalCreatesANewMeasurementAndPreservesTheOriginalInputs",
+        "ListingReworkAuthorizationIT#displaySnapshotsRetainUnknownReportsAndRespectOriginalAcquisitionTime",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 source/acquisition/processing 三种时间、跨时区窗口、显示版本、迟到修订和重算重放；过渡排除只改变效果口径，不删除保护事实。",
+      "limits": [
+        "真实平台迟到事件时限仍未调用。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-005",
+      "severity": "BLOCKER",
       "title": "正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Legacy HTTP numeric assertions no longer manufacture formal MET or protection PASS/FAIL. Canonical Metric exact-period read added; qualified positive Outcome pipeline and full protections remain open.",
-        "Added same-authority canonical scope Metric projection with compatible whole-profit sum, weighted return counts, scoped identity checks and original confidence/provenance. Formal protection consumer still open.",
-        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "正式 Outcome 从冻结范围的合格固定流量增量保守界、独立保护和关键群组/Variant 自身基准计算；调用者数字、绝对率、缺失 bound 或伪阶段不再生成 MET/PASS。",
+      "production_evidence": [
+        "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+        "EvaluationService",
+        "ListingOutcomeMetricEvidence",
+        "ListingOutcomeSupplyEvidence",
+        "CanonicalAccountingComparison"
       ],
       "executed_evidence": [
-        "Checkpoint-4 targeted receipts: 16 actual Metric Engine/database tests and 20 signed HTTP/database tests passed, including caller-number forgery. Positive canonical Outcome and full regression still required.",
-        "Checkpoint-5 actual Metric Engine subset 17 passed including available-to-unavailable scope profit revision and preserved historical projection. Unit/architecture subset 91 passed.",
-        "Checkpoint-7: 104 unit/architecture, 24 signed HTTP/database including concurrent revision chain, and 8 schema/application-role tests passed. An earlier unexplained preparation 403 is retained for continued investigation. No closure claim."
+        "ListingReworkAuthorizationIT#callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio",
+        "ListingReworkAuthorizationIT#frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts",
+        "ListingReworkAuthorizationIT#structuralHealthCannotAuthorizeLaunchWithoutBusinessProtectionEvidence",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 OPERATIONAL/SETTLED、主目标、直接/关联利润、整体/关键 Variant 退货、供给和 critical groups；已知 FAIL 与 UNKNOWN 分轴保留。",
+      "limits": [
+        "合成 Outcome 证明计算与拒绝控制，不证明真实业务改善。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-006",
+      "severity": "MAJOR",
       "title": "评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Historical evaluation now resolves the exact accepted package at plan freeze, including original activation and retirement times. Node schedule, optional stop/tail and independent futility remain open.",
-        "Full structured methods and critical group rules retained; explicit empty stop/zero tail permitted, missing stop remains unresolved. NOT_MET is no longer an automatic stop. Real qualified upper-bound/node schedule integration remains open.",
-        "Normal DRAFT preparation now freezes the plan before review. V0088 binds review and approval to its exact digest/chronology and rejects legacy unbound approval reuse. Full frozen definition is available on read; complete windows/method/node execution remain open.",
-        "Checkpoint 7: executable frozen finite-node method and exact window/maturity/deadline admission; retained qualification gaps, serialized revisions, and UNKNOWN Task stage for unproved Outcome. Formal control/coverage/protection integration remains open.",
-        "Checkpoint 16: controlled application +60s clock reproduces plan freeze refusal; persisted listing preparation/plan/review/approval/binding uses one database clock. The original strict chronology constraints are unchanged."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "评价在 review 前冻结 plan、method、node/window、critical groups 和可选 futility；历史 Outcome 继续使用原包/原边界，迟到事实只追加同范围 revision，NOT_MET 不再反推停止资格。",
+      "production_evidence": [
+        "V0086__preserve_frozen_listing_evaluation_semantics.sql",
+        "V0088__bind_listing_review_and_approval_to_frozen_plan.sql",
+        "V0089__retain_listing_node_evaluation_qualification.sql",
+        "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+        "FrozenComparisonMethod",
+        "FrozenNodeWindow",
+        "FrozenFutilityRule"
       ],
       "executed_evidence": [
-        "ListingReworkAuthorizationIT historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion passed; final integration remains pending.",
-        "Protection/calibration unit and architecture subset: 88 passed before the latest HTTP authority removal. ListingConversionSchemaIT: 8 passed including mandatory protection dimensions and known-failure precedence. Partial evidence only.",
-        "Checkpoint-4: 91 unit/architecture tests including positive explicit no-stop/zero-tail freeze and exact package-version refusal. SQL schema subset 8 passed. No final closure claim.",
-        "Checkpoint-6: 93 unit/architecture, 23 signed HTTP/database, 7 launch and 7 description Gate tests passed. Normal preparation and legacy plan-binding refusal covered; no final closure claim.",
-        "Checkpoint-7: 104 unit/architecture, 24 signed HTTP/database including concurrent revision chain, and 8 schema/application-role tests passed. An earlier unexplained preparation 403 is retained for continued investigation. No closure claim."
+        "ListingReworkAuthorizationIT#normalPreparationFreezesTheEvaluationPlanBeforeAnyReviewOrApproval",
+        "ListingReworkAuthorizationIT#approvalBindingKeepsTheReviewedPlanAndLegacyUnboundApprovalCannotBorrowIt",
+        "ListingReworkAuthorizationIT#frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts",
+        "ListingReworkAuthorizationIT#historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描提前/越界节点、无 stop/zero tail 合法计划、futility 与成功条件取反、v1/v2 校准切换和晚事实修订。",
+      "limits": [
+        "计划方法仅实现已接受的有限方法，不新增统计方法或默认阈值。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-007",
+      "severity": "BLOCKER",
       "title": "启动Gate用结构性Listing Health代替利润、退货、供给与用途保障",
-      "status": "OPEN",
-      "implementation": [
-        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open.",
-        "Checkpoint 30: existing supply-owner predicates reject future stock/inbound verification and nonpositive freshness bounds; no new supply engine or policy. Listing-purpose and upside-demand safety connection remains OPEN."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "利润、关联利润、退货、单位底线、需求与供给的当前权威按声明用途进入 preview、approval 和 execution 的同一 Guardrail；硬失败/未知不能由结构 Health 抵消，纠错、有界探索和正式改善保留各自有限准入。",
+      "production_evidence": [
+        "V0113__bind_current_listing_business_protection.sql",
+        "V0118__bind_launch_plan_to_declared_listing_purpose.sql",
+        "V0123__bind_qualified_promotion_simulation_to_action.sql",
+        "ListingBusinessProtectionService",
+        "GuardrailService",
+        "ApprovalService",
+        "ListingActionLaunchService"
       ],
       "executed_evidence": [
-        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim.",
-        "checkpoint-30-test-receipts.json: 5 failures in 8 pre-fix probes; final 118 availability unit, 76 architecture, 12 PostgreSQL flow cases pass. Fixed runtime-relative policy/mapping dates in a historical flow fixture after 7 cascading failures; no production relaxation. No root closure claim."
+        "ListingReworkAuthorizationIT#structuralHealthCannotAuthorizeLaunchWithoutBusinessProtectionEvidence",
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "ListingReworkAuthorizationIT#declaredNonformalApprovalBindsReviewedUseAndCannotOutliveIt",
+        "ListingReworkAuthorizationIT#currentAccountingReferenceCannotAcquireAuthorityWithInvalidScopeOrPeriod",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描三种 purpose 的必需类别、批准后 source 变化、启动锁等待期间授权到期、利润/退货/库存/需求各自失效和零业务副作用。",
+      "limits": [
+        "只消费既有财务、Metric、供给和 Policy 权威；未证输入保持拒绝。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-008",
+      "severity": "BLOCKER",
       "title": "普通/重大分类用字符差额和发起人暴露数字替代内容含义与真实经营暴露",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 26: actual complete affected-member/store same-window canonical retained-sales exposure replaces caller exposureShare. Accepted explicit window/verification/period-age rules, confirmed values, full membership, consistent currency/definition and exact threshold cross multiplication; immutable financial snapshot stays out of ordinary Action response. Valid calibration may coexist with missing current exposure, which still cannot pass independent review or leave DRAFT. Content/commercial semantic review and current classification at approval/launch remain OPEN.",
-        "Checkpoint 27: removes character-ratio and blanket-promotion meaning. Finite accepted ordinary/material catalogs and exact structured independent review supply meaning; review rechecks current canonical exposure and exact scope/text/calibration. Unknown/incomplete/unbound meaning cannot advance. Immutable axes and structured binding proof; normal Ops Lead/Owner routes tested. Current-evidence recheck at approval/launch still open.",
-        "Checkpoint 28: shared Guardrail rechecked decision scope uses the same Metric exposure implementation as preparation/review, requires current complete exact scope and structured meaning, rejects unknown or changed exposure axes at approval/launch and permits current same-axis evidence. Frozen review/route stay immutable. Supplemental proof retained in detail/input_digest; exact database authority_snapshot preserved. Atomic dependency fencing and full lifecycle still pending."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "内容重大性由有限结构化含义条件和 canonical 实际暴露独立决定；删除字符差额与请求 exposureShare 的权威性，任一重大轴走 Owner 路线，未知留在 DRAFT，并在批准/启动重检当前暴露。",
+      "production_evidence": [
+        "V0106__retain_canonical_listing_materiality_exposure.sql",
+        "V0107__bind_listing_classification_to_structured_meaning_review.sql",
+        "ListingActionDecisionService",
+        "GuardrailService",
+        "ListingMeaningReview"
       ],
       "executed_evidence": [
-        "checkpoint-26-test-receipts.json: 52 signed HTTP/database, 114 launch/domain/architecture, 10 schema/role, 1 historical upgrade and 32 frontend tests, lint/build PASS. Tampered 0/1 cannot alter actual material exposure; fake high input cannot upgrade known small exposure; missing member cannot borrow zero or be attested away.",
-        "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
-        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure."
+        "ListingReworkAuthorizationIT#requestExposureCannotLowerOrRaiseCanonicalClassification",
+        "ListingReworkAuthorizationIT#missingMemberExposureCannotBorrowTheRequestsZero",
+        "ListingReworkAuthorizationIT#fabricatedHighExposureCannotUpgradeAKnownSmallExposure",
+        "ListingReworkAuthorizationIT#acceptedMeaningConditionsDetermineRouteWithTheSameSmallExposure",
+        "ListingReworkAuthorizationIT#incompleteOrUnboundMeaningCannotAdvanceDraft",
+        "ListingReworkAuthorizationIT#changedOrUnknownExposureCannotConsumeAnOrdinaryReviewAtApproval",
+        "ListingReworkAuthorizationIT#launchRechecksCurrentExposureThroughTheSharedExecutionGuardrail",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描短文本语义变化、完整成员暴露、普通/重大内容与促销、专业 reviewer/Owner 路线，以及 review 后 exposure 改变。",
+      "limits": [
+        "有限条件目录由治理校准提供；没有建设 NLP 或让 AI 作分类决定。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-009",
+      "severity": "MAJOR",
       "title": "正文误用512字符元数据校验并strip，合法长文被拒绝且准确文本被改写",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Exact long Unicode description intake replaces metadata length handling; invalid Unicode and secret-like content rejected. Category/native contract validation still open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "正文使用 code-point 有界的准确文本类型，保留首尾空白、换行、多字节值和 digest；非法 Unicode/NUL、超限及敏感内容继续拒绝，管理回读和恢复使用准确前值。",
+      "production_evidence": [
+        "DescriptionText",
+        "ListingFactIntakeService",
+        "ListingDescriptionResolutionService"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence."
+        "ListingReworkAuthorizationIT#descriptionHttpIntakePreservesLongTextAndItsDigest",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描候选 intake、观察值、Command payload、readback、Console 展示及 restoration，不再调用 512 字符 metadata sanitizer 或 strip。",
+      "limits": [
+        "平台/类别最大长度只能来自合格 profile；文档快照不自动启用 Provider 写。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-010",
+      "severity": "MAJOR",
       "title": "完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "V0083 captures immutable identity lineage and includes mapping target, effective interval/version, product status and conflicts in the affected-set digest. Binding checks now detect dependent mapping/member changes; original snapshots remain intact. Native source-membership completeness proof is still open.",
-        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 28 diagnostic: one original native-scope complete-capture test returned INCOMPLETE at line 285 without detailed reasons. Added resolution failure output; targeted and two full subsequent runs passed. Cause remains unconfirmed and must not be waived based on rerun success.",
-        "Checkpoint 29: deterministically reproduced native intake/consumer clock mismatch at -120/+120s; valid source rejection and invisible future-recorded COMPLETE were repaired by database recording chronology. Source observedAt remains exact and future source is rejected without writes. Original intermittent incident lacks measured offset, so exact attribution is not claimed. Official native producer/full root closure remain pending."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "原生枚举的 completeness、分页/时间资格与实际映射 ID/version/effective interval 一同进入 affected-set snapshot/digest；成员或映射变动只失效依赖它的 Action，局部观察不冒充完整范围。",
+      "production_evidence": [
+        "V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+        "V0102__bind_listing_scope_to_native_enumeration_evidence.sql",
+        "ListingFactIntakeService",
+        "ListingHealthService",
+        "ListingActionService"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
-        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure.",
-        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure."
+        "ListingReworkAuthorizationIT#nativeScopeNeedsCompleteEnumerationAndUnchangedRefreshPreservesTheDependency",
+        "ListingReworkAuthorizationIT#nativeScopeRecordingUsesDatabaseChronologyDespiteApplicationClockOffset",
+        "ListingReworkAuthorizationIT#reacquiringOldNativeEnumerationCannotRenewItsSourceFreshness",
+        "ListingReworkAuthorizationIT#mappingRebindingInvalidatesOnlyDependentActionsAndKeepsOriginalLineage",
+        "ListingReworkAuthorizationIT#mappingVersionAndNativeMembershipChangesAreVisibleToBindingChecks",
+        "ListingReworkAuthorizationIT#identityDigestDoesNotDependOnSessionTimezone",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描空/partial/冲突 scope、旧 observation 重新获取、mapping rebind、成员增删、无关 Listing 及 session timezone。",
+      "limits": [
+        "本地测试只证明完整性 receipt 的生产与消费；不声称供应商实时全集已取得。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-011",
+      "severity": "MAJOR",
       "title": "Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "V0082 adds sealed prepare/validate/accept/activate Policy operations, current role/scope checks, independent Owner acceptance, exact digests, lifecycle events, purpose-specific resolution and explicit replacement identity. App role remains read-only on calibration tables.",
-        "The existing signed professional/independent Owner calibration lifecycle now also exercises explicit ALL_APPLICABLE allowance scope composition without modifying an accepted package.",
-        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open.",
-        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open.",
-        "Checkpoint 27: new CONTENT category values are typed finite condition catalogs under the existing validation/acceptance lifecycle. Historical numeric values remain byte-identical and cannot qualify meaning. Other accepted consumers remain separate. Purpose/complete consumer convergence still open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "校准复用 Policy/Approval 边界完成 prepare→专业 validate→独立 Owner accept→activate，校验完整组合与 exact digest；消费者按 scope/purpose/实际依赖延续，历史评价保留冻结包。",
+      "production_evidence": [
+        "V0082__govern_listing_calibration_acceptance_and_activation.sql",
+        "V0103__recheck_exact_listing_calibration_dependencies.sql",
+        "V0104__validate_calibration_combinations_for_their_declared_purpose.sql",
+        "V0111__bind_declared_listing_action_purpose.sql",
+        "V0112__freeze_listing_purpose_use_basis_before_review.sql",
+        "CalibrationService",
+        "CalibrationRepository"
       ],
       "executed_evidence": [
-        "Signed HTTP plus real PostgreSQL completed draft, professional validation, independent Owner acceptance and activation; self-acceptance, missing components and incorrect digest refused. Replacement/concurrency/expiry/dependency-continuation and full Console remain pending.",
-        "Checkpoint 17 signed HTTP/database regression passes 40 tests, including exact policy composition acceptance and active resolution. Purpose-dependent consumers and continuation remain open.",
-        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim.",
-        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim.",
-        "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence."
+        "ListingReworkAuthorizationIT#calibrationLifecycleUsesProfessionalAndIndependentOwnerThroughSignedHttp",
+        "ListingReworkAuthorizationIT#historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion",
+        "ListingReworkAuthorizationIT#governedReplacementContinuesUnchangedDependenciesAndStopsChangedOnes",
+        "ListingReworkAuthorizationIT#correctionCalibrationDoesNotRequireGrowthClaimsButRetainsSafetyRules",
+        "ListingReworkAuthorizationIT#calibrationValidationRejectsMissingComponentsAndIncorrectExactDigest",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描自批、缺证/错 digest、冲突/到期/替换、三种 purpose 的必需组合、旧 plan 与未执行 binding；应用角色仍不能直接写校准表。",
+      "limits": [
+        "所有校准值为合成值；没有生成或激活真实生产 Policy。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-012",
+      "severity": "BLOCKER",
       "title": "累计额度未绑定完整轴集合和准确需求，换版本可能把现存承担从余额中清零",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "V0098 makes preview and acquisition share one complete accepted-axis projection, with explicit scope composition, stable organization locking, cross-configuration canonical outstanding identities, retained Unknown and immutable demand evidence. Request numbers no longer set occupation. Qualified revenue/category demand, accepted limit-publication linkage and preexisting promotion obligations remain open.",
-        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "累计额度按持续 obligation identity 和所有适用轴跨配置版本计算；需求来自绑定动作/促销上下文的 canonical demand，锁内原子取得，预算不足保留批准且不产生 launch/Command/occupation。",
+      "production_evidence": [
+        "V0098__accumulate_listing_allowance_across_configuration_versions.sql",
+        "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+        "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+        "ListingActionLaunchService",
+        "ManualPathService"
       ],
       "executed_evidence": [
-        "Checkpoint 17: real PostgreSQL 100/70/70 manual/API race admits only one; configuration replacement retains historical Unknown even with stored zero; missing axis, malformed policy, reserve consumption and implicit scope priority refuse. Signed HTTP preview and independent acceptance of explicit scope composition are exercised. No closure claim.",
-        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim."
+        "ListingReworkAuthorizationIT#signedAllowancePreviewUsesCanonicalDemandAndShowsMissingRequiredAxes",
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "Final clean matrix: ListingActionLaunchIT#racingLaunchesAreSerialised",
+        "Final clean matrix: ListingActionLaunchIT#configurationReplacementRetainsOldUnknownOccupationAndPreviewMatchesLaunch",
+        "Final clean matrix: ListingActionLaunchIT#missingRequiredAxisDoesNotDisappearFromLaunchRequirements",
+        "Final clean matrix: ListingActionLaunchIT#callerAmountsCannotSetOrLowerCanonicalOccupation",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描版本替换、缺轴、层级 composition、手工/API/存量 promotion 共用余额、caller 数值篡改和并发锁。",
+      "limits": [
+        "Q085-B 的启动时占用边界保持不变；没有引入提前预占。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-013",
+      "severity": "BLOCKER",
       "title": "占用释放只验证有一条观察/旧值匹配，不能证明已经停止或不可能应用",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "V0098 revokes arbitrary occupation-state/number mutation and removes generic observation, MATCHED_PRIOR and self-reported promotion-state release. Release consumes an exact actor/org-bound proof and records purpose/identity evidence. Positive NOT_APPLIED release requires a terminal no-submit command with no mutation attempt or linked promotion. Independent STOP_NEW and historical-obligation clearing remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "促销承担分 NEW_TRANSACTIONS_STOPPED 与 OBLIGATIONS_CLEARED 两阶段、逐轴释放；证据绑定 exact engagement/purpose、独立 observer 和当前事实，未知或无关证据继续占用，应用角色无任意 state/amount 写权。",
+      "production_evidence": [
+        "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+        "ManualPathService",
+        "GovernanceService"
       ],
       "executed_evidence": [
-        "Checkpoint 17: ordinary still-active display evidence, no-submit inference from a pending command, direct zero overwrite, borrowed actor proof and wrong evidence are refused; exact never-submitted termination releases only the selected occupation. Positive qualified stop/obligation lifecycle and async old-value end-to-end negatives remain pending."
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "Final clean matrix: PromotionClosureIT#adoptedActivityNeedsExactAuthorityAndReleasesNewWorkBeforeResidualObligations",
+        "Final clean matrix: ListingActionLaunchIT#releaseRequiresExactPurposeQualifiedEvidence",
+        "Final clean matrix: ListingActionLaunchIT#releaseCannotBorrowAnotherActorsProofOrAnotherActionsEvidence",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描异步旧值、跨动作 observation、同一 actor、自证、错误轴、0 改写及 residual 未清时的全释放。",
+      "limits": [
+        "完整释放矩阵已在 clean verify 中通过。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-014",
+      "severity": "BLOCKER",
       "title": "促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
-        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "准确 promotion 条款、费用、并存背景、退出条件、完整集合与承担在 review 前冻结并绑定 simulation/recommendation/action/approval/launch；存量先登记实际承担，退出消费原授权并分阶段核验。",
+      "production_evidence": [
+        "V0099__freeze_promotion_declarations_before_review.sql",
+        "V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+        "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+        "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+        "V0123__bind_qualified_promotion_simulation_to_action.sql",
+        "ManualPathService"
       ],
       "executed_evidence": [
-        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
-        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "ListingReworkAuthorizationIT#adoptedPromotionWithoutHistoricalProductScopeRequiresOrganizationFinancialDisclosure",
+        "Final clean matrix: PromotionClosureIT#currentContextQualifiesOnlyTheLatestIndependentCompleteEnumeration",
+        "Final clean matrix: PromotionClosureIT#adoptedActivityNeedsExactAuthorityAndReleasesNewWorkBeforeResidualObligations",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描两类 promotion、条款改写、entry/post-entry 不一致、已知但不完整活动、adoption、退出授权和 residual。",
+      "limits": [
+        "KNOWN_RECORDS_ONLY 明确保留，不能证明 Provider 活动清单完整。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-015",
+      "severity": "MAJOR",
       "title": "促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效",
-      "status": "OPEN",
-      "implementation": [
-        "Checkpoint 21: conditional simulator reuses canonical Money contribution-profit arithmetic, selects greatest applicable fee floor, retains fixed commitment and explicit canonical expense families/currency, and keeps missing fees unknown. Conservative arithmetic comparison is separate from unqualified admission; full snapshot and declared period replace lossy toString/fabricated D30 evidence. Complete source/Policy, payer/timing/coexistence and actual approval consumers remain open.",
-        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "模拟复用统一经济口径并绑定 exact activity/period/currency：固定费只扣一次，阶梯按适用 floor，buyer payment/seller revenue/compensation 分离，完整成员成本、治理需求场景、并存背景与利润基准共同决定资格。",
+      "production_evidence": [
+        "V0101__retain_conditional_promotion_simulation_basis.sql",
+        "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+        "V0123__bind_qualified_promotion_simulation_to_action.sql",
+        "PromotionSimulator",
+        "ListingSimulationInputEvidence",
+        "PriceEconomicsCalculator",
+        "PriceEconomicsRepository"
       ],
       "executed_evidence": [
-        "checkpoint-21-test-receipts.json: 44 signed HTTP/database, 100 domain/metric/architecture, 1 historical V90-to-V101 upgrade and 9 schema/role tests pass. P04/P05, fixed 600, explicit expenses, unknown fees, currency/discount/quantity validation, same Money rounding, snapshot hash, no published metric, database gate rejection and current financial revocation covered. No closure claim.",
-        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim."
+        "ListingSimulationInputEvidenceTest#exactActivityFixedFeeMatchesOnceAndDoesNotBecomeAMissingFeeZero",
+        "ListingSimulationInputEvidenceTest#buyerPaymentAndSellerRevenueStayDistinctAndCompensationCannotBeAssumed",
+        "ListingSimulationInputEvidenceTest#aCurrentlyValidProfileCannotQualifyAnUncoveredSimulationPeriod",
+        "ListingSimulationInputEvidenceTest#explicitInapplicabilityMatchesZeroButCallerKnownFlagCannotHideMismatch",
+        "ListingSimulationInputEvidenceTest#everyMemberAndKnownFutureCostIntervalMustFitTheDeclaredBound",
+        "ListingSimulationInputEvidenceTest#emptyScopeOrMissingPeriodsCannotQualifyCostByVacuousAgreement",
+        "ListingSimulationInputEvidenceTest#malformedStoredMaterialIsDistinctFromAValidCalculationWithUnknownInputs",
+        "ListingSimulationInputEvidenceTest#multipleFulfillmentModesNeverSelectTheFavorableProfile",
+        "ListingSimulationInputEvidenceTest#overallQualificationIsAConjunctionAndCannotBorrowAConditionalBoolean",
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 fixed/variable/return/tax/ads、fee basis、负/分数数量、折扣范围、币种、成本区间、多个履约方式、necessary/conservative 以及无解与未知。",
+      "limits": [
+        "未从供应商文档推断未定义费用/补贴；没有扩建通用费率或价格优化平台。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-016",
+      "severity": "MAJOR",
       "title": "人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 8 retains as-of display snapshots including unknown reports; exact manual verification binds listing/target/operation/acquisition time and independent observer provenance. Full interval coverage and downstream propagation remain open.",
-        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "人工操作、执行报告、管理 match、顾客展示 observation 和 Outcome 各自绑定 Listing、target/version、operation、source/acquisition time 与独立职责；事实可记录但不会因存在而自动取得核验资格。",
+      "production_evidence": [
+        "V0090__bind_manual_listing_verification_to_exact_observations.sql",
+        "V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+        "ManualPathService",
+        "ListingManualConsoleController"
       ],
       "executed_evidence": [
-        "Checkpoint-8 receipts: 91 unit/architecture, 26 signed HTTP/database including normal packet/observation/verification/read, and 8 independent PostgreSQL application-role manual evidence tests passed. No closure claim.",
-        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim."
+        "ListingReworkAuthorizationIT#signedManualVerificationBindsIndependentExactObservationsAndExposesTheirExtent",
+        "ListingReworkAuthorizationIT#displaySnapshotsRetainUnknownReportsAndRespectOriginalAcquisitionTime",
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描跨 Listing、动作前证据、覆盖不足、executor 自证、过期 packet、Description 与 promotion 目标混用及晚报。",
+      "limits": [
+        "只验证本地合成人工证据链，不替代真实操作员事实。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-017",
+      "severity": "MAJOR",
       "title": "运行期偏离与跨域处理缺少权威证据闭环，任意核验ID可成为关闭依据",
-      "status": "OPEN",
-      "implementation": [
-        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open.",
-        "Checkpoint 28: current exposure is re-read at shared approval/execution Guardrail consumption; no automatic route change or assumption that an old reviewed snapshot stays current. Read-time checks and retained identifiers do not establish atomic concurrent-publication fencing or full dependency invalidation/continuation lifecycle."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "迟到关联按 LAWFUL_LATE_REPORT、UNAUTHORISED_DEVIATION、UNRESOLVED_CHANGE 分支保留历史；关闭绑定 exact event 的合格 verification 或后续独立 Action/approval/launch，任意报告/ID 不能恢复依赖。",
+      "production_evidence": [
+        "V0121__complete_listing_operations_queue_and_review.sql",
+        "GovernanceService",
+        "GovernanceRepository",
+        "ConsoleProblemAdvice"
       ],
       "executed_evidence": [
-        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim.",
-        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure."
+        "ListingReworkAuthorizationIT#lateAssociationBranchesRequireQualifiedEvidenceForTheExactListingActionAndEvent",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描错事件 verification、无前瞻批准、重复导入/改名、状态转换 SQLSTATE→HTTP 映射及独立范围不被共同等待。",
+      "limits": [
+        "跨域处理仅追踪本 Slice 依赖回流，不建立长期专业整改系统。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-018",
+      "severity": "MAJOR",
       "title": "限域隔离的依赖传播与重新启用未消费当前原因和调用权威",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "V0085 corrects capability enablement and platform/account/store stop matching in the description Gate, including current flag lifecycle. Full K7/K9 cause/dependency propagation and two-part re-enablement remain open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "隔离范围由当前合格原因和实际 dependency closure 计算；共同消费者受限、独立范围不连坐；解除要求独立技术修复与经营同意、当前权限/调用证明且原因不再被消费。",
+      "production_evidence": [
+        "V0117__latch_listing_protection_failures_until_independent_release.sql",
+        "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+        "GovernanceService",
+        "ListingTaskDependencyHoldService"
       ],
       "executed_evidence": [
-        "ListingDescriptionWriteGateIT includes unrelated-store stop and other-capability enablement negatives; broader closure remains unverified."
+        "ListingReworkAuthorizationIT#frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts",
+        "ListingReworkAuthorizationIT#lateAssociationBranchesRequireQualifiedEvidenceForTheExactListingActionAndEvent",
+        "Final clean matrix: PromotionClosureIT#sharedCauseContainsOnlyItsProvenCurrentConsumersAndCannotBeReleasedWhileUsed",
+        "Final clean matrix: ListingContainmentIT#reenableRejectsMissingProofAnotherActorAndAnAttestationProof",
+        "Final clean matrix: ListingContainmentIT#reenableRejectsAttestationsWhoseCurrentAuthorityNoLongerApplies",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 K7 共同 dependency、K9 独立 consumer、Outcome 必要失败 latch、撤权/过期 proof、单人双身份和原因仍在使用。",
+      "limits": [
+        "共同原因与 re-enable 矩阵已在 clean verify 中通过。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-019",
+      "severity": "MAJOR",
       "title": "一次明确启动没有接通Description Command，命令结果也未闭合业务动作",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 9: one launch transaction creates exactly one API command through the sole creator, or rolls back action, launch and all allowance axes. Manual launch creates none. Historic orphan launches cannot gain a command retrospectively; current actor authority precedes idempotent reads. Qualified result-to-business closure remains open.",
-        "Checkpoint 14: qualified native completion + exact subsequent management readback atomically produce an immutable receipt and verify only its still-launched API action; the existing workflow journal consumes receipts transactionally without human/outcome conflation. Full connected launch/worker/HTTP/custody/Console verification remains open.",
-        "Checkpoint 16: normal launch now performs the existing EXECUTION Guardrail evaluation in its transaction. New restoration exercises actual preparation/review/approval through Worker, not a preseeded execution PASS."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "一次准确 API 启动在当前 Gate 与额度锁后于同一事务建立唯一 launch、occupation 和 Description Command/Outbox；失败回滚，重放返回同一 Command；worker/Raw/readback/Task 结果回到同一 Action。",
+      "production_evidence": [
+        "V0091__create_listing_command_atomically_with_its_launch.sql",
+        "V0096__project_qualified_description_execution_results.sql",
+        "ListingActionLaunchService",
+        "ListingDescriptionCommandWorker",
+        "ListingExecutionJournalService"
       ],
       "executed_evidence": [
-        "Checkpoint-9 receipts: 76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and 1 V0090-to-V0091 upgrade tests passed. All local and targeted; no finding closure.",
-        "checkpoint-14-test-receipts.json: actual DB synchronous/async, absent/unknown/conflicting/historical proof, rollback, containment, concurrent Task delivery, repository projection, shared journal/authorization/UI and scheduler fault isolation pass; targeted only.",
-        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim."
+        "ListingReworkAuthorizationIT#oneSignedApiLaunchCreatesAndReturnsItsOnlyCommandBeforeCommit",
+        "ListingReworkAuthorizationIT#oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 MANUAL 不建 API Command、创建失败回滚、重复 launch/worker、approval 到期、同步/异步/失败/未决结果与 Task 回流。",
+      "limits": [
+        "adapter 指向本地 loopback fake；没有真实 Provider 副作用。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-020",
+      "severity": "BLOCKER",
       "title": "精确恢复复用原命令和原批准，COMMAND_RESOLVE被扩成新的业务恢复授权",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 16: exact source-bound new restoration Action follows existing independent review/current approval/Guardrail/allowance/atomic launch and RESTORE worker. Legacy opposite-approval compensation is refused; conditional current-version control and RESTORE result custody are connected."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "恢复建立新的 exact restoration Action、purpose basis、当前保护、独立 review/approval 和条件写；只复用捕获的完整前值与技术尝试连续性，不能借原改变批准授权相反业务动作。",
+      "production_evidence": [
+        "V0097__bind_exact_restoration_to_a_new_approved_action.sql",
+        "ListingDescriptionResolutionService",
+        "ListingDescriptionCommandWorker",
+        "ListingActionPurpose"
       ],
       "executed_evidence": [
-        "checkpoint-16-test-receipts.json: 39 signed HTTP/database cases include 7 connected restoration scenarios and missing captured prior, plus 132 unit/architecture, 21 native identity, 7 timing, 8 Gate, 1 upgrade and 22 UI checks. Targeted local evidence; no final closure."
+        "ListingReworkAuthorizationIT#exactRestorationUsesNewPreparationIndependentReviewApprovalAndConditionalWorker",
+        "ListingReworkAuthorizationIT#restorationRejectsACompletedSourceWhoseCapturedPriorIsMissing",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描缺新批准、错 source/object、过期 authority、空前值、第三方后来版本、同步/异步轮询、重复恢复和无关字段。",
+      "limits": [
+        "恢复仍服从 Provider capability/default-OFF；没有真实恢复调用。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-021",
+      "severity": "MAJOR",
       "title": "请求guard没有绑定准确原生目标和正文节点，跨平台硬编码又拒绝合法Schema",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open.",
-        "Checkpoint 11: Description metadata now flows through the existing scoped registry draft, revision and independent exact-configuration verification functions using CONTENT_WRITE. New/revised descriptors bind submitted evidence; renewed attestation preserves the existing verified definition. Runtime request guard and non-echo identity still remain open.",
-        "Checkpoint 12: governed closed request schema with exact typed native identity/attribute/Unicode/conditional marking; destination-before-secret, final authority check, exact conditional header and JSON media type. Restoration business authority and combined runtime still unfinished."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "请求 guard 由治理 profile 校验 platform/native target、唯一 description attribute、准确正文、允许的非目标字段、JSON media type 和条件声明；目的地/权限在取 credential 前后重检，WB 未证写路径继续关闭。",
+      "production_evidence": [
+        "V0093__govern_description_protocol_configuration.sql",
+        "V0094__bind_description_requests_to_exact_verified_schema.sql",
+        "DescriptionChangeGuard",
+        "ListingDescriptionCommandWorker"
       ],
       "executed_evidence": [
-        "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
-        "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure.",
-        "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only."
+        "ListingReworkAuthorizationIT#oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole",
+        "ListingReworkAuthorizationIT#exactRestorationUsesNewPreparationIndependentReviewApprovalAndConditionalWorker",
+        "Final clean matrix: ListingDescriptionWriteGateIT",
+        "Final clean matrix: ListingDescriptionRegistryIT",
+        "Final clean matrix: RegistryVerificationFlowIT",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描错 native target、第二 target/attribute、正文子串、duplicate key、错误 content-type/声明、跨平台 shape 与 socket 前拒绝。",
+      "limits": [
+        "官方 PDF 内层 schema 有折叠；测试 profile 仍是合成资格，capability 不标真实 VERIFIED。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-022",
+      "severity": "MAJOR",
       "title": "等待头和异步结果的完整协议语义未落实，可能提前重试或误认终局",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Native retry headers are preserved with exact units; waits are not capped. V0084 derives durable earliest-call time or explicit timing-unknown hold from retained transport evidence and guards leases, attempts and dispatch rechecks. HTTP 409 is inconclusive. Native task/object identity, per-purpose protocol and all scheduler/expiry coverage remain open.",
-        "Checkpoint 10: Command native key derives from approved immutable affected-set identity; attempts retain exact latest accepted mutation-task relation. Typed exact-one-item readback/status classification, duplicate-key refusal, strict non-application evidence extent, and pre-socket frozen/current identity comparison added. No-response/local enquiry refusal cannot manufacture native task rejection. Request guard, governed descriptor lifecycle and non-echo query uniqueness remain open.",
-        "Checkpoint 11: Description metadata now flows through the existing scoped registry draft, revision and independent exact-configuration verification functions using CONTENT_WRITE. New/revised descriptors bind submitted evidence; renewed attestation preserves the existing verified definition. Runtime request guard and non-echo identity still remain open.",
-        "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "native `Item-Retry-After` 分钟、`X-Ratelimit-Retry` 秒及标准 Retry-After 分开解析并保留较晚边界；Command 严分传输、受理 task、最终应用与 readback，task/item identity、lease fence、批准时限和重启恢复贯通。",
+      "production_evidence": [
+        "V0084__persist_provider_description_retry_timing.sql",
+        "V0092__bind_description_response_to_frozen_native_identity.sql",
+        "V0095__retain_exact_description_task_query_evidence.sql",
+        "V0096__project_qualified_description_execution_results.sql",
+        "ListingDescriptionCommandWorker"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
-        "Checkpoint-10 receipts: 182 shared unit/architecture, 11 native response identity/database, 7 retry timing, 10 launch, 27 signed HTTP/database and 1 upgrade tests passed. Synthetic retained bytes and fabricated verification state only; no provider qualification or finding closure.",
-        "Checkpoint-11: 76 architecture, 5 Description registry/database, 35 existing Registry workflow, 11 response/database and 27 signed listing HTTP/database tests passed. Fictional attestation workflow only; no provider qualification or finding closure.",
-        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
-        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim.",
-        "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred."
+        "ListingReworkAuthorizationIT#oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole",
+        "ListingReworkAuthorizationIT#exactRestorationUsesNewPreparationIndependentReviewApprovalAndConditionalWorker",
+        "Final clean matrix: ListingDescriptionRetryTimingIT",
+        "Final clean matrix: ListingDescriptionResponseIdentityIT",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描 malformed/duplicate/overflow/foreign-unit wait、409/429/5xx、accepted-but-pending、错 task/item、approval 到期和 worker 重建。",
+      "limits": [
+        "不推断供应商未明示的幂等/任务关系；相关协议类已在 clean verify 中通过；真实 Provider 资格仍属外部证据。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-023",
+      "severity": "MAJOR",
       "title": "5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 25: existing queue atomically claims by generation with expiry recovery; exact Health and calculation run publish in the same fenced transaction. Listing lock serializes versions; stale completion/failure is rejected, missing results and failed latency cannot be successful. One database tick excludes future accepted times without rewriting source/entry evidence. Periodic full review and canonical measurement/protection/authorization consumers remain OPEN.",
-        "Checkpoint 29: native-scope enqueue now receives database recording time paired with unchanged source time, avoiding future system chronology from the intake application Clock. No broad scheduler or all-ingress clock rewrite; full consumer/recalculation lifecycle remains pending.",
-        "Checkpoint 33: finite reason-bound Task deferral consumes the original explicit maximum duration, preserves original SLO/age and rejects extension. Existing Health reassessment invalidates changed retained scope/necessary/eligibility; existing worker commits expiry and exact scoped review queue atomically. Shared bilingual explicit forms discard late actor/target responses. This is not qualified dependency HOLD; complete business reason/qualification/source integration remains open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "原重算队列以 generation/lease fence 原子 claim，过期可恢复；实际 source changes 和 60 分钟 sweep 入队，在同一 fenced transaction 发布 Health/measurement/protection/authorization consumer receipts，重放不重复目标结果。",
+      "production_evidence": [
+        "V0105__fence_listing_recalculation_result_publication.sql",
+        "V0121__complete_listing_operations_queue_and_review.sql",
+        "RecalculationService",
+        "ListingConversionScheduler"
       ],
       "executed_evidence": [
-        "checkpoint-25-test-receipts.json: final 93 queue/domain/architecture, 48 signed authorization, 10 schema/privilege, 1 historical upgrade PASS; six real PostgreSQL queue cases included in 93.",
-        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure.",
-        "See checkpoint-33-test-receipts.json for isolated authorization, queue rollback/replay, shared launch/architecture/journal/schema/upgrade and frontend results. No full-root closure claim."
+        "ListingReworkAuthorizationIT#lateSaleReversalCreatesANewMeasurementAndPreservesTheOriginalInputs",
+        "ListingReworkAuthorizationIT#finiteDeferralKeepsOriginalClocksAndReassessesChangedDiagnosis",
+        "Final clean matrix: ListingRecalculationLeaseIT",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描多 worker、stale completion、crash expiry、同 trigger 重放、无事件 sweep、source/acquisition/processing time 和每个 consumer receipt。",
+      "limits": [
+        "多 worker/lease 专项已在本地 clean verify 中通过；真实调度环境与 Provider 时限未运行。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-024",
+      "severity": "MAJOR",
       "title": "责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Checkpoint 31: normal preparation now binds original ordinary Task deadlines to exact governed SLO/calendar values; no fixed now+2 days. The real journal and scoped on-demand read separate acknowledgement/action, preserve origin on reassignment/recalculation/reopen, refuse caller-labelled substitute actions and require current-episode disposition for closure. Database chronology fixes independently reproduced writer-clock offsets. Continuous risk, qualified finite holds/defer, automatic activation/sorting and staffed release coverage remain OPEN.",
-        "Checkpoint 32: retained failed mapping/containment diagnoses create one existing Task per listing/cause before any new Action. Exact source/calibration binding, continuous explicit risk SLO, scoped acknowledgement and same-Task recurrence are connected to Health recomputation. No unowned Task, Recommendation, Action or new scheduler is manufactured. Remaining purpose-qualified activation, risk/responsibility ordering, source-change fencing, cross-domain attribution and finite hold/defer/coverage work remain OPEN.",
-        "Checkpoint 33: finite reason-bound Task deferral consumes the original explicit maximum duration, preserves original SLO/age and rejects extension. Existing Health reassessment invalidates changed retained scope/necessary/eligibility; existing worker commits expiry and exact scoped review queue atomically. Shared bilingual explicit forms discard late actor/target responses. This is not qualified dependency HOLD; complete business reason/qualification/source integration remains open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "原 Task 使用治理 SLO/calendar 从 first raise 计算 acknowledgement/action；转派、reopen、recalculation 不重置。有限 dependency hold/deferral 绑定原因、最长时限和重评，实际风险/机会确定性排序并复用同一责任。",
+      "production_evidence": [
+        "V0108__freeze_listing_task_responsibility_clocks.sql",
+        "V0109__activate_listing_diagnostic_responsibility.sql",
+        "V0110__bind_finite_listing_task_deferral_to_reassessment.sql",
+        "V0117__latch_listing_protection_failures_until_independent_release.sql",
+        "V0121__complete_listing_operations_queue_and_review.sql",
+        "ListingTaskSloService",
+        "ListingTaskDependencyHoldService",
+        "ListingTaskDeferralService"
       ],
       "executed_evidence": [
-        "checkpoint-31-test-receipts.json: normal signed workflow, controlled clock offsets, closure/reopen, original Task preservation and shared Workflow regression. Partial ordinary-path evidence only.",
-        "checkpoint-32-test-receipts.json: signed diagnosis-to-Task path, replay, store permission, acknowledgement/action separation, actual retained resolution and recurrence; shared journal/queue/schema/upgrade and full architecture checks. Partial root evidence only.",
-        "See checkpoint-33-test-receipts.json for isolated authorization, queue rollback/replay, shared launch/architecture/journal/schema/upgrade and frontend results. No full-root closure claim."
+        "ListingReworkAuthorizationIT#retainedNecessaryFailureActivatesOneContinuousTaskWithoutAnActionProposal",
+        "ListingReworkAuthorizationIT#normalPreparationBindsOriginalTaskClocksAndAcknowledgementIsNotAnAction",
+        "ListingReworkAuthorizationIT#finiteDeferralKeepsOriginalClocksAndReassessesChangedDiagnosis",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描连续高风险/普通 coverage、ack 与 action 分离、转派/回流/reopen、hold 资格/上限、deferral 到期和重复 source event。",
+      "limits": [
+        "没有新增通知渠道、工单系统或默认 24x7 coverage。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-025",
+      "severity": "MAJOR",
       "title": "必需的按需AI、原文主题纠正、日周复盘与经验复用未形成实际业务路径",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "四种有限按需 AI 复用既有 Gateway，只接收 allowlisted、带原证据引用的字段且不能执行建议；反馈保留 Raw source/job 身份、追加式人工分类修订，日/周 review 同版本输出，经验按 exact evidence scope 适用并随来源撤权失效。",
+      "production_evidence": [
+        "V0114__retain_listing_feedback_identity_and_label_revisions.sql",
+        "V0115__declare_bounded_listing_ai_projection.sql",
+        "V0121__complete_listing_operations_queue_and_review.sql",
+        "ListingAssistanceService",
+        "ListingFeedbackService",
+        "ListingExperienceService",
+        "ListingOperationsReviewService",
+        "RawEvidenceService",
+        "RawEvidenceRepository"
+      ],
+      "executed_evidence": [
+        "ListingReworkAuthorizationIT#listingAssistanceUsesOnlyAllowlistedEvidenceAndCannotExecuteItsOwnSuggestion",
+        "ListingReworkAuthorizationIT#feedbackReviewAndExperienceRemainRevisionAwareAndSourceRevocationFailsClosed",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描四 purpose、字段白名单/输出校验、原反馈去重与否定纠正、日/周同源、experience scope/revision、Raw read 当前权限及 job identity 传递。",
+      "limits": [
+        "AI 使用本地 fake；模型不能计算正式利润、授权、启动或 Provider 调用。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
+      ]
     },
     {
       "id": "S4-DR-R1-026",
+      "severity": "MAJOR",
       "title": "双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Allowance preview exposes unresolved required axes and each applied scope in Chinese/Russian; rows with the same axis in multiple scopes retain separate keys. It uses the shared canonical projection.",
-        "Checkpoint 18: existing two-kind promotion declaration freezes before review, binds recommendation and manual packet, and rejects different entry/post-entry terms. Current store and every frozen product financial scope govern a separate full declaration read. Bilingual exact term preparation/read added. Economics, participation/exit/adoption/release and remaining projections are not closed.",
-        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open.",
-        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 26: removes user-entered exposure from Console preparation and request serialization, with Chinese/Russian explanation. Complete semantic-review and financially scoped exposure-evidence journeys remain open.",
-        "Checkpoint 27: adds scoped on-demand Russian full before/after and commercial-term review basis, Chinese/Russian condition answers/reasons/reference/coverage, unknown submission guard and stale actor-result rejection. Complete evidence history and remaining Console journeys still open.",
-        "Checkpoint 31: Chinese/Russian on-demand original Task clock read and explicit acknowledgement are connected to ordinary Action detail, with unknown states and stale actor/action reply rejection. Complete Task/hold/coverage and remaining Console journeys remain OPEN.",
-        "Checkpoint 32: Listing detail displays necessary diagnostic responsibility and explicit acknowledgement in Chinese/Russian, sharing the original Task clock display. The exact diagnostic Task/store controls acknowledgement. Complete remaining Console and browser journeys remain OPEN.",
-        "Checkpoint 33: finite reason-bound Task deferral consumes the original explicit maximum duration, preserves original SLO/age and rejects extension. Existing Health reassessment invalidates changed retained scope/necessary/eligibility; existing worker commits expiry and exact scoped review queue atomically. Shared bilingual explicit forms discard late actor/target responses. This is not qualified dependency HOLD; complete business reason/qualification/source integration remains open."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "现有中俄 Console 接通 purpose、保护、准确 review material、批准、启动、人工核验、Outcome、反馈/AI、日周 review、dependency hold 和批次局部阻塞；请求上下文变化时丢弃迟到响应，受限材料按当前权限隐藏。",
+      "production_evidence": [
+        "ListingConversionShell",
+        "ListingActionsPanel",
+        "ListingMeaningReview",
+        "ListingPromotionTerms",
+        "ListingManualPanel",
+        "ListingFeedbackPanel",
+        "ListingAssistancePanel",
+        "ListingOperationsReviewPanel",
+        "ListingDependencyHold",
+        "frontend listingConversion API"
       ],
       "executed_evidence": [
-        "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
-        "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
-        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
-        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
-        "checkpoint-31-test-receipts.json: 39 frontend cases across four files, build/lint PASS; scoped responsibility HTTP flow and acknowledgement scope refusal. No complete browser journey claim.",
-        "checkpoint-32-test-receipts.json: 41 frontend cases with six overlapping final cases after mock type style fix, build/lint/final tsc; 78 signed authorization cases with recurrence extension. No full browser acceptance claim.",
-        "See checkpoint-33-test-receipts.json for isolated authorization, queue rollback/replay, shared launch/architecture/journal/schema/upgrade and frontend results. No full-root closure claim."
+        "ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry",
+        "ListingReworkAuthorizationIT#feedbackReviewAndExperienceRemainRevisionAwareAndSourceRevocationFailsClosed",
+        "Final clean matrix: ListingConversionApi.test.ts",
+        "Final clean matrix: ListingConversionForms.test.tsx",
+        "Final clean matrix: ListingAssistance.test.tsx",
+        "Final clean matrix: ListingFeedback.test.tsx",
+        "Final clean matrix: ListingResponsibility.test.tsx",
+        "Final clean matrix: listing-operations-journey.spec.ts#TC-BROWSER-017",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描中俄同事实、角色切换、普通/重大、MANUAL/API、无权限 material、stale response、部分批次阻塞与下钻路径。",
+      "limits": [
+        "Frontend 418/418 与浏览器 26 个唯一场景通过收据已补录。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
     {
       "id": "S4-DR-R1-027",
+      "severity": "MAJOR",
       "title": "验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺",
-      "status": "IN_PROGRESS",
-      "implementation": [
-        "Isolated PostgreSQL and real signed Console requests execute. Found and fixed manual fact provenance, missing calculation requester, and read-audit transaction defects; no full regression or LOCAL_VERIFIED claim.",
-        "Checkpoint 12: governed closed request schema with exact typed native identity/attribute/Unicode/conditional marking; destination-before-secret, final authority check, exact conditional header and JSON media type. Restoration business authority and combined runtime still unfinished.",
-        "Checkpoint 13: immutable exact POST task query captured before dispatch, bound to latest accepted mutation/frozen operation. Governed pointer/type/method checks, non-echo native result classification, stale lease refusal and no retrospective query evidence. Full Worker/restart coupling remains unfinished.",
-        "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open.",
-        "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open.",
-        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open.",
-        "Checkpoint 27: 66 signed HTTP, 2 condition/binding SQL, 113 launch/domain/architecture, 10 schema and 1 upgrade passed; 35 frontend cases, build and typed lint passed. Fixed diagnostics retained in the receipt. Complete final-head regression remains open.",
-        "Checkpoint 28: 79 signed HTTP/Guardrail and 113 launch/domain/architecture passed. JDBC time binding, strict authority snapshot rejection and test-history isolation diagnostics retained; one unconfirmed native-scope failure remains explicitly tracked. No schema/frontend change or needless repeat of their suites.",
-        "Checkpoint 29: 2 deterministic red cases before the time fix, 4 targeted cases after it, then 75 signed HTTP and 80 domain/architecture cases passed. Source hashes, commands and limitation retained in checkpoint-29 receipt. No blind repetition of the original intermittent test.",
-        "Checkpoint 31: original Task/SLO provenance, historical no-backfill behavior, disposition/reopen chain and inherited migration inventory are recorded separately from unimplemented risk/hold/activation and final verification work.",
-        "Checkpoint 32: records distinct executed checks, two diagnosed integration failures and the method-filtered architecture subset separately from complete regression. Unimplemented risk ordering/holds/purpose/source fencing remain explicit; historical migrations are preserved."
+      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "root_cause_correction": "证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不再提升为完整结论。V0080–V0123 forward-only，历史迁移/合同保持字节不变，外部义务与默认关闭状态继续分列。OQ-121/124 与 Capability Matrix 的用途映射已纠正为 Description→F-W01/F-W02、Metric→F-M01/F-M02、样本证据/方法适配→F-S01。",
+      "production_evidence": [
+        "finding-progress.json",
+        "executable-evidence.md",
+        "FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "MIGRATION-INVENTORY.json",
+        "validate_production_readiness.py",
+        "docs/00-governance/OPEN_QUESTIONS.md",
+        "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
       "executed_evidence": [
-        "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
-        "checkpoint-12-test-receipts.json: 131 unit/architecture, 6 registry, 35 shared registry, 11 response identity, 27 signed HTTP authorization and 10 launch/database passed; targeted synthetic evidence only.",
-        "checkpoint-13-test-receipts.json: 131 unit/architecture, 7 registry, 17 response identity including real DB + local HTTP, 35 shared registry, 7 waiting, 27 signed HTTP authorization and 1 upgrade passed; partial synthetic evidence.",
-        "Checkpoint 15: 3 connected signed MockMvc -> real DB/worker/adapter -> loopback HTTP -> custody/readback -> Action/Task/Console scenarios, included in a passing 30-test affected-class regression. Sync, async pending/done after approval expiry, and recreated-worker recovery after simulated loss are covered. Whole-process/DB restart, persistent storage DR, normal preparation/approval and browser ingress remain unproved; no closure claim.",
-        "Checkpoint 16 receipts include 7 real DB/loopback restoration scenarios (inside 39 passing affected-class tests), controlled clock red/green, targeted unit/architecture/DB/upgrade/frontend checks. No broad/final closure inferred.",
-        "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
-        "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 23: 47 signed HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity, 10 schema/role, 1 historical upgrade PASS; final scope predicate verified by 2 overlapping connected cases. See checkpoint-23-test-receipts.json for exact source-stage boundaries. No closure claim.",
-        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim.",
-        "checkpoint-25-test-receipts.json: bounded relevant checks and two diagnosed failures preserved; no root closure or complete LOCAL_VERIFIED claim.",
-        "checkpoint-26-test-receipts.json: bounded final runs, immutable original-input verification and diagnosed initial failures preserved; no complete LOCAL_VERIFIED claim.",
-        "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
-        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure.",
-        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure.",
-        "checkpoint-31-test-receipts.json: finite affected verification stages, failures and independent chronology reproduction retained. Immutable input and 107 historical migration byte checks pass; no final closure claim.",
-        "checkpoint-32-test-receipts.json; 108 existing migration bytes and 30 forward inventory entries verified, with no final LOCAL_VERIFIED or 27-root closure claim."
+        "./mvnw -B -ntp -Dtest=ListingSimulationInputEvidenceTest,ListingReworkAuthorizationIT test → 113 tests, 0 failures, 0 errors, 0 skipped, BUILD SUCCESS",
+        "Final clean matrix: 完整后端/DB/frontend/browser 的退出码与计数",
+        "Canonical closeout: governance/readiness validators 与 git diff --check，结果见最终 Level 1 收据",
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+      ],
+      "pending_full_matrix_evidence": [],
+      "same_class_and_transitive_scan": "扫描全部 27 Frozen ID、V0001–V0079/既有迁移字节、共享价格/广告/身份/Raw/审批回归、OQ/Capability 的 F-M/F-W/F-S 用途映射、API 文档边界、未运行项和 remote/production 权限。",
+      "limits": [
+        "Level 1 完整层级收据已形成，验证源码 Head/tree 已固定；Controller verdict 保持 pending。",
+        "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     }
   ],
-  "convergence_control": "Owner reiterated 2026-09-13: monitor active runs and inspect terminal results; stop after bounded relevant checks pass. Every change must map to a frozen root and observable acceptance outcome; every rerun needs a relevant source change, new evidence or diagnosed failure. Inspect actual consumers and sole-owner boundaries before adding logic. No unused speculative abstraction or repeated authority."
+  "convergence_control": "Implementation scope frozen. Terminal verification used the already-completed backend/frontend results, one full browser run, and one targeted closure of its two directly diagnosed failures; no broader rerun or implementation expansion was performed."
 }
