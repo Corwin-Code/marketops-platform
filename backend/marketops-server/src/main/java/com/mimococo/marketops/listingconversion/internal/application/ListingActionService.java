@@ -69,7 +69,7 @@ public class ListingActionService {
     private final ListingActionIntake intake;
     private final ListingActionLaunch launcher;
     private final CalculationRunLedger ledger;
-    private final com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery scopeMetrics;
+    private final ListingExposureService exposureService;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
     private final IdGenerator ids;
@@ -78,7 +78,7 @@ public class ListingActionService {
     ListingActionService(ListingFactRepository facts, ListingActionRepository actions, ListingHealthRepository healthRows,
                          GovernanceRepository governance, ListingHealthService health, CalibrationService calibration,
                          EvaluationService evaluation, ListingActionIntake intake, ListingActionLaunch launcher,
-                         CalculationRunLedger ledger, com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery scopeMetrics,
+                         CalculationRunLedger ledger, ListingExposureService exposureService,
                          BusinessAuthorization authorization, MetadataAuditRecorder audit,
                          IdGenerator ids, Clock clock) {
         this.facts = facts;
@@ -91,7 +91,7 @@ public class ListingActionService {
         this.intake = intake;
         this.launcher = launcher;
         this.ledger = ledger;
-        this.scopeMetrics = scopeMetrics;
+        this.exposureService = exposureService;
         this.authorization = authorization;
         this.audit = audit;
         this.ids = ids;
@@ -206,7 +206,7 @@ public class ListingActionService {
         }
         CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
                 listing.storeId(), now);
-        var exposure=exposureBasis(listing,set,resolved,now);
+        var exposure=exposureService.assess(listing,set.digest(),set.resolution().listingVariantIds(),resolved,now);
         // Meaning remains unknown until an independent reviewer answers the accepted conditions.
         var classification=MaterialityClassifier.classify(null,exposure.material());
         String entityVersion = Digest.ofComponents(List.of(set.digest(),
@@ -252,48 +252,6 @@ public class ListingActionService {
                 "materialityRoute", new FieldChange(null, classification.route().name()),
                 "affectedSetDigest", new FieldChange(null, set.digest())), null);
         return view(actionId).orElseThrow();
-    }
-
-    private record ExposureBasis(Boolean material,Map<String,Object> evidence) { }
-
-    private ExposureBasis exposureBasis(ListingFactRepository.ListingContext listing,ListingHealthService.FrozenSet set,
-                                        CalibrationService.Outcome calibration,Instant at) {
-        Map<String,Object> basis=new java.util.LinkedHashMap<>();
-        basis.put("model","LC_RETAINED_SALES_EXPOSURE_1");
-        basis.put("affectedSetDigest",set.digest());
-        basis.put("assessedAt",at);
-        if (!calibration.ok()) {
-            basis.put("state","CALIBRATION_UNRESOLVED");
-            return new ExposureBasis(null,basis);
-        }
-        var ordinary=calibration.resolved().values().get("ORDINARY_TRIGGER_EXPOSURE");
-        var material=calibration.resolved().values().get("MATERIAL_TRIGGER_EXPOSURE");
-        var freshness=calibration.resolved().values().get("FRESHNESS_RULE");
-        var rule=freshness==null || freshness.json()==null?null:freshness.json().get("materialityExposure");
-        if (ordinary==null || material==null || ordinary.windowDays()==null
-                || !ordinary.windowDays().equals(material.windowDays())
-                || !List.of(7,14,30).contains(ordinary.windowDays()) || rule==null
-                || !rule.path("maximumVerificationAgeSeconds").isIntegralNumber()
-                || !rule.path("maximumPeriodEndAgeSeconds").isIntegralNumber()
-                || !rule.path("maximumVerificationAgeSeconds").canConvertToLong()
-                || !rule.path("maximumPeriodEndAgeSeconds").canConvertToLong()
-                || rule.path("maximumVerificationAgeSeconds").asLong()<=0
-                || rule.path("maximumPeriodEndAgeSeconds").asLong()<=0) {
-            basis.put("state","EXPOSURE_RULE_UNQUALIFIED");
-            return new ExposureBasis(null,basis);
-        }
-        var result=scopeMetrics.exposure(new com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.ExposureScope(
-                listing.organizationId(),listing.storeId(),set.resolution().listingVariantIds(),
-                MetricWindow.valueOf("D"+ordinary.windowDays()),at,rule.path("maximumVerificationAgeSeconds").asLong(),
-                rule.path("maximumPeriodEndAgeSeconds").asLong()));
-        basis.put("state",result.available()?"QUALIFIED":"EXPOSURE_UNRESOLVED");
-        basis.put("projection",result);
-        Integer materialComparison=result.compareWith(material.numeric());
-        Integer ordinaryComparison=result.compareWith(ordinary.numeric());
-        Boolean axis=materialComparison==null || ordinaryComparison==null?null
-                : materialComparison>=0?Boolean.TRUE:ordinaryComparison<=0?Boolean.FALSE:null;
-        if (axis==null && result.available()) basis.put("state","EXPOSURE_BETWEEN_ACCEPTED_BOUNDS");
-        return new ExposureBasis(axis,basis);
     }
 
     private UUID runFor(ListingFactRepository.ListingContext listing, Instant now, UUID requestedByUserId) {
@@ -365,7 +323,7 @@ public class ListingActionService {
                     .map(row->row.textDigest().equals(action.currentTextDigest())).orElse(false)) {
                 throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
             }
-            var exposure=exposureBasis(listing,currentSet,currentCalibration.outcome(),now);
+            var exposure=exposureService.assess(listing,currentSet.digest(),currentSet.resolution().listingVariantIds(),currentCalibration.outcome(),now);
             if (meaning==null || exposure.material()==null) throw OperationRejectedException.of(ErrorCode.MATERIALITY_UNRESOLVED);
             reviewedClassification=MaterialityClassifier.classify(meaning,exposure.material());
             reviewedExposure=exposure.evidence();

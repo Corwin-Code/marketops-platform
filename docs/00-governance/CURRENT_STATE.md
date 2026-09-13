@@ -937,3 +937,11 @@ proof. 192 affected backend cases, 35 frontend cases, build and typed lint pass;
 see `checkpoint-27-test-receipts.json`. Current-evidence recheck at approval/launch
 and remaining frozen-root closure are still pending. Level 1 local authority
 continues; no real platform write or remote Git operation occurred.
+
+SLICE-V1-004 continuous local rework update: checkpoint-28 rechecks current
+canonical exposure in the existing approval/execution Guardrail, using one shared
+projection and retaining supplemental proof without altering its database-owned
+authority snapshot. 79 signed HTTP/Guardrail and 113 launch/domain/architecture
+cases pass. Atomic dependency fencing, full lifecycle work and an unconfirmed
+earlier native-scope test failure remain open; see checkpoint-28 receipts.
+No schema, frontend, provider or production-enablement change in this checkpoint.

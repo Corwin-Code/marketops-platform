@@ -310,6 +310,11 @@ public class ListingActionRepository {
                 .query(String.class).optional();
     }
 
+    public boolean hasQualifiedMeaningReview(UUID actionId,Instant at) {
+        return jdbc.sql("SELECT ops.lc_action_has_meaning_review(:id,:at)")
+                .param("id",actionId).param("at",Timestamp.from(at)).query(Boolean.class).single();
+    }
+
     public Optional<UUID> attestingReviewer(UUID actionId) {
         return jdbc.sql("""
                 SELECT reviewer_user_id FROM ops.lc_action_review WHERE action_id = :action AND verdict = 'ATTESTED'

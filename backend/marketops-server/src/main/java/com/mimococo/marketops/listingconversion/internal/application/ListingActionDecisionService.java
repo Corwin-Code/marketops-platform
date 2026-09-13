@@ -37,16 +37,18 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
     private final ListingActionRepository actions;
     private final ListingFactRepository facts;
     private final CalibrationService calibration;
+    private final ListingExposureService exposureService;
     private final ListingActionIntake intake;
     private final IdGenerator ids;
     private final Clock clock;
     private final ObjectMapper json;
 
     ListingActionDecisionService(ListingActionRepository actions, ListingFactRepository facts, CalibrationService calibration,
-                                 ListingActionIntake intake, IdGenerator ids, Clock clock, ObjectMapper json) {
+                                 ListingActionIntake intake, IdGenerator ids, Clock clock, ObjectMapper json,ListingExposureService exposureService) {
         this.actions = actions;
         this.facts = facts;
         this.calibration = calibration;
+        this.exposureService = exposureService;
         this.intake = intake;
         this.ids = ids;
         this.clock = clock;
@@ -56,21 +58,68 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
     @Override
     @Transactional(readOnly = true)
     public Optional<ListingDecisionScope> decisionScope(UUID recommendationId) {
+        return buildScope(recommendationId,false);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public Optional<ListingDecisionScope> recheckedDecisionScope(UUID recommendationId) {
+        return buildScope(recommendationId,true);
+    }
+
+    private Optional<ListingDecisionScope> buildScope(UUID recommendationId,boolean recheckCurrentExposure) {
         return actions.actionForRecommendation(recommendationId).map(action -> {
             Optional<UUID> reviewer = actions.attestingReviewer(action.id());
-            var recheck=calibration.recheckAction(action.id(),clock.instant());
+            Instant now=actions.databaseNow();
+            var recheck=calibration.recheckAction(action.id(),now);
             CalibrationService.Outcome resolved=recheck.outcome();
             Duration validity=resolved.ok()?CalibrationService.approvalValidity(resolved.resolved()).orElse(null):null;
-            String document = actions.authoritySnapshot(recommendationId).orElse("{}");
+            boolean meaningQualified=actions.hasQualifiedMeaningReview(action.id(),now);
+            String document=actions.authoritySnapshot(recommendationId).orElse("{}");
+            String route=action.materialityRoute();
+            Map<String,String> materiality=recheckCurrentExposure?currentMateriality(action,resolved,meaningQualified,now):Map.of();
+            if (recheckCurrentExposure && !"CURRENT".equals(materiality.get("state")))
+                route=MaterialityRoute.MATERIALITY_UNRESOLVED.name();
             return new ListingDecisionScope(recommendationId, action.organizationId(), action.storeId(), action.listingId(),
                     action.id(), action.version(), ActionKind.valueOf(action.actionKind()), action.executionPath(),
-                    action.state(), action.materialityRoute(), Boolean.TRUE.equals(action.contentAxisMaterial()),
+                    action.state(), route, Boolean.TRUE.equals(action.contentAxisMaterial()),
                     Boolean.TRUE.equals(action.exposureAxisMaterial()), action.calibrationPackageId(),
                     action.calibrationVersion(), validity, action.affectedSetDigest(), action.targetTextDigest(),
                     action.currentTextDigest(), action.targetText() == null ? 0 : action.targetText().length(),
-                    action.kizMarkedDeclared(), action.authorUserId(), reviewer.orElse(null), reviewer.isPresent(),
-                    document,recheck.evidence());
+                    action.kizMarkedDeclared(), action.authorUserId(), reviewer.orElse(null), meaningQualified,
+                    document,recheck.evidence(),materiality);
         });
+    }
+
+    private Map<String,String> currentMateriality(ListingActionRepository.ActionRow action,CalibrationService.Outcome resolved,
+                                                 boolean meaningQualified,Instant at) {
+        Map<String,String> evidence=new java.util.LinkedHashMap<>();
+        evidence.put("model","LC_CURRENT_MATERIALITY_1");
+        evidence.put("assessedAt",at.toString());
+        if (!meaningQualified) { evidence.put("state","MEANING_REVIEW_UNQUALIFIED");return evidence; }
+        var snapshot=facts.identitySnapshot(action.listingId(),at);
+        var nativeScope=snapshot.identityLineage().path("nativeScope");
+        var nativeReasons=new ArrayList<String>();
+        nativeScope.path("reasonCodes").forEach(reason->nativeReasons.add(reason.asText()));
+        var set=com.mimococo.marketops.listingconversion.internal.domain.AffectedSetResolution.resolve(
+                ListingFactRepository.snapshotMembers(snapshot.identityLineage()),nativeScope.path("state").asText(),nativeReasons);
+        if (!"COMPLETE".equals(set.state()) || !snapshot.digest().equals(action.affectedSetDigest())) {
+            evidence.put("state","AFFECTED_SET_CHANGED_OR_UNQUALIFIED");return evidence;
+        }
+        var listing=facts.listing(action.listingId()).orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        var exposure=exposureService.assess(listing,snapshot.digest(),set.listingVariantIds(),resolved,at);
+        evidence.put("projectionDigest",Digest.ofText(json.writeValueAsString(exposure.evidence())));
+        evidence.put("exposureState",String.valueOf(exposure.evidence().get("state")));
+        if (exposure.evidence().get("projection") instanceof com.mimococo.marketops.analyticsdecision.CanonicalScopeMetricQuery.Exposure projection) {
+            var values=new ArrayList<com.mimococo.marketops.analyticsdecision.MetricValueView>(projection.memberValues());
+            if (projection.storeValue()!=null) values.add(projection.storeValue());
+            evidence.put("metricValueIds",json.writeValueAsString(values.stream().map(com.mimococo.marketops.analyticsdecision.MetricValueView::metricValueId).toList()));
+            evidence.put("verificationRunIds",json.writeValueAsString(values.stream().map(com.mimococo.marketops.analyticsdecision.MetricValueView::verificationRunId)
+                    .filter(java.util.Objects::nonNull).distinct().toList()));
+        }
+        evidence.put("state",exposure.material()==null?"CURRENT_EXPOSURE_UNRESOLVED"
+                :exposure.material().equals(action.exposureAxisMaterial())?"CURRENT":"EXPOSURE_CLASSIFICATION_CHANGED");
+        return evidence;
     }
 
     @Override

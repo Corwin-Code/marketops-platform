@@ -706,3 +706,29 @@ accepted conditions; promotion terms retain the existing financial-scope gate.
 The connected tests and Console flow are recorded in checkpoint 27. Full
 current classification at approval/launch remains a distinct remaining
 dependency; a preparation/review snapshot does not supply that proof.
+
+### Checkpoint 28 work — current classification at workflow consumption
+
+The existing shared approval/execution Guardrail requests a rechecked listing
+decision scope after authorization; the permission-location scope remains cheap.
+Reuse that route to re-read the Metric owner's current
+exposure immediately when authority is consumed. Extract the existing exposure
+projection into one package-private service; preparation, review and decision
+scope all use the same implementation. Do not add a scheduler, engine, role,
+provider path, table or new launch mechanism.
+
+The current native scope must remain complete with the exact reviewed digest;
+the original structured meaning proof and accepted consumed dependencies must
+remain qualified. Current exposure must be known and agree with the immutable
+reviewed exposure axis. Changed/unknown exposure makes the decision unresolved;
+it cannot rewrite the review or automatically switch an existing approval's
+route. A new exact action/review is required for a changed classification.
+
+The existing Guardrail detail retains assessment time, state, projection digest
+and canonical Metric/verification identifiers without financial amounts, bound
+into the input digest. Its database-owned authority snapshot remains exact and
+unchanged; application evidence does not extend or bypass that authority. Approval and execution share the consumer. Current read-time checks do
+not claim database-atomic fencing against a concurrently published Metric value;
+that wider dependency/version consumption belongs to the remaining lifecycle
+work. Tests target changed, missing, threshold-gap and unchanged-axis current
+exposure at the normal signed approval and launch paths, plus retained evidence.

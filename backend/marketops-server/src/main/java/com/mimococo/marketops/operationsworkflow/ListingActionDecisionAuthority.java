@@ -15,6 +15,9 @@ public interface ListingActionDecisionAuthority {
 
     Optional<ListingDecisionScope> decisionScope(UUID recommendationId);
 
+    /** Current exposure proof for the shared Guardrail consumer, after caller authorization. */
+    Optional<ListingDecisionScope> recheckedDecisionScope(UUID recommendationId);
+
     /** Deterministic refusals in the listing module's own vocabulary; empty means none. */
     List<String> unresolvedReasons(UUID recommendationId);
 

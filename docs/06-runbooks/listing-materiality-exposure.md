@@ -72,8 +72,28 @@ material approval requires Owner. The Console uses the same Chinese/Russian
 form, rejects stale results after actor changes, and exposes full promotion
 terms only under the existing all-member financial scope.
 
-This remains a partial repair of S4-DR-R1-008. Current-evidence recheck at
-approval/launch remains open; the stored review is a point-in-time proof. Revenue share alone is
-not certification of full promotion economics, necessary protection, allowance
-or production qualification. All real platform writes remain disabled under
-the local-only authority.
+## Current exposure when approval or launch is consumed
+
+The shared workflow Guardrail now rechecks exposure through the same Metric
+projection used by preparation and review. Permission lookup continues to read
+the frozen decision scope; it does not repeatedly query Metric values. The
+Guardrail requires current complete native scope with the reviewed digest,
+qualified exact meaning proof and current accepted consumed calibration. Current
+exposure must be known and agree with the immutable reviewed axis. Missing or
+unqualified current exposure, a threshold gap, or an axis change blocks approval
+and launch. No request number repairs it and no existing review is rewritten.
+Unchanged ordinary/material classification can proceed with current evidence.
+
+The Guardrail's ordinary detail fields retain `materialityRecheck.*`: assessment
+time, state, projection digest, Metric value identifiers and verification run
+identifiers. These fields are also bound into its input digest. They contain no
+financial amounts. Its database-owned authority snapshot remains unchanged and
+must still match its exact source. Do not add application fields to that snapshot
+or relax the database check to store this supplemental evidence.
+
+These are current read-time checks, not database-atomic fencing against a Metric
+publication racing with consumption. That dependency fencing and the wider
+lifecycle consumers remain part of the unfinished rework. Revenue share alone
+is not certification of full promotion economics, necessary protection,
+allowance or production qualification. All real platform writes remain disabled
+under the local-only authority.

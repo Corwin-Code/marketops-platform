@@ -282,7 +282,7 @@ class ListingReworkAuthorizationIT {
         mvc.perform(post(url).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(full))).andExpect(status().isOk());
         var complete=health.freezeAffectedSet(listing);
-        assertThat(complete.resolution().state()).isEqualTo("COMPLETE");
+        assertThat(complete.resolution().state()).withFailMessage("Full native capture resolution: %s",complete.resolution()).isEqualTo("COMPLETE");
         assertThat(complete.resolution().listingVariantIds()).containsExactlyInAnyOrder(fixture.id("listingVariant"),additional);
         assertThat(complete.digest()).isNotEqualTo(original);
         assertThatThrownBy(()->fixture.launch(UUID.randomUUID(),"actionOne",fixture.id("ownerUser")))
@@ -1047,6 +1047,86 @@ class ListingReworkAuthorizationIT {
                   AND (materiality_evidence#>>'{projection,share}')::numeric=0.0001
                 FROM ops.lc_action WHERE id=:id
                 """).param("id",action).query(Boolean.class).single()).isTrue();
+    }
+
+    private void changeCurrentExposure(String change) {
+        fixture.seedRetainedSalesExposure(new java.math.BigDecimal(switch(change) {
+            case "MATERIAL" -> "300000";
+            case "BETWEEN_BOUNDS" -> "100000";
+            case "ZERO_STORE" -> "0";
+            case "SAME_AXIS" -> "200";
+            default -> throw new AssertionError(change);
+        }),new java.math.BigDecimal(change.equals("ZERO_STORE")?"0":"1000000"));
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"MATERIAL","BETWEEN_BOUNDS","ZERO_STORE"})
+    void changedOrUnknownExposureCannotConsumeAnOrdinaryReviewAtApproval(String change) throws Exception {
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ZERO);
+        independentMeaningReviewer();
+        mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(meaningReviewRequest(action,false))).andExpect(status().isOk());
+        changeCurrentExposure(change);
+        UUID recommendation=jdbc.sql("SELECT recommendation_id FROM ops.lc_action WHERE id=:id").param("id",action).query(UUID.class).single();
+        long version=jdbc.sql("SELECT version FROM ops.recommendation WHERE id=:id").param("id",recommendation).query(Long.class).single();
+        var json=new tools.jackson.databind.ObjectMapper();
+        mvc.perform(post("/api/v1/console/workflow/recommendations/"+recommendation+"/approval")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("expectedVersion",version,"reason","Current evidence must still qualify"))))
+                .andExpect(result->assertThat(result.getResolvedException()).isInstanceOfSatisfying(
+                    com.mimococo.marketops.shared.OperationRejectedException.class,
+                    failure->assertThat(failure.errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.GUARDRAIL_BLOCKED)));
+        assertThat(jdbc.sql("SELECT state='REVIEWED' AND materiality_route='ORDINARY_IMPACT' AND NOT exposure_axis_material FROM ops.lc_action WHERE id=:id")
+                .param("id",action).query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_action_binding WHERE action_id=:id").param("id",action).query(Long.class).single()).isZero();
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"MATERIAL","BETWEEN_BOUNDS","ZERO_STORE","SAME_AXIS"})
+    void launchRechecksCurrentExposureThroughTheSharedExecutionGuardrail(String change) throws Exception {
+        var requestsBefore=List.copyOf(loopback.received);
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_ACTION_LAUNCH,
+                ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        listingIntake.ensureResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Synthetic current exposure task",Instant.now().plusSeconds(86400),Instant.now());
+        changeCurrentExposure(change);
+        var decisions=applicationContext.getBean(com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority.class);
+        var scope=decisions.recheckedDecisionScope(fixture.id("recommendationOne")).orElseThrow();
+        var json=new tools.jackson.databind.ObjectMapper();
+        var evidence=scope.materialityRecheck();
+        assertThat(evidence.get("projectionDigest")).matches("[0-9a-f]{64}");
+        assertThat(json.readTree(evidence.get("metricValueIds")).size()).isEqualTo(2);
+        assertThat(evidence.containsKey("share")).isFalse();
+        assertThat(evidence.containsKey("projection")).isFalse();
+        boolean same=change.equals("SAME_AXIS");
+        assertThat(scope.materialityResolved()).isEqualTo(same);
+        assertThat(evidence.get("state")).isEqualTo(same?"CURRENT":change.equals("MATERIAL")
+                ?"EXPOSURE_CLASSIFICATION_CHANGED":"CURRENT_EXPOSURE_UNRESOLVED");
+        var attempt=mvc.perform(post("/api/v1/console/listing/actions/"+fixture.id("actionOne")+"/launch")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON).content("{\"axes\":{}}"));
+        if (same) {
+            attempt.andExpect(status().isOk()).andExpect(jsonPath("$.launched").value(true));
+            assertThat(jdbc.sql("""
+                    SELECT detail->>'materialityRecheck.state'='CURRENT'
+                      AND detail->>'materialityRecheck.projectionDigest' ~ '^[0-9a-f]{64}$'
+                      AND jsonb_array_length((detail->>'materialityRecheck.metricValueIds')::jsonb)=2
+                      AND NOT jsonb_exists(authority_snapshot,'materialityRecheck')
+                    FROM ops.guardrail_evaluation WHERE recommendation_id=:id AND purpose='EXECUTION'
+                    ORDER BY evaluated_at DESC LIMIT 1
+                    """).param("id",fixture.id("recommendationOne")).query(Boolean.class).single()).isTrue();
+
+        } else {
+            attempt.andExpect(result->assertThat(result.getResolvedException()).isInstanceOfSatisfying(
+                    com.mimococo.marketops.shared.OperationRejectedException.class,
+                    failure->assertThat(failure.errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.GUARDRAIL_BLOCKED)));
+            assertThat(jdbc.sql("SELECT state FROM ops.lc_action WHERE id=:id").param("id",fixture.id("actionOne")).query(String.class).single()).isEqualTo("APPROVED");
+            assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:id")
+                    .param("id",fixture.id("actionOne")).query(Long.class).single()).isZero();
+            assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_exposure_occupation WHERE action_id=:id")
+                    .param("id",fixture.id("actionOne")).query(Long.class).single()).isZero();
+        }
+        assertThat(loopback.received).isEqualTo(requestsBefore);
     }
 
     @Test

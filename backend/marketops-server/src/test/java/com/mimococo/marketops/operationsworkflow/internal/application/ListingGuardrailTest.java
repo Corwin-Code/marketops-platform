@@ -76,7 +76,7 @@ class ListingGuardrailTest {
     private static ListingDecisionScope scope(String route, boolean reviewAttested) {
         return new ListingDecisionScope(ID, ID, ID, ID, ID, 1L, ActionKind.LISTING_DESCRIPTION_CHANGE, "API",
                 "REVIEWED", route, false, false, PACKAGE, 3, Duration.ofHours(48), DIGEST, DIGEST, DIGEST, 120,
-                Boolean.FALSE, AUTHOR, null, reviewAttested, "{\"calibrationPackageId\":\"" + PACKAGE + "\"}", Map.of("state","CURRENT"));
+                Boolean.FALSE, AUTHOR, null, reviewAttested, "{\"calibrationPackageId\":\"" + PACKAGE + "\"}", Map.of("state","CURRENT"),Map.of("state","CURRENT"));
     }
 
     @BeforeEach
@@ -88,7 +88,7 @@ class ListingGuardrailTest {
     @Test
     @DisplayName("TC-LC-GR01 a reviewed, calibrated, unblocked action passes and names its calibration package")
     void passNamesTheCalibrationPackage() {
-        when(listingDecisions.decisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
 
         ListingImpactPreview preview = service.previewListingAction(proposal(NOW.plusSeconds(3600)),
                 GuardrailPurpose.APPROVAL);
@@ -103,7 +103,7 @@ class ListingGuardrailTest {
     @Test
     @DisplayName("TC-LC-GR02 a refusal names no calibration package at all")
     void refusalNamesNoAuthority() {
-        when(listingDecisions.decisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
         when(listingDecisions.unresolvedReasons(ID)).thenReturn(List.of("SCOPE_CONTAINED"));
 
         ListingImpactPreview preview = service.previewListingAction(proposal(NOW.plusSeconds(3600)),
@@ -119,7 +119,7 @@ class ListingGuardrailTest {
     @Test
     @DisplayName("TC-LC-GR03 no decision scope at all blocks the action outright")
     void missingScopeBlocks() {
-        when(listingDecisions.decisionScope(ID)).thenReturn(Optional.empty());
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.empty());
 
         ListingImpactPreview preview = service.previewListingAction(proposal(NOW.plusSeconds(3600)),
                 GuardrailPurpose.APPROVAL);
@@ -131,7 +131,7 @@ class ListingGuardrailTest {
     @Test
     @DisplayName("TC-LC-GR04 an elapsed proposal, a missing review and unresolved materiality each refuse")
     void workflowOwnedReasons() {
-        when(listingDecisions.decisionScope(ID)).thenReturn(Optional.of(scope("MATERIALITY_UNRESOLVED", false)));
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("MATERIALITY_UNRESOLVED", false)));
 
         ListingImpactPreview approval = service.previewListingAction(proposal(NOW), GuardrailPurpose.APPROVAL);
         ListingImpactPreview preview = service.previewListingAction(proposal(NOW.plusSeconds(1)),
@@ -147,7 +147,7 @@ class ListingGuardrailTest {
     @Test
     @DisplayName("TC-LC-GR05 the listing module's blockers map onto workflow reasons without duplicates")
     void listingBlockersMap() {
-        when(listingDecisions.decisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
         when(listingDecisions.unresolvedReasons(ID)).thenReturn(List.of("CALIBRATION_CONFLICTED",
                 "CALIBRATION_UNRESOLVED", "AFFECTED_SET_DIGEST_CHANGED", "CURRENT_TEXT_MOVED",
                 "LISTING_HEALTH_UNKNOWN", "TEXT_LENGTH_OUT_OF_BOUNDS", "KIZ_MARKED_UNDECLARED",
@@ -167,7 +167,7 @@ class ListingGuardrailTest {
     @Test
     @DisplayName("TC-LC-GR06 the shared evaluate entry point routes a listing action to the listing preview")
     void evaluateRoutesListingActions() {
-        when(listingDecisions.decisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT", true)));
 
         var verdict = service.evaluate(proposal(NOW.plusSeconds(3600)), null, GuardrailPurpose.APPROVAL);
 

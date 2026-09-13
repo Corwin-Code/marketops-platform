@@ -356,3 +356,21 @@ No accepted input or committed historical migration changed.
 Review-time proof does not establish current exposure at subsequent approval or
 launch. That consumer recheck and full scoped review history remain open along
 with the other frozen roots. All processes ended; 0/27 formally closed.
+
+## Current classification at Guardrail consumption checkpoint 28
+
+The existing Metric exposure projection is shared by preparation, review and a
+rechecked decision-scope method called only from the existing Guardrail. Permission
+lookup does not repeat Metric reads. Current unknown or changed exposure axes
+block ordinary approval/launch; current same-axis evidence passes. Detail fields
+and input_digest retain the supplemental recheck. The database-owned authority
+snapshot remains exact; its MO032 control was preserved after it rejected an
+incorrect attempted extension. No new schema, frontend, engine or scheduler.
+
+79 signed HTTP/Guardrail and 113 launch/domain/architecture cases passed. Initial
+JDBC Instant binding and shared test-request history errors were corrected. One
+prior native-scope complete-capture test returned INCOMPLETE; later diagnostic
+and full runs passed, but the initial cause remains unconfirmed. The receipt
+retains this limitation rather than attributing it to an unproved clock cause.
+All processes ended; no repeats of unchanged frontend/schema/upgrade suites.
+Atomic dependency fencing and remaining lifecycle/root work are still open.

@@ -115,7 +115,7 @@ public class GuardrailService {
     public ListingImpactPreview previewListingAction(RecommendationView proposal,
                                                      GuardrailPurpose purpose) {
         Instant now = clock.instant();
-        ListingDecisionScope scope = listingDecisions.decisionScope(proposal.id()).orElse(null);
+        ListingDecisionScope scope = listingDecisions.recheckedDecisionScope(proposal.id()).orElse(null);
         List<String> unresolved = listingDecisions.unresolvedReasons(proposal.id());
         List<GuardrailReason> reasons = listingReasons(proposal, scope, unresolved, now, purpose);
         boolean passed = reasons.isEmpty();
@@ -129,6 +129,8 @@ public class GuardrailService {
             authority = "{}";
         }
         components.add(authority);
+        if (scope!=null) scope.materialityRecheck().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .forEach(entry->{components.add(entry.getKey());components.add(entry.getValue());});
         components.addAll(unresolved);
         String inputDigest = Digest.ofComponents(components);
         evaluations.insert(evaluationId, proposal.organizationId(), proposal.id(), null, null, null, null,
@@ -201,6 +203,7 @@ public class GuardrailService {
         detail.put("calibrationPackageId", String.valueOf(scope.calibrationPackageId()));
         detail.put("calibrationVersion", String.valueOf(scope.calibrationVersion()));
         scope.calibrationRecheck().forEach((key,value)->detail.put("calibrationRecheck."+key,value));
+        scope.materialityRecheck().forEach((key,value)->detail.put("materialityRecheck."+key,value));
         detail.put("reviewAttested", Boolean.toString(scope.reviewAttested()));
         if (!unresolved.isEmpty()) {
             detail.put("listingBlockers", String.join(",", unresolved));
