@@ -4,6 +4,7 @@ import { ListingActionsPanel } from './ListingActionsPanel';
 import { ListingGovernancePanel } from './ListingGovernancePanel';
 import { ListingHealthPanel } from './ListingHealthPanel';
 import { ListingManualPanel } from './ListingManualPanel';
+import { ListingOperationsReviewPanel } from './ListingOperationsReviewPanel';
 import type { Language } from './i18n/language';
 import { LanguageProvider, LanguageSwitch, useLanguage } from './i18n/language';
 import { t } from './i18n/ui';
@@ -16,9 +17,9 @@ export interface ListingConversionShellProps {
   readonly storage?: Pick<Storage, 'getItem' | 'setItem'>;
 }
 
-type Tab = 'health' | 'actions' | 'manual' | 'governance';
+type Tab = 'health' | 'actions' | 'manual' | 'governance' | 'review';
 
-/** The listing conversion console: four tabs, two languages, one journey. */
+/** The listing conversion console: one bilingual operating journey. */
 export function ListingConversionShell(props: ListingConversionShellProps): React.JSX.Element {
   return (
     <LanguageProvider
@@ -47,6 +48,7 @@ function Tabs({
     { key: 'actions', label: t('tabActions', language) },
     { key: 'manual', label: t('tabManual', language) },
     { key: 'governance', label: t('tabGovernance', language) },
+    { key: 'review', label: t('tabReview', language) },
   ];
   return (
     <section aria-label={t('title', language)} lang={language}>
@@ -86,6 +88,7 @@ function Tabs({
       )}
       {tab === 'manual' && <ListingManualPanel context={context} />}
       {tab === 'governance' && <ListingGovernancePanel context={context} storeId={storeId} />}
+      {tab === 'review' && <ListingOperationsReviewPanel context={context} storeId={storeId} />}
     </section>
   );
 }

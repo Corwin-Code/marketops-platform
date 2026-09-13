@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessRoleCode;
+import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorker;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRecalculationScheduler;
@@ -169,6 +170,13 @@ class RepresentativePerformanceIT {
                     .containsEntry("mart.metric_input_reference",
                             INPUT_REFERENCES_PER_VALUE*VALUES_PER_DEFINITION*activeDefinitions)
                     .containsEntry("mart.diagnosis_finding",285660L).containsEntry("ops.recommendation",30000L);
+            assertThat(jdbc.sql("""
+                    SELECT count(*)=5000 AND count(DISTINCT platform_listing_id)=5000
+                      FROM ops.lc_recalculation_queue
+                     WHERE trigger_reference LIKE 'ledger.sales_fact:batch:%'
+                    """).query(Boolean.class).single())
+                    .as("the 720k-row sales statement enqueues one request per affected Listing")
+                    .isTrue();
             assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command").query(Integer.class).single()).isZero();
             assertThat(jdbc.sql("SELECT count(*) FROM platform.platform_capability WHERE verification_state='VERIFIED'")
                     .query(Integer.class).single()).isZero();
@@ -312,7 +320,9 @@ class RepresentativePerformanceIT {
         exportWorker.runOnce();
         var job = exports.status(actor,exportId);
         assertThat(job.state()).as("representative export: %s",job.failureCode()).isEqualTo("SUCCEEDED");
-        assertThat(job.rowCount()).isEqualTo(600000);
+        // 4,000 variants x (34 metrics x (value + 3 refs)
+        //     + 9 findings x (finding + ref)).
+        assertThat(job.rowCount()).isEqualTo(616_000L);
         assertThat(job.byteLength()).isBetween(100_000_000L,268435456L);
         var manifest = exports.manifest(actor,exportId);
         var document = mapper.readTree(manifest.document());
@@ -954,7 +964,7 @@ class RepresentativePerformanceIT {
             assertThat(json.size()).isEqualTo(test.name().equals("priority-maximum-page") ? 500 : 50);
             assertThat(test.url()).contains(json.get(0).path("storeId").asString());
         } else if (test.name().startsWith("sku-360")) {
-            assertThat(json.path("metrics").size()).isEqualTo(33);
+            assertThat(json.path("metrics").size()).isEqualTo(MetricCode.values().length);
             assertThat(json.path("findings").size()).isEqualTo(9);
             var sales = json.path("metrics").path("COMPLETED_NET_SALES");
             assertThat(sales.path("evidenceRefs").size()).isEqualTo(3);

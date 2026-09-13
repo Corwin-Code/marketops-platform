@@ -38,11 +38,16 @@ public record ListingDecisionScope(
         boolean reviewAttested,
         String authorityDocument,
         java.util.Map<String,String> calibrationRecheck,
-        java.util.Map<String,String> materialityRecheck) {
+        java.util.Map<String,String> materialityRecheck,
+        java.util.Map<String,String> protectionRecheck,
+        String purposeCode,
+        String purposeBasisDigest,
+        java.time.Instant purposeUseUntil) {
 
     public ListingDecisionScope {
         calibrationRecheck=java.util.Map.copyOf(calibrationRecheck);
         materialityRecheck=java.util.Map.copyOf(materialityRecheck);
+        protectionRecheck=java.util.Map.copyOf(protectionRecheck);
         Objects.requireNonNull(recommendationId, "recommendationId");
         Objects.requireNonNull(organizationId, "organizationId");
         Objects.requireNonNull(storeId, "storeId");

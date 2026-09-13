@@ -119,9 +119,73 @@ class ListingContainmentIT {
                 .query(String.class).single()).isEqualTo("ACTIVE");
     }
 
-    private static void reenable(ListingConversionFixture f, UUID containment, UUID actor) {
-        f.app.sql("SELECT ops.reenable_lc_containment(:id, :actor)").param("id", containment).param("actor", actor)
-                .query(Object.class).optional();
+    @Test
+    void reenableRejectsMissingProofAnotherActorAndAnAttestationProof() throws Exception {
+        var f=ready();UUID containment=UUID.randomUUID();
+        f.contain(containment,f.id("ownerUser"),f.id("listing"));
+        f.attest(UUID.randomUUID(),containment,f.id("ownerUser"),"REPAIR_ATTESTATION");
+        f.attest(UUID.randomUUID(),containment,f.id("verifierUser"),"BUSINESS_CONSENT");
+        assertThatThrownBy(()->f.app.sql("SELECT ops.reenable_lc_containment(:id,:actor,'not-issued')")
+                .param("id",containment).param("actor",f.id("ownerUser")).query(Object.class).optional())
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        for (boolean wrongActor:java.util.List.of(true,false)) {
+            assertThatThrownBy(()->{
+                try (var connection=f.transaction()) {
+                    String proof=f.proof(connection,f.id("ownerUser"),wrongActor?"LISTING_CONTAINMENT_REENABLE":"LISTING_CONTAINMENT_CONSENT",
+                            containment,containment);
+                    try (var query=connection.prepareStatement("SELECT ops.reenable_lc_containment(?,?,?)")) {
+                        query.setObject(1,containment);query.setObject(2,f.id(wrongActor?"verifierUser":"ownerUser"));
+                        query.setString(3,proof);query.execute();
+                    }
+                }
+            }).satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        }
+        assertThat(f.app.sql("SELECT state FROM ops.lc_containment WHERE id=:id").param("id",containment).query(String.class).single())
+                .isEqualTo("ACTIVE");
+        f.reenable(containment,f.id("ownerUser"));
+        assertThat(f.app.sql("SELECT state FROM ops.lc_containment WHERE id=:id").param("id",containment).query(String.class).single())
+                .isEqualTo("REENABLED");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"REPAIR_ROLE_REVOKED","CONSENT_SCOPE_EXPIRED"})
+    void reenableRejectsAttestationsWhoseCurrentAuthorityNoLongerApplies(String expiredAuthority) throws Exception {
+        var f=ready();UUID containment=UUID.randomUUID();
+        f.contain(containment,f.id("ownerUser"),f.id("listing"));
+        f.attest(UUID.randomUUID(),containment,f.id("ownerUser"),"REPAIR_ATTESTATION");
+        f.attest(UUID.randomUUID(),containment,f.id("verifierUser"),"BUSINESS_CONSENT");
+
+        UUID reenableActor;
+        if(expiredAuthority.equals("REPAIR_ROLE_REVOKED")) {
+            assertThat(f.seed.sql("""
+                    UPDATE iam.user_role_assignment
+                       SET status='REVOKED',effective_to=clock_timestamp()-interval '1 second',
+                           reason='Synthetic current repair authority withdrawal',updated_at=clock_timestamp(),version=version+1
+                     WHERE user_id=:actor AND role_code='OWNER' AND status='ACTIVE'
+                    """).param("actor",f.id("ownerUser")).update()).isEqualTo(1);
+            reenableActor=f.id("verifierUser");
+        } else {
+            assertThat(f.seed.sql("""
+                    UPDATE iam.user_scope_grant
+                       SET effective_to=clock_timestamp()-interval '1 second',updated_at=clock_timestamp(),version=version+1
+                     WHERE user_id=:actor AND action_code='LISTING_CONTAINMENT_CONSENT' AND status='ACTIVE'
+                    """).param("actor",f.id("verifierUser")).update()).isEqualTo(1);
+            reenableActor=f.id("ownerUser");
+        }
+
+        assertThatThrownBy(()->f.reenable(containment,reenableActor))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));
+        assertThat(f.app.sql("SELECT state FROM ops.lc_containment WHERE id=:id")
+                .param("id",containment).query(String.class).single()).isEqualTo("ACTIVE");
+        assertThat(f.app.sql("SELECT ops.lc_scope_contained(:org,:listing)")
+                .param("org",f.id("organization")).param("listing",f.id("listing"))
+                .query(Boolean.class).single()).isTrue();
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_containment_attestation WHERE containment_id=:id")
+                .param("id",containment).query(Long.class).single()).isEqualTo(2);
+    }
+
+    private static void reenable(ListingConversionFixture f, UUID containment, UUID actor) throws Exception {
+        f.reenable(containment,actor);
     }
 
     @Test

@@ -32,15 +32,27 @@ public class RecalculationService {
     private final Clock clock;
     private final org.springframework.transaction.support.TransactionTemplate transaction;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds;
+    private final com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository actions;
+    private final ConversionMeasurementService measurements;
+    private final EvaluationService evaluations;
 
     RecalculationService(GovernanceRepository governance, ListingHealthService health, IdGenerator ids, Clock clock,
                          org.springframework.transaction.PlatformTransactionManager transactions,
-                         com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
+                         com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals,
+                         com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository actions,
+                         ConversionMeasurementService measurements,
+                         EvaluationService evaluations,
+                         com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds) {
         this.governance = governance;
         this.health = health;
         this.ids = ids;
         this.clock = clock;
         this.deferrals = deferrals;
+        this.dependencyHolds = dependencyHolds;
+        this.actions = actions;
+        this.measurements = measurements;
+        this.evaluations = evaluations;
         this.transaction = new org.springframework.transaction.support.TransactionTemplate(transactions);
         this.transaction.setPropagationBehavior(org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         this.transaction.setTimeout(120);
@@ -57,6 +69,7 @@ public class RecalculationService {
     @Transactional(propagation = Propagation.NEVER)
     public int runOnce(int limit) {
         transaction.executeWithoutResult(status -> {
+            dependencyHolds.synchronizeDue(limit);
             for(var review:deferrals.expireDue(limit)) {
                 UUID queueId=ids.newId();
                 governance.enqueue(queueId,review.organizationId(),review.listingId(),
@@ -71,7 +84,12 @@ public class RecalculationService {
                 Boolean completed = transaction.execute(status -> {
                     if (!governance.lockClaim(row)) return false;
                     var result = health.recompute(row.listingId(), "SCHEDULED", null);
-                    if (!governance.finish(row, result.id(), null)) {
+                    var measurementResults=measurements.remeasureCurrent(row.listingId(),"SCHEDULED");
+                    var outcomeResults=evaluations.reviseCurrent(row.listingId(),measurementResults,
+                            "recalculation-queue:"+row.id());
+                    var bindingResults=actions.recheckPendingBindings(row.listingId());
+                    if (!governance.finish(row, result.id(),measurementResults,bindingResults.assessed(),
+                            bindingResults.invalidated(),outcomeResults.assessed(),outcomeResults.resultIds(),null)) {
                         throw new IllegalStateException("recalculation lease expired before publication");
                     }
                     return true;
@@ -85,6 +103,11 @@ public class RecalculationService {
             }
         }
         return finished;
+    }
+
+    @Transactional
+    public int enqueueDueFullReviews(int limit) {
+        return governance.enqueueDueFullReviews(limit);
     }
 
     @Transactional(readOnly = true)

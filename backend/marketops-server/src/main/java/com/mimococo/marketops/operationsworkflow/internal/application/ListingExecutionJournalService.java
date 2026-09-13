@@ -40,8 +40,28 @@ class ListingExecutionJournalService implements ListingExecutionJournal {
                     .param("receipt",delivery.receipt()).param("event",event).query(Boolean.class).single();
             if (!acknowledged) throw new IllegalStateException("execution journal acknowledgement conflicted");
         }
-        return deliveries.size();
+        int remaining=Math.max(0,Math.min(limit,100)-deliveries.size());
+        var commandStates=jdbc.sql("SELECT * FROM ops.lock_lc_command_task_deliveries(:limit)")
+                .param("limit",remaining).query((rs,n)->new CommandDelivery(rs.getObject("command_id",UUID.class),
+                        rs.getObject("organization_id",UUID.class),rs.getObject("task_id",UUID.class),
+                        rs.getObject("recommendation_id",UUID.class),rs.getString("command_state"),
+                        rs.getString("failure_code"),rs.getTimestamp("recorded_at").toInstant())).list();
+        for (var delivery:commandStates) {
+            boolean failed=java.util.Set.of("FAILED_FINAL","TERMINATED_WITHOUT_PROVIDER_CALL","COMPENSATION_FAILED")
+                    .contains(delivery.state());
+            String eventKind="COMPENSATED".equals(delivery.state())?"EXECUTION_COMPENSATED":
+                    failed?"EXECUTION_FAILED":"EXECUTION_PENDING";
+            String correlation="lc-command-state:"+delivery.command()+":"+delivery.state();
+            String reason=delivery.failure()==null?delivery.state():delivery.state()+":"+delivery.failure();
+            journal.append(new WorkTaskEventRepository.Event(ids.newId(),delivery.task(),delivery.organization(),
+                    eventKind,"recommendation:"+delivery.recommendation(),
+                    null,null,"lc-description-command:"+delivery.command(),null,null,null,null,null,null,reason,
+                    delivery.recordedAt(),correlation));
+        }
+        return deliveries.size()+commandStates.size();
     }
 
     private record Delivery(UUID receipt,UUID organization,UUID task,UUID recommendation,String state,Instant recordedAt) { }
+    private record CommandDelivery(UUID command,UUID organization,UUID task,UUID recommendation,String state,
+                                   String failure,Instant recordedAt) { }
 }

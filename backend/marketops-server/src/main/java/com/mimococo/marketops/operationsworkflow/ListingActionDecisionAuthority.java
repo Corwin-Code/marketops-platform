@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 
 /**
  * What the listing conversion module answers when the workflow decides a listing action.
@@ -17,6 +18,9 @@ public interface ListingActionDecisionAuthority {
 
     /** Current exposure proof for the shared Guardrail consumer, after caller authorization. */
     Optional<ListingDecisionScope> recheckedDecisionScope(UUID recommendationId);
+
+    /** Require permission to inspect every member whose evidence is needed for this decision. */
+    void requireDecisionEvidence(AuthenticatedActor actor, UUID recommendationId);
 
     /** Deterministic refusals in the listing module's own vocabulary; empty means none. */
     List<String> unresolvedReasons(UUID recommendationId);

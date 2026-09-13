@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { ConsoleFailure, ConsoleRequest } from '../api/console';
-import type { ManualPacket, PromotionEngagement } from '../api/listingConversion';
+import type { ConsoleFailure, ConsoleOutcome, ConsoleRequest } from '../api/console';
+import type { ManualPacket, PromotionEngagement, PromotionTerms } from '../api/listingConversion';
 import {
+  adoptEngagement,
   authorizeExit,
+  fetchActionPackets,
   fetchEngagements,
   fetchMyPackets,
   issuePacket,
@@ -11,6 +13,7 @@ import {
   verifyPacket,
 } from '../api/listingConversion';
 import { Code, ListingProblem, When } from './ListingCommon';
+import { PromotionTermsForm } from './ListingPromotionTerms';
 import { useLanguage } from './i18n/language';
 import { t } from './i18n/ui';
 
@@ -32,6 +35,8 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
   const [generation, setGeneration] = useState(0);
   const [issueAction, setIssueAction] = useState('');
   const [issueExecutor, setIssueExecutor] = useState('');
+  const [packetActionDraft, setPacketActionDraft] = useState('');
+  const [packetAction, setPacketAction] = useState('');
   const [operationTime, setOperationTime] = useState('');
   const [reportState, setReportState] = useState('APPLIED');
   const [note, setNote] = useState('');
@@ -46,10 +51,21 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
     undefined,
   );
   const [exitReason, setExitReason] = useState('OWNER_DECISION');
+  const [exitAuthority, setExitAuthority] = useState('');
+  const [exitEvidenceId, setExitEvidenceId] = useState('');
+  const [releaseObservationId, setReleaseObservationId] = useState('');
+  const [releaseEvidence, setReleaseEvidence] = useState('');
+  const [adoptionKind, setAdoptionKind] = useState('');
+  const [adoptionContextObservation, setAdoptionContextObservation] = useState('');
+  const [adoptionAuthority, setAdoptionAuthority] = useState('');
+  const [adoptionAuthorityUntil, setAdoptionAuthorityUntil] = useState('');
+  const [adoptionResponsibleUser, setAdoptionResponsibleUser] = useState('');
 
   useEffect(() => {
     let active = true;
-    void fetchMyPackets(context).then((outcome) => {
+    const request =
+      packetAction === '' ? fetchMyPackets(context) : fetchActionPackets(context, packetAction);
+    void request.then((outcome) => {
       if (!active) return;
       if (outcome.ok) {
         setPackets(outcome.value);
@@ -62,7 +78,7 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
     return () => {
       active = false;
     };
-  }, [context, generation]);
+  }, [context, generation, packetAction]);
 
   const settle = (outcome: { readonly ok: boolean; readonly failure?: ConsoleFailure }): void => {
     if (outcome.ok) {
@@ -78,6 +94,38 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
         setEngagements(outcome.value);
         setFailure(undefined);
       } else setFailure(outcome.failure);
+    });
+  };
+  const adoptCurrentEngagement = (terms: PromotionTerms): Promise<ConsoleOutcome<string>> => {
+    const authorityUntil = new Date(adoptionAuthorityUntil);
+    if (
+      listingId.trim() === '' ||
+      adoptionKind === '' ||
+      adoptionContextObservation.trim() === '' ||
+      adoptionAuthority.trim() === '' ||
+      !Number.isFinite(authorityUntil.valueOf()) ||
+      adoptionResponsibleUser.trim() === ''
+    ) {
+      return Promise.resolve({
+        ok: false,
+        failure: {
+          kind: 'refused',
+          status: 400,
+          detail: t('promotionAdoptionRequired', language),
+        },
+      });
+    }
+    return adoptEngagement(
+      context,
+      listingId,
+      terms,
+      adoptionContextObservation,
+      adoptionAuthority,
+      authorityUntil.toISOString(),
+      adoptionResponsibleUser,
+    ).then((outcome): ConsoleOutcome<string> => {
+      if (outcome.ok) return { ok: true, value: outcome.value.id };
+      return outcome;
     });
   };
 
@@ -114,6 +162,25 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
           />
         </label>
         <button type="submit">{t('submit', language)}</button>
+      </form>
+      <form
+        aria-label={t('packetLookup', language)}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setPacketAction(packetActionDraft.trim());
+        }}
+      >
+        <label>
+          {t('actions', language)}{' '}
+          <input
+            required
+            value={packetActionDraft}
+            onChange={(event) => {
+              setPacketActionDraft(event.target.value);
+            }}
+          />
+        </label>
+        <button type="submit">{t('open', language)}</button>
       </form>
       {packets === undefined && failure === undefined && <p>{t('loading', language)}</p>}
       {packets?.length === 0 && <p>{t('nothing', language)}</p>}
@@ -308,6 +375,84 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
         </label>
         <button type="submit">{t('open', language)}</button>
       </form>
+      <PromotionTermsForm
+        label={t('promotionAdoption', language)}
+        kind={adoptionKind}
+        heading={t('promotionAdoption', language)}
+        help={t('promotionAdoptionHelp', language)}
+        onSave={adoptCurrentEngagement}
+        onSaved={loadEngagements}
+      >
+        <label>
+          {t('listing', language)}{' '}
+          <input
+            required
+            value={listingId}
+            onChange={(event) => {
+              setListingId(event.target.value);
+            }}
+          />
+        </label>
+        <label>
+          {t('promotionKind', language)}
+          <select
+            required
+            value={adoptionKind}
+            onChange={(event) => {
+              setAdoptionKind(event.target.value);
+            }}
+          >
+            <option value="">{t('undeclared', language)}</option>
+            <option value="OFFICIAL_PROMOTION_PARTICIPATION">
+              {t('promotionOfficialKind', language)}
+            </option>
+            <option value="SELLER_DIRECT_DISCOUNT">{t('promotionSellerKind', language)}</option>
+          </select>
+        </label>
+        <label>
+          {t('promotionContextObservationId', language)}
+          <input
+            required
+            value={adoptionContextObservation}
+            onChange={(event) => {
+              setAdoptionContextObservation(event.target.value);
+            }}
+          />
+        </label>
+        <label>
+          {t('promotionOriginalAuthority', language)}
+          <input
+            required
+            maxLength={512}
+            value={adoptionAuthority}
+            onChange={(event) => {
+              setAdoptionAuthority(event.target.value);
+            }}
+          />
+        </label>
+        <label>
+          {t('promotionOriginalAuthorityUntil', language)}
+          <input
+            required
+            type="datetime-local"
+            step="any"
+            value={adoptionAuthorityUntil}
+            onChange={(event) => {
+              setAdoptionAuthorityUntil(event.target.value);
+            }}
+          />
+        </label>
+        <label>
+          {t('promotionResponsibleUser', language)}
+          <input
+            required
+            value={adoptionResponsibleUser}
+            onChange={(event) => {
+              setAdoptionResponsibleUser(event.target.value);
+            }}
+          />
+        </label>
+      </PromotionTermsForm>
       {engagements?.length === 0 && <p>{t('nothing', language)}</p>}
       {engagements?.map((engagement) => (
         <article
@@ -326,6 +471,33 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
             )}
           </h4>
           {!engagement.fullDisclosure && <p>{t('promotionTermsRestricted', language)}</p>}
+          {engagement.fullDisclosure && (
+            <>
+              <h5>{t('terms', language)}</h5>
+              <dl>
+                {Object.entries(engagement.terms).map(([key, value]) => (
+                  <div key={key}>
+                    <dt>{key}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <h5>{t('obligations', language)}</h5>
+              <dl>
+                {Object.entries(engagement.obligations).map(([key, value]) => (
+                  <div key={key}>
+                    <dt>{key}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              {engagement.termsEvidenceReference !== undefined && (
+                <p>
+                  {t('evidence', language)} {engagement.termsEvidenceReference}
+                </p>
+              )}
+            </>
+          )}
           {engagement.state === 'ACTIVE' && (
             <>
               <label>
@@ -349,10 +521,34 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
                   ))}
                 </select>
               </label>
+              <label>
+                {t('authorityReference', language)}{' '}
+                <input
+                  value={exitAuthority}
+                  onChange={(e) => {
+                    setExitAuthority(e.target.value);
+                  }}
+                />
+              </label>
+              <label>
+                {t('evidenceId', language)}{' '}
+                <input
+                  value={exitEvidenceId}
+                  onChange={(e) => {
+                    setExitEvidenceId(e.target.value);
+                  }}
+                />
+              </label>
               <button
                 type="button"
                 onClick={() => {
-                  void authorizeExit(context, engagement.id, exitReason).then((outcome) => {
+                  void authorizeExit(
+                    context,
+                    engagement.id,
+                    exitReason,
+                    exitAuthority,
+                    exitEvidenceId,
+                  ).then((outcome) => {
                     settle(outcome);
                     loadEngagements();
                   });
@@ -363,23 +559,45 @@ export function ListingManualPanel({ context }: ListingManualPanelProps): React.
             </>
           )}
           {(engagement.state === 'EXITING' || engagement.state === 'STOPPED') && (
-            <button
-              type="button"
-              onClick={() => {
-                void releaseEngagement(
-                  context,
-                  engagement.id,
-                  engagement.state === 'EXITING'
-                    ? 'NEW_TRANSACTIONS_STOPPED'
-                    : 'OBLIGATIONS_CLEARED',
-                ).then((outcome) => {
-                  settle(outcome);
-                  loadEngagements();
-                });
-              }}
-            >
-              {t('release', language)}
-            </button>
+            <>
+              <label>
+                {t('observationId', language)}{' '}
+                <input
+                  value={releaseObservationId}
+                  onChange={(e) => {
+                    setReleaseObservationId(e.target.value);
+                  }}
+                />
+              </label>
+              <label>
+                {t('evidence', language)}{' '}
+                <input
+                  value={releaseEvidence}
+                  onChange={(e) => {
+                    setReleaseEvidence(e.target.value);
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  void releaseEngagement(
+                    context,
+                    engagement.id,
+                    engagement.state === 'EXITING'
+                      ? 'NEW_TRANSACTIONS_STOPPED'
+                      : 'OBLIGATIONS_CLEARED',
+                    releaseObservationId,
+                    releaseEvidence,
+                  ).then((outcome) => {
+                    settle(outcome);
+                    loadEngagements();
+                  });
+                }}
+              >
+                {t('release', language)}
+              </button>
+            </>
           )}
         </article>
       ))}

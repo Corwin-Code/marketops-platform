@@ -43,6 +43,15 @@ public class CalibrationRepository {
                 .single();
     }
 
+    public Instant acceptedAt(UUID packageId, Instant knownAt) {
+        return jdbc.sql("""
+                SELECT g.accepted_at FROM ops.lc_calibration_governance g
+                 WHERE g.package_id=:id AND g.accepted_at<=:at
+                   AND g.accepted_digest=ops.lc_calibration_digest(g.package_id)
+                """).param("id",packageId).param("at",Timestamp.from(knownAt))
+                .query((rs,n)->rs.getTimestamp("accepted_at").toInstant()).optional().orElse(null);
+    }
+
     public Map<String, Value> values(UUID packageId) {
         Map<String, Value> values = new LinkedHashMap<>();
         jdbc.sql("""

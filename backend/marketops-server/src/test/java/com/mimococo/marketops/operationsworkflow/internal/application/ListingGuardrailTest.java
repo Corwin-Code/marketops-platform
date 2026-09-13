@@ -74,9 +74,20 @@ class ListingGuardrailTest {
     }
 
     private static ListingDecisionScope scope(String route, boolean reviewAttested) {
-        return new ListingDecisionScope(ID, ID, ID, ID, ID, 1L, ActionKind.LISTING_DESCRIPTION_CHANGE, "API",
+        return scope(route,reviewAttested,Map.of("supplyVerdict","PASS","financialInputState","CANONICAL_INPUT_AVAILABLE","unitProfitFloorVerdict","PASS","currentProfitVerdict","PASS","currentReturnVerdict","PASS"));
+    }
+
+    private static ListingDecisionScope scope(String route, boolean reviewAttested,Map<String,String> protection) {
+        return scope(route,reviewAttested,protection,ActionKind.LISTING_DESCRIPTION_CHANGE,"LISTING_CONVERSION");
+    }
+
+    private static ListingDecisionScope scope(String route,boolean reviewAttested,Map<String,String> protection,
+                                               ActionKind actionKind,String purpose) {
+        var protectionAtDatabaseTime = new java.util.HashMap<>(protection);
+        protectionAtDatabaseTime.putIfAbsent("assessedAt", NOW.toString());
+        return new ListingDecisionScope(ID, ID, ID, ID, ID, 1L, actionKind, "API",
                 "REVIEWED", route, false, false, PACKAGE, 3, Duration.ofHours(48), DIGEST, DIGEST, DIGEST, 120,
-                Boolean.FALSE, AUTHOR, null, reviewAttested, "{\"calibrationPackageId\":\"" + PACKAGE + "\"}", Map.of("state","CURRENT"),Map.of("state","CURRENT"));
+                Boolean.FALSE, AUTHOR, null, reviewAttested, "{\"calibrationPackageId\":\"" + PACKAGE + "\"}", Map.of("state","CURRENT"),Map.of("state","CURRENT"),Map.copyOf(protectionAtDatabaseTime),purpose,null,null);
     }
 
     @BeforeEach
@@ -98,6 +109,61 @@ class ListingGuardrailTest {
         verify(evaluations).insert(eq(ID), eq(ID), eq(ID), isNull(), isNull(), isNull(), isNull(), eq(PACKAGE),
                 eq(3), eq(GuardrailPurpose.APPROVAL), eq(true), eq(List.of()), anyMap(), anyString(),
                 anyString(), eq(NOW), any());
+    }
+
+    @Test
+    void priorSimulationInputInvalidationBlocksApprovalAndExecutionDespiteOtherPassingChecks() {
+        var protection=Map.of("supplyVerdict","PASS","financialInputState","CANONICAL_INPUT_AVAILABLE",
+                "unitProfitFloorVerdict","PASS","currentProfitVerdict","PASS","currentReturnVerdict","PASS","selectedSimulationInputState","INVALIDATED");
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT",true,protection,
+                ActionKind.LISTING_PROMOTION_ACTION,"PROMOTION")));
+        for (var purpose:List.of(GuardrailPurpose.APPROVAL,GuardrailPurpose.EXECUTION)) {
+            var preview=service.previewListingAction(proposal(NOW.plusSeconds(3600)),purpose);
+            assertThat(preview.verdict().passed()).isFalse();
+            assertThat(preview.unresolved()).contains("QUALIFIED_PROMOTION_ECONOMICS_REQUIRED");
+        }
+    }
+
+    @Test
+    void exactCorrectionDoesNotBorrowFormalEconomicRequirements() {
+        var notApplicable=Map.of("supplyVerdict","UNDETERMINED","financialInputState","UNDETERMINED",
+                "unitProfitFloorVerdict","UNDETERMINED","currentProfitVerdict","UNDETERMINED",
+                "currentReturnVerdict","UNDETERMINED");
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT",true,
+                notApplicable,ActionKind.LISTING_DESCRIPTION_CHANGE,"DESCRIPTION_CORRECTION")));
+        assertThat(service.previewListingAction(proposal(NOW.plusSeconds(3600)),GuardrailPurpose.APPROVAL).verdict().passed()).isTrue();
+    }
+
+    @Test
+    void promotionRequiresTheCurrentQualifiedEconomicConjunction() {
+        var protection=new java.util.HashMap<>(Map.of("supplyVerdict","PASS",
+                "financialInputState","CANONICAL_INPUT_AVAILABLE","unitProfitFloorVerdict","PASS",
+                "currentProfitVerdict","PASS","currentReturnVerdict","PASS"));
+        protection.put("selectedSimulationInputState","QUALIFIED_CURRENT");
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT",true,
+                protection,ActionKind.LISTING_PROMOTION_ACTION,"PROMOTION")));
+        assertThat(service.previewListingAction(proposal(NOW.plusSeconds(3600)),GuardrailPurpose.EXECUTION).verdict().passed()).isTrue();
+        protection.put("selectedSimulationInputState","INVALIDATED");
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT",true,
+                protection,ActionKind.LISTING_PROMOTION_ACTION,"PROMOTION")));
+        assertThat(service.previewListingAction(proposal(NOW.plusSeconds(3600)),GuardrailPurpose.EXECUTION).unresolved())
+                .contains("QUALIFIED_PROMOTION_ECONOMICS_REQUIRED");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({"Profit,FAIL","Profit,UNDETERMINED","Return,FAIL","Return,UNDETERMINED"})
+    void availableInputsCannotReplaceIndependentAccountingProtection(String dimension,String state) {
+        var protection=new java.util.HashMap<>(Map.of("supplyVerdict","PASS",
+                "financialInputState","CANONICAL_INPUT_AVAILABLE","unitProfitFloorVerdict","PASS",
+                "currentProfitVerdict","PASS","currentReturnVerdict","PASS"));
+        protection.put("current"+dimension+"Verdict",state);
+        when(listingDecisions.recheckedDecisionScope(ID)).thenReturn(Optional.of(scope("ORDINARY_IMPACT",true,protection)));
+        for (var purpose:List.of(GuardrailPurpose.APPROVAL,GuardrailPurpose.EXECUTION)) {
+            var preview=service.previewListingAction(proposal(NOW.plusSeconds(3600)),purpose);
+            assertThat(preview.verdict().passed()).isFalse();
+            assertThat(preview.unresolved()).containsExactly("CURRENT_"+dimension.toUpperCase(java.util.Locale.ROOT)
+                    +(state.equals("FAIL")?"_PROTECTION_FAILED":"_PROTECTION_UNQUALIFIED"));
+        }
     }
 
     @Test

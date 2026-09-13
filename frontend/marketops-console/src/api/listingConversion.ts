@@ -1,5 +1,559 @@
 import type { ConsoleOutcome, ConsoleRequest } from './console';
 import { request } from './console';
+import { parseAiExplanation } from './console';
+import type { AiExplanation } from './console';
+
+export type ListingAssistancePurpose =
+  'HYPOTHESIS_COMPARISON' | 'RUSSIAN_DESCRIPTION' | 'SIMPLE_PROMOTION' | 'REVIEW_SUMMARY';
+export function requestListingAssistance(
+  context: ConsoleRequest,
+  listingId: string,
+  window: 'D7' | 'D14' | 'D30',
+  purpose: ListingAssistancePurpose,
+): Promise<ConsoleOutcome<AiExplanation>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/assistance`,
+    parseAiExplanation,
+    post({ window, purpose }),
+  );
+}
+export function fetchListingAssistance(
+  context: ConsoleRequest,
+  listingId: string,
+  invocationId: string,
+): Promise<ConsoleOutcome<AiExplanation>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/assistance/${id(invocationId)}`,
+    parseAiExplanation,
+  );
+}
+
+export interface ListingFeedbackItem {
+  readonly id: string;
+  readonly listingId: string;
+  readonly sourceIdentity: string;
+  readonly rawObservationId: string;
+  readonly originalPointer: string;
+  readonly originalDigest: string;
+  readonly observedAt: string;
+  readonly acquiredAt: string;
+}
+export interface ListingFeedbackClassification {
+  readonly id: string;
+  readonly itemId: string;
+  readonly revision: number;
+  readonly themeCode: string;
+  readonly qualificationState: string;
+  readonly classifierVersion: string;
+  readonly reason: string;
+  readonly classifiedBy: string;
+  readonly classifiedAt: string;
+}
+export interface ListingFeedbackOverview {
+  readonly asOf: string;
+  readonly periodStart: string;
+  readonly periodEnd: string;
+  readonly itemLimit: number;
+  readonly themes: readonly {
+    readonly themeCode: string;
+    readonly qualificationState: string;
+    readonly mentionCount: number;
+  }[];
+  readonly items: readonly ListingFeedbackItem[];
+}
+export interface ListingFeedbackDetail {
+  readonly original: ListingFeedbackItem;
+  readonly classifications: readonly ListingFeedbackClassification[];
+}
+
+function parseFeedbackItem(body: unknown): ListingFeedbackItem | undefined {
+  const r = row(body);
+  const id = text(r?.id),
+    listingId = text(r?.listingId),
+    sourceIdentity = text(r?.sourceIdentity),
+    rawObservationId = text(r?.rawObservationId),
+    originalPointer = text(r?.originalPointer),
+    originalDigest = text(r?.originalDigest),
+    observedAt = text(r?.observedAt),
+    acquiredAt = text(r?.acquiredAt);
+  return id === undefined ||
+    listingId === undefined ||
+    sourceIdentity === undefined ||
+    rawObservationId === undefined ||
+    originalPointer === undefined ||
+    originalDigest === undefined ||
+    observedAt === undefined ||
+    acquiredAt === undefined
+    ? undefined
+    : {
+        id,
+        listingId,
+        sourceIdentity,
+        rawObservationId,
+        originalPointer,
+        originalDigest,
+        observedAt,
+        acquiredAt,
+      };
+}
+export function parseFeedbackOverview(body: unknown): ListingFeedbackOverview | undefined {
+  const r = row(body);
+  const asOf = text(r?.asOf),
+    periodStart = text(r?.periodStart),
+    periodEnd = text(r?.periodEnd),
+    itemLimit = number(r?.itemLimit);
+  const items = list(r?.items, parseFeedbackItem);
+  const themes = list(r?.themes, (value) => {
+    const theme = row(value),
+      themeCode = text(theme?.themeCode),
+      qualificationState = text(theme?.qualificationState),
+      mentionCount = number(theme?.mentionCount);
+    return themeCode === undefined ||
+      qualificationState === undefined ||
+      mentionCount === undefined ||
+      !Number.isSafeInteger(mentionCount) ||
+      mentionCount < 0
+      ? undefined
+      : { themeCode, qualificationState, mentionCount };
+  });
+  return asOf === undefined ||
+    periodStart === undefined ||
+    periodEnd === undefined ||
+    itemLimit === undefined ||
+    items === undefined ||
+    themes === undefined
+    ? undefined
+    : { asOf, periodStart, periodEnd, itemLimit, items, themes };
+}
+export function parseFeedbackDetail(body: unknown): ListingFeedbackDetail | undefined {
+  const r = row(body),
+    original = parseFeedbackItem(r?.original);
+  const classifications = list(r?.classifications, (value) => {
+    const c = row(value),
+      id = text(c?.id),
+      itemId = text(c?.itemId),
+      revision = number(c?.revision),
+      themeCode = text(c?.themeCode),
+      qualificationState = text(c?.qualificationState),
+      classifierVersion = text(c?.classifierVersion),
+      reason = text(c?.reason),
+      classifiedBy = text(c?.classifiedBy),
+      classifiedAt = text(c?.classifiedAt);
+    return id === undefined ||
+      itemId === undefined ||
+      revision === undefined ||
+      !Number.isSafeInteger(revision) ||
+      revision < 0 ||
+      themeCode === undefined ||
+      qualificationState === undefined ||
+      classifierVersion === undefined ||
+      reason === undefined ||
+      classifiedBy === undefined ||
+      classifiedAt === undefined
+      ? undefined
+      : {
+          id,
+          itemId,
+          revision,
+          themeCode,
+          qualificationState,
+          classifierVersion,
+          reason,
+          classifiedBy,
+          classifiedAt,
+        };
+  });
+  return original === undefined ||
+    classifications === undefined ||
+    classifications.some((c) => c.itemId !== original.id)
+    ? undefined
+    : { original, classifications };
+}
+export function fetchFeedbackOverview(
+  context: ConsoleRequest,
+  listingId: string,
+  from: string,
+  to: string,
+): Promise<ConsoleOutcome<ListingFeedbackOverview>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/feedback?${new URLSearchParams({ from, to, limit: '50' }).toString()}`,
+    parseFeedbackOverview,
+  );
+}
+export function fetchFeedbackDetail(
+  context: ConsoleRequest,
+  listingId: string,
+  itemId: string,
+): Promise<ConsoleOutcome<ListingFeedbackDetail>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/feedback/${id(itemId)}`,
+    parseFeedbackDetail,
+  );
+}
+export function captureFeedbackSource(
+  context: ConsoleRequest,
+  listingId: string,
+  source: {
+    readonly rawObservationId: string;
+    readonly itemPointer: string;
+    readonly identityPointer: string;
+    readonly listingPointer: string;
+    readonly textPointer: string;
+  },
+): Promise<ConsoleOutcome<string>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/feedback/sources`,
+    (body) => text(row(body)?.itemId),
+    post(source),
+  );
+}
+export function classifyFeedback(
+  context: ConsoleRequest,
+  listingId: string,
+  itemId: string,
+  classification: Pick<
+    ListingFeedbackClassification,
+    'themeCode' | 'qualificationState' | 'classifierVersion' | 'reason'
+  >,
+): Promise<ConsoleOutcome<string>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/feedback/${id(itemId)}/classifications`,
+    (body) => text(row(body)?.classificationId),
+    { method: 'POST', body: JSON.stringify(classification) },
+  );
+}
+
+export interface ListingReviewCommand {
+  readonly id: string;
+  readonly state: string;
+  readonly failureCode: string | undefined;
+  readonly updatedAt: string;
+}
+export interface ListingReviewTask {
+  readonly taskId: string;
+  readonly causeCode: string;
+  readonly lane: string;
+  readonly taskState: string;
+  readonly status: NonNullable<ListingResponsibility['status']>;
+}
+export interface ListingReviewAction {
+  readonly action: ListingAction;
+  readonly responsibility: NonNullable<ListingResponsibility['status']> | undefined;
+  readonly evaluation: Evaluation | undefined;
+  readonly command: ListingReviewCommand | undefined;
+}
+export interface ListingReviewReceipt {
+  readonly id: string;
+  readonly triggerClass: string;
+  readonly targetMinutes: number;
+  readonly state: string;
+  readonly sourceTime: string | undefined;
+  readonly acceptedAt: string;
+  readonly startedAt: string | undefined;
+  readonly finishedAt: string | undefined;
+  readonly healthResultId: string | undefined;
+  readonly measurementResultIds: readonly string[];
+  readonly bindingAssessedCount: number | undefined;
+  readonly bindingInvalidatedCount: number | undefined;
+  readonly failureCode: string | undefined;
+}
+export interface ListingReviewRow {
+  readonly lane: string;
+  readonly health: ListingHealth;
+  readonly responsibilities: readonly ListingReviewTask[];
+  readonly actions: readonly ListingReviewAction[];
+  readonly recalculation: ListingReviewReceipt | undefined;
+}
+export interface ListingReviewReading {
+  readonly kind: 'CURRENT_QUEUE' | 'DAILY_ACTION_BRIEF' | 'WEEKLY_EVIDENCE_REVIEW';
+  readonly periodStart: string;
+  readonly asOf: string;
+  readonly rows: readonly ListingReviewRow[];
+}
+export interface ListingOperationsReview {
+  readonly asOf: string;
+  readonly storeId: string;
+  readonly timezone: string;
+  readonly current: ListingReviewReading;
+  readonly daily: ListingReviewReading;
+  readonly weekly: ListingReviewReading;
+}
+
+function parseReviewStatus(
+  value: unknown,
+): NonNullable<ListingResponsibility['status']> | undefined {
+  return parseListingResponsibility({ bound: true, status: value })?.status;
+}
+function parseReviewCommand(value: unknown): ListingReviewCommand | undefined {
+  const r = row(value),
+    commandId = text(r?.id),
+    state = text(r?.state),
+    updatedAt = text(r?.updatedAt);
+  return commandId === undefined || state === undefined || updatedAt === undefined
+    ? undefined
+    : { id: commandId, state, failureCode: text(r?.failureCode), updatedAt };
+}
+function parseReviewReceipt(value: unknown): ListingReviewReceipt | undefined {
+  const r = row(value),
+    receiptId = text(r?.id),
+    triggerClass = text(r?.triggerClass),
+    targetMinutes = number(r?.targetMinutes),
+    state = text(r?.state),
+    acceptedAt = text(r?.acceptedAt),
+    measurementResultIds = list(r?.measurementResultIds, text);
+  if (
+    receiptId === undefined ||
+    triggerClass === undefined ||
+    targetMinutes === undefined ||
+    state === undefined ||
+    acceptedAt === undefined ||
+    measurementResultIds === undefined
+  )
+    return undefined;
+  return {
+    id: receiptId,
+    triggerClass,
+    targetMinutes,
+    state,
+    acceptedAt,
+    measurementResultIds,
+    sourceTime: text(r?.sourceTime),
+    startedAt: text(r?.startedAt),
+    finishedAt: text(r?.finishedAt),
+    healthResultId: text(r?.healthResultId),
+    bindingAssessedCount: number(r?.bindingAssessedCount),
+    bindingInvalidatedCount: number(r?.bindingInvalidatedCount),
+    failureCode: text(r?.failureCode),
+  };
+}
+function parseReviewRow(value: unknown): ListingReviewRow | undefined {
+  const r = row(value);
+  if (r === undefined) return undefined;
+  const lane = text(r.lane),
+    health = parseListingHealth(r.health);
+  const responsibilities = list<ListingReviewTask>(r.responsibilities, (entry) => {
+    const task = row(entry),
+      taskId = text(task?.taskId),
+      causeCode = text(task?.causeCode),
+      taskLane = text(task?.lane),
+      taskState = text(task?.taskState),
+      status = parseReviewStatus(task?.status);
+    return taskId === undefined ||
+      causeCode === undefined ||
+      taskLane === undefined ||
+      taskState === undefined ||
+      status?.taskId !== taskId
+      ? undefined
+      : { taskId, causeCode, lane: taskLane, taskState, status };
+  });
+  const actions = list<ListingReviewAction>(r.actions, (entry) => {
+    const item = row(entry);
+    if (item === undefined) return undefined;
+    const action = parseListingAction(item.action);
+    const responsibility =
+      item.responsibility === null || item.responsibility === undefined
+        ? undefined
+        : parseReviewStatus(item.responsibility);
+    const evaluation =
+      item.evaluation === null || item.evaluation === undefined
+        ? undefined
+        : parseEvaluation(item.evaluation);
+    const command =
+      item.command === null || item.command === undefined
+        ? undefined
+        : parseReviewCommand(item.command);
+    if (
+      action === undefined ||
+      (item.responsibility !== null &&
+        item.responsibility !== undefined &&
+        responsibility === undefined) ||
+      (item.evaluation !== null && item.evaluation !== undefined && evaluation === undefined) ||
+      (item.command !== null && item.command !== undefined && command === undefined)
+    )
+      return undefined;
+    return { action, responsibility, evaluation, command };
+  });
+  const recalculation =
+    r.recalculation === null || r.recalculation === undefined
+      ? undefined
+      : parseReviewReceipt(r.recalculation);
+  if (
+    lane === undefined ||
+    health === undefined ||
+    responsibilities === undefined ||
+    actions === undefined ||
+    (r.recalculation !== null && r.recalculation !== undefined && recalculation === undefined) ||
+    actions.some((a) => a.action.platformListingId !== health.platformListingId)
+  )
+    return undefined;
+  return { lane, health, responsibilities, actions, recalculation };
+}
+function parseReviewReading(value: unknown): ListingReviewReading | undefined {
+  const r = row(value),
+    kind = text(r?.kind),
+    periodStart = text(r?.periodStart),
+    asOf = text(r?.asOf),
+    rows = list(r?.rows, parseReviewRow);
+  if (
+    !['CURRENT_QUEUE', 'DAILY_ACTION_BRIEF', 'WEEKLY_EVIDENCE_REVIEW'].includes(kind ?? '') ||
+    periodStart === undefined ||
+    asOf === undefined ||
+    rows === undefined
+  )
+    return undefined;
+  return { kind: kind as ListingReviewReading['kind'], periodStart, asOf, rows };
+}
+export function parseListingOperationsReview(value: unknown): ListingOperationsReview | undefined {
+  const r = row(value),
+    asOf = text(r?.asOf),
+    storeId = text(r?.storeId),
+    timezone = text(r?.timezone),
+    current = parseReviewReading(r?.current),
+    daily = parseReviewReading(r?.daily),
+    weekly = parseReviewReading(r?.weekly);
+  if (
+    asOf === undefined ||
+    storeId === undefined ||
+    timezone === undefined ||
+    current === undefined ||
+    daily === undefined ||
+    weekly === undefined ||
+    current.kind !== 'CURRENT_QUEUE' ||
+    daily.kind !== 'DAILY_ACTION_BRIEF' ||
+    weekly.kind !== 'WEEKLY_EVIDENCE_REVIEW' ||
+    [current, daily, weekly].some((reading) => reading.asOf !== asOf)
+  )
+    return undefined;
+  const identity = (reading: ListingReviewReading) =>
+    reading.rows.map((item) => `${item.health.id}:${String(item.health.healthVersion)}`).join('|');
+  if (identity(current) !== identity(daily) || identity(current) !== identity(weekly))
+    return undefined;
+  return { asOf, storeId, timezone, current, daily, weekly };
+}
+export function fetchListingOperationsReview(
+  context: ConsoleRequest,
+  storeId: string,
+): Promise<ConsoleOutcome<ListingOperationsReview>> {
+  return request(
+    context,
+    `/api/v1/console/listing/operations-review?storeId=${id(storeId)}&limit=100`,
+    parseListingOperationsReview,
+  );
+}
+
+export interface ListingExperienceApplication {
+  readonly id: string;
+  readonly sourceActionId: string;
+  readonly sourceResultId: string;
+  readonly sourceListingId: string;
+  readonly sourceNodeCode: string;
+  readonly sourceStage: string;
+  readonly sourceRevision: number;
+  readonly sourceVerdict: string;
+  readonly sourceProtectionVerdict: string;
+  readonly sourceEvaluatedAt: string;
+  readonly targetListingId: string;
+  readonly targetAffectedSetDigest: string;
+  readonly candidateKind: string;
+  readonly applicabilityEvidenceReference: string;
+  readonly recordedByUserId: string;
+  readonly recordedAt: string;
+  readonly applicabilityState: string;
+}
+export function parseListingExperienceApplication(
+  value: unknown,
+): ListingExperienceApplication | undefined {
+  const r = row(value),
+    idValue = text(r?.id),
+    sourceActionId = text(r?.sourceActionId),
+    sourceResultId = text(r?.sourceResultId),
+    sourceListingId = text(r?.sourceListingId),
+    sourceNodeCode = text(r?.sourceNodeCode),
+    sourceStage = text(r?.sourceStage),
+    sourceRevision = number(r?.sourceRevision),
+    sourceVerdict = text(r?.sourceVerdict),
+    sourceProtectionVerdict = text(r?.sourceProtectionVerdict),
+    sourceEvaluatedAt = text(r?.sourceEvaluatedAt),
+    targetListingId = text(r?.targetListingId),
+    targetAffectedSetDigest = text(r?.targetAffectedSetDigest),
+    candidateKind = text(r?.candidateKind),
+    applicabilityEvidenceReference = text(r?.applicabilityEvidenceReference),
+    recordedByUserId = text(r?.recordedByUserId),
+    recordedAt = text(r?.recordedAt),
+    applicabilityState = text(r?.applicabilityState);
+  if (
+    idValue === undefined ||
+    sourceActionId === undefined ||
+    sourceResultId === undefined ||
+    sourceListingId === undefined ||
+    sourceNodeCode === undefined ||
+    sourceStage === undefined ||
+    sourceRevision === undefined ||
+    sourceVerdict === undefined ||
+    sourceProtectionVerdict === undefined ||
+    sourceEvaluatedAt === undefined ||
+    targetListingId === undefined ||
+    targetAffectedSetDigest === undefined ||
+    candidateKind === undefined ||
+    applicabilityEvidenceReference === undefined ||
+    recordedByUserId === undefined ||
+    recordedAt === undefined ||
+    applicabilityState === undefined
+  )
+    return undefined;
+  return {
+    id: idValue,
+    sourceActionId,
+    sourceResultId,
+    sourceListingId,
+    sourceNodeCode,
+    sourceStage,
+    sourceRevision,
+    sourceVerdict,
+    sourceProtectionVerdict,
+    sourceEvaluatedAt,
+    targetListingId,
+    targetAffectedSetDigest,
+    candidateKind,
+    applicabilityEvidenceReference,
+    recordedByUserId,
+    recordedAt,
+    applicabilityState,
+  };
+}
+export function fetchListingExperience(
+  context: ConsoleRequest,
+  targetListingId: string,
+): Promise<ConsoleOutcome<readonly ListingExperienceApplication[]>> {
+  return request(
+    context,
+    `/api/v1/console/listing/experience?targetListingId=${id(targetListingId)}`,
+    (body) => list(body, parseListingExperienceApplication),
+  );
+}
+export function recordListingExperience(
+  context: ConsoleRequest,
+  input: {
+    readonly sourceActionId: string;
+    readonly sourceResultId: string;
+    readonly targetListingId: string;
+    readonly candidateKind: string;
+    readonly applicabilityEvidenceReference: string;
+  },
+): Promise<ConsoleOutcome<ListingExperienceApplication>> {
+  return request(
+    context,
+    '/api/v1/console/listing/experience',
+    parseListingExperienceApplication,
+    post(input),
+  );
+}
 
 /**
  * The listing conversion console's view of the backend.
@@ -51,6 +605,8 @@ export interface ConversionMeasurement {
   readonly sellableSplit: Readonly<Record<string, string>>;
   readonly excludedTransitionDays: readonly string[];
   readonly computedAt: string;
+  readonly sourceTime?: string;
+  readonly acquisitionTime?: string;
 }
 
 export interface ListingDiagnosticResponsibility {
@@ -107,11 +663,63 @@ export interface PromotionTerms {
   readonly obligations: Readonly<Record<string, string>>;
 }
 
+export interface PromotionContextObservationInput {
+  readonly coverageStart: string;
+  readonly coverageEnd: string;
+  readonly verificationExpiresAt: string;
+  readonly records: readonly {
+    readonly declaration: PromotionTerms;
+    readonly participationState: string;
+    readonly effectiveFrom: string;
+    readonly effectiveTo: string;
+    readonly newTransactionsState: string;
+    readonly residualObligationState: string;
+    readonly originalAuthorityReference: string | null;
+    readonly originalAuthorityValidUntil: string | null;
+    readonly axisDemands: Readonly<
+      Record<
+        string,
+        {
+          readonly value: string;
+          readonly unitCode: string;
+          readonly evidenceReference: string;
+        }
+      >
+    >;
+  }[];
+}
+
 export interface PromotionTermsView {
   readonly actionId: string;
   readonly digest: string | undefined;
   readonly fullDisclosure: boolean;
   readonly terms: PromotionTerms | undefined;
+}
+
+export type ListingActionPurpose =
+  'LISTING_CONVERSION' | 'DESCRIPTION_CORRECTION' | 'BOUNDED_EXPLORATION' | 'PROMOTION';
+
+export interface ListingPurposeBasis {
+  readonly evidenceReference: string;
+  readonly useConditions: readonly string[];
+  readonly endConditions: readonly string[];
+  readonly useUntil?: string | undefined;
+}
+
+function parsePurposeBasis(body: unknown): ListingPurposeBasis | undefined {
+  const r = row(body),
+    evidenceReference = text(r?.evidenceReference);
+  const useConditions = list(r?.useConditions, text),
+    endConditions = list(r?.endConditions, text);
+  if (
+    evidenceReference === undefined ||
+    useConditions === undefined ||
+    useConditions.length === 0 ||
+    endConditions === undefined ||
+    endConditions.length === 0
+  )
+    return undefined;
+  return { evidenceReference, useConditions, endConditions, useUntil: text(r?.useUntil) };
 }
 
 export interface ListingAction {
@@ -133,6 +741,8 @@ export interface ListingAction {
   readonly targetTextDigest: string | undefined;
   readonly restoresCommandId?: string | undefined;
   readonly promotionTermsDigest?: string | undefined;
+  readonly purposeCode?: string | undefined;
+  readonly purposeBasis?: ListingPurposeBasis | undefined;
   readonly kizMarkedDeclared: boolean | undefined;
   readonly materialityRoute: string;
   readonly contentAxisMaterial: boolean | undefined;
@@ -234,6 +844,15 @@ export interface EvaluationNodeResult {
   readonly protectionVector: Readonly<Record<string, string>>;
   readonly protectionVerdict: string;
   readonly stopVerdict: string | undefined;
+  readonly qualificationGaps?: readonly string[];
+  readonly measurementAcquiredAt?: string;
+  readonly measurementComputedAt?: string;
+  readonly fixedTrafficObservation?: {
+    readonly state: string;
+    readonly referenceStandardized: string | undefined;
+    readonly targetStandardized: string | undefined;
+    readonly observedDifference: string | undefined;
+  };
 }
 
 export interface Evaluation {
@@ -249,6 +868,17 @@ export interface Evaluation {
   readonly comparisonBasis: string;
   readonly crossPeriodWindowDays: number;
   readonly results: readonly EvaluationNodeResult[];
+  readonly planDigest?: string;
+  readonly frozenAt?: string;
+  readonly latestBoundary?: string;
+  readonly revisions?: readonly {
+    readonly id: string;
+    readonly originalNodeResultId: string;
+    readonly revisedNodeResultId: string;
+    readonly revisionReason: string;
+    readonly lateFactReference: string;
+    readonly recordedAt: string;
+  }[];
 }
 
 export interface ManualPacket {
@@ -281,10 +911,16 @@ export interface PromotionEngagement {
   readonly actionId: string | undefined;
   readonly engagementKind: string;
   readonly nativePromotionKey: string | undefined;
+  readonly terms: Readonly<Record<string, string>>;
+  readonly termsEvidenceReference: string | undefined;
   readonly priceFreeze: boolean;
   readonly autoParticipation: boolean;
   readonly adopted: boolean;
+  readonly obligations: Readonly<Record<string, string>>;
   readonly fullDisclosure: boolean;
+  readonly sourceContextObservationId: string | undefined;
+  readonly originalAuthorityReference: string | undefined;
+  readonly originalAuthorityValidUntil: string | undefined;
   readonly exitReasonCode: string | undefined;
   readonly state: string;
   readonly version: number;
@@ -465,7 +1101,9 @@ export function parseConversionMeasurement(body: unknown): ConversionMeasurement
     ratioState = text(r.ratioState),
     maturityReached = bool(r.maturityReached),
     sourceStratified = bool(r.sourceStratified),
-    computedAt = text(r.computedAt);
+    computedAt = text(r.computedAt),
+    sourceTime = text(r.sourceTime),
+    acquisitionTime = text(r.acquisitionTime);
   if (
     id === undefined ||
     platformListingId === undefined ||
@@ -497,6 +1135,8 @@ export function parseConversionMeasurement(body: unknown): ConversionMeasurement
     sourceStratified,
     sellableSplit: stringMap(r.sellableSplit),
     excludedTransitionDays: strings(r.excludedTransitionDays),
+    ...(sourceTime === undefined ? {} : { sourceTime }),
+    ...(acquisitionTime === undefined ? {} : { acquisitionTime }),
     computedAt,
   };
 }
@@ -688,6 +1328,9 @@ export function parseListingAction(body: unknown): ListingAction | undefined {
     (launchRow !== undefined && launch === undefined)
   )
     return undefined;
+  const purposeBasis = parsePurposeBasis(r.purposeBasis);
+  if (r.purposeBasis !== undefined && r.purposeBasis !== null && purposeBasis === undefined)
+    return undefined;
   return {
     id,
     storeId,
@@ -707,6 +1350,8 @@ export function parseListingAction(body: unknown): ListingAction | undefined {
     targetTextDigest: text(r.targetTextDigest),
     restoresCommandId: text(r.restoresCommandId),
     promotionTermsDigest: text(r.promotionTermsDigest),
+    purposeCode: text(r.purposeCode),
+    purposeBasis,
     kizMarkedDeclared: bool(r.kizMarkedDeclared),
     materialityRoute,
     contentAxisMaterial: bool(r.contentAxisMaterial),
@@ -873,6 +1518,37 @@ export function parseDescriptionCommand(body: unknown): DescriptionCommand | und
 export function parseEvaluation(body: unknown): Evaluation | undefined {
   const r = row(body);
   if (r === undefined) return undefined;
+  const planDigest = text(r.planDigest),
+    frozenAt = text(r.frozenAt),
+    latestBoundary = text(r.latestBoundary);
+  const revisions =
+    r.revisions === undefined
+      ? []
+      : list(r.revisions, (item) => {
+          const revision = row(item);
+          const id = text(revision?.id),
+            originalNodeResultId = text(revision?.originalNodeResultId),
+            revisedNodeResultId = text(revision?.revisedNodeResultId),
+            revisionReason = text(revision?.revisionReason),
+            lateFactReference = text(revision?.lateFactReference),
+            recordedAt = text(revision?.recordedAt);
+          return id === undefined ||
+            originalNodeResultId === undefined ||
+            revisedNodeResultId === undefined ||
+            revisionReason === undefined ||
+            lateFactReference === undefined ||
+            recordedAt === undefined
+            ? undefined
+            : {
+                id,
+                originalNodeResultId,
+                revisedNodeResultId,
+                revisionReason,
+                lateFactReference,
+                recordedAt,
+              };
+        });
+  if (revisions === undefined) return undefined;
   const planId = text(r.planId),
     actionId = text(r.actionId),
     comparisonBasis = text(r.comparisonBasis),
@@ -894,6 +1570,11 @@ export function parseEvaluation(body: unknown): Evaluation | undefined {
       revisionNo = number(c?.revisionNo),
       verdict = text(c?.verdict),
       protectionVerdict = text(c?.protectionVerdict);
+    const evidence = row(c?.evaluationEvidence);
+    const observation = row(evidence?.fixedTrafficObservation);
+    const observationState = text(observation?.state);
+    const acquiredAt = text(evidence?.measurementAcquiredAt);
+    const computedAt = text(evidence?.measurementComputedAt);
     return resultId === undefined ||
       nodeCode === undefined ||
       stage === undefined ||
@@ -913,6 +1594,19 @@ export function parseEvaluation(body: unknown): Evaluation | undefined {
           protectionVector: stringMap(c?.protectionVector),
           protectionVerdict,
           stopVerdict: text(c?.stopVerdict),
+          qualificationGaps: list(evidence?.qualificationGaps, text) ?? [],
+          ...(acquiredAt === undefined ? {} : { measurementAcquiredAt: acquiredAt }),
+          ...(computedAt === undefined ? {} : { measurementComputedAt: computedAt }),
+          ...(observationState === undefined
+            ? {}
+            : {
+                fixedTrafficObservation: {
+                  state: observationState,
+                  referenceStandardized: decimalText(observation?.referenceStandardized),
+                  targetStandardized: decimalText(observation?.targetStandardized),
+                  observedDifference: decimalText(observation?.observedDifference),
+                },
+              }),
         };
   });
   if (
@@ -932,6 +1626,10 @@ export function parseEvaluation(body: unknown): Evaluation | undefined {
     comparisonBasis,
     crossPeriodWindowDays,
     results,
+    revisions,
+    ...(planDigest === undefined ? {} : { planDigest }),
+    ...(frozenAt === undefined ? {} : { frozenAt }),
+    ...(latestBoundary === undefined ? {} : { latestBoundary }),
   };
 }
 
@@ -1030,10 +1728,16 @@ export function parsePromotionEngagement(body: unknown): PromotionEngagement | u
     actionId: text(r.actionId),
     engagementKind,
     nativePromotionKey: text(r.nativePromotionKey),
+    terms: stringMap(r.terms),
+    termsEvidenceReference: text(r.termsEvidenceReference),
     priceFreeze,
     autoParticipation,
     adopted,
+    obligations: stringMap(r.obligations),
     fullDisclosure,
+    sourceContextObservationId: text(r.sourceContextObservationId),
+    originalAuthorityReference: text(r.originalAuthorityReference),
+    originalAuthorityValidUntil: text(r.originalAuthorityValidUntil),
     exitReasonCode: text(r.exitReasonCode),
     state,
     version,
@@ -1244,6 +1948,7 @@ export function recordPromotionFact(
   observedAt: string,
   evidenceReference: string,
   nativeIdentity?: { engagementKind: string; nativePromotionKey: string },
+  promotionContext?: PromotionContextObservationInput,
 ): Promise<ConsoleOutcome<string>> {
   return request(
     context,
@@ -1256,6 +1961,7 @@ export function recordPromotionFact(
       participationState,
       observedAt,
       evidenceReference,
+      context: promotionContext,
     }),
   );
 }
@@ -1338,6 +2044,116 @@ export function prepareCandidate(
   );
 }
 
+export interface PromotionSimulation {
+  readonly id: string;
+  readonly candidateId: string;
+  readonly inputsDigest: string | undefined;
+  readonly computedAt: string;
+  readonly inverseState: string;
+  readonly qualificationState: string;
+  readonly purposeCode: string | undefined;
+  readonly scenarios: readonly {
+    readonly scenarioCode: string;
+    readonly state: string;
+    readonly quantity: string | undefined;
+    readonly netRevenue: string | undefined;
+    readonly contributionProfit: string | undefined;
+    readonly missingInputs: readonly string[];
+  }[];
+}
+export function parsePromotionSimulation(body: unknown): PromotionSimulation | undefined {
+  const r = row(body),
+    simulationId = text(r?.id),
+    candidateId = text(r?.candidateId),
+    computedAt = text(r?.computedAt),
+    inverseState = text(r?.inverseState),
+    snapshot = row(r?.inputSnapshot);
+  const scenarios = list<PromotionSimulation['scenarios'][number]>(r?.scenarios, (item) => {
+    const s = row(item),
+      scenarioCode = text(s?.scenarioCode),
+      state = text(s?.state);
+    return scenarioCode === undefined || state === undefined
+      ? undefined
+      : {
+          scenarioCode,
+          state,
+          quantity: decimalText(s?.quantity),
+          netRevenue: decimalText(s?.netRevenue),
+          contributionProfit: decimalText(s?.contributionProfit),
+          missingInputs: strings(s?.missingInputs),
+        };
+  });
+  if (
+    simulationId === undefined ||
+    candidateId === undefined ||
+    computedAt === undefined ||
+    inverseState === undefined ||
+    scenarios === undefined
+  )
+    return undefined;
+  return {
+    id: simulationId,
+    candidateId,
+    computedAt,
+    inverseState,
+    inputsDigest: text(r?.inputsDigest),
+    scenarios,
+    qualificationState:
+      text(snapshot?.qualificationState) ?? text(r?.qualificationState) ?? 'UNQUALIFIED',
+    purposeCode: text(snapshot?.purposeCode),
+  };
+}
+export function fetchCandidateSimulations(
+  context: ConsoleRequest,
+  candidateId: string,
+): Promise<ConsoleOutcome<readonly PromotionSimulation[]>> {
+  return request(context, `${ACTIONS}/candidates/${id(candidateId)}/simulations`, (body) =>
+    list(body, parsePromotionSimulation),
+  );
+}
+export interface PromotionSimulationRequest {
+  readonly listPrice: string;
+  readonly sellerDiscountRate: string | null;
+  readonly discountAlreadyInNetRevenue: boolean;
+  readonly unitCost: string | null;
+  readonly stepFees: readonly { readonly priceFloor: string; readonly feePerUnit: string }[];
+  readonly feesKnown: boolean;
+  readonly scenarios: readonly {
+    readonly code: string;
+    readonly quantity: string;
+    readonly necessary: boolean;
+    readonly conservative: boolean;
+  }[];
+  readonly referenceProfitLine: string | null;
+  readonly currencyCode: string;
+  readonly expenses: null | {
+    readonly fixedPromotionFee: { readonly amount: string; readonly currencyCode: string } | null;
+    readonly returnLossPerUnit: { readonly amount: string; readonly currencyCode: string } | null;
+    readonly advertisingPerUnit: { readonly amount: string; readonly currencyCode: string } | null;
+    readonly variableTaxPerUnit: { readonly amount: string; readonly currencyCode: string } | null;
+  };
+  readonly context: {
+    readonly periodStart: string;
+    readonly periodEnd: string;
+    readonly sourceReferences: Readonly<Record<string, string>>;
+    readonly assumptions: string;
+    readonly commercialDeclaration: PromotionTerms;
+  };
+}
+export function simulatePromotionCandidate(
+  context: ConsoleRequest,
+  candidateId: string,
+  requestBody: PromotionSimulationRequest,
+  purpose: 'PROMOTION' | 'BOUNDED_EXPLORATION',
+): Promise<ConsoleOutcome<PromotionSimulation>> {
+  return request(
+    context,
+    `${ACTIONS}/candidates/${id(candidateId)}/simulate`,
+    parsePromotionSimulation,
+    post({ ...requestBody, purpose }),
+  );
+}
+
 export function prepareAction(
   context: ConsoleRequest,
   candidateId: string,
@@ -1346,6 +2162,9 @@ export function prepareAction(
   kizMarkedDeclared: boolean | undefined,
   restoresCommandId?: string,
   promotionTerms?: PromotionTerms,
+  purpose?: ListingActionPurpose,
+  purposeBasis?: ListingPurposeBasis,
+  simulationId?: string,
 ): Promise<ConsoleOutcome<ListingAction>> {
   return request(
     context,
@@ -1354,6 +2173,9 @@ export function prepareAction(
     post({
       executionPath,
       ...(promotionTerms === undefined ? {} : { promotionTerms }),
+      ...(purpose === undefined ? {} : { purpose }),
+      ...(purposeBasis === undefined ? {} : { purposeBasis }),
+      ...(simulationId === undefined ? {} : { simulationId }),
       targetText: restoresCommandId || promotionTerms ? null : targetText,
       restoresCommandId: restoresCommandId === '' ? null : (restoresCommandId ?? null),
       kizMarkedDeclared: kizMarkedDeclared ?? null,
@@ -1375,7 +2197,156 @@ export interface MeaningAssessment {
   }[];
 }
 
+export interface ReviewSimulation {
+  readonly id: string;
+  readonly inputsDigest: string;
+  readonly computedAt: string;
+  readonly currency: string | undefined;
+  readonly periodStart: string | undefined;
+  readonly periodEnd: string | undefined;
+  readonly referenceProfitLine: string | undefined;
+  readonly inverseMinimumQuantity: string | undefined;
+  readonly inverseState: string;
+  readonly qualificationState: string;
+  readonly conditionalScenariosPassed: boolean | undefined;
+  readonly inputEvidence: string;
+  readonly scenarios: readonly {
+    readonly code: string;
+    readonly state: string;
+    readonly quantity: string | undefined;
+    readonly netRevenue: string | undefined;
+    readonly contributionProfit: string | undefined;
+    readonly missingInputs: readonly string[];
+  }[];
+}
+
+function parseReviewSimulation(body: unknown): ReviewSimulation | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const id = text(r.id),
+    inputsDigest = text(r.inputsDigest),
+    computedAt = text(r.computedAt),
+    inverseState = text(r.inverseState),
+    qualificationState = text(r.qualificationState),
+    inputEvidence = text(r.inputEvidence);
+  const scenarios = list<ReviewSimulation['scenarios'][number]>(r.scenarios, (item) => {
+    const value = row(item),
+      code = text(value?.code),
+      state = text(value?.state);
+    if (
+      value === undefined ||
+      code === undefined ||
+      state === undefined ||
+      !Array.isArray(value.missingInputs) ||
+      value.missingInputs.some((gap) => typeof gap !== 'string')
+    )
+      return undefined;
+    for (const field of ['quantity', 'netRevenue', 'contributionProfit'])
+      if (
+        value[field] !== null &&
+        value[field] !== undefined &&
+        (typeof value[field] !== 'string' || !/^-?\d+(?:\.\d+)?$/.test(value[field]))
+      )
+        return undefined;
+    return {
+      code,
+      state,
+      quantity: text(value.quantity),
+      netRevenue: text(value.netRevenue),
+      contributionProfit: text(value.contributionProfit),
+      missingInputs: strings(value.missingInputs),
+    };
+  });
+  if (
+    id === undefined ||
+    inputsDigest === undefined ||
+    computedAt === undefined ||
+    inverseState === undefined ||
+    qualificationState === undefined ||
+    inputEvidence === undefined ||
+    scenarios === undefined
+  )
+    return undefined;
+  for (const field of ['referenceProfitLine', 'inverseMinimumQuantity'])
+    if (
+      r[field] !== null &&
+      r[field] !== undefined &&
+      (typeof r[field] !== 'string' || !/^-?\d+(?:\.\d+)?$/.test(r[field]))
+    )
+      return undefined;
+  return {
+    id,
+    inputsDigest,
+    computedAt,
+    inverseState,
+    qualificationState,
+    inputEvidence,
+    scenarios,
+    currency: text(r.currency),
+    periodStart: text(r.periodStart),
+    periodEnd: text(r.periodEnd),
+    referenceProfitLine: text(r.referenceProfitLine),
+    inverseMinimumQuantity: text(r.inverseMinimumQuantity),
+    conditionalScenariosPassed: bool(r.conditionalScenariosPassed),
+  };
+}
+
 export interface MeaningReviewBasis {
+  readonly selectedSimulation?: ReviewSimulation | undefined;
+  readonly purposeBasis?: ListingPurposeBasis | undefined;
+  readonly currentDescription?:
+    | {
+        readonly observationId: string;
+        readonly textDigest: string;
+        readonly text: string;
+        readonly languageCode: string;
+        readonly kizMarkedDeclared?: boolean | undefined;
+        readonly observedAt: string;
+        readonly acquiredAt: string;
+        readonly sourceKind: string;
+      }
+    | undefined;
+  readonly affectedSet: {
+    readonly affectedSetId: string;
+    readonly digest: string;
+    readonly state: string;
+    readonly listingVariantIds: readonly string[];
+    readonly productVariantIds: readonly string[];
+    readonly nativeScopeObservationId?: string | undefined;
+    readonly identityLineage?: string | undefined;
+  };
+  readonly reviewEvidence?:
+    | {
+        readonly reviewerUserId: string;
+        readonly verdict: string;
+        readonly reason: string;
+        readonly reviewedAt: string;
+        readonly factsDigest: string;
+        readonly evaluationPlanDigest?: string | undefined;
+        readonly purposeBasisDigest?: string | undefined;
+        readonly meaningAssessment?: string | undefined;
+        readonly exposureEvidence?: string | undefined;
+        readonly contentAxisMaterial?: boolean | undefined;
+        readonly exposureAxisMaterial?: boolean | undefined;
+        readonly materialityRoute?: string | undefined;
+      }
+    | undefined;
+  readonly calibrationEvidence: Readonly<Record<string, string>>;
+  readonly materialityEvidence: Readonly<Record<string, string>>;
+  readonly businessProtectionEvidence: Readonly<Record<string, string>>;
+  readonly authorityDocument: string;
+  readonly applicableExperience: readonly {
+    readonly experienceApplicationId: string;
+    readonly sourceActionId: string;
+    readonly sourceResultId: string;
+    readonly sourceListingId: string;
+    readonly sourceNodeCode: string;
+    readonly sourceStage: string;
+    readonly sourceRevision: number;
+    readonly targetAffectedSetDigest: string;
+    readonly candidateKind: string;
+    readonly applicabilityEvidenceReference: string;
+  }[];
   readonly actionId: string;
   readonly basisDigest: string;
   readonly ruleState: string;
@@ -1391,10 +2362,11 @@ export interface MeaningReviewBasis {
 
 export function parseMeaningReviewBasis(body: unknown): MeaningReviewBasis | undefined {
   const r = row(body);
-  const actionId = text(r?.actionId),
-    basisDigest = text(r?.basisDigest),
-    ruleState = text(r?.ruleState);
-  const conditions = list<MeaningReviewBasis['conditions'][number]>(r?.conditions, (item) => {
+  if (r === undefined) return undefined;
+  const actionId = text(r.actionId),
+    basisDigest = text(r.basisDigest),
+    ruleState = text(r.ruleState);
+  const conditions = list<MeaningReviewBasis['conditions'][number]>(r.conditions, (item) => {
     const c = row(item);
     const code = text(c?.code),
       condition = text(c?.condition),
@@ -1416,7 +2388,7 @@ export function parseMeaningReviewBasis(body: unknown): MeaningReviewBasis | und
     return undefined;
   if (new Set(conditions.map((c) => c.code)).size !== conditions.length) return undefined;
   let promotionTerms: PromotionTerms | undefined;
-  if (r?.promotionTerms !== undefined && r.promotionTerms !== null) {
+  if (r.promotionTerms !== undefined && r.promotionTerms !== null) {
     const parsed = parsePromotionTermsView({
       actionId,
       digest: basisDigest,
@@ -1426,12 +2398,174 @@ export function parseMeaningReviewBasis(body: unknown): MeaningReviewBasis | und
     if (parsed?.terms === undefined) return undefined;
     promotionTerms = parsed.terms;
   }
+  const selectedSimulation =
+    r.selectedSimulation === null || r.selectedSimulation === undefined
+      ? undefined
+      : parseReviewSimulation(r.selectedSimulation);
+  if (
+    r.selectedSimulation !== null &&
+    r.selectedSimulation !== undefined &&
+    selectedSimulation === undefined
+  )
+    return undefined;
+  const purposeBasis = parsePurposeBasis(r.purposeBasis);
+  if (r.purposeBasis !== undefined && r.purposeBasis !== null && purposeBasis === undefined)
+    return undefined;
+  const descriptionRow = row(r.currentDescription);
+  let currentDescription: MeaningReviewBasis['currentDescription'];
+  if (r.currentDescription !== undefined && r.currentDescription !== null) {
+    const observationId = text(descriptionRow?.observationId),
+      textDigest = text(descriptionRow?.textDigest),
+      descriptionText = text(descriptionRow?.text),
+      languageCode = text(descriptionRow?.languageCode),
+      observedAt = text(descriptionRow?.observedAt),
+      acquiredAt = text(descriptionRow?.acquiredAt),
+      sourceKind = text(descriptionRow?.sourceKind),
+      kizMarkedDeclared = bool(descriptionRow?.kizMarkedDeclared);
+    if (
+      observationId === undefined ||
+      textDigest === undefined ||
+      descriptionText === undefined ||
+      languageCode === undefined ||
+      observedAt === undefined ||
+      acquiredAt === undefined ||
+      sourceKind === undefined ||
+      (descriptionRow?.kizMarkedDeclared !== null &&
+        descriptionRow?.kizMarkedDeclared !== undefined &&
+        kizMarkedDeclared === undefined)
+    )
+      return undefined;
+    currentDescription = {
+      observationId,
+      textDigest,
+      text: descriptionText,
+      languageCode,
+      observedAt,
+      acquiredAt,
+      sourceKind,
+      kizMarkedDeclared,
+    };
+  }
+  const affectedRow = row(r.affectedSet),
+    affectedSetId = text(affectedRow?.affectedSetId),
+    affectedDigest = text(affectedRow?.digest),
+    affectedState = text(affectedRow?.state),
+    listingVariantIds = list(affectedRow?.listingVariantIds, text),
+    productVariantIds = list(affectedRow?.productVariantIds, text),
+    nativeScopeObservationId = text(affectedRow?.nativeScopeObservationId),
+    identityLineage = text(affectedRow?.identityLineage);
+  if (
+    affectedSetId === undefined ||
+    affectedDigest === undefined ||
+    affectedState === undefined ||
+    listingVariantIds === undefined ||
+    productVariantIds === undefined ||
+    listingVariantIds.length === 0 ||
+    productVariantIds.length === 0
+  )
+    return undefined;
+  const reviewRow = row(r.reviewEvidence);
+  let reviewEvidence: MeaningReviewBasis['reviewEvidence'];
+  if (r.reviewEvidence !== undefined && r.reviewEvidence !== null) {
+    const reviewerUserId = text(reviewRow?.reviewerUserId),
+      verdict = text(reviewRow?.verdict),
+      reviewReason = text(reviewRow?.reason),
+      reviewedAt = text(reviewRow?.reviewedAt),
+      factsDigest = text(reviewRow?.factsDigest);
+    if (
+      reviewerUserId === undefined ||
+      verdict === undefined ||
+      reviewReason === undefined ||
+      reviewedAt === undefined ||
+      factsDigest === undefined
+    )
+      return undefined;
+    reviewEvidence = {
+      reviewerUserId,
+      verdict,
+      reason: reviewReason,
+      reviewedAt,
+      factsDigest,
+      evaluationPlanDigest: text(reviewRow?.evaluationPlanDigest),
+      purposeBasisDigest: text(reviewRow?.purposeBasisDigest),
+      meaningAssessment: text(reviewRow?.meaningAssessment),
+      exposureEvidence: text(reviewRow?.exposureEvidence),
+      contentAxisMaterial: bool(reviewRow?.contentAxisMaterial),
+      exposureAxisMaterial: bool(reviewRow?.exposureAxisMaterial),
+      materialityRoute: text(reviewRow?.materialityRoute),
+    };
+  }
+  const applicableExperience = list(r.applicableExperience, (value) => {
+    const item = row(value),
+      experienceApplicationId = text(item?.experienceApplicationId),
+      sourceActionId = text(item?.sourceActionId),
+      sourceResultId = text(item?.sourceResultId),
+      sourceListingId = text(item?.sourceListingId),
+      sourceNodeCode = text(item?.sourceNodeCode),
+      sourceStage = text(item?.sourceStage),
+      sourceRevision = number(item?.sourceRevision),
+      targetAffectedSetDigest = text(item?.targetAffectedSetDigest),
+      candidateKind = text(item?.candidateKind),
+      applicabilityEvidenceReference = text(item?.applicabilityEvidenceReference);
+    return experienceApplicationId === undefined ||
+      sourceActionId === undefined ||
+      sourceResultId === undefined ||
+      sourceListingId === undefined ||
+      sourceNodeCode === undefined ||
+      sourceStage === undefined ||
+      sourceRevision === undefined ||
+      !Number.isSafeInteger(sourceRevision) ||
+      sourceRevision < 0 ||
+      targetAffectedSetDigest === undefined ||
+      candidateKind === undefined ||
+      applicabilityEvidenceReference === undefined
+      ? undefined
+      : {
+          experienceApplicationId,
+          sourceActionId,
+          sourceResultId,
+          sourceListingId,
+          sourceNodeCode,
+          sourceStage,
+          sourceRevision,
+          targetAffectedSetDigest,
+          candidateKind,
+          applicabilityEvidenceReference,
+        };
+  });
+  const authorityDocument = text(r.authorityDocument);
+  if (
+    applicableExperience === undefined ||
+    authorityDocument === undefined ||
+    row(r.calibrationEvidence) === undefined ||
+    row(r.materialityEvidence) === undefined ||
+    row(r.businessProtectionEvidence) === undefined
+  )
+    return undefined;
   return {
+    selectedSimulation,
+    purposeBasis,
+    currentDescription,
+    affectedSet: {
+      affectedSetId,
+      digest: affectedDigest,
+      state: affectedState,
+      listingVariantIds,
+      productVariantIds,
+      nativeScopeObservationId,
+      identityLineage,
+    },
+    reviewEvidence,
+    calibrationEvidence: stringMap(r.calibrationEvidence),
+    materialityEvidence: stringMap(r.materialityEvidence),
+    businessProtectionEvidence: stringMap(r.businessProtectionEvidence),
+    authorityDocument,
+    applicableExperience,
     actionId,
     basisDigest,
     ruleState,
-    currentText: text(r?.currentText),
-    targetText: text(r?.targetText),
+    currentText: text(r.currentText),
+    targetText: text(r.targetText),
     promotionTerms,
     conditions,
   };
@@ -1514,6 +2648,7 @@ export interface ListingResponsibility {
     readonly calibrationVersion: number | undefined;
     readonly firstRaisedAt: string;
     readonly acknowledgementDueAt: string | undefined;
+    readonly originalActionDueAt: string | undefined;
     readonly actionDueAt: string | undefined;
     readonly outcomeMaturityDueAt: string | undefined;
     readonly nextCoveredAt: string | undefined;
@@ -1522,8 +2657,81 @@ export interface ListingResponsibility {
     readonly acknowledgementBreached: boolean | undefined;
     readonly actionBreached: boolean | undefined;
     readonly wallClockAgeSeconds: number;
+    readonly dependencyHoldElapsedSeconds: number;
     readonly deferral?: ListingTaskDeferral | undefined;
+    readonly dependencyHold?: ListingTaskDependencyHold | undefined;
   };
+}
+
+export interface ListingTaskDependencyHold {
+  readonly id: string;
+  readonly dependencyTaskId: string;
+  readonly minutes: number;
+  readonly evidenceReference: string;
+  readonly startedAt: string;
+  readonly expiresAt: string;
+  readonly state: 'ACTIVE' | 'RESUMED' | 'EXPIRED' | 'INVALIDATED';
+  readonly endedAt: string | undefined;
+  readonly endReason: string | undefined;
+}
+
+export type ListingDependencyHoldTarget =
+  | { readonly kind: 'ACTION'; readonly actionId: string }
+  | { readonly kind: 'DIAGNOSTIC'; readonly listingId: string; readonly taskId: string };
+
+export function parseListingTaskDependencyHold(
+  body: unknown,
+): ListingTaskDependencyHold | undefined {
+  const r = row(body),
+    holdId = text(r?.id),
+    dependencyTaskId = text(r?.dependencyTaskId),
+    minutes = number(r?.minutes),
+    evidenceReference = text(r?.evidenceReference),
+    startedAt = text(r?.startedAt),
+    expiresAt = text(r?.expiresAt),
+    state = text(r?.state);
+  if (
+    holdId === undefined ||
+    dependencyTaskId === undefined ||
+    minutes === undefined ||
+    !Number.isSafeInteger(minutes) ||
+    minutes < 1 ||
+    evidenceReference === undefined ||
+    startedAt === undefined ||
+    expiresAt === undefined ||
+    !['ACTIVE', 'RESUMED', 'EXPIRED', 'INVALIDATED'].includes(state ?? '')
+  )
+    return undefined;
+  return {
+    id: holdId,
+    dependencyTaskId,
+    minutes,
+    evidenceReference,
+    startedAt,
+    expiresAt,
+    state: state as ListingTaskDependencyHold['state'],
+    endedAt: text(r?.endedAt),
+    endReason: text(r?.endReason),
+  };
+}
+
+export function holdListingTaskForDependency(
+  context: ConsoleRequest,
+  target: ListingDependencyHoldTarget,
+  dependencyTaskId: string,
+  minutes: number,
+  evidenceReference: string,
+): Promise<ConsoleOutcome<ListingTaskDependencyHold>> {
+  const url =
+    target.kind === 'ACTION'
+      ? `${ACTIONS}/${id(target.actionId)}/responsibility/dependency-holds`
+      : `${HEALTH}/listings/${id(target.listingId)}/responsibilities/${id(target.taskId)}/dependency-holds`;
+  return request(
+    context,
+    url,
+    parseListingTaskDependencyHold,
+    post({ dependencyTaskId, minutes, evidenceReference }),
+  );
 }
 
 export function parseListingResponsibility(body: unknown): ListingResponsibility | undefined {
@@ -1550,18 +2758,27 @@ export function parseListingResponsibility(body: unknown): ListingResponsibility
       ? undefined
       : parseListingTaskDeferral(s.deferral);
   if (s.deferral !== null && s.deferral !== undefined && deferral === undefined) return undefined;
+  const dependencyHold =
+    s.dependencyHold === null || s.dependencyHold === undefined
+      ? undefined
+      : parseListingTaskDependencyHold(s.dependencyHold);
+  if (s.dependencyHold !== null && s.dependencyHold !== undefined && dependencyHold === undefined)
+    return undefined;
   return {
     bound: true,
     status: {
       deferral,
+      dependencyHold,
       taskId,
       clockState,
       basisDigest,
       firstRaisedAt,
       wallClockAgeSeconds: age,
+      dependencyHoldElapsedSeconds: number(s.dependencyHoldElapsedSeconds) ?? 0,
       calibrationPackageId: text(s.calibrationPackageId),
       calibrationVersion: number(s.calibrationVersion),
       acknowledgementDueAt: text(s.acknowledgementDueAt),
+      originalActionDueAt: text(s.originalActionDueAt),
       actionDueAt: text(s.actionDueAt),
       outcomeMaturityDueAt: text(s.outcomeMaturityDueAt),
       nextCoveredAt: text(s.nextCoveredAt),
@@ -1667,6 +2884,24 @@ export function fetchEvaluation(
   return request(context, `${ACTIONS}/${id(actionId)}/evaluation`, parseEvaluation);
 }
 
+export function evaluateNode(
+  context: ConsoleRequest,
+  actionId: string,
+  node: {
+    readonly nodeCode: string;
+    readonly stage: 'OPERATIONAL' | 'SETTLED';
+    readonly measurementId?: string;
+    readonly lateFactReference?: string;
+  },
+): Promise<ConsoleOutcome<Evaluation>> {
+  return request(
+    context,
+    `${ACTIONS}/${id(actionId)}/evaluation/nodes`,
+    parseEvaluation,
+    post(node),
+  );
+}
+
 export function fetchDescriptionCommand(
   context: ConsoleRequest,
   actionId: string,
@@ -1757,16 +2992,41 @@ export function fetchEngagements(
   );
 }
 
+export function adoptEngagement(
+  context: ConsoleRequest,
+  listingId: string,
+  declaration: PromotionTerms,
+  contextObservationId: string,
+  originalAuthorityReference: string,
+  originalAuthorityValidUntil: string,
+  responsibleUserId: string,
+): Promise<ConsoleOutcome<PromotionEngagement>> {
+  return request(
+    context,
+    `${MANUAL}/listings/${id(listingId)}/engagements`,
+    parsePromotionEngagement,
+    post({
+      ...declaration,
+      contextObservationId: id(contextObservationId),
+      originalAuthorityReference,
+      originalAuthorityValidUntil,
+      responsibleUserId: id(responsibleUserId),
+    }),
+  );
+}
+
 export function authorizeExit(
   context: ConsoleRequest,
   engagementId: string,
   reasonCode: string,
+  authorityReference: string,
+  evidenceId: string,
 ): Promise<ConsoleOutcome<PromotionEngagement>> {
   return request(
     context,
     `${MANUAL}/engagements/${id(engagementId)}/exit`,
     parsePromotionEngagement,
-    post({ reasonCode }),
+    post({ reasonCode, authorityReference, evidenceId: id(evidenceId) }),
   );
 }
 
@@ -1774,12 +3034,14 @@ export function releaseEngagement(
   context: ConsoleRequest,
   engagementId: string,
   releaseKind: string,
+  observationId: string,
+  evidenceReference: string,
 ): Promise<ConsoleOutcome<PromotionEngagement>> {
   return request(
     context,
     `${MANUAL}/engagements/${id(engagementId)}/release`,
     parsePromotionEngagement,
-    post({ releaseKind }),
+    post({ releaseKind, observationId: id(observationId), evidenceReference }),
   );
 }
 

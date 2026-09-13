@@ -18,7 +18,7 @@ class FrozenNodeWindowTest {
     ConversionMeasurementView measurement(int from, int to, int retention, int source, int computed) {
         return new ConversionMeasurementView(UUID.randomUUID(), UUID.randomUUID(), 1, day(from), day(to), retention,
                 EvidencePath.DETAIL, true, List.of(), 100L, 20L, new BigDecimal("0.2"), RatioState.DEFINED,
-                true, true, Map.of(), List.of(), day(source), day(computed));
+                true, true, Map.of(), List.of(), day(source), day(computed), day(computed));
     }
     FrozenNodeWindow.Admission assess(ConversionMeasurementView measurement, int now, boolean revision) {
         return FrozenNodeWindow.assess(method, frozen, day(42), frozen, measurement, day(now), revision);
@@ -41,6 +41,21 @@ class FrozenNodeWindowTest {
     @Test void wallClockOrMaturityBooleanCannotReplaceSourceCompleteness() {
         assertThat(assess(measurement(0,14,14,27,28),28,false).gaps()).contains("SOURCE_MATURITY_UNPROVEN");
         assertThat(assess(measurement(0,14,7,28,28),28,false).gaps()).contains("MEASUREMENT_RETENTION_MISMATCH");
+    }
+    @Test void processingTimeCannotReplaceUnknownOrLaterEvidenceAcquisition() {
+        var value=measurement(0,14,14,28,28);
+        var unknown=new ConversionMeasurementView(value.id(),value.platformListingId(),value.definitionVersion(),
+                value.windowStart(),value.windowEnd(),value.retentionWindowDays(),value.evidencePath(),value.pathQualified(),
+                value.qualificationReasonCodes(),value.visitCount(),value.retainedPurchaseVisitCount(),value.primaryRatio(),
+                value.ratioState(),value.maturityReached(),value.sourceStratified(),value.sellableSplit(),
+                value.excludedTransitionDays(),value.sourceTime(),null,value.computedAt());
+        assertThat(assess(unknown,28,false).gaps()).contains("MEASUREMENT_ACQUISITION_TIME_UNKNOWN");
+        var later=new ConversionMeasurementView(value.id(),value.platformListingId(),value.definitionVersion(),
+                value.windowStart(),value.windowEnd(),value.retentionWindowDays(),value.evidencePath(),value.pathQualified(),
+                value.qualificationReasonCodes(),value.visitCount(),value.retainedPurchaseVisitCount(),value.primaryRatio(),
+                value.ratioState(),value.maturityReached(),value.sourceStratified(),value.sellableSplit(),
+                value.excludedTransitionDays(),value.sourceTime(),day(29),value.computedAt());
+        assertThat(assess(later,30,false).gaps()).contains("MEASUREMENT_ACQUISITION_FROM_FUTURE");
     }
     @Test void absentOrLateLaunchCannotBeTreatedAsTargetVersionExposure() {
         var measurement = measurement(0,14,14,28,28);

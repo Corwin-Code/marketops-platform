@@ -11,12 +11,13 @@ INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organiza
 SELECT gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','9264ceb0-c29a-5837-9339-c84bfe73a444',code,'8689c119-8fa0-50b7-8ba2-f9bf3039d336','ACTIVE',now()-interval '1 day','synthetic owner listing scope',now(),now()
   FROM unnest(ARRAY['LISTING_CONVERSION_VIEW','LISTING_ACTION_PREPARE','LISTING_ACTION_REVIEW','LISTING_ACTION_APPROVE_ORDINARY',
                     'LISTING_ACTION_APPROVE_MATERIAL','LISTING_ACTION_LAUNCH','LISTING_MANUAL_EXECUTE','LISTING_MANUAL_VERIFY',
-                    'LISTING_CONTAINMENT_STOP','LISTING_CONTAINMENT_ATTEST','LISTING_CONTAINMENT_CONSENT','LISTING_PROMOTION_MANAGE']) AS code;
+                    'LISTING_CONTAINMENT_STOP','LISTING_CONTAINMENT_ATTEST','LISTING_CONTAINMENT_CONSENT','LISTING_PROMOTION_MANAGE',
+                    'LISTING_DECISION_EVIDENCE_VIEW']) AS code;
 INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,status,effective_from,reason,created_at,updated_at)
 SELECT gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','8ec704dd-3aa5-529c-93db-def4bbf39260',code,'8689c119-8fa0-50b7-8ba2-f9bf3039d336','ACTIVE',now()-interval '1 day','synthetic lead listing scope',now(),now()
   FROM unnest(ARRAY['LISTING_CONVERSION_VIEW','LISTING_ACTION_PREPARE','LISTING_ACTION_REVIEW','LISTING_ACTION_APPROVE_ORDINARY',
                     'LISTING_ACTION_LAUNCH','LISTING_MANUAL_EXECUTE','LISTING_MANUAL_VERIFY','LISTING_CONTAINMENT_STOP',
-                    'LISTING_CONTAINMENT_CONSENT','LISTING_PROMOTION_MANAGE']) AS code;
+                    'LISTING_CONTAINMENT_CONSENT','LISTING_PROMOTION_MANAGE','LISTING_DECISION_EVIDENCE_VIEW']) AS code;
 INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,status,effective_from,reason,created_at,updated_at)
 SELECT gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','0998716b-6f78-56da-bbea-554b20cfd093',code,'8689c119-8fa0-50b7-8ba2-f9bf3039d336','ACTIVE',now()-interval '1 day','synthetic operator listing scope',now(),now()
   FROM unnest(ARRAY['LISTING_CONVERSION_VIEW','LISTING_ACTION_PREPARE','LISTING_MANUAL_EXECUTE']) AS code;
@@ -41,8 +42,8 @@ INSERT INTO core.lc_calibration_value(id,package_id,category_code,value_numeric,
  (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','REPRESENTATION_EQUIVALENCE_RULE',NULL,'EXACT',NULL,'RULE','fixture',NULL,'fixture://calibration'),
  (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','ALLOWANCE_AXES',NULL,NULL,'["CONCURRENT_LISTINGS", "AFFECTED_VARIANTS"]','RULE','fixture',NULL,'fixture://calibration'),
  (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','ALLOWANCE_RESERVE',NULL,NULL,'{"CONCURRENT_LISTINGS": "0", "AFFECTED_VARIANTS": "0"}','RULE','fixture',NULL,'fixture://calibration'),
- (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','FORMAL_NODES',NULL,NULL,'[{"nodeCode": "D14", "maturityDays": 14, "method": "WILSON_LOWER_BOUND", "threshold": "0.050000", "stop": true}]','RULE','fixture',NULL,'fixture://calibration'),
- (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','STOP_RULE',NULL,NULL,'{"nodeCode": "D14", "trigger": "NOT_MET_AFTER_MATURITY"}','RULE','fixture',NULL,'fixture://calibration'),
+ (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','FORMAL_NODES',NULL,NULL,'[{"nodeCode":"D14","maturityDays":14,"method":"EXACT_BINOMIAL_FIXED_TRAFFIC_BONFERRONI_V1","threshold":"0.050000","methodParameters":{"familyAlpha":"0.05","nodeAlpha":"0.05","samplingModel":"INDEPENDENT_BERNOULLI_VISITS","qualificationRef":"fixture://exact-fixed-traffic"},"schedule":{"windowStartOffsetDays":1,"windowEndOffsetDays":15,"notBeforeOffsetDays":29,"lastOffsetDays":43}}]','RULE','fixture',NULL,'fixture://calibration'),
+ (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','STOP_RULE',NULL,NULL,'{}','RULE','fixture',NULL,'fixture://calibration'),
  (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','CROSS_PERIOD_WINDOW',30.000000,NULL,NULL,'DAYS','fixture',30,'fixture://calibration'),
  (gen_random_uuid(),'5c000000-0000-5000-8000-000000000001','DESCRIPTION_LENGTH_RULE',NULL,NULL,'{"min": 10, "max": 6000}','RULE','fixture',NULL,'fixture://calibration');
 UPDATE core.lc_calibration_package SET status = 'ACTIVE', activated_at = now() WHERE id = '5c000000-0000-5000-8000-000000000001';

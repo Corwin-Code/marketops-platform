@@ -105,7 +105,7 @@ public class ListingActionRepository {
                             String targetTextDigest, Boolean kizMarkedDeclared, Boolean contentAxisMaterial,
                             Boolean exposureAxisMaterial, String materialityRoute, UUID calibrationPackageId,
                             Integer calibrationVersion, UUID authorUserId, String state, Instant createdAt,
-                            Instant updatedAt, long version, UUID restoresCommandId, String promotionTermsDigest) {
+                            Instant updatedAt, long version, UUID restoresCommandId, String promotionTermsDigest, String purposeCode) {
     }
 
     /** One database clock for the persisted preparation/plan/review/binding chronology. */
@@ -119,16 +119,17 @@ public class ListingActionRepository {
                              String targetTextDigest, Boolean kizMarked, Boolean contentAxis, Boolean exposureAxis,
                              MaterialityRoute route, UUID calibrationPackageId, Integer calibrationVersion,
                              UUID authorUserId, Instant now, UUID restoresCommandId,
-                             com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms, Map<String,Object> materialityEvidence) {
+                             com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms, Map<String,Object> materialityEvidence,
+                             com.mimococo.marketops.listingconversion.ListingPurposeBasis purposeBasis) {
         jdbc.sql("""
                 INSERT INTO ops.lc_action (id, organization_id, store_id, platform_listing_id, candidate_id, recommendation_id,
                     affected_set_id, affected_set_digest, action_kind, execution_path, current_description_observation_id,
                     current_text_digest, target_text, target_text_digest, target_language_code, kiz_marked_declared,
                     content_axis_material, exposure_axis_material, materiality_route, calibration_package_id,
-                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id, promotion_terms, materiality_evidence)
+                    calibration_version, author_user_id, state, created_at, updated_at, version, restores_command_id, promotion_terms, materiality_evidence, purpose_basis)
                 VALUES (:id, :org, :store, :listing, :candidate, :recommendation, :set, :digest, :kind, :path, :observation,
                     :currentDigest, :text, :textDigest, :language, :kiz, :content, :exposure, :route, :package, :packageVersion,
-                    :author, 'DRAFT', :now, :now, 0, :restores, CAST(:promotion AS jsonb), CAST(:materiality AS jsonb))
+                    :author, 'DRAFT', :now, :now, 0, :restores, CAST(:promotion AS jsonb), CAST(:materiality AS jsonb),CAST(:purposeBasis AS jsonb))
                 """).param("id", id).param("org", organizationId).param("store", storeId).param("listing", listingId)
                 .param("candidate", candidateId).param("recommendation", recommendationId).param("set", affectedSetId)
                 .param("digest", affectedSetDigest).param("kind", actionKind).param("path", path.name())
@@ -139,12 +140,109 @@ public class ListingActionRepository {
                 .param("package", calibrationPackageId).param("packageVersion", calibrationVersion)
                 .param("author", authorUserId).param("now", Timestamp.from(now)).param("restores",restoresCommandId)
                 .param("promotion",promotionTerms==null?null:json.writeValueAsString(promotionTerms))
-                .param("materiality",json.writeValueAsString(materialityEvidence)).update();
+                .param("materiality",json.writeValueAsString(materialityEvidence))
+                .param("purposeBasis",purposeBasis==null?null:json.writeValueAsString(purposeBasis)).update();
+    }
+
+    public String purposeBasisDigest(String purpose,com.mimococo.marketops.listingconversion.ListingPurposeBasis basis) {
+        return jdbc.sql("SELECT ops.lc_purpose_basis_digest(:purpose,CAST(:basis AS jsonb))")
+                .param("purpose",purpose).param("basis",json.writeValueAsString(basis)).query(String.class).single();
+    }
+
+    public Optional<com.mimococo.marketops.listingconversion.ListingPurposeBasis> purposeBasis(UUID actionId) {
+        return jdbc.sql("SELECT purpose_basis::text FROM ops.lc_action WHERE id=:id AND purpose_basis IS NOT NULL")
+                .param("id",actionId).query(String.class).optional().map(value->json.readValue(value,com.mimococo.marketops.listingconversion.ListingPurposeBasis.class));
+    }
+
+    public record SelectedSimulation(boolean declared,UUID id) {
+        public boolean invalidated() { return declared && id==null; }
+    }
+
+    public SelectedSimulation selectedSimulation(UUID actionId) {
+        return jdbc.sql("""
+                SELECT (jsonb_exists(r.proposed_parameters,'simulationId')
+                     OR jsonb_exists(r.proposed_parameters,'simulationInputsDigest')) AS declared,s.id
+                FROM ops.lc_action a JOIN ops.recommendation r
+                    ON r.id=a.recommendation_id AND r.organization_id=a.organization_id
+                LEFT JOIN ops.lc_simulation s ON s.id::text=r.proposed_parameters->>'simulationId'
+                    AND s.organization_id=a.organization_id AND s.candidate_id=a.candidate_id
+                    AND s.inputs_digest=r.proposed_parameters->>'simulationInputsDigest'
+                    AND s.computed_at<=a.created_at AND a.action_kind='LISTING_PROMOTION_ACTION'
+                    AND s.input_snapshot->>'nativeIdentityDigest'=a.affected_set_digest
+                    AND s.input_snapshot->>'promotionTermsDigest'=a.promotion_terms_digest
+                    AND s.input_snapshot->>'promotionTermsDigest'=ops.lc_promotion_terms_digest(s.input_snapshot->'context'->'commercialDeclaration')
+                    AND s.input_snapshot->>'qualificationState'='QUALIFIED_CONDITIONAL_ECONOMICS'
+                    AND s.input_snapshot->>'sourceKind'='QUALIFIED_MATCHED_INPUTS'
+                    AND s.input_snapshot->>'purposeCode'=r.proposed_parameters->>'purposeCode'
+                    AND s.input_snapshot#>>'{demandEvidence,packageId}'=a.calibration_package_id::text
+                    AND s.input_snapshot#>>'{demandEvidence,packageVersion}'=a.calibration_version::text
+                    AND s.input_snapshot#>>'{profitReferenceEvidence,packageId}'=a.calibration_package_id::text
+                    AND s.input_snapshot#>>'{profitReferenceEvidence,packageVersion}'=a.calibration_version::text
+                    AND s.input_snapshot#>>'{knownPromotionContext,coverage}'='QUALIFIED_COMPLETE'
+                    AND (ops.lc_current_promotion_context(a.organization_id,a.platform_listing_id,
+                      (s.input_snapshot#>>'{context,periodStart}')::timestamptz,
+                      (s.input_snapshot#>>'{context,periodEnd}')::timestamptz,statement_timestamp()))->>'coverage'='QUALIFIED_COMPLETE'
+                    AND s.input_snapshot#>>'{knownPromotionContext,digest}'=(ops.lc_current_promotion_context(
+                      a.organization_id,a.platform_listing_id,
+                      (s.input_snapshot#>>'{context,periodStart}')::timestamptz,
+                      (s.input_snapshot#>>'{context,periodEnd}')::timestamptz,statement_timestamp()))->>'digest'
+                    AND s.inputs_digest=encode(sha256(convert_to(s.input_snapshot::text,'UTF8')),'hex')
+                WHERE a.id=:id
+                """).param("id",actionId).query((rs,n)->new SelectedSimulation(rs.getBoolean("declared"),
+                    rs.getObject("id",UUID.class))).single();
+    }
+
+    public Optional<String> matchingSimulationDigest(UUID simulationId, UUID organizationId, UUID candidateId,
+            String affectedSetDigest, String promotionTermsDigest,String purposeCode,
+            UUID calibrationPackageId,Integer calibrationVersion,Instant at) {
+        return jdbc.sql("""
+                SELECT inputs_digest FROM ops.lc_simulation
+                 WHERE id=:id AND organization_id=:org AND candidate_id=:candidate AND computed_at<=:at
+                   AND input_snapshot->>'nativeIdentityDigest'=:scope
+                   AND input_snapshot->>'promotionTermsDigest'=:terms
+                   AND input_snapshot->>'promotionTermsDigest'=ops.lc_promotion_terms_digest(input_snapshot->'context'->'commercialDeclaration')
+                   AND input_snapshot->>'qualificationState'='QUALIFIED_CONDITIONAL_ECONOMICS'
+                   AND input_snapshot->>'sourceKind'='QUALIFIED_MATCHED_INPUTS'
+                   AND input_snapshot->>'purposeCode'=:purpose
+                   AND input_snapshot#>>'{demandEvidence,packageId}'=:packageId
+                   AND input_snapshot#>>'{demandEvidence,packageVersion}'=:packageVersion
+                   AND input_snapshot#>>'{profitReferenceEvidence,packageId}'=:packageId
+                   AND input_snapshot#>>'{profitReferenceEvidence,packageVersion}'=:packageVersion
+                   AND input_snapshot#>>'{knownPromotionContext,coverage}'='QUALIFIED_COMPLETE'
+                   AND (ops.lc_current_promotion_context(:org,(SELECT platform_listing_id FROM ops.lc_candidate
+                         WHERE id=:candidate AND organization_id=:org),
+                         (input_snapshot#>>'{context,periodStart}')::timestamptz,
+                         (input_snapshot#>>'{context,periodEnd}')::timestamptz,:at))->>'coverage'='QUALIFIED_COMPLETE'
+                   AND input_snapshot#>>'{knownPromotionContext,digest}'=
+                     (ops.lc_current_promotion_context(:org,(SELECT platform_listing_id FROM ops.lc_candidate
+                       WHERE id=:candidate AND organization_id=:org),
+                       (input_snapshot#>>'{context,periodStart}')::timestamptz,
+                       (input_snapshot#>>'{context,periodEnd}')::timestamptz,:at))->>'digest'
+                   AND inputs_digest=encode(sha256(convert_to(input_snapshot::text,'UTF8')),'hex')
+                """).param("id",simulationId).param("org",organizationId).param("candidate",candidateId)
+                .param("at",Timestamp.from(at)).param("scope",affectedSetDigest).param("terms",promotionTermsDigest)
+                .param("purpose",purposeCode).param("packageId",String.valueOf(calibrationPackageId))
+                .param("packageVersion",String.valueOf(calibrationVersion))
+                .query(String.class).optional();
     }
 
     public String promotionTermsDigest(com.mimococo.marketops.listingconversion.PromotionTerms terms) {
         return jdbc.sql("SELECT ops.lc_promotion_terms_digest(CAST(:terms AS jsonb))")
                 .param("terms",json.writeValueAsString(terms)).query(String.class).single();
+    }
+
+    /** Existing local records, including stopped activities with residual obligations; not inventory completeness. */
+    public JsonNode knownPromotionContext(UUID organizationId,UUID listingId) {
+        return JsonValues.read(json,jdbc.sql("SELECT ops.lc_known_promotion_context(:org,:listing)::text")
+                .param("org",organizationId).param("listing",listingId).query(String.class).single());
+    }
+
+    /** Independent complete activity context for the exact prospective period, or an explicit unqualified state. */
+    public JsonNode currentPromotionContext(UUID organizationId,UUID listingId,Instant periodStart,
+                                            Instant periodEnd,Instant asOf) {
+        return JsonValues.read(json,jdbc.sql("SELECT ops.lc_current_promotion_context(:org,:listing,:from,:until,:at)::text")
+                .param("org",organizationId).param("listing",listingId).param("from",Timestamp.from(periodStart))
+                .param("until",Timestamp.from(periodEnd)).param("at",Timestamp.from(asOf)).query(String.class).single());
     }
 
     public record FrozenPromotion(String digest,com.mimococo.marketops.listingconversion.PromotionTerms terms) { }
@@ -161,6 +259,44 @@ public class ListingActionRepository {
                   unnest(s.product_variant_ids) member WHERE a.id=:id AND s.resolution_state='COMPLETE'
                     AND s.native_scope_observation_id IS NOT NULL AND s.identity_lineage#>>'{nativeScope,state}'='COMPLETE'
                 """).param("id",actionId).query(UUID.class).list();
+    }
+
+    /** The reviewed direct scope, not today's possibly different native membership. */
+    public List<UUID> frozenDirectListingVariants(UUID actionId) {
+        return jdbc.sql("""
+                SELECT DISTINCT member FROM ops.lc_action a JOIN core.lc_affected_set s ON s.id=a.affected_set_id,
+                  unnest(s.platform_listing_variant_ids) member WHERE a.id=:id AND s.resolution_state='COMPLETE'
+                    AND s.native_scope_observation_id IS NOT NULL AND s.identity_lineage#>>'{nativeScope,state}'='COMPLETE'
+                ORDER BY member
+                """).param("id",actionId).query(UUID.class).list();
+    }
+
+    /** Product identities captured in the same reviewed affected-set snapshot. */
+    public List<UUID> frozenDirectProductVariants(UUID actionId) {
+        return jdbc.sql("""
+                SELECT DISTINCT member FROM ops.lc_action a JOIN core.lc_affected_set s ON s.id=a.affected_set_id,
+                  unnest(s.product_variant_ids) member WHERE a.id=:id AND s.resolution_state='COMPLETE'
+                    AND s.native_scope_observation_id IS NOT NULL AND s.identity_lineage#>>'{nativeScope,state}'='COMPLETE'
+                ORDER BY member
+                """).param("id",actionId).query(UUID.class).list();
+    }
+
+    public List<UUID> unreleasedOutcomeFailures(UUID organizationId,UUID listingId) {
+        return jdbc.sql("SELECT unnest(ops.lc_unreleased_outcome_failures(:org,:listing))")
+                .param("org",organizationId).param("listing",listingId).query(UUID.class).list();
+    }
+
+    public Optional<JsonNode> frozenCalibrationDependencies(UUID actionId) {
+        return jdbc.sql("SELECT calibration_dependencies::text FROM ops.lc_action WHERE id=:id AND calibration_dependencies IS NOT NULL")
+                .param("id",actionId).query(String.class).optional().map(value->JsonValues.read(json,value));
+    }
+
+    /** Prepared immutable dependency projection; never substitutes today's accepted package. */
+    public Optional<JsonNode> frozenProtectionScopeBasis(UUID actionId) {
+        return jdbc.sql("""
+                SELECT (calibration_dependencies->'protectionScopeBasis')::text FROM ops.lc_action
+                 WHERE id=:id AND calibration_dependencies->'protectionScopeBasis' IS NOT NULL
+                """).param("id",actionId).query(String.class).optional().map(value->JsonValues.read(json,value));
     }
 
     public record RestorationSource(UUID commandId,String priorText,String appliedTextDigest) { }
@@ -215,7 +351,9 @@ public class ListingActionRepository {
                    a.current_description_observation_id, a.current_text_digest, a.target_text, a.target_text_digest,
                    a.kiz_marked_declared, a.content_axis_material, a.exposure_axis_material, a.materiality_route,
                    a.calibration_package_id, a.calibration_version, a.author_user_id, a.state, a.created_at, a.updated_at,
-                   a.version, a.restores_command_id, a.promotion_terms_digest
+                   a.version, a.restores_command_id, a.promotion_terms_digest,
+                   coalesce((SELECT r.proposed_parameters->>'purposeCode' FROM ops.recommendation r
+                     WHERE r.id=a.recommendation_id),a.calibration_dependencies->>'purpose') AS purpose_code
               FROM ops.lc_action a
             """;
 
@@ -232,7 +370,7 @@ public class ListingActionRepository {
                 rs.getObject("calibration_package_id", UUID.class), rs.getObject("calibration_version", Integer.class),
                 rs.getObject("author_user_id", UUID.class), rs.getString("state"),
                 ListingFactRepository.instant(rs, "created_at"), ListingFactRepository.instant(rs, "updated_at"),
-                rs.getLong("version"),rs.getObject("restores_command_id",UUID.class),rs.getString("promotion_terms_digest"));
+                rs.getLong("version"),rs.getObject("restores_command_id",UUID.class),rs.getString("promotion_terms_digest"),rs.getString("purpose_code"));
     }
 
     // ------------------------------------------------------------------ reviews, bindings, plans
@@ -241,7 +379,7 @@ public class ListingActionRepository {
         return jdbc.sql("""
                 SELECT a.id,ops.lc_meaning_review_basis_digest(a.id) AS basis_digest,o.description_text,a.target_text,
                        core.lc_meaning_catalog(a.calibration_package_id,a.action_kind)::text AS conditions,
-                       a.promotion_terms::text AS terms
+                       a.promotion_terms::text AS terms,a.purpose_basis::text AS purpose_basis
                 FROM ops.lc_action a LEFT JOIN core.lc_description_observation o ON o.id=a.current_description_observation_id
                 WHERE a.id=:id
                 """).param("id",actionId).query((rs,n)->{
@@ -252,7 +390,8 @@ public class ListingActionRepository {
                     }
                     return new com.mimococo.marketops.listingconversion.MeaningReviewBasis(actionId,rs.getString("basis_digest"),
                             conditions.isEmpty()?"MEANING_RULE_UNQUALIFIED":"QUALIFIED",rs.getString("description_text"),rs.getString("target_text"),
-                            rs.getString("terms")==null?null:json.readValue(rs.getString("terms"),com.mimococo.marketops.listingconversion.PromotionTerms.class),conditions);
+                            rs.getString("terms")==null?null:json.readValue(rs.getString("terms"),com.mimococo.marketops.listingconversion.PromotionTerms.class),conditions,
+                            rs.getString("purpose_basis")==null?null:json.readValue(rs.getString("purpose_basis"),com.mimococo.marketops.listingconversion.ListingPurposeBasis.class));
                 }).single();
     }
 
@@ -302,6 +441,24 @@ public class ListingActionRepository {
                         rs.getObject("reviewer_user_id", UUID.class), rs.getString("verdict"), rs.getString("reason"),
                         ListingFactRepository.instant(rs, "reviewed_at"), rs.getString("evaluation_plan_digest")))
                 .list();
+    }
+
+    public Optional<com.mimococo.marketops.listingconversion.MeaningReviewBasis.ReviewMaterial> reviewMaterial(UUID actionId) {
+        return jdbc.sql("""
+                SELECT reviewer_user_id,verdict,reason,reviewed_at,facts_digest,evaluation_plan_digest,
+                       purpose_basis_digest,meaning_assessment::text,exposure_evidence::text,
+                       content_axis_material,exposure_axis_material,materiality_route
+                  FROM ops.lc_action_review WHERE action_id=:action AND verdict='ATTESTED'
+                 ORDER BY reviewed_at DESC,id DESC LIMIT 1
+                """).param("action",actionId).query((rs,n)->
+                    new com.mimococo.marketops.listingconversion.MeaningReviewBasis.ReviewMaterial(
+                        rs.getObject("reviewer_user_id",UUID.class),rs.getString("verdict"),rs.getString("reason"),
+                        ListingFactRepository.instant(rs,"reviewed_at"),rs.getString("facts_digest"),
+                        rs.getString("evaluation_plan_digest"),rs.getString("purpose_basis_digest"),
+                        rs.getString("meaning_assessment"),rs.getString("exposure_evidence"),
+                        rs.getObject("content_axis_material",Boolean.class),
+                        rs.getObject("exposure_axis_material",Boolean.class),rs.getString("materiality_route")))
+                .optional();
     }
 
     /** The database's own description of what a decision on this recommendation rests on. */
@@ -366,6 +523,36 @@ public class ListingActionRepository {
         String joined = jdbc.sql("SELECT array_to_string(ops.lc_binding_gaps(:action), ',')").param("action", actionId)
                 .query(String.class).single();
         return joined == null || joined.isBlank() ? List.of() : List.of(joined.split(","));
+    }
+
+    /** Existing queue consumers publish current binding invalidation with their fenced health result. */
+    public int invalidatePendingBindings(UUID listingId) {
+        return recheckPendingBindings(listingId).invalidated();
+    }
+
+    public record BindingRecheck(int assessed, int invalidated) { }
+
+    /** Exact number of existing write bindings assessed and invalidated in this transaction. */
+    public BindingRecheck recheckPendingBindings(UUID listingId) {
+        int assessed=jdbc.sql("""
+                SELECT count(*) FROM ops.lc_action a JOIN ops.lc_action_binding b ON b.action_id=a.id
+                 WHERE a.platform_listing_id=:listing AND a.state IN ('APPROVED','APPROVED_NOT_LAUNCHABLE')
+                   AND b.state='BOUND'
+                """).param("listing",listingId).query(Integer.class).single();
+        int invalidated=jdbc.sql("""
+                WITH pending AS MATERIALIZED (
+                  SELECT a.id FROM ops.lc_action a
+                  WHERE a.platform_listing_id=:listing AND a.state IN ('APPROVED','APPROVED_NOT_LAUNCHABLE')
+                    AND EXISTS(SELECT 1 FROM ops.lc_action_binding b WHERE b.action_id=a.id AND b.state='BOUND')
+                  ORDER BY a.id FOR UPDATE OF a
+                ), assessed AS MATERIALIZED (
+                  SELECT id,ops.lc_binding_gaps(id) AS gaps FROM pending
+                )
+                UPDATE ops.lc_action_binding b SET state='INAPPLICABLE',
+                    inapplicable_reason=array_to_string(assessed.gaps,','),inapplicable_at=clock_timestamp()
+                  FROM assessed WHERE b.action_id=assessed.id AND b.state='BOUND' AND cardinality(assessed.gaps)>0
+                """).param("listing",listingId).update();
+        return new BindingRecheck(assessed,invalidated);
     }
 
     public void insertPlan(UUID id, UUID organizationId, UUID actionId, UUID calibrationPackageId, int calibrationVersion,

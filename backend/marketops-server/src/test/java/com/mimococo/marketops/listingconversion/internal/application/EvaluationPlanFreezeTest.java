@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.mimococo.marketops.analyticsdecision.CalculationRunLedger;
+import com.mimococo.marketops.listingconversion.EvidencePath;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.*;
 import com.mimococo.marketops.operationsworkflow.ListingActionIntake;
 import com.mimococo.marketops.shared.ErrorCode;
@@ -28,6 +29,7 @@ class EvaluationPlanFreezeTest {
     final ListingActionRepository actions=mock(ListingActionRepository.class);
     final ListingFactRepository facts=mock(ListingFactRepository.class);
     final CalibrationService calibration=mock(CalibrationService.class);
+    final MeasurementEvidenceRepository measurementEvidence=mock(MeasurementEvidenceRepository.class);
     final ListingActionRepository.ActionRow action=mock(ListingActionRepository.ActionRow.class);
     final UUID organization=UUID.randomUUID(), listing=UUID.randomUUID(), store=UUID.randomUUID();
     final UUID actionId=UUID.randomUUID(), packageId=UUID.randomUUID(), planId=UUID.randomUUID();
@@ -36,7 +38,9 @@ class EvaluationPlanFreezeTest {
     final EvaluationService service=new EvaluationService(mock(EvaluationRepository.class),actions,
             mock(ListingHealthRepository.class),facts,calibration,mock(CalculationRunLedger.class),
             mock(ListingActionIntake.class),()->planId,Clock.fixed(at,ZoneOffset.UTC),
-            mock(ListingScopeAuthorization.class),mock(ListingDisclosureService.class),json);
+            mock(ListingScopeAuthorization.class),mock(ListingDisclosureService.class),json,
+            measurementEvidence,mock(ListingOutcomeMetricEvidence.class),
+            mock(ListingOutcomeSupplyEvidence.class),mock(ManualPathRepository.class),mock(ListingSimulationInputEvidence.class));
 
     @BeforeEach void exactActionAndAcceptedPackage() {
         when(actions.databaseNow()).thenReturn(at);
@@ -44,6 +48,7 @@ class EvaluationPlanFreezeTest {
         when(action.state()).thenReturn("DRAFT");
         when(action.organizationId()).thenReturn(organization);
         when(action.listingId()).thenReturn(listing);
+        when(action.actionKind()).thenReturn("LISTING_DESCRIPTION_CHANGE");
         when(action.calibrationPackageId()).thenReturn(packageId);
         when(action.calibrationVersion()).thenReturn(1);
         when(action.currentTextDigest()).thenReturn("a".repeat(64));
@@ -59,7 +64,7 @@ class EvaluationPlanFreezeTest {
         put("STOP_RULE",null,"{}");
         put("CROSS_PERIOD_WINDOW",BigDecimal.ZERO,null);
         put("CRITICAL_GROUP_RULE",null,"{\"groups\":[{\"code\":\"RETURNS\",\"bound\":0.02}]}");
-        when(calibration.resolve(organization,"OZON",store,at)).thenReturn(new CalibrationService.Outcome(
+        when(calibration.resolve(organization,"OZON",store,at,"LISTING_CONVERSION")).thenReturn(new CalibrationService.Outcome(
                 new CalibrationService.Resolved(packageId,1,values),"RESOLVED"));
     }
 
@@ -118,9 +123,24 @@ class EvaluationPlanFreezeTest {
                    "samplingModel":"INDEPENDENT_BERNOULLI_VISITS","qualificationRef":"fixture://verified-method"},
                   "schedule":{"windowStartOffsetDays":1,"windowEndOffsetDays":15,"notBeforeOffsetDays":29,"lastOffsetDays":43}}]
                 """);
+        UUID referenceId=UUID.randomUUID();
+        Instant referenceEnd=at.minusSeconds(15L*86400),referenceStart=referenceEnd.minusSeconds(14L*86400);
+        when(measurementEvidence.latestReferenceSourceStrata(listing,14,14,at)).thenReturn(Optional.of(
+                new MeasurementEvidenceRepository.MeasuredSourceStrata(referenceId,listing,1,referenceStart,referenceEnd,14,
+                        EvidencePath.DETAIL,true,json.readTree("""
+                            {"ADVERTISING":{"visits":75,"retained":6},"ORGANIC":{"visits":25,"retained":3}}
+                            """),json.readTree("{}"),json.readTree("""
+                            {"state":"FULL_SINGLE_VERSION_COVERAGE","coveredTextDigest":"%s",
+                             "excludedTransitionDays":[],"uncoveredDays":[]}
+                            """.formatted("a".repeat(64))),"d".repeat(64),referenceEnd.plusSeconds(14L*86400),
+                        at.minusSeconds(12L*3600),at.minusSeconds(6L*3600))));
         assertThat(service.freezePlan(action)).isEqualTo(planId);
         verify(actions).insertPlan(any(),any(),any(),any(),anyInt(),anyMap(),eq(at.plusSeconds(43L*86400)),
-                anyList(),anyMap(),anyList(),anyString(),eq(0),anyString(),eq(at));
+                argThat(nodes->json.<JsonNode>valueToTree(nodes).get(0).path("comparisonReference")
+                        .path("state").asText().equals("FROZEN_REFERENCE")
+                        && json.<JsonNode>valueToTree(nodes).get(0).path("comparisonReference").path("sourceWeights")
+                            .path("ADVERTISING").decimalValue().compareTo(new BigDecimal("0.75"))==0),
+                anyMap(),anyList(),anyString(),eq(0),anyString(),eq(at));
         put("CRITICAL_GROUP_RULE",null,"{\"groups\":[\"unstructured\"]}");
         rejectsUnresolved();
     }

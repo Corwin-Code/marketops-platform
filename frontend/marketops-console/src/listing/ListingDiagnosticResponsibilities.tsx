@@ -9,6 +9,7 @@ import { ResponsibilityTimes } from './ListingResponsibility';
 import { useLanguage } from './i18n/language';
 import { t } from './i18n/ui';
 import { ListingDeferral } from './ListingDeferral';
+import { ListingDependencyHold } from './ListingDependencyHold';
 
 export function ListingDiagnosticResponsibilities({
   context,
@@ -74,6 +75,11 @@ export function ListingDiagnosticResponsibilities({
             context={context}
             target={{ kind: 'DIAGNOSTIC', listingId, taskId: status.taskId }}
             current={status.deferral}
+          />
+          <ListingDependencyHold
+            context={context}
+            target={{ kind: 'DIAGNOSTIC', listingId, taskId: status.taskId }}
+            current={status.dependencyHold}
           />
         </article>
       ))}

@@ -46,13 +46,15 @@ public class ListingHealthRepository {
 
     public void insertHealth(UUID id, UUID organizationId, UUID storeId, UUID listingId, UUID runId, UUID affectedSetId,
                              int version, List<ListingHealthView.Condition> conditions, String necessaryState,
-                             Map<String, String> eligibility, List<String> opportunities, String definitionDigest,
+                             Map<String, String> eligibility, List<String> opportunities,
+                             Map<String,String> opportunityEvidence, String definitionDigest,
                              Instant sourceTime, Instant acquisitionTime, Instant computedAt) {
         List<Map<String, String>> conditionRows = new ArrayList<>();
         conditions.forEach(c -> conditionRows.add(Map.of("code", c.code(), "state", c.state(),
                 "evidenceReference", c.evidenceReference())));
         List<Map<String, String>> opportunityRows = new ArrayList<>();
-        opportunities.forEach(o -> opportunityRows.add(Map.of("code", o, "evidenceReference", "mart.lc_listing_health")));
+        opportunities.forEach(o -> opportunityRows.add(Map.of("code", o, "evidenceReference",
+                opportunityEvidence.getOrDefault(o,"mart.lc_listing_health"))));
         jdbc.sql("""
                 INSERT INTO mart.lc_listing_health (id, organization_id, store_id, platform_listing_id, calculation_run_id,
                     affected_set_id, health_version, necessary_conditions, necessary_state, eligibility, opportunities,
@@ -161,7 +163,7 @@ public class ListingHealthRepository {
                 SELECT id, platform_listing_id, definition_version, window_start, window_end, retention_window_days,
                        evidence_path, path_qualified, qualification_reason_codes, visit_count, retained_purchase_visit_count,
                        primary_ratio, ratio_state, maturity_reached, source_stratified, sellable_split::text AS split,
-                       excluded_transition_days, source_time, computed_at
+                       excluded_transition_days, source_time, acquisition_time, computed_at
                   FROM mart.lc_conversion_measurement WHERE platform_listing_id = :listing
                  ORDER BY computed_at DESC LIMIT :limit
                 """).param("listing", listingId).param("limit", limit).query(this::mapMeasurement).list();
@@ -172,9 +174,33 @@ public class ListingHealthRepository {
                 SELECT id, platform_listing_id, definition_version, window_start, window_end, retention_window_days,
                        evidence_path, path_qualified, qualification_reason_codes, visit_count, retained_purchase_visit_count,
                        primary_ratio, ratio_state, maturity_reached, source_stratified, sellable_split::text AS split,
-                       excluded_transition_days, source_time, computed_at
+                       excluded_transition_days, source_time, acquisition_time, computed_at
                   FROM mart.lc_conversion_measurement WHERE id = :id
                 """).param("id", id).query(this::mapMeasurement).optional();
+    }
+
+    public record MeasurementDefinition(Instant windowStart, Instant windowEnd, int retentionDays,
+                                        EvidencePath evidencePath) { }
+
+    /**
+     * The finite set of measurement definitions that already exist for a listing.
+     * A queued source change may refresh these exact definitions; it may not
+     * invent a window, evidence path, or retention policy of its own.
+     */
+    public List<MeasurementDefinition> currentMeasurementDefinitions(UUID listingId, int limit) {
+        return jdbc.sql("""
+                SELECT window_start,window_end,retention_window_days,evidence_path FROM (
+                  SELECT DISTINCT ON (window_start,window_end,retention_window_days,evidence_path)
+                    window_start,window_end,retention_window_days,evidence_path,computed_at,id
+                  FROM mart.lc_conversion_measurement WHERE platform_listing_id=:listing
+                  ORDER BY window_start,window_end,retention_window_days,evidence_path,computed_at DESC,id DESC
+                ) current_definitions
+                ORDER BY window_end DESC,window_start DESC,retention_window_days,evidence_path
+                LIMIT :limit
+                """).param("listing",listingId).param("limit",Math.clamp(limit,1,100))
+                .query((rs,n)->new MeasurementDefinition(rs.getTimestamp("window_start").toInstant(),
+                        rs.getTimestamp("window_end").toInstant(),rs.getInt("retention_window_days"),
+                        EvidencePath.valueOf(rs.getString("evidence_path")))).list();
     }
 
     private ConversionMeasurementView mapMeasurement(ResultSet rs, int n) throws SQLException {
@@ -196,6 +222,6 @@ public class ListingHealthRepository {
                 rs.getObject("visit_count", Long.class), rs.getObject("retained_purchase_visit_count", Long.class),
                 rs.getBigDecimal("primary_ratio"), RatioState.valueOf(rs.getString("ratio_state")),
                 rs.getBoolean("maturity_reached"), rs.getBoolean("source_stratified"), split, days,
-                ListingFactRepository.instant(rs, "source_time"), ListingFactRepository.instant(rs, "computed_at"));
+                ListingFactRepository.instant(rs, "source_time"), ListingFactRepository.instant(rs, "acquisition_time"), ListingFactRepository.instant(rs, "computed_at"));
     }
 }

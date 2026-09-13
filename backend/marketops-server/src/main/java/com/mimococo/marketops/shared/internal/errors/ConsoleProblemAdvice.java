@@ -124,6 +124,7 @@ public class ConsoleProblemAdvice {
             case "23505", "23P01", "MO061", "MO063", "MO065" -> ErrorCode.VERSION_CONFLICT;
             case "23503", "23514", "22007", "22008", "22003", "22P02", "MO036", "MO039", "MO093" -> ErrorCode.VALIDATION_FAILED;
             case "MO060", "MO064", "MO092" -> ErrorCode.RESOURCE_SCOPE_DENIED;
+            case "MO091" -> ErrorCode.INVALID_STATE_TRANSITION;
             case "MO094" -> ErrorCode.RESTORE_UNSUPPORTED;
             case "MO062" -> ErrorCode.IMPORT_VALIDATION_FAILED;
             case "MO080" -> ErrorCode.EXPORT_QUEUE_FULL;

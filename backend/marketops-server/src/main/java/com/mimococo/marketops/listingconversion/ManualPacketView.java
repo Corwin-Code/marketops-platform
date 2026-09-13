@@ -23,12 +23,13 @@ public record ManualPacketView(
         long version) {
 
     public record Report(UUID id, UUID reporterUserId, Instant operationTime, Instant reportedAt,
-                         String reportState, String note) {
+                         String reportState, String note, String operationQualification, String deviationReason) {
     }
 
     public record Verification(UUID id, UUID verifierUserId, String verificationBasis, String managementMatch,
                                UUID managementObservationId, UUID displayObservationId, String displayState,
-                               Instant verifiedAt, String note, Map<String,Object> observationBinding) {
+                               Instant verifiedAt, String note, Map<String,Object> observationBinding,
+                               String qualificationState) {
         public Verification { observationBinding=Map.copyOf(observationBinding==null?Map.of():observationBinding); }
     }
 

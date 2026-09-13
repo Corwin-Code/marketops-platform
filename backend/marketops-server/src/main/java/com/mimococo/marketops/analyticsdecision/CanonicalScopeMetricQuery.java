@@ -33,7 +33,11 @@ public interface CanonicalScopeMetricQuery {
         public boolean available() { return value != null && gaps.isEmpty(); }
     }
 
-    record Projection(Scope scope, Observation contributionProfit, Observation returnRate) { }
+    record UnitProfitInput(MetricValueView contributionProfit,MetricValueView unitCount,MetricValueView requiredProfitPerUnit) { }
+    record Projection(Scope scope, Observation contributionProfit, Observation returnRate,java.util.Map<UUID,UnitProfitInput> unitProfitInputs) {
+        public Projection { unitProfitInputs=java.util.Map.copyOf(unitProfitInputs); }
+        public Projection(Scope scope,Observation contributionProfit,Observation returnRate) { this(scope,contributionProfit,returnRate,java.util.Map.of()); }
+    }
 
     record ExposureScope(UUID organizationId, UUID storeId, List<UUID> listingVariantIds,
                          MetricWindow window, Instant asOf, long maximumVerificationAgeSeconds, long maximumPeriodEndAgeSeconds) {
@@ -58,6 +62,15 @@ public interface CanonicalScopeMetricQuery {
         }
     }
 
+    record CurrentScope(UUID organizationId, UUID storeId, List<UUID> listingVariantIds,
+                        MetricWindow window, Instant asOf, ProfitBasis profitBasis) {
+        public CurrentScope { listingVariantIds=List.copyOf(listingVariantIds); }
+    }
+
+    /** Latest profit period of the first stable member; all members must match that exact period.
+     * No search for an older, more favorable common period and no absent-member zero fill.
+     */
+    java.util.Optional<Projection> current(CurrentScope scope);
     Projection project(Scope scope);
     Exposure exposure(ExposureScope scope);
 }

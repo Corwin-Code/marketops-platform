@@ -180,6 +180,50 @@ APPROVED_MIGRATIONS = (
     "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
     "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
     "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
+    "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+    "V0081__record_listing_measurement_coverage_and_lineage.sql",
+    "V0082__govern_listing_calibration_acceptance_and_activation.sql",
+    "V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+    "V0084__persist_provider_description_retry_timing.sql",
+    "V0085__scope_listing_description_feature_flags.sql",
+    "V0086__preserve_frozen_listing_evaluation_semantics.sql",
+    "V0087__bind_listing_measurement_lineage_identity.sql",
+    "V0088__bind_listing_review_and_approval_to_frozen_plan.sql",
+    "V0089__retain_listing_node_evaluation_qualification.sql",
+    "V0090__bind_manual_listing_verification_to_exact_observations.sql",
+    "V0091__create_listing_command_atomically_with_its_launch.sql",
+    "V0092__bind_description_response_to_frozen_native_identity.sql",
+    "V0093__govern_description_protocol_configuration.sql",
+    "V0094__bind_description_requests_to_exact_verified_schema.sql",
+    "V0095__retain_exact_description_task_query_evidence.sql",
+    "V0096__project_qualified_description_execution_results.sql",
+    "V0097__bind_exact_restoration_to_a_new_approved_action.sql",
+    "V0098__accumulate_listing_allowance_across_configuration_versions.sql",
+    "V0099__freeze_promotion_declarations_before_review.sql",
+    "V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+    "V0101__retain_conditional_promotion_simulation_basis.sql",
+    "V0102__bind_listing_scope_to_native_enumeration_evidence.sql",
+    "V0103__recheck_exact_listing_calibration_dependencies.sql",
+    "V0104__validate_calibration_combinations_for_their_declared_purpose.sql",
+    "V0105__fence_listing_recalculation_result_publication.sql",
+    "V0106__retain_canonical_listing_materiality_exposure.sql",
+    "V0107__bind_listing_classification_to_structured_meaning_review.sql",
+    "V0108__freeze_listing_task_responsibility_clocks.sql",
+    "V0109__activate_listing_diagnostic_responsibility.sql",
+    "V0110__bind_finite_listing_task_deferral_to_reassessment.sql",
+    "V0111__bind_declared_listing_action_purpose.sql",
+    "V0112__freeze_listing_purpose_use_basis_before_review.sql",
+    "V0113__bind_current_listing_business_protection.sql",
+    "V0114__retain_listing_feedback_identity_and_label_revisions.sql",
+    "V0115__declare_bounded_listing_ai_projection.sql",
+    "V0116__publish_existing_settled_sales_quantity_as_canonical_metric.sql",
+    "V0117__latch_listing_protection_failures_until_independent_release.sql",
+    "V0118__bind_launch_plan_to_declared_listing_purpose.sql",
+    "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+    "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+    "V0121__complete_listing_operations_queue_and_review.sql",
+    "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+    "V0123__bind_qualified_promotion_simulation_to_action.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -227,10 +271,10 @@ def approved_index_replacement(path: Path, text: str, line: str) -> bool:
 
     The old active-grant uniqueness key predates Product scope. Keeping it would
     collapse every Product grant for one user/action into one row. This narrow
-    exception requires the exact V0034 file, exact old index, and the complete
-    replacement key; it does not permit a table/row/schema drop or arbitrary
-    index retirement. R1 also distinguishes an accountable Advertising Case
-    from its finite inert choices while preserving every non-advertising key.
+    exception requires the exact migration file, exact old index, and the
+    complete replacement keys; it does not permit a table/row/schema drop or
+    arbitrary index retirement. Later replacements preserve the independent
+    advertising, manual-execution and listing-restoration authorities.
     """
     if path.name == "V0073__require_complete_independent_manual_observation.sql":
         # Permit only the exact index and issue-time guard together. The shared
@@ -261,6 +305,23 @@ def approved_index_replacement(path: Path, text: str, line: str) -> bool:
         # exception cannot admit an omitted replacement or a broader predicate.
         return (line.strip().upper() == "DROP INDEX OPS.RECOMMENDATION_LIVE_UQ;"
                 and re.sub(r"\s+", "", expected) in re.sub(r"\s+", "", text))
+    if path.name == "V0097__bind_exact_restoration_to_a_new_approved_action.sql":
+        expected = """
+        DROP INDEX ops.recommendation_live_uq;
+        CREATE UNIQUE INDEX recommendation_live_uq ON ops.recommendation(subject_kind,subject_id,action_kind)
+         WHERE action_kind NOT IN ('ADVERTISING_REVIEW','AD_BID_CHANGE')
+           AND NOT (action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId')
+           AND state IN ('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                         'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        CREATE UNIQUE INDEX lc_restoration_live_proposal_uq ON ops.recommendation(subject_kind,subject_id,action_kind)
+         WHERE action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId'
+           AND state IN ('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                         'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        """
+        return (
+            line.strip().upper() == "DROP INDEX OPS.RECOMMENDATION_LIVE_UQ;"
+            and re.sub(r"\s+", "", expected) in re.sub(r"\s+", "", text)
+        )
     return (
         path.name == "V0034__close_availability_deep_review_findings.sql"
         and line.strip().upper() == "DROP INDEX IAM.USER_SCOPE_GRANT_ACTIVE_UQ;"

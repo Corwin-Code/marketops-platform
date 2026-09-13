@@ -44,7 +44,9 @@ public record ListingActionView(
         Instant updatedAt,
         long version,
         UUID restoresCommandId,
-        String promotionTermsDigest) {
+        String promotionTermsDigest,
+        String purposeCode,
+        ListingPurposeBasis purposeBasis) {
 
     public record Review(UUID id, UUID reviewerUserId, String verdict, String reason, Instant reviewedAt,
                          String evaluationPlanDigest) {

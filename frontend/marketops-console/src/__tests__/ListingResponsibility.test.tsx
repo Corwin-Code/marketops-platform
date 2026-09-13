@@ -130,9 +130,7 @@ describe('necessary diagnostic responsibility', () => {
   it.each(['zh', 'ru'] as const)(
     'shows continuous time and requires explicit acknowledgement in %s',
     async (language) => {
-      const send = vi.fn<typeof fetch>(() =>
-        Promise.resolve(new Response(null, { status: 204 })),
-      );
+      const send = vi.fn<typeof fetch>(() => Promise.resolve(new Response(null, { status: 204 })));
       const refresh = vi.fn();
       const context: ConsoleRequest = {
         apiBaseUrl: 'http://localhost',

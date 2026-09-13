@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import { decide } from '../api/console';
 import type {
@@ -8,6 +8,8 @@ import type {
   Evaluation,
   LaunchAnswer,
   ListingAction,
+  ListingActionPurpose,
+  MeaningReviewBasis,
 } from '../api/listingConversion';
 import {
   cancelAction,
@@ -17,6 +19,7 @@ import {
   fetchDescriptionCommand,
   fetchDescriptionGate,
   fetchEvaluation,
+  evaluateNode,
   launchAction,
   prepareAction,
   prepareCandidate,
@@ -24,6 +27,7 @@ import {
   reviewAction,
 } from '../api/listingConversion';
 import { Code, ListingProblem, When, YesNo } from './ListingCommon';
+import { ListingPurposeBasisDetails } from './ListingPurposeBasisDetails';
 import { ListingMeaningReview } from './ListingMeaningReview';
 import { ListingResponsibility } from './ListingResponsibility';
 import { PromotionDeclaration, PromotionPreparationForm } from './ListingPromotionTerms';
@@ -210,6 +214,11 @@ function CandidatePreparation({
   const [roundKey, setRoundKey] = useState('round-1');
   const [evidence, setEvidence] = useState('');
   const [path, setPath] = useState('API');
+  const [purpose, setPurpose] = useState<ListingActionPurpose>('LISTING_CONVERSION');
+  const [purposeReference, setPurposeReference] = useState('');
+  const [purposeUseConditions, setPurposeUseConditions] = useState('');
+  const [purposeEndConditions, setPurposeEndConditions] = useState('');
+  const [purposeUseUntil, setPurposeUseUntil] = useState('');
   const [targetText, setTargetText] = useState('');
   const [restoresCommandId, setRestoresCommandId] = useState('');
   const [kiz, setKiz] = useState<'undeclared' | 'yes' | 'no'>('undeclared');
@@ -319,6 +328,20 @@ function CandidatePreparation({
                       targetText,
                       kiz === 'undeclared' ? undefined : kiz === 'yes',
                       restoresCommandId.trim() || undefined,
+                      undefined,
+                      purpose,
+                      purpose === 'LISTING_CONVERSION'
+                        ? undefined
+                        : {
+                            evidenceReference: purposeReference,
+                            useConditions: purposeUseConditions
+                              .split('\n')
+                              .filter((value) => value.trim() !== ''),
+                            endConditions: purposeEndConditions
+                              .split('\n')
+                              .filter((value) => value.trim() !== ''),
+                            useUntil: purposeUseUntil.trim() || undefined,
+                          },
                     ).then((outcome) => {
                       if (outcome.ok) {
                         onPrepared(outcome.value.id);
@@ -330,6 +353,76 @@ function CandidatePreparation({
                 >
                   <>
                     <label>
+                      {t('actionPurpose', language)}
+                      <select
+                        value={purpose}
+                        onChange={(event) => {
+                          const selected = event.target.value as ListingActionPurpose;
+                          setPurpose(selected);
+                          if (selected === 'BOUNDED_EXPLORATION') setPath('MANUAL');
+                        }}
+                      >
+                        <option value="LISTING_CONVERSION">
+                          {t('purposeImprovement', language)}
+                        </option>
+                        <option value="DESCRIPTION_CORRECTION">
+                          {t('purposeCorrection', language)}
+                        </option>
+                        <option value="BOUNDED_EXPLORATION">
+                          {t('purposeExploration', language)}
+                        </option>
+                      </select>
+                    </label>
+                    <p>{t('purposeHelp', language)}</p>
+                    {purpose !== 'LISTING_CONVERSION' && (
+                      <fieldset>
+                        <legend>{t('purposeBasis', language)}</legend>
+                        <label>
+                          {t('purposeEvidence', language)}
+                          <input
+                            required
+                            maxLength={512}
+                            value={purposeReference}
+                            onChange={(event) => {
+                              setPurposeReference(event.target.value);
+                            }}
+                          />
+                        </label>
+                        <label>
+                          {t('purposeUseConditions', language)}
+                          <textarea
+                            required
+                            value={purposeUseConditions}
+                            onChange={(event) => {
+                              setPurposeUseConditions(event.target.value);
+                            }}
+                          />
+                        </label>
+                        <label>
+                          {t('purposeEndConditions', language)}
+                          <textarea
+                            required
+                            value={purposeEndConditions}
+                            onChange={(event) => {
+                              setPurposeEndConditions(event.target.value);
+                            }}
+                          />
+                        </label>
+                        <label>
+                          {t('purposeUseUntil', language)}
+                          <input
+                            required={purpose === 'BOUNDED_EXPLORATION'}
+                            value={purposeUseUntil}
+                            placeholder="2026-12-01T00:00:00Z"
+                            onChange={(event) => {
+                              setPurposeUseUntil(event.target.value);
+                            }}
+                          />
+                        </label>
+                      </fieldset>
+                    )}
+
+                    <label>
                       {t('path', language)}
                       <select
                         value={path}
@@ -337,7 +430,9 @@ function CandidatePreparation({
                           setPath(e.target.value);
                         }}
                       >
-                        <option value="API">API</option>
+                        <option value="API" disabled={purpose === 'BOUNDED_EXPLORATION'}>
+                          API
+                        </option>
                         <option value="MANUAL">MANUAL</option>
                       </select>
                     </label>
@@ -407,6 +502,12 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
   const [command, setCommand] = useState<DescriptionCommand | undefined>(undefined);
   const [gate, setGate] = useState<readonly string[] | undefined>(undefined);
   const [message, setMessage] = useState<string | undefined>(undefined);
+  const [approvalMaterial, setApprovalMaterial] = useState<MeaningReviewBasis | undefined>(
+    undefined,
+  );
+  const receiveApprovalMaterial = useCallback((basis: MeaningReviewBasis | undefined): void => {
+    setApprovalMaterial(basis);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -425,6 +526,7 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
   }, [context, actionId, generation]);
 
   const refresh = (): void => {
+    setApprovalMaterial(undefined);
     setGeneration((value) => value + 1);
   };
   const settle = (outcome: { readonly ok: boolean; readonly failure?: ConsoleFailure }): void => {
@@ -452,6 +554,23 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
             <Code family="executionPath" code={action.executionPath} /> ·{' '}
             <Code family="materialityRoute" code={action.materialityRoute} />
           </h3>
+          <p>
+            {t('actionPurpose', language)}:{' '}
+            {action.purposeCode === undefined
+              ? '—'
+              : action.purposeCode === 'LISTING_CONVERSION'
+                ? t('purposeImprovement', language)
+                : action.purposeCode === 'DESCRIPTION_CORRECTION'
+                  ? t('purposeCorrection', language)
+                  : action.purposeCode === 'BOUNDED_EXPLORATION'
+                    ? t('purposeExploration', language)
+                    : action.purposeCode === 'PROMOTION'
+                      ? t('purposePromotion', language)
+                      : action.purposeCode}
+          </p>
+          {action.purposeBasis !== undefined && (
+            <ListingPurposeBasisDetails basis={action.purposeBasis} />
+          )}
           <ListingResponsibility context={context} actionId={actionId} />
           {action.actionKind === 'LISTING_PROMOTION_ACTION' && (
             <PromotionDeclaration
@@ -476,6 +595,8 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
             <dd>
               {action.affectedSetDigest} ({action.affectedVariantCount})
             </dd>
+            <dt>{language === 'ru' ? 'Идентификатор карточки' : '平台 Listing ID'}</dt>
+            <dd>{action.platformListingId}</dd>
             <dt>{t('currentDigest', language)}</dt>
             <dd>{action.currentTextDigest ?? '—'}</dd>
             <dt>{t('targetDigest', language)}</dt>
@@ -486,6 +607,20 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
             </dd>
             <dt>{t('version', language)}</dt>
             <dd>{action.version}</dd>
+            <dt>{language === 'ru' ? 'Ось содержания' : '内容材料性轴'}</dt>
+            <dd>
+              {action.contentAxisMaterial === undefined ? '—' : String(action.contentAxisMaterial)}
+            </dd>
+            <dt>{language === 'ru' ? 'Ось воздействия' : '暴露材料性轴'}</dt>
+            <dd>
+              {action.exposureAxisMaterial === undefined
+                ? '—'
+                : String(action.exposureAxisMaterial)}
+            </dd>
+            <dt>{language === 'ru' ? 'Версия калибровки' : '校准版本'}</dt>
+            <dd>
+              {action.calibrationPackageId ?? '—'} · {action.calibrationVersion ?? '—'}
+            </dd>
           </dl>
           {action.restoresCommandId !== undefined && (
             <p>
@@ -538,8 +673,22 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
           )}
           {action.state === 'REVIEWED' && (
             <>
+              <ListingMeaningReview
+                context={context}
+                actionId={actionId}
+                reason={reason}
+                onOutcome={settle}
+                approvalMode
+                onMaterialLoaded={receiveApprovalMaterial}
+              />
               <button
                 type="button"
+                disabled={
+                  approvalMaterial === undefined ||
+                  approvalMaterial.reviewEvidence?.verdict !== 'ATTESTED' ||
+                  approvalMaterial.materialityEvidence.state !== 'CURRENT' ||
+                  reason.trim() === ''
+                }
                 onClick={() => {
                   void decide(
                     context,
@@ -630,18 +779,34 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
               {t('launched', language)} <When value={action.launch.launchedAt} />
             </p>
           )}
-          <button
-            type="button"
-            onClick={() => {
-              void fetchEvaluation(context, actionId).then((outcome) => {
-                if (outcome.ok) setEvaluation(outcome.value);
-                else setFailure(outcome.failure);
-              });
-            }}
-          >
-            {t('evaluation', language)}
-          </button>
-          {evaluation !== undefined && <EvaluationTable evaluation={evaluation} />}
+          {action.purposeCode !== 'DESCRIPTION_CORRECTION' &&
+            action.purposeCode !== 'BOUNDED_EXPLORATION' && (
+              <button
+                type="button"
+                onClick={() => {
+                  void fetchEvaluation(context, actionId).then((outcome) => {
+                    if (outcome.ok) setEvaluation(outcome.value);
+                    else setFailure(outcome.failure);
+                  });
+                }}
+              >
+                {t('evaluation', language)}
+              </button>
+            )}
+          {evaluation !== undefined && (
+            <>
+              {action.launch !== undefined && (
+                <NodeEvaluationForm
+                  context={context}
+                  actionId={actionId}
+                  evaluation={evaluation}
+                  onEvaluated={setEvaluation}
+                  onFailure={setFailure}
+                />
+              )}
+              <EvaluationTable evaluation={evaluation} />
+            </>
+          )}
           {action.executionPath === 'API' && action.launch !== undefined && (
             <button
               type="button"
@@ -746,10 +911,110 @@ function AllowanceTable({ allowance }: { readonly allowance: Allowance }): React
   );
 }
 
+function NodeEvaluationForm({
+  context,
+  actionId,
+  evaluation,
+  onEvaluated,
+  onFailure,
+}: {
+  readonly context: ConsoleRequest;
+  readonly actionId: string;
+  readonly evaluation: Evaluation;
+  readonly onEvaluated: (value: Evaluation) => void;
+  readonly onFailure: (failure: ConsoleFailure | undefined) => void;
+}): React.JSX.Element {
+  const { language } = useLanguage();
+  const [nodeCode, setNodeCode] = useState(evaluation.formalNodes[0]?.nodeCode ?? '');
+  const [stage, setStage] = useState<'OPERATIONAL' | 'SETTLED'>('OPERATIONAL');
+  const [measurementId, setMeasurementId] = useState('');
+  const [lateFactReference, setLateFactReference] = useState('');
+  return (
+    <form
+      aria-label={t('evaluationRecord', language)}
+      onSubmit={(event) => {
+        event.preventDefault();
+        void evaluateNode(context, actionId, {
+          nodeCode,
+          stage,
+          ...(measurementId.trim() === '' ? {} : { measurementId: measurementId.trim() }),
+          ...(lateFactReference.trim() === ''
+            ? {}
+            : { lateFactReference: lateFactReference.trim() }),
+        }).then((outcome) => {
+          if (outcome.ok) {
+            onEvaluated(outcome.value);
+            onFailure(undefined);
+          } else onFailure(outcome.failure);
+        });
+      }}
+    >
+      <label>
+        {t('nodes', language)}{' '}
+        <select
+          required
+          value={nodeCode}
+          onChange={(event) => {
+            setNodeCode(event.target.value);
+          }}
+        >
+          {evaluation.formalNodes.map((node) => (
+            <option key={node.nodeCode} value={node.nodeCode}>
+              {node.nodeCode}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t('evaluationStage', language)}{' '}
+        <select
+          value={stage}
+          onChange={(event) => {
+            setStage(event.target.value as 'OPERATIONAL' | 'SETTLED');
+          }}
+        >
+          <option value="OPERATIONAL">OPERATIONAL</option>
+          <option value="SETTLED">SETTLED</option>
+        </select>
+      </label>
+      <label>
+        {t('measurementId', language)}{' '}
+        <input
+          value={measurementId}
+          onChange={(event) => {
+            setMeasurementId(event.target.value);
+          }}
+        />
+      </label>
+      <label>
+        {t('lateFactReference', language)}{' '}
+        <input
+          value={lateFactReference}
+          onChange={(event) => {
+            setLateFactReference(event.target.value);
+          }}
+        />
+      </label>
+      <button type="submit" disabled={nodeCode === ''}>
+        {t('evaluationRecord', language)}
+      </button>
+    </form>
+  );
+}
+
 function EvaluationTable({ evaluation }: { readonly evaluation: Evaluation }): React.JSX.Element {
   const { language } = useLanguage();
   return (
     <div data-plan={evaluation.planId}>
+      <p>
+        {t('evaluationFrozenAt', language)}: <When value={evaluation.frozenAt} />
+      </p>
+      <p>
+        {t('evaluationBoundary', language)}: <When value={evaluation.latestBoundary} />
+      </p>
+      <p>
+        {t('evaluationPlanDigest', language)}: <code>{evaluation.planDigest ?? '—'}</code>
+      </p>
       <h4>{t('nodes', language)}</h4>
       <ul>
         {evaluation.formalNodes.map((node) => (
@@ -771,7 +1036,11 @@ function EvaluationTable({ evaluation }: { readonly evaluation: Evaluation }): R
           </thead>
           <tbody>
             {evaluation.results.map((result) => (
-              <tr key={result.id} data-verdict={result.verdict}>
+              <tr
+                key={result.id}
+                id={`evaluation-result-${result.id}`}
+                data-verdict={result.verdict}
+              >
                 <td>
                   {result.nodeCode} <Code family="evaluationStage" code={result.stage} /> #
                   {result.revisionNo} <Code family="nodeVerdict" code={result.verdict} />
@@ -779,6 +1048,28 @@ function EvaluationTable({ evaluation }: { readonly evaluation: Evaluation }): R
                 <td>
                   {result.primaryRatio ?? '—'} / {result.conservativeBound ?? '—'} /{' '}
                   {result.acceptedThreshold ?? '—'}
+                  {result.fixedTrafficObservation !== undefined && (
+                    <p>
+                      {t('observedComparison', language)}:{' '}
+                      {result.fixedTrafficObservation.referenceStandardized ?? '—'} /{' '}
+                      {result.fixedTrafficObservation.targetStandardized ?? '—'} /{' '}
+                      {result.fixedTrafficObservation.observedDifference ?? '—'}
+                      <br />
+                      {t('observationOnly', language)}
+                    </p>
+                  )}
+                  {(result.qualificationGaps?.length ?? 0) > 0 && (
+                    <p>
+                      {t('qualification', language)}: {result.qualificationGaps?.join(', ')}
+                    </p>
+                  )}
+                  <p>
+                    {t('acquisitionTime', language)}: <When value={result.measurementAcquiredAt} />
+                  </p>
+                  <p>
+                    {t('measurementComputedAt', language)}:{' '}
+                    <When value={result.measurementComputedAt} />
+                  </p>
                 </td>
                 <td>
                   <Code family="protectionVerdict" code={result.protectionVerdict} />{' '}
@@ -793,6 +1084,35 @@ function EvaluationTable({ evaluation }: { readonly evaluation: Evaluation }): R
             ))}
           </tbody>
         </table>
+      )}
+      {(evaluation.revisions?.length ?? 0) > 0 && (
+        <section aria-label={t('evaluationRevisions', language)}>
+          <h4>{t('evaluationRevisions', language)}</h4>
+          <ul>
+            {evaluation.revisions?.map((revision) => (
+              <li key={revision.id}>
+                {t('evaluationRevisionLink', language)}:{' '}
+                <a href={`#evaluation-result-${revision.originalNodeResultId}`}>
+                  {revision.originalNodeResultId}
+                </a>
+                {' → '}
+                <a href={`#evaluation-result-${revision.revisedNodeResultId}`}>
+                  {revision.revisedNodeResultId}
+                </a>
+                {' · '}
+                {revision.revisionReason === 'LATE_FACT'
+                  ? t('evaluationLateFact', language)
+                  : revision.revisionReason === 'CORRECTION'
+                    ? t('evaluationCorrection', language)
+                    : revision.revisionReason}
+                {' · '}
+                {revision.lateFactReference}
+                {' · '}
+                <When value={revision.recordedAt} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );

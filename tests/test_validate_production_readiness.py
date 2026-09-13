@@ -637,6 +637,50 @@ class MigrationContractTests(unittest.TestCase):
                 "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
                 "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
                 "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
+                "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+                "V0081__record_listing_measurement_coverage_and_lineage.sql",
+                "V0082__govern_listing_calibration_acceptance_and_activation.sql",
+                "V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+                "V0084__persist_provider_description_retry_timing.sql",
+                "V0085__scope_listing_description_feature_flags.sql",
+                "V0086__preserve_frozen_listing_evaluation_semantics.sql",
+                "V0087__bind_listing_measurement_lineage_identity.sql",
+                "V0088__bind_listing_review_and_approval_to_frozen_plan.sql",
+                "V0089__retain_listing_node_evaluation_qualification.sql",
+                "V0090__bind_manual_listing_verification_to_exact_observations.sql",
+                "V0091__create_listing_command_atomically_with_its_launch.sql",
+                "V0092__bind_description_response_to_frozen_native_identity.sql",
+                "V0093__govern_description_protocol_configuration.sql",
+                "V0094__bind_description_requests_to_exact_verified_schema.sql",
+                "V0095__retain_exact_description_task_query_evidence.sql",
+                "V0096__project_qualified_description_execution_results.sql",
+                "V0097__bind_exact_restoration_to_a_new_approved_action.sql",
+                "V0098__accumulate_listing_allowance_across_configuration_versions.sql",
+                "V0099__freeze_promotion_declarations_before_review.sql",
+                "V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+                "V0101__retain_conditional_promotion_simulation_basis.sql",
+                "V0102__bind_listing_scope_to_native_enumeration_evidence.sql",
+                "V0103__recheck_exact_listing_calibration_dependencies.sql",
+                "V0104__validate_calibration_combinations_for_their_declared_purpose.sql",
+                "V0105__fence_listing_recalculation_result_publication.sql",
+                "V0106__retain_canonical_listing_materiality_exposure.sql",
+                "V0107__bind_listing_classification_to_structured_meaning_review.sql",
+                "V0108__freeze_listing_task_responsibility_clocks.sql",
+                "V0109__activate_listing_diagnostic_responsibility.sql",
+                "V0110__bind_finite_listing_task_deferral_to_reassessment.sql",
+                "V0111__bind_declared_listing_action_purpose.sql",
+                "V0112__freeze_listing_purpose_use_basis_before_review.sql",
+                "V0113__bind_current_listing_business_protection.sql",
+                "V0114__retain_listing_feedback_identity_and_label_revisions.sql",
+                "V0115__declare_bounded_listing_ai_projection.sql",
+                "V0116__publish_existing_settled_sales_quantity_as_canonical_metric.sql",
+                "V0117__latch_listing_protection_failures_until_independent_release.sql",
+                "V0118__bind_launch_plan_to_declared_listing_purpose.sql",
+                "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+                "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+                "V0121__complete_listing_operations_queue_and_review.sql",
+                "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+                "V0123__bind_qualified_promotion_simulation_to_action.sql",
             ),
             APPROVED_MIGRATIONS,
         )
@@ -709,6 +753,9 @@ class MigrationContractTests(unittest.TestCase):
         for removed in ("'caseId'", "'candidateId'", "'APPROVED',", "'ADVERTISING_REVIEW','AD_BID_CHANGE'"):
             with self.subTest(removed=removed):
                 self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
+
+    def test_manual_execution_index_replacement_keeps_its_issue_guard(self) -> None:
+        root = Path(__file__).resolve().parents[1]
         path = root / "backend/marketops-server/src/main/resources/db/migration/V0073__require_complete_independent_manual_observation.sql"
         text = path.read_text(encoding="utf-8")
         line = "DROP INDEX ops.ad_manual_execution_packet_live_uq;"
@@ -719,6 +766,33 @@ class MigrationContractTests(unittest.TestCase):
                         "'MANUAL_EXECUTION_UNCERTAIN'", "pg_advisory_xact_lock", "other.id<>NEW.id"):
             with self.subTest(removed=removed):
                 self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
+
+    def test_listing_restoration_index_replacement_preserves_both_live_authorities(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        path = root / (
+            "backend/marketops-server/src/main/resources/db/migration/"
+            "V0097__bind_exact_restoration_to_a_new_approved_action.sql"
+        )
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX ops.recommendation_live_uq;"
+
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(
+            approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line)
+        )
+        self.assertFalse(
+            approved_index_replacement(path, text, "DROP INDEX ops.unrelated_index;")
+        )
+        for removed in (
+            "CREATE UNIQUE INDEX recommendation_live_uq",
+            "CREATE UNIQUE INDEX lc_restoration_live_proposal_uq",
+            "AND NOT (action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId')",
+            "WHERE action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId'",
+        ):
+            with self.subTest(removed=removed):
+                self.assertFalse(
+                    approved_index_replacement(path, text.replace(removed, "", 1), line)
+                )
 
 
 class CommentExtractionTests(unittest.TestCase):

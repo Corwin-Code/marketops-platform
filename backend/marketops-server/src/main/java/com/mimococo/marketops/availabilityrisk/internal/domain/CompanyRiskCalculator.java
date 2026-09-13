@@ -62,6 +62,13 @@ public final class CompanyRiskCalculator {
                                       ProfitAssessment profit,
                                       long freshnessMaxMinutes,
                                       Instant asOf) {
+        return calculate(observation,demand,leadTime,profit,freshnessMaxMinutes,asOf,null);
+    }
+
+    /** Extend the checked horizon for a declared use without changing its lead-time policy. */
+    public static ChildRisk calculate(CompanyObservation observation, DemandDecision demand,
+                                      LeadTimeResolution leadTime, ProfitAssessment profit,
+                                      long freshnessMaxMinutes, Instant asOf, Instant requiredThrough) {
         List<String> blockers = new ArrayList<>();
 
         // A blocked policy is decisive on its own: without a horizon there is no
@@ -76,6 +83,7 @@ public final class CompanyRiskCalculator {
         }
 
         Instant horizonEnd = asOf.plus(Duration.ofDays(leadTime.coverageHorizonDays()));
+        if (requiredThrough!=null && requiredThrough.isAfter(horizonEnd)) horizonEnd=requiredThrough;
         List<SupplyComponent> components = new ArrayList<>();
 
         for (CompanyObservation.WarehouseHolding holding : observation.warehouseHoldings()) {

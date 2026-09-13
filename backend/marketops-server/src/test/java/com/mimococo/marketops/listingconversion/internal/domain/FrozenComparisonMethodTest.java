@@ -10,7 +10,7 @@ class FrozenComparisonMethodTest {
     static final ObjectMapper JSON = new ObjectMapper();
     static JsonNode nodes(String nodeAlpha) {
         return JSON.readTree("""
-                [{"nodeCode":"D14","maturityDays":14,"method":"EXACT_BINOMIAL_FIXED_TRAFFIC_BONFERRONI_V1",
+                [{"nodeCode":"D14","maturityDays":14,"method":"EXACT_BINOMIAL_FIXED_TRAFFIC_BONFERRONI_V1","threshold":"0.05",
                   "methodParameters":{"familyAlpha":"0.05","nodeAlpha":"%s",
                    "samplingModel":"INDEPENDENT_BERNOULLI_VISITS","qualificationRef":"fixture://sampling-method"},
                   "schedule":{"notBeforeOffsetDays":28,"lastOffsetDays":42,"windowStartOffsetDays":0,"windowEndOffsetDays":14}}]
@@ -22,7 +22,7 @@ class FrozenComparisonMethodTest {
 
     @Test void explicitBudgetCoversBothTailsAndAllFrozenComparisons() {
         assertThat(method().componentTailAlpha()).isEqualByComparingTo("0.00625");
-        var grouped = FrozenComparisonMethod.resolve(nodes("0.05"), JSON.readTree("[{\"code\":\"SMALL\"}]"), "D14").orElseThrow();
+        var grouped = FrozenComparisonMethod.resolve(nodes("0.05"), JSON.readTree("[{\"code\":\"SMALL\",\"bound\":\"0.02\"}]"), "D14").orElseThrow();
         assertThat(grouped.componentTailAlpha()).isEqualByComparingTo("0.003125");
         assertThat(grouped.qualificationReference()).isEqualTo("fixture://sampling-method");
         assertThat(grouped.notBeforeDays()).isEqualTo(28);
@@ -42,8 +42,16 @@ class FrozenComparisonMethodTest {
 
     @Test void duplicateNodesAndGroupsCannotHideMultiplicity() {
         assertThat(resolve("[" + nodes("0.01").get(0) + "," + nodes("0.01").get(0) + "]")).isEmpty();
-        assertThat(FrozenComparisonMethod.resolve(nodes("0.05"), JSON.readTree("[{\"code\":\"A\"},{\"code\":\"A\"}]"), "D14")).isEmpty();
+        assertThat(FrozenComparisonMethod.resolve(nodes("0.05"), JSON.readTree("[{\"code\":\"A\",\"bound\":0},{\"code\":\"A\",\"bound\":0}]"), "D14")).isEmpty();
         assertThat(FrozenComparisonMethod.resolve(nodes("0.05"), JSON.readTree("[\"A\"]"), "D14")).isEmpty();
+    }
+
+    @Test void primaryThresholdAndEveryIndependentGroupBoundAreExplicitProbabilities() {
+        assertThat(resolve(nodes("0.05").toString().replace("\"threshold\":\"0.05\"", "\"threshold\":0"))).isEmpty();
+        assertThat(FrozenComparisonMethod.resolve(nodes("0.05"),
+                JSON.readTree("[{\"code\":\"SMALL\",\"bound\":\"1.01\"}]"),"D14")).isEmpty();
+        assertThat(FrozenComparisonMethod.resolve(nodes("0.05"),
+                JSON.readTree("[{\"code\":\"SMALL\"}]"),"D14")).isEmpty();
     }
 
     @Test void missingInvalidOrUnrepresentableConfidenceHasNoDefault() {

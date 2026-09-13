@@ -121,7 +121,7 @@ class PriceEconomicsRepository implements PriceEconomicsQuery {
         List<PriceEconomicsProfile.Component> components = jdbc.sql("""
                         SELECT id, component_code, family_code, component_kind,
                                fixed_amount, rate_value, lower_price_inclusive,
-                               upper_price_exclusive, evidence_reference
+                               upper_price_exclusive, evidence_reference, price_basis
                           FROM core.economics_projection_component
                          WHERE profile_id = :profileId
                          ORDER BY family_code, component_code,
@@ -138,7 +138,9 @@ class PriceEconomicsRepository implements PriceEconomicsQuery {
                         result.getBigDecimal("rate_value"),
                         result.getBigDecimal("lower_price_inclusive"),
                         result.getBigDecimal("upper_price_exclusive"),
-                        result.getString("evidence_reference")))
+                        result.getString("evidence_reference"),
+                        result.getString("price_basis") == null ? PriceEconomicsProfile.PriceBasis.PROPOSED_PRICE
+                                : PriceEconomicsProfile.PriceBasis.valueOf(result.getString("price_basis"))))
                 .list();
 
         PriceEconomicsProfile profile = new PriceEconomicsProfile(row.id(), row.version(),

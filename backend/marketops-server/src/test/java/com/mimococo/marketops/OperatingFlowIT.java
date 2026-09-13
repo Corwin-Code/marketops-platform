@@ -790,25 +790,28 @@ class OperatingFlowIT {
         long metricRows = jdbc.sql("SELECT count(*) FROM mart.metric_value")
                 .query(Long.class).single();
 
-        appendSalesWatermark(Duration.ofDays(31), "stale-sync");
-        ImpactPreview stale = guardrails.preview(proposal, null,
-                GuardrailPurpose.IMPACT_PREVIEW);
-        assertThat(stale.verdict().passed()).isFalse();
-        assertThat(stale.verdict().reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
-        assertThat(jdbc.sql("SELECT count(*) FROM mart.metric_value")
-                .query(Long.class).single()).isEqualTo(metricRows);
+        try {
+            appendSalesWatermark(Duration.ofDays(31), "stale-sync");
+            ImpactPreview stale = guardrails.preview(proposal, null,
+                    GuardrailPurpose.IMPACT_PREVIEW);
+            assertThat(stale.verdict().passed()).isFalse();
+            assertThat(stale.verdict().reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
+            assertThat(jdbc.sql("SELECT count(*) FROM mart.metric_value")
+                    .query(Long.class).single()).isEqualTo(metricRows);
 
-        // A new business event is still not a source synchronization assertion.
-        facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId,
-                listingVariantId, storeId, "COMPLETED", null,
-                "flow:fresh-business-event", "ORDER-FRESH", "LINE-FRESH", "delivered",
-                Instant.now(), 1, "RUB", new BigDecimal("100.0000"), BigDecimal.ZERO,
-                new BigDecimal("100.0000"));
-        ImpactPreview stillStale = guardrails.preview(proposal, null,
-                GuardrailPurpose.IMPACT_PREVIEW);
-        assertThat(stillStale.verdict().reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
-
-        appendSalesWatermark(Duration.ZERO, "attributable-refresh");
+            // A new business event is still not a source synchronization assertion.
+            facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId,
+                    listingVariantId, storeId, "COMPLETED", null,
+                    "flow:fresh-business-event", "ORDER-FRESH", "LINE-FRESH", "delivered",
+                    Instant.now(), 1, "RUB", new BigDecimal("100.0000"), BigDecimal.ZERO,
+                    new BigDecimal("100.0000"));
+            ImpactPreview stillStale = guardrails.preview(proposal, null,
+                    GuardrailPurpose.IMPACT_PREVIEW);
+            assertThat(stillStale.verdict().reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
+        } finally {
+            // Restore shared flow state even when the stale-path assertion fails.
+            appendSalesWatermark(Duration.ZERO, "attributable-refresh");
+        }
         ImpactPreview refreshed = guardrails.preview(proposal, null,
                 GuardrailPurpose.IMPACT_PREVIEW);
         assertThat(refreshed.verdict().reasons())
@@ -1657,8 +1660,10 @@ class OperatingFlowIT {
     }
 
     private static void appendSalesWatermark(Duration sourceAge, String evidenceSuffix) {
-        Instant now = Instant.now();
-        fixtureJdbc().sql("""
+        JdbcClient fixture = fixtureJdbc();
+        Instant now = fixture.sql("SELECT statement_timestamp()")
+                .query(java.sql.Timestamp.class).single().toInstant();
+        fixture.sql("""
                 INSERT INTO core.source_feed_watermark
                     (id,organization_id,platform_code,marketplace_account_id,store_id,
                      feed_code,source_updated_at,ingested_at,reconciled_at,evidence_reference,

@@ -150,7 +150,8 @@ class ListingTaskDeferralService implements ListingTaskDeferralIntake {
 
     private Context context(UUID task) {
         return jdbc.sql("""
-                SELECT b.organization_id,coalesce(b.platform_listing_id,a.platform_listing_id),b.source_health_id IS NOT NULL,
+                SELECT b.organization_id,coalesce(b.platform_listing_id,a.platform_listing_id),
+                    b.responsibility_lane='NECESSARY_RISK',
                     b.slo_snapshot::text,t.recommendation_id FROM ops.lc_task_responsibility b
                 JOIN ops.work_task t ON t.id=b.task_id LEFT JOIN ops.lc_action a ON a.recommendation_id=b.recommendation_id WHERE b.task_id=:id
                 """).param("id",task).query((rs,n)->new Context(rs.getObject(1,UUID.class),rs.getObject(2,UUID.class),

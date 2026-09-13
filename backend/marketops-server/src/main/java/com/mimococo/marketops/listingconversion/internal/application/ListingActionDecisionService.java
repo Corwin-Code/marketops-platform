@@ -7,6 +7,10 @@ import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.ListingActionIntake;
 import com.mimococo.marketops.operationsworkflow.ListingDecisionScope;
+import com.mimococo.marketops.identityaccess.ActionScopeCode;
+import com.mimococo.marketops.identityaccess.AuthenticatedActor;
+import com.mimococo.marketops.identityaccess.BusinessAuthorization;
+import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
@@ -38,21 +42,26 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
     private final ListingFactRepository facts;
     private final CalibrationService calibration;
     private final ListingExposureService exposureService;
+    private final ListingBusinessProtectionService businessProtection;
     private final ListingActionIntake intake;
     private final IdGenerator ids;
     private final Clock clock;
     private final ObjectMapper json;
+    private final BusinessAuthorization authorization;
 
     ListingActionDecisionService(ListingActionRepository actions, ListingFactRepository facts, CalibrationService calibration,
-                                 ListingActionIntake intake, IdGenerator ids, Clock clock, ObjectMapper json,ListingExposureService exposureService) {
+                                 ListingActionIntake intake, IdGenerator ids, Clock clock, ObjectMapper json,ListingExposureService exposureService,
+                                 ListingBusinessProtectionService businessProtection, BusinessAuthorization authorization) {
         this.actions = actions;
         this.facts = facts;
         this.calibration = calibration;
         this.exposureService = exposureService;
+        this.businessProtection=businessProtection;
         this.intake = intake;
         this.ids = ids;
         this.clock = clock;
         this.json = json;
+        this.authorization=authorization;
     }
 
     @Override
@@ -67,6 +76,25 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
         return buildScope(recommendationId,true);
     }
 
+    @Override
+    @Transactional(readOnly=true)
+    public void requireDecisionEvidence(AuthenticatedActor actor,UUID recommendationId) {
+        var action=actions.actionForRecommendation(recommendationId)
+                .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        if (!actor.organizationId().equals(action.organizationId()))
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        if (authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                ResourceScope.organization(action.organizationId())).permitted()) return;
+        var listingMembers=actions.frozenDirectListingVariants(action.id());
+        var productMembers=actions.frozenDirectProductVariants(action.id());
+        boolean complete=!listingMembers.isEmpty() && !productMembers.isEmpty()
+                && authorization.evaluate(actor,ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,
+                    ResourceScope.store(action.storeId())).permitted()
+                && productMembers.stream().allMatch(product->authorization.evaluate(actor,
+                    ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,ResourceScope.productVariant(product)).permitted());
+        if (!complete) throw OperationRejectedException.of(ErrorCode.APPROVAL_EVIDENCE_SCOPE_BLOCKED);
+    }
+
     private Optional<ListingDecisionScope> buildScope(UUID recommendationId,boolean recheckCurrentExposure) {
         return actions.actionForRecommendation(recommendationId).map(action -> {
             Optional<UUID> reviewer = actions.attestingReviewer(action.id());
@@ -78,6 +106,7 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
             String document=actions.authoritySnapshot(recommendationId).orElse("{}");
             String route=action.materialityRoute();
             Map<String,String> materiality=recheckCurrentExposure?currentMateriality(action,resolved,meaningQualified,now):Map.of();
+            var purposeBasis=actions.purposeBasis(action.id()).orElse(null);
             if (recheckCurrentExposure && !"CURRENT".equals(materiality.get("state")))
                 route=MaterialityRoute.MATERIALITY_UNRESOLVED.name();
             return new ListingDecisionScope(recommendationId, action.organizationId(), action.storeId(), action.listingId(),
@@ -87,7 +116,10 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
                     action.calibrationVersion(), validity, action.affectedSetDigest(), action.targetTextDigest(),
                     action.currentTextDigest(), action.targetText() == null ? 0 : action.targetText().length(),
                     action.kizMarkedDeclared(), action.authorUserId(), reviewer.orElse(null), meaningQualified,
-                    document,recheck.evidence(),materiality);
+                    document,recheck.evidence(),materiality,
+                    recheckCurrentExposure?businessProtection.assess(action,resolved,now):Map.of(),action.purposeCode(),
+                    purposeBasis==null?null:actions.purposeBasisDigest(action.purposeCode(),purposeBasis),
+                    purposeBasis==null?null:purposeBasis.useUntil());
         });
     }
 
@@ -169,18 +201,27 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
                 });
             }
         }
-        String healthState = actions.latestHealthNecessaryState(action.listingId()).orElse(null);
-        if (healthState == null || "UNKNOWN".equals(healthState)) {
-            reasons.add("LISTING_HEALTH_UNKNOWN");
-        } else if ("FAIL".equals(healthState)) {
-            reasons.add("LISTING_HEALTH_NECESSARY_FAILED");
+        if (!"DESCRIPTION_CORRECTION".equals(action.purposeCode())) {
+            String healthState = actions.latestHealthNecessaryState(action.listingId()).orElse(null);
+            if (healthState == null || "UNKNOWN".equals(healthState)) {
+                reasons.add("LISTING_HEALTH_UNKNOWN");
+            } else if ("FAIL".equals(healthState)) {
+                reasons.add("LISTING_HEALTH_NECESSARY_FAILED");
+            }
         }
         if (actions.scopeContained(action.organizationId(), action.listingId())) {
             reasons.add("SCOPE_CONTAINED");
         }
+        actions.unreleasedOutcomeFailures(action.organizationId(),action.listingId())
+                .forEach(resultId->reasons.add("UNRELEASED_PROTECTION_FAILURE:"+resultId));
         if (actions.attestingReviewer(action.id()).isEmpty()) {
             reasons.add("REVIEW_MISSING");
         }
+        var purposeBasis=actions.purposeBasis(action.id()).orElse(null);
+        if (("DESCRIPTION_CORRECTION".equals(action.purposeCode()) || "BOUNDED_EXPLORATION".equals(action.purposeCode()))
+                && purposeBasis==null) reasons.add("PURPOSE_USE_BASIS_MISSING");
+        if (purposeBasis!=null && purposeBasis.useUntil()!=null && !purposeBasis.useUntil().isAfter(actions.databaseNow()))
+            reasons.add("PURPOSE_USE_EXPIRED");
         return List.copyOf(reasons);
     }
 
@@ -194,15 +235,24 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
         Instant now = actions.databaseNow();
-        Map<String, String> evidenceVersions = Map.of(
+        var purposeBasis=actions.purposeBasis(action.id()).orElse(null);
+        String purposeDigest=purposeBasis==null?null:actions.purposeBasisDigest(action.purposeCode(),purposeBasis);
+        if (purposeBasis!=null && purposeBasis.useUntil()!=null) {
+            if (!purposeBasis.useUntil().isAfter(now)) throw OperationRejectedException.of(ErrorCode.BINDING_INAPPLICABLE);
+            if (purposeBasis.useUntil().isBefore(approvalScopeExpiresAt)) approvalScopeExpiresAt=purposeBasis.useUntil();
+        }
+        Map<String, String> evidenceVersions = new java.util.LinkedHashMap<>(Map.of(
                 "currentDescriptionObservationId", String.valueOf(action.currentObservationId()),
                 "affectedSetId", action.affectedSetId().toString(),
-                "healthNecessaryState", actions.latestHealthNecessaryState(action.listingId()).orElse("UNKNOWN"));
+                "healthNecessaryState", actions.latestHealthNecessaryState(action.listingId()).orElse("UNKNOWN")));
+        evidenceVersions.put("purposeCode",String.valueOf(action.purposeCode()));
+        if (purposeDigest!=null) evidenceVersions.put("purposeBasisDigest",purposeDigest);
+        if (purposeBasis!=null && purposeBasis.useUntil()!=null) evidenceVersions.put("purposeUseUntil",purposeBasis.useUntil().toString());
         Map<String, String> ruleVersions = Map.of(
                 "calibrationPackageId", action.calibrationPackageId().toString(),
                 "calibrationVersion", String.valueOf(action.calibrationVersion()),
                 "guardrailEvaluationId", guardrailEvaluationId.toString());
-        String bindingDigest = Digest.ofComponents(List.of(action.affectedSetDigest(),
+        String bindingDigest = Digest.ofComponents(List.of(String.valueOf(action.purposeCode()),String.valueOf(purposeDigest),action.affectedSetDigest(),
                 String.valueOf(action.currentTextDigest()), String.valueOf(action.targetTextDigest()), action.executionPath(),
                 approvalDecisionId.toString(), guardrailEvaluationId.toString(),
                 action.calibrationPackageId() + ":" + action.calibrationVersion(), approvalScopeExpiresAt.toString()));
@@ -236,6 +286,6 @@ class ListingActionDecisionService implements ListingActionDecisionAuthority {
     }
 
     private CalibrationService.Outcome resolvedFor(ListingActionRepository.ActionRow action) {
-        return calibration.recheckAction(action.id(),clock.instant()).outcome();
+        return calibration.recheckAction(action.id(),actions.databaseNow()).outcome();
     }
 }

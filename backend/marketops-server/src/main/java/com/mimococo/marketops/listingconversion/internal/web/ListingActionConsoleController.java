@@ -62,12 +62,14 @@ class ListingActionConsoleController {
     private final com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility;
     private final com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds;
 
     ListingActionConsoleController(ListingActionService actions, EvaluationService evaluations,
                                    BusinessAuthorization authorization, MetadataAuditRecorder audit,
                                    com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
                                    com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake,
-                                   com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals,
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds) {
         this.actions = actions;
         this.evaluations = evaluations;
         this.authorization = authorization;
@@ -75,6 +77,7 @@ class ListingActionConsoleController {
         this.responsibility = responsibility;
         this.taskIntake = taskIntake;
         this.deferrals = deferrals;
+        this.dependencyHolds = dependencyHolds;
     }
 
     @PostMapping("/{actionId}/responsibility/deferrals")
@@ -86,6 +89,18 @@ class ListingActionConsoleController {
         return deferrals.request(actor,action.platformListingId(),task,request.minutes(),request.reason());
     }
     record DeferralRequest(@jakarta.validation.constraints.Min(1) int minutes,@NotBlank String reason) { }
+
+    @PostMapping("/{actionId}/responsibility/dependency-holds")
+    com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold.View holdForDependency(
+            AuthenticatedActor actor,@PathVariable UUID actionId,@Valid @RequestBody DependencyHoldRequest request) {
+        var action=actions.require(actor,actionId);
+        UUID task=taskIntake.taskForRecommendation(action.recommendationId()).orElseThrow(()->
+                OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        return dependencyHolds.request(actor,action.platformListingId(),task,request.dependencyTaskId(),
+                request.minutes(),request.evidenceReference());
+    }
+    record DependencyHoldRequest(@NotNull UUID dependencyTaskId,@Min(1) int minutes,
+                                 @NotBlank String evidenceReference) { }
 
     // ------------------------------------------------------------------ candidates
 
@@ -118,7 +133,7 @@ class ListingActionConsoleController {
                                     @Valid @RequestBody PrepareRequest request) {
         return actions.prepareAction(actor, candidateId, new ListingActionService.Preparation(request.executionPath(),
                 request.targetText(), request.kizMarkedDeclared(), request.exposureShare(), request.expectedEffect(),
-                request.riskLabel(), request.restoresCommandId(), request.promotionTerms()));
+                request.riskLabel(), request.restoresCommandId(), request.promotionTerms(), request.purpose(), request.purposeBasis(), request.simulationId()));
     }
 
     @PostMapping(value = "/candidates/{candidateId}/simulate", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -134,7 +149,8 @@ class ListingActionConsoleController {
         List<PromotionSimulator.Scenario> scenarios = request.scenarios().stream()
                 .map(s -> new PromotionSimulator.Scenario(s.code(), s.quantity(), s.necessary(), s.conservative()))
                 .toList();
-        return evaluations.simulate(actor, candidateId, inputs, scenarios, request.referenceProfitLine(), request.context());
+        return evaluations.simulate(actor, candidateId, inputs, scenarios, request.referenceProfitLine(), request.context(),
+                request.purpose());
     }
 
     @Transactional
@@ -273,7 +289,9 @@ class ListingActionConsoleController {
 
     record PrepareRequest(@NotNull ExecutionPath executionPath, String targetText, Boolean kizMarkedDeclared,
                           BigDecimal exposureShare, Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId,
-                          com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms) {
+                          com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms,
+                          com.mimococo.marketops.listingconversion.ListingActionPurpose purpose,
+                          com.mimococo.marketops.listingconversion.ListingPurposeBasis purposeBasis, UUID simulationId) {
     }
 
     record FeeStepRequest(@NotNull BigDecimal priceFloor, @NotNull BigDecimal feePerUnit) {
@@ -288,7 +306,8 @@ class ListingActionConsoleController {
                              List<@Valid FeeStepRequest> stepFees, boolean feesKnown,
                              @NotEmpty List<@Valid ScenarioRequest> scenarios, BigDecimal referenceProfitLine,
                              String currencyCode, PromotionSimulator.Expenses expenses,
-                             @NotNull @Valid com.mimococo.marketops.listingconversion.SimulationAssumptions context) {
+                             @NotNull @Valid com.mimococo.marketops.listingconversion.SimulationAssumptions context,
+                             com.mimococo.marketops.listingconversion.ListingActionPurpose purpose) {
     }
 
     record ReviewRequest(@NotBlank String verdict, String reason,

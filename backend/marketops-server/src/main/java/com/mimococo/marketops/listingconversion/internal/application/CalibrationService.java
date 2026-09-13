@@ -30,7 +30,10 @@ public class CalibrationService {
     }
 
     /** One resolved package with its values, or the reason none resolved. */
-    public record Resolved(UUID packageId, int version, Map<String, CalibrationRepository.Value> values) {
+    public record Resolved(UUID packageId, int version, Map<String, CalibrationRepository.Value> values, Instant acceptedAt) {
+        public Resolved(UUID packageId, int version, Map<String, CalibrationRepository.Value> values) {
+            this(packageId, version, values, null);
+        }
     }
 
     public record Outcome(Resolved resolved, String state) {
@@ -50,8 +53,7 @@ public class CalibrationService {
         if (!resolution.resolved()) {
             return new Outcome(null, resolution.state());
         }
-        return new Outcome(new Resolved(resolution.packageId(), resolution.packageVersion(),
-                calibration.values(resolution.packageId())), "RESOLVED");
+        return new Outcome(readResolved(resolution.packageId(), resolution.packageVersion(), at), "RESOLVED");
     }
 
     @Transactional(readOnly = true)
@@ -60,7 +62,7 @@ public class CalibrationService {
         if (!calibration.boundAt(organizationId,platformCode,storeId,packageId,version,frozenAt)) {
             return new Outcome(null,"BOUND_CALIBRATION_UNRESOLVED");
         }
-        return new Outcome(new Resolved(packageId,version,calibration.values(packageId)),"RESOLVED");
+        return new Outcome(readResolved(packageId,version,frozenAt),"RESOLVED");
     }
 
     public record ActionRecheck(Outcome outcome, Map<String,String> evidence) {
@@ -77,7 +79,119 @@ public class CalibrationService {
             return new ActionRecheck(new Outcome(null,state),evidence);
         }
         UUID id=UUID.fromString(check.path("currentPackageId").asText());
-        return new ActionRecheck(new Outcome(new Resolved(id,check.path("currentVersion").asInt(),calibration.values(id)),state),evidence);
+        return new ActionRecheck(new Outcome(readResolved(id,check.path("currentVersion").asInt(),at),state),evidence);
+    }
+
+    private Resolved readResolved(UUID id, int version, Instant at) {
+        Map<String,CalibrationRepository.Value> values = calibration.values(id);
+        var demand = values.get("DEMAND_SCENARIO_SET");
+        boolean consumesAcceptanceTime = demand != null && demand.json() != null
+                && demand.json().has("economicScenarioBases");
+        return new Resolved(id, version, values,
+                consumesAcceptanceTime ? calibration.acceptedAt(id, at) : null);
+    }
+
+    /** Necessary scenarios come from accepted Policy, never from the caller's flags. */
+    public static Map<String,Object> demandEvidence(Outcome outcome, UUID listingId,
+            com.mimococo.marketops.listingconversion.SimulationAssumptions context,
+            List<com.mimococo.marketops.listingconversion.internal.domain.PromotionSimulator.Scenario> submitted,
+            Instant at) {
+        Map<String,Object> evidence = new java.util.LinkedHashMap<>();
+        List<String> gaps = new ArrayList<>();
+        evidence.put("state", "UNQUALIFIED");
+        evidence.put("gaps", gaps);
+        if (!outcome.ok()) { gaps.add(outcome.state()); return evidence; }
+        evidence.put("packageId", outcome.resolved().packageId());
+        evidence.put("packageVersion", outcome.resolved().version());
+        evidence.put("acceptedAt", outcome.resolved().acceptedAt());
+        var value = outcome.resolved().values().get("DEMAND_SCENARIO_SET");
+        JsonNode basis = value == null || value.json() == null ? null
+                : value.json().path("economicScenarioBases").get(listingId.toString());
+        if (basis == null || !basis.isObject()) { gaps.add("DEMAND_BASIS_MISSING"); return evidence; }
+        evidence.put("acceptedBasis", basis);
+        try {
+            if (!basis.path("evidenceReference").isTextual() || basis.path("evidenceReference").asText().isBlank())
+                gaps.add("DEMAND_SOURCE_MISSING");
+            Instant from = Instant.parse(basis.path("periodStart").asText());
+            Instant to = Instant.parse(basis.path("periodEnd").asText());
+            if (!from.equals(context.periodStart()) || !to.equals(context.periodEnd()) || !from.isBefore(to))
+                gaps.add("DEMAND_PERIOD_MISMATCH");
+            Instant acceptedAt = outcome.resolved().acceptedAt();
+            if (acceptedAt == null || acceptedAt.isAfter(at) || acceptedAt.isAfter(from))
+                gaps.add("DEMAND_NOT_ACCEPTED_EX_ANTE");
+            JsonNode required = basis.path("necessaryScenarios");
+            if (!required.isArray() || required.isEmpty() || required.size() > 64) {
+                gaps.add("NECESSARY_DEMAND_SCENARIOS_MISSING");
+                return evidence;
+            }
+            var codes = new java.util.HashSet<String>();
+            for (JsonNode scenario : required) {
+                String code = scenario.path("code").asText();
+                if (code.isBlank() || code.length() > 64 || !codes.add(code)
+                        || !scenario.path("quantity").isNumber()
+                        || !scenario.path("conservative").isBoolean() || !scenario.path("conservative").asBoolean()
+                        || !scenario.path("evidenceReference").isTextual() || scenario.path("evidenceReference").asText().isBlank()) {
+                    gaps.add("NECESSARY_DEMAND_SCENARIO_INVALID"); continue;
+                }
+                BigDecimal quantity = scenario.path("quantity").decimalValue();
+                if (quantity.signum() < 0 || quantity.stripTrailingZeros().scale() > 0
+                        || quantity.compareTo(new BigDecimal("99999999999999")) > 0) {
+                    gaps.add("NECESSARY_DEMAND_QUANTITY_INVALID"); continue;
+                }
+                var matching = submitted.stream().filter(row -> row.code().equals(code)).toList();
+                if (matching.size() != 1 || matching.getFirst().quantity() == null
+                        || matching.getFirst().quantity().compareTo(quantity) != 0
+                        || !matching.getFirst().necessary() || !matching.getFirst().conservative())
+                    gaps.add("NECESSARY_DEMAND_SCENARIO_MISMATCH:" + code);
+            }
+        } catch (java.time.DateTimeException invalid) { gaps.add("DEMAND_PERIOD_INVALID"); }
+        if (gaps.isEmpty()) evidence.put("state", "ACCEPTED_NECESSARY_SCENARIOS_MATCH");
+        return evidence;
+    }
+
+    /** The requested total-profit line is qualified only against the accepted exact economic basis. */
+    public static Map<String,Object> profitReferenceEvidence(Outcome outcome,UUID listingId,
+            com.mimococo.marketops.listingconversion.SimulationAssumptions context,
+            BigDecimal submitted,String currency,Instant at) {
+        Map<String,Object> evidence=new java.util.LinkedHashMap<>();
+        List<String> gaps=new ArrayList<>();
+        evidence.put("state","UNQUALIFIED");
+        evidence.put("gaps",gaps);
+        if (!outcome.ok()) { gaps.add(outcome.state()); return evidence; }
+        evidence.put("packageId",outcome.resolved().packageId());
+        evidence.put("packageVersion",outcome.resolved().version());
+        evidence.put("acceptedAt",outcome.resolved().acceptedAt());
+        var value=outcome.resolved().values().get("DEMAND_SCENARIO_SET");
+        JsonNode basis=value==null || value.json()==null?null
+                :value.json().path("economicScenarioBases").get(listingId.toString());
+        if (basis==null || !basis.isObject()) { gaps.add("PROFIT_REFERENCE_BASIS_MISSING");return evidence; }
+        try {
+            Instant from=Instant.parse(basis.path("periodStart").asText());
+            Instant to=Instant.parse(basis.path("periodEnd").asText());
+            if (!from.equals(context.periodStart()) || !to.equals(context.periodEnd()) || !from.isBefore(to))
+                gaps.add("PROFIT_REFERENCE_PERIOD_MISMATCH");
+        } catch (java.time.DateTimeException invalid) { gaps.add("PROFIT_REFERENCE_PERIOD_INVALID"); }
+        Instant acceptedAt=outcome.resolved().acceptedAt();
+        if (acceptedAt==null || acceptedAt.isAfter(at) || acceptedAt.isAfter(context.periodStart()))
+            gaps.add("PROFIT_REFERENCE_NOT_ACCEPTED_EX_ANTE");
+        var minimum=basis.get("minimumContributionProfit");
+        if (minimum==null || !minimum.isNumber() || minimum.decimalValue().signum()<0)
+            gaps.add("PROFIT_REFERENCE_VALUE_UNQUALIFIED");
+        if (!basis.path("currencyCode").isTextual() || !basis.path("currencyCode").asText().equals(currency))
+            gaps.add("PROFIT_REFERENCE_CURRENCY_MISMATCH");
+        if (!basis.path("profitEvidenceReference").isTextual()
+                || basis.path("profitEvidenceReference").asText().isBlank())
+            gaps.add("PROFIT_REFERENCE_SOURCE_MISSING");
+        if (submitted==null || minimum==null || !minimum.isNumber()
+                || submitted.compareTo(minimum.decimalValue())<0)
+            gaps.add("PROFIT_REFERENCE_BELOW_ACCEPTED_MINIMUM");
+        if (gaps.isEmpty()) {
+            evidence.put("state","ACCEPTED_PROFIT_REFERENCE_BOUND");
+            evidence.put("minimumContributionProfit",minimum.decimalValue().toPlainString());
+            evidence.put("currencyCode",currency);
+            evidence.put("evidenceReference",basis.path("profitEvidenceReference").asText());
+        }
+        return evidence;
     }
 
     /** Approval validity in the unit the package states; empty when absent or unusable. */

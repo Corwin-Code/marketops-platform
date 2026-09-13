@@ -32,6 +32,15 @@ public class AvailabilityPolicyRepository {
         this.jdbc = jdbc;
     }
 
+    public boolean ownsProductVariant(UUID organizationId,UUID productVariantId,Instant at) {
+        return jdbc.sql("""
+                SELECT EXISTS(SELECT 1 FROM core.product_variant v JOIN core.product p ON p.id=v.product_id
+                 WHERE v.id=:variant AND v.organization_id=:org AND p.organization_id=:org
+                   AND v.status='ACTIVE' AND p.status='ACTIVE' AND v.created_at<=:at AND p.created_at<=:at)
+                """).param("variant",productVariantId).param("org",organizationId).param("at",Timestamp.from(at))
+                .query(Boolean.class).single();
+    }
+
     /**
      * The lead-time and safety policy in force for one variant.
      *

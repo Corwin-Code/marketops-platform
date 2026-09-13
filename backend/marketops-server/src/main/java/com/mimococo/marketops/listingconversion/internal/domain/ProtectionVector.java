@@ -34,6 +34,19 @@ public final class ProtectionVector {
         return worse ? ProtectionVerdict.FAIL : ProtectionVerdict.PASS;
     }
 
+    /** A critical cohort passes only when its whole interval stays inside its own frozen decline bound. */
+    public static ProtectionVerdict intervalNonWorsening(BigDecimal lowerImprovement, BigDecimal upperImprovement,
+                                                          BigDecimal maximumDecline) {
+        if (lowerImprovement==null || upperImprovement==null || maximumDecline==null
+                || maximumDecline.signum()<0 || maximumDecline.compareTo(BigDecimal.ONE)>0
+                || lowerImprovement.compareTo(upperImprovement)>0)
+            return ProtectionVerdict.UNDETERMINED;
+        BigDecimal floor=maximumDecline.negate();
+        if (lowerImprovement.compareTo(floor)>=0) return ProtectionVerdict.PASS;
+        if (upperImprovement.compareTo(floor)<0) return ProtectionVerdict.FAIL;
+        return ProtectionVerdict.UNDETERMINED;
+    }
+
     /** The vector's own verdict. */
     public static ProtectionVerdict verdictOf(Map<String, ProtectionVerdict> vector) {
         if (vector == null) return ProtectionVerdict.UNDETERMINED;
@@ -72,6 +85,18 @@ public final class ProtectionVector {
         return stopNode && maturityReached && stopMethodQualified
                 && qualifiedUpperImprovement != null && futilityThreshold != null
                 && qualifiedUpperImprovement.compareTo(futilityThreshold) < 0;
+    }
+
+    /** Existing Task vocabulary, derived from qualified results rather than the requested stage. */
+    public static String taskOutcome(NodeVerdict primary,ProtectionVerdict protection,boolean mature,
+                                     String stage,boolean revision) {
+        if (protection==ProtectionVerdict.FAIL) return "REGRESSION";
+        if (!mature || protection!=ProtectionVerdict.PASS || primary==null || primary==NodeVerdict.UNDETERMINED)
+            return "UNKNOWN";
+        if (primary==NodeVerdict.NOT_MET) return "NO_IMPROVEMENT";
+        if ("OPERATIONAL".equals(stage)) return "OPERATIONAL";
+        if ("SETTLED".equals(stage)) return revision?"SETTLED_REVISED":"SETTLED";
+        return "UNKNOWN";
     }
 
     public static Map<String, String> toStrings(Map<String, ProtectionVerdict> vector) {

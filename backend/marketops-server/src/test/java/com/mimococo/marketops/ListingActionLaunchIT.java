@@ -50,6 +50,40 @@ class ListingActionLaunchIT {
     }
 
     @Test
+    void listingExecutionEvidenceIsStampedByItsActualTransaction() throws Exception {
+        var f=ready();
+        UUID evaluation=UUID.randomUUID();
+        long transaction;
+        try (Connection connection=f.transaction()) {
+            try (var insert=connection.prepareStatement("""
+                    INSERT INTO ops.guardrail_evaluation(id,organization_id,recommendation_id,
+                        lc_calibration_package_id,lc_calibration_version,purpose,outcome,reason_codes,
+                        detail,input_digest,evaluated_at,correlation_id,authority_snapshot,listing_transaction_id)
+                    SELECT ?,e.organization_id,e.recommendation_id,e.lc_calibration_package_id,e.lc_calibration_version,
+                        'EXECUTION',e.outcome,e.reason_codes,e.detail,e.input_digest,clock_timestamp(),
+                        'synthetic-transaction-stamp',ops.lc_authority_snapshot(e.recommendation_id),-1
+                    FROM ops.lc_action_binding b JOIN ops.guardrail_evaluation e ON e.id=b.guardrail_evaluation_id
+                    WHERE b.action_id=?
+                    RETURNING listing_transaction_id,txid_current()
+                    """)) {
+                insert.setObject(1,evaluation);insert.setObject(2,f.id("actionOne"));
+                try (var result=insert.executeQuery()) {
+                    assertThat(result.next()).isTrue();
+                    transaction=result.getLong(1);
+                    assertThat(transaction).isEqualTo(result.getLong(2)).isNotEqualTo(-1);
+                }
+            }
+            connection.commit();
+        }
+        assertThat(f.app.sql("SELECT has_function_privilege(current_user,'ops.acquire_lc_launch_allowance(uuid,uuid,uuid,text,jsonb)','EXECUTE')")
+                .query(Boolean.class).single()).isFalse();
+        assertThat(f.app.sql("SELECT listing_transaction_id=:prior AND listing_transaction_id<>txid_current() FROM ops.guardrail_evaluation WHERE id=:id")
+                .param("prior",transaction).param("id",evaluation).query(Boolean.class).single()).isTrue();
+        assertThat(f.app.sql("SELECT count(*) FROM ops.lc_launch WHERE action_id=:id")
+                .param("id",f.id("actionOne")).query(Long.class).single()).isZero();
+    }
+
+    @Test
     @DisplayName("TC-LC-LAUNCH-001 a launch acquires every published axis and moves the action through the function")
     void launchAcquiresEveryAxis() throws Exception {
         var f = ready();
@@ -69,6 +103,9 @@ class ListingActionLaunchIT {
         assertThat(f.app.sql("""
                 SELECT c.action_id=:action AND c.launch_id=:launch AND c.state='PENDING'
                     AND c.attempt_no=0 AND l.created_transaction_id IS NOT NULL
+                    AND EXISTS(SELECT 1 FROM ops.guardrail_evaluation e WHERE e.id=l.execution_guardrail_id
+                        AND e.listing_transaction_id=l.created_transaction_id AND e.purpose='EXECUTION'
+                        AND e.detail->>'actionId'=l.action_id::text)
                 FROM ops.lc_description_command c JOIN ops.lc_launch l ON l.id=c.launch_id WHERE c.id=:command
                 """).param("action",f.id("actionOne")).param("launch",launch).param("command",command)
                 .query(Boolean.class).single()).isTrue();
@@ -77,6 +114,68 @@ class ListingActionLaunchIT {
                 SELECT n.nspname||'.'||p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
                 WHERE p.prosrc ~* 'insert[[:space:]]+into[[:space:]]+ops[.]lc_description_command[[:space:]]*[(]'
                 """).query(String.class).list()).containsExactly("ops.create_lc_description_command");
+    }
+
+    @Test
+    void aNecessaryOutcomeFailureBlocksOnlyItsListingAndAHealthyRevisionDoesNotReleaseIt() throws Exception {
+        var f=ready();
+        UUID failed=UUID.randomUUID();
+        String insert="""
+                INSERT INTO ops.lc_node_result(id,organization_id,plan_id,node_code,stage,revision_no,
+                    calculation_run_id,accepted_threshold,verdict,protection_vector,protection_verdict,
+                    stop_triggered,maturity_reached,evaluated_at,evaluation_evidence)
+                SELECT :id,p.organization_id,p.id,p.formal_nodes->0->>'nodeCode','OPERATIONAL',:revision,
+                    h.calculation_run_id,0.01,'UNDETERMINED',CAST(:vector AS jsonb),:verdict,false,false,clock_timestamp(),
+                    jsonb_build_object('planDigest',p.plan_digest,'nodeCode',p.formal_nodes->0->>'nodeCode',
+                        'requestedStage','OPERATIONAL','qualificationGaps','[]'::jsonb)
+                FROM ops.lc_evaluation_plan p JOIN ops.lc_action a ON a.id=p.action_id
+                JOIN LATERAL (SELECT calculation_run_id FROM mart.lc_listing_health
+                    WHERE platform_listing_id=a.platform_listing_id ORDER BY health_version DESC LIMIT 1) h ON true
+                WHERE a.id=:action
+                """;
+        String failedVector="{\"DIRECT_CONTRIBUTION_PROFIT\":\"FAIL\",\"LINKED_SCOPE_PROFIT\":\"UNDETERMINED\",\"OVERALL_RETURN_RATE\":\"UNDETERMINED\",\"CRITICAL_VARIANT_RETURN\":\"UNDETERMINED\",\"SUPPLY_COVERAGE\":\"UNDETERMINED\"}";
+        assertThat(f.app.sql(insert).param("id",failed).param("revision",0).param("vector",failedVector)
+                .param("verdict","FAIL").param("action",f.id("actionOne")).update()).isEqualTo(1);
+        assertThat(f.app.sql("SELECT ops.lc_scope_contained(:org,:listing)").param("org",f.id("organization"))
+                .param("listing",f.id("listing")).query(Boolean.class).single()).isTrue();
+        assertThat(f.app.sql("SELECT ops.lc_scope_contained(:org,:listing)").param("org",f.id("organization"))
+                .param("listing",f.id("listingTwo")).query(Boolean.class).single()).isFalse();
+        String healthy=failedVector.replace("FAIL","PASS").replace("UNDETERMINED","PASS");
+        assertThat(f.app.sql(insert).param("id",UUID.randomUUID()).param("revision",1).param("vector",healthy)
+                .param("verdict","PASS").param("action",f.id("actionOne")).update()).isEqualTo(1);
+        assertThat(f.app.sql("SELECT unnest(ops.lc_unreleased_outcome_failures(:org,:listing))")
+                .param("org",f.id("organization")).param("listing",f.id("listing")).query(UUID.class).list())
+                .containsExactly(failed);
+        assertThat(f.app.sql("SELECT has_function_privilege(current_user,'ops.reenable_lc_containment_v0077(uuid,uuid)','EXECUTE')")
+                .query(Boolean.class).single()).isFalse();
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(booleans={false,true})
+    void authenticatedLaunchCannotBorrowAnAbsentOrPreviouslyCommittedExecutionEvaluation(boolean historical) throws Exception {
+        var f=ready();
+        UUID priorEvaluation;
+        if (historical) try (Connection connection=f.transaction()) {
+            priorEvaluation=f.syntheticExecutionEvidence(connection,f.id("actionOne"));
+            connection.commit();
+        } else priorEvaluation=null;
+        try (Connection connection=f.transaction()) {
+            String proof=f.proof(connection,f.id("ownerUser"),"LISTING_ACTION_LAUNCH",
+                    f.id("recommendationOne"),f.id("approvalOne"));
+            assertThatThrownBy(()->{
+                try (var query=connection.prepareStatement("SELECT ops.acquire_lc_launch_allowance(?,?,?,?, '{}'::jsonb, ?)")) {
+                    query.setObject(1,UUID.randomUUID());query.setObject(2,f.id("actionOne"));
+                    query.setObject(3,f.id("ownerUser"));query.setString(4,proof);query.setObject(5,priorEvaluation);query.executeQuery();
+                }
+            }).isInstanceOfSatisfying(java.sql.SQLException.class,failure->{
+                assertThat(failure.getSQLState()).isEqualTo("MO092");
+                assertThat(failure.getMessage()).contains("exact current protected execution evaluation");
+            });
+            connection.rollback();
+        }
+        for (String table:List.of("lc_launch","lc_exposure_occupation","lc_description_command"))
+            assertThat(f.app.sql("SELECT count(*) FROM ops."+table+" WHERE action_id=:id")
+                    .param("id",f.id("actionOne")).query(Long.class).single()).as(table).isZero();
     }
 
     @Test
@@ -142,14 +241,16 @@ class ListingActionLaunchIT {
         try {
             Future<JsonNode> first = pool.submit(() -> {
                 try (Connection connection = f.transaction()) {
+                    UUID executionEvaluation=f.syntheticExecutionEvidence(connection,f.id("actionOne"));
                     String proof = f.proof(connection, f.id("ownerUser"), "LISTING_ACTION_LAUNCH",
                             f.id("recommendationOne"), f.id("approvalOne"));
                     try (var query = connection.prepareStatement(
-                            "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, '{}'::jsonb)::text")) {
+                            "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, '{}'::jsonb, ?)::text")) {
                         query.setObject(1, UUID.randomUUID());
                         query.setObject(2, f.id("actionOne"));
                         query.setObject(3, f.id("ownerUser"));
                         query.setString(4, proof);
+                        query.setObject(5,executionEvaluation);
                         JsonNode answer;
                         try (var rows = query.executeQuery()) {
                             rows.next();
@@ -188,7 +289,7 @@ class ListingActionLaunchIT {
                     f.id("recommendationOne"), f.id("approvalOne"));
             assertThatThrownBy(() -> {
                 try (var query = connection.prepareStatement(
-                        "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, '{}'::jsonb)")) {
+                        "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, '{}'::jsonb, NULL::uuid)")) {
                     query.setObject(1, UUID.randomUUID());
                     query.setObject(2, f.id("actionOne"));
                     query.setObject(3, f.id("verifierUser"));

@@ -6,6 +6,7 @@ import com.mimococo.marketops.listingconversion.ContainmentView;
 import com.mimococo.marketops.listingconversion.LateAssociationView;
 import com.mimococo.marketops.listingconversion.RecalculationClass;
 import com.mimococo.marketops.listingconversion.RecalculationQueueView;
+import com.mimococo.marketops.shared.JsonValues;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Batches, containment, isolation dependencies, late associations and the
@@ -28,9 +30,11 @@ import org.springframework.stereotype.Repository;
 public class GovernanceRepository {
 
     private final JdbcClient jdbc;
+    private final ObjectMapper json;
 
-    GovernanceRepository(JdbcClient jdbc) {
+    GovernanceRepository(JdbcClient jdbc, ObjectMapper json) {
         this.jdbc = jdbc;
+        this.json = json;
     }
 
     public Instant databaseNow() {
@@ -120,8 +124,8 @@ public class GovernanceRepository {
                 .param("kind", kind).param("evidence", evidence).query(UUID.class).single();
     }
 
-    public void reenable(UUID containmentId, UUID actorId) {
-        jdbc.sql("SELECT ops.reenable_lc_containment(:id, :actor)").param("id", containmentId).param("actor", actorId)
+    public void reenable(UUID containmentId, UUID actorId, String proof) {
+        jdbc.sql("SELECT ops.reenable_lc_containment(:id, :actor, :proof)").param("id", containmentId).param("actor", actorId).param("proof",proof)
                 .query(Object.class).optional();
     }
 
@@ -160,14 +164,12 @@ public class GovernanceRepository {
                 ListingFactRepository.instant(rs, "reenabled_at"), attestations);
     }
 
-    public void insertDependency(UUID id, UUID organizationId, UUID fromListing, UUID toListing, String kind, String proof,
-                                 UUID recordedBy, Instant now) {
-        jdbc.sql("""
-                INSERT INTO ops.lc_isolation_dependency (id, organization_id, from_listing_id, to_listing_id, dependency_kind,
-                    proof_reference, proven_at, recorded_by_user_id)
-                VALUES (:id, :org, :from, :to, :kind, :proof, :now, :user)
-                """).param("id", id).param("org", organizationId).param("from", fromListing).param("to", toListing)
-                .param("kind", kind).param("proof", proof).param("now", Timestamp.from(now)).param("user", recordedBy).update();
+    public void insertDependency(UUID id, UUID organizationId, UUID fromListing, UUID toListing, String kind,
+                                 String proofReference, UUID recordedBy, String invocationProof) {
+        jdbc.sql("SELECT ops.record_lc_isolation_dependency(:id,:actor,:org,:proof,:from,:to,:kind,:reference)")
+                .param("id", id).param("actor", recordedBy).param("org", organizationId)
+                .param("proof", invocationProof).param("from", fromListing).param("to", toListing)
+                .param("kind", kind).param("reference", proofReference).query(Object.class).optional();
     }
 
     public Map<UUID, List<UUID>> provenDependencies(UUID organizationId) {
@@ -178,6 +180,13 @@ public class GovernanceRepository {
                 .list()
                 .forEach(pair -> graph.computeIfAbsent(pair[0], ignored -> new java.util.ArrayList<>()).add(pair[1]));
         return graph;
+    }
+
+    public java.util.Set<UUID> currentIsolationScope(UUID organizationId, UUID failingListingId) {
+                return new java.util.LinkedHashSet<>(jdbc.sql(
+                        "SELECT platform_listing_id FROM ops.lc_current_isolation_scope(:org,:listing)")
+                .param("org", organizationId).param("listing", failingListingId)
+                .query(UUID.class).list());
     }
 
     // ------------------------------------------------------------------ late association
@@ -198,37 +207,43 @@ public class GovernanceRepository {
                 .param("now", Timestamp.from(now)).update();
     }
 
-    public boolean closeLateAssociation(UUID id, UUID verificationId, long expectedVersion, Instant now) {
-        return jdbc.sql("""
-                UPDATE ops.lc_late_association SET state = 'CLOSED', closure_verification_id = :verification, updated_at = :now,
-                    version = version + 1
-                 WHERE id = :id AND version = :version AND state <> 'CLOSED'
-                """).param("id", id).param("verification", verificationId).param("version", expectedVersion)
-                .param("now", Timestamp.from(now)).update() == 1;
+    public void closeLateAssociation(UUID id, UUID actorId, String proof, UUID verificationId) {
+        jdbc.sql("SELECT ops.close_lc_late_association(:id,:actor,:proof,:verification)")
+                .param("id", id).param("actor", actorId).param("proof", proof)
+                .param("verification", verificationId).query(Object.class).optional();
     }
 
     public List<LateAssociationView> lateAssociations(UUID listingId) {
         return jdbc.sql(LATE_SELECT + " WHERE platform_listing_id = :listing ORDER BY recorded_at DESC")
-                .param("listing", listingId).query(GovernanceRepository::mapLate).list();
+                .param("listing", listingId).query(this::mapLate).list();
     }
 
     public Optional<LateAssociationView> lateAssociation(UUID id) {
-        return jdbc.sql(LATE_SELECT + " WHERE id = :id").param("id", id).query(GovernanceRepository::mapLate).optional();
+        return jdbc.sql(LATE_SELECT + " WHERE id = :id").param("id", id).query(this::mapLate).optional();
     }
 
     private static final String LATE_SELECT = """
             SELECT id, platform_listing_id, action_id, association_kind, observation_id, operation_time, report_time,
-                   authority_gap, forward_disposition, state, closure_verification_id, recorded_by_user_id, recorded_at, version
+                   authority_gap, forward_disposition, state, closure_verification_id, recorded_by_user_id, recorded_at,
+                   closure_assessment::text AS closure_assessment, version
               FROM ops.lc_late_association
             """;
 
-    private static LateAssociationView mapLate(ResultSet rs, int n) throws SQLException {
+    private LateAssociationView mapLate(ResultSet rs, int n) throws SQLException {
         return new LateAssociationView(rs.getObject("id", UUID.class), rs.getObject("platform_listing_id", UUID.class),
                 rs.getObject("action_id", UUID.class), rs.getString("association_kind"), rs.getObject("observation_id", UUID.class),
                 ListingFactRepository.instant(rs, "operation_time"), ListingFactRepository.instant(rs, "report_time"),
                 rs.getString("authority_gap"), rs.getString("forward_disposition"), rs.getString("state"),
                 rs.getObject("closure_verification_id", UUID.class), rs.getObject("recorded_by_user_id", UUID.class),
-                ListingFactRepository.instant(rs, "recorded_at"));
+                ListingFactRepository.instant(rs, "recorded_at"), objectMap(rs.getString("closure_assessment")));
+    }
+
+    private Map<String, Object> objectMap(String value) {
+        if (value == null) return Map.of();
+        var node = JsonValues.read(json, value);
+        Map<String, Object> result = new java.util.LinkedHashMap<>();
+        node.properties().forEach(entry -> result.put(entry.getKey(), entry.getValue().deepCopy()));
+        return result;
     }
 
     public long lateAssociationVersion(UUID id) {
@@ -248,6 +263,32 @@ public class GovernanceRepository {
                 .param("source", ListingFactRepository.ts(sourceTime)).param("accepted", Timestamp.from(acceptedAt)).update();
     }
 
+    /** Enqueue at most one due full review per observed listing. */
+    public int enqueueDueFullReviews(int limit) {
+        if (limit < 1 || limit > 1000) throw new IllegalArgumentException("invalid full-review limit");
+        return jdbc.sql("""
+                WITH due AS MATERIALIZED (
+                  SELECT l.id,l.organization_id,
+                    coalesce(last_attempt.accepted_at,l.created_at)+interval '60 minutes' AS due_at
+                  FROM core.platform_listing l
+                  LEFT JOIN LATERAL (SELECT q.accepted_at FROM ops.lc_recalculation_queue q
+                    WHERE q.platform_listing_id=l.id AND q.trigger_class='FULL_REVIEW'
+                      AND q.state IN ('FINISHED','FAILED') ORDER BY q.accepted_at DESC,q.id DESC LIMIT 1) last_attempt ON true
+                  WHERE l.status='OBSERVED'
+                    AND coalesce(last_attempt.accepted_at,l.created_at)+interval '60 minutes'<=clock_timestamp()
+                    AND NOT EXISTS (SELECT 1 FROM ops.lc_recalculation_queue open_review
+                      WHERE open_review.platform_listing_id=l.id AND open_review.trigger_class='FULL_REVIEW'
+                        AND open_review.state IN ('QUEUED','RUNNING'))
+                  ORDER BY due_at,l.id LIMIT :limit FOR UPDATE OF l SKIP LOCKED
+                )
+                INSERT INTO ops.lc_recalculation_queue(id,organization_id,platform_listing_id,trigger_class,target_minutes,
+                    trigger_reference,source_time,accepted_at,state)
+                SELECT gen_random_uuid(),organization_id,id,'FULL_REVIEW',60,
+                    'full-review:'||id::text||':'||extract(epoch from due_at)::bigint,due_at,due_at,'QUEUED' FROM due
+                ON CONFLICT DO NOTHING
+                """).param("limit",limit).update();
+    }
+
     public record QueuedRow(UUID id, UUID organizationId, UUID listingId, RecalculationClass triggerClass,
                             long leaseGeneration) {
     }
@@ -260,7 +301,7 @@ public class GovernanceRepository {
                 UPDATE ops.lc_recalculation_queue q
                    SET state='RUNNING', started_at=coalesce(q.started_at,tick.at),
                        lease_generation=coalesce(q.lease_generation,0)+1,
-                       leased_until=tick.at+interval '120 seconds'
+                       leased_until=tick.at+interval '120 seconds',consumer_contract_version=1
                   FROM (SELECT pending.id FROM ops.lc_recalculation_queue pending CROSS JOIN tick
                          WHERE pending.accepted_at<=tick.at AND (pending.state='QUEUED' OR (pending.state='RUNNING' AND
                              (pending.leased_until IS NULL OR pending.leased_until<=tick.at)))
@@ -285,23 +326,40 @@ public class GovernanceRepository {
     }
 
     public boolean finish(QueuedRow row, UUID healthId, String failureCode) {
+        return finish(row,healthId,List.of(),0,0,failureCode);
+    }
+
+    public boolean finish(QueuedRow row, UUID healthId, List<UUID> measurementIds,
+                          int bindingAssessed, int bindingInvalidated, String failureCode) {
+        return finish(row,healthId,measurementIds,bindingAssessed,bindingInvalidated,0,List.of(),failureCode);
+    }
+
+    public boolean finish(QueuedRow row, UUID healthId, List<UUID> measurementIds,
+                          int bindingAssessed, int bindingInvalidated, int outcomeAssessed,
+                          List<UUID> outcomeResultIds, String failureCode) {
         return jdbc.sql("""
                 UPDATE ops.lc_recalculation_queue q
                    SET state=CASE WHEN :failure IS NULL THEN 'FINISHED' ELSE 'FAILED' END,
                        finished_at=clock_timestamp(),health_result_id=:health,
                        calculation_run_id=(SELECT calculation_run_id FROM mart.lc_listing_health WHERE id=:health),
-                       failure_code=:failure,leased_until=NULL
+                       measurement_result_ids=:measurements,binding_assessed_count=:assessed,
+                       binding_invalidated_count=:invalidated,outcome_assessed_count=:outcomeAssessed,
+                       outcome_result_ids=:outcomes,failure_code=:failure,leased_until=NULL
                  WHERE q.id=:id AND q.state='RUNNING' AND q.lease_generation=:generation
                    AND q.leased_until>clock_timestamp()
                 """).param("id",row.id()).param("generation",row.leaseGeneration())
                 .param("health",new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.OTHER,healthId))
+                .param("measurements",measurementIds.toArray(UUID[]::new)).param("assessed",bindingAssessed)
+                .param("invalidated",bindingInvalidated)
+                .param("outcomeAssessed",outcomeAssessed).param("outcomes",outcomeResultIds.toArray(UUID[]::new))
                 .param("failure",new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.VARCHAR,failureCode)).update()==1;
     }
 
     public List<RecalculationQueueView> queue(UUID organizationId, int limit) {
         return jdbc.sql("""
                 SELECT id, trigger_class, target_minutes, platform_listing_id, trigger_reference, source_time, accepted_at,
-                       started_at, finished_at, state, health_result_id, calculation_run_id
+                       started_at, finished_at, state, health_result_id, calculation_run_id,
+                       measurement_result_ids,binding_assessed_count,binding_invalidated_count
                   FROM ops.lc_recalculation_queue WHERE organization_id = :org ORDER BY accepted_at DESC LIMIT :limit
                 """).param("org", organizationId).param("limit", limit)
                 .query((rs, n) -> {
@@ -317,7 +375,11 @@ public class GovernanceRepository {
                             "FINISHED".equals(rs.getString("state")) && rs.getObject("health_result_id") != null
                                     && rs.getObject("calculation_run_id") != null
                                     && finished != null && !finished.isBefore(accepted)
-                                    && java.time.Duration.between(accepted, finished).compareTo(java.time.Duration.ofMinutes(target)) <= 0);
+                            && java.time.Duration.between(accepted, finished).compareTo(java.time.Duration.ofMinutes(target)) <= 0,
+                            rs.getArray("measurement_result_ids")==null?List.of():
+                                List.of((UUID[])rs.getArray("measurement_result_ids").getArray()),
+                            rs.getObject("binding_assessed_count",Integer.class),
+                            rs.getObject("binding_invalidated_count",Integer.class));
                 })
                 .list();
     }

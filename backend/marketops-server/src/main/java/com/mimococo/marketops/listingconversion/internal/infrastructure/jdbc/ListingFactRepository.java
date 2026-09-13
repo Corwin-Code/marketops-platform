@@ -117,6 +117,15 @@ public class ListingFactRepository {
                                  List<String> reasonCodes) {
     }
 
+    public record AffectedSetReviewMaterial(UUID id,String digest,String resolutionState,
+            List<UUID> listingVariantIds,List<UUID> productVariantIds,UUID nativeScopeObservationId,
+            String identityLineage) {
+        public AffectedSetReviewMaterial {
+            listingVariantIds=List.copyOf(listingVariantIds);
+            productVariantIds=List.copyOf(productVariantIds);
+        }
+    }
+
     public Optional<AffectedSetRow> affectedSetById(UUID id) {
         return jdbc.sql("""
                 SELECT id, affected_set_digest, resolution_state, cardinality(platform_listing_variant_ids) AS variant_count,
@@ -127,6 +136,23 @@ public class ListingFactRepository {
                         rs.getString("resolution_state"), rs.getInt("variant_count"),
                         List.of((String[]) rs.getArray("unresolved_reason_codes").getArray())))
                 .optional();
+    }
+
+    public Optional<AffectedSetReviewMaterial> affectedSetReviewMaterial(UUID id) {
+        return jdbc.sql("""
+                SELECT id,affected_set_digest,resolution_state,platform_listing_variant_ids,product_variant_ids,
+                       native_scope_observation_id,identity_lineage::text
+                  FROM core.lc_affected_set WHERE id=:id
+                """).param("id",id).query((rs,n)->new AffectedSetReviewMaterial(
+                        rs.getObject("id",UUID.class),rs.getString("affected_set_digest"),
+                        rs.getString("resolution_state"),uuidList(rs,"platform_listing_variant_ids"),
+                        uuidList(rs,"product_variant_ids"),rs.getObject("native_scope_observation_id",UUID.class),
+                        rs.getString("identity_lineage"))).optional();
+    }
+
+    private static List<UUID> uuidList(ResultSet rs,String column) throws SQLException {
+        var value=rs.getArray(column);
+        return value==null?List.of():List.of((UUID[])value.getArray());
     }
 
     public void insertAffectedSet(UUID id, UUID organizationId, UUID listingId, String digest,
@@ -185,15 +211,23 @@ public class ListingFactRepository {
 
     public void insertPromotionObservation(UUID id,UUID organizationId,UUID provenanceId,UUID listingId,
             Instant observedAt,Instant acquiredAt,String state,String kind,String nativeKey,
-            com.mimococo.marketops.listingconversion.PromotionTerms declaration,String reference) {
+            com.mimococo.marketops.listingconversion.PromotionTerms declaration,String reference,
+            com.mimococo.marketops.listingconversion.PromotionContextObservation context) {
         jdbc.sql("""
                 INSERT INTO core.lc_promotion_observation(id,organization_id,provenance_id,platform_listing_id,
-                    observed_at,acquired_at,participation_state,engagement_kind,native_promotion_key,declaration,evidence_reference)
-                VALUES(:id,:org,:provenance,:listing,:observed,:acquired,:state,:kind,:nativeKey,CAST(:declaration AS jsonb),:reference)
+                    observed_at,acquired_at,participation_state,engagement_kind,native_promotion_key,declaration,evidence_reference,
+                    context_coverage,coverage_from,coverage_until,verification_expires_at,context_snapshot)
+                VALUES(:id,:org,:provenance,:listing,:observed,:acquired,:state,:kind,:nativeKey,CAST(:declaration AS jsonb),:reference,
+                    :coverage,:coverageFrom,:coverageUntil,:expires,CAST(:snapshot AS jsonb))
                 """).param("id",id).param("org",organizationId).param("provenance",provenanceId).param("listing",listingId)
                 .param("observed",Timestamp.from(observedAt)).param("acquired",Timestamp.from(acquiredAt))
                 .param("state",state).param("kind",kind).param("nativeKey",nativeKey)
-                .param("declaration",declaration==null?null:json.writeValueAsString(declaration)).param("reference",reference).update();
+                .param("declaration",declaration==null?null:json.writeValueAsString(declaration)).param("reference",reference)
+                .param("coverage",context==null?"SINGLE_ACTIVITY_ONLY":"COMPLETE_ENUMERATION")
+                .param("coverageFrom",ts(context==null?null:context.coverageStart()))
+                .param("coverageUntil",ts(context==null?null:context.coverageEnd()))
+                .param("expires",ts(context==null?null:context.verificationExpiresAt()))
+                .param("snapshot",context==null?null:json.writeValueAsString(context.records())).update();
     }
 
     public void insertDescriptionObservation(UUID id, UUID organizationId, UUID provenanceId, UUID listingId,

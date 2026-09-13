@@ -8,7 +8,10 @@ import java.util.Map;
 
 /** Declared conditional context. References identify assumptions; they do not qualify their sources. */
 public record SimulationAssumptions(Instant periodStart, Instant periodEnd,
-                                    Map<String, String> sourceReferences, String assumptions) {
+                                    Map<String, String> sourceReferences, String assumptions, PromotionTerms commercialDeclaration) {
+    public SimulationAssumptions(Instant periodStart, Instant periodEnd, Map<String,String> sourceReferences, String assumptions) {
+        this(periodStart, periodEnd, sourceReferences, assumptions, null);
+    }
     public SimulationAssumptions {
         if (periodStart == null || periodEnd == null || !periodStart.isBefore(periodEnd)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);

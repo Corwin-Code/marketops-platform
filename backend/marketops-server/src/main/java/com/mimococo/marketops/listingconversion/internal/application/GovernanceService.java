@@ -15,7 +15,6 @@ import com.mimococo.marketops.listingconversion.ContainmentCauseClass;
 import com.mimococo.marketops.listingconversion.ContainmentView;
 import com.mimococo.marketops.listingconversion.LateAssociationView;
 import com.mimococo.marketops.listingconversion.RecalculationClass;
-import com.mimococo.marketops.listingconversion.internal.domain.IsolationScope;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.GovernanceRepository;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingFactRepository;
@@ -164,8 +163,7 @@ public class GovernanceService {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         ActionScopeCode scope = repair ? ActionScopeCode.LISTING_CONTAINMENT_ATTEST : ActionScopeCode.LISTING_CONTAINMENT_CONSENT;
-        authorization.require(actor, scope, containment.storeId() == null
-                ? ResourceScope.organization(actor.organizationId()) : ResourceScope.store(containment.storeId()));
+        authorization.require(actor, scope, containmentScope(actor,containment));
         if (!actor.stepUpSatisfiedAt(clock.instant())) {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
         }
@@ -180,9 +178,11 @@ public class GovernanceService {
     public ContainmentView reenable(AuthenticatedActor actor, UUID containmentId) {
         ContainmentView containment = governance.containment(containmentId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
-        authorization.require(actor, ActionScopeCode.LISTING_CONTAINMENT_CONSENT, containment.storeId() == null
-                ? ResourceScope.organization(actor.organizationId()) : ResourceScope.store(containment.storeId()));
-        governance.reenable(containmentId, actor.userId());
+        authorization.require(actor, ActionScopeCode.LISTING_CONTAINMENT_CONSENT, containmentScope(actor,containment));
+        if (!actor.stepUpSatisfiedAt(clock.instant())) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+        governance.reenable(containmentId, actor.userId(),proof("LISTING_CONTAINMENT_REENABLE",containmentId,containmentId));
         recordAudit(actor, "lc-containment", containmentId, AuditAction.STATUS_CHANGE, Map.of("state", new FieldChange("ACTIVE", "REENABLED")), null);
         return governance.containment(containmentId).orElseThrow();
     }
@@ -195,14 +195,18 @@ public class GovernanceService {
     @Transactional
     public void recordDependency(AuthenticatedActor actor, UUID fromListing, UUID toListing, String kind, String proofReference) {
         authorization.require(actor, ActionScopeCode.LISTING_ACTION_PREPARE, ResourceScope.organization(actor.organizationId()));
-        governance.insertDependency(ids.newId(), actor.organizationId(), fromListing, toListing,
+        if (!actor.stepUpSatisfiedAt(clock.instant())) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+        UUID id = ids.newId();
+        governance.insertDependency(id, actor.organizationId(), fromListing, toListing,
                 MetadataFieldPolicy.requireText("dependencyKind", kind), MetadataFieldPolicy.requireText("proofReference", proofReference),
-                actor.userId(), clock.instant());
+                actor.userId(), proof("LISTING_ISOLATION_DEPENDENCY_RECORD", id, id));
     }
 
     @Transactional(readOnly = true)
     public Set<UUID> isolationScope(UUID organizationId, UUID failingListingId) {
-        return IsolationScope.widen(failingListingId, governance.provenDependencies(organizationId));
+        return governance.currentIsolationScope(organizationId, failingListingId);
     }
 
     // ------------------------------------------------------------------ late association
@@ -248,9 +252,10 @@ public class GovernanceService {
             // text; only an independent verification closes it.
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
-        if (!governance.closeLateAssociation(id, verificationId, governance.lateAssociationVersion(id), clock.instant())) {
-            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        if (!actor.stepUpSatisfiedAt(clock.instant())) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
         }
+        governance.closeLateAssociation(id, actor.userId(), proof("LISTING_MANUAL_VERIFY", id, id), verificationId);
         return governance.lateAssociation(id).orElseThrow();
     }
 
@@ -265,6 +270,15 @@ public class GovernanceService {
         BatchView batch = governance.batch(batchId).orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         authorization.require(actor, scope, ResourceScope.store(batch.storeId()));
         return batch;
+    }
+
+    private ResourceScope containmentScope(AuthenticatedActor actor,ContainmentView containment) {
+        UUID storeId=containment.storeId();
+        if (storeId==null && containment.platformListingId()!=null)
+            storeId=facts.listing(containment.platformListingId()).orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND)).storeId();
+        if (storeId==null && containment.batchId()!=null)
+            storeId=governance.batch(containment.batchId()).orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND)).storeId();
+        return storeId==null?ResourceScope.organization(actor.organizationId()):ResourceScope.store(storeId);
     }
 
     private String proof(String purpose, UUID target, UUID version) {

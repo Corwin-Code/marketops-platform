@@ -52,6 +52,10 @@ public final class FrozenComparisonMethod {
             if (!group.isObject() || !group.path("code").isTextual()
                     || !group.path("code").asText().matches("[A-Z][A-Z0-9_]{0,63}")
                     || !groupCodes.add(group.path("code").asText())) return Optional.empty();
+            try {
+                BigDecimal bound=decimal(group.path("bound"));
+                if (bound.signum()<0 || bound.compareTo(BigDecimal.ONE)>0) return Optional.empty();
+            } catch (IllegalArgumentException invalid) { return Optional.empty(); }
         }
         Set<String> codes = new HashSet<>();
         BigDecimal family = null, spent = BigDecimal.ZERO;
@@ -62,6 +66,8 @@ public final class FrozenComparisonMethod {
                 if (!node.isObject() || !code.matches("[A-Z][A-Z0-9_]{0,63}") || !codes.add(code)
                         || !CODE.equals(node.path("method").asText())
                         || !MATURITY.contains(node.path("maturityDays").asText())) return Optional.empty();
+                BigDecimal threshold=decimal(node.path("threshold"));
+                if (threshold.signum()<=0 || threshold.compareTo(BigDecimal.ONE)>0) return Optional.empty();
                 JsonNode parameters = node.path("methodParameters"), schedule = node.path("schedule");
                 if (!"INDEPENDENT_BERNOULLI_VISITS".equals(parameters.path("samplingModel").asText())
                         || !parameters.path("qualificationRef").isTextual()
@@ -92,11 +98,15 @@ public final class FrozenComparisonMethod {
     }
 
     private static BigDecimal probability(JsonNode value) {
-        if (!value.isNumber() && !value.isTextual()) throw new IllegalArgumentException("explicit probability required");
-        BigDecimal probability = new BigDecimal(value.asText());
+        BigDecimal probability = decimal(value);
         if (probability.signum() <= 0 || probability.compareTo(BigDecimal.ONE) >= 0)
             throw new IllegalArgumentException("probability outside open unit interval");
         return probability;
+    }
+
+    private static BigDecimal decimal(JsonNode value) {
+        if (!value.isNumber() && !value.isTextual()) throw new IllegalArgumentException("explicit decimal required");
+        return new BigDecimal(value.asText());
     }
 
     private static int boundedDay(JsonNode value) {

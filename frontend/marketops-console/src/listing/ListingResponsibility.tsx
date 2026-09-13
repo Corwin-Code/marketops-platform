@@ -9,6 +9,7 @@ import { ListingProblem, When, YesNo } from './ListingCommon';
 import { useLanguage } from './i18n/language';
 import { t } from './i18n/ui';
 import { ListingDeferral } from './ListingDeferral';
+import { ListingDependencyHold } from './ListingDependencyHold';
 
 export function ListingResponsibility({
   context,
@@ -104,6 +105,11 @@ export function ListingResponsibility({
             target={{ kind: 'ACTION', actionId }}
             current={status.deferral}
           />
+          <ListingDependencyHold
+            context={context}
+            target={{ kind: 'ACTION', actionId }}
+            current={status.dependencyHold}
+          />
         </>
       )}
     </section>
@@ -132,6 +138,12 @@ export function ResponsibilityTimes({
       <dd>
         <When value={status.actionDueAt} />
       </dd>
+      <dt>{t('responsibilityOriginalActionDue', language)}</dt>
+      <dd>
+        <When value={status.originalActionDueAt} />
+      </dd>
+      <dt>{t('responsibilityDependencyElapsed', language)}</dt>
+      <dd>{status.dependencyHoldElapsedSeconds}</dd>
       <dt>{t('responsibilityOutcomeDue', language)}</dt>
       <dd>
         <When value={status.outcomeMaturityDueAt} />

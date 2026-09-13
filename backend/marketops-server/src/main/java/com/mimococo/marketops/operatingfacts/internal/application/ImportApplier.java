@@ -171,19 +171,24 @@ public class ImportApplier {
         String scopeKind = text(values, "scopeKind", "ORGANIZATION").toUpperCase(Locale.ROOT);
         String valueKind = text(values, "valueKind", "RATE").toUpperCase(Locale.ROOT);
         UUID scopeId = "ORGANIZATION".equals(scopeKind) ? null : UUID.fromString(row.targetKey());
-        UUID storeRef = "STORE".equals(scopeKind) ? scopeId : null;
+        UUID storeRef = ("STORE".equals(scopeKind) || "PROMOTION".equals(scopeKind)) ? scopeId : null;
         UUID variantRef = "PRODUCT_VARIANT".equals(scopeKind) ? scopeId : null;
         Instant from = instant(values, "effectiveFrom", effectiveFrom);
 
+        String promotionKind="PROMOTION".equals(scopeKind)?text(values,"promotionKind","").toUpperCase(Locale.ROOT):null;
+        String nativePromotionKey="PROMOTION".equals(scopeKind)?text(values,"nativePromotionKey",""):null;
+        Instant until="PROMOTION".equals(scopeKind)?instant(values,"effectiveTo",null):null;
+        UUID promotionListing=values.hasNonNull("promotionListingId")?UUID.fromString(values.path("promotionListingId").asText()):null;
+        String promotionTermsDigest=values.hasNonNull("promotionTermsDigest")?values.path("promotionTermsDigest").asText():null;
         references.endOpenFinanceInput(batch.organizationId(), inputCode, scopeKind, scopeId,
-                from, "superseded by import " + batch.id());
+                from, "superseded by import " + batch.id(),promotionKind,nativePromotionKey,promotionListing);
         references.insertFinanceInput(idGenerator.newId(), batch.organizationId(), inputCode,
                 scopeKind, storeRef, variantRef, valueKind,
                 "RATE".equals(valueKind) ? decimal(values, "rateValue") : null,
                 "AMOUNT".equals(valueKind) ? decimal(values, "amountValue") : null,
                 "AMOUNT".equals(valueKind)
                         ? text(values, "currencyCode", "RUB").toUpperCase(Locale.ROOT) : null,
-                provenanceId, from, now);
+                provenanceId, from, now,promotionKind,nativePromotionKey,until,promotionListing,promotionTermsDigest);
         return 1;
     }
 

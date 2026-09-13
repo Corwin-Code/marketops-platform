@@ -96,6 +96,39 @@ const ENGAGEMENT = {
   state: 'ACTIVE',
   version: 1,
 };
+const PROMOTION_TERMS = {
+  engagementKind: 'SELLER_DIRECT_DISCOUNT',
+  nativePromotionKey: 'promotion-1',
+  terms: { finalPrice: '200.0000' },
+  priceFreeze: true,
+  autoParticipation: false,
+  termsEvidenceReference: 'evidence://promotion/terms',
+  obligations: { fixedFee: '10.0000' },
+};
+const PROMOTION_CONTEXT = {
+  coverageStart: '2026-09-01T00:00:00Z',
+  coverageEnd: '2026-09-30T00:00:00Z',
+  verificationExpiresAt: '2026-10-01T00:00:00Z',
+  records: [
+    {
+      declaration: PROMOTION_TERMS,
+      participationState: 'PARTICIPATING',
+      effectiveFrom: '2026-09-01T00:00:00Z',
+      effectiveTo: '2026-09-30T00:00:00Z',
+      newTransactionsState: 'OPEN',
+      residualObligationState: 'OUTSTANDING',
+      originalAuthorityReference: 'authority://promotion/original',
+      originalAuthorityValidUntil: '2026-10-01T00:00:00Z',
+      axisDemands: {
+        REVENUE_EXPOSURE: {
+          value: '500.0000',
+          unitCode: 'RUB',
+          evidenceReference: 'evidence://promotion/revenue',
+        },
+      },
+    },
+  ],
+};
 const BATCH = {
   id: 'b1',
   storeId: 's1',
@@ -196,6 +229,7 @@ const ROUTES: readonly (readonly [RegExp, unknown])[] = [
     /\/actions\/[^/]+\/launch$/u,
     { launched: true, launchId: 'l', occupationIds: ['o'], insufficientAxes: [] },
   ],
+  [/\/actions\/[^/]+\/evaluation\/nodes$/u, EVALUATION],
   [/\/actions\/[^/]+\/evaluation$/u, EVALUATION],
   [/\/actions\?/u, [ACTION]],
   [/\/actions\/[^/?]+$/u, ACTION],
@@ -207,6 +241,7 @@ const ROUTES: readonly (readonly [RegExp, unknown])[] = [
   ],
   [/\/manual\/engagements\/[^/]+\/(exit|release)$/u, ENGAGEMENT],
   [/\/manual\/engagements\?/u, [ENGAGEMENT]],
+  [/\/manual\/listings\/[^/]+\/engagements$/u, ENGAGEMENT],
   [/\/governance\/batches\/[^/]+\/(members|close)$/u, BATCH],
   [/\/governance\/batches\?/u, [BATCH]],
   [/\/governance\/batches$/u, BATCH],
@@ -260,6 +295,16 @@ describe('the listing client covers every console route', () => {
       api.measureConversion(context, LISTING, 'a', 'b', 14, 'DETAIL'),
       api.recordDescriptionFact(context, LISTING, 'текст', undefined, ''),
       api.recordDisplayFact(context, LISTING, 'DISPLAYED', '', 'ref'),
+      api.recordPromotionFact(
+        context,
+        LISTING,
+        PROMOTION_TERMS,
+        'PARTICIPATING',
+        '2026-09-13T00:00:00Z',
+        'evidence://promotion/observation',
+        undefined,
+        PROMOTION_CONTEXT,
+      ),
       api.fetchActions(context, 'DRAFT'),
       api.fetchAction(context, 'a1'),
       api.fetchCandidates(context, LISTING),
@@ -271,6 +316,11 @@ describe('the listing client covers every console route', () => {
       api.launchAction(context, 'a1'),
       api.releaseOccupation(context, 'o1', 'STOP_EVIDENCE', 'ev', 'ref'),
       api.fetchEvaluation(context, 'a1'),
+      api.evaluateNode(context, 'a1', {
+        nodeCode: 'D14',
+        stage: 'OPERATIONAL',
+        lateFactReference: 'fixture://late-evaluation',
+      }),
       api.fetchDescriptionCommand(context, 'a1'),
       api.fetchDescriptionGate(context, 'cmd'),
       api.fetchMyPackets(context),
@@ -279,8 +329,23 @@ describe('the listing client covers every console route', () => {
       api.reportPacket(context, 'p1', 't', 'APPLIED', 'n'),
       api.verifyPacket(context, 'p1', 'INDEPENDENT_HUMAN', 'MATCHED_TARGET', 'DISPLAYED', 'n'),
       api.fetchEngagements(context, LISTING),
-      api.authorizeExit(context, 'e1', 'OWNER_DECISION'),
-      api.releaseEngagement(context, 'e1', 'NEW_TRANSACTIONS_STOPPED'),
+      api.adoptEngagement(
+        context,
+        LISTING,
+        PROMOTION_TERMS,
+        'context-observation-1',
+        'authority://promotion/original',
+        '2026-10-01T00:00:00Z',
+        'responsible-user-1',
+      ),
+      api.authorizeExit(context, 'e1', 'OWNER_DECISION', 'authority://exit', 'evidence-1'),
+      api.releaseEngagement(
+        context,
+        'e1',
+        'NEW_TRANSACTIONS_STOPPED',
+        'observation-1',
+        'evidence://stop',
+      ),
       api.fetchBatches(context),
       api.createBatch(context, 's1', 'code'),
       api.addBatchMember(context, 'b1', 'a1'),
@@ -299,13 +364,30 @@ describe('the listing client covers every console route', () => {
     expect(calls.find((call) => call.url.endsWith('/candidates/c1/prepare'))?.body).not.toContain(
       'exposureShare',
     );
-    expect(calls.filter((call) => call.method === 'POST')).toHaveLength(22);
+    expect(calls.find((call) => call.url.endsWith('/evaluation/nodes'))?.body).toContain(
+      '"nodeCode":"D14"',
+    );
+    expect(calls.filter((call) => call.method === 'POST')).toHaveLength(25);
     expect(calls.find((call) => call.url.includes('/facts/description'))?.body).toContain(
       '"languageCode":"ru"',
     );
     expect(calls.find((call) => call.url.includes('/facts/description'))?.body).toContain(
       '"kizMarkedDeclared":null',
     );
+    expect(
+      JSON.parse(calls.find((call) => call.url.includes('/facts/promotion'))?.body ?? '{}'),
+    ).toMatchObject({ context: PROMOTION_CONTEXT });
+    expect(
+      JSON.parse(
+        calls.find((call) => /\/manual\/listings\/[^/]+\/engagements$/u.test(call.url))?.body ??
+          '{}',
+      ),
+    ).toMatchObject({
+      ...PROMOTION_TERMS,
+      contextObservationId: 'context-observation-1',
+      originalAuthorityReference: 'authority://promotion/original',
+      responsibleUserId: 'responsible-user-1',
+    });
     expect(calls.find((call) => call.url.includes('/containments/stop'))?.body).toContain(
       '"platformListingId":null',
     );
@@ -334,10 +416,61 @@ describe('the listing client covers every console route', () => {
     expect(api.parseEvaluation(EVALUATION)?.results[0]?.protectionVector).toEqual({
       SUPPLY_COVERAGE: 'PASS',
     });
+    const observedEvaluation = api.parseEvaluation({
+      ...EVALUATION,
+      results: [
+        {
+          ...EVALUATION.results[0],
+          conservativeBound: null,
+          evaluationEvidence: {
+            measurementAcquiredAt: null,
+            measurementComputedAt: '2026-09-13T00:00:00Z',
+            qualificationGaps: ['QUALIFIED_CONTROL_AND_VERSION_COVERAGE_UNRESOLVED'],
+            fixedTrafficObservation: {
+              state: 'OBSERVATIONAL_ONLY',
+              referenceStandardized: '0.1',
+              targetStandardized: '0.12',
+              observedDifference: '0.02',
+            },
+          },
+        },
+      ],
+    })?.results[0];
+    expect(observedEvaluation?.conservativeBound).toBeUndefined();
+    expect(observedEvaluation?.measurementAcquiredAt).toBeUndefined();
+    expect(observedEvaluation?.measurementComputedAt).toBe('2026-09-13T00:00:00Z');
+    expect(observedEvaluation?.fixedTrafficObservation?.observedDifference).toBe('0.02');
+    expect(observedEvaluation?.qualificationGaps).toEqual([
+      'QUALIFIED_CONTROL_AND_VERSION_COVERAGE_UNRESOLVED',
+    ]);
     expect(
       api.parseEvaluation({ ...EVALUATION, formalNodes: [{ nodeCode: 'X' }] }),
     ).toBeUndefined();
     expect(api.parseEvaluation({ ...EVALUATION, results: [{ id: 'x' }] })).toBeUndefined();
+    const revision = {
+      id: 'revision',
+      originalNodeResultId: 'original',
+      revisedNodeResultId: 'revised',
+      revisionReason: 'LATE_FACT',
+      lateFactReference: 'fixture://late-fact',
+      recordedAt: '2026-09-13T00:00:00Z',
+    };
+    const frozenHistory = api.parseEvaluation({
+      ...EVALUATION,
+      planDigest: 'a'.repeat(64),
+      frozenAt: '2026-08-01T00:00:00Z',
+      latestBoundary: '2026-09-30T00:00:00Z',
+      revisions: [revision],
+    });
+    expect(frozenHistory?.revisions).toEqual([revision]);
+    expect(frozenHistory?.latestBoundary).toBe('2026-09-30T00:00:00Z');
+    expect(frozenHistory?.planDigest).toBe('a'.repeat(64));
+    expect(
+      api.parseEvaluation({
+        ...EVALUATION,
+        revisions: [{ ...revision, originalNodeResultId: null }],
+      }),
+    ).toBeUndefined();
     expect(api.parseDescriptionCommand(COMMAND)?.attempts[0]?.errorCode).toBe('x');
     const receipt = {
       id: 'receipt',
@@ -407,7 +540,66 @@ describe('exact meaning review basis', () => {
     conditions: [
       { code: 'SAFETY_CHANGE', condition: 'Изменение ограничений безопасности', axis: 'MATERIAL' },
     ],
+    affectedSet: {
+      affectedSetId: 'set-1',
+      digest: 'affected-digest',
+      state: 'COMPLETE',
+      listingVariantIds: ['listing-variant-1'],
+      productVariantIds: ['product-variant-1'],
+      nativeScopeObservationId: 'scope-observation-1',
+      identityLineage: '{"members":[]}',
+    },
+    calibrationEvidence: { state: 'CURRENT' },
+    materialityEvidence: { state: 'CURRENT' },
+    businessProtectionEvidence: { model: 'LC_CURRENT_BUSINESS_PROTECTION_1' },
+    authorityDocument: '{}',
+    applicableExperience: [],
   };
+  it('preserves exact selected simulation decimals and rejects lossy numeric material', () => {
+    const selectedSimulation = {
+      id: 'simulation',
+      inputsDigest: 'digest',
+      computedAt: '2026-09-01T00:00:00Z',
+      currency: 'RUB',
+      periodStart: 'start',
+      periodEnd: 'end',
+      referenceProfitLine: '9007199254740993.0001',
+      inverseMinimumQuantity: null,
+      inverseState: 'NO_SOLUTION',
+      qualificationState: 'UNQUALIFIED',
+      conditionalScenariosPassed: false,
+      inputEvidence: '{"original":"evidence"}',
+      scenarios: [
+        {
+          code: 'DOWNSIDE',
+          state: 'COMPUTED',
+          quantity: '99999999999999',
+          netRevenue: '9007199254740993.0001',
+          contributionProfit: '-0.0001',
+          missingInputs: [],
+        },
+      ],
+    };
+    expect(
+      api.parseMeaningReviewBasis({ ...basis, selectedSimulation })?.selectedSimulation
+        ?.scenarios[0]?.netRevenue,
+    ).toBe('9007199254740993.0001');
+    expect(
+      api.parseMeaningReviewBasis({
+        ...basis,
+        selectedSimulation: {
+          ...selectedSimulation,
+          referenceProfitLine: Number('9007199254740993'),
+        },
+      }),
+    ).toBeUndefined();
+    expect(
+      api.parseMeaningReviewBasis({
+        ...basis,
+        selectedSimulation: { ...selectedSimulation, referenceProfitLine: 'NaN' },
+      }),
+    ).toBeUndefined();
+  });
   it('preserves full Russian text and rejects incomplete or duplicate conditions', () => {
     expect(api.parseMeaningReviewBasis(basis)?.currentText).toBe(basis.currentText);
     expect(api.parseMeaningReviewBasis(basis)?.targetText).toBe(basis.targetText);

@@ -38,6 +38,7 @@ export function ListingGovernancePanel({
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [generation, setGeneration] = useState(0);
   const [batchCode, setBatchCode] = useState('');
+  const [batchStoreId, setBatchStoreId] = useState(storeId);
   const [memberAction, setMemberAction] = useState('');
   const [stopListing, setStopListing] = useState('');
   const [causeClass, setCauseClass] = useState('SAFETY_FAILURE');
@@ -45,6 +46,10 @@ export function ListingGovernancePanel({
   const [reason, setReason] = useState('');
   const [evidence, setEvidence] = useState('');
   const [activeOnly, setActiveOnly] = useState(true);
+
+  useEffect(() => {
+    setBatchStoreId(storeId);
+  }, [storeId]);
 
   useEffect(() => {
     let active = true;
@@ -244,9 +249,19 @@ export function ListingGovernancePanel({
         aria-label={t('batches', language)}
         onSubmit={(event) => {
           event.preventDefault();
-          void createBatch(context, storeId, batchCode).then(settle);
+          void createBatch(context, batchStoreId, batchCode).then(settle);
         }}
       >
+        <label>
+          {t('batchStoreId', language)}{' '}
+          <input
+            required
+            value={batchStoreId}
+            onChange={(event) => {
+              setBatchStoreId(event.target.value);
+            }}
+          />
+        </label>
         <label>
           {t('batches', language)}{' '}
           <input

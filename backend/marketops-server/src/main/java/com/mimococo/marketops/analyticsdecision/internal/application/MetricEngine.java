@@ -175,6 +175,8 @@ public class MetricEngine {
         putMoney(metrics, MetricCode.RETAINED_NET_SALES, retained.netAmount(),
                 retained.evidence());
         putMoney(metrics, MetricCode.SETTLED_NET_SALES, settled.netAmount(), settled.evidence());
+        putCount(metrics, MetricCode.SETTLED_UNITS,
+                settled.available() ? settled.units() : null, settled.evidence());
 
         putCount(metrics, MetricCode.RETURN_UNITS,
                 returns.available() ? returns.units() : null, returns.evidence());

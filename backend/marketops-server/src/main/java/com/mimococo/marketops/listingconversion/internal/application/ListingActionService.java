@@ -28,6 +28,7 @@ import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.ListingActionIntake;
 import com.mimococo.marketops.operationsworkflow.ListingActionLaunch;
 import com.mimococo.marketops.operationsworkflow.ListingActionProposal;
+import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
@@ -70,6 +71,8 @@ public class ListingActionService {
     private final ListingActionLaunch launcher;
     private final CalculationRunLedger ledger;
     private final ListingExposureService exposureService;
+    private final ListingExperienceService experience;
+    private final ListingActionDecisionAuthority decisionAuthority;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
     private final IdGenerator ids;
@@ -79,6 +82,7 @@ public class ListingActionService {
                          GovernanceRepository governance, ListingHealthService health, CalibrationService calibration,
                          EvaluationService evaluation, ListingActionIntake intake, ListingActionLaunch launcher,
                          CalculationRunLedger ledger, ListingExposureService exposureService,
+                         ListingExperienceService experience, ListingActionDecisionAuthority decisionAuthority,
                          BusinessAuthorization authorization, MetadataAuditRecorder audit,
                          IdGenerator ids, Clock clock) {
         this.facts = facts;
@@ -92,6 +96,8 @@ public class ListingActionService {
         this.launcher = launcher;
         this.ledger = ledger;
         this.exposureService = exposureService;
+        this.experience = experience;
+        this.decisionAuthority=decisionAuthority;
         this.authorization = authorization;
         this.audit = audit;
         this.ids = ids;
@@ -148,7 +154,17 @@ public class ListingActionService {
     /** What preparation needs beyond the candidate. */
     public record Preparation(ExecutionPath path, String targetText, Boolean kizMarkedDeclared, BigDecimal exposureShare,
                               Map<String, String> expectedEffect, String riskLabel, UUID restoresCommandId,
-                              com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms) {
+                              com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms,
+                              com.mimococo.marketops.listingconversion.ListingActionPurpose purpose,
+                              com.mimococo.marketops.listingconversion.ListingPurposeBasis purposeBasis, UUID simulationId) {
+        public Preparation(ExecutionPath path, String targetText, Boolean kizMarkedDeclared, BigDecimal exposureShare,
+                Map<String,String> expectedEffect, String riskLabel, UUID restoresCommandId,
+                com.mimococo.marketops.listingconversion.PromotionTerms promotionTerms,
+                com.mimococo.marketops.listingconversion.ListingActionPurpose purpose,
+                com.mimococo.marketops.listingconversion.ListingPurposeBasis purposeBasis) {
+            this(path,targetText,kizMarkedDeclared,exposureShare,expectedEffect,riskLabel,restoresCommandId,
+                    promotionTerms,purpose,purposeBasis,null);
+        }
     }
 
     @Transactional
@@ -164,6 +180,20 @@ public class ListingActionService {
         boolean description = candidate.candidateKind() == CandidateKind.CONTENT_DESCRIPTION;
         ActionKind kind = description ? ActionKind.LISTING_DESCRIPTION_CHANGE : ActionKind.LISTING_PROMOTION_ACTION;
         ExecutionPath path = preparation.path() == null ? ExecutionPath.MANUAL : preparation.path();
+        // An omitted purpose keeps the established description-improvement path; a promotion
+        // must bind the promotion-specific accepted inputs used by its simulation.
+        var purpose=preparation.purpose()==null
+                ?(description?com.mimococo.marketops.listingconversion.ListingActionPurpose.LISTING_CONVERSION
+                    :com.mimococo.marketops.listingconversion.ListingActionPurpose.PROMOTION)
+                :preparation.purpose();
+        if (preparation.restoresCommandId()!=null
+                && purpose!=com.mimococo.marketops.listingconversion.ListingActionPurpose.DESCRIPTION_CORRECTION)
+            throw OperationRejectedException.of(ErrorCode.RESTORE_UNSUPPORTED);
+        if ((description && purpose==com.mimococo.marketops.listingconversion.ListingActionPurpose.PROMOTION)
+                || (!description && purpose!=com.mimococo.marketops.listingconversion.ListingActionPurpose.PROMOTION
+                    && purpose!=com.mimococo.marketops.listingconversion.ListingActionPurpose.BOUNDED_EXPLORATION)
+                || (purpose==com.mimococo.marketops.listingconversion.ListingActionPurpose.BOUNDED_EXPLORATION && path!=ExecutionPath.MANUAL))
+            throw OperationRejectedException.of(ErrorCode.EXECUTION_PATH_MISMATCH);
         if (!description && (path == ExecutionPath.API || preparation.restoresCommandId()!=null)) {
             throw OperationRejectedException.of(ErrorCode.EXECUTION_PATH_MISMATCH);
         }
@@ -175,6 +205,21 @@ public class ListingActionService {
         ListingHealthService.FrozenSet set = health.freezeAffectedSet(candidate.platformListingId());
         if (!"COMPLETE".equals(set.resolution().state())) {
             throw OperationRejectedException.of(ErrorCode.AFFECTED_SET_INCOMPLETE);
+        }
+        CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
+                listing.storeId(), now, purpose.name());
+        String simulationDigest = null;
+        if (!description && !resolved.ok()) throw OperationRejectedException.of(ErrorCode.CALIBRATION_UNRESOLVED);
+        if (!description && preparation.simulationId()==null) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        if (preparation.simulationId() != null) {
+            if (description) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            authorization.require(actor, ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW, ResourceScope.store(listing.storeId()));
+            for (UUID member : set.resolution().productVariantIds())
+                authorization.require(actor, ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW, ResourceScope.productVariant(member));
+            simulationDigest = actions.matchingSimulationDigest(preparation.simulationId(), listing.organizationId(),
+                    candidateId, set.digest(), promotionDigest, purpose.name(),resolved.resolved().packageId(),
+                    resolved.resolved().version(),now)
+                    .orElseThrow(() -> OperationRejectedException.of(ErrorCode.VALIDATION_FAILED));
         }
         Optional<ListingFactRepository.DescriptionRow> current = facts.latestDescription(candidate.platformListingId());
         String targetText = null;
@@ -204,18 +249,38 @@ public class ListingActionService {
                 throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
             }
         }
-        CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
-                listing.storeId(), now);
+        var purposeBasis=preparation.purposeBasis();
+        if (!purpose.requiresFormalEvaluation() && purposeBasis==null)
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        if (purposeBasis!=null) {
+            MetadataFieldPolicy.requireText("purposeEvidenceReference",purposeBasis.evidenceReference());
+            if (purposeBasis.useConditions().isEmpty() || purposeBasis.endConditions().isEmpty())
+                throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            purposeBasis.useConditions().forEach(value->MetadataFieldPolicy.requireText("useCondition",value));
+            purposeBasis.endConditions().forEach(value->MetadataFieldPolicy.requireText("endCondition",value));
+            if ((purpose==com.mimococo.marketops.listingconversion.ListingActionPurpose.BOUNDED_EXPLORATION && purposeBasis.useUntil()==null)
+                    || (purposeBasis.useUntil()!=null && !purposeBasis.useUntil().isAfter(now)))
+                throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        String purposeBasisDigest=purposeBasis==null?null:actions.purposeBasisDigest(purpose.name(),purposeBasis);
         var exposure=exposureService.assess(listing,set.digest(),set.resolution().listingVariantIds(),resolved,now);
         // Meaning remains unknown until an independent reviewer answers the accepted conditions.
         var classification=MaterialityClassifier.classify(null,exposure.material());
-        String entityVersion = Digest.ofComponents(List.of(set.digest(),
+        var entityComponents = new java.util.ArrayList<>(List.of("purpose:"+purpose.name(),"purposeBasis:"+String.valueOf(purposeBasisDigest),set.digest(),
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse("NO_DESCRIPTION"),
                 targetDigest == null ? "NO_TARGET" : targetDigest,
                 !resolved.ok() ? "CALIBRATION_UNRESOLVED" : resolved.resolved().packageId() + ":" + resolved.resolved().version()));
+        if (simulationDigest != null) entityComponents.add("simulation:"+preparation.simulationId()+":"+simulationDigest);
+        String entityVersion = Digest.ofComponents(entityComponents);
         Map<String, String> parameters = new java.util.LinkedHashMap<>();
         parameters.put("candidateId", candidateId.toString());
+        if (simulationDigest != null) {
+            parameters.put("simulationId", preparation.simulationId().toString());
+            parameters.put("simulationInputsDigest", simulationDigest);
+        }
         parameters.put("executionPath", path.name());
+        parameters.put("purposeCode",purpose.name());
+        if(purposeBasisDigest!=null) parameters.put("purposeBasisDigest",purposeBasisDigest);
         parameters.put("affectedSetDigest", set.digest());
         if (promotionDigest!=null) parameters.put("promotionTermsDigest",promotionDigest);
         if (preparation.restoresCommandId()!=null) parameters.put("restoresCommandId",preparation.restoresCommandId().toString());
@@ -235,8 +300,8 @@ public class ListingActionService {
                 current.map(ListingFactRepository.DescriptionRow::textDigest).orElse(null), targetText, targetDigest, kiz,
                 classification.contentAxisMaterial(), classification.exposureAxisMaterial(), classification.route(),
                 resolved.ok() ? resolved.resolved().packageId() : null, resolved.ok() ? resolved.resolved().version() : null,
-                actor.userId(), now, preparation.restoresCommandId(), preparation.promotionTerms(), exposure.evidence());
-        if (resolved.ok()) {
+                actor.userId(), now, preparation.restoresCommandId(), preparation.promotionTerms(), exposure.evidence(),purposeBasis);
+        if (resolved.ok() && purpose.requiresFormalEvaluation()) {
             evaluation.freezePlan(actions.action(actionId).orElseThrow());
         }
         if (!actions.moveCandidate(candidateId, "OPEN", "SELECTED", candidate.version(), now)) {
@@ -263,14 +328,40 @@ public class ListingActionService {
     @Transactional(readOnly=true)
     public com.mimococo.marketops.listingconversion.MeaningReviewBasis reviewBasis(AuthenticatedActor actor,UUID actionId) {
         var action=requireAction(actor,actionId,ActionScopeCode.LISTING_ACTION_REVIEW);
+        decisionAuthority.requireDecisionEvidence(actor,action.recommendationId());
         if ("LISTING_PROMOTION_ACTION".equals(action.actionKind()) && !maySeePromotionTerms(actor,action)) {
             throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
         }
         var basis=actions.meaningBasis(actionId);
         var current=calibration.recheckAction(actionId,actions.databaseNow());
-        return current.outcome().ok()?basis:new com.mimococo.marketops.listingconversion.MeaningReviewBasis(
-                basis.actionId(),basis.basisDigest(),current.outcome().state(),basis.currentText(),basis.targetText(),
-                basis.promotionTerms(),basis.conditions());
+        var selectedBinding=actions.selectedSimulation(actionId);
+        if (selectedBinding.invalidated()) throw OperationRejectedException.of(ErrorCode.BINDING_INAPPLICABLE);
+        com.mimococo.marketops.listingconversion.SimulationView selected=null;
+        if (selectedBinding.declared()) {
+            selected=evaluation.simulation(actor,action.candidateId(),selectedBinding.id());
+            if (selected.inputSnapshot()==null)
+                throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        CandidateView candidate=actions.candidate(action.candidateId()).orElseThrow();
+        var applicableExperience=experience.applicableForReview(actor,action.listingId(),candidate.candidateKind());
+        var currentDescription=action.currentObservationId()==null?null:facts.description(action.currentObservationId())
+                .map(row->new com.mimococo.marketops.listingconversion.MeaningReviewBasis.DescriptionMaterial(
+                    row.id(),row.textDigest(),row.descriptionText(),row.languageCode(),row.kizMarkedDeclared(),
+                    row.observedAt(),row.acquiredAt(),row.sourceKind())).orElse(null);
+        var frozenSet=facts.affectedSetReviewMaterial(action.affectedSetId())
+                .orElseThrow(()->OperationRejectedException.of(ErrorCode.AFFECTED_SET_INCOMPLETE));
+        var affectedSet=new com.mimococo.marketops.listingconversion.MeaningReviewBasis.AffectedSetMaterial(
+                frozenSet.id(),frozenSet.digest(),frozenSet.resolutionState(),frozenSet.listingVariantIds(),
+                frozenSet.productVariantIds(),frozenSet.nativeScopeObservationId(),frozenSet.identityLineage());
+        var decision=decisionAuthority.recheckedDecisionScope(action.recommendationId())
+                .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        return new com.mimococo.marketops.listingconversion.MeaningReviewBasis(
+                basis.actionId(),basis.basisDigest(),current.outcome().ok()?basis.ruleState():current.outcome().state(),
+                basis.currentText(),basis.targetText(),basis.promotionTerms(),basis.conditions(),basis.purposeBasis(),
+                com.mimococo.marketops.listingconversion.MeaningReviewBasis.SimulationMaterial.from(selected),
+                applicableExperience,currentDescription,affectedSet,actions.reviewMaterial(actionId).orElse(null),
+                decision.calibrationRecheck(),decision.materialityRecheck(),decision.protectionRecheck(),
+                decision.authorityDocument());
     }
 
     @Transactional
@@ -306,7 +397,11 @@ public class ListingActionService {
             }
         }
         Optional<String> planDigest = evaluation.frozenPlanDigest(actionId);
-        if ("ATTESTED".equals(verdict) && planDigest.isEmpty()) {
+        var useBasis=actions.purposeBasis(actionId).orElse(null);
+        boolean nonformal="DESCRIPTION_CORRECTION".equals(action.purposeCode()) || "BOUNDED_EXPLORATION".equals(action.purposeCode());
+        if ("ATTESTED".equals(verdict) && (nonformal
+                ? useBasis==null || (useBasis.useUntil()!=null && !useBasis.useUntil().isAfter(now))
+                : planDigest.isEmpty())) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
         MaterialityClassifier.Classification reviewedClassification=null;
@@ -334,7 +429,8 @@ public class ListingActionService {
         String factsDigest = Digest.ofComponents(List.of(action.affectedSetDigest(),
                 String.valueOf(action.currentTextDigest()), String.valueOf(action.targetTextDigest()),
                 String.valueOf(action.calibrationPackageId()), String.valueOf(action.calibrationVersion()),
-                planDigest.orElse("NO_FROZEN_PLAN")));
+                planDigest.orElse("NO_FORMAL_PLAN"),
+                useBasis==null?"NO_PURPOSE_BASIS":actions.purposeBasisDigest(action.purposeCode(),useBasis)));
         actions.insertReview(ids.newId(), action.organizationId(), actionId, actor.userId(), action.targetTextDigest(),
                 action.currentTextDigest(), action.affectedSetDigest(), factsDigest, verdict, validReason, now,
                 assessment,reviewedExposure,reviewedClassification);
@@ -400,10 +496,12 @@ public class ListingActionService {
         if (actions.scopeContained(action.organizationId(), action.listingId())) {
             throw OperationRejectedException.of(ErrorCode.SCOPE_CONTAINED);
         }
-        if (!"PASS".equals(actions.latestHealthNecessaryState(action.listingId()).orElse("UNKNOWN"))) {
+        if (!"DESCRIPTION_CORRECTION".equals(action.purposeCode())
+                && !"PASS".equals(actions.latestHealthNecessaryState(action.listingId()).orElse("UNKNOWN"))) {
             throw OperationRejectedException.of(ErrorCode.LISTING_HEALTH_BLOCKS_LAUNCH);
         }
-        evaluation.freezePlan(action);
+        if (action.purposeCode()==null || com.mimococo.marketops.listingconversion.ListingActionPurpose.valueOf(action.purposeCode()).requiresFormalEvaluation())
+            evaluation.freezePlan(action);
         ListingActionLaunch.LaunchResult result = launcher.launch(actor, actionId, requested);
         if (result.launched()) {
             intake.recordTaskAction(actor, action.recommendationId(), "ACTION_LAUNCHED", "lc-launch:" + result.launchId(),
@@ -468,7 +566,7 @@ public class ListingActionService {
                 row.authorUserId(), ListingActionState.valueOf(row.state()), actions.reviews(row.id()),
                 actions.binding(row.id()).orElse(null), actions.launch(row.id()).orElse(null), actions.occupations(row.id()),
                 actions.binding(row.id()).isPresent() ? actions.bindingGaps(row.id()) : List.of(),
-                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId(), row.promotionTermsDigest());
+                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId(), row.promotionTermsDigest(), row.purposeCode(),actions.purposeBasis(row.id()).orElse(null));
     }
 
     ListingActionRepository.ActionRow requireAction(AuthenticatedActor actor, UUID actionId, ActionScopeCode scope) {

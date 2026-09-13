@@ -23,6 +23,8 @@ class VersionWindowTest {
                 new VersionWindow.Display("b".repeat(64), Instant.parse("2026-09-03T08:00:00Z"))), START, END);
 
         assertThat(attribution.excludedDays()).containsExactly(LocalDate.of(2026, 9, 2));
+        assertThat(attribution.uncoveredDays()).containsExactly(LocalDate.of(2026,9,1));
+        assertThat(attribution.fullyCovers("b".repeat(64))).isFalse();
         assertThat(VersionWindow.excluded(attribution, Instant.parse("2026-09-02T23:59:59Z"))).isTrue();
         assertThat(VersionWindow.excluded(attribution, Instant.parse("2026-09-03T00:00:00Z"))).isFalse();
     }
@@ -36,6 +38,8 @@ class VersionWindowTest {
                 new VersionWindow.Display("b".repeat(64), END)), START, END);
 
         assertThat(attribution.excludedDays()).isEmpty();
+        assertThat(attribution.uncoveredDays()).isEmpty();
+        assertThat(attribution.fullyCovers("b".repeat(64))).isTrue();
         assertThat(attribution.windowStart()).isEqualTo(START);
         assertThat(attribution.windowEnd()).isEqualTo(END);
     }
@@ -58,6 +62,36 @@ class VersionWindowTest {
         assertThat(attribution.excludedDays()).containsExactly(LocalDate.of(2026,9,2));
         assertThat(VersionWindow.excluded(attribution, START.plusSeconds(16*3600))).isTrue();
         assertThat(VersionWindow.excluded(attribution, START.plusSeconds(15*3600))).isFalse();
+    }
+
+    @Test void transitionDayCanBeRemovedButEveryRemainingDayMustHaveTheTargetVersion() {
+        String prior="a".repeat(64),target="b".repeat(64);
+        var attribution=VersionWindow.attribute(List.of(
+                new VersionWindow.Display(prior,START.minusSeconds(1)),
+                new VersionWindow.Display(target,START.plusSeconds(3600))),START,END);
+        assertThat(attribution.excludedDays()).containsExactly(LocalDate.of(2026,9,1));
+        assertThat(attribution.uncoveredDays()).isEmpty();
+        assertThat(attribution.fullyCovers(target)).isTrue();
+    }
+
+    @Test void anUnknownDisplayStateLeavesTheWholeSourceDayUncovered() {
+        String target="b".repeat(64);
+        var attribution=VersionWindow.attribute(List.of(
+                new VersionWindow.Display(target,START.minusSeconds(1)),
+                new VersionWindow.Display(null,START.plusSeconds(3600),false),
+                new VersionWindow.Display(target,START.plusSeconds(7200))),START,END);
+        assertThat(attribution.excludedDays()).isEmpty();
+        assertThat(attribution.uncoveredDays()).containsExactly(LocalDate.of(2026,9,1));
+        assertThat(attribution.fullyCovers(target)).isFalse();
+    }
+
+    @Test void sameTimeConflictingSourceRowsDoNotChooseOneVersionByRowOrder() {
+        var observed=START.minusSeconds(1);
+        var attribution=VersionWindow.attribute(List.of(
+                new VersionWindow.Display("a",observed),new VersionWindow.Display("b",observed)),START,END);
+        assertThat(attribution.excludedDays()).isEmpty();
+        assertThat(attribution.uncoveredDays()).containsExactlyElementsOf(
+                java.util.stream.IntStream.range(0,7).mapToObj(day->LocalDate.of(2026,9,1).plusDays(day)).toList());
     }
 
 }

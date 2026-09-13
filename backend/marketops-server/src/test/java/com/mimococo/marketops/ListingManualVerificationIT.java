@@ -33,6 +33,12 @@ class ListingManualVerificationIT {
                 JOIN ops.lc_action_binding b ON b.action_id=a.id WHERE a.id=:action
                 """).param("packet",packet).param("launch",launch).param("executor",f.id("executorUser"))
                 .param("issuer",f.id("ownerUser")).param("action",f.id("actionTwo")).update();
+        f.app.sql("""
+                INSERT INTO ops.lc_manual_report(id,organization_id,packet_id,reporter_user_id,
+                    operation_time,reported_at,report_state,note)
+                SELECT gen_random_uuid(),organization_id,id,executor_user_id,issued_at,clock_timestamp(),
+                    'APPLIED','fixture operation report' FROM ops.lc_manual_packet WHERE id=:packet
+                """).param("packet",packet).update();
         return new Case(f,packet,f.app.sql("SELECT target_text FROM ops.lc_action WHERE id=:id")
                 .param("id",f.id("actionTwo")).query(String.class).single());
     }

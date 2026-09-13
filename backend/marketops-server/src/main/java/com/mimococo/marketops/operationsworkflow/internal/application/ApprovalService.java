@@ -138,6 +138,12 @@ public class ApprovalService {
 
         Duration scope = listingScope == null ? AUTHORIZATION_SCOPE : listingScope.approvalValidity();
         Instant decidedAt = listingScope == null ? now : approvals.databaseNow();
+        if (listingScope!=null && listingScope.purposeUseUntil()!=null) {
+            if (!listingScope.purposeUseUntil().isAfter(decidedAt))
+                throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
+            Duration remainingUse=Duration.between(decidedAt,listingScope.purposeUseUntil());
+            if (remainingUse.compareTo(scope)<0) scope=remainingUse;
+        }
         UUID decisionId = record(proposal, "APPROVED", actor.userId(), null,
                 actor.authenticatedAt(), true, reason, decidedAt, scope);
         recommendations.transition(actor.userId().toString(), recommendationId,
@@ -345,6 +351,7 @@ public class ApprovalService {
         if (!actor.organizationId().equals(scope.organizationId())) {
             throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
         }
+        listingDecisions.requireDecisionEvidence(actor,proposal.id());
         if (actor.userId().equals(scope.authorUserId())) {
             throw OperationRejectedException.of(ErrorCode.INDEPENDENCE_REQUIRED);
         }

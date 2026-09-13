@@ -79,6 +79,13 @@ public record PriceEconomicsProfile(
         FIXED_PLUS_PERCENTAGE
     }
 
+    /** The evidenced amount used both for tier selection and percentage calculation. */
+    public enum PriceBasis {
+        PROPOSED_PRICE,
+        BUYER_PAYMENT,
+        SELLER_REVENUE
+    }
+
     /**
      * One component or one tier of a component.
      *
@@ -95,7 +102,15 @@ public record PriceEconomicsProfile(
             BigDecimal rate,
             BigDecimal lowerPriceInclusive,
             BigDecimal upperPriceExclusive,
-            String evidenceReference) {
+            String evidenceReference,
+            PriceBasis priceBasis) {
+
+        public Component(UUID componentId, String componentCode, FeeFamily family, ComponentKind kind,
+                         BigDecimal fixedAmount, BigDecimal rate, BigDecimal lowerPriceInclusive,
+                         BigDecimal upperPriceExclusive, String evidenceReference) {
+            this(componentId, componentCode, family, kind, fixedAmount, rate, lowerPriceInclusive,
+                    upperPriceExclusive, evidenceReference, PriceBasis.PROPOSED_PRICE);
+        }
 
         public Component {
             Objects.requireNonNull(componentId, "componentId");
@@ -103,6 +118,7 @@ public record PriceEconomicsProfile(
             Objects.requireNonNull(family, "family");
             Objects.requireNonNull(kind, "kind");
             Objects.requireNonNull(evidenceReference, "evidenceReference");
+            Objects.requireNonNull(priceBasis, "priceBasis");
         }
 
         /** Whether this tier applies to the exact proposed price. */

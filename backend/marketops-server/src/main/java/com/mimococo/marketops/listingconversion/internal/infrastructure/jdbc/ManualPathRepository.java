@@ -13,6 +13,8 @@ import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import com.mimococo.marketops.shared.JsonValues;
 
 /** Manual packets, executor reports, independent verifications and promotion engagements. */
 @Repository
@@ -76,17 +78,19 @@ public class ManualPathRepository {
                 .param("state", reportState).param("note", note).update();
     }
 
-    public void insertVerification(UUID id, UUID organizationId, UUID packetId, UUID verifierUserId, String basis,
+    public String insertVerification(UUID id, UUID organizationId, UUID packetId, UUID verifierUserId, String basis,
                                    String managementMatch, UUID managementObservationId, UUID displayObservationId,
                                    String displayState, Instant verifiedAt, String note, UUID promotionObservationId) {
-        jdbc.sql("""
+        return jdbc.sql("""
                 INSERT INTO ops.lc_manual_verification (id, organization_id, packet_id, verifier_user_id, verification_basis,
                     management_match, management_observation_id, display_observation_id, display_state, verified_at, note, promotion_observation_id)
                 VALUES (:id, :org, :packet, :verifier, :basis, :match, :management, :display, :displayState, :verified, :note, :promotion)
+                RETURNING qualification_state
                 """).param("id", id).param("org", organizationId).param("packet", packetId).param("verifier", verifierUserId)
                 .param("basis", basis).param("match", managementMatch).param("management", managementObservationId)
                 .param("display", displayObservationId).param("displayState", displayState)
-                .param("verified", Timestamp.from(verifiedAt)).param("note", note).param("promotion",promotionObservationId).update();
+                .param("verified", Timestamp.from(verifiedAt)).param("note", note).param("promotion",promotionObservationId)
+                .query(String.class).single();
     }
 
     private static final String PACKET_SELECT = """
@@ -98,23 +102,27 @@ public class ManualPathRepository {
     private ManualPacketView mapPacket(ResultSet rs, int n) throws SQLException {
         UUID id = rs.getObject("id", UUID.class);
         List<ManualPacketView.Report> reports = jdbc.sql("""
-                SELECT id, reporter_user_id, operation_time, reported_at, report_state, note FROM ops.lc_manual_report
+                SELECT id, reporter_user_id, operation_time, reported_at, report_state, note,
+                       operation_qualification,deviation_reason FROM ops.lc_manual_report
                  WHERE packet_id = :packet ORDER BY reported_at
                 """).param("packet", id)
                 .query((row, m) -> new ManualPacketView.Report(row.getObject("id", UUID.class),
                         row.getObject("reporter_user_id", UUID.class), ListingFactRepository.instant(row, "operation_time"),
-                        ListingFactRepository.instant(row, "reported_at"), row.getString("report_state"), row.getString("note")))
+                        ListingFactRepository.instant(row, "reported_at"), row.getString("report_state"), row.getString("note"),
+                        row.getString("operation_qualification"),row.getString("deviation_reason")))
                 .list();
         List<ManualPacketView.Verification> verifications = jdbc.sql("""
                 SELECT id, verifier_user_id, verification_basis, management_match, management_observation_id,
-                       display_observation_id, display_state, verified_at, note, observation_binding::text AS binding
+                       display_observation_id, display_state, verified_at, note, observation_binding::text AS binding,
+                       qualification_state
                   FROM ops.lc_manual_verification WHERE packet_id = :packet ORDER BY verified_at
                 """).param("packet", id)
                 .query((row, m) -> new ManualPacketView.Verification(row.getObject("id", UUID.class),
                         row.getObject("verifier_user_id", UUID.class), row.getString("verification_basis"),
                         row.getString("management_match"), row.getObject("management_observation_id", UUID.class),
                         row.getObject("display_observation_id", UUID.class), row.getString("display_state"),
-                        ListingFactRepository.instant(row, "verified_at"), row.getString("note"),observationBinding(row.getString("binding"))))
+                        ListingFactRepository.instant(row, "verified_at"), row.getString("note"),observationBinding(row.getString("binding")),
+                        row.getString("qualification_state")))
                 .list();
         return new ManualPacketView(id, rs.getObject("action_id", UUID.class), rs.getObject("launch_id", UUID.class),
                 rs.getObject("executor_user_id", UUID.class), rs.getObject("issued_by_user_id", UUID.class),
@@ -133,18 +141,24 @@ public class ManualPathRepository {
 
     public void insertEngagement(UUID id, UUID organizationId, UUID storeId, UUID listingId, UUID actionId, String kind,
                                  String nativeKey, Map<String, String> terms, boolean priceFreeze, boolean autoParticipation,
-                                 String termsEvidence, boolean adopted, Map<String, String> obligations, Instant now) {
+                                 String termsEvidence, boolean adopted, Map<String, String> obligations, Instant now,
+                                 UUID contextObservationId, String originalAuthorityReference,
+                                 Instant originalAuthorityValidUntil, UUID responsibleUserId) {
         jdbc.sql("""
                 INSERT INTO ops.lc_promotion_engagement (id, organization_id, store_id, platform_listing_id, action_id,
                     engagement_kind, native_promotion_key, terms, price_freeze, auto_participation, terms_evidence_reference,
-                    adopted, obligations, state, created_at, updated_at, version)
+                    adopted, obligations, state, created_at, updated_at, version,source_context_observation_id,
+                    original_authority_reference,original_authority_valid_until,responsible_user_id)
                 VALUES (:id, :org, :store, :listing, :action, :kind, :key, CAST(:terms AS jsonb), :freeze, :auto, :evidence,
-                    :adopted, CAST(:obligations AS jsonb), 'ACTIVE', :now, :now, 0)
+                    :adopted, CAST(:obligations AS jsonb), 'ACTIVE', :now, :now, 0,:context,:authority,:authorityUntil,:responsible)
                 """).param("id", id).param("org", organizationId).param("store", storeId).param("listing", listingId)
                 .param("action", actionId).param("kind", kind).param("key", nativeKey)
                 .param("terms", json.writeValueAsString(terms)).param("freeze", priceFreeze).param("auto", autoParticipation)
                 .param("evidence", termsEvidence).param("adopted", adopted)
-                .param("obligations", json.writeValueAsString(obligations)).param("now", Timestamp.from(now)).update();
+                .param("obligations", json.writeValueAsString(obligations)).param("now", Timestamp.from(now))
+                .param("context",contextObservationId).param("authority",originalAuthorityReference)
+                .param("authorityUntil",ListingFactRepository.ts(originalAuthorityValidUntil))
+                .param("responsible",responsibleUserId).update();
     }
 
     public Optional<PromotionEngagementView> engagement(UUID id) {
@@ -156,33 +170,40 @@ public class ManualPathRepository {
                 .param("listing", listingId).query(this::mapEngagement).list();
     }
 
-    public void authorizeExit(UUID engagementId, UUID actorId, String proof, String reasonCode) {
-        jdbc.sql("SELECT ops.authorize_lc_promotion_exit(:id, :actor, :proof, :reason)")
+    /** Current exact promotion inventory for a requested period; qualification is decided by PostgreSQL. */
+    public JsonNode currentPromotionContext(UUID organizationId, UUID listingId, Instant periodStart,
+                                            Instant periodEnd, Instant asOf) {
+        String value = jdbc.sql("SELECT ops.lc_current_promotion_context(:org,:listing,:from,:until,:at)::text")
+                .param("org", organizationId).param("listing", listingId)
+                .param("from", Timestamp.from(periodStart)).param("until", Timestamp.from(periodEnd))
+                .param("at", Timestamp.from(asOf)).query(String.class).single();
+        return JsonValues.read(json, value);
+    }
+
+    public void authorizeExit(UUID engagementId, UUID actorId, String proof, String reasonCode,
+                              String authorityReference, UUID evidenceId) {
+        jdbc.sql("SELECT ops.authorize_lc_promotion_exit(:id,:actor,:proof,:reason,:authority,:evidence)")
                 .param("id", engagementId).param("actor", actorId).param("proof", proof).param("reason", reasonCode)
+                .param("authority",authorityReference).param("evidence",evidenceId)
                 .query(Object.class).optional();
     }
 
-    public boolean release(UUID engagementId, String toState, Instant at, long expectedVersion) {
-        String column = "STOPPED".equals(toState) ? "new_transactions_stopped_at" : "obligations_cleared_at";
-        return jdbc.sql("UPDATE ops.lc_promotion_engagement SET state = :to, " + column + " = :at, updated_at = :at, "
-                + "version = version + 1 WHERE id = :id AND version = :version")
-                .param("to", toState).param("at", Timestamp.from(at)).param("id", engagementId).param("version", expectedVersion)
-                .update() == 1;
-    }
-
-    public boolean updateObligations(UUID engagementId, Map<String, String> obligations, Instant at, long expectedVersion) {
-        return jdbc.sql("""
-                UPDATE ops.lc_promotion_engagement SET obligations = CAST(:obligations AS jsonb), updated_at = :at,
-                    version = version + 1 WHERE id = :id AND version = :version
-                """).param("obligations", json.writeValueAsString(obligations)).param("at", Timestamp.from(at))
-                .param("id", engagementId).param("version", expectedVersion).update() == 1;
+    public void release(UUID engagementId, UUID actorId, String proof, String releaseKind,
+                        UUID observationId, String evidenceReference) {
+        jdbc.sql("SELECT ops.release_lc_promotion_engagement(:id,:actor,:proof,:kind,:observation,:reference)")
+                .param("id",engagementId).param("actor",actorId).param("proof",proof).param("kind",releaseKind)
+                .param("observation",observationId).param("reference",evidenceReference).query(Object.class).optional();
     }
 
     private static final String ENGAGEMENT_SELECT = """
             SELECT e.id, e.store_id, e.platform_listing_id, e.action_id, e.engagement_kind, e.native_promotion_key,
                    e.terms::text AS terms, e.price_freeze, e.auto_participation, e.terms_evidence_reference, e.adopted,
                    e.obligations::text AS obligations, e.exit_reason_code, e.exit_authorized_by_user_id, e.exit_authorized_at,
-                   e.new_transactions_stopped_at, e.obligations_cleared_at, e.state, e.version
+                   e.new_transactions_stopped_at, e.obligations_cleared_at, e.state, e.version,
+                   e.terms_digest,e.source_context_observation_id,e.original_authority_reference,
+                   e.original_authority_valid_until,e.responsible_user_id,e.adoption_qualification_state,
+                   e.axis_demands::text AS axis_demands,e.exit_authority_reference,e.exit_evidence_id,
+                   e.stop_evidence_observation_id,e.obligation_evidence_observation_id
               FROM ops.lc_promotion_engagement e
             """;
 
@@ -196,6 +217,18 @@ public class ManualPathRepository {
                 rs.getObject("exit_authorized_by_user_id", UUID.class),
                 ListingFactRepository.instant(rs, "exit_authorized_at"),
                 ListingFactRepository.instant(rs, "new_transactions_stopped_at"),
-                ListingFactRepository.instant(rs, "obligations_cleared_at"), rs.getString("state"), rs.getLong("version"),true);
+                ListingFactRepository.instant(rs, "obligations_cleared_at"), rs.getString("state"), rs.getLong("version"),true,
+                rs.getString("terms_digest"),rs.getObject("source_context_observation_id",UUID.class),
+                rs.getString("original_authority_reference"),ListingFactRepository.instant(rs,"original_authority_valid_until"),
+                rs.getObject("responsible_user_id",UUID.class),rs.getString("adoption_qualification_state"),
+                objectMap(rs.getString("axis_demands")),rs.getString("exit_authority_reference"),
+                rs.getObject("exit_evidence_id",UUID.class),rs.getObject("stop_evidence_observation_id",UUID.class),
+                rs.getObject("obligation_evidence_observation_id",UUID.class));
+    }
+
+    private Map<String,Object> objectMap(String body) {
+        Map<String,Object> values=new java.util.LinkedHashMap<>();
+        if (body!=null) json.readTree(body).properties().forEach(entry->values.put(entry.getKey(),entry.getValue().deepCopy()));
+        return values;
     }
 }

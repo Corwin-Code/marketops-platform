@@ -79,7 +79,7 @@ public class ManualPathService {
         var launch = actions.launch(actionId).orElseThrow(() -> OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION));
         var binding = actions.binding(actionId).orElseThrow(() -> OperationRejectedException.of(ErrorCode.BINDING_INAPPLICABLE));
         ListingFactRepository.ListingContext listing = facts.listing(action.listingId()).orElseThrow();
-        Instant now = clock.instant();
+        Instant now = actions.databaseNow();
         UUID id = ids.newId();
         manual.insertPacket(id, action.organizationId(), actionId, launch.id(), executorUserId, actor.userId(), now,
                 binding.expiresAt(), listing.nativeListingKey(), action.affectedSetDigest(), action.targetText());
@@ -135,12 +135,12 @@ public class ManualPathService {
         }
         boolean human = "INDEPENDENT_HUMAN".equals(basis);
         UUID id = ids.newId();
-        manual.insertVerification(id, actor.organizationId(), packetId, human ? actor.userId() : null,
+        String qualification=manual.insertVerification(id, actor.organizationId(), packetId, human ? actor.userId() : null,
                 MetadataFieldPolicy.requireText("basis", basis), MetadataFieldPolicy.requireText("managementMatch", managementMatch),
                 managementObservationId, displayObservationId, MetadataFieldPolicy.requireText("displayState", displayState),
                 now, MetadataFieldPolicy.requireText("note", note),promotionObservationId);
         var action = actions.action(packet.actionId()).orElseThrow();
-        if ("MATCHED_TARGET".equals(managementMatch)) {
+        if ("MATCHED_TARGET".equals(managementMatch) && "QUALIFIED".equals(qualification)) {
             manual.movePacket(packetId, "VERIFIED", manual.packet(packetId).orElseThrow().version(), now);
             if ("LAUNCHED".equals(action.state())) {
                 actions.moveAction(action.id(), "VERIFIED", action.version(), now);
@@ -149,7 +149,7 @@ public class ManualPathService {
                     "management match verified; display " + displayState);
         } else {
             intake.recordTaskAction(actor, action.recommendationId(), "EVIDENCE_RETURNED", "lc-manual-verification:" + id,
-                    "verification recorded " + managementMatch + "; display " + displayState);
+                    "verification recorded " + managementMatch + "; display " + displayState + "; qualification " + qualification);
         }
         recordAudit(actor, "lc-manual-packet", packetId, AuditAction.VERIFICATION_CHANGE,
                 Map.of("managementMatch", new FieldChange(null, managementMatch), "displayState", new FieldChange(null, displayState)), note);
@@ -181,7 +181,9 @@ public class ManualPathService {
 
     public record EngagementRequest(String engagementKind, String nativePromotionKey, Map<String, String> terms,
                                     boolean priceFreeze, boolean autoParticipation, String termsEvidenceReference,
-                                    Map<String, String> obligations) {
+                                    Map<String, String> obligations, UUID contextObservationId,
+                                    String originalAuthorityReference, Instant originalAuthorityValidUntil,
+                                    UUID responsibleUserId) {
     }
 
     @Transactional
@@ -192,7 +194,9 @@ public class ManualPathService {
                 MetadataFieldPolicy.requireText("engagementKind", request.engagementKind()), request.nativePromotionKey(),
                 request.terms() == null ? Map.of() : request.terms(), request.priceFreeze(), request.autoParticipation(),
                 MetadataFieldPolicy.requireText("termsEvidenceReference", request.termsEvidenceReference()), true,
-                request.obligations() == null ? Map.of() : request.obligations(), clock.instant());
+                request.obligations() == null ? Map.of() : request.obligations(), clock.instant(),
+                request.contextObservationId(),request.originalAuthorityReference(),request.originalAuthorityValidUntil(),
+                request.responsibleUserId());
         recordAudit(actor, "lc-promotion-engagement", id, AuditAction.CREATE, Map.of("adopted", new FieldChange(null, "true")), null);
         return disclose(actor,manual.engagement(id).orElseThrow());
     }
@@ -211,13 +215,14 @@ public class ManualPathService {
                 MetadataFieldPolicy.requireText("engagementKind", request.engagementKind()), request.nativePromotionKey(),
                 request.terms() == null ? Map.of() : request.terms(), request.priceFreeze(), request.autoParticipation(),
                 exactTermsReference(request.termsEvidenceReference()), false,
-                request.obligations() == null ? Map.of() : request.obligations(), clock.instant());
+                request.obligations() == null ? Map.of() : request.obligations(), clock.instant(),null,null,null,null);
         recordAudit(actor, "lc-promotion-engagement", id, AuditAction.CREATE, Map.of("actionId", new FieldChange(null, actionId.toString())), null);
         return disclose(actor,manual.engagement(id).orElseThrow());
     }
 
     @Transactional
-    public PromotionEngagementView authorizeExit(AuthenticatedActor actor, UUID engagementId, String reasonCode) {
+    public PromotionEngagementView authorizeExit(AuthenticatedActor actor, UUID engagementId, String reasonCode,
+                                                  String authorityReference, UUID evidenceId) {
         PromotionEngagementView engagement = requireEngagement(actor, engagementId, ActionScopeCode.LISTING_PROMOTION_MANAGE);
         if (!actor.stepUpSatisfiedAt(clock.instant())) {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
@@ -230,7 +235,8 @@ public class ManualPathService {
                 .query((rs, row) -> new long[] {rs.getInt(1), rs.getLong(2)}).single();
         String proof = issuer.issueControl("LISTING_PROMOTION_EXIT", engagementId, engagementId, Math.toIntExact(context[0]),
                 context[1]);
-        manual.authorizeExit(engagementId, actor.userId(), proof, reasonCode);
+        manual.authorizeExit(engagementId, actor.userId(), proof, reasonCode,
+                MetadataFieldPolicy.requireText("authorityReference",authorityReference),evidenceId);
         recordAudit(actor, "lc-promotion-engagement", engagementId, AuditAction.STATUS_CHANGE,
                 Map.of("state", new FieldChange(engagement.state(), "EXITING"), "exitReason", new FieldChange(null, reasonCode)), null);
         return disclose(actor,manual.engagement(engagementId).orElseThrow());
@@ -238,9 +244,13 @@ public class ManualPathService {
 
     /** The two separate releases: new transactions stopped, then obligations cleared. */
     @Transactional
-    public PromotionEngagementView release(AuthenticatedActor actor, UUID engagementId, String releaseKind) {
+    public PromotionEngagementView release(AuthenticatedActor actor, UUID engagementId, String releaseKind,
+                                           UUID observationId, String evidenceReference) {
         PromotionEngagementView engagement = requireEngagement(actor, engagementId, ActionScopeCode.LISTING_PROMOTION_MANAGE);
         Instant now = clock.instant();
+        if (!actor.stepUpSatisfiedAt(now)) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
         String to;
         if ("NEW_TRANSACTIONS_STOPPED".equals(releaseKind) && "EXITING".equals(engagement.state())) {
             to = "STOPPED";
@@ -249,9 +259,12 @@ public class ManualPathService {
         } else {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
-        if (!manual.release(engagementId, to, now, engagement.version())) {
-            throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
-        }
+        long[] context = jdbc.sql("SELECT pg_backend_pid(), txid_current()")
+                .query((rs, row) -> new long[] {rs.getInt(1), rs.getLong(2)}).single();
+        String proof=issuer.issueControl("LISTING_OCCUPATION_RELEASE",engagementId,engagementId,
+                Math.toIntExact(context[0]),context[1]);
+        manual.release(engagementId,actor.userId(),proof,releaseKind,observationId,
+                MetadataFieldPolicy.requireText("evidenceReference",evidenceReference));
         recordAudit(actor, "lc-promotion-engagement", engagementId, AuditAction.STATUS_CHANGE,
                 Map.of("state", new FieldChange(engagement.state(), to)), null);
         return disclose(actor,manual.engagement(engagementId).orElseThrow());

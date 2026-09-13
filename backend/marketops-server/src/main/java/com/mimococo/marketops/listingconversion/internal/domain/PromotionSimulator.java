@@ -132,6 +132,9 @@ public final class PromotionSimulator {
                     if (needed.compareTo(MAX_QUANTITY) <= 0) {
                         minimum = needed;
                         inverseState = "COMPUTED";
+                    } else {
+                        // Inputs are determined, but no supported quantity meets the target.
+                        inverseState = "NO_SOLUTION";
                     }
                 }
             }
@@ -164,14 +167,14 @@ public final class PromotionSimulator {
         return missing;
     }
 
-    static BigDecimal netPrice(Inputs inputs) {
+    public static BigDecimal netPrice(Inputs inputs) {
         if (inputs.discountAlreadyInNetRevenue()) return inputs.listPrice().setScale(Money.SCALE, RoundingMode.HALF_UP);
         if (inputs.sellerDiscountRate() == null) return null;
         return inputs.listPrice().multiply(BigDecimal.ONE.subtract(inputs.sellerDiscountRate()))
                 .setScale(Money.SCALE, RoundingMode.HALF_UP);
     }
 
-    static BigDecimal stepFee(Inputs inputs, BigDecimal price) {
+    public static BigDecimal stepFee(Inputs inputs, BigDecimal price) {
         FeeStep selected = null;
         for (FeeStep step : inputs.stepFees()) {
             if (price.compareTo(step.priceFloor()) >= 0 && (selected == null || step.priceFloor().compareTo(selected.priceFloor()) > 0)) selected = step;

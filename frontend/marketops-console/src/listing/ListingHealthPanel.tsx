@@ -1,4 +1,6 @@
 import { ListingDiagnosticResponsibilities } from './ListingDiagnosticResponsibilities';
+import { ListingFeedbackPanel } from './ListingFeedbackPanel';
+import { ListingAssistancePanel } from './ListingAssistancePanel';
 import { PromotionObservationForm } from './ListingPromotionTerms';
 import { NativeScopeObservationForm } from './ListingNativeScope';
 import { useEffect, useState } from 'react';
@@ -328,6 +330,12 @@ function ListingDetailView({
           </form>
           <NativeScopeObservationForm context={context} listingId={listingId} />
           <PromotionObservationForm context={context} listingId={listingId} />
+          <ListingFeedbackPanel key={listingId} context={context} listingId={listingId} />
+          <ListingAssistancePanel
+            key={`assistance-${listingId}`}
+            context={context}
+            listingId={listingId}
+          />
           <form
             aria-label={t('targetText', language)}
             onSubmit={(event) => {
@@ -494,6 +502,12 @@ function Measurements({
                 <td>
                   <When value={measurement.windowStart} /> → <When value={measurement.windowEnd} />{' '}
                   ({measurement.retentionWindowDays})
+                  <div>
+                    {t('sourceTime', language)}: <When value={measurement.sourceTime} />
+                  </div>
+                  <div>
+                    {t('acquisitionTime', language)}: <When value={measurement.acquisitionTime} />
+                  </div>
                 </td>
                 <td>
                   <Code family="evidencePath" code={measurement.evidencePath} />

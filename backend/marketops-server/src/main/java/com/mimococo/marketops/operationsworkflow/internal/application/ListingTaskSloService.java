@@ -61,10 +61,16 @@ public class ListingTaskSloService implements ListingTaskSloQuery {
                 com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
         boolean unresolved=jdbc.sql("""
                 SELECT EXISTS(SELECT 1 FROM ops.lc_task_responsibility b WHERE b.task_id=:task AND b.source_health_id IS NOT NULL
-                  AND NOT EXISTS(SELECT 1 FROM mart.lc_listing_health h CROSS JOIN LATERAL jsonb_array_elements(h.necessary_conditions) c
+                  AND NOT EXISTS(SELECT 1 FROM mart.lc_listing_health h
                     WHERE h.id=(SELECT current.id FROM mart.lc_listing_health current
                       WHERE current.platform_listing_id=b.platform_listing_id ORDER BY current.health_version DESC LIMIT 1)
-                      AND c->>'code'=b.cause_code AND c->>'state'='PASS'))
+                      AND ((b.responsibility_lane='NECESSARY_RISK' AND EXISTS(
+                          SELECT 1 FROM jsonb_array_elements(h.necessary_conditions) c
+                          WHERE c->>'code'=b.cause_code AND c->>'state'='PASS'))
+                        OR (b.responsibility_lane='QUALIFIED_OPPORTUNITY' AND NOT (
+                          h.necessary_state='PASS' AND h.eligibility->>'EVALUATION'='ELIGIBLE'
+                          AND EXISTS(SELECT 1 FROM jsonb_array_elements(h.opportunities) o
+                            WHERE o->>'code'=b.cause_code))))))
                 """).param("task",taskId).query(Boolean.class).single();
         if (unresolved) throw com.mimococo.marketops.shared.OperationRejectedException.of(
                 com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
@@ -117,6 +123,12 @@ public class ListingTaskSloService implements ListingTaskSloQuery {
 
     @Override
     @Transactional(readOnly=true)
+    public Optional<Status> statusForTask(UUID taskId, Instant asOf) {
+        return status(null,taskId,asOf);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
     public List<DiagnosticStatus> diagnosticsForListing(UUID listingId) {
         Instant now=jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
         return jdbc.sql("SELECT task_id,cause_code FROM ops.lc_task_responsibility WHERE platform_listing_id=:id ORDER BY first_raised_at,cause_code,task_id")
@@ -139,9 +151,12 @@ public class ListingTaskSloService implements ListingTaskSloQuery {
                   AND r.first_raised_at<=:at AND r.recorded_at<=:at
                 """).param("recommendation",recommendationId).param("task",taskId).param("at",Timestamp.from(asOf)).query((rs,n)->{
                     Instant raised=instant(rs,"first_raised_at"), ackDue=instant(rs,"acknowledgement_due_at"),
-                            actionDue=instant(rs,"action_due_at"), acknowledged=instant(rs,"acknowledged"), acted=instant(rs,"acted");
+                            originalActionDue=instant(rs,"action_due_at"), acknowledged=instant(rs,"acknowledged"), acted=instant(rs,"acted");
                     String state=rs.getString("clock_state");
                     Instant next=null;
+                    var holds=dependencyHolds(rs.getObject("task_id",UUID.class),asOf);
+                    Instant actionDue=effectiveActionDue(raised,originalActionDue,state,rs.getString("slo"),
+                            rs.getString("coverage"),holds.projected());
                     if ("COVERAGE_CONFIGURED".equals(state)) {
                         var coverage=ListingResponsibilitySchedule.coverage(json.readTree(rs.getString("coverage")));
                         state=coverage.contains(asOf)?"IN_COVERAGE":"OUT_OF_COVERAGE";
@@ -149,12 +164,61 @@ public class ListingTaskSloService implements ListingTaskSloQuery {
                     }
                     return new Status(rs.getObject("task_id",UUID.class),rs.getObject("calibration_package_id",UUID.class),
                             rs.getObject("calibration_version",Integer.class),rs.getString("basis_digest"),state,raised,
-                            ackDue,actionDue,instant(rs,"outcome_maturity_due_at"),next,acknowledged,acted,
+                            ackDue,originalActionDue,actionDue,instant(rs,"outcome_maturity_due_at"),next,acknowledged,acted,
                             breached(ackDue,acknowledged,asOf),breached(actionDue,acted,asOf),
                             Math.max(0,Duration.between(raised,asOf).getSeconds()),
-                            deferrals.at(rs.getObject("task_id",UUID.class),asOf).orElse(null));
+                            holds.elapsedSeconds(),deferrals.at(rs.getObject("task_id",UUID.class),asOf).orElse(null),
+                            holds.current());
                 }).optional();
     }
+
+    private Instant effectiveActionDue(Instant raised,Instant original,String state,String sloText,String coverageText,
+                                       List<StaffedResponseClock.Pause> pauses) {
+        if (original==null || pauses.isEmpty()) return original;
+        if ("CONTINUOUS_RISK".equals(state)) {
+            long seconds=pauses.stream().mapToLong(p->Duration.between(p.from(),p.until()).getSeconds()).sum();
+            return original.plusSeconds(seconds);
+        }
+        if (!"COVERAGE_CONFIGURED".equals(state)) return original;
+        JsonNode slo=json.readTree(sloText);
+        JsonNode minutes=slo.path("actionMinutes");
+        if (!minutes.isIntegralNumber() || !minutes.canConvertToInt() || minutes.intValue()<1) return original;
+        return StaffedResponseClock.deadline(raised,minutes.intValue(),
+                ListingResponsibilitySchedule.coverage(json.readTree(coverageText)),pauses);
+    }
+
+    private Holds dependencyHolds(UUID taskId,Instant asOf) {
+        var rows=jdbc.sql("""
+                SELECT id,dependency_task_id,hold_minutes,evidence_reference,started_at,expires_at,state,ended_at,end_reason
+                FROM ops.lc_task_dependency_hold WHERE task_id=:task AND started_at<=:at
+                ORDER BY started_at,id
+                """).param("task",taskId).param("at",Timestamp.from(asOf)).query((rs,n)->new HoldRow(
+                        rs.getObject("id",UUID.class),rs.getObject("dependency_task_id",UUID.class),rs.getInt("hold_minutes"),
+                        rs.getString("evidence_reference"),rs.getTimestamp("started_at").toInstant(),
+                        rs.getTimestamp("expires_at").toInstant(),rs.getString("state"),instant(rs,"ended_at"),
+                        rs.getString("end_reason"))).list();
+        List<StaffedResponseClock.Pause> projected=new java.util.ArrayList<>();
+        long elapsed=0; com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold.View current=null;
+        for (HoldRow row:rows) {
+            boolean historicallyActive=row.endedAt()==null || row.endedAt().isAfter(asOf);
+            Instant projectedUntil=historicallyActive?row.expiresAt():row.endedAt();
+            projected.add(new StaffedResponseClock.Pause(row.startedAt(),projectedUntil));
+            Instant elapsedUntil=projectedUntil.isBefore(asOf)?projectedUntil:asOf;
+            if (elapsedUntil.isAfter(row.startedAt())) elapsed+=Duration.between(row.startedAt(),elapsedUntil).getSeconds();
+            String viewState=historicallyActive?(row.expiresAt().isAfter(asOf)?"ACTIVE":"EXPIRED"):row.state();
+            Instant viewEnded="ACTIVE".equals(viewState)?null:(historicallyActive?row.expiresAt():row.endedAt());
+            String reason="EXPIRED".equals(viewState)&&historicallyActive?"finite dependency hold expired":row.endReason();
+            current=new com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold.View(row.id(),
+                    row.dependencyTaskId(),row.minutes(),row.evidenceReference(),row.startedAt(),row.expiresAt(),
+                    viewState,viewEnded,reason);
+        }
+        return new Holds(List.copyOf(projected),elapsed,current);
+    }
+
+    private record HoldRow(UUID id,UUID dependencyTaskId,int minutes,String evidenceReference,Instant startedAt,
+                           Instant expiresAt,String state,Instant endedAt,String endReason) { }
+    private record Holds(List<StaffedResponseClock.Pause> projected,long elapsedSeconds,
+                         com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold.View current) { }
 
     private JsonNode object(JsonNode value) { return value!=null && value.isObject()?value:json.createObjectNode(); }
     private static Boolean breached(Instant due, Instant completed, Instant at) {

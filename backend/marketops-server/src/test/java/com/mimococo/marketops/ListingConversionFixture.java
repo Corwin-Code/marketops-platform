@@ -3,6 +3,8 @@ package com.mimococo.marketops;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,20 +97,32 @@ public final class ListingConversionFixture {
             """.strip();
 
     public ListingConversionFixture(DataSource migration, DataSource application, DataSource admin) throws Exception {
-        this(migration,application,admin,false);
+        this(migration,application,admin,false,1,null,false);
+    }
+
+    /** Full current-protection evidence used only by the isolated browser journey. */
+    public static ListingConversionFixture browserJourney(DataSource migration,DataSource application,
+                                                            DataSource admin) throws Exception {
+        return new ListingConversionFixture(migration,application,admin,false,1,null,true);
     }
 
     ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,boolean emptyPrior) throws Exception {
-        this(migration,application,admin,emptyPrior,1);
+        this(migration,application,admin,emptyPrior,1,null,false);
     }
 
     ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
                              boolean emptyPrior,int nativeVariantsPerListing) throws Exception {
-        this(migration,application,admin,emptyPrior,nativeVariantsPerListing,null);
+        this(migration,application,admin,emptyPrior,nativeVariantsPerListing,null,false);
     }
 
     ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
                              boolean emptyPrior,int nativeVariantsPerListing,String allowanceAxes) throws Exception {
+        this(migration,application,admin,emptyPrior,nativeVariantsPerListing,allowanceAxes,false);
+    }
+
+    private ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
+                             boolean emptyPrior,int nativeVariantsPerListing,String allowanceAxes,
+                             boolean browserJourney) throws Exception {
         if (nativeVariantsPerListing<1 || nativeVariantsPerListing>4096) throw new IllegalArgumentException("finite fixture scope");
         this.migration = migration;
         this.application = application;
@@ -122,6 +136,8 @@ public final class ListingConversionFixture {
             UUID actual = named.computeIfAbsent(name, ignored -> UUID.randomUUID());
             replacement.put(template, actual.toString());
         });
+        CurrentBusinessProtectionBasis browserProtection=browserJourney
+                ?currentBusinessProtectionBasis():null;
         String source = new ClassPathResource("listing/lc-fictional-positive.sql")
                 .getContentAsString(StandardCharsets.UTF_8);
         boolean structuredMeaning=Boolean.TRUE.equals(seed.sql("SELECT to_regprocedure('core.lc_meaning_catalog(uuid,text)') IS NOT NULL")
@@ -131,6 +147,12 @@ public final class ListingConversionFixture {
                     "'ORDINARY_TRIGGER_CONTENT',NULL,NULL,'"+MEANING_ORDINARY+"','CONDITIONS'")
                 .replace("'MATERIAL_TRIGGER_CONTENT',0.400000,NULL,NULL,'RATIO'",
                     "'MATERIAL_TRIGGER_CONTENT',NULL,NULL,'"+MEANING_MATERIAL+"','CONDITIONS'");
+        }
+        if (Boolean.TRUE.equals(seed.sql("SELECT to_regprocedure('ops.guard_lc_declared_purpose()') IS NOT NULL")
+                .query(Boolean.class).single())) {
+            // Declare the purpose before these new fixture Actions exist; never retrofit historical rows.
+            source=source.replace("\"executionPath\":\"API\"", "\"executionPath\":\"API\",\"purposeCode\":\"LISTING_CONVERSION\"")
+                    .replace("\"executionPath\":\"MANUAL\"", "\"executionPath\":\"MANUAL\",\"purposeCode\":\"LISTING_CONVERSION\"");
         }
         if (emptyPrior) source=source.replace(PRIOR_TEXT_ONE,"");
         if (allowanceAxes!=null) source=source.replace(
@@ -204,6 +226,59 @@ public final class ListingConversionFixture {
                 INSERT INTO core.lc_affected_set(
                 """);
         }
+        if (browserProtection!=null) {
+            source=source.replace("UPDATE core.lc_calibration_package SET status = 'ACTIVE'", """
+                UPDATE core.lc_calibration_value SET window_days=7,value_json=jsonb_build_object(
+                  'currentAccountingComparisons',jsonb_build_object(
+                    'aa14dd95-b455-5db2-924c-8a3972e6f9d2',jsonb_build_object(
+                      'periodStart','%s','periodEnd','%s',
+                      'evidenceReference','fixture://browser/current-accounting-reference-one'),
+                    '5c000000-0000-5000-8000-000000000022',jsonb_build_object(
+                      'periodStart','%s','periodEnd','%s',
+                      'evidenceReference','fixture://browser/current-accounting-reference-two')))
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001'
+                   AND category_code='NON_WORSENING_PROFIT_BOUND';
+                UPDATE core.lc_calibration_value SET window_days=7
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001'
+                   AND category_code='NON_WORSENING_RETURN_BOUND';
+                UPDATE core.lc_calibration_value SET value_json=jsonb_build_object(
+                  'groups','[]'::jsonb,'protectionScopeBases',jsonb_build_object(
+                    'aa14dd95-b455-5db2-924c-8a3972e6f9d2',jsonb_build_object(
+                      'evidenceReference','fixture://browser/protection-scope-one',
+                      'linkedProfitScopes','[]'::jsonb,
+                      'criticalReturnVariantIds',jsonb_build_array('7d693f80-2ad3-570d-8f47-e589af7b5598')),
+                    '5c000000-0000-5000-8000-000000000022',jsonb_build_object(
+                      'evidenceReference','fixture://browser/protection-scope-two',
+                      'linkedProfitScopes','[]'::jsonb,
+                      'criticalReturnVariantIds',jsonb_build_array('5c000000-0000-5000-8000-000000000023'))))
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001'
+                   AND category_code='CRITICAL_GROUP_RULE';
+                UPDATE core.lc_calibration_value SET value_json=jsonb_set(value_json,'{supplyScenarios}',
+                  jsonb_build_array(
+                    jsonb_build_object('code','FINITE_CURRENT_SUPPLY_ONE',
+                      'productVariantId','1484c926-777f-5205-8893-941965dbb38a',
+                      'companyDailyFulfillmentUnits',100,'coverageDays',7,
+                      'evidenceReference','fixture://browser/current-supply-one'),
+                    jsonb_build_object('code','FINITE_CURRENT_SUPPLY_TWO',
+                      'productVariantId','5c000000-0000-5000-8000-000000000021',
+                      'companyDailyFulfillmentUnits',100,'coverageDays',7,
+                      'evidenceReference','fixture://browser/current-supply-two')),true)
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001'
+                   AND category_code='DEMAND_SCENARIO_SET';
+                UPDATE core.lc_calibration_value SET value_json=jsonb_build_object(
+                  'nativeScope',jsonb_build_object(
+                    'MANUAL_ENTRY',jsonb_build_object('maximumAgeSeconds',3600),
+                    'MARKETPLACE_RAW',jsonb_build_object('maximumAgeSeconds',3600)),
+                  'materialityExposure',jsonb_build_object(
+                    'maximumVerificationAgeSeconds',3600,'maximumPeriodEndAgeSeconds',86400),
+                  'businessProtection',jsonb_build_object(
+                    'maximumVerificationAgeSeconds',3600,'maximumPeriodEndAgeSeconds',86400))
+                 WHERE package_id='5c000000-0000-5000-8000-000000000001'
+                   AND category_code='FRESHNESS_RULE';
+                UPDATE core.lc_calibration_package SET status = 'ACTIVE'
+                """.formatted(browserProtection.referenceStart(),browserProtection.currentStart(),
+                        browserProtection.referenceStart(),browserProtection.currentStart()));
+        }
         if (structuredMeaning) {
             source=source.replace("facts_digest,verdict,reason,reviewed_at)",
                     "facts_digest,verdict,reason,reviewed_at,meaning_assessment,exposure_evidence,content_axis_material,exposure_axis_material,materiality_route)");
@@ -251,6 +326,169 @@ public final class ListingConversionFixture {
         if (Boolean.TRUE.equals(seed.sql("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='ops' AND table_name='lc_action' AND column_name='materiality_evidence')")
                 .query(Boolean.class).single())) {
             seedRetainedSalesExposure(new java.math.BigDecimal("100"),new java.math.BigDecimal("1000000"));
+        }
+        if (browserProtection!=null) seedCurrentBusinessProtectionSources(browserProtection);
+    }
+
+    private record CurrentBusinessProtectionBasis(Instant asOf,Instant currentStart,Instant currentEnd,
+                                                   Instant referenceStart) { }
+
+    private CurrentBusinessProtectionBasis currentBusinessProtectionBasis() {
+        Instant asOf=seed.sql("SELECT clock_timestamp()")
+                .query(java.time.OffsetDateTime.class).single().toInstant().truncatedTo(ChronoUnit.MICROS);
+        Instant currentEnd=asOf.minusSeconds(60).truncatedTo(ChronoUnit.MINUTES);
+        Instant currentStart=currentEnd.minusSeconds(7L*86400);
+        return new CurrentBusinessProtectionBasis(asOf,currentStart,currentEnd,
+                currentStart.minusSeconds(7L*86400));
+    }
+
+    /** Synthetic facts needed by both listings' current approval and launch rechecks. */
+    private void seedCurrentBusinessProtectionSources(CurrentBusinessProtectionBasis basis) {
+        Instant now=basis.asOf();
+        UUID provenance=UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,
+                    recorded_by_user_id,evidence_note)
+                VALUES(:id,:org,'MANUAL_ENTRY',:at,:at,:actor,
+                    'Synthetic browser current business protection')
+                """).param("id",provenance).param("org",id("organization"))
+                .param("at",java.sql.Timestamp.from(now.minusSeconds(30)))
+                .param("actor",id("ownerUser")).update();
+        for(int period=0;period<2;period++) {
+            Instant from=period==0?basis.referenceStart():basis.currentStart();
+            Instant until=period==0?basis.currentStart():basis.currentEnd();
+            Instant computed=now.minusSeconds(3L-period);
+            UUID run=UUID.randomUUID();
+            seed.sql("""
+                    INSERT INTO mart.calculation_run(id,organization_id,trigger_kind,scope_kind,store_ref_id,
+                        window_code,period_start,period_end,definition_set_digest,state,subject_count,value_count,
+                        correlation_id,started_at,completed_at,requested_by_user_id)
+                    VALUES(:id,:org,'MANUAL','STORE',:store,'D7',:from,:until,:digest,'SUCCEEDED',2,8,
+                        :correlation,:started,:completed,:actor)
+                    """).param("id",run).param("org",id("organization")).param("store",id("store"))
+                    .param("from",java.sql.Timestamp.from(from)).param("until",java.sql.Timestamp.from(until))
+                    .param("digest",com.mimococo.marketops.shared.Digest.ofText(
+                            "browser-current-protection-definitions"))
+                    .param("correlation","browser-current-protection-"+period)
+                    .param("started",java.sql.Timestamp.from(computed.minusSeconds(1)))
+                    .param("completed",java.sql.Timestamp.from(computed.plusSeconds(1)))
+                    .param("actor",id("ownerUser")).update();
+            for(String variantName:List.of("listingVariant","listingVariantTwo")) {
+                var values=new java.util.LinkedHashMap<String,java.math.BigDecimal>();
+                values.put("OPERATIONAL_CONTRIBUTION_PROFIT",
+                        new java.math.BigDecimal(period==0?"1000":"1100"));
+                values.put("RETURN_UNITS",new java.math.BigDecimal(period==0?"2":"1"));
+                values.put("COMPLETED_UNITS",new java.math.BigDecimal("100"));
+                values.put("REQUIRED_PROFIT_PER_UNIT",new java.math.BigDecimal("5"));
+                for(var metric:values.entrySet()) {
+                    UUID valueId=UUID.randomUUID();
+                    boolean money=metric.getKey().contains("PROFIT");
+                    seed.sql("""
+                            INSERT INTO mart.metric_value(id,organization_id,calculation_run_id,metric_code,
+                                definition_version,subject_kind,subject_id,window_code,period_start,period_end,
+                                value_state,numeric_value,currency_code,confidence_state,estimated,oldest_source_time,
+                                freshness_seconds,input_digest,computed_at)
+                            SELECT :id,:org,:run,:code,max(definition_version),'PLATFORM_LISTING_VARIANT',:subject,
+                                'D7',:from,:until,'AVAILABLE',:amount,:currency,'CANONICAL_CONFIRMED',false,
+                                :from,0,:digest,:computed FROM mart.metric_definition WHERE metric_code=:code
+                            """).param("id",valueId).param("org",id("organization")).param("run",run)
+                            .param("code",metric.getKey()).param("subject",id(variantName))
+                            .param("from",java.sql.Timestamp.from(from)).param("until",java.sql.Timestamp.from(until))
+                            .param("amount",metric.getValue()).param("currency",money?"RUB":null)
+                            .param("digest",com.mimococo.marketops.shared.Digest.ofText(
+                                    "browser:"+variantName+":"+metric.getKey()+":"+from))
+                            .param("computed",java.sql.Timestamp.from(computed)).update();
+                    seed.sql("""
+                            INSERT INTO mart.metric_input_reference(id,metric_value_id,reference_kind,reference_id)
+                            VALUES(:id,:value,'FACT_PROVENANCE',:source)
+                            """).param("id",UUID.randomUUID()).param("value",valueId)
+                            .param("source",provenance).update();
+                }
+            }
+        }
+        seedCurrentSupplyEvidence(basis,provenance);
+    }
+
+    private void seedCurrentSupplyEvidence(CurrentBusinessProtectionBasis basis,UUID provenance) {
+        Instant now=basis.asOf();
+        seed.sql("""
+                INSERT INTO core.lead_time_safety_policy(id,organization_id,scope_kind,scope_precedence,
+                    lead_time_days_min,lead_time_days_max,safety_days,owner_user_id,reason,evidence_reference,
+                    last_reviewed_at,effective_from,status,policy_version,created_at)
+                VALUES(:id,:org,'ORGANIZATION',3,1,2,1,:actor,'Synthetic finite browser supply horizon',
+                    'fixture://browser/lead-time',:at,:effective,'ACTIVE',1,:at)
+                """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                .param("actor",id("ownerUser")).param("at",java.sql.Timestamp.from(now))
+                .param("effective",java.sql.Timestamp.from(now.minusSeconds(86400))).update();
+        seed.sql("""
+                INSERT INTO core.demand_observation_policy(id,organization_id,minimum_sample_units,
+                    acceleration_ratio,deceleration_ratio,outlier_share_ratio,minimum_coverage_ratio,
+                    carry_forward_max_days,stock_freshness_max_minutes,owner_user_id,reason,evidence_reference,
+                    effective_from,status,policy_version,created_at)
+                VALUES(:id,:org,5,1.50,0.60,0.70,0.60,14,1440,:actor,
+                    'Synthetic finite browser demand observation','fixture://browser/demand-policy',
+                    :effective,'ACTIVE',1,:at)
+                """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                .param("actor",id("ownerUser"))
+                .param("effective",java.sql.Timestamp.from(now.minusSeconds(40L*86400)))
+                .param("at",java.sql.Timestamp.from(now)).update();
+        seed.sql("""
+                INSERT INTO core.supply_ownership_declaration(id,organization_id,store_id,fulfillment_mode_code,
+                    distinctness,evidence_reference,declared_by_user_id,reason,effective_from,status,
+                    policy_version,created_at)
+                VALUES(:id,:org,:store,'MARKETPLACE_FULFILLED','PHYSICALLY_DISTINCT',
+                    'fixture://browser/supply-ownership',:actor,'Synthetic platform holding is distinct',
+                    :effective,'ACTIVE',1,:at)
+                """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                .param("store",id("store")).param("actor",id("ownerUser"))
+                .param("effective",java.sql.Timestamp.from(now.minusSeconds(86400)))
+                .param("at",java.sql.Timestamp.from(now)).update();
+        for(String variantName:List.of("listingVariant","listingVariantTwo")) {
+            seed.sql("""
+                    INSERT INTO core.listing_stock_observation(id,organization_id,provenance_id,
+                        platform_listing_variant_id,fulfillment_mode_code,source_fact_key,observed_at,
+                        available_quantity,reserved_quantity)
+                    VALUES(:id,:org,:source,:variant,'MARKETPLACE_FULFILLED',:key,:at,10000,0)
+                    """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                    .param("source",provenance).param("variant",id(variantName))
+                    .param("key","browser-stock-current-"+UUID.randomUUID())
+                    .param("at",java.sql.Timestamp.from(now.minusSeconds(10))).update();
+            seed.sql("""
+                    INSERT INTO core.listing_stock_observation(id,organization_id,provenance_id,
+                        platform_listing_variant_id,fulfillment_mode_code,source_fact_key,observed_at,
+                        available_quantity,reserved_quantity)
+                    VALUES(:id,:org,:source,:variant,'MARKETPLACE_FULFILLED',:key,:at,10000,0)
+                    """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                    .param("source",provenance).param("variant",id(variantName))
+                    .param("key","browser-stock-history-"+UUID.randomUUID())
+                    .param("at",java.sql.Timestamp.from(basis.referenceStart().minusSeconds(1))).update();
+            seed.sql("""
+                    INSERT INTO core.listing_health_observation(id,organization_id,provenance_id,
+                        platform_listing_variant_id,source_fact_key,observed_at,sellable)
+                    VALUES(:id,:org,:source,:variant,:key,:at,'YES')
+                    """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                    .param("source",provenance).param("variant",id(variantName))
+                    .param("key","browser-health-current-"+UUID.randomUUID())
+                    .param("at",java.sql.Timestamp.from(now.minusSeconds(10))).update();
+            seed.sql("""
+                    INSERT INTO core.listing_health_observation(id,organization_id,provenance_id,
+                        platform_listing_variant_id,source_fact_key,observed_at,sellable)
+                    VALUES(:id,:org,:source,:variant,:key,:at,'YES')
+                    """).param("id",UUID.randomUUID()).param("org",id("organization"))
+                    .param("source",provenance).param("variant",id(variantName))
+                    .param("key","browser-health-history-"+UUID.randomUUID())
+                    .param("at",java.sql.Timestamp.from(basis.referenceStart().minusSeconds(1))).update();
+            String salePrefix="browser-demand-"+variantName+"-"+UUID.randomUUID();
+            seed.sql("""
+                    INSERT INTO ledger.sales_fact(id,organization_id,provenance_id,store_id,
+                        platform_listing_variant_id,source_fact_key,native_order_key,occurred_at,sale_stage,
+                        quantity,currency_code,gross_amount,discount_amount,net_amount)
+                    SELECT gen_random_uuid(),:org,:source,:store,:variant,:prefix||'-'||day,
+                        :prefix||'-order-'||day,CAST(:at AS timestamptz)-(day||' days')::interval,
+                        'COMPLETED',1,'RUB',200,0,200 FROM generate_series(1,30) day
+                    """).param("org",id("organization")).param("source",provenance)
+                    .param("store",id("store")).param("variant",id(variantName))
+                    .param("prefix",salePrefix).param("at",java.sql.Timestamp.from(now)).update();
         }
     }
 
@@ -321,14 +559,17 @@ public final class ListingConversionFixture {
         UUID recommendation = id("recommendation" + suffix);
         UUID approval = id("approval" + suffix);
         try (Connection connection = transaction()) {
+            UUID executionEvaluation=syntheticExecutionEvidence(connection,action);
             String proof = proof(connection, actor, "LISTING_ACTION_LAUNCH", recommendation, approval);
             try (var query = connection.prepareStatement(
-                    "SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, ?::jsonb)::text")) {
+                    executionEvaluation==null?"SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, ?::jsonb)::text"
+                            :"SELECT ops.acquire_lc_launch_allowance(?, ?, ?, ?, ?::jsonb, ?)::text")) {
                 query.setObject(1, launchId);
                 query.setObject(2, action);
                 query.setObject(3, actor);
                 query.setString(4, proof);
                 query.setString(5, requested);
+                if(executionEvaluation!=null) query.setObject(6,executionEvaluation);
                 try (var rows = query.executeQuery()) {
                     rows.next();
                     JsonNode answer = JSON.readTree(rows.getString(1));
@@ -338,6 +579,51 @@ public final class ListingConversionFixture {
             } catch (SQLException refused) {
                 connection.rollback();
                 throw refused;
+            }
+        }
+    }
+
+    /** SQL atomicity fixture only. This does not exercise or certify Java business protection. */
+    UUID syntheticExecutionEvidence(Connection connection,UUID action) throws Exception {
+        try (var columns=connection.createStatement();var result=columns.executeQuery("""
+                SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='ops'
+                    AND table_name='guardrail_evaluation' AND column_name='listing_transaction_id')
+                """)) {
+            result.next(); if (!result.getBoolean(1)) return null; // Preserve the historical upgrade source path.
+        }
+        try (var lock=connection.prepareStatement("SELECT id FROM ops.lc_action WHERE id=? FOR UPDATE")) {
+            lock.setObject(1,action);try (var result=lock.executeQuery()) { if(!result.next()) throw new IllegalArgumentException("fixture action missing"); }
+        }
+        try (var lock=connection.prepareStatement("SELECT ops.lock_lc_launch_evaluation(?)")) {
+            lock.setObject(1,action);
+            lock.execute();
+        }
+        try (var insert=connection.prepareStatement("""
+                INSERT INTO ops.guardrail_evaluation(id,organization_id,recommendation_id,
+                    lc_calibration_package_id,lc_calibration_version,purpose,outcome,reason_codes,
+                    detail,input_digest,evaluated_at,correlation_id,authority_snapshot)
+                SELECT gen_random_uuid(),a.organization_id,a.recommendation_id,a.calibration_package_id,a.calibration_version,
+                    'EXECUTION','PASS','{}',jsonb_build_object(
+                      'fixture','SQL atomicity only; not a business-protection calculation',
+                      'actionId',a.id::text,'actionVersion',a.version::text,'actionState',a.state,
+                      'executionPath',a.execution_path,'affectedSetDigest',a.affected_set_digest,
+                      'targetTextDigest',coalesce(a.target_text_digest,'null'),
+                      'purposeCode',r.proposed_parameters->>'purposeCode',
+                      'purposeBasisDigest',ops.lc_purpose_basis_digest(r.proposed_parameters->>'purposeCode',a.purpose_basis),
+                      'calibrationPackageId',a.calibration_package_id::text,'calibrationVersion',a.calibration_version::text,
+                      'reviewAttested','true','materialityRecheck.state','CURRENT',
+                      'protectionRecheck.financialInputState','CANONICAL_INPUT_AVAILABLE',
+                      'protectionRecheck.currentProfitVerdict','PASS','protectionRecheck.currentReturnVerdict','PASS',
+                      'protectionRecheck.unitProfitFloorVerdict','PASS','protectionRecheck.supplyVerdict','PASS'),
+                    repeat('f',64),clock_timestamp(),'synthetic-sql-launch',
+                    ops.lc_authority_snapshot(a.recommendation_id)
+                FROM ops.lc_action a JOIN ops.recommendation r ON r.id=a.recommendation_id WHERE a.id=?
+                RETURNING id
+                """)) {
+            insert.setObject(1,action);
+            try (var result=insert.executeQuery()) {
+                if(!result.next()) throw new IllegalArgumentException("fixture evaluation missing");
+                return result.getObject(1,UUID.class);
             }
         }
     }
@@ -382,6 +668,16 @@ public final class ListingConversionFixture {
                 connection.rollback();
                 throw refused;
             }
+        }
+    }
+
+    void reenable(UUID containmentId,UUID actor) throws Exception {
+        try (Connection connection=transaction()) {
+            String proof=proof(connection,actor,"LISTING_CONTAINMENT_REENABLE",containmentId,containmentId);
+            try (var query=connection.prepareStatement("SELECT ops.reenable_lc_containment(?,?,?)")) {
+                query.setObject(1,containmentId);query.setObject(2,actor);query.setString(3,proof);
+                query.execute();connection.commit();
+            } catch (SQLException refused) { connection.rollback();throw refused; }
         }
     }
 

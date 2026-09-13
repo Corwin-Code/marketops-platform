@@ -66,34 +66,39 @@ public class ConversionMeasurementService {
         if (windowStart == null || windowEnd == null || path == null || !windowStart.isBefore(windowEnd) || (retentionDays != 7 && retentionDays != 14 && retentionDays != 30)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
-        Instant now = clock.instant();
-        var coverage = evidence.coverage(listingId, path, windowStart, windowEnd, retentionDays);
+        Instant now = facts.databaseNow();
+        var coverage = evidence.coverage(listingId, path, windowStart, windowEnd, retentionDays, now);
         var timezone = evidence.timezone(listingId).map(java.time.ZoneId::of);
         var displayEvidence = evidence.displaySnapshot(listingId,windowStart,windowEnd,now);
         List<VersionWindow.Display> knownDisplays = new java.util.ArrayList<>();
         for (var display : displayEvidence) {
-            if ("DISPLAYED".equals(display.path("display_state").asText()))
-                knownDisplays.add(new VersionWindow.Display(display.path("displayed_text_digest").asText(),
-                        java.time.OffsetDateTime.parse(display.path("observed_at").asText()).toInstant()));
+            boolean displayed="DISPLAYED".equals(display.path("display_state").asText())
+                    && display.path("displayed_text_digest").isTextual()
+                    && !display.path("displayed_text_digest").asText().isBlank();
+            knownDisplays.add(new VersionWindow.Display(displayed?display.path("displayed_text_digest").asText():null,
+                    java.time.OffsetDateTime.parse(display.path("observed_at").asText()).toInstant(),displayed));
         }
         VersionWindow.Attribution attribution = VersionWindow.attribute(
                 knownDisplays, windowStart, windowEnd,
                 timezone.orElse(java.time.ZoneOffset.UTC));
         var detail = evidence.detailSnapshot(listingId, windowStart, windowEnd, now);
         var summary = coverage.filter(c -> c.summaryId() != null)
-                .flatMap(c -> evidence.summarySnapshot(listingId, c.summaryId(), windowStart, windowEnd, retentionDays));
+                .flatMap(c -> evidence.summarySnapshot(listingId, c.summaryId(), windowStart, windowEnd, retentionDays, now));
         String actualDigest = path == EvidencePath.DETAIL ? detail.digest() : summary.map(s -> s.digest()).orElse(null);
         boolean complete = coverage.isPresent() && coverage.get().inputDigest().equals(actualDigest);
         boolean maturity = coverage.map(c -> !c.sourceThrough().isBefore(windowEnd.plus(java.time.Duration.ofDays(retentionDays))))
                 .orElse(false);
         List<VisitConversion.Visit> allVisits = new java.util.ArrayList<>();
         List<VisitConversion.Visit> visits = new java.util.ArrayList<>();
+        Map<String,List<VisitConversion.Visit>> criticalGroupVisits = new java.util.TreeMap<>();
         for (var row : detail.inputs().path("visits")) {
             var visit = new VisitConversion.Visit(row.path("visit_key").asText(),
                     row.path("sellable_at_visit").asText(), row.path("source_channel").asText());
             allVisits.add(visit);
             if (!VersionWindow.excluded(attribution, java.time.OffsetDateTime.parse(row.path("visited_at").asText()).toInstant())) {
                 visits.add(visit);
+                String group=row.path("key_group_code").asText("");
+                if (!group.isBlank()) criticalGroupVisits.computeIfAbsent(group,ignored->new java.util.ArrayList<>()).add(visit);
             }
         }
         boolean stratified = path == EvidencePath.DETAIL && !visits.isEmpty()
@@ -120,7 +125,17 @@ public class ConversionMeasurementService {
         tools.jackson.databind.node.ObjectNode lineage = json.createObjectNode();
         lineage.set("displayObservations",displayEvidence);
         lineage.put("displayObservationAsOf",now.toString());
-        lineage.put("fullTargetVersionCoverageQualified",false);
+        var versionCoverage=lineage.putObject("versionCoverage");
+        versionCoverage.put("timezone",timezone.map(java.time.ZoneId::getId).orElse("UNRESOLVED"));
+        versionCoverage.set("excludedTransitionDays",json.valueToTree(attribution.excludedDays()));
+        versionCoverage.set("uncoveredDays",json.valueToTree(attribution.uncoveredDays()));
+        versionCoverage.set("includedDayDigests",json.valueToTree(attribution.includedDayDigests()));
+        var coveredDigests=new java.util.TreeSet<>(attribution.includedDayDigests().values());
+        boolean singleVersionCoverage=timezone.isPresent() && attribution.uncoveredDays().isEmpty()
+                && !attribution.includedDayDigests().isEmpty() && coveredDigests.size()==1;
+        versionCoverage.put("state",singleVersionCoverage?"FULL_SINGLE_VERSION_COVERAGE":"UNQUALIFIED");
+        versionCoverage.put("coveredTextDigest",singleVersionCoverage?coveredDigests.first():null);
+        lineage.put("fullTargetVersionCoverageQualified",singleVersionCoverage);
         lineage.set("equivalenceProfile", boundProfile.orElseGet(json::createObjectNode));
         lineage.set("sourceInputs", path == EvidencePath.DETAIL ? detail.inputs()
                 : summary.map(s -> s.inputs()).orElseGet(() -> json.createObjectNode()));
@@ -133,7 +148,11 @@ public class ConversionMeasurementService {
             lineage.set("salesEvidence",sales.lineage());
             List<String> retained = sales.visitKeys();
             lineage.set("sourceStrata",json.valueToTree(VisitConversion.sourceCounts(visits,retained)));
+            var groupStrata=lineage.putObject("criticalGroupSourceStrata");
+            criticalGroupVisits.forEach((code,members)->groupStrata.set(code,
+                    json.valueToTree(VisitConversion.sourceCounts(members,retained))));
             lineage.put("sourceStrataQualified",qualified && maturity && stratified);
+            lineage.put("criticalGroupSourceStrataQualified",qualified && maturity && stratified);
             VisitConversion.Result whole = VisitConversion.compute(allVisits, retained, maturity, qualified);
             VisitConversion.Result result = VisitConversion.compute(visits, retained, maturity, qualified);
             lineage.put("wholeWindowVisitCount", whole.visitCount());
@@ -189,6 +208,20 @@ public class ConversionMeasurementService {
     @Transactional(readOnly = true)
     public List<ConversionMeasurementView> history(UUID listingId, int limit) {
         return measurements.measurements(listingId, limit);
+    }
+
+    /**
+     * Refresh only measurement definitions that a person or accepted plan has
+     * already established.  The bound prevents one source event from turning
+     * historical measurement rows into an unbounded recalculation loop.
+     */
+    public List<UUID> remeasureCurrent(UUID listingId, String triggerKind) {
+        List<UUID> refreshed = new java.util.ArrayList<>();
+        for (var definition : measurements.currentMeasurementDefinitions(listingId, 24)) {
+            refreshed.add(measure(listingId,definition.windowStart(),definition.windowEnd(),
+                    definition.retentionDays(),definition.evidencePath(),triggerKind,null).id());
+        }
+        return List.copyOf(refreshed);
     }
 
     private static MetricWindow windowOf(int retentionDays) {

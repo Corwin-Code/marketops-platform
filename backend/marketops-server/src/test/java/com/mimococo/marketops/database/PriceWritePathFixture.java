@@ -378,6 +378,7 @@ final class PriceWritePathFixture {
                 "iam.service_account_scope_grant",
                 "iam.service_account_allowed_source",
                 "iam.service_account",
+                "ops.lc_recalculation_queue",
                 "ops.price_command_readback",
                 "ops.price_command_attempt",
                 "ops.price_command",

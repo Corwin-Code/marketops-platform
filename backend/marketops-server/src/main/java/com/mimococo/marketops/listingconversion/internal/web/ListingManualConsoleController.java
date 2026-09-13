@@ -138,14 +138,14 @@ class ListingManualConsoleController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     PromotionEngagementView exit(AuthenticatedActor actor, @PathVariable UUID engagementId,
                                  @Valid @RequestBody ExitRequest request) {
-        return manual.authorizeExit(actor, engagementId, request.reasonCode());
+        return manual.authorizeExit(actor, engagementId, request.reasonCode(),request.authorityReference(),request.evidenceId());
     }
 
     @PostMapping(value = "/engagements/{engagementId}/release", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     PromotionEngagementView release(AuthenticatedActor actor, @PathVariable UUID engagementId,
                                     @Valid @RequestBody ReleaseKindRequest request) {
-        return manual.release(actor, engagementId, request.releaseKind());
+        return manual.release(actor, engagementId, request.releaseKind(),request.observationId(),request.evidenceReference());
     }
 
     private void auditRead(AuthenticatedActor actor, String entityType, UUID entityId, String reason) {
@@ -165,18 +165,22 @@ class ListingManualConsoleController {
 
     record EngagementRequest(@NotBlank String engagementKind, @NotBlank String nativePromotionKey,
                              Map<String, String> terms, boolean priceFreeze, boolean autoParticipation,
-                             @NotBlank String termsEvidenceReference, Map<String, String> obligations) {
+                             @NotBlank String termsEvidenceReference, Map<String, String> obligations,
+                             UUID contextObservationId,String originalAuthorityReference,
+                             Instant originalAuthorityValidUntil,UUID responsibleUserId) {
 
         ManualPathService.EngagementRequest toService() {
             return new ManualPathService.EngagementRequest(engagementKind, nativePromotionKey,
                     terms == null ? Map.of() : terms, priceFreeze, autoParticipation, termsEvidenceReference,
-                    obligations == null ? Map.of() : obligations);
+                    obligations == null ? Map.of() : obligations,contextObservationId,originalAuthorityReference,
+                    originalAuthorityValidUntil,responsibleUserId);
         }
     }
 
-    record ExitRequest(@NotBlank String reasonCode) {
+    record ExitRequest(@NotBlank String reasonCode,@NotBlank String authorityReference,@NotNull UUID evidenceId) {
     }
 
-    record ReleaseKindRequest(@NotBlank String releaseKind) {
+    record ReleaseKindRequest(@NotBlank String releaseKind,@NotNull UUID observationId,
+                              @NotBlank String evidenceReference) {
     }
 }

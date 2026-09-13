@@ -127,6 +127,24 @@ class PromotionSimulatorTest {
     }
 
     @Test
+    void inverseDistinguishesSupportedBoundaryFromAnUnreachableKnownTarget() {
+        var input = inputs("1", "0", "0",
+                List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("0"))), expenses("600"));
+        var maximum = scenario("MAXIMUM", "99999999999999", true);
+        var boundary = PromotionSimulator.simulate(input, List.of(maximum), decimal("99999999999399"));
+        assertThat(boundary.inverseState()).isEqualTo("COMPUTED");
+        assertThat(boundary.inverseMinimumQuantity()).isEqualByComparingTo(maximum.quantity());
+        assertThat(boundary.conditionalScenariosPassed()).isTrue();
+
+        var unreachable = PromotionSimulator.simulate(input, List.of(maximum), decimal("99999999999400"));
+        assertThat(unreachable.inverseState()).isEqualTo("NO_SOLUTION");
+        assertThat(unreachable.inverseMinimumQuantity()).isNull();
+        assertThat(unreachable.conditionalScenariosPassed()).isFalse();
+        assertThatThrownBy(() -> scenario("OUTSIDE", "100000000000000", true))
+                .isInstanceOf(OperationRejectedException.class);
+    }
+
+    @Test
     void necessaryFailureIsNotHiddenByOtherUnknownOrProfitableScenario() {
         var result = PromotionSimulator.simulate(complete(), List.of(scenario("FAIL", "1", true),
                 new PromotionSimulator.Scenario("UNKNOWN", null, true, true),

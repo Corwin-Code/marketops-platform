@@ -58,13 +58,15 @@ class ListingHealthConsoleController {
     private final com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility;
     private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds;
 
     ListingHealthConsoleController(ListingHealthService health, ConversionMeasurementService measurements,
                                    ListingFactIntakeService facts, ListingScopeAuthorization listings,
                                    BusinessAuthorization authorization, MetadataAuditRecorder audit,
                                    com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
                                    com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake,
-                                   com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals,
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds) {
         this.health = health;
         this.measurements = measurements;
         this.facts = facts;
@@ -74,6 +76,7 @@ class ListingHealthConsoleController {
         this.responsibility = responsibility;
         this.diagnosticIntake = diagnosticIntake;
         this.deferrals = deferrals;
+        this.dependencyHolds = dependencyHolds;
     }
 
     @PostMapping("/listings/{listingId}/responsibilities/{taskId}/deferrals")
@@ -83,6 +86,17 @@ class ListingHealthConsoleController {
         return deferrals.request(actor,listingId,taskId,request.minutes(),request.reason());
     }
     record DeferralRequest(@Min(1) int minutes,@NotBlank String reason) { }
+
+    @PostMapping("/listings/{listingId}/responsibilities/{taskId}/dependency-holds")
+    com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold.View holdForDependency(
+            AuthenticatedActor actor,@PathVariable UUID listingId,@PathVariable UUID taskId,
+            @Valid @RequestBody DependencyHoldRequest request) {
+        listings.require(actor,listingId,ActionScopeCode.LISTING_CONVERSION_VIEW);
+        return dependencyHolds.request(actor,listingId,taskId,request.dependencyTaskId(),request.minutes(),
+                request.evidenceReference());
+    }
+    record DependencyHoldRequest(@NotNull UUID dependencyTaskId,@Min(1) int minutes,
+                                 @NotBlank String evidenceReference) { }
 
     @PostMapping("/listings/{listingId}/responsibilities/{taskId}/acknowledgement")
     @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
@@ -163,7 +177,7 @@ class ListingHealthConsoleController {
     Map<String,UUID> recordPromotion(AuthenticatedActor actor,@PathVariable UUID listingId,
                                     @Valid @RequestBody PromotionFactRequest request) {
         return Map.of("observationId",facts.recordPromotion(actor,listingId,request.declaration(),request.engagementKind(),request.nativePromotionKey(),
-                request.participationState(),request.observedAt(),request.evidenceReference()));
+                request.participationState(),request.observedAt(),request.evidenceReference(),request.context()));
     }
 
     @PostMapping(value = "/listings/{listingId}/facts/display", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -230,7 +244,8 @@ class ListingHealthConsoleController {
 
     record PromotionFactRequest(com.mimococo.marketops.listingconversion.PromotionTerms declaration,
                                 @NotBlank String engagementKind,@NotBlank String nativePromotionKey,
-                                @NotBlank String participationState,@NotNull Instant observedAt,@NotBlank String evidenceReference) { }
+                                @NotBlank String participationState,@NotNull Instant observedAt,@NotBlank String evidenceReference,
+                                com.mimococo.marketops.listingconversion.PromotionContextObservation context) { }
 
     record DisplayFactRequest(@NotBlank String displayState, String displayedText, Instant observedAt,
                               @NotBlank String evidenceReference) {

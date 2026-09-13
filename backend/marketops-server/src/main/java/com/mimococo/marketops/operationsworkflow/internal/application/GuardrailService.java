@@ -114,9 +114,35 @@ public class GuardrailService {
     @Transactional
     public ListingImpactPreview previewListingAction(RecommendationView proposal,
                                                      GuardrailPurpose purpose) {
-        Instant now = clock.instant();
         ListingDecisionScope scope = listingDecisions.recheckedDecisionScope(proposal.id()).orElse(null);
-        List<String> unresolved = listingDecisions.unresolvedReasons(proposal.id());
+        // The listing authority captures one database time after any enclosing launch locks.
+        // Reuse it for expiry and for the persisted guardrail chronology so application-clock
+        // skew cannot create evidence dated after the transaction that must consume it.
+        Instant now = scope == null ? clock.instant()
+                : Instant.parse(scope.protectionRecheck().get("assessedAt"));
+        List<String> unresolved = new ArrayList<>(listingDecisions.unresolvedReasons(proposal.id()));
+        boolean currentEconomicProtectionRequired=scope!=null && !"DESCRIPTION_CORRECTION".equals(scope.purposeCode());
+        if (currentEconomicProtectionRequired && !"PASS".equals(scope.protectionRecheck().get("supplyVerdict"))) {
+            String supplyReasons=scope.protectionRecheck().get("supplyReasonCodes");
+            if (supplyReasons==null || supplyReasons.isBlank()) unresolved.add("SUPPLY_PROTECTION_UNQUALIFIED");
+            else unresolved.addAll(List.of(supplyReasons.split(",")));
+        }
+        if (currentEconomicProtectionRequired && !"CANONICAL_INPUT_AVAILABLE".equals(scope.protectionRecheck().get("financialInputState"))) {
+            String financialReasons=scope.protectionRecheck().get("financialInputReasonCodes");
+            if (financialReasons==null || financialReasons.isBlank()) unresolved.add("CURRENT_FINANCIAL_INPUT_UNQUALIFIED");
+            else unresolved.addAll(List.of(financialReasons.split(",")));
+        }
+        if (currentEconomicProtectionRequired && !"PASS".equals(scope.protectionRecheck().get("unitProfitFloorVerdict")))
+            unresolved.add("FAIL".equals(scope.protectionRecheck().get("unitProfitFloorVerdict"))
+                    ?"UNIT_PROFIT_FLOOR_FAILED":"UNIT_PROFIT_FLOOR_UNQUALIFIED");
+        if (currentEconomicProtectionRequired) for (String dimension:List.of("Profit","Return")) {
+            String verdict=scope.protectionRecheck().get("current"+dimension+"Verdict");
+            if (!"PASS".equals(verdict)) unresolved.add("CURRENT_"+dimension.toUpperCase(java.util.Locale.ROOT)
+                    +("FAIL".equals(verdict)?"_PROTECTION_FAILED":"_PROTECTION_UNQUALIFIED"));
+        }
+        if (scope!=null && scope.actionKind()==ActionKind.LISTING_PROMOTION_ACTION
+                && !"QUALIFIED_CURRENT".equals(scope.protectionRecheck().get("selectedSimulationInputState")))
+            unresolved.add("QUALIFIED_PROMOTION_ECONOMICS_REQUIRED");
         List<GuardrailReason> reasons = listingReasons(proposal, scope, unresolved, now, purpose);
         boolean passed = reasons.isEmpty();
         UUID evaluationId = idGenerator.newId();
@@ -131,6 +157,13 @@ public class GuardrailService {
         components.add(authority);
         if (scope!=null) scope.materialityRecheck().entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .forEach(entry->{components.add(entry.getKey());components.add(entry.getValue());});
+        if (scope!=null) scope.protectionRecheck().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .forEach(entry->{components.add(entry.getKey());components.add(entry.getValue());});
+        if (scope!=null) {
+            components.add(String.valueOf(scope.purposeCode()));
+            components.add(String.valueOf(scope.purposeBasisDigest()));
+            components.add(String.valueOf(scope.purposeUseUntil()));
+        }
         components.addAll(unresolved);
         String inputDigest = Digest.ofComponents(components);
         evaluations.insert(evaluationId, proposal.organizationId(), proposal.id(), null, null, null, null,
@@ -192,9 +225,13 @@ public class GuardrailService {
         }
         Map<String, String> detail = new java.util.LinkedHashMap<>();
         detail.put("actionId", scope.actionId().toString());
+        detail.put("actionVersion",Long.toString(scope.actionVersion()));
         detail.put("actionKind", scope.actionKind().name());
         detail.put("executionPath", scope.executionPath());
         detail.put("actionState", scope.actionState());
+        if (scope.purposeCode()!=null) detail.put("purposeCode",scope.purposeCode());
+        if (scope.purposeBasisDigest()!=null) detail.put("purposeBasisDigest",scope.purposeBasisDigest());
+        if (scope.purposeUseUntil()!=null) detail.put("purposeUseUntil",scope.purposeUseUntil().toString());
         detail.put("materialityRoute", scope.materialityRoute());
         detail.put("contentAxisMaterial", Boolean.toString(scope.contentAxisMaterial()));
         detail.put("exposureAxisMaterial", Boolean.toString(scope.exposureAxisMaterial()));
@@ -204,6 +241,7 @@ public class GuardrailService {
         detail.put("calibrationVersion", String.valueOf(scope.calibrationVersion()));
         scope.calibrationRecheck().forEach((key,value)->detail.put("calibrationRecheck."+key,value));
         scope.materialityRecheck().forEach((key,value)->detail.put("materialityRecheck."+key,value));
+        scope.protectionRecheck().forEach((key,value)->detail.put("protectionRecheck."+key,value));
         detail.put("reviewAttested", Boolean.toString(scope.reviewAttested()));
         if (!unresolved.isEmpty()) {
             detail.put("listingBlockers", String.join(",", unresolved));

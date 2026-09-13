@@ -72,7 +72,7 @@ class ExactTrafficComparisonTest {
 
     @Test void morePredeclaredComparisonsWidenTheInterval() {
         var method = FrozenComparisonMethod.resolve(FrozenComparisonMethodTest.nodes("0.05"),
-                FrozenComparisonMethodTest.JSON.readTree("[{\"code\":\"SMALL\"}]"), "D14").orElseThrow();
+                FrozenComparisonMethodTest.JSON.readTree("[{\"code\":\"SMALL\",\"bound\":\"0.02\"}]"), "D14").orElseThrow();
         var prior = counts(1000, 100, 1000, 100);
         var target = counts(1000, 200, 1000, 200);
         var ordinary = compare(prior, target);

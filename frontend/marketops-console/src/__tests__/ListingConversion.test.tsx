@@ -425,6 +425,31 @@ describe('actions, allowance and launch', () => {
   it('TC-UI-LC-009 a reviewed action is approved through the workflow decision, never a listing endpoint', async () => {
     const { fetchImpl, calls } = backend({
       '/api/v1/console/workflow/recommendations': { decisionId: 'd1', state: 'APPROVED' },
+      [`/api/v1/console/listing/actions/${ACTION}/review-basis`]: {
+        actionId: ACTION,
+        basisDigest: 'meaning-basis',
+        ruleState: 'QUALIFIED',
+        conditions: [],
+        affectedSet: {
+          affectedSetId: 'set-1',
+          digest: 'affected-digest',
+          state: 'COMPLETE',
+          listingVariantIds: ['listing-variant-1'],
+          productVariantIds: ['product-variant-1'],
+        },
+        reviewEvidence: {
+          reviewerUserId: 'reviewer-1',
+          verdict: 'ATTESTED',
+          reason: 'meaning attested',
+          reviewedAt: '2026-09-01T00:00:00Z',
+          factsDigest: 'facts-digest',
+        },
+        calibrationEvidence: { state: 'CURRENT' },
+        materialityEvidence: { state: 'CURRENT' },
+        businessProtectionEvidence: { state: 'CURRENT' },
+        authorityDocument: '{}',
+        applicableExperience: [],
+      },
       [`/api/v1/console/listing/actions/${ACTION}`]: action('REVIEWED'),
       '/api/v1/console/listing/actions': [action('REVIEWED')],
     });
@@ -440,7 +465,13 @@ describe('actions, allowance and launch', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Открыть' }));
 
     fireEvent.change(await screen.findByLabelText(/Причина/u), { target: { value: 'согласен' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Одобрить (решение процесса)' }));
+    const approve = screen.getByRole('button', { name: 'Одобрить (решение процесса)' });
+    expect(approve).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Прочитать материалы окончательного решения' }),
+    );
+    await waitFor(() => expect(approve).toBeEnabled());
+    fireEvent.click(approve);
 
     await waitFor(() => {
       const approval = calls.find((call) => call.url.includes('/workflow/recommendations/'));

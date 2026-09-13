@@ -39,6 +39,10 @@ public final class FrozenNodeWindow {
                     || measurement.sourceTime().isBefore(to.plus(Duration.ofDays(method.maturityDays()))))
                 gaps.add("SOURCE_MATURITY_UNPROVEN");
             if (measurement.computedAt() == null || measurement.computedAt().isAfter(now)) gaps.add("MEASUREMENT_FROM_FUTURE");
+            if (measurement.acquisitionTime()==null) gaps.add("MEASUREMENT_ACQUISITION_TIME_UNKNOWN");
+            else if (measurement.acquisitionTime().isAfter(now)
+                    || (measurement.computedAt()!=null && measurement.acquisitionTime().isAfter(measurement.computedAt())))
+                gaps.add("MEASUREMENT_ACQUISITION_FROM_FUTURE");
         }
         return new Admission(from, to, method.maturityDays(), first, last, gaps);
     }

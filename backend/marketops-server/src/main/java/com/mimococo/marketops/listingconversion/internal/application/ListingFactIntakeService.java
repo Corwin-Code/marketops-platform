@@ -82,7 +82,7 @@ public class ListingFactIntakeService {
         reference = MetadataFieldPolicy.requireText("sourceReference", reference);
         var snapshot = path == com.mimococo.marketops.listingconversion.EvidencePath.DETAIL
                 ? measurementEvidence.detailSnapshot(listingId, from, to, now)
-                : measurementEvidence.summarySnapshot(listingId, summaryId, from, to, days)
+                : measurementEvidence.summarySnapshot(listingId, summaryId, from, to, days, now)
                         .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED));
         if (path == com.mimococo.marketops.listingconversion.EvidencePath.DETAIL) {
             if (summaryId != null || expectedVisits == null || expectedLinks == null
@@ -128,7 +128,8 @@ public class ListingFactIntakeService {
     @Transactional
     public UUID recordPromotion(AuthenticatedActor actor,UUID listingId,
             com.mimococo.marketops.listingconversion.PromotionTerms declaration,String kind,String nativeKey,String state,
-            Instant observedAt,String evidenceReference) {
+            Instant observedAt,String evidenceReference,
+            com.mimococo.marketops.listingconversion.PromotionContextObservation context) {
         var listing=require(actor,listingId,ActionScopeCode.LISTING_MANUAL_VERIFY);
         Instant now=clock.instant();
         if(kind==null || !java.util.Set.of("OFFICIAL_PROMOTION_PARTICIPATION","SELLER_DIRECT_DISCOUNT").contains(kind)
@@ -141,11 +142,18 @@ public class ListingFactIntakeService {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         MetadataFieldPolicy.requireText("evidenceReference",evidenceReference);
+        if (context != null && (declaration == null || !observedAt.isBefore(context.verificationExpiresAt())
+                || context.records().stream().noneMatch(record -> kind.equals(record.declaration().engagementKind())
+                    && nativeKey.equals(record.declaration().nativePromotionKey())
+                    && state.equals(record.participationState())
+                    && declaration.equals(record.declaration())))) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         UUID provenance=facts.insertProvenance(ids.newId(),listing.organizationId(),"MANUAL_ENTRY",null,
                 observedAt,now,actor.userId(),null);
         UUID id=ids.newId();
         facts.insertPromotionObservation(id,listing.organizationId(),provenance,listingId,observedAt,now,state,kind,nativeKey,
-                declaration,evidenceReference);
+                declaration,evidenceReference,context);
         governance.enqueue(ids.newId(),listing.organizationId(),listingId,RecalculationClass.ORDINARY,
                 "promotion-observation:"+id,observedAt,now);
         return id;
@@ -191,6 +199,8 @@ public class ListingFactIntakeService {
         facts.insertVisitFact(id, listing.organizationId(), provenance, listing.storeId(), listingId, variantId,
                 "visit:" + id, MetadataFieldPolicy.requireText("visitKey", visitKey), visitedAt, now,
                 sellable == null ? "UNKNOWN" : sellable, channel == null ? "UNKNOWN" : channel, keyGroup);
+        governance.enqueue(ids.newId(), listing.organizationId(), listingId, RecalculationClass.ORDINARY,
+                "visit:" + id, visitedAt, now);
         return id;
     }
 
@@ -246,7 +256,7 @@ public class ListingFactIntakeService {
                 now, actor.userId(), null);
         UUID id = ids.newId();
         facts.insertFeedbackTheme(id, listing.organizationId(), provenance, listingId, "feedback:" + id, periodStart,
-                periodEnd, MetadataFieldPolicy.requireText("themeCode", themeCode), mentionCount, "OFFICIAL_EVIDENCE",
+                periodEnd, MetadataFieldPolicy.requireText("themeCode", themeCode), mentionCount, "INDEPENDENT_HUMAN",
                 observed, now);
         governance.enqueue(ids.newId(), listing.organizationId(), listingId, RecalculationClass.ORDINARY,
                 "feedback-theme:" + id, observed, now);

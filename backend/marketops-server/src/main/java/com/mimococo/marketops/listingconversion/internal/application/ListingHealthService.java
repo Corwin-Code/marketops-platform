@@ -7,6 +7,7 @@ import com.mimococo.marketops.listingconversion.internal.domain.AffectedSetResol
 import com.mimococo.marketops.listingconversion.internal.domain.ListingHealthAssessment;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingFactRepository;
+import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingFeedbackRepository;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingHealthRepository;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.ErrorCode;
@@ -34,6 +35,7 @@ public class ListingHealthService {
     private static final Duration LOOKBACK = Duration.ofDays(30);
 
     private final ListingFactRepository facts;
+    private final ListingFeedbackRepository feedback;
     private final ListingHealthRepository health;
     private final ListingActionRepository actions;
     private final CalibrationService calibration;
@@ -42,11 +44,13 @@ public class ListingHealthService {
     private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
 
-    ListingHealthService(ListingFactRepository facts, ListingHealthRepository health, ListingActionRepository actions,
+    ListingHealthService(ListingFactRepository facts, ListingFeedbackRepository feedback,
+                         ListingHealthRepository health, ListingActionRepository actions,
                          CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids,
                          com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility,
                          com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
         this.facts = facts;
+        this.feedback = feedback;
         this.health = health;
         this.actions = actions;
         this.calibration = calibration;
@@ -96,6 +100,8 @@ public class ListingHealthService {
                 "VISITS_AND_RETAINED_PURCHASES", now).proven();
         CalibrationService.Outcome resolved = calibration.resolve(listing.organizationId(), listing.platformCode(),
                 listing.storeId(), now);
+        ListingFeedbackRepository.CurrentClassificationSet currentFeedback=
+                feedback.currentClassifications(listingId,now);
         String mappingState = switch (set.resolution().state()) {
             case "COMPLETE" -> "RESOLVED";
             case "CONFLICTED" -> "CONFLICT";
@@ -109,7 +115,7 @@ public class ListingHealthService {
                         !visits.isEmpty(), facts.purchaseLinksPresent(listingId), stratified, summaryProven,
                         ListingFactRepository.maturityReached(now.minus(LOOKBACK), 7, now),
                         resolved.ok() ? Boolean.TRUE : ("CALIBRATION_UNRESOLVED".equals(resolved.state()) ? null : Boolean.FALSE),
-                        facts.feedbackThemesPresent(listingId),
+                        facts.feedbackThemesPresent(listingId) || currentFeedback.present(),
                         actions.scopeContained(listing.organizationId(), listingId)));
         UUID runId = ledger.recordCompletedRun(new CalculationRunLedger.CompletedRun(listing.organizationId(),
                 listing.storeId(), triggerKind, MetricWindow.D30, now.minus(LOOKBACK), now,
@@ -119,9 +125,12 @@ public class ListingHealthService {
         Instant acquisitionTime = description.map(ListingFactRepository.DescriptionRow::acquiredAt).orElse(null);
         List<ListingHealthView.Condition> conditions = assessment.necessaryConditions().stream()
                 .map(c -> new ListingHealthView.Condition(c.code(), c.state(), c.evidenceReference())).toList();
+        java.util.Map<String,String> opportunityEvidence=currentFeedback.present()
+                ?java.util.Map.of("FEEDBACK_THEMES_PRESENT",currentFeedback.evidenceReference())
+                :java.util.Map.of();
         health.insertHealth(healthId, listing.organizationId(), listing.storeId(), listingId, runId, set.id(),
                 health.nextHealthVersion(listingId), conditions, assessment.necessaryState(), assessment.eligibility(),
-                assessment.opportunities(), Digest.ofText(DEFINITION_VERSION), sourceTime, acquisitionTime, now);
+                assessment.opportunities(), opportunityEvidence, Digest.ofText(DEFINITION_VERSION), sourceTime, acquisitionTime, now);
         responsibility.synchronize(healthId,CalibrationService.responsibilityBasis(resolved));
         deferrals.reassessed(healthId);
         return health.latest(listingId).orElseThrow();

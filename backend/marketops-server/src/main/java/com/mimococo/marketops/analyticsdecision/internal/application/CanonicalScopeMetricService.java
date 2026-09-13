@@ -37,6 +37,28 @@ public class CanonicalScopeMetricService implements CanonicalScopeMetricQuery {
 
     @Override
     @Transactional(readOnly=true, isolation=Isolation.REPEATABLE_READ)
+    public java.util.Optional<Projection> current(CurrentScope scope) {
+        if (scope==null || scope.organizationId()==null || scope.storeId()==null || scope.window()==null
+                || scope.asOf()==null || scope.profitBasis()==null
+                || new HashSet<>(scope.listingVariantIds()).size()!=scope.listingVariantIds().size()) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        requireMembers(scope.organizationId(),scope.storeId(),scope.listingVariantIds(),scope.asOf());
+        if (scope.listingVariantIds().isEmpty()) return java.util.Optional.empty();
+        UUID anchor=scope.listingVariantIds().stream().sorted().findFirst().orElseThrow();
+        MetricCode code=scope.profitBasis()==ProfitBasis.SETTLED
+                ? MetricCode.SETTLED_CONTRIBUTION_PROFIT : MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT;
+        MetricValueView value=metrics.currentValuesAt(SubjectKind.PLATFORM_LISTING_VARIANT,anchor,
+                scope.window(),scope.asOf()).get(code);
+        if (value==null || value.periodStart()==null || value.periodEnd()==null
+                || !value.periodStart().isBefore(value.periodEnd()) || value.periodEnd().isAfter(scope.asOf()))
+            return java.util.Optional.empty();
+        return java.util.Optional.of(project(new Scope(scope.organizationId(),scope.storeId(),scope.listingVariantIds(),
+                scope.window(),value.periodStart(),value.periodEnd(),scope.asOf(),scope.profitBasis())));
+    }
+
+    @Override
+    @Transactional(readOnly=true, isolation=Isolation.REPEATABLE_READ)
     public Projection project(Scope scope) {
         if (scope==null || scope.organizationId()==null || scope.storeId()==null || scope.window()==null
                 || scope.profitBasis()==null || scope.periodStart()==null || scope.periodEnd()==null || scope.asOf()==null
@@ -51,9 +73,13 @@ public class CanonicalScopeMetricService implements CanonicalScopeMetricQuery {
         for (MetricCode code:List.of(profit,MetricCode.RETURN_UNITS,MetricCode.COMPLETED_UNITS)) {
             components.put(code,new ArrayList<>());
         }
+        var unitProfitInputs=new java.util.LinkedHashMap<UUID,UnitProfitInput>();
         for (UUID member:scope.listingVariantIds().stream().sorted().toList()) {
             var values=metrics.currentValuesForPeriodAt(SubjectKind.PLATFORM_LISTING_VARIANT,member,scope.window(),
                     scope.periodStart(),scope.periodEnd(),scope.asOf());
+            unitProfitInputs.put(member,new UnitProfitInput(values.get(profit),
+                    values.get(scope.profitBasis()==ProfitBasis.OPERATIONAL?MetricCode.COMPLETED_UNITS:MetricCode.SETTLED_UNITS),
+                    values.get(MetricCode.REQUIRED_PROFIT_PER_UNIT)));
             components.forEach((code,rows)->{
                 MetricValueView value=values.get(code);
                 if (value!=null) rows.add(value);
@@ -81,7 +107,7 @@ public class CanonicalScopeMetricService implements CanonicalScopeMetricQuery {
         }
         var returnComponents=new ArrayList<>(returnRows);
         returnComponents.addAll(completedRows);
-        return new Projection(scope,profitObservation,new Observation(returnRate,null,returnGaps,returnComponents));
+        return new Projection(scope,profitObservation,new Observation(returnRate,null,returnGaps,returnComponents),unitProfitInputs);
     }
 
     @Override

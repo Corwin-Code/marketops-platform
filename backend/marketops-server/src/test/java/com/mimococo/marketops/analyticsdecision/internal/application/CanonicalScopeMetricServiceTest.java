@@ -43,6 +43,32 @@ class CanonicalScopeMetricServiceTest {
         put(b,MetricCode.COMPLETED_UNITS,"98",null,2,ConfidenceState.CANONICAL_CONFIRMED);
     }
 
+    @Test void currentProjectionUsesOneStableExactPeriodWithoutFallingBackToOlderCompleteRows() {
+        UUID anchor=List.of(a,b).stream().sorted().findFirst().orElseThrow();
+        when(metrics.currentValuesAt(SubjectKind.PLATFORM_LISTING_VARIANT,anchor,MetricWindow.D7,asOf))
+                .thenReturn(rows.get(anchor));
+        var request=new CanonicalScopeMetricQuery.CurrentScope(org,store,List.of(b,a),MetricWindow.D7,asOf,
+                CanonicalScopeMetricQuery.ProfitBasis.OPERATIONAL);
+        var projected=service.current(request).orElseThrow();
+        assertThat(projected.scope().periodStart()).isEqualTo(start);
+        assertThat(projected.scope().periodEnd()).isEqualTo(end);
+        assertThat(projected.contributionProfit().value()).isEqualByComparingTo("7");
+        UUID other=anchor.equals(a)?b:a;
+        rows.get(other).remove(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT);
+        assertThat(service.current(request).orElseThrow().contributionProfit().gaps())
+                .contains("OPERATIONAL_CONTRIBUTION_PROFIT_MEMBER_VALUE_MISSING");
+        verify(metrics,never()).history(any(),any(),any(),any(),anyInt());
+        verify(metrics,never()).currentValuesCoveringAt(any(),any(),any(),any(),any(),any());
+    }
+
+    @Test void currentProjectionCannotChooseAnotherMemberWhenItsAnchorPeriodIsUnavailable() {
+        UUID anchor=List.of(a,b).stream().sorted().findFirst().orElseThrow();
+        when(metrics.currentValuesAt(SubjectKind.PLATFORM_LISTING_VARIANT,anchor,MetricWindow.D7,asOf)).thenReturn(Map.of());
+        assertThat(service.current(new CanonicalScopeMetricQuery.CurrentScope(org,store,List.of(a,b),MetricWindow.D7,asOf,
+                CanonicalScopeMetricQuery.ProfitBasis.OPERATIONAL))).isEmpty();
+        verify(metrics,never()).currentValuesForPeriodAt(any(),any(),any(),any(),any(),any());
+    }
+
     @Test void scopeUsesWholeProfitAndWeightedReturnCountsWhileRetainingEstimateEvidence() {
         var result=service.project(scope(CanonicalScopeMetricQuery.ProfitBasis.OPERATIONAL));
         assertThat(result.contributionProfit().value()).isEqualByComparingTo("7");

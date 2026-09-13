@@ -37,6 +37,7 @@ class ListingConversionScheduler {
             log.warn("event=lc_execution_journal_delivery_failed failureType={} correlationId={}",
                     failedDelivery.getClass().getSimpleName(), CorrelationId.current());
         }
+        recalculation.enqueueDueFullReviews(properties.getListingsPerPass());
         int finished = recalculation.runOnce(properties.getListingsPerPass());
         if (finished > 0) {
             log.info("event=lc_recalculation_pass_completed finished={} correlationId={}", finished,

@@ -32,6 +32,7 @@ public record ConversionMeasurementView(
         Map<String, String> sellableSplit,
         List<String> excludedTransitionDays,
         Instant sourceTime,
+        Instant acquisitionTime,
         Instant computedAt) {
 
     public ConversionMeasurementView {

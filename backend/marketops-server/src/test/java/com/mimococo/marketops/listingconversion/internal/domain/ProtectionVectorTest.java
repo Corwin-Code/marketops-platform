@@ -60,6 +60,23 @@ class ProtectionVectorTest {
         assertThat(ProtectionVector.verdictOf(nullValue)).isEqualTo(ProtectionVerdict.UNDETERMINED);
     }
 
+    @Test void taskOutcomeKeepsRegressionIndependentOfGrowthAndDoesNotUpgradeMissingEvidence() {
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.UNDETERMINED,ProtectionVerdict.FAIL,true,"SETTLED",false))
+                .isEqualTo("REGRESSION");
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.MET,ProtectionVerdict.UNDETERMINED,true,"SETTLED",false))
+                .isEqualTo("UNKNOWN");
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.MET,ProtectionVerdict.PASS,false,"SETTLED",false))
+                .isEqualTo("UNKNOWN");
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.NOT_MET,ProtectionVerdict.PASS,true,"OPERATIONAL",false))
+                .isEqualTo("NO_IMPROVEMENT");
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.MET,ProtectionVerdict.PASS,true,"OPERATIONAL",true))
+                .isEqualTo("OPERATIONAL");
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.MET,ProtectionVerdict.PASS,true,"SETTLED",false))
+                .isEqualTo("SETTLED");
+        assertThat(ProtectionVector.taskOutcome(NodeVerdict.MET,ProtectionVerdict.PASS,true,"SETTLED",true))
+                .isEqualTo("SETTLED_REVISED");
+    }
+
     @Test
     @DisplayName("TC-LC-P04 a node is met by its conservative bound, and only after maturity")
     void nodeVerdictUsesTheConservativeBound() {
@@ -90,5 +107,17 @@ class ProtectionVectorTest {
         assertThat(ProtectionVector.stopTriggered(minimum,minimum,true,true,true)).isFalse();
         assertThat(ProtectionVector.toStrings(Map.of("SUPPLY_COVERAGE", ProtectionVerdict.FAIL)))
                 .containsEntry("SUPPLY_COVERAGE", "FAIL");
+    }
+
+    @Test void criticalGroupUsesItsWholeIndependentIntervalAgainstItsOwnDeclineBound() {
+        BigDecimal bound=new BigDecimal("0.02");
+        assertThat(ProtectionVector.intervalNonWorsening(new BigDecimal("-0.02"),new BigDecimal("0.04"),bound))
+                .isEqualTo(ProtectionVerdict.PASS);
+        assertThat(ProtectionVector.intervalNonWorsening(new BigDecimal("-0.08"),new BigDecimal("-0.021"),bound))
+                .isEqualTo(ProtectionVerdict.FAIL);
+        assertThat(ProtectionVector.intervalNonWorsening(new BigDecimal("-0.03"),new BigDecimal("0.01"),bound))
+                .isEqualTo(ProtectionVerdict.UNDETERMINED);
+        assertThat(ProtectionVector.intervalNonWorsening(null,new BigDecimal("0.01"),bound))
+                .isEqualTo(ProtectionVerdict.UNDETERMINED);
     }
 }

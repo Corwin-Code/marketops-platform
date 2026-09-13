@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * keeps the calculation free to be run twice and compared.
  */
 @Service
-public class AvailabilityRiskCalculationService {
+public class AvailabilityRiskCalculationService implements com.mimococo.marketops.availabilityrisk.SupplyCoverageQuery {
 
     /** The demand policy's freshness bound also governs stock observations. */
     private static final BigDecimal DEFAULT_LIFECYCLE_WEIGHT = BigDecimal.ZERO;
@@ -77,6 +77,12 @@ public class AvailabilityRiskCalculationService {
      */
     @Transactional(readOnly = true)
     public VariantRisk calculate(UUID organizationId, UUID productVariantId, Instant asOf) {
+        return calculate(organizationId,productVariantId,asOf,null).risk();
+    }
+
+    private record Calculation(VariantRisk risk,BigDecimal observedCompanyDemand) { }
+
+    private Calculation calculate(UUID organizationId,UUID productVariantId,Instant asOf,Scenario scenario) {
         Optional<DemandPolicySettings> demandPolicy =
                 policies.resolveDemandPolicy(organizationId, asOf);
         LeadTimeResolution leadTime = policies.resolveLeadTime(
@@ -149,6 +155,18 @@ public class AvailabilityRiskCalculationService {
                 : DemandPolicyEngine.decide(companyWindows, demandSettings,
                         carriedForward(ChildKind.COMPANY, organizationId, productVariantId,
                                 null, null), asOf);
+        BigDecimal observedCompanyDemand=companyDemand.selectedRate();
+        if (scenario!=null) {
+            boolean current=companyDemand.evidenceState()==com.mimococo.marketops.availabilityrisk.RiskEvidenceState.CONFIRMED
+                    && observedCompanyDemand!=null;
+            boolean covers=current && scenario.companyDailyFulfillmentUnits().compareTo(observedCompanyDemand)>=0;
+            companyDemand=new DemandDecision(covers?scenario.companyDailyFulfillmentUnits():null,
+                    companyDemand.selectedWindow(),covers?"DECLARED_SUPPLY_SCENARIO"
+                        :current?"CURRENT_DEMAND_EXCEEDS_DECLARED_SCENARIO":"CURRENT_COMPANY_DEMAND_UNQUALIFIED",
+                    covers?com.mimococo.marketops.availabilityrisk.RiskEvidenceState.CONFIRMED
+                        :com.mimococo.marketops.availabilityrisk.RiskEvidenceState.DATA_BLOCKED,
+                    companyDemand.confidence(),companyDemand.windows(),null,null);
+        }
         List<InboundConsignment> consignments =
                 inbound.currentFor(organizationId, productVariantId);
         CompanyObservation companyObservation = reading.companyObservation(
@@ -158,14 +176,53 @@ public class AvailabilityRiskCalculationService {
         // worth replenishing even when another channel has no figure.
         ProfitAssessment companyProfit = strongestProfit(children);
         ChildRisk companyRisk = CompanyRiskCalculator.calculate(companyObservation, companyDemand,
-                leadTime, companyProfit, freshnessMinutes, asOf);
+                leadTime, companyProfit, freshnessMinutes, asOf,
+                scenario==null?null:asOf.plus(Duration.ofDays(scenario.coverageDays())));
         companyRisk = priority == null
                 ? companyRisk.withBlocker("PRIORITY_POLICY_UNRESOLVED") : companyRisk;
         children.add(new VariantRisk.ScoredChild(companyRisk, null,
                 ranking(companyRisk, priority), companyWindows));
 
-        return new VariantRisk(organizationId, productVariantId, asOf, policySet,
-                List.copyOf(children));
+        return new Calculation(new VariantRisk(organizationId, productVariantId, asOf, policySet,
+                List.copyOf(children)),observedCompanyDemand);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public Projection project(Scenario scenario) {
+        if (!policies.ownsProductVariant(scenario.organizationId(),scenario.productVariantId(),scenario.asOf()))
+            return new Projection(scenario,"UNDETERMINED",scenario.asOf().plus(Duration.ofDays(scenario.coverageDays())),
+                    null,null,List.of("PRODUCT_SCOPE_UNQUALIFIED"),List.of(),java.util.Map.of(),
+                    com.mimococo.marketops.shared.Digest.ofText("PRODUCT_SCOPE_UNQUALIFIED:"+scenario));
+        var calculated=calculate(scenario.organizationId(),scenario.productVariantId(),scenario.asOf(),scenario);
+        var result=calculated.risk();
+        var company=result.children().stream().map(VariantRisk.ScoredChild::risk)
+                .filter(child->child.kind()==ChildKind.COMPANY).findFirst().orElseThrow();
+        var leadTime=result.policies().leadTime();
+        var demandPolicy=result.policies().demand();
+        Instant horizon=scenario.asOf().plus(Duration.ofDays(scenario.coverageDays()));
+        if (leadTime.resolved()) {
+            Instant replenishment=scenario.asOf().plus(Duration.ofDays(leadTime.coverageHorizonDays()));
+            if (replenishment.isAfter(horizon)) horizon=replenishment;
+        }
+        var gaps=new ArrayList<String>();
+        if (!leadTime.resolved()) gaps.add("LEAD_TIME_POLICY_UNRESOLVED");
+        if (demandPolicy==null || company.demand().evidenceState()!=com.mimococo.marketops.availabilityrisk.RiskEvidenceState.CONFIRMED)
+            gaps.add(company.demand().reason());
+        if (!company.supply().present()) gaps.add("COMPANY_SUPPLY_NOT_OBSERVED");
+        if (!company.supply().complete()) gaps.add("COMPANY_SUPPLY_INCOMPLETE");
+        var sources=company.supply().components().stream().map(source->new SupplyEvidence(source.provenanceId(),
+                source.source().name(),source.reason().name(),source.units(),source.observedAt())).toList();
+        var policiesUsed=new java.util.LinkedHashMap<String,String>();
+        if (leadTime.resolved()) policiesUsed.put("leadTime",leadTime.policyId()+":"+leadTime.policyVersion());
+        if (demandPolicy!=null) policiesUsed.put("demand",demandPolicy.policyId()+":"+demandPolicy.policyVersion());
+        String verdict=!gaps.isEmpty()?"UNDETERMINED"
+                :company.projectedStockoutAt()!=null && company.projectedStockoutAt().isBefore(horizon)?"FAIL":"PASS";
+        String digest=com.mimococo.marketops.shared.Digest.ofComponents(List.of("SUPPLY_COVERAGE_SCENARIO_1",scenario.toString(),
+                sources.toString(),company.demand().windows().toString(),policiesUsed.toString(),
+                String.valueOf(calculated.observedCompanyDemand()),String.valueOf(company.projectedStockoutAt()),horizon.toString()));
+        return new Projection(scenario,verdict,horizon,calculated.observedCompanyDemand(),company.projectedStockoutAt(),
+                gaps,sources,policiesUsed,digest);
     }
 
     /**

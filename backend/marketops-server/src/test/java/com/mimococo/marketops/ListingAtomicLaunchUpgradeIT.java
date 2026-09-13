@@ -19,7 +19,12 @@ class ListingAtomicLaunchUpgradeIT {
         var legacy=new ListingConversionFixture(migration,application,admin);
         UUID launch=UUID.randomUUID();
         assertThat(legacy.launch(launch,"actionOne",legacy.id("ownerUser")).path("launched").asBoolean()).isTrue();
-        String before=legacy.app.sql("SELECT to_jsonb(l)::text FROM ops.lc_launch l WHERE id=:id")
+        String before=legacy.app.sql("""
+                SELECT jsonb_build_object('id',l.id,'organizationId',l.organization_id,'actionId',l.action_id,
+                    'bindingId',l.binding_id,'planId',l.plan_id,'launchedByUserId',l.launched_by_user_id,
+                    'launchedAt',l.launched_at,'proofHash',l.proof_hash)::text
+                  FROM ops.lc_launch l WHERE id=:id
+                """)
                 .param("id",launch).query(String.class).single();
         assertThat(legacy.app.sql("SELECT count(*) FROM ops.lc_description_command WHERE action_id=:action")
                 .param("action",legacy.id("actionOne")).query(Integer.class).single()).isZero();
@@ -41,7 +46,15 @@ class ListingAtomicLaunchUpgradeIT {
                 VALUES (:id,:org,:listing,'RISK',5,'synthetic historical unbound receipt',now(),now(),now(),'FINISHED')
                 """).param("id",historicalQueue).param("org",legacy.id("organization"))
                 .param("listing",legacy.id("listing")).update();
-        String queueBefore=legacy.app.sql("SELECT to_jsonb(q)::text FROM ops.lc_recalculation_queue q WHERE id=:id")
+        String queueBefore=legacy.app.sql("""
+                SELECT jsonb_build_object('id',q.id,'organizationId',q.organization_id,
+                    'platformListingId',q.platform_listing_id,'triggerClass',q.trigger_class,
+                    'targetMinutes',q.target_minutes,'triggerReference',q.trigger_reference,
+                    'sourceTime',q.source_time,'acceptedAt',q.accepted_at,'startedAt',q.started_at,
+                    'finishedAt',q.finished_at,'state',q.state,'calculationRunId',q.calculation_run_id,
+                    'failureCode',q.failure_code)::text
+                  FROM ops.lc_recalculation_queue q WHERE id=:id
+                """)
                 .param("id",historicalQueue).query(String.class).single();
 
         String meaningValuesBefore=legacy.app.sql("""
@@ -72,7 +85,12 @@ class ListingAtomicLaunchUpgradeIT {
                 .param("id",legacy.id("actionOne")).query(Boolean.class).single()).isTrue();
 
         assertThat(legacy.app.sql("""
-                SELECT (to_jsonb(q)-'lease_generation'-'leased_until'-'health_result_id')::text
+                SELECT jsonb_build_object('id',q.id,'organizationId',q.organization_id,
+                    'platformListingId',q.platform_listing_id,'triggerClass',q.trigger_class,
+                    'targetMinutes',q.target_minutes,'triggerReference',q.trigger_reference,
+                    'sourceTime',q.source_time,'acceptedAt',q.accepted_at,'startedAt',q.started_at,
+                    'finishedAt',q.finished_at,'state',q.state,'calculationRunId',q.calculation_run_id,
+                    'failureCode',q.failure_code)::text
                   FROM ops.lc_recalculation_queue q WHERE id=:id
                 """).param("id",historicalQueue).query(String.class).single()).isEqualTo(queueBefore);
         assertThat(legacy.app.sql("""
@@ -98,9 +116,14 @@ class ListingAtomicLaunchUpgradeIT {
         assertThat(legacy.app.sql("SELECT native_scope_observation_id IS NULL FROM core.lc_affected_set WHERE id=:id")
                 .param("id",legacy.id("affectedSetOne")).query(Boolean.class).single()).isTrue();
 
-        assertThat(legacy.app.sql("SELECT (to_jsonb(l)-'created_transaction_id')::text FROM ops.lc_launch l WHERE id=:id")
+        assertThat(legacy.app.sql("""
+                SELECT jsonb_build_object('id',l.id,'organizationId',l.organization_id,'actionId',l.action_id,
+                    'bindingId',l.binding_id,'planId',l.plan_id,'launchedByUserId',l.launched_by_user_id,
+                    'launchedAt',l.launched_at,'proofHash',l.proof_hash)::text
+                  FROM ops.lc_launch l WHERE id=:id
+                """)
                 .param("id",launch).query(String.class).single()).isEqualTo(before);
-        assertThat(legacy.app.sql("SELECT created_transaction_id IS NULL FROM ops.lc_launch WHERE id=:id")
+        assertThat(legacy.app.sql("SELECT created_transaction_id IS NULL AND execution_guardrail_id IS NULL FROM ops.lc_launch WHERE id=:id")
                 .param("id",launch).query(Boolean.class).single()).isTrue();
         assertThatThrownBy(()->legacy.createCommand(legacy.id("actionOne"),legacy.id("ownerUser")))
                 .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("MO092"));

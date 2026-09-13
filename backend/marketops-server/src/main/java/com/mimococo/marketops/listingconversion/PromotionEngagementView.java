@@ -25,17 +25,32 @@ public record PromotionEngagementView(
         Instant obligationsClearedAt,
         String state,
         long version,
-        boolean fullDisclosure) {
+        boolean fullDisclosure,
+        String termsDigest,
+        UUID sourceContextObservationId,
+        String originalAuthorityReference,
+        Instant originalAuthorityValidUntil,
+        UUID responsibleUserId,
+        String adoptionQualificationState,
+        Map<String,Object> axisDemands,
+        String exitAuthorityReference,
+        UUID exitEvidenceId,
+        UUID stopEvidenceObservationId,
+        UUID obligationEvidenceObservationId) {
 
     public PromotionEngagementView withFinancialDisclosure(boolean permitted) {
         return new PromotionEngagementView(id,storeId,platformListingId,actionId,engagementKind,nativePromotionKey,
                 permitted?terms:Map.of(),priceFreeze,autoParticipation,permitted?termsEvidenceReference:null,adopted,
                 permitted?obligations:Map.of(),exitReasonCode,exitAuthorizedByUserId,exitAuthorizedAt,
-                newTransactionsStoppedAt,obligationsClearedAt,state,version,permitted);
+                newTransactionsStoppedAt,obligationsClearedAt,state,version,permitted,termsDigest,
+                sourceContextObservationId,permitted?originalAuthorityReference:null,originalAuthorityValidUntil,
+                responsibleUserId,adoptionQualificationState,permitted?axisDemands:Map.of(),
+                permitted?exitAuthorityReference:null,exitEvidenceId,stopEvidenceObservationId,obligationEvidenceObservationId);
     }
 
     public PromotionEngagementView {
         terms = Map.copyOf(terms == null ? Map.of() : terms);
         obligations = Map.copyOf(obligations == null ? Map.of() : obligations);
+        axisDemands = Map.copyOf(axisDemands == null ? Map.of() : axisDemands);
     }
 }

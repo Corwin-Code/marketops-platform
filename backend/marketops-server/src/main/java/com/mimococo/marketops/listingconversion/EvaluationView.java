@@ -35,7 +35,9 @@ public record EvaluationView(
                              String stopVerdict, Instant evaluatedAt, Map<String,Object> evaluationEvidence) {
         public NodeResult {
             protectionVector = Map.copyOf(protectionVector == null ? Map.of() : protectionVector);
-            evaluationEvidence = Map.copyOf(evaluationEvidence == null ? Map.of() : evaluationEvidence);
+            // Null is a retained unknown, not an absent journal field.
+            evaluationEvidence = java.util.Collections.unmodifiableMap(new java.util.LinkedHashMap<>(
+                    evaluationEvidence == null ? Map.of() : evaluationEvidence));
         }
     }
 
