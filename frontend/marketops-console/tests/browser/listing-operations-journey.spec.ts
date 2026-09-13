@@ -222,7 +222,7 @@ async function recordPromotionContext(
   if (participationState === 'PARTICIPATING') {
     await form.getByLabel('原商业权威引用').fill(PROMOTION_EXIT_AUTHORITY);
     await form.getByLabel('原商业权威有效期至').fill(originalAuthorityUntil);
-    const concurrent = form.getByRole('group', { name: 'CONCURRENT_LISTINGS' });
+    const concurrent = form.getByRole('group', { name: '并发 Listing 数' });
     await concurrent.getByLabel('数值').fill('1');
     await concurrent.getByLabel('单位').fill('COUNT');
     await concurrent
