@@ -523,7 +523,7 @@ test('TC-BROWSER-017 real bilingual listing decision and closed-write journey', 
     await expect(initialGovernance).toHaveAttribute('data-state', 'loaded');
     const batchForm = initialGovernance.getByRole('form', { name: '批次' });
     await batchForm.getByLabel('批次所属店铺 ID').fill(listing.storeId);
-    await batchForm.getByLabel('批次').fill('browser-partial-launch');
+    await batchForm.getByLabel('批次', { exact: true }).fill('browser-partial-launch');
     await batchForm.getByRole('button', { name: '提交' }).click();
     let batch = initialGovernance
       .locator('[data-batch]')
@@ -665,7 +665,7 @@ test('TC-BROWSER-017 real bilingual listing decision and closed-write journey', 
       const reportForm = executorPacket.getByRole('form', { name: `报告执行 ${packet.id}` });
       await reportForm
         .getByLabel('操作时间')
-        .fill(localDateTime(new Date(new Date(packet.issuedAt).getTime() + 1)));
+        .fill(new Date(new Date(packet.issuedAt).getTime() + 1).toISOString());
       await reportForm.getByLabel('备注').fill('执行人按批准包完成管理端描述更新');
       const reportPath = `/api/v1/console/listing/manual/packets/${packet.id}/report`;
       const [reportResponse] = await Promise.all([
@@ -712,11 +712,11 @@ test('TC-BROWSER-017 real bilingual listing decision and closed-write journey', 
         readonly observationId: string;
       };
 
-      const displayForm = listingDetail.getByRole('form', { name: '证据', exact: true });
+      const displayForm = listingDetail.getByRole('form', { name: '证据引用', exact: true });
       await displayForm.locator('select').selectOption('DISPLAYED');
       await displayForm.getByLabel('目标俄语描述（完整文本）').fill(listing.manualTargetText);
       await displayForm
-        .getByLabel('证据', { exact: true })
+        .getByLabel('证据引用', { exact: true })
         .fill('evidence://synthetic/browser/manual-display');
       const displayPath = `/api/v1/console/listing/health/listings/${listing.otherListingId}/facts/display`;
       const [displayResponse] = await Promise.all([
