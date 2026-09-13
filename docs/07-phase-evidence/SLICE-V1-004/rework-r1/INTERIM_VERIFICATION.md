@@ -442,3 +442,44 @@ processes ended. Continuous-risk timing, finite qualified holds/defer with expir
 deterministic automatic activation and qualified personnel/entry coverage remain
 open. A calendar is not personnel evidence, and the planned outcome-review deadline
 is not proof of business maturity. No root or final LOCAL_VERIFIED closure claimed.
+
+## Diagnostic responsibility before Action checkpoint 32
+
+Retained Health recomputation now creates/reuses the original Workflow Task for
+known failed mapping/containment conditions in its existing transaction. The
+diagnostic identity is unique by organization/listing/cause and retains its exact
+source Health and calibration. No Recommendation or Action is manufactured. A
+Task must have its proposal or a validated diagnostic binding by transaction end.
+Explicit risk SLO minutes run continuously; absent risk policy remains unresolved.
+
+Signed HTTP verifies no task for the initial unfailed diagnosis, one Task after
+the retained failure, replay without duplication, current store Task permission,
+separate acknowledgement, refusal of caller-labelled actions and premature
+closure, independent source repair/consent then retained PASS, and recurrence
+reopening the same Task without resetting its origin. Listing detail shares the
+original clock display in Chinese/Russian and does not acknowledge by reading.
+
+Initial activation returned 500; the required Recommendation in the original
+Task schema conflicted with this source path. The correction preserves required
+source ownership through a deferred exact binding. A subsequent 403 isolated the
+existing ownership resolver's Recommendation-only store lookup; the diagnostic
+binding now supplies the exact current listing/store. The first failure did not
+capture its database SQLSTATE, which is not retrospectively claimed. A mixed
+method/class selector executed only 34 architecture cases; the unfiltered final
+launch/architecture pass executes all 76. The receipt keeps both extents explicit.
+
+204 distinct backend cases pass: 5 schedule, 78 signed authorization, 21 launch,
+76 architecture, 6 queue, 7 shared journal, 10 schema, 1 historical upgrade.
+The extended recurrence case is the same case included in 78, not an extra one.
+41 frontend cases pass, with 6 overlapping final cases after removing two unused
+mock parameters; build, lint and final tsc pass. All handles ended. 108 original
+migration files and the three frozen-input hashes match; 30 forward inventory
+entries match. See checkpoint-32-test-receipts.json and its sanitized summary.
+
+Only the two named retained necessary diagnoses activate through this path.
+Current generic Task ordering still uses due time; complete risk/responsibility
+ordering, full source-change triggering/fencing, purpose-qualified protections
+and opportunities, cross-domain action attribution, finite qualified hold/defer
+expiry/recovery and staffed release coverage remain unfinished. The current
+retained PASS does not fabricate a personally attributable action or Outcome.
+No final LOCAL_VERIFIED, root closure, external verification or platform write.

@@ -53,12 +53,18 @@ export interface ConversionMeasurement {
   readonly computedAt: string;
 }
 
+export interface ListingDiagnosticResponsibility {
+  readonly causeCode: string;
+  readonly status: NonNullable<ListingResponsibility['status']>;
+}
+
 export interface ListingDetail {
   readonly listingId: string;
   readonly storeId: string;
   readonly platformCode: string;
   readonly nativeListingKey: string;
   readonly health: ListingHealth | undefined;
+  readonly diagnosticResponsibilities?: readonly ListingDiagnosticResponsibility[];
   readonly measurements: readonly ConversionMeasurement[];
 }
 
@@ -502,6 +508,17 @@ export function parseListingDetail(body: unknown): ListingDetail | undefined {
     storeId = text(r.storeId),
     platformCode = text(r.platformCode),
     nativeListingKey = text(r.nativeListingKey);
+  const diagnosticResponsibilities =
+    r.diagnosticResponsibilities === undefined
+      ? []
+      : list(r.diagnosticResponsibilities, (value): ListingDiagnosticResponsibility | undefined => {
+          const entry = row(value),
+            causeCode = text(entry?.causeCode);
+          const parsed = parseListingResponsibility({ bound: true, status: entry?.status });
+          return causeCode === undefined || parsed?.status === undefined
+            ? undefined
+            : { causeCode, status: parsed.status };
+        });
   const measurements = list(r.measurements, parseConversionMeasurement);
   const health =
     r.health === null || r.health === undefined ? undefined : parseListingHealth(r.health);
@@ -511,10 +528,19 @@ export function parseListingDetail(body: unknown): ListingDetail | undefined {
     platformCode === undefined ||
     nativeListingKey === undefined ||
     measurements === undefined ||
+    diagnosticResponsibilities === undefined ||
     (r.health !== null && r.health !== undefined && health === undefined)
   )
     return undefined;
-  return { listingId, storeId, platformCode, nativeListingKey, health, measurements };
+  return {
+    listingId,
+    storeId,
+    platformCode,
+    nativeListingKey,
+    health,
+    measurements,
+    diagnosticResponsibilities,
+  };
 }
 
 export function parseCandidate(body: unknown): Candidate | undefined {
@@ -1850,4 +1876,17 @@ export function parsePromotionTermsView(body: unknown): PromotionTermsView | und
       obligations,
     },
   };
+}
+
+export function acknowledgeListingDiagnostic(
+  context: ConsoleRequest,
+  listingId: string,
+  taskId: string,
+): Promise<ConsoleOutcome<true>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/responsibilities/${id(taskId)}/acknowledgement`,
+    (): true => true,
+    { method: 'POST' },
+  );
 }

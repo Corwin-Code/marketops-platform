@@ -24,7 +24,12 @@ Ordinary-work configuration uses the existing governed calibration categories:
   "RESPONSIBILITY_SLO": {
     "acknowledgementMinutes": 120,
     "actionMinutes": 180,
-    "outcomeMaturityDays": 30
+    "outcomeMaturityDays": 30,
+    "necessaryRisk": {
+      "acknowledgementMinutes": 15,
+      "actionMinutes": 60,
+      "outcomeMaturityDays": 30
+    }
   },
   "RESPONSIBILITY_COVERAGE": {
     "timezone": "Europe/Moscow",
@@ -57,7 +62,18 @@ events at database time. If an event seems absent, compare its original event
 time and original responsibility time before retrying anything. New system
 acknowledgement/action records share database chronology with this consumer.
 
-At this intermediate checkpoint, continuous-risk activation, qualified dependency
-hold/defer processing and personnel coverage at release are not yet implemented
-by this view. No clock display releases occupations, closes an Outcome, lifts
-containment or enables a platform write.
+On Listing detail, **必要条件处置责任 / Ответственность за необходимые условия**
+shows the Task raised by the retained failed mapping or containment condition.
+This responsibility exists before a new Action proposal. Recomputing the same
+cause preserves the Task, original policy and origin. Explicit risk response
+minutes count elapsed time even outside the ordinary operating calendar; missing
+`necessaryRisk` values remain unresolved. This is not evidence of staffed coverage.
+
+Reading this list does not acknowledge. Its acknowledgement control checks the
+exact Listing and the shared Task's current store permission. The Task's cause
+must be resolved in retained diagnosis before closure; a click or caller-labelled
+action is insufficient. A later failed diagnosis reopens the same Task. Scope
+change fencing, cross-domain action attribution, finite holds/defer and complete
+opportunity activation remain unfinished at this intermediate checkpoint.
+No clock display releases occupations, closes an Outcome, lifts containment or
+enables a platform write.

@@ -311,7 +311,8 @@ public class WorkTaskService {
      * from a different proposal is different work whatever it is called.
      */
     private String lineageOf(WorkTaskView task) {
-        return advertising.lineage(task.id(), "recommendation:" + task.recommendationId());
+        return advertising.lineage(task.id(), task.recommendationId()==null
+                ? "listing-diagnosis:"+task.id() : "recommendation:" + task.recommendationId());
     }
 
     public void requireTaskAction(AuthenticatedActor actor, UUID taskId, boolean readOnly) {

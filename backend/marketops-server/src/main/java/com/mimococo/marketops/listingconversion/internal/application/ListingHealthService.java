@@ -39,15 +39,18 @@ public class ListingHealthService {
     private final CalibrationService calibration;
     private final CalculationRunLedger ledger;
     private final IdGenerator ids;
+    private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility;
 
     ListingHealthService(ListingFactRepository facts, ListingHealthRepository health, ListingActionRepository actions,
-                         CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids) {
+                         CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids,
+                         com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility) {
         this.facts = facts;
         this.health = health;
         this.actions = actions;
         this.calibration = calibration;
         this.ledger = ledger;
         this.ids = ids;
+        this.responsibility = responsibility;
     }
 
     /** The current complete affected set of a listing, frozen if it is new. */
@@ -116,6 +119,7 @@ public class ListingHealthService {
         health.insertHealth(healthId, listing.organizationId(), listing.storeId(), listingId, runId, set.id(),
                 health.nextHealthVersion(listingId), conditions, assessment.necessaryState(), assessment.eligibility(),
                 assessment.opportunities(), Digest.ofText(DEFINITION_VERSION), sourceTime, acquisitionTime, now);
+        responsibility.synchronize(healthId,CalibrationService.responsibilityBasis(resolved));
         return health.latest(listingId).orElseThrow();
     }
 

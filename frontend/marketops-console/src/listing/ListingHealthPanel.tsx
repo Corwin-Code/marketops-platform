@@ -1,3 +1,4 @@
+import { ListingDiagnosticResponsibilities } from './ListingDiagnosticResponsibilities';
 import { PromotionObservationForm } from './ListingPromotionTerms';
 import { NativeScopeObservationForm } from './ListingNativeScope';
 import { useEffect, useState } from 'react';
@@ -189,6 +190,7 @@ function ListingDetailView({
 
   useEffect(() => {
     let active = true;
+    setDetail(undefined);
     void fetchListingDetail(context, listingId).then((outcome) => {
       if (!active) return;
       if (outcome.ok) {
@@ -251,6 +253,12 @@ function ListingDetailView({
           ) : (
             <HealthLayers health={detail.health} />
           )}
+          <ListingDiagnosticResponsibilities
+            context={context}
+            listingId={listingId}
+            responsibilities={detail.diagnosticResponsibilities ?? []}
+            refresh={refresh}
+          />
           <Measurements measurements={detail.measurements} />
           <form
             aria-label={t('measure', language)}

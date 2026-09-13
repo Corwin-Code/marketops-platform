@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest';
 import type { ConsoleRequest } from '../api/console';
 import { parseListingResponsibility } from '../api/listingConversion';
+import { ListingDiagnosticResponsibilities } from '../listing/ListingDiagnosticResponsibilities';
 import { ListingResponsibility } from '../listing/ListingResponsibility';
 import { LanguageProvider } from '../listing/i18n/language';
 import { t } from '../listing/i18n/ui';
@@ -123,4 +124,52 @@ describe('original Listing responsibility', () => {
     fireEvent.click(screen.getByRole('button', { name: t('responsibilityLoad', 'zh') }));
     expect(await screen.findByText(t('responsibilityUnbound', 'zh'))).toBeInTheDocument();
   });
+});
+
+describe('necessary diagnostic responsibility', () => {
+  it.each(['zh', 'ru'] as const)(
+    'shows continuous time and requires explicit acknowledgement in %s',
+    async (language) => {
+      const send = vi.fn<typeof fetch>(() =>
+        Promise.resolve(new Response(null, { status: 204 })),
+      );
+      const refresh = vi.fn();
+      const context: ConsoleRequest = {
+        apiBaseUrl: 'http://localhost',
+        accessToken: 'fixture',
+        fetchImpl: send as typeof fetch,
+      };
+      const parsed = parseListingResponsibility({
+        bound: true,
+        status: { ...status, clockState: 'CONTINUOUS_RISK' },
+      });
+      if (parsed?.status === undefined) throw new Error('fixture status');
+      render(
+        <LanguageProvider initial={language}>
+          <ListingDiagnosticResponsibilities
+            context={context}
+            listingId="listing-one"
+            responsibilities={[{ causeCode: 'NOT_CONTAINED', status: parsed.status }]}
+            refresh={refresh}
+          />
+        </LanguageProvider>,
+      );
+      expect(screen.getByText(t('responsibilityContinuous', language))).toBeInTheDocument();
+      expect(screen.getByText(status.firstRaisedAt)).toBeInTheDocument();
+      expect(send).not.toHaveBeenCalled();
+      fireEvent.click(
+        screen.getByRole('button', { name: t('responsibilityAcknowledge', language) }),
+      );
+      await waitFor(() => {
+        expect(refresh).toHaveBeenCalledTimes(1);
+      });
+      expect(send).toHaveBeenCalledTimes(1);
+      expect(send.mock.calls[0]?.[0]).toBe(
+        'http://localhost/api/v1/console/listing/health/listings/listing-one/responsibilities/original-task/acknowledgement',
+      );
+      expect(
+        screen.getByText(t('responsibilityAction', language)).nextElementSibling,
+      ).toHaveTextContent('—');
+    },
+  );
 });

@@ -55,16 +55,29 @@ class ListingHealthConsoleController {
     private final ListingScopeAuthorization listings;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility;
+    private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake;
 
     ListingHealthConsoleController(ListingHealthService health, ConversionMeasurementService measurements,
                                    ListingFactIntakeService facts, ListingScopeAuthorization listings,
-                                   BusinessAuthorization authorization, MetadataAuditRecorder audit) {
+                                   BusinessAuthorization authorization, MetadataAuditRecorder audit,
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
+                                   com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake) {
         this.health = health;
         this.measurements = measurements;
         this.facts = facts;
         this.listings = listings;
         this.authorization = authorization;
         this.audit = audit;
+        this.responsibility = responsibility;
+        this.diagnosticIntake = diagnosticIntake;
+    }
+
+    @PostMapping("/listings/{listingId}/responsibilities/{taskId}/acknowledgement")
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
+    void acknowledgeDiagnostic(AuthenticatedActor actor,@PathVariable UUID listingId,@PathVariable UUID taskId) {
+        listings.require(actor,listingId,ActionScopeCode.LISTING_CONVERSION_VIEW);
+        diagnosticIntake.acknowledge(actor,listingId,taskId);
     }
 
     @Transactional
@@ -90,6 +103,7 @@ class ListingHealthConsoleController {
         result.put("platformCode", scope.platformCode());
         result.put("nativeListingKey", scope.nativeListingKey());
         result.put("health", health.latest(listingId).orElse(null));
+        result.put("diagnosticResponsibilities", responsibility.diagnosticsForListing(listingId));
         result.put("measurements", measurements.history(listingId, measurementLimit));
         auditRead(actor, "lc-listing-health", listingId, "listing");
         return result;

@@ -50,7 +50,7 @@ slice_v1_004_owner_decision_count: 85
 slice_v1_004_decision_085: B
 slice_v1_004_scope_deltas_not_required: DELTA_01_DELTA_02_DELTA_03
 slice_v1_004_evidence_obligations_open: F_M01_F_M02_F_S01_F_W01_F_W02_E_04
-slice_v1_004_migrations: V0074_THROUGH_V0108
+slice_v1_004_migrations: V0074_THROUGH_V0109
 slice_v1_004_as_built_design: docs/02-architecture/designs/SLICE-V1-004-design.md
 slice_v1_004_acceptance_status: docs/07-phase-evidence/SLICE-V1-004/acceptance-status.md
 slice_v1_004_executable_evidence: docs/07-phase-evidence/SLICE-V1-004/executable-evidence.md
@@ -973,3 +973,15 @@ files and 29 forward migration inventory entries are verified. Continuous-risk
 timing, finite qualified hold/defer, automatic activation, actual release coverage
 and final whole-scope verification remain unfinished. 23 findings are IN_PROGRESS,
 4 OPEN, none closed. See checkpoint-31 receipts; Level 1 boundaries remain in force.
+
+SLICE-V1-004 continuous local rework update: checkpoint-32 activates an existing
+Task from retained failed mapping/containment diagnoses before Action preparation.
+An exact diagnostic binding preserves required ownership without manufacturing a
+Recommendation or unowned Task. Explicit necessary-risk SLO counts continuously;
+Listing detail displays original clocks and current-store-scoped acknowledgement.
+Resolved then recurring causes reuse the original Task and history. 204 distinct
+backend and 41 frontend cases pass across documented final stages; build, lint
+and final typecheck pass. All processes ended; 108 existing migration files and
+the three immutable inputs are unchanged. Remaining purpose-qualified activation,
+risk ordering, source-change triggering/fencing, finite holds/defer and staffed
+release coverage remain open. No whole-root closure or production enablement.

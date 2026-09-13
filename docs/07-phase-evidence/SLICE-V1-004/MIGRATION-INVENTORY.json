@@ -308,7 +308,16 @@
         "lines": 64,
         "sha256": "6fa1a5d8a3939a8d5473515d833a5ac8adb1e46a787a6bb619184ce0dabee416",
         "forward_only": true
+      },
+      {
+        "version": "V0109",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0109__activate_listing_diagnostic_responsibility.sql",
+        "bytes": 6908,
+        "lines": 100,
+        "sha256": "a37c0c49070626e22e5c49fca11bb2b07c48233e1f8bbc5fce8e6049ac97f017",
+        "forward_only": true
       }
-    ]
+    ],
+    "committed_migrations_through_V0108_byte_changes_at_checkpoint_32": 0
   }
 }

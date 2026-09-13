@@ -811,3 +811,38 @@ independent-review action to the real Task. Continuous-risk activation, qualifie
 dependency holds/defer expiry, staffed-personnel release admission and automatic
 risk/opportunity activation remain required work under root 024. Calendar
 configuration alone never proves personnel coverage or grants launch authority.
+
+### Checkpoint 32 work — diagnostic responsibility before Action preparation
+
+The Action-only origin in checkpoint 31 cannot represent a necessary condition
+that needs work before an Action exists. Retained Health recomputation now calls
+a Workflow intake within the same listing-locked transaction. Known failed
+`MAPPING_RESOLVED` and `NOT_CONTAINED` conditions acquire one Task per organization,
+listing and cause. Unknown conditions and opportunity labels do not acquire this
+risk qualification. Existing Tasks retain their first origin and policy; a later
+failed diagnosis reopens a closed Task instead of creating another responsibility.
+
+The existing `ops.lc_task_responsibility` binding carries the exact source Health
+and cause. A diagnostic Task needs no Recommendation or Action proposal. A
+deferred database constraint requires every Task to have its original proposal
+or an exact diagnostic binding by transaction end; null is not an unowned Task
+escape. The binding trigger validates scope, current source version, failed cause,
+the resolved calibration identity and exact original JSON. Previously accepted
+migrations are not edited. The ordinary Action binding keeps its existing path.
+
+Risk response limits use explicit `RESPONSIBILITY_SLO.necessaryRisk` minutes,
+separately from ordinary covered minutes. Missing risk limits remain unresolved.
+Continuous risk is a clock rule, not a claim that somebody is on duty. Risk work
+appears in the existing Task queue and scoped Listing detail. Explicit
+acknowledgement uses current Listing visibility and shared Task scope. A caller
+label cannot manufacture a business action, and an unresolved latest retained
+cause refuses Task closure. A later PASS does not itself fabricate a personally
+attributable action event or an Outcome.
+
+This is not yet complete root 024. It does not turn the present structural Health
+projection into qualified profit/return/supply protection, or qualify all
+opportunity labels. Complete purpose evidence, within-layer ordering, cross-domain
+action attribution, finite hold/defer with expiry/recovery, source-change fencing
+at closure and staffed release coverage remain required. These consumers must
+reuse this original Task; no additional scheduler, notification channel or case
+system is introduced by this step.

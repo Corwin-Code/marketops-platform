@@ -1,0 +1,201 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "7341fd8fe2852f054df12db117abbc9b9b1e3e7d",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "node_version": "24.19.0",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/infrastructure/jdbc/UserAuthorizationRepository.java": "42b0430c04b691df1aec1a43dc97afc25ca087f5b33b2e459767472b7504df6d",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingHealthService.java": "940cf64ef195904f35b7ba3e2b421a1419b240803c3cf5cacfbb403f0da84d00",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingHealthConsoleController.java": "2394148d631c91059e16e09eb5e5087264335c9b7c665cfc66724f680b2d69a2",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingDiagnosticIntake.java": "64b965703260de92a102594ca4241a569b9b20147c20e4d9197270bb005c4870",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingTaskSloQuery.java": "ac3ede700a0005bb60c0f976747e1016e0ce56fa034c83555821b5d84dd505a1",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingDiagnosticIntakeService.java": "a5a1015272110f57a8cf2127e777d2b8d6d535c77f747ab0e5fbe4c5c0308e31",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingTaskSloService.java": "1a4acd90ca617870ae0642f3292a15f0c2bfa8f0f1ef8f7e07d5d918186c92af",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskService.java": "22f626971eb78b41ec7d8e51e92928fb5736e8cf89c33fe25ab921f6349b1642",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/ListingResponsibilitySchedule.java": "da49855327f74dd1c3708c8dd16d94b86fc304cd3c42072c307a8b25fac1cc1f",
+    "backend/marketops-server/src/main/resources/db/migration/V0109__activate_listing_diagnostic_responsibility.sql": "a37c0c49070626e22e5c49fca11bb2b07c48233e1f8bbc5fce8e6049ac97f017",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "7a3e99b7790ad03337d8741f260385d90c7959725e26ed38e252de583813a476",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/ListingResponsibilityScheduleTest.java": "e0f571e6627321acdecb0a3bf0141bbb6911a858969f8c766b0de6d2b0030a47",
+    "backend/marketops-server/src/test/resources/listing/lc-fictional-positive.sql": "91ac598717fcfbccd1b5a59808178a36a044b33d54a4bb03ab0d38ccba311197",
+    "frontend/marketops-console/src/__tests__/ListingResponsibility.test.tsx": "31f3e7bb53a7ad0201debd410802a0699dcf5114b3ee1a6de018c3e78dee720c",
+    "frontend/marketops-console/src/api/listingConversion.ts": "2af77c78f35dfc14fe8c51031861c2abca100493d14c179c2a5076ea140e8d99",
+    "frontend/marketops-console/src/listing/ListingDiagnosticResponsibilities.tsx": "3500940307455e20df6fc377f9c53da0cb242216b228930e62cfdbd329f25348",
+    "frontend/marketops-console/src/listing/ListingHealthPanel.tsx": "55facb4a8e00c2b4f79d93dede454da11a3e1608163354c8cdcc1028860c3cc2",
+    "frontend/marketops-console/src/listing/ListingResponsibility.tsx": "bddad84678f7b61d5d85685be7faf347ea91253f9dc0b40cd1caf44426a339c4",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "bc41daf14d55779385c470799328e81b0d102cd8735cbcfd7354e9701fb5b8cc"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT#retainedNecessaryFailureActivatesOneContinuousTaskWithoutAnActionProposal,ListingResponsibilityScheduleTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "FAIL_NEW_TASK_SOURCE_SHAPE",
+      "tests": 6,
+      "failures": 1,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-targeted.log",
+      "raw_log_sha256": "4f26102859c0be46fc8d7e2ffb7125e016f337aef4bbcddc49a77e33c9d1179c"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT#retainedNecessaryFailureActivatesOneContinuousTaskWithoutAnActionProposal,ListingResponsibilityScheduleTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS_BOUND_DIAGNOSTIC_TASK_AND_SCHEDULE",
+      "tests": 6,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-bound-task.log",
+      "raw_log_sha256": "3692c2e6c38962be67ab1a8b4b0794c5a0f09ff9bcbdff2cf24998d2796483f7"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "FAIL_NEW_TASK_OWNERSHIP_RESOLUTION",
+      "tests": 78,
+      "failures": 1,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-auth.log",
+      "raw_log_sha256": "bf863194443ef50e5338fe82fc04fa387d74d30ce06624615d6f8219b8c93a82"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS_AFTER_EXACT_DIAGNOSTIC_STORE_OWNERSHIP",
+      "tests": 78,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-auth-owned.log",
+      "raw_log_sha256": "69ee6f307aa2e1ee656bbabdf4d1f6259fed99249bf41c02fbf12b232a0dc25e"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT#retainedNecessaryFailureActivatesOneContinuousTaskWithoutAnActionProposal,*ArchitectureTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS_RECURRENCE_AND_PARTIAL_ARCHITECTURE_SELECTOR",
+      "tests": 35,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-recurrence-architecture.log",
+      "raw_log_sha256": "7f0136190fba4a5187246fefa3baae1bc496f9b332786298c200464c02c321e1"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingActionLaunchIT,*ArchitectureTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS_21_LAUNCH_AND_COMPLETE_76_ARCHITECTURE",
+      "tests": 97,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-launch-architecture.log",
+      "raw_log_sha256": "949520d5921daeb28569d5574551048b64a8311bf408bc7fc724eec54b0065c3"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingRecalculationLeaseIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS",
+      "tests": 6,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-queue.log",
+      "raw_log_sha256": "b575b5aea662c3c5eca9dc42f9abaa75f44375e6a0aa33fd91e666475b49a8e0"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=WorkTaskJournalIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS",
+      "tests": 7,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-task-journal.log",
+      "raw_log_sha256": "bb838fa17c69a68dd268447a3980e800e748a29550fe1c4984d032f203d43337"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingConversionSchemaIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS",
+      "tests": 10,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-schema.log",
+      "raw_log_sha256": "daf187298751247ebf28cd42227e3b295330754ab3d577634dc0c15cfde7b00c"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=ListingAtomicLaunchUpgradeIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS",
+      "tests": 1,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-upgrade.log",
+      "raw_log_sha256": "63c521f137c3b43481f094b836fdd067fc2983f2cb05368f1d8b7a398c714d5b"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingResponsibility.test.tsx src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS_BEFORE_TEST_MOCK_TYPE_STYLE_FIX",
+      "tests": 41,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-frontend.log",
+      "raw_log_sha256": "11ba20b096d1a25a67e9838a14f5b0ad0b41363b4fe7bf39eed4b9ee9973e41d"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingResponsibility.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS_AFTER_TEST_MOCK_TYPE_STYLE_FIX_OVERLAPS_41",
+      "tests": 6,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-frontend-fixed.log",
+      "raw_log_sha256": "50c778f8da056217388c159f9f4b14a166468511b92c46ab3a945aac3c1472d1"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS_BEFORE_ADDITIONAL_TEST_SOURCE",
+      "tests": null,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-build.log",
+      "raw_log_sha256": "d8bc6d75d59f374f1cd7754d96f7a6d3d911e0ba218fb437027351d0a94676ee"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS_BEFORE_TEST_MOCK_TYPE_STYLE_FIX",
+      "tests": null,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-build-final.log",
+      "raw_log_sha256": "040483ef7372d201917ead69d0f990287a4dff1f3d6afff01fd263e719bebcff"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "result": "FAIL_TWO_UNUSED_TEST_MOCK_PARAMETERS",
+      "tests": null,
+      "failures": 2,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-lint.log",
+      "raw_log_sha256": "64dd55fd9c6a2af7ff3000daec715bf495d2b0e25c5806cc5bd420d7a24a488c"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS_AFTER_TEST_MOCK_TYPE_STYLE_FIX",
+      "tests": null,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-lint-fixed.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npx tsc --noEmit",
+      "working_directory": "frontend/marketops-console",
+      "result": "PASS_FINAL",
+      "tests": null,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint32-risk-activation-typecheck-final.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "summary_path": "checkpoint32-risk-activation-test-summary.txt",
+  "summary_sha256": "b343fb9c56caaf501e6e82381ed6fac42c7192d0caea6a645f2e97f03e0dfbc8",
+  "scope": {
+    "implemented": "Existing retained Health recomputation creates one existing Workflow Task for each known failed mapping/containment cause, before an Action exists. Current source/basis is bound in the same transaction, with a deferred source requirement instead of unowned nullable Tasks. Risk response consumes explicit necessaryRisk minutes continuously. Scoped bilingual detail, explicit store-authorized acknowledgement, actual retained resolution before closure and original-Task recurrence are connected. No Recommendation, Action, Command, provider or additional scheduler is created by diagnosis.",
+    "remaining": "Other purpose-qualified necessary protections/opportunities, deterministic risk/responsibility ordering, qualified finite hold/defer expiry/restoration, actual cross-domain action attribution, current source-change fencing at closure and staffed release coverage remain incomplete. Generic Task ordering still uses due time; no complete risk-first ordering claim. Retained Health PASS is not business Outcome maturity or a fabricated personal action. Full root 024 and 27-finding closure remain open."
+  },
+  "diagnosis": [
+    "Initial new risk activation returned HTTP 500; inspection identified the incompatible mandatory Recommendation in the existing Task schema. V0109 preserves a required origin with a deferred exact diagnostic binding; the subsequent six targeted cases pass. The first response did not retain the underlying database exception, so no precise SQLSTATE is claimed.",
+    "The full signed suite then found only the new acknowledgement failing 403. Owned WORK_TASK resolved store solely through Recommendation. The exact diagnostic binding now resolves its current listing/store; Listing view alone fails while matching store TASK_ASSIGN succeeds. Per-Task diagnostic lineage prevents recommendation:null histories.",
+    "A method-specific selector combined with architecture classes ran only 34 architecture cases. The following unfiltered launch/architecture run executes all 76; partial and overlapping counts are not accumulated.",
+    "Frontend lint rejected two unused mock arguments. A typed vi.fn<typeof fetch> preserves request-call assertions without unused arguments; affected six tests, lint and final tsc pass."
+  ],
+  "immutable_checks": {
+    "immutable_input_hashes_verified": 3,
+    "committed_migrations_compared_byte_exact": 108,
+    "changed_committed_migrations": 0,
+    "verified_forward_migration_inventory_entries": 30
+  },
+  "verification_discipline": "204 distinct backend cases across their affected final stages: 5 schedule, 78 signed authorization, 21 launch, 76 architecture, 6 queue, 7 shared journal, 10 schema, 1 upgrade. Recurrence extends the same signed case and is not an extra distinct case. 41 frontend cases; six final overlapping cases after test mock style repair. One Maven process at a time, separate database classes, no Java/SQL/test-source edits while Maven live. No repeat after pass absent a concrete code/fixture/selector reason. All handles terminal before checkpoint; not a final LOCAL_VERIFIED claim."
+}

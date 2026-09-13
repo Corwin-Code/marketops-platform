@@ -337,10 +337,12 @@
       "title": "责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Checkpoint 31: normal preparation now binds original ordinary Task deadlines to exact governed SLO/calendar values; no fixed now+2 days. The real journal and scoped on-demand read separate acknowledgement/action, preserve origin on reassignment/recalculation/reopen, refuse caller-labelled substitute actions and require current-episode disposition for closure. Database chronology fixes independently reproduced writer-clock offsets. Continuous risk, qualified finite holds/defer, automatic activation/sorting and staffed release coverage remain OPEN."
+        "Checkpoint 31: normal preparation now binds original ordinary Task deadlines to exact governed SLO/calendar values; no fixed now+2 days. The real journal and scoped on-demand read separate acknowledgement/action, preserve origin on reassignment/recalculation/reopen, refuse caller-labelled substitute actions and require current-episode disposition for closure. Database chronology fixes independently reproduced writer-clock offsets. Continuous risk, qualified finite holds/defer, automatic activation/sorting and staffed release coverage remain OPEN.",
+        "Checkpoint 32: retained failed mapping/containment diagnoses create one existing Task per listing/cause before any new Action. Exact source/calibration binding, continuous explicit risk SLO, scoped acknowledgement and same-Task recurrence are connected to Health recomputation. No unowned Task, Recommendation, Action or new scheduler is manufactured. Remaining purpose-qualified activation, risk/responsibility ordering, source-change fencing, cross-domain attribution and finite hold/defer/coverage work remain OPEN."
       ],
       "executed_evidence": [
-        "checkpoint-31-test-receipts.json: normal signed workflow, controlled clock offsets, closure/reopen, original Task preservation and shared Workflow regression. Partial ordinary-path evidence only."
+        "checkpoint-31-test-receipts.json: normal signed workflow, controlled clock offsets, closure/reopen, original Task preservation and shared Workflow regression. Partial ordinary-path evidence only.",
+        "checkpoint-32-test-receipts.json: signed diagnosis-to-Task path, replay, store permission, acknowledgement/action separation, actual retained resolution and recurrence; shared journal/queue/schema/upgrade and full architecture checks. Partial root evidence only."
       ]
     },
     {
@@ -361,7 +363,8 @@
         "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
         "Checkpoint 26: removes user-entered exposure from Console preparation and request serialization, with Chinese/Russian explanation. Complete semantic-review and financially scoped exposure-evidence journeys remain open.",
         "Checkpoint 27: adds scoped on-demand Russian full before/after and commercial-term review basis, Chinese/Russian condition answers/reasons/reference/coverage, unknown submission guard and stale actor-result rejection. Complete evidence history and remaining Console journeys still open.",
-        "Checkpoint 31: Chinese/Russian on-demand original Task clock read and explicit acknowledgement are connected to ordinary Action detail, with unknown states and stale actor/action reply rejection. Complete Task/hold/coverage and remaining Console journeys remain OPEN."
+        "Checkpoint 31: Chinese/Russian on-demand original Task clock read and explicit acknowledgement are connected to ordinary Action detail, with unknown states and stale actor/action reply rejection. Complete Task/hold/coverage and remaining Console journeys remain OPEN.",
+        "Checkpoint 32: Listing detail displays necessary diagnostic responsibility and explicit acknowledgement in Chinese/Russian, sharing the original Task clock display. The exact diagnostic Task/store controls acknowledgement. Complete remaining Console and browser journeys remain OPEN."
       ],
       "executed_evidence": [
         "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
@@ -369,7 +372,8 @@
         "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
         "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
-        "checkpoint-31-test-receipts.json: 39 frontend cases across four files, build/lint PASS; scoped responsibility HTTP flow and acknowledgement scope refusal. No complete browser journey claim."
+        "checkpoint-31-test-receipts.json: 39 frontend cases across four files, build/lint PASS; scoped responsibility HTTP flow and acknowledgement scope refusal. No complete browser journey claim.",
+        "checkpoint-32-test-receipts.json: 41 frontend cases with six overlapping final cases after mock type style fix, build/lint/final tsc; 78 signed authorization cases with recurrence extension. No full browser acceptance claim."
       ]
     },
     {
@@ -387,7 +391,8 @@
         "Checkpoint 27: 66 signed HTTP, 2 condition/binding SQL, 113 launch/domain/architecture, 10 schema and 1 upgrade passed; 35 frontend cases, build and typed lint passed. Fixed diagnostics retained in the receipt. Complete final-head regression remains open.",
         "Checkpoint 28: 79 signed HTTP/Guardrail and 113 launch/domain/architecture passed. JDBC time binding, strict authority snapshot rejection and test-history isolation diagnostics retained; one unconfirmed native-scope failure remains explicitly tracked. No schema/frontend change or needless repeat of their suites.",
         "Checkpoint 29: 2 deterministic red cases before the time fix, 4 targeted cases after it, then 75 signed HTTP and 80 domain/architecture cases passed. Source hashes, commands and limitation retained in checkpoint-29 receipt. No blind repetition of the original intermittent test.",
-        "Checkpoint 31: original Task/SLO provenance, historical no-backfill behavior, disposition/reopen chain and inherited migration inventory are recorded separately from unimplemented risk/hold/activation and final verification work."
+        "Checkpoint 31: original Task/SLO provenance, historical no-backfill behavior, disposition/reopen chain and inherited migration inventory are recorded separately from unimplemented risk/hold/activation and final verification work.",
+        "Checkpoint 32: records distinct executed checks, two diagnosed integration failures and the method-filtered architecture subset separately from complete regression. Unimplemented risk ordering/holds/purpose/source fencing remain explicit; historical migrations are preserved."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
@@ -404,7 +409,8 @@
         "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
         "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure.",
         "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure.",
-        "checkpoint-31-test-receipts.json: finite affected verification stages, failures and independent chronology reproduction retained. Immutable input and 107 historical migration byte checks pass; no final closure claim."
+        "checkpoint-31-test-receipts.json: finite affected verification stages, failures and independent chronology reproduction retained. Immutable input and 107 historical migration byte checks pass; no final closure claim.",
+        "checkpoint-32-test-receipts.json; 108 existing migration bytes and 30 forward inventory entries verified, with no final LOCAL_VERIFIED or 27-root closure claim."
       ]
     }
   ],

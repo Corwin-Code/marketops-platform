@@ -15,6 +15,11 @@ public final class ListingResponsibilitySchedule {
                            Instant outcomeMaturityDueAt, StaffedResponseClock.Coverage coverage) { }
 
     public static Schedule resolve(Instant raisedAt, JsonNode slo, JsonNode calendar) {
+        return resolve(raisedAt,slo,calendar,false);
+    }
+
+    public static Schedule resolve(Instant raisedAt, JsonNode slo, JsonNode calendar, boolean necessaryRisk) {
+        if (necessaryRisk) slo=slo==null?null:slo.path("necessaryRisk");
         int acknowledgement, action, maturity;
         try {
             if (slo == null || !slo.isObject()) return unresolved("SLO_UNRESOLVED");
@@ -25,6 +30,9 @@ public final class ListingResponsibilitySchedule {
             return unresolved("SLO_UNRESOLVED");
         }
         Instant outcomeDue = raisedAt.plus(Duration.ofDays(maturity));
+        if (necessaryRisk) return new Schedule("CONTINUOUS_RISK",
+                raisedAt.plus(Duration.ofMinutes(acknowledgement)),raisedAt.plus(Duration.ofMinutes(action)),
+                outcomeDue,null);
         try {
             var coverage = coverage(calendar);
             return new Schedule("COVERAGE_CONFIGURED",

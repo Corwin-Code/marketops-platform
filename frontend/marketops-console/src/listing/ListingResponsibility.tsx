@@ -97,53 +97,64 @@ export function ListingResponsibility({
           >
             {t('responsibilityAcknowledge', language)}
           </button>
-          <dl>
-            <dt>{t('responsibilityTask', language)}</dt>
-            <dd>{status.taskId}</dd>
-            <dt>{t('responsibilityOrigin', language)}</dt>
-            <dd>
-              <When value={status.firstRaisedAt} />
-            </dd>
-            <dt>{t('responsibilityAckDue', language)}</dt>
-            <dd>
-              <When value={status.acknowledgementDueAt} />
-            </dd>
-            <dt>{t('responsibilityActionDue', language)}</dt>
-            <dd>
-              <When value={status.actionDueAt} />
-            </dd>
-            <dt>{t('responsibilityOutcomeDue', language)}</dt>
-            <dd>
-              <When value={status.outcomeMaturityDueAt} />
-            </dd>
-            <dt>{t('responsibilityNext', language)}</dt>
-            <dd>
-              <When value={status.nextCoveredAt} />
-            </dd>
-            <dt>{t('responsibilityAck', language)}</dt>
-            <dd>
-              <When value={status.acknowledgedAt} />
-            </dd>
-            <dt>{t('responsibilityAction', language)}</dt>
-            <dd>
-              <When value={status.firstAttributableActionAt} />
-            </dd>
-            <dt>{t('responsibilityAckLate', language)}</dt>
-            <dd>
-              <YesNo value={status.acknowledgementBreached} />
-            </dd>
-            <dt>{t('responsibilityActionLate', language)}</dt>
-            <dd>
-              <YesNo value={status.actionBreached} />
-            </dd>
-            <dt>{t('responsibilityBasis', language)}</dt>
-            <dd>
-              {status.calibrationPackageId ?? '—'} · {status.calibrationVersion ?? '—'} ·{' '}
-              {status.basisDigest}
-            </dd>
-          </dl>
+          <ResponsibilityTimes status={status} />
         </>
       )}
     </section>
+  );
+}
+
+export function ResponsibilityTimes({
+  status,
+}: {
+  readonly status: NonNullable<Responsibility['status']>;
+}): React.JSX.Element {
+  const { language } = useLanguage();
+  return (
+    <dl>
+      <dt>{t('responsibilityTask', language)}</dt>
+      <dd>{status.taskId}</dd>
+      <dt>{t('responsibilityOrigin', language)}</dt>
+      <dd>
+        <When value={status.firstRaisedAt} />
+      </dd>
+      <dt>{t('responsibilityAckDue', language)}</dt>
+      <dd>
+        <When value={status.acknowledgementDueAt} />
+      </dd>
+      <dt>{t('responsibilityActionDue', language)}</dt>
+      <dd>
+        <When value={status.actionDueAt} />
+      </dd>
+      <dt>{t('responsibilityOutcomeDue', language)}</dt>
+      <dd>
+        <When value={status.outcomeMaturityDueAt} />
+      </dd>
+      <dt>{t('responsibilityNext', language)}</dt>
+      <dd>
+        <When value={status.nextCoveredAt} />
+      </dd>
+      <dt>{t('responsibilityAck', language)}</dt>
+      <dd>
+        <When value={status.acknowledgedAt} />
+      </dd>
+      <dt>{t('responsibilityAction', language)}</dt>
+      <dd>
+        <When value={status.firstAttributableActionAt} />
+      </dd>
+      <dt>{t('responsibilityAckLate', language)}</dt>
+      <dd>
+        <YesNo value={status.acknowledgementBreached} />
+      </dd>
+      <dt>{t('responsibilityActionLate', language)}</dt>
+      <dd>
+        <YesNo value={status.actionBreached} />
+      </dd>
+      <dt>{t('responsibilityBasis', language)}</dt>
+      <dd>
+        {status.calibrationPackageId ?? '—'} · {status.calibrationVersion ?? '—'} ·{' '}
+        {status.basisDigest}
+      </dd>
+    </dl>
   );
 }

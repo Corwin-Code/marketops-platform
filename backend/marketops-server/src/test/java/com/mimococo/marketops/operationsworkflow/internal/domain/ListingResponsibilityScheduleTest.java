@@ -27,6 +27,16 @@ class ListingResponsibilityScheduleTest {
         assertThat(schedule.acknowledgementDueAt()).isNull();
     }
 
+    @Test void explicitNecessaryRiskMinutesContinueThroughUncoveredHours() {
+        var policy=json.readTree("{\"necessaryRisk\":"+slo+"}");
+        var risk=ListingResponsibilitySchedule.resolve(raised,policy,null,true);
+        assertThat(risk.state()).isEqualTo("CONTINUOUS_RISK");
+        assertThat(risk.acknowledgementDueAt()).isEqualTo(raised.plus(Duration.ofMinutes(120)));
+        assertThat(risk.actionDueAt()).isEqualTo(raised.plus(Duration.ofMinutes(180)));
+        assertThat(ListingResponsibilitySchedule.resolve(raised,json.readTree(slo),null,true).state())
+                .isEqualTo("SLO_UNRESOLVED");
+    }
+
     @Test void missingOrInvalidCalendarDoesNotInventTwoDaysOrEraseIndependentMaturity() {
         for (String calendar:java.util.List.of("{}",coverage.replace("Europe/Moscow","unknown-zone"),
                 coverage.replace("[1,2,3,4,5]","[1,1]"),coverage.replace("540","540.5"))) {

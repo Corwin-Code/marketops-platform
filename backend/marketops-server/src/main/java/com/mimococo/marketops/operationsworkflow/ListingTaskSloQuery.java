@@ -8,6 +8,9 @@ import java.util.UUID;
 public interface ListingTaskSloQuery {
     Optional<Status> statusForRecommendation(UUID recommendationId);
     Optional<Status> statusForRecommendation(UUID recommendationId, Instant asOf);
+    java.util.List<DiagnosticStatus> diagnosticsForListing(UUID listingId);
+
+    record DiagnosticStatus(String causeCode, Status status) { }
 
     record Status(UUID taskId, UUID calibrationPackageId, Integer calibrationVersion, String basisDigest,
                   String clockState, Instant firstRaisedAt, Instant acknowledgementDueAt,

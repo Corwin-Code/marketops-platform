@@ -340,6 +340,82 @@ class ListingReworkAuthorizationIT {
     }
 
     @Test
+    void retainedNecessaryFailureActivatesOneContinuousTaskWithoutAnActionProposal() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        for(var scope:List.of(ActionScopeCode.LISTING_CONVERSION_VIEW,ActionScopeCode.LISTING_ACTION_PREPARE))
+            users.grantScope(OPERATOR,userId,scope,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        String endpoint="/api/v1/console/listing/health/listings/"+fixture.id("listing");
+        mvc.perform(post(endpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk());
+        mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.diagnosticResponsibilities").isEmpty());
+        long actionCount=jdbc.sql("SELECT count(*) FROM ops.lc_action").query(Long.class).single();
+        UUID containment=fixture.contain(UUID.randomUUID(),fixture.id("ownerUser"),fixture.id("listing"));
+        var json=new tools.jackson.databind.ObjectMapper();
+        UUID task=null;
+        Instant origin=null;
+        for(int replay=0;replay<2;replay++) {
+            mvc.perform(post(endpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer()))
+                    .andExpect(result->assertThat(result.getResponse().getStatus())
+                            .withFailMessage("Risk activation failed: %s",result.getResolvedException()).isEqualTo(200));
+            var response=mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.diagnosticResponsibilities.length()").value(1))
+                    .andExpect(jsonPath("$.diagnosticResponsibilities[0].causeCode").value("NOT_CONTAINED"))
+                    .andReturn().getResponse().getContentAsString();
+            var current=json.readTree(response).path("diagnosticResponsibilities").get(0).path("status");
+            UUID currentTask=UUID.fromString(current.path("taskId").asText());
+            Instant currentOrigin=Instant.parse(current.path("firstRaisedAt").asText());
+            if(replay==0) {task=currentTask;origin=currentOrigin;}
+            assertThat(currentTask).isEqualTo(task);
+            assertThat(currentOrigin).isEqualTo(origin);
+            assertThat(current.path("clockState").asText()).isEqualTo("CONTINUOUS_RISK");
+            assertThat(Instant.parse(current.path("acknowledgementDueAt").asText())).isEqualTo(origin.plusSeconds(900));
+            assertThat(Instant.parse(current.path("actionDueAt").asText())).isEqualTo(origin.plusSeconds(3600));
+            assertThat(current.path("acknowledgedAt").isNull()).isTrue();
+        }
+        assertThat(jdbc.sql("SELECT recommendation_id IS NULL FROM ops.work_task WHERE id=:id").param("id",task)
+                .query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_action").query(Long.class).single()).isEqualTo(actionCount);
+        mvc.perform(post(endpoint+"/responsibilities/"+task+"/acknowledgement").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isForbidden());
+        users.grantScope(OPERATOR,userId,ActionScopeCode.TASK_ASSIGN,ResourceScopeType.STORE,fixture.id("store"),null);
+        mvc.perform(post(endpoint+"/responsibilities/"+task+"/acknowledgement").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isNoContent());
+        mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.diagnosticResponsibilities[0].status.acknowledgedAt").isNotEmpty())
+                .andExpect(jsonPath("$.diagnosticResponsibilities[0].status.firstAttributableActionAt").isEmpty());
+        mvc.perform(post("/api/v1/console/advertising/tasks/"+task+"/action").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"actionKind\":\"REPAIRED\",\"evidenceReference\":\"fixture://caller\",\"reason\":\"Caller label is not source resolution\"}"))
+                .andExpect(status().isForbidden());
+        assertThatThrownBy(()->fixture.app.sql("""
+                INSERT INTO ops.work_task(id,organization_id,title,state,created_at,updated_at)
+                VALUES (:id,:org,'An unbound Task is still refused','OPEN',clock_timestamp(),clock_timestamp())
+                """).param("id",UUID.randomUUID()).param("org",fixture.id("organization")).update())
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        mvc.perform(post("/api/v1/console/workflow/tasks/"+task+"/closure").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"done\":true,\"closureReason\":\"Click is not risk resolution\",\"expectedVersion\":0}"))
+                .andExpect(status().isForbidden());
+        fixture.attest(UUID.randomUUID(),containment,fixture.id("ownerUser"),"REPAIR_ATTESTATION");
+        fixture.attest(UUID.randomUUID(),containment,fixture.id("verifierUser"),"BUSINESS_CONSENT");
+        fixture.app.sql("SELECT ops.reenable_lc_containment(:id,:actor)").param("id",containment)
+                .param("actor",fixture.id("ownerUser")).query(Object.class).optional();
+        mvc.perform(post(endpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk());
+        mvc.perform(post("/api/v1/console/workflow/tasks/"+task+"/closure").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"done\":true,\"closureReason\":\"Independent repair and consent followed by current diagnosis\",\"expectedVersion\":0}"))
+                .andExpect(status().isNoContent());
+        fixture.contain(UUID.randomUUID(),fixture.id("ownerUser"),fixture.id("listing"));
+        mvc.perform(post(endpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk());
+        var reopened=applicationContext.getBean(com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery.class)
+                .diagnosticsForListing(fixture.id("listing")).getFirst().status();
+        assertThat(reopened.taskId()).isEqualTo(task);
+        assertThat(reopened.firstRaisedAt()).isEqualTo(origin);
+        assertThat(reopened.acknowledgedAt()).isNull();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id AND event_kind='RAISED'")
+                .param("id",task).query(Long.class).single()).isEqualTo(1);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id AND event_kind='REOPENED'")
+                .param("id",task).query(Long.class).single()).isEqualTo(1);
+    }
+
+    @Test
     void reacquiringOldNativeEnumerationCannotRenewItsSourceFreshness() throws Exception {
         var identity=applicationContext.getBean(com.mimococo.marketops.productlisting.ListingScopeEvidence.class);
         UUID listing=UUID.randomUUID(), variant=UUID.randomUUID();
