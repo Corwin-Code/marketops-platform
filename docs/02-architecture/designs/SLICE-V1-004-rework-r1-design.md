@@ -763,3 +763,51 @@ recording, and preserves observedAt. Future-source input must still be rejected
 without either provenance or scope writes. Other fact ingress methods were
 scanned; they remain separate pending their own consumer/time-basis audit. This
 bounded repair does not replace every application Clock or rewrite history.
+
+### Checkpoint 31 — original ordinary Task responsibility is an actual consumer
+
+Normal Listing preparation now passes the exact resolved RESPONSIBILITY_SLO and
+RESPONSIBILITY_COVERAGE values to operationsworkflow. The existing sole Task
+intake serializes on its Recommendation, raises the Task once and stores an
+immutable `ops.lc_task_responsibility` binding in the same transaction. The
+binding checks Task/Recommendation/organization, original raised time, Action
+calibration identity and exact source JSON. It has no provider route. Legacy
+Tasks are not backfilled with a policy they never consumed.
+
+The existing StaffedResponseClock computes acknowledgement and substantive-action
+deadlines from explicit positive `acknowledgementMinutes` and `actionMinutes`,
+using the declared timezone, operating days and start/end minute. Ambiguous
+legacy hours/actionDays are not reinterpreted. Missing or malformed values leave
+the relevant clocks unresolved and `work_task.due_at` null instead of now+2 days.
+The accepted `outcomeMaturityDays` supplies a separate planned outcome-review
+deadline in elapsed days; this timer does not qualify observed business maturity
+or any Operational/Settled Outcome.
+
+The scoped Listing responsibility read consumes the frozen deadlines and the
+first attributable ACKNOWLEDGED / ACTION_RECORDED events in the current Task
+episode. Reopen retains the origin and deadlines, but old episode events cannot
+satisfy current acknowledgement/action obligations. Page reads do not acknowledge;
+assignment, recalculation and later review
+do not replace the origin or policy snapshot. Reads locate current coverage with
+the existing calendar and do not repeat deadline calculation. The bilingual
+Console loads on demand, distinguishes unknown breaches from false, and exposes
+explicit acknowledgement through the shared Task scope and journal. Late replies
+from an old actor/action context are discarded.
+
+System-recorded acknowledgement and action events use the Task repository's
+database chronology, matching the consumer. Controlled -120/+120-second writer
+Clock probes establish why a valid event otherwise falls before its origin or
+after the database as-of instant. Source facts and historic event times remain
+unchanged. The first intermittent null read had no offset measurement and is
+not retrospectively claimed to have a proven cause. Reopen state and journal
+records also use one database instant. Generic caller-labelled action input is
+refused for Listing Tasks; business producers retain their qualified action path.
+Task closure requires a current-episode business action or the Recommendation's
+actual cancellation/rejection. Acknowledgement alone cannot close the Task. This
+Task disposition does not release separate business occupations or Outcomes.
+
+This connects ordinary preparation, read, acknowledgement, reassignment and
+independent-review action to the real Task. Continuous-risk activation, qualified
+dependency holds/defer expiry, staffed-personnel release admission and automatic
+risk/opportunity activation remain required work under root 024. Calendar
+configuration alone never proves personnel coverage or grants launch authority.

@@ -28,8 +28,15 @@ public interface ListingActionIntake {
     UUID ensureResponsibilityTask(UUID organizationId, UUID recommendationId, String title,
                                   Instant dueAt, Instant raisedAt);
 
+    /** Raise ordinary Listing work under its exact accepted clock and coverage values. */
+    UUID ensureGovernedResponsibilityTask(UUID organizationId, UUID recommendationId, String title,
+                                         ListingResponsibilityBasis basis, Instant raisedAt);
+
     /** The responsibility Task of a proposal, when one exists. */
     Optional<UUID> taskForRecommendation(UUID recommendationId);
+
+    /** Explicit human acknowledgement through the existing Task authorization and journal. */
+    void acknowledgeResponsibility(AuthenticatedActor actor, UUID recommendationId);
 
     /** A structured action a person performed against the Task, with its evidence. */
     void recordTaskAction(AuthenticatedActor actor, UUID recommendationId, String actionKind,

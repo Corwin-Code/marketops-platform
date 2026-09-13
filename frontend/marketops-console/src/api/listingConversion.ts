@@ -1418,6 +1418,88 @@ export function fetchMeaningReviewBasis(
   return request(context, `${ACTIONS}/${id(actionId)}/review-basis`, parseMeaningReviewBasis);
 }
 
+export interface ListingResponsibility {
+  readonly bound: boolean;
+  readonly status?: {
+    readonly taskId: string;
+    readonly clockState: string;
+    readonly basisDigest: string;
+    readonly calibrationPackageId: string | undefined;
+    readonly calibrationVersion: number | undefined;
+    readonly firstRaisedAt: string;
+    readonly acknowledgementDueAt: string | undefined;
+    readonly actionDueAt: string | undefined;
+    readonly outcomeMaturityDueAt: string | undefined;
+    readonly nextCoveredAt: string | undefined;
+    readonly acknowledgedAt: string | undefined;
+    readonly firstAttributableActionAt: string | undefined;
+    readonly acknowledgementBreached: boolean | undefined;
+    readonly actionBreached: boolean | undefined;
+    readonly wallClockAgeSeconds: number;
+  };
+}
+
+export function parseListingResponsibility(body: unknown): ListingResponsibility | undefined {
+  const r = row(body);
+  if (r?.bound === false) return { bound: false };
+  if (r?.bound !== true) return undefined;
+  const s = row(r.status),
+    taskId = text(s?.taskId),
+    clockState = text(s?.clockState),
+    basisDigest = text(s?.basisDigest),
+    firstRaisedAt = text(s?.firstRaisedAt),
+    age = number(s?.wallClockAgeSeconds);
+  if (
+    s === undefined ||
+    taskId === undefined ||
+    clockState === undefined ||
+    basisDigest === undefined ||
+    firstRaisedAt === undefined ||
+    age === undefined
+  )
+    return undefined;
+  return {
+    bound: true,
+    status: {
+      taskId,
+      clockState,
+      basisDigest,
+      firstRaisedAt,
+      wallClockAgeSeconds: age,
+      calibrationPackageId: text(s.calibrationPackageId),
+      calibrationVersion: number(s.calibrationVersion),
+      acknowledgementDueAt: text(s.acknowledgementDueAt),
+      actionDueAt: text(s.actionDueAt),
+      outcomeMaturityDueAt: text(s.outcomeMaturityDueAt),
+      nextCoveredAt: text(s.nextCoveredAt),
+      acknowledgedAt: text(s.acknowledgedAt),
+      firstAttributableActionAt: text(s.firstAttributableActionAt),
+      acknowledgementBreached:
+        typeof s.acknowledgementBreached === 'boolean' ? s.acknowledgementBreached : undefined,
+      actionBreached: typeof s.actionBreached === 'boolean' ? s.actionBreached : undefined,
+    },
+  };
+}
+
+export function fetchListingResponsibility(
+  context: ConsoleRequest,
+  actionId: string,
+): Promise<ConsoleOutcome<ListingResponsibility>> {
+  return request(context, `${ACTIONS}/${id(actionId)}/responsibility`, parseListingResponsibility);
+}
+
+export function acknowledgeListingResponsibility(
+  context: ConsoleRequest,
+  actionId: string,
+): Promise<ConsoleOutcome<true>> {
+  return request(
+    context,
+    `${ACTIONS}/${id(actionId)}/responsibility/acknowledgement`,
+    (): true => true,
+    { method: 'POST' },
+  );
+}
+
 export function reviewAction(
   context: ConsoleRequest,
   actionId: string,

@@ -95,6 +95,16 @@ public class CalibrationService {
         };
     }
 
+    /** Exact original values; Workflow owns their clock interpretation and persists unresolved states. */
+    public static com.mimococo.marketops.operationsworkflow.ListingResponsibilityBasis responsibilityBasis(Outcome outcome) {
+        if (!outcome.ok()) return new com.mimococo.marketops.operationsworkflow.ListingResponsibilityBasis(null,null,null,null);
+        Resolved resolved=outcome.resolved();
+        var slo=resolved.values().get("RESPONSIBILITY_SLO");
+        var coverage=resolved.values().get("RESPONSIBILITY_COVERAGE");
+        return new com.mimococo.marketops.operationsworkflow.ListingResponsibilityBasis(resolved.packageId(),resolved.version(),
+                slo==null?null:slo.json(),coverage==null?null:coverage.json());
+    }
+
     public static Optional<int[]> lengthBounds(Resolved resolved) {
         CalibrationRepository.Value value = resolved.values().get("DESCRIPTION_LENGTH_RULE");
         if (value == null || value.json() == null || !value.json().has("min") || !value.json().has("max")) {

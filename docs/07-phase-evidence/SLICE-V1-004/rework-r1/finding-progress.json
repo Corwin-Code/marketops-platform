@@ -335,9 +335,13 @@
     {
       "id": "S4-DR-R1-024",
       "title": "责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立",
-      "status": "OPEN",
-      "implementation": [],
-      "executed_evidence": []
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "Checkpoint 31: normal preparation now binds original ordinary Task deadlines to exact governed SLO/calendar values; no fixed now+2 days. The real journal and scoped on-demand read separate acknowledgement/action, preserve origin on reassignment/recalculation/reopen, refuse caller-labelled substitute actions and require current-episode disposition for closure. Database chronology fixes independently reproduced writer-clock offsets. Continuous risk, qualified finite holds/defer, automatic activation/sorting and staffed release coverage remain OPEN."
+      ],
+      "executed_evidence": [
+        "checkpoint-31-test-receipts.json: normal signed workflow, controlled clock offsets, closure/reopen, original Task preservation and shared Workflow regression. Partial ordinary-path evidence only."
+      ]
     },
     {
       "id": "S4-DR-R1-025",
@@ -356,14 +360,16 @@
         "Checkpoint 20: exact append-only promotion observation and current independent manual participation verification reuse the packet/report/Task chain. Unknown terms are retained without matching authority; native/time/source/actor/terms/financial scope are bound. Console captures observations and submits explicit evidence IDs; manual/allowance runbooks corrected. Exit, economics, residual responsibilities, other lawful association paths and complete root closure remain open.",
         "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
         "Checkpoint 26: removes user-entered exposure from Console preparation and request serialization, with Chinese/Russian explanation. Complete semantic-review and financially scoped exposure-evidence journeys remain open.",
-        "Checkpoint 27: adds scoped on-demand Russian full before/after and commercial-term review basis, Chinese/Russian condition answers/reasons/reference/coverage, unknown submission guard and stale actor-result rejection. Complete evidence history and remaining Console journeys still open."
+        "Checkpoint 27: adds scoped on-demand Russian full before/after and commercial-term review basis, Chinese/Russian condition answers/reasons/reference/coverage, unknown submission guard and stale actor-result rejection. Complete evidence history and remaining Console journeys still open.",
+        "Checkpoint 31: Chinese/Russian on-demand original Task clock read and explicit acknowledgement are connected to ordinary Action detail, with unknown states and stale actor/action reply rejection. Complete Task/hold/coverage and remaining Console journeys remain OPEN."
       ],
       "executed_evidence": [
         "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
         "checkpoint-18-test-receipts.json: signed two-kind preparation/review/approval/manual launch/packet/entry, exact reference preservation, current product-scope/revocation, immutable declaration, no command/provider call. Full affected authorization and targeted frontend/launch/architecture/upgrade pass; see run-specific limitations.",
         "checkpoint-20-test-receipts.json: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role, 1 historical upgrade and 30 frontend checks pass; lint/build pass. Initial generated-column and stale-inventory failures diagnosed and corrected. No provider/production/final closure claim.",
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence."
+        "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
+        "checkpoint-31-test-receipts.json: 39 frontend cases across four files, build/lint PASS; scoped responsibility HTTP flow and acknowledgement scope refusal. No complete browser journey claim."
       ]
     },
     {
@@ -380,7 +386,8 @@
         "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open.",
         "Checkpoint 27: 66 signed HTTP, 2 condition/binding SQL, 113 launch/domain/architecture, 10 schema and 1 upgrade passed; 35 frontend cases, build and typed lint passed. Fixed diagnostics retained in the receipt. Complete final-head regression remains open.",
         "Checkpoint 28: 79 signed HTTP/Guardrail and 113 launch/domain/architecture passed. JDBC time binding, strict authority snapshot rejection and test-history isolation diagnostics retained; one unconfirmed native-scope failure remains explicitly tracked. No schema/frontend change or needless repeat of their suites.",
-        "Checkpoint 29: 2 deterministic red cases before the time fix, 4 targeted cases after it, then 75 signed HTTP and 80 domain/architecture cases passed. Source hashes, commands and limitation retained in checkpoint-29 receipt. No blind repetition of the original intermittent test."
+        "Checkpoint 29: 2 deterministic red cases before the time fix, 4 targeted cases after it, then 75 signed HTTP and 80 domain/architecture cases passed. Source hashes, commands and limitation retained in checkpoint-29 receipt. No blind repetition of the original intermittent test.",
+        "Checkpoint 31: original Task/SLO provenance, historical no-backfill behavior, disposition/reopen chain and inherited migration inventory are recorded separately from unimplemented risk/hold/activation and final verification work."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
@@ -396,7 +403,8 @@
         "checkpoint-26-test-receipts.json: bounded final runs, immutable original-input verification and diagnosed initial failures preserved; no complete LOCAL_VERIFIED claim.",
         "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
         "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure.",
-        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure."
+        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure.",
+        "checkpoint-31-test-receipts.json: finite affected verification stages, failures and independent chronology reproduction retained. Immutable input and 107 historical migration byte checks pass; no final closure claim."
       ]
     }
   ],

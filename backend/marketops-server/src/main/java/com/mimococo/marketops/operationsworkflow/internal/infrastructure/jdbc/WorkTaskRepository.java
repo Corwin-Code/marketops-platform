@@ -27,6 +27,11 @@ public class WorkTaskRepository {
         this.jdbc = jdbc;
     }
 
+    /** System-recorded Task events and their database-time consumers share one chronology. */
+    public Instant databaseNow() {
+        return jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
+    }
+
     /** Raise a task from a proposal. */
     public void insert(UUID id, UUID organizationId, UUID recommendationId, String title,
                        Instant dueAt, Instant now) {

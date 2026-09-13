@@ -48,7 +48,20 @@ class ListingAtomicLaunchUpgradeIT {
                 SELECT jsonb_agg(to_jsonb(v) ORDER BY v.category_code)::text FROM core.lc_calibration_value v
                   WHERE package_id=:id AND category_code IN ('ORDINARY_TRIGGER_CONTENT','MATERIAL_TRIGGER_CONTENT')
                 """).param("id",legacy.id("calibrationPackage")).query(String.class).single();
+        UUID historicalTask=UUID.randomUUID();
+        legacy.app.sql("""
+                INSERT INTO ops.work_task(id,organization_id,recommendation_id,title,state,due_at,created_at,updated_at)
+                VALUES (:task,:org,:recommendation,'Historical unbound Listing responsibility','OPEN',
+                    now()+interval '2 days',now()-interval '1 day',now()-interval '1 day')
+                """).param("task",historicalTask).param("org",legacy.id("organization"))
+                .param("recommendation",legacy.id("recommendationOne")).update();
+        String historicalTaskBefore=legacy.app.sql("SELECT to_jsonb(t)::text FROM ops.work_task t WHERE id=:id")
+                .param("id",historicalTask).query(String.class).single();
         Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
+        assertThat(legacy.app.sql("SELECT to_jsonb(t)::text FROM ops.work_task t WHERE id=:id")
+                .param("id",historicalTask).query(String.class).single()).isEqualTo(historicalTaskBefore);
+        assertThat(legacy.app.sql("SELECT count(*) FROM ops.lc_task_responsibility WHERE task_id=:id")
+                .param("id",historicalTask).query(Integer.class).single()).isZero();
         assertThat(legacy.app.sql("""
                 SELECT jsonb_agg(to_jsonb(v) ORDER BY v.category_code)::text FROM core.lc_calibration_value v
                   WHERE package_id=:id AND category_code IN ('ORDINARY_TRIGGER_CONTENT','MATERIAL_TRIGGER_CONTENT')

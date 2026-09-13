@@ -53,13 +53,16 @@ class ListingActionIntakeService implements ListingActionIntake {
     private final IdGenerator ids;
     private final Clock clock;
     private final ObjectMapper json;
+    private final ListingTaskSloService listingClocks;
+    private final WorkTaskService taskService;
 
     ListingActionIntakeService(RecommendationRepository recommendations,
                                RecommendationService recommendationService,
                                WorkTaskRepository tasks,
                                WorkTaskEventRepository journal,
                                MetadataAuditRecorder auditRecorder,
-                               IdGenerator ids, Clock clock, ObjectMapper json) {
+                               IdGenerator ids, Clock clock, ObjectMapper json, ListingTaskSloService listingClocks,
+                               WorkTaskService taskService) {
         this.recommendations = recommendations;
         this.recommendationService = recommendationService;
         this.tasks = tasks;
@@ -68,6 +71,8 @@ class ListingActionIntakeService implements ListingActionIntake {
         this.ids = ids;
         this.clock = clock;
         this.json = json;
+        this.listingClocks = listingClocks;
+        this.taskService = taskService;
     }
 
     @Override
@@ -130,24 +135,43 @@ class ListingActionIntakeService implements ListingActionIntake {
     @Transactional
     public UUID ensureResponsibilityTask(UUID organizationId, UUID recommendationId, String title,
                                          Instant dueAt, Instant raisedAt) {
+        return ensureTask(organizationId,recommendationId,title,dueAt,raisedAt,null);
+    }
+
+    @Override
+    @Transactional
+    public UUID ensureGovernedResponsibilityTask(UUID organizationId, UUID recommendationId, String title,
+            com.mimococo.marketops.operationsworkflow.ListingResponsibilityBasis basis, Instant raisedAt) {
+        return ensureTask(organizationId,recommendationId,title,null,raisedAt,java.util.Objects.requireNonNull(basis));
+    }
+
+    private UUID ensureTask(UUID organizationId, UUID recommendationId, String title, Instant legacyDueAt, Instant raisedAt,
+            com.mimococo.marketops.operationsworkflow.ListingResponsibilityBasis basis) {
+        listingClocks.lockRecommendation(organizationId,recommendationId);
         List<WorkTaskView> existing = tasks.forRecommendation(recommendationId);
         if (!existing.isEmpty()) {
             WorkTaskView task = existing.getFirst();
             if (List.of("DONE", "CANCELLED").contains(task.state())) {
-                tasks.reopen(task.id(), clock.instant(), task.version());
+                Instant reopenedAt=tasks.databaseNow();
+                if (!tasks.reopen(task.id(), reopenedAt, task.version())) {
+                    throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+                }
                 journal.append(new WorkTaskEventRepository.Event(ids.newId(), task.id(), organizationId,
                         "REOPENED", "recommendation:" + recommendationId, null, null, null, null, null,
-                        null, null, null, null, "the same listing cause recurred", clock.instant(),
+                        null, null, null, null, "the same listing cause recurred", reopenedAt,
                         "listing-task-reopened:" + recommendationId));
             }
             return task.id();
         }
         UUID taskId = ids.newId();
         String validTitle = MetadataFieldPolicy.requireText("title", title);
-        tasks.insert(taskId, organizationId, recommendationId, validTitle, dueAt, raisedAt);
+        var schedule=basis==null?null:listingClocks.schedule(raisedAt,basis);
+        tasks.insert(taskId, organizationId, recommendationId, validTitle,
+                schedule==null?legacyDueAt:schedule.actionDueAt(), raisedAt);
         journal.append(new WorkTaskEventRepository.Event(ids.newId(), taskId, organizationId, "RAISED",
                 "recommendation:" + recommendationId, null, null, null, null, null, null, null, null,
                 null, validTitle, raisedAt, "recommendation:" + recommendationId));
+        if (schedule!=null) listingClocks.bind(taskId,organizationId,recommendationId,raisedAt,basis,schedule);
         return taskId;
     }
 
@@ -155,6 +179,14 @@ class ListingActionIntakeService implements ListingActionIntake {
     @Transactional(readOnly = true)
     public Optional<UUID> taskForRecommendation(UUID recommendationId) {
         return tasks.forRecommendation(recommendationId).stream().map(WorkTaskView::id).findFirst();
+    }
+
+    @Override
+    @Transactional
+    public void acknowledgeResponsibility(AuthenticatedActor actor, UUID recommendationId) {
+        UUID task=taskForRecommendation(recommendationId)
+                .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        taskService.acknowledge(actor,task);
     }
 
     @Override
@@ -169,7 +201,7 @@ class ListingActionIntakeService implements ListingActionIntake {
                 MetadataFieldPolicy.requireText("actionKind", actionKind),
                 json.writeValueAsString(Map.of("reference", reference)), reference, null, null, null,
                 null, actor.userId(), null, MetadataFieldPolicy.requireText("reason", reason),
-                clock.instant(), "listing-task-action:" + task.id()));
+                tasks.databaseNow(), "listing-task-action:" + task.id()));
     }
 
     @Override

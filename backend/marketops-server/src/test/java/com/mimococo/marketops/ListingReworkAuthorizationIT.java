@@ -889,6 +889,128 @@ class ListingReworkAuthorizationIT {
         prepareDescriptionForExposure(new java.math.BigDecimal("0.01"));
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(ints={-120,120})
+    void normalPreparationBindsOriginalTaskClocksAndAcknowledgementIsNotAnAction(int clockOffsetSeconds) throws Exception {
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ZERO);
+        String endpoint="/api/v1/console/listing/actions/"+action+"/responsibility";
+        var json=new tools.jackson.databind.ObjectMapper();
+        var response=mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.bound").value(true))
+                .andReturn().getResponse().getContentAsString();
+        var original=json.readTree(response).path("status");
+        UUID task=UUID.fromString(original.path("taskId").asText());
+        UUID recommendation=jdbc.sql("SELECT recommendation_id FROM ops.lc_action WHERE id=:id")
+                .param("id",action).query(UUID.class).single();
+        Instant raised=Instant.parse(original.path("firstRaisedAt").asText());
+        var clocks=applicationContext.getBean(com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery.class);
+        var after=clocks.statusForRecommendation(recommendation,
+                Instant.parse(original.path("actionDueAt").asText()).plusSeconds(1)).orElseThrow();
+        assertThat(after.acknowledgementBreached()).isTrue();
+        assertThat(after.actionBreached()).isTrue();
+        assertThat(after.outcomeMaturityDueAt()).isEqualTo(raised.plus(java.time.Duration.ofDays(30)));
+        assertThat(jdbc.sql("SELECT due_at FROM ops.work_task WHERE id=:id").param("id",task)
+                .query(java.sql.Timestamp.class).single().toInstant()).isEqualTo(after.actionDueAt());
+        assertThat(original.path("acknowledgedAt").isNull()).isTrue();
+        assertThat(original.path("firstAttributableActionAt").isNull()).isTrue();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id AND event_kind='ACKNOWLEDGED'")
+                .param("id",task).query(Long.class).single()).isZero();
+
+        // Listing view alone cannot grant the existing shared Task action scope.
+        mvc.perform(post(endpoint+"/acknowledgement").header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isForbidden());
+        users.grantScope(OPERATOR,userId,ActionScopeCode.TASK_ASSIGN,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        Object taskService=org.springframework.test.util.AopTestUtils.getUltimateTargetObject(applicationContext.getBean("workTaskService"));
+        var originalClock=(java.time.Clock)org.springframework.test.util.ReflectionTestUtils.getField(taskService,"clock");
+        try {
+            org.springframework.test.util.ReflectionTestUtils.setField(taskService,"clock",
+                    java.time.Clock.offset(originalClock,java.time.Duration.ofSeconds(clockOffsetSeconds)));
+            mvc.perform(post(endpoint+"/acknowledgement").header(HttpHeaders.AUTHORIZATION,bearer()))
+                    .andExpect(status().isNoContent());
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(taskService,"clock",originalClock);
+        }
+        var acknowledged=clocks.statusForRecommendation(recommendation).orElseThrow();
+        assertThat(acknowledged.acknowledgedAt()).withFailMessage("Task acknowledgement chronology: %s",
+                jdbc.sql("""
+                        SELECT jsonb_build_object('origin',r.first_raised_at,'recorded',r.recorded_at,
+                          'databaseNow',clock_timestamp(),'acknowledgements',
+                          (SELECT jsonb_agg(e.occurred_at) FROM ops.work_task_event e
+                             WHERE e.task_id=r.task_id AND e.event_kind='ACKNOWLEDGED'))::text
+                        FROM ops.lc_task_responsibility r WHERE r.task_id=:id
+                        """).param("id",task).query(String.class).single()).isNotNull();
+        assertThat(acknowledged.firstAttributableActionAt()).isNull();
+        String closureEndpoint="/api/v1/console/workflow/tasks/"+task+"/closure";
+        mvc.perform(post(closureEndpoint).header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of(
+                        "done",true,"closureReason","Acknowledgement is not disposition","expectedVersion",0))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/api/v1/console/advertising/tasks/"+task+"/action")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("actionKind","DECISION_ENDORSED",
+                        "evidenceReference","evidence://synthetic/caller-labelled",
+                        "reason","Caller text cannot substitute for qualified Listing review"))))
+                .andExpect(status().isForbidden());
+        assertThat(clocks.statusForRecommendation(recommendation).orElseThrow().firstAttributableActionAt()).isNull();
+        for (int version=0;version<2;version++) {
+            UUID assignee=version==0?fixture.id("ownerUser"):fixture.id("executorUser");
+            mvc.perform(post("/api/v1/console/workflow/tasks/"+task+"/assignment")
+                    .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(Map.of("assigneeUserId",assignee,"expectedVersion",version))))
+                    .andExpect(status().isNoContent());
+        }
+        assertThat(clocks.statusForRecommendation(recommendation).orElseThrow().firstRaisedAt()).isEqualTo(raised);
+        assertThat(clocks.statusForRecommendation(recommendation).orElseThrow().basisDigest())
+                .isEqualTo(original.path("basisDigest").asText());
+        var resolved=calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now());
+        UUID same=listingIntake.ensureGovernedResponsibilityTask(fixture.id("organization"),recommendation,
+                "Recalculation must retain original responsibility",
+                com.mimococo.marketops.listingconversion.internal.application.CalibrationService.responsibilityBasis(resolved),
+                raised.plusSeconds(600));
+        assertThat(same).isEqualTo(task);
+        assertThat(clocks.statusForRecommendation(recommendation).orElseThrow().firstRaisedAt()).isEqualTo(raised);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task WHERE recommendation_id=:id")
+                .param("id",recommendation).query(Long.class).single()).isEqualTo(1);
+        assertThatThrownBy(()->fixture.seed.sql("UPDATE ops.lc_task_responsibility SET first_raised_at=first_raised_at+interval '1 hour' WHERE task_id=:id")
+                .param("id",task).update()).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+
+        UUID reviewer=independentMeaningReviewer();
+        Object intake=org.springframework.test.util.AopTestUtils.getUltimateTargetObject(listingIntake);
+        var intakeClock=(java.time.Clock)org.springframework.test.util.ReflectionTestUtils.getField(intake,"clock");
+        try {
+            org.springframework.test.util.ReflectionTestUtils.setField(intake,"clock",
+                    java.time.Clock.offset(intakeClock,java.time.Duration.ofSeconds(clockOffsetSeconds)));
+            mvc.perform(post("/api/v1/console/listing/actions/"+action+"/review").header(HttpHeaders.AUTHORIZATION,bearer())
+                    .contentType(MediaType.APPLICATION_JSON).content(meaningReviewRequest(action,false)))
+                    .andExpect(status().isOk());
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(intake,"clock",intakeClock);
+        }
+        assertThat(clocks.statusForRecommendation(recommendation).orElseThrow().firstAttributableActionAt()).isNotNull();
+        assertThat(clocks.statusForRecommendation(recommendation).orElseThrow().acknowledgedAt())
+                .isEqualTo(acknowledged.acknowledgedAt());
+        users.grantScope(OPERATOR,reviewer,ActionScopeCode.TASK_ASSIGN,ResourceScopeType.ORGANIZATION,fixture.id("organization"),null);
+        mvc.perform(post(closureEndpoint).header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of(
+                        "done",true,"closureReason","Qualified review completed the proposal work","expectedVersion",2))))
+                .andExpect(status().isNoContent());
+        assertThat(listingIntake.ensureGovernedResponsibilityTask(fixture.id("organization"),recommendation,
+                "Recurring work retains the original clock",
+                com.mimococo.marketops.listingconversion.internal.application.CalibrationService.responsibilityBasis(resolved),
+                raised.plusSeconds(1200))).isEqualTo(task);
+        var reopened=clocks.statusForRecommendation(recommendation).orElseThrow();
+        assertThat(reopened.firstRaisedAt()).isEqualTo(raised);
+        assertThat(reopened.basisDigest()).isEqualTo(original.path("basisDigest").asText());
+        assertThat(reopened.acknowledgedAt()).isNull();
+        assertThat(reopened.firstAttributableActionAt()).isNull();
+        assertThat(clocks.statusForRecommendation(recommendation,reopened.actionDueAt().plusSeconds(1))
+                .orElseThrow().actionBreached()).isTrue();
+        mvc.perform(post(closureEndpoint).header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of(
+                        "done",true,"closureReason","Old action cannot close recurring work","expectedVersion",4))))
+                .andExpect(status().isForbidden());
+    }
+
     private UUID prepareDescriptionForExposure(java.math.BigDecimal reportedExposure) throws Exception {
         return prepareDescriptionForExposure(reportedExposure,ListingConversionFixture.PRIOR_TEXT_ONE+".");
     }

@@ -25,6 +25,7 @@ import {
 } from '../api/listingConversion';
 import { Code, ListingProblem, When, YesNo } from './ListingCommon';
 import { ListingMeaningReview } from './ListingMeaningReview';
+import { ListingResponsibility } from './ListingResponsibility';
 import { PromotionDeclaration, PromotionPreparationForm } from './ListingPromotionTerms';
 import { useLanguage } from './i18n/language';
 import { t, type UiKey } from './i18n/ui';
@@ -451,6 +452,7 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
             <Code family="executionPath" code={action.executionPath} /> ·{' '}
             <Code family="materialityRoute" code={action.materialityRoute} />
           </h3>
+          <ListingResponsibility context={context} actionId={actionId} />
           {action.actionKind === 'LISTING_PROMOTION_ACTION' && (
             <PromotionDeclaration
               key={actionId}

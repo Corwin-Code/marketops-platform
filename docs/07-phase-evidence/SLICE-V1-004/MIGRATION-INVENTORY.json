@@ -70,5 +70,245 @@
     "result": "V0001-V0079 applied cleanly in order, one transaction per file",
     "testcontainers_flyway_it": "NOT_RUN (no container runtime in this session; FlywayMigrationIT compiled with APPROVED_MIGRATIONS extended to V0079)"
   },
-  "rollback": "Forward-only. Every new object is additive under the lc_ prefix or a widening CHECK/vocabulary insert; a corrective change is a later forward migration, never an edit of V0074-V0079 once applied outside this session."
+  "rollback": "Forward-only. Every new object is additive under the lc_ prefix or a widening CHECK/vocabulary insert; a corrective change is a later forward migration, never an edit of V0074-V0079 once applied outside this session.",
+  "rework_r1": {
+    "status": "IN_PROGRESS_NOT_FINAL_CLOSURE",
+    "reviewed_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
+    "preserved_reviewed_migrations": "V0001-V0079",
+    "committed_migrations_through_V0107_byte_changes_at_checkpoint_31": 0,
+    "forward_migrations": [
+      {
+        "version": "V0080",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+        "bytes": 1716,
+        "lines": 28,
+        "sha256": "295998bbb6c6f575e528bd0165d92bfb10ca6606bb4c09087884dcf4d51d70b6",
+        "forward_only": true
+      },
+      {
+        "version": "V0081",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0081__record_listing_measurement_coverage_and_lineage.sql",
+        "bytes": 5183,
+        "lines": 84,
+        "sha256": "c5b8687ee491e360bfbc6e246acd25142d6ea9d6094cdce498e3055f198e8089",
+        "forward_only": true
+      },
+      {
+        "version": "V0082",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0082__govern_listing_calibration_acceptance_and_activation.sql",
+        "bytes": 23045,
+        "lines": 325,
+        "sha256": "fae2e1631dd0927bf846e20b39816e21782efee44191239abe34bdea4a8f019d",
+        "forward_only": true
+      },
+      {
+        "version": "V0083",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+        "bytes": 5007,
+        "lines": 95,
+        "sha256": "50677228b1f3ffa66fee76535d6cf9382cf91464c9e713631720871a2663e07e",
+        "forward_only": true
+      },
+      {
+        "version": "V0084",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0084__persist_provider_description_retry_timing.sql",
+        "bytes": 15868,
+        "lines": 291,
+        "sha256": "e21a1e098dcbe353e69ec34f09b2310bd55322037d7ed3f08bc27da781b865ef",
+        "forward_only": true
+      },
+      {
+        "version": "V0085",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0085__scope_listing_description_feature_flags.sql",
+        "bytes": 7639,
+        "lines": 131,
+        "sha256": "26e682d71d6dcda59e67663dba4e68cbe86fe73faf014b642e4bf5fb789968c8",
+        "forward_only": true
+      },
+      {
+        "version": "V0086",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0086__preserve_frozen_listing_evaluation_semantics.sql",
+        "bytes": 1377,
+        "lines": 31,
+        "sha256": "6055728df90313f53e3e5aa528dbde19eec2bd05c80b05b54adb589efd4fe62e",
+        "forward_only": true
+      },
+      {
+        "version": "V0087",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0087__bind_listing_measurement_lineage_identity.sql",
+        "bytes": 2840,
+        "lines": 49,
+        "sha256": "9dc23ab4a2c1fbd95d00db6023cef755eb21606996740e41f3decf5ca673df11",
+        "forward_only": true
+      },
+      {
+        "version": "V0088",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0088__bind_listing_review_and_approval_to_frozen_plan.sql",
+        "bytes": 7014,
+        "lines": 137,
+        "sha256": "c32e3841040211625641592d042e8e9ffb757ab52b10f232b16999163db44119",
+        "forward_only": true
+      },
+      {
+        "version": "V0089",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0089__retain_listing_node_evaluation_qualification.sql",
+        "bytes": 1435,
+        "lines": 28,
+        "sha256": "f930374c4e5269efd4027a0918c7323c0a7f3da6f2f305382567b420d5a08406",
+        "forward_only": true
+      },
+      {
+        "version": "V0090",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0090__bind_manual_listing_verification_to_exact_observations.sql",
+        "bytes": 6663,
+        "lines": 99,
+        "sha256": "47f225df2de666a763b5d97d0a335fa4a181179698e2376f47a41be50cafb6b2",
+        "forward_only": true
+      },
+      {
+        "version": "V0091",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0091__create_listing_command_atomically_with_its_launch.sql",
+        "bytes": 13761,
+        "lines": 244,
+        "sha256": "d5c4008c8dac715ff4d69e5ef0905b4777466910dbcd015db8d18450f21d8c23",
+        "forward_only": true
+      },
+      {
+        "version": "V0092",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0092__bind_description_response_to_frozen_native_identity.sql",
+        "bytes": 21132,
+        "lines": 354,
+        "sha256": "ad7bab92dbe33003c507c3c0efd7a7aaf983d37bebbe9579432d9854aa212913",
+        "forward_only": true
+      },
+      {
+        "version": "V0093",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0093__govern_description_protocol_configuration.sql",
+        "bytes": 24600,
+        "lines": 278,
+        "sha256": "2797bf4e16c54a20ce0c2f69d75ce3657f7ca9949f7dda31b8723ccfa65405a9",
+        "forward_only": true
+      },
+      {
+        "version": "V0094",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0094__bind_description_requests_to_exact_verified_schema.sql",
+        "bytes": 34718,
+        "lines": 453,
+        "sha256": "8e3727fbb0f211dd784322c156400d041dd0613486b41407a3aa0e37ed9afe0a",
+        "forward_only": true
+      },
+      {
+        "version": "V0095",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0095__retain_exact_description_task_query_evidence.sql",
+        "bytes": 36141,
+        "lines": 523,
+        "sha256": "194b67767508c70ca24f19bccf022313c832103b4cbc8495a997aaeaf9c0138a",
+        "forward_only": true
+      },
+      {
+        "version": "V0096",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0096__project_qualified_description_execution_results.sql",
+        "bytes": 21854,
+        "lines": 324,
+        "sha256": "7906769cb9a9d7fa29e7824978dfdb336c80887be33711df03fbd2c14f1239d5",
+        "forward_only": true
+      },
+      {
+        "version": "V0097",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0097__bind_exact_restoration_to_a_new_approved_action.sql",
+        "bytes": 36621,
+        "lines": 536,
+        "sha256": "d20cd5f8c0b42dc1519d3ae354a6d55ff8061c8221785e660d50f5565d3df273",
+        "forward_only": true
+      },
+      {
+        "version": "V0098",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0098__accumulate_listing_allowance_across_configuration_versions.sql",
+        "bytes": 17635,
+        "lines": 284,
+        "sha256": "fef2c8cf80af2592cf56b0c1459b6c32f016002586426213b04cc165e4cc1c05",
+        "forward_only": true
+      },
+      {
+        "version": "V0099",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0099__freeze_promotion_declarations_before_review.sql",
+        "bytes": 7829,
+        "lines": 129,
+        "sha256": "9d870efe9e7a45b68ec9b6f2b6be23273e0940ada99c15ebde3b0a3092321ac1",
+        "forward_only": true
+      },
+      {
+        "version": "V0100",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+        "bytes": 16500,
+        "lines": 237,
+        "sha256": "0b9c271be9db0665c8a84d50ebd6ba3d9c7b12ffc7f8b7a885a85f174db378f1",
+        "forward_only": true
+      },
+      {
+        "version": "V0101",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0101__retain_conditional_promotion_simulation_basis.sql",
+        "bytes": 1449,
+        "lines": 24,
+        "sha256": "a799471e0d5f52660d25405392273690cf02e8db8c97626164258b3745ccd47e",
+        "forward_only": true
+      },
+      {
+        "version": "V0102",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0102__bind_listing_scope_to_native_enumeration_evidence.sql",
+        "bytes": 12361,
+        "lines": 171,
+        "sha256": "6f886e4b037e49fd9b049c1b3fe541bb53b5e6e50155210eabf386a0e520cac2",
+        "forward_only": true
+      },
+      {
+        "version": "V0103",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0103__recheck_exact_listing_calibration_dependencies.sql",
+        "bytes": 15758,
+        "lines": 251,
+        "sha256": "cea6a88e247fb86f8544304df9434271064b184598531258ce81f0f6b9dbf44c",
+        "forward_only": true
+      },
+      {
+        "version": "V0104",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0104__validate_calibration_combinations_for_their_declared_purpose.sql",
+        "bytes": 2334,
+        "lines": 32,
+        "sha256": "61159bd5a1055e826670ead1dfcee3819141566012c8b3abf7cce021a1c86ca8",
+        "forward_only": true
+      },
+      {
+        "version": "V0105",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0105__fence_listing_recalculation_result_publication.sql",
+        "bytes": 2238,
+        "lines": 38,
+        "sha256": "35ffb1ba0cb6769770dd991fa188870097d002234bef7f0fc9110e8fe062633a",
+        "forward_only": true
+      },
+      {
+        "version": "V0106",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0106__retain_canonical_listing_materiality_exposure.sql",
+        "bytes": 1468,
+        "lines": 24,
+        "sha256": "13c86aaf5b488f7ae29c62731735efc2e5af65b3f97898eabcae5c8019be88f7",
+        "forward_only": true
+      },
+      {
+        "version": "V0107",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0107__bind_listing_classification_to_structured_meaning_review.sql",
+        "bytes": 18043,
+        "lines": 306,
+        "sha256": "f4cdeba111deb8dab4e78a31ba7844e9f6f9478611eefa84df208be9fca0e133",
+        "forward_only": true
+      },
+      {
+        "version": "V0108",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0108__freeze_listing_task_responsibility_clocks.sql",
+        "bytes": 4227,
+        "lines": 64,
+        "sha256": "6fa1a5d8a3939a8d5473515d833a5ac8adb1e46a787a6bb619184ce0dabee416",
+        "forward_only": true
+      }
+    ]
+  }
 }

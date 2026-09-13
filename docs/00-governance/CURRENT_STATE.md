@@ -50,7 +50,7 @@ slice_v1_004_owner_decision_count: 85
 slice_v1_004_decision_085: B
 slice_v1_004_scope_deltas_not_required: DELTA_01_DELTA_02_DELTA_03
 slice_v1_004_evidence_obligations_open: F_M01_F_M02_F_S01_F_W01_F_W02_E_04
-slice_v1_004_migrations: V0074_THROUGH_V0079
+slice_v1_004_migrations: V0074_THROUGH_V0108
 slice_v1_004_as_built_design: docs/02-architecture/designs/SLICE-V1-004-design.md
 slice_v1_004_acceptance_status: docs/07-phase-evidence/SLICE-V1-004/acceptance-status.md
 slice_v1_004_executable_evidence: docs/07-phase-evidence/SLICE-V1-004/executable-evidence.md
@@ -961,3 +961,15 @@ unit, 76 architecture and 12 PostgreSQL flow cases pass; the flow's historical
 fixture dates were repaired after a diagnosed time-dependent failure. Complete
 Listing business protection remains open. See checkpoint-30 receipts; local-only
 authority and all production-write restrictions continue unchanged.
+
+SLICE-V1-004 continuous local rework update: checkpoint-31 connects ordinary
+Listing preparation to frozen original Task SLO/calendar values, scoped bilingual
+clock read and explicit acknowledgement. Real business disposition gates closure;
+reopen retains original deadlines and needs new episode evidence. System event
+chronology uses database time. Historical Tasks remain unchanged and unbound.
+211 distinct affected backend and 39 frontend cases pass across documented
+stages; build/lint pass. The three immutable input hashes, 107 prior migration
+files and 29 forward migration inventory entries are verified. Continuous-risk
+timing, finite qualified hold/defer, automatic activation, actual release coverage
+and final whole-scope verification remain unfinished. 23 findings are IN_PROGRESS,
+4 OPEN, none closed. See checkpoint-31 receipts; Level 1 boundaries remain in force.

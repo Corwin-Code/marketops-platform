@@ -59,13 +59,19 @@ class ListingActionConsoleController {
     private final EvaluationService evaluations;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility;
+    private final com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake;
 
     ListingActionConsoleController(ListingActionService actions, EvaluationService evaluations,
-                                   BusinessAuthorization authorization, MetadataAuditRecorder audit) {
+                                   BusinessAuthorization authorization, MetadataAuditRecorder audit,
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
+                                   com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake) {
         this.actions = actions;
         this.evaluations = evaluations;
         this.authorization = authorization;
         this.audit = audit;
+        this.responsibility = responsibility;
+        this.taskIntake = taskIntake;
     }
 
     // ------------------------------------------------------------------ candidates
@@ -145,6 +151,22 @@ class ListingActionConsoleController {
         ListingActionView result = actions.require(actor, actionId);
         auditRead(actor, "lc-action", actionId, "action");
         return result;
+    }
+
+    @Transactional
+    @GetMapping(value = "/{actionId}/responsibility", produces = MediaType.APPLICATION_JSON_VALUE)
+    Map<String,Object> responsibility(AuthenticatedActor actor, @PathVariable UUID actionId) {
+        ListingActionView action=actions.require(actor,actionId);
+        var status=responsibility.statusForRecommendation(action.recommendationId());
+        auditRead(actor,"lc-task-responsibility",actionId,"original responsibility clocks");
+        return status.<Map<String,Object>>map(value->Map.of("bound",true,"status",value)).orElseGet(()->Map.of("bound",false));
+    }
+
+    @PostMapping(value = "/{actionId}/responsibility/acknowledgement")
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
+    void acknowledgeResponsibility(AuthenticatedActor actor, @PathVariable UUID actionId) {
+        var action=actions.require(actor,actionId);
+        taskIntake.acknowledgeResponsibility(actor,action.recommendationId());
     }
 
     @Transactional

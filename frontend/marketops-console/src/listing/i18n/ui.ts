@@ -2,6 +2,37 @@ import type { Language } from './language';
 
 /** Every string the listing console shows that is not a backend code. */
 const STRINGS = {
+  responsibilityLoad: { zh: '读取原责任时钟', ru: 'Загрузить исходные сроки ответственности' },
+  responsibilityAcknowledge: { zh: '确认承接此责任', ru: 'Принять эту ответственность' },
+  responsibilityUnbound: {
+    zh: '此历史任务未绑定合格责任时钟，不能推定期限或未逾期。',
+    ru: 'Для этой исторической задачи нет подтверждённых исходных сроков. Сроки и отсутствие просрочки не установлены.',
+  },
+  responsibilityIn: { zh: '当前处于配置覆盖时段', ru: 'Сейчас действует заданное время покрытия' },
+  responsibilityOut: { zh: '当前不在配置覆盖时段', ru: 'Сейчас вне заданного времени покрытия' },
+  responsibilitySloUnknown: {
+    zh: '责任时限政策未确定',
+    ru: 'Политика сроков ответственности не определена',
+  },
+  responsibilityCoverageUnknown: { zh: '覆盖日历未确定', ru: 'Календарь покрытия не определён' },
+  responsibilityHelp: {
+    zh: '承接、实质行动和结果成熟分别记录；转派不重置原起点。日历配置不证明人员值守或发布许可。',
+    ru: 'Принятие ответственности, существенное действие и созревание результата учитываются отдельно. Переназначение не меняет исходную точку. Календарь не подтверждает наличие дежурного или разрешение на публикацию.',
+  },
+  responsibilityTask: { zh: '原责任任务', ru: 'Исходная задача' },
+  responsibilityOrigin: { zh: '原责任起点', ru: 'Начало ответственности' },
+  responsibilityAckDue: { zh: '承接期限', ru: 'Срок принятия ответственности' },
+  responsibilityActionDue: { zh: '实质行动期限', ru: 'Срок существенного действия' },
+  responsibilityOutcomeDue: { zh: '结果成熟检查期限', ru: 'Срок проверки зрелости результата' },
+  responsibilityNext: { zh: '下一覆盖时间', ru: 'Следующее время покрытия' },
+  responsibilityAck: { zh: '已记录承接时间', ru: 'Зафиксированное принятие ответственности' },
+  responsibilityAction: { zh: '首项实质行动时间', ru: 'Первое существенное действие' },
+  responsibilityAckLate: { zh: '承接是否逾期', ru: 'Просрочено ли принятие ответственности' },
+  responsibilityActionLate: { zh: '实质行动是否逾期', ru: 'Просрочено ли существенное действие' },
+  responsibilityBasis: {
+    zh: '原校准版本与依据摘要',
+    ru: 'Исходная версия калибровки и отпечаток основания',
+  },
   meaningLoad: { zh: '读取含义审核依据', ru: 'Загрузить основания проверки смысла' },
   meaningCurrent: { zh: '审核绑定的当前俄语全文', ru: 'Текущий русский текст для проверки' },
   meaningTarget: { zh: '审核绑定的目标俄语全文', ru: 'Предлагаемый русский текст для проверки' },

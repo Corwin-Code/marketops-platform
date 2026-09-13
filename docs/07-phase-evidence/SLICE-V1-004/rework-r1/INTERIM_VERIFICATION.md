@@ -408,3 +408,37 @@ No upper limit of one was invented for the period-based return ratio. This is a
 prerequisite repair under root 007, whose complete Listing-purpose/profit/return/
 upside-demand protection connection remains OPEN. No root closure is claimed.
 Exact commands, failed runs and final file hashes: checkpoint-30-test-receipts.json.
+
+## Ordinary Task responsibility consumption checkpoint 31
+
+Normal preparation now freezes the exact governed ordinary SLO/calendar alongside
+the existing Task, replacing its fixed two-day deadline. The actual journal and
+scoped bilingual view separate acknowledgement from business action. Assignment,
+recalculation and reopen preserve the original origin/deadlines. Reopen retains
+history while requiring current-episode evidence; acknowledgement or generic
+caller-labelled action cannot substitute for a qualified disposition to close
+the Task. A cancelled/rejected Recommendation supplies its actual disposition.
+Task completion does not release separate business obligations.
+
+Controlled -120/+120-second writer Clock probes fail before database chronology
+is used for new acknowledgement/action events. The earlier initial null read had
+no measured offset, so its cause is not retroactively declared proven. State and
+journal reopen times share one database instant; an unsuccessful versioned update
+cannot publish a reopen event. No sleeps, retries or weakened chronology checks.
+
+211 distinct backend cases pass across affected final stages: 10 calendar/unit,
+77 signed authorization, 97 launch/architecture, 7 shared Task journal, 9 advertising
+boundary, 10 schema and 1 historical upgrade. Final two ordinary HTTP probes cover
+the checked reopen return after the full 77-case run and are not counted again.
+39 frontend cases, build and lint pass; one test-arrow lint error was repaired.
+Unchanged calendar/schema/upgrade/frontend checks were not repeated after Task
+disposition hardening. Exact per-stage limitations and failed runs are retained in
+checkpoint-31-test-receipts.json and its consolidated sanitized summary.
+
+The upgraded historical Task is byte-exact and has no fabricated clock binding.
+All 107 previously committed migration files and the three immutable input hashes
+match; all 29 rework forward-migration inventory entries match their bytes. All
+processes ended. Continuous-risk timing, finite qualified holds/defer with expiry,
+deterministic automatic activation and qualified personnel/entry coverage remain
+open. A calendar is not personnel evidence, and the planned outcome-review deadline
+is not proof of business maturity. No root or final LOCAL_VERIFIED closure claimed.

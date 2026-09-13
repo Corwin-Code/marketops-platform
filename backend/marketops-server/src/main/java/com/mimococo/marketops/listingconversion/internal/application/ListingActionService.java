@@ -242,9 +242,9 @@ public class ListingActionService {
         if (!actions.moveCandidate(candidateId, "OPEN", "SELECTED", candidate.version(), now)) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
         }
-        intake.ensureResponsibilityTask(listing.organizationId(), recommendationId,
+        intake.ensureGovernedResponsibilityTask(listing.organizationId(), recommendationId,
                 description ? "Review the proposed listing description change" : "Review the proposed promotion action",
-                now.plus(Duration.ofDays(2)), now);
+                CalibrationService.responsibilityBasis(resolved), now);
         governance.enqueue(ids.newId(), listing.organizationId(), candidate.platformListingId(), RecalculationClass.ORDINARY,
                 "action-prepared:" + actionId, now, now);
         recordAudit(actor, ENTITY_TYPE, actionId, AuditAction.CREATE, Map.of(
