@@ -160,7 +160,10 @@ function matches(response: Response, method: string, pathname: string): boolean 
 
 function localDateTime(value: Date): string {
   const part = (number: number, length = 2) => String(number).padStart(length, '0');
-  return `${String(value.getFullYear())}-${part(value.getMonth() + 1)}-${part(value.getDate())}T${part(value.getHours())}:${part(value.getMinutes())}:${part(value.getSeconds())}.${part(value.getMilliseconds(), 3)}`;
+  const minute = `${String(value.getFullYear())}-${part(value.getMonth() + 1)}-${part(value.getDate())}T${part(value.getHours())}:${part(value.getMinutes())}`;
+  if (value.getSeconds() === 0 && value.getMilliseconds() === 0) return minute;
+  const milliseconds = part(value.getMilliseconds(), 3).replace(/0+$/, '');
+  return `${minute}:${part(value.getSeconds())}${milliseconds.length === 0 ? '' : `.${milliseconds}`}`;
 }
 
 async function fillPromotionTerms(
@@ -597,9 +600,7 @@ test('TC-BROWSER-017 real bilingual listing decision and closed-write journey', 
     expect(manualLaunch.insufficientAxes).toContain('CONCURRENT_LISTINGS');
     await expect(manualAction.locator('[data-launched="false"]')).toBeVisible();
     await expect(
-      manualAction.locator(
-        '[data-family="actionState"][data-code="APPROVED_NOT_LAUNCHABLE"]',
-      ),
+      manualAction.locator('[data-family="actionState"][data-code="APPROVED_NOT_LAUNCHABLE"]'),
     ).toBeVisible();
 
     await ownerChinese.getByRole('button', { name: '批次、遏制与队列' }).click();
@@ -662,7 +663,9 @@ test('TC-BROWSER-017 real bilingual listing decision and closed-write journey', 
       const executorPacket = executorChinese.locator(`[data-packet="${packet.id}"]`);
       await expect(executorPacket).toHaveAttribute('data-packet-state', 'ISSUED');
       const reportForm = executorPacket.getByRole('form', { name: `报告执行 ${packet.id}` });
-      await reportForm.getByLabel('操作时间').fill(packet.issuedAt);
+      await reportForm
+        .getByLabel('操作时间')
+        .fill(localDateTime(new Date(new Date(packet.issuedAt).getTime() + 1)));
       await reportForm.getByLabel('备注').fill('执行人按批准包完成管理端描述更新');
       const reportPath = `/api/v1/console/listing/manual/packets/${packet.id}/report`;
       const [reportResponse] = await Promise.all([
