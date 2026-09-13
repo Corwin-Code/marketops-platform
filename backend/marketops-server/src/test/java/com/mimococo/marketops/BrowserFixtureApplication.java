@@ -7,6 +7,7 @@ import com.mimococo.marketops.operationsworkflow.*;
 import com.mimococo.marketops.operationsworkflow.internal.application.*;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRiskRefreshService;
+import com.mimococo.marketops.listingconversion.internal.application.CalibrationService;
 import com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWritePort;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult;
@@ -103,6 +104,16 @@ public final class BrowserFixtureApplication {
             }
             var listing = ListingConversionFixture.browserJourney(migrationSource,
                     context.getBean(DataSource.class),migrationSource);
+            // The raw fixture seeds this already-approved manual Action outside prepare(),
+            // so add the responsibility Task that the normal application path creates.
+            var calibration = context.getBean(CalibrationService.class);
+            Instant responsibilityRaisedAt = Instant.now();
+            context.getBean(ListingActionIntake.class).ensureGovernedResponsibilityTask(
+                    listing.id("organization"), listing.id("recommendationTwo"),
+                    "Review the proposed listing description change",
+                    CalibrationService.responsibilityBasis(calibration.resolve(
+                            listing.id("organization"), listing.graph.platform(), listing.id("store"), responsibilityRaisedAt)),
+                    responsibilityRaisedAt);
             fixture.sql("""
                     INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,
                       organization_ref_id,status,effective_from,reason,created_at,updated_at)
