@@ -174,9 +174,10 @@ class AvailabilityRiskFlowIT {
                 INSERT INTO core.listing_mapping (id, organization_id, platform_listing_variant_id,
                         product_variant_id, effective_from, status, confirmed_by_user_id, reason,
                         created_at, updated_at)
-                VALUES ('%s', '%s', '%s', '%s', now() - interval '60 days', 'ACTIVE', '%s',
+                VALUES ('%s', '%s', '%s', '%s', TIMESTAMPTZ '%s', 'ACTIVE', '%s',
                         'seeded operating graph', now(), now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, LISTING_VARIANT, VARIANT, USER));
+                """.formatted(UUID.randomUUID(), ORGANIZATION, LISTING_VARIANT, VARIANT,
+                        AS_OF.minus(Duration.ofDays(60)), USER));
         seedPolicies();
         seedFacts();
 
@@ -461,8 +462,8 @@ class AvailabilityRiskFlowIT {
                         effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 'ORGANIZATION', 3, 10, 14, 7, '%s',
                         'agreed replenishment lead time', 'ev://procurement/lead-time',
-                        now(), now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        now(), TIMESTAMPTZ '%s', 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER, AS_OF.minus(Duration.ofDays(10))));
         sql("""
                 INSERT INTO core.demand_observation_policy (id, organization_id,
                         minimum_sample_units, acceleration_ratio, deceleration_ratio,
@@ -471,8 +472,8 @@ class AvailabilityRiskFlowIT {
                         effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 5, 1.50, 0.60, 0.70, 0.60, 14, 360, '%s',
                         'agreed demand observation policy', 'ev://procurement/demand',
-                        now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        TIMESTAMPTZ '%s', 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER, AS_OF.minus(Duration.ofDays(10))));
         sql("""
                 INSERT INTO core.work_activation_policy (id, organization_id,
                         high_sustained_cycles, critical_action_sla_minutes,
@@ -481,8 +482,8 @@ class AvailabilityRiskFlowIT {
                         effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 2, 60, 240, 480, 2880, 1440, '%s',
                         'agreed activation policy', 'ev://ops/activation',
-                        now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        TIMESTAMPTZ '%s', 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER, AS_OF.minus(Duration.ofDays(10))));
         sql("""
                 INSERT INTO core.availability_priority_policy (id, organization_id,
                         policy_version, time_weight, profit_weight, velocity_weight,
@@ -490,8 +491,8 @@ class AvailabilityRiskFlowIT {
                         evidence_reference, effective_from, status, created_at)
                 VALUES ('%s', '%s', 1, 400, 5, 20, 25, -10, '%s',
                         'agreed availability ordering', 'ev://ops/availability-priority',
-                        now() - interval '10 days', 'ACTIVE', now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        TIMESTAMPTZ '%s', 'ACTIVE', now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER, AS_OF.minus(Duration.ofDays(10))));
     }
 
     /**

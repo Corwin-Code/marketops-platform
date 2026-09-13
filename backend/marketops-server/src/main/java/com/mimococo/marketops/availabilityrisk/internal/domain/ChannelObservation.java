@@ -48,7 +48,7 @@ public record ChannelObservation(
      * to say when it was true, and an unknown age cannot be inside a bound.
      */
     public boolean freshAt(Instant asOf, long freshnessMaxMinutes) {
-        return observedAt != null
+        return freshnessMaxMinutes > 0 && observedAt != null && !observedAt.isAfter(asOf)
                 && !observedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
     }
 }

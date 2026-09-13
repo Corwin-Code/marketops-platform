@@ -953,3 +953,11 @@ cases, four targeted post-fix cases, then 75 signed HTTP and 80 domain/architect
 cases establish the change. The original intermittent incident has no measured
 offset and is not retrospectively declared proven. Full frozen-root work remains
 active under Level 1 local-only authority; see checkpoint-29 receipts.
+
+SLICE-V1-004 continuous local rework update: checkpoint-30 prevents future stock
+or inbound verification and missing freshness bounds from providing current
+supply. Existing owner algorithms and exclusions are retained. 118 availability
+unit, 76 architecture and 12 PostgreSQL flow cases pass; the flow's historical
+fixture dates were repaired after a diagnosed time-dependent failure. Complete
+Listing business protection remains open. See checkpoint-30 receipts; local-only
+authority and all production-write restrictions continue unchanged.

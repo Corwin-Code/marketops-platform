@@ -278,6 +278,16 @@ Measurement inputs now consume source-calendar transition exclusions and preserv
 
 ## Next implementation chain: frozen evaluation authority
 
+Supply-owner prerequisite (checkpoint 30): current stock and inbound verification
+must have a source time at or before the calculation instant and a positive
+freshness bound. The existing channel, warehouse, distinct platform holding and
+inbound predicates enforce that same finite interval. Existing exclusion paths,
+stock ownership and latest-arrival projection remain in place; no second supply
+engine or policy default is introduced. This repairs a reusable prerequisite,
+not the still-open connection from Listing purpose/admission to qualified upside
+fulfillment demand. The owner Metric's period return/completed ratio is not a
+same-order cohort, so no invented upper bound of one is imposed on that ratio.
+
 The frozen plan must name each node's exact measurement window, retention stage, target-description coverage evidence, baseline/reference cohort and traffic weights. The plan records the original calibration package version; historic evaluation reads that exact package as of freeze, while current safety resolves current policy independently. Activation/retirement history must be preserved. A newer package cannot relabel an old result as a different experiment.
 
 The existing evaluator's request `protections` and `conservativeBound` are not authoritative evidence. The replacement consumes canonical MetricValue identities for direct and linked profit, returns and supply, with exact business periods, source coverage and Operational/Settled eligibility. Missing dimensions yield UNDETERMINED. Each frozen critical group carries its own non-worsening basis and threshold. Primary improvement requires the admitted comparison method and pre-action source weights; raw actual rates remain separately visible. An absolute retained-visit ratio is not an improvement.

@@ -390,3 +390,21 @@ frontend changes. The earlier intermittent failure had no captured clock-offset
 data, so this establishes and repairs the same-class defect independently,
 without claiming its precise cause was proven. Other clock pairs and full root
 closure remain open. See checkpoint-29-test-receipts.json.
+
+## Supply chronology prerequisite checkpoint 30
+
+The existing channel, warehouse, distinct platform holding and inbound predicates
+now refuse future source/verification instants and nonpositive freshness bounds.
+Eight pre-fix probes produced five failures; future supply could clear a shortage.
+After the repair, all 118 availability unit cases and 76 architecture cases pass.
+The PostgreSQL flow initially had seven cascading failures from a fixed August 31
+calculation paired with runtime-relative policy dates. Anchoring fixture policies
+and mapping to its AS_OF restored all 12 flow cases without changing production
+policy or test expectations. Only that diagnosed class was repeated.
+
+206 distinct final cases pass. All handles are terminal; the supply projection,
+ownership rules, arrival timing and production write configuration are unchanged.
+No upper limit of one was invented for the period-based return ratio. This is a
+prerequisite repair under root 007, whose complete Listing-purpose/profit/return/
+upside-demand protection connection remains OPEN. No root closure is claimed.
+Exact commands, failed runs and final file hashes: checkpoint-30-test-receipts.json.

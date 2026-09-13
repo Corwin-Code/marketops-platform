@@ -1,0 +1,65 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "e5acb1c22a67e5dc580207814d7fdf63658c97a7",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/ChannelObservation.java": "e51c7caaa08bef0ade47e11bb74f3c0a688e6a70e887cb0f26ed0576e2510f84",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/CompanyObservation.java": "540dd9a2e254b46834fe0d5f12da41c35f31c4aa121ed4f1736f0dd65d2f439e",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/InboundConsignment.java": "302beec982513b40d5dd98cec3faf22d8e5d1c568b45215bcf609047dcdc4110",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/domain/SupplyEvidenceChronologyTest.java": "cd89039dbcc3e62c337068dc0405852788a06bfb405a3a4d4feca48023aae0db",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityRiskFlowIT.java": "fd07f42f18dfedc7faf04451c841c9dac69f8440988fa91cf9c97b564e8836a3"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp '-Dtest=SupplyEvidenceChronologyTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "EXPECTED_RED_BEFORE_FIX",
+      "tests": 8,
+      "failures": 5,
+      "raw_log_local_path": "build/slice4-rework/checkpoint30-supply-chronology-red.log",
+      "raw_log_sha256": "19b1802338f5ecce63e1d4b90d27e1c496cd17aeb3340980991b1898689f86ee",
+      "summary_path": "checkpoint30-supply-chronology-red-summary.txt",
+      "summary_sha256": "bc8165e23bbcf45db4e37bf00a36a728a85e37de4bb63cbac338d81dfd4e8354"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=com.mimococo.marketops.availabilityrisk.**.*Test,ArchitectureTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS_AVAILABILITY_UNIT_ONLY",
+      "tests": 118,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint30-supply-unit-architecture.log",
+      "raw_log_sha256": "4f324aa5d49b855632eadeba4fe4d6b85ea6c83048966535c9a8bc2d6953b0ae",
+      "summary_path": "checkpoint30-supply-unit-architecture-summary.txt",
+      "summary_sha256": "7683adbe8e4c013e16effe5d2db8b9e7f25710201d6b52d42a57e02c16082bfb"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=AvailabilityRiskFlowIT,*ArchitectureTest' test",
+      "working_directory": "backend/marketops-server",
+      "result": "ARCHITECTURE_PASS_FLOW_FIXTURE_TIME_FAILURE",
+      "tests": 88,
+      "failures": 7,
+      "raw_log_local_path": "build/slice4-rework/checkpoint30-supply-flow-architecture.log",
+      "raw_log_sha256": "e2e41f3eb3b5153993c6245971c8f6e6b647229507ef1b8ece78e52d34c39a31",
+      "summary_path": "checkpoint30-supply-flow-architecture-summary.txt",
+      "summary_sha256": "91020de3e1a4db6beabbce5fee73973332d0432ffccc9495bf579d465dc70e07"
+    },
+    {
+      "command": "./mvnw -B -ntp '-Dtest=AvailabilityRiskFlowIT' test",
+      "working_directory": "backend/marketops-server",
+      "result": "PASS_FLOW_AFTER_FIXTURE_TIME_REPAIR",
+      "tests": 12,
+      "failures": 0,
+      "raw_log_local_path": "build/slice4-rework/checkpoint30-supply-flow-fixed.log",
+      "raw_log_sha256": "6f0c0af48dacf348bad473a440936d36b142472dcfdd7da055cc97fce26bd80c",
+      "summary_path": "checkpoint30-supply-flow-fixed-summary.txt",
+      "summary_sha256": "7fc5414d7d4c0198cdb64a86b0468858d07e19409c24a531d98a5626be24dca4"
+    }
+  ],
+  "scope": {
+    "implemented": "Four existing supply freshness predicates reject future source/verification instants and nonpositive bounds. Current eligible inventory and latest-arrival handling remain intact. Fixed historical integration fixture policy and mapping dates to AS_OF instead of wall-clock now.",
+    "remaining": "Listing-purpose safety admission, qualified upside fulfillment demand, formal canonical protection and frozen Outcome integration remain open. Existing freshness refusal codes are retained; no new policy, algorithm, schema, provider or write enablement.",
+    "rejected_expansion": "No upper bound of one was added to the canonical period return/completed ratio; its owner definition is not a same-order cohort."
+  },
+  "diagnosis": "Flow had 7 cascading failures because AS_OF was 2026-08-31 but seed policy effective_from was runtime now minus 10 days, already later than AS_OF. Fixed fixture anchors and reran only its 12 cases. The exact ArchitectureTest selector in the first pass matched no architecture classes; wildcard *ArchitectureTest in the next pass executed all 76, which passed.",
+  "verification_discipline": "One pre-fix red probe, one full availability unit pass, one flow/architecture pass, one diagnosed fixture-only flow rerun. 206 distinct final cases pass (118 unit, 76 architecture, 12 flow). No tests or constraints weakened; all process handles terminal."
+}

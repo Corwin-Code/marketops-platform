@@ -100,10 +100,12 @@
       "title": "启动Gate用结构性Listing Health代替利润、退货、供给与用途保障",
       "status": "OPEN",
       "implementation": [
-        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open."
+        "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open.",
+        "Checkpoint 30: existing supply-owner predicates reject future stock/inbound verification and nonpositive freshness bounds; no new supply engine or policy. Listing-purpose and upside-demand safety connection remains OPEN."
       ],
       "executed_evidence": [
-        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim."
+        "Checkpoint 24: 48 signed HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Independent Owner accepts a correction package without growth categories; missing approval validity and wrong digest still fail. See checkpoint-24-test-receipts.json; no closure claim.",
+        "checkpoint-30-test-receipts.json: 5 failures in 8 pre-fix probes; final 118 availability unit, 76 architecture, 12 PostgreSQL flow cases pass. Fixed runtime-relative policy/mapping dates in a historical flow fixture after 7 cascading failures; no production relaxation. No root closure claim."
       ]
     },
     {
