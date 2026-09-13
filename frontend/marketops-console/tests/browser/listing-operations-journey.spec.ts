@@ -210,8 +210,8 @@ async function recordPromotionContext(
         : 'evidence://synthetic/browser/promotion-stopped',
     );
   await form.getByLabel('本次来源是完整促销枚举').check();
-  await form.getByLabel('枚举覆盖开始').fill(localDateTime(new Date(Date.now() - 3_600_000)));
-  await form.getByLabel('枚举覆盖结束').fill(localDateTime(new Date(Date.now() + 3_600_000)));
+  await form.getByLabel('枚举覆盖开始').fill(effectiveFrom);
+  await form.getByLabel('枚举覆盖结束').fill(effectiveTo);
   await form.getByLabel('枚举核验有效期至').fill(localDateTime(new Date(Date.now() + 3_600_000)));
   await form.getByLabel('活动生效开始').fill(effectiveFrom);
   await form.getByLabel('活动生效结束').fill(effectiveTo);
