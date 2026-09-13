@@ -291,6 +291,54 @@ class ListingReworkAuthorizationIT {
                 .param("id",fixture.id("actionOne")).query(Integer.class).single()).isZero();
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(ints={-120,120})
+    void nativeScopeRecordingUsesDatabaseChronologyDespiteApplicationClockOffset(int seconds) throws Exception {
+        var intake=applicationContext.getBean(com.mimococo.marketops.listingconversion.internal.application.ListingFactIntakeService.class);
+        var actionRows=applicationContext.getBean(com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingActionRepository.class);
+        var health=applicationContext.getBean(com.mimococo.marketops.listingconversion.internal.application.ListingHealthService.class);
+        var originalClock=(java.time.Clock)org.springframework.test.util.ReflectionTestUtils.getField(intake,"clock");
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        users.grantScope(OPERATOR,userId,ActionScopeCode.LISTING_MANUAL_VERIFY,
+                ResourceScopeType.STORE,fixture.id("store"),null);
+        String listingKey=jdbc.sql("SELECT native_listing_key FROM core.platform_listing WHERE id=:id")
+                .param("id",fixture.id("listing")).query(String.class).single();
+        String memberKey=jdbc.sql("SELECT native_variant_key FROM core.platform_listing_variant WHERE id=:id")
+                .param("id",fixture.id("listingVariant")).query(String.class).single();
+        var json=new tools.jackson.databind.ObjectMapper();
+        String endpoint="/api/v1/console/listing/health/listings/"+fixture.id("listing")+"/facts/native-scope";
+        Map<String,Object> capture=new java.util.LinkedHashMap<>(Map.of("scopeKind","WHOLE_LISTING","nativeScopeKey",listingKey,
+                "nativeVariantKeys",List.of(memberKey),"coverageState","PARTIAL","expectedMemberCount",2,
+                "continuationReference","fixture:next-page","sourceReference","fixture:clock-bound-source",
+                "scopeBasisReference","fixture:whole-listing","observedAt",actionRows.databaseNow().toString(),
+                "verificationExpiresAt",actionRows.databaseNow().plusSeconds(3600).toString()));
+        mvc.perform(post(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(capture))).andExpect(status().isOk());
+        assertThat(health.freezeAffectedSet(fixture.id("listing")).resolution().state()).isEqualTo("INCOMPLETE");
+        Instant observed=actionRows.databaseNow();
+        capture.put("coverageState","COMPLETE");capture.put("expectedMemberCount",1);
+        capture.remove("continuationReference");capture.put("observedAt",observed.toString());
+        try {
+            org.springframework.test.util.ReflectionTestUtils.setField(intake,"clock",java.time.Clock.offset(originalClock,java.time.Duration.ofSeconds(seconds)));
+            var response=mvc.perform(post(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(capture))).andExpect(status().isOk()).andReturn();
+            UUID receipt=UUID.fromString(json.readTree(response.getResponse().getContentAsString()).path("observationId").asText());
+            var complete=health.freezeAffectedSet(fixture.id("listing"));
+            assertThat(complete.resolution().state()).withFailMessage("After completed capture under clock offset %s: %s",seconds,complete.resolution()).isEqualTo("COMPLETE");
+            assertThat(jdbc.sql("SELECT observed_at=:observed AND recorded_at<=clock_timestamp() FROM core.platform_listing_scope_observation WHERE id=:id")
+                    .param("observed",java.sql.Timestamp.from(observed)).param("id",receipt).query(Boolean.class).single()).isTrue();
+            long scopesBefore=count("core.platform_listing_scope_observation");
+            long provenanceBefore=count("core.fact_provenance");
+            capture.put("observedAt",actionRows.databaseNow().plusSeconds(60).toString());
+            mvc.perform(post(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(capture))).andExpect(status().isBadRequest());
+            assertThat(count("core.platform_listing_scope_observation")).isEqualTo(scopesBefore);
+            assertThat(count("core.fact_provenance")).isEqualTo(provenanceBefore);
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(intake,"clock",originalClock);
+        }
+    }
+
     @Test
     void reacquiringOldNativeEnumerationCannotRenewItsSourceFreshness() throws Exception {
         var identity=applicationContext.getBean(com.mimococo.marketops.productlisting.ListingScopeEvidence.class);

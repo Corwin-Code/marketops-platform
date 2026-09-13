@@ -732,3 +732,24 @@ not claim database-atomic fencing against a concurrently published Metric value;
 that wider dependency/version consumption belongs to the remaining lifecycle
 work. Tests target changed, missing, threshold-gap and unchanged-axis current
 exposure at the normal signed approval and launch paths, plus retained evidence.
+
+### Checkpoint 29 investigation — native intake and database chronology
+
+An earlier complete native capture returned INCOMPLETE once. Investigation found
+native intake stamps recordedAt/provenance with the application Clock while the
+native snapshot and health consumer use a database as-of time. A deterministic
+probe first records PARTIAL, then COMPLETE with only the intake Clock offset by
+-120/+120 seconds. It asserts a valid source remains accepted, the completed
+capture is immediately visible and no system recording timestamp lies in the
+future of the database. The original incident's cause is not assumed; the probe
+must establish the clock defect independently before any production change.
+No sleeps, retries or relaxed source freshness/coverage rules are introduced.
+
+The two offset probes reproduced distinct failures: -120 seconds rejects a valid
+source; +120 seconds accepts but hides the new COMPLETE receipt behind its
+future recordedAt, so the consumer retains old PARTIAL. The repair obtains the
+native intake recording time from the database, shared with provenance/queue
+recording, and preserves observedAt. Future-source input must still be rejected
+without either provenance or scope writes. Other fact ingress methods were
+scanned; they remain separate pending their own consumer/time-basis audit. This
+bounded repair does not replace every application Clock or rewrite history.

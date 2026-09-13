@@ -374,3 +374,19 @@ and full runs passed, but the initial cause remains unconfirmed. The receipt
 retains this limitation rather than attributing it to an unproved clock cause.
 All processes ended; no repeats of unchanged frontend/schema/upgrade suites.
 Atomic dependency fencing and remaining lifecycle/root work are still open.
+
+## Native capture recording chronology checkpoint 29
+
+A deterministic -120/+120-second offset applied only to native intake Clock
+reproduced two failures: valid source rejection and a future-recorded COMPLETE
+capture invisible to the database-time consumer, which kept old PARTIAL. Native
+intake now obtains its system chronology from the database. Source observedAt
+remains unchanged; future-source rejection leaves no provenance/scope writes.
+
+Both red cases were recorded before repair. Four targeted cases then passed,
+followed by 75 signed HTTP and 80 affected-set/domain/architecture cases. No
+sleeps, retries or freshness-rule relaxation. All processes ended; no schema or
+frontend changes. The earlier intermittent failure had no captured clock-offset
+data, so this establishes and repairs the same-class defect independently,
+without claiming its precise cause was proven. Other clock pairs and full root
+closure remain open. See checkpoint-29-test-receipts.json.

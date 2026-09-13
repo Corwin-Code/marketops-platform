@@ -139,12 +139,14 @@
       "implementation": [
         "V0083 captures immutable identity lineage and includes mapping target, effective interval/version, product status and conflicts in the affected-set digest. Binding checks now detect dependent mapping/member changes; original snapshots remain intact. Native source-membership completeness proof is still open.",
         "Checkpoint 22: native enumeration under productlisting composes mapping versions with full/partial/unknown scope, accepted source freshness and expiry; unchanged refresh preserves dependencies. Native scope enters simulation basis and financial scope. Canonical Policy digest is session-timezone-independent without historical reacceptance. Purpose, official acquisition and complete UI remain open.",
-        "Checkpoint 28 diagnostic: one original native-scope complete-capture test returned INCOMPLETE at line 285 without detailed reasons. Added resolution failure output; targeted and two full subsequent runs passed. Cause remains unconfirmed and must not be waived based on rerun success."
+        "Checkpoint 28 diagnostic: one original native-scope complete-capture test returned INCOMPLETE at line 285 without detailed reasons. Added resolution failure output; targeted and two full subsequent runs passed. Cause remains unconfirmed and must not be waived based on rerun success.",
+        "Checkpoint 29: deterministically reproduced native intake/consumer clock mismatch at -120/+120s; valid source rejection and invisible future-recorded COMPLETE were repaired by database recording chronology. Source observedAt remains exact and future source is rejected without writes. Original intermittent incident lacks measured offset, so exact attribution is not claimed. Official native producer/full root closure remain pending."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial local runs, not final-head closure evidence.",
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
-        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure."
+        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure.",
+        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure."
       ]
     },
     {
@@ -320,10 +322,12 @@
       "title": "5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复",
       "status": "IN_PROGRESS",
       "implementation": [
-        "Checkpoint 25: existing queue atomically claims by generation with expiry recovery; exact Health and calculation run publish in the same fenced transaction. Listing lock serializes versions; stale completion/failure is rejected, missing results and failed latency cannot be successful. One database tick excludes future accepted times without rewriting source/entry evidence. Periodic full review and canonical measurement/protection/authorization consumers remain OPEN."
+        "Checkpoint 25: existing queue atomically claims by generation with expiry recovery; exact Health and calculation run publish in the same fenced transaction. Listing lock serializes versions; stale completion/failure is rejected, missing results and failed latency cannot be successful. One database tick excludes future accepted times without rewriting source/entry evidence. Periodic full review and canonical measurement/protection/authorization consumers remain OPEN.",
+        "Checkpoint 29: native-scope enqueue now receives database recording time paired with unchanged source time, avoiding future system chronology from the intake application Clock. No broad scheduler or all-ingress clock rewrite; full consumer/recalculation lifecycle remains pending."
       ],
       "executed_evidence": [
-        "checkpoint-25-test-receipts.json: final 93 queue/domain/architecture, 48 signed authorization, 10 schema/privilege, 1 historical upgrade PASS; six real PostgreSQL queue cases included in 93."
+        "checkpoint-25-test-receipts.json: final 93 queue/domain/architecture, 48 signed authorization, 10 schema/privilege, 1 historical upgrade PASS; six real PostgreSQL queue cases included in 93.",
+        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure."
       ]
     },
     {
@@ -373,7 +377,8 @@
         "Checkpoint 23: newly prepared Actions retain a closed consumed-rule projection. Accepted current scope/purpose recheck permits unchanged dependencies across package IDs and refuses changed/unproved rules. Java decisions, SQL binding gaps and allowance projection share the result; existing Guardrail retains current references. Original approval/plan and historical NULL remain unchanged. Explicit purpose preparation, complete purpose combinations and other transitive consumers remain open.",
         "Checkpoint 24: required calibration categories now follow declared purpose. Correction can omit unrelated growth categories while retaining safety categories; explicit-purpose read resolution and requiredCategories detail are connected. Actual correction/exploration preparation, structured-rule semantics and complete safety remain open.",
         "Checkpoint 27: 66 signed HTTP, 2 condition/binding SQL, 113 launch/domain/architecture, 10 schema and 1 upgrade passed; 35 frontend cases, build and typed lint passed. Fixed diagnostics retained in the receipt. Complete final-head regression remains open.",
-        "Checkpoint 28: 79 signed HTTP/Guardrail and 113 launch/domain/architecture passed. JDBC time binding, strict authority snapshot rejection and test-history isolation diagnostics retained; one unconfirmed native-scope failure remains explicitly tracked. No schema/frontend change or needless repeat of their suites."
+        "Checkpoint 28: 79 signed HTTP/Guardrail and 113 launch/domain/architecture passed. JDBC time binding, strict authority snapshot rejection and test-history isolation diagnostics retained; one unconfirmed native-scope failure remains explicitly tracked. No schema/frontend change or needless repeat of their suites.",
+        "Checkpoint 29: 2 deterministic red cases before the time fix, 4 targeted cases after it, then 75 signed HTTP and 80 domain/architecture cases passed. Source hashes, commands and limitation retained in checkpoint-29 receipt. No blind repetition of the original intermittent test."
       ],
       "executed_evidence": [
         "See INTERIM_VERIFICATION.md; partial runs, not final-head closure evidence.",
@@ -388,7 +393,8 @@
         "checkpoint-25-test-receipts.json: bounded relevant checks and two diagnosed failures preserved; no root closure or complete LOCAL_VERIFIED claim.",
         "checkpoint-26-test-receipts.json: bounded final runs, immutable original-input verification and diagnosed initial failures preserved; no complete LOCAL_VERIFIED claim.",
         "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
-        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure."
+        "Checkpoint 28: checkpoint-28-test-receipts.json; final affected code hashes and finite test evidence, not final closure.",
+        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure."
       ]
     }
   ],

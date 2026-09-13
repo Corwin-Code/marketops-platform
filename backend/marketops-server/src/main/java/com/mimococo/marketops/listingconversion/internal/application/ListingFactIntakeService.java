@@ -56,7 +56,7 @@ public class ListingFactIntakeService {
     public UUID recordNativeScope(AuthenticatedActor actor, UUID listingId,
                                   com.mimococo.marketops.productlisting.ListingScopeEvidence.Capture capture) {
         var listing=require(actor,listingId,ActionScopeCode.LISTING_MANUAL_VERIFY);
-        Instant now=clock.instant();
+        Instant now=facts.databaseNow();
         if(capture==null || capture.observedAt().isAfter(now) || !now.isBefore(capture.verificationExpiresAt())) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }

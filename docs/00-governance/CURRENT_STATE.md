@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-10
+as_of: 2026-09-13
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -945,3 +945,11 @@ authority snapshot. 79 signed HTTP/Guardrail and 113 launch/domain/architecture
 cases pass. Atomic dependency fencing, full lifecycle work and an unconfirmed
 earlier native-scope test failure remain open; see checkpoint-28 receipts.
 No schema, frontend, provider or production-enablement change in this checkpoint.
+
+SLICE-V1-004 continuous local rework update: checkpoint-29 fixes the independently
+reproduced native-capture clock-domain defect with database recording chronology,
+retaining exact source time and strict future-source rejection. Two pre-fix red
+cases, four targeted post-fix cases, then 75 signed HTTP and 80 domain/architecture
+cases establish the change. The original intermittent incident has no measured
+offset and is not retrospectively declared proven. Full frozen-root work remains
+active under Level 1 local-only authority; see checkpoint-29 receipts.

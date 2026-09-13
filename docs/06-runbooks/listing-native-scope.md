@@ -22,6 +22,13 @@ rule, the scope remains unqualified. Reacquiring or rerecording an old source
 preserves its observation time and cannot make it fresh. The test fixture's
 3600-second parameter is fictional and is not a production recommendation.
 
+Native intake obtains its system recording time from the database, matching the
+identity snapshot's as-of chronology. The supplied source observation time stays
+unchanged in provenance and the scope receipt. A future source or expired
+verification is refused; application-clock drift must not put a completed
+capture into the database's future or reject an otherwise valid source. This
+change does not rewrite historical receipts or renew an old source's age.
+
 Affected-set resolution composes this evidence with current canonical mappings.
 Missing members, unresolved mappings, conflicting scope, stale evidence or
 inactive products prevent COMPLETE. Correct mappings through the existing

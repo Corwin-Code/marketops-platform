@@ -33,6 +33,11 @@ public class ListingFactRepository {
         this.identity = identity;
     }
 
+    /** Recording chronology for native evidence consumed by database-time identity snapshots. */
+    public Instant databaseNow() {
+        return jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
+    }
+
     public record ListingContext(UUID id, UUID organizationId, UUID storeId, UUID marketplaceAccountId,
                                  String platformCode, String nativeListingKey, String status) {
     }

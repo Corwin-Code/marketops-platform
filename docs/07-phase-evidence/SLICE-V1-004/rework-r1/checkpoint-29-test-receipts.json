@@ -1,0 +1,56 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "881b19cafb11d11aa4aac48d186506a8dd89fcc6",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingFactIntakeService.java": "7132476a76b45adfd40c397037a9a89b8622db947d841fc49daa5f465c3b181b",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingFactRepository.java": "cd439a48e5f38044c016ab456a625ee4a187ef40d14c9874ba784706646b937b",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "06b2e0d5cebf28d2dd344bcb147bae1753a67acf37cdae6f0d4f0080fc990ca5"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 75,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/native-scope-clock-auth.log",
+      "raw_log_sha256": "ba4ccfdd64c767c2b024f92206dba78183e177b72d201d70e6df44d21e09cf24",
+      "summary_path": "native-scope-clock-auth-summary.txt",
+      "summary_sha256": "27ac51dbfd89a826b55544e56a6b7637d7848409ee09e867463094e238b94140"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=AffectedSetResolutionTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 80,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/native-scope-clock-domain-architecture.log",
+      "raw_log_sha256": "6b067205015694f0fa758ee47918769f3de49bda9a962f4b413d29ef321c907e",
+      "summary_path": "native-scope-clock-domain-architecture-summary.txt",
+      "summary_sha256": "22611bd6ab4b38d125260e6c1494175e387325645542cc60cc8e788d67883671"
+    }
+  ],
+  "deterministic_reproduction": {
+    "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT#nativeScopeRecordingUsesDatabaseChronologyDespiteApplicationClockOffset'",
+    "result": "EXPECTED_RED_BEFORE_FIX_2_FAILURES",
+    "raw_log_local_path": "build/slice4-rework/native-scope-clock-reproduction.log",
+    "raw_log_sha256": "9bc05d2052a46f963b7ab828e45d33ee04019aba1551a190e1d25afd80958d32",
+    "observed": "Intake Clock -120s rejected valid source with HTTP 400; +120s accepted COMPLETE but stamped recordedAt in database future, leaving old PARTIAL selected and Health INCOMPLETE. No sleeps/retries."
+  },
+  "targeted_fix_verification": {
+    "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT#nativeScopeRecordingUsesDatabaseChronologyDespiteApplicationClockOffset+nativeScopeNeedsCompleteEnumerationAndUnchangedRefreshPreservesTheDependency+reacquiringOldNativeEnumerationCannotRenewItsSourceFreshness'",
+    "tests": 4,
+    "result": "PASS_AFTER_FIX",
+    "raw_log_local_path": "build/slice4-rework/native-scope-clock-fixed.log",
+    "raw_log_sha256": "9799053890166ce1ce4e29a0b58ff773a5a53b06fffc7866e27234b7c9922945"
+  },
+  "scope": {
+    "implemented": "Native-scope intake now uses database time for its system recording/provenance/queue chronology; observedAt remains exact. Future source still fails with no provenance/scope inserts. One repository time read and one native intake substitution, no history rewrite.",
+    "remaining": "The earlier intermittent COMPLETE/INCOMPLETE failure did not retain clock-offset data, so its exact cause is not proven. This independently reproduced same-class clock defect is fixed. Other fact-ingress/consumer clock pairs and the rest of frozen-root closure remain subject to their own audit.",
+    "not_changed": [
+      "Schema/migrations",
+      "Frontend",
+      "Provider/permission/production configuration"
+    ]
+  },
+  "verification_discipline": "One deterministic red probe, one targeted fix check, one finite final affected suite. 155 final backend cases pass; all handles terminal. No repeated unchanged frontend/schema/upgrade tests."
+}
