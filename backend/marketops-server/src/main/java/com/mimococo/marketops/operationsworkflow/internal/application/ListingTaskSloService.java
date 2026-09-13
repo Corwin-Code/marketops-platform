@@ -22,8 +22,12 @@ import tools.jackson.databind.ObjectMapper;
 public class ListingTaskSloService implements ListingTaskSloQuery {
     private final JdbcClient jdbc;
     private final ObjectMapper json;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
 
-    ListingTaskSloService(JdbcClient jdbc, ObjectMapper json) { this.jdbc=jdbc; this.json=json; }
+    ListingTaskSloService(JdbcClient jdbc, ObjectMapper json,
+            com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
+        this.jdbc=jdbc; this.json=json; this.deferrals=deferrals;
+    }
 
     void lockRecommendation(UUID organization, UUID recommendation) {
         jdbc.sql("SELECT id FROM ops.recommendation WHERE id=:id AND organization_id=:org FOR UPDATE")
@@ -147,7 +151,8 @@ public class ListingTaskSloService implements ListingTaskSloQuery {
                             rs.getObject("calibration_version",Integer.class),rs.getString("basis_digest"),state,raised,
                             ackDue,actionDue,instant(rs,"outcome_maturity_due_at"),next,acknowledged,acted,
                             breached(ackDue,acknowledged,asOf),breached(actionDue,acted,asOf),
-                            Math.max(0,Duration.between(raised,asOf).getSeconds()));
+                            Math.max(0,Duration.between(raised,asOf).getSeconds()),
+                            deferrals.at(rs.getObject("task_id",UUID.class),asOf).orElse(null));
                 }).optional();
     }
 

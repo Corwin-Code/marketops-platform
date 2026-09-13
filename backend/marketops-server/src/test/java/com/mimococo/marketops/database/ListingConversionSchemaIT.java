@@ -116,7 +116,7 @@ class ListingConversionSchemaIT extends PostgresContainerSupport {
                         "SELECT schema_name || '.' || table_name FROM platform.control_route_inventory"
                                 + " WHERE table_name LIKE 'lc\\_%' AND route_kind = 'NO_ROUTE' ORDER BY 1");
 
-                assertThat(tables).hasSize(50).contains("ops.lc_task_responsibility", "core.lc_measurement_coverage", "mart.lc_measurement_lineage",
+                assertThat(tables).hasSize(51).contains("ops.lc_task_deferral", "ops.lc_task_responsibility", "core.lc_measurement_coverage", "mart.lc_measurement_lineage",
                         "ops.lc_calibration_governance", "ops.lc_calibration_event",
                         "ops.lc_execution_receipt", "core.lc_promotion_observation");
                 assertThat(inventoried).containsExactlyElementsOf(tables);

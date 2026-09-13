@@ -325,11 +325,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Checkpoint 25: existing queue atomically claims by generation with expiry recovery; exact Health and calculation run publish in the same fenced transaction. Listing lock serializes versions; stale completion/failure is rejected, missing results and failed latency cannot be successful. One database tick excludes future accepted times without rewriting source/entry evidence. Periodic full review and canonical measurement/protection/authorization consumers remain OPEN.",
-        "Checkpoint 29: native-scope enqueue now receives database recording time paired with unchanged source time, avoiding future system chronology from the intake application Clock. No broad scheduler or all-ingress clock rewrite; full consumer/recalculation lifecycle remains pending."
+        "Checkpoint 29: native-scope enqueue now receives database recording time paired with unchanged source time, avoiding future system chronology from the intake application Clock. No broad scheduler or all-ingress clock rewrite; full consumer/recalculation lifecycle remains pending.",
+        "Checkpoint 33: finite reason-bound Task deferral consumes the original explicit maximum duration, preserves original SLO/age and rejects extension. Existing Health reassessment invalidates changed retained scope/necessary/eligibility; existing worker commits expiry and exact scoped review queue atomically. Shared bilingual explicit forms discard late actor/target responses. This is not qualified dependency HOLD; complete business reason/qualification/source integration remains open."
       ],
       "executed_evidence": [
         "checkpoint-25-test-receipts.json: final 93 queue/domain/architecture, 48 signed authorization, 10 schema/privilege, 1 historical upgrade PASS; six real PostgreSQL queue cases included in 93.",
-        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure."
+        "Checkpoint 29: checkpoint-29-test-receipts.json; deterministic reproduction and final affected verification, not whole-root closure.",
+        "See checkpoint-33-test-receipts.json for isolated authorization, queue rollback/replay, shared launch/architecture/journal/schema/upgrade and frontend results. No full-root closure claim."
       ]
     },
     {
@@ -338,11 +340,13 @@
       "status": "IN_PROGRESS",
       "implementation": [
         "Checkpoint 31: normal preparation now binds original ordinary Task deadlines to exact governed SLO/calendar values; no fixed now+2 days. The real journal and scoped on-demand read separate acknowledgement/action, preserve origin on reassignment/recalculation/reopen, refuse caller-labelled substitute actions and require current-episode disposition for closure. Database chronology fixes independently reproduced writer-clock offsets. Continuous risk, qualified finite holds/defer, automatic activation/sorting and staffed release coverage remain OPEN.",
-        "Checkpoint 32: retained failed mapping/containment diagnoses create one existing Task per listing/cause before any new Action. Exact source/calibration binding, continuous explicit risk SLO, scoped acknowledgement and same-Task recurrence are connected to Health recomputation. No unowned Task, Recommendation, Action or new scheduler is manufactured. Remaining purpose-qualified activation, risk/responsibility ordering, source-change fencing, cross-domain attribution and finite hold/defer/coverage work remain OPEN."
+        "Checkpoint 32: retained failed mapping/containment diagnoses create one existing Task per listing/cause before any new Action. Exact source/calibration binding, continuous explicit risk SLO, scoped acknowledgement and same-Task recurrence are connected to Health recomputation. No unowned Task, Recommendation, Action or new scheduler is manufactured. Remaining purpose-qualified activation, risk/responsibility ordering, source-change fencing, cross-domain attribution and finite hold/defer/coverage work remain OPEN.",
+        "Checkpoint 33: finite reason-bound Task deferral consumes the original explicit maximum duration, preserves original SLO/age and rejects extension. Existing Health reassessment invalidates changed retained scope/necessary/eligibility; existing worker commits expiry and exact scoped review queue atomically. Shared bilingual explicit forms discard late actor/target responses. This is not qualified dependency HOLD; complete business reason/qualification/source integration remains open."
       ],
       "executed_evidence": [
         "checkpoint-31-test-receipts.json: normal signed workflow, controlled clock offsets, closure/reopen, original Task preservation and shared Workflow regression. Partial ordinary-path evidence only.",
-        "checkpoint-32-test-receipts.json: signed diagnosis-to-Task path, replay, store permission, acknowledgement/action separation, actual retained resolution and recurrence; shared journal/queue/schema/upgrade and full architecture checks. Partial root evidence only."
+        "checkpoint-32-test-receipts.json: signed diagnosis-to-Task path, replay, store permission, acknowledgement/action separation, actual retained resolution and recurrence; shared journal/queue/schema/upgrade and full architecture checks. Partial root evidence only.",
+        "See checkpoint-33-test-receipts.json for isolated authorization, queue rollback/replay, shared launch/architecture/journal/schema/upgrade and frontend results. No full-root closure claim."
       ]
     },
     {
@@ -364,7 +368,8 @@
         "Checkpoint 26: removes user-entered exposure from Console preparation and request serialization, with Chinese/Russian explanation. Complete semantic-review and financially scoped exposure-evidence journeys remain open.",
         "Checkpoint 27: adds scoped on-demand Russian full before/after and commercial-term review basis, Chinese/Russian condition answers/reasons/reference/coverage, unknown submission guard and stale actor-result rejection. Complete evidence history and remaining Console journeys still open.",
         "Checkpoint 31: Chinese/Russian on-demand original Task clock read and explicit acknowledgement are connected to ordinary Action detail, with unknown states and stale actor/action reply rejection. Complete Task/hold/coverage and remaining Console journeys remain OPEN.",
-        "Checkpoint 32: Listing detail displays necessary diagnostic responsibility and explicit acknowledgement in Chinese/Russian, sharing the original Task clock display. The exact diagnostic Task/store controls acknowledgement. Complete remaining Console and browser journeys remain OPEN."
+        "Checkpoint 32: Listing detail displays necessary diagnostic responsibility and explicit acknowledgement in Chinese/Russian, sharing the original Task clock display. The exact diagnostic Task/store controls acknowledgement. Complete remaining Console and browser journeys remain OPEN.",
+        "Checkpoint 33: finite reason-bound Task deferral consumes the original explicit maximum duration, preserves original SLO/age and rejects extension. Existing Health reassessment invalidates changed retained scope/necessary/eligibility; existing worker commits expiry and exact scoped review queue atomically. Shared bilingual explicit forms discard late actor/target responses. This is not qualified dependency HOLD; complete business reason/qualification/source integration remains open."
       ],
       "executed_evidence": [
         "Checkpoint 17: 24 targeted UI tests, including both-language missing-axis display; Node 24 typecheck/lint/build pass. Full Console journeys/browser verification remain open.",
@@ -373,7 +378,8 @@
         "Checkpoint 22: 46 signed HTTP/database, 101 launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS. Frontend 32 then final overlapping 16 forms; lint/build PASS. See checkpoint-22-test-receipts.json. No closure claim.",
         "Checkpoint 27: checkpoint-27-test-receipts.json; affected-scope tests and exact changed source hashes, not final closure evidence.",
         "checkpoint-31-test-receipts.json: 39 frontend cases across four files, build/lint PASS; scoped responsibility HTTP flow and acknowledgement scope refusal. No complete browser journey claim.",
-        "checkpoint-32-test-receipts.json: 41 frontend cases with six overlapping final cases after mock type style fix, build/lint/final tsc; 78 signed authorization cases with recurrence extension. No full browser acceptance claim."
+        "checkpoint-32-test-receipts.json: 41 frontend cases with six overlapping final cases after mock type style fix, build/lint/final tsc; 78 signed authorization cases with recurrence extension. No full browser acceptance claim.",
+        "See checkpoint-33-test-receipts.json for isolated authorization, queue rollback/replay, shared launch/architecture/journal/schema/upgrade and frontend results. No full-root closure claim."
       ]
     },
     {

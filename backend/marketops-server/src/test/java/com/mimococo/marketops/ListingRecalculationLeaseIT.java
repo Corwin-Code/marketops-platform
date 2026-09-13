@@ -34,6 +34,9 @@ class ListingRecalculationLeaseIT {
     @Autowired ListingHealthService health;
     @Autowired JdbcClient jdbc;
     @Autowired PlatformTransactionManager transactions;
+    @Autowired com.mimococo.marketops.operationsworkflow.ListingActionIntake listingIntake;
+    @Autowired com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
+    @Autowired com.mimococo.marketops.listingconversion.internal.application.CalibrationService calibration;
     private ListingConversionFixture fixture;
 
     @DynamicPropertySource
@@ -57,6 +60,39 @@ class ListingRecalculationLeaseIT {
         queue.enqueue(id,fixture.id("organization"),fixture.id("listing"),kind,
                 "synthetic-lease/"+id,Instant.now().minusSeconds(3600),Instant.now().minusSeconds(1));
         return id;
+    }
+
+    @Test void expiredDeferralAndItsReviewQueueAreAtomicAndDoNotResetTaskAge() {
+        health.recompute(fixture.id("listing"),"MANUAL",fixture.id("ownerUser"));
+        var resolved=calibration.resolve(fixture.id("organization"),fixture.graph.platform(),fixture.id("store"),Instant.now());
+        Instant origin=queue.databaseNow().minusSeconds(172800);
+        UUID task=listingIntake.ensureGovernedResponsibilityTask(fixture.id("organization"),fixture.id("recommendationOne"),
+                "Historical synthetic responsibility",com.mimococo.marketops.listingconversion.internal.application.CalibrationService.responsibilityBasis(resolved),origin);
+        UUID id=UUID.randomUUID();
+        // Isolated historical fixture: exercise elapsed-time recovery without sleeping or changing a clock guard.
+        fixture.app.sql("""
+                WITH tick AS MATERIALIZED(SELECT clock_timestamp() AS at)
+                INSERT INTO ops.lc_task_deferral(id,task_id,organization_id,requester_user_id,defer_minutes,reason,
+                    requested_at,expires_at,basis_digest,state)
+                SELECT :id,:task,:org,:actor,60,'Historical finite reconsideration',at-interval '2 hours',
+                    at-interval '1 hour',ops.lc_task_reassessment_basis(:task),'ACTIVE' FROM tick
+                """).param("id",id).param("task",task).param("org",fixture.id("organization"))
+                .param("actor",fixture.id("ownerUser")).update();
+        String original=jdbc.sql("SELECT to_jsonb(t)::text FROM ops.work_task t WHERE id=:id").param("id",task).query(String.class).single();
+        var tx=new TransactionTemplate(transactions);
+        assertThatThrownBy(()->tx.executeWithoutResult(status->deferrals.expireDue(10)))
+                .satisfies(failure->assertThat(ListingConversionFixture.sqlState(failure)).isEqualTo("23514"));
+        assertThat(jdbc.sql("SELECT state FROM ops.lc_task_deferral WHERE id=:id").param("id",id).query(String.class).single()).isEqualTo("ACTIVE");
+        assertThat(worker.runOnce(10)).isEqualTo(1);
+        assertThat(jdbc.sql("""
+                SELECT d.state='EXPIRED' AND d.review_health_id=q.health_result_id AND q.state='FINISHED'
+                    AND q.trigger_reference='task-deferral-expired:'||d.id::text AND q.source_time=d.expires_at
+                FROM ops.lc_task_deferral d JOIN ops.lc_recalculation_queue q ON q.id=d.review_queue_id WHERE d.id=:id
+                """).param("id",id).query(Boolean.class).single()).isTrue();
+        assertThat(worker.runOnce(10)).isZero();
+        assertThat(jdbc.sql("SELECT to_jsonb(t)::text FROM ops.work_task t WHERE id=:id").param("id",task).query(String.class).single()).isEqualTo(original);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id AND event_kind='REASSESSMENT_REQUIRED'")
+                .param("id",task).query(Long.class).single()).isEqualTo(1);
     }
     private void expire(UUID id) {
         jdbc.sql("UPDATE ops.lc_recalculation_queue SET leased_until=clock_timestamp()-interval '1 second' WHERE id=:id")

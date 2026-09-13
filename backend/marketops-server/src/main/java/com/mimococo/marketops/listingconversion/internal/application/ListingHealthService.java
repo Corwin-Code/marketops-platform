@@ -40,10 +40,12 @@ public class ListingHealthService {
     private final CalculationRunLedger ledger;
     private final IdGenerator ids;
     private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
 
     ListingHealthService(ListingFactRepository facts, ListingHealthRepository health, ListingActionRepository actions,
                          CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids,
-                         com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility) {
+                         com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility,
+                         com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
         this.facts = facts;
         this.health = health;
         this.actions = actions;
@@ -51,6 +53,7 @@ public class ListingHealthService {
         this.ledger = ledger;
         this.ids = ids;
         this.responsibility = responsibility;
+        this.deferrals = deferrals;
     }
 
     /** The current complete affected set of a listing, frozen if it is new. */
@@ -120,6 +123,7 @@ public class ListingHealthService {
                 health.nextHealthVersion(listingId), conditions, assessment.necessaryState(), assessment.eligibility(),
                 assessment.opportunities(), Digest.ofText(DEFINITION_VERSION), sourceTime, acquisitionTime, now);
         responsibility.synchronize(healthId,CalibrationService.responsibilityBasis(resolved));
+        deferrals.reassessed(healthId);
         return health.latest(listingId).orElseThrow();
     }
 

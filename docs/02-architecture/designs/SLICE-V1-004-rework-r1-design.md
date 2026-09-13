@@ -846,3 +846,38 @@ action attribution, finite hold/defer with expiry/recovery, source-change fencin
 at closure and staffed release coverage remain required. These consumers must
 reuse this original Task; no additional scheduler, notification channel or case
 system is introduced by this step.
+
+### Checkpoint 33 work — finite deferral and retained reassessment
+
+Original Task policy must explicitly provide `maximumDeferMinutes` (under
+`necessaryRisk` for a diagnostic Task). Missing or malformed calibration refuses
+the request. Current Listing visibility and exact Task assignment scope govern
+both existing Action and diagnostic routes. The finite reason, actor, duration,
+original scope basis and database timestamps are retained. Exact request replay
+returns the existing deadline; an active request cannot be extended or replaced.
+Neither acknowledgement, attributable action, Task state, deadlines nor elapsed
+age changes. Deferral is not qualified dependency HOLD and does not pause a clock.
+
+Retained Health recomputation compares affected-set identity, necessary conditions
+and eligibility to the saved basis. A changed basis invalidates the deferral and
+names the actual subsequent scoped Health result; an unchanged recomputation does
+not invalidate merely because its row ID or calculation timestamp changed. The
+existing recalculation worker expires due deferrals in a bounded transaction and
+queues exact scoped reconsideration with the original expiry as source time. A
+deferred database constraint prevents expiry from committing without that queue
+or an actual subsequent review. Existing lease/replay behavior remains the only
+worker mechanism. A failed review remains visible and does not allow renewal
+until an actual review exists. No additional scheduler or case lifecycle is added.
+
+Chinese/Russian existing responsibility views expose explicit finite requests and
+the returned state. Reading does not submit, acknowledge or poll. Changed account
+or target discards late request responses. The form cannot extend an active
+request; the server remains authoritative for policy and current Task authority.
+
+This closes only the implemented finite deferral mechanism. Complete Q035 reason
+qualification/invalidation and major business changes require the remaining
+purpose/protection/source integrations; the current structural Health projection
+is not evidence that those decisions have been implemented. Qualified cross-domain
+dependency HOLD, restoration, staffed coverage, full risk ordering and all-root
+closure remain required. Existing collaboration-link storage has no qualified
+producer and cannot by itself authorize a paused clock.

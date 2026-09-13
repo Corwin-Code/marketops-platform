@@ -16,5 +16,6 @@ public interface ListingTaskSloQuery {
                   String clockState, Instant firstRaisedAt, Instant acknowledgementDueAt,
                   Instant actionDueAt, Instant outcomeMaturityDueAt, Instant nextCoveredAt,
                   Instant acknowledgedAt, Instant firstAttributableActionAt,
-                  Boolean acknowledgementBreached, Boolean actionBreached, long wallClockAgeSeconds) { }
+                  Boolean acknowledgementBreached, Boolean actionBreached, long wallClockAgeSeconds,
+                  ListingTaskDeferralIntake.View deferral) { }
 }

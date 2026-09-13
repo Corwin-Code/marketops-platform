@@ -316,8 +316,17 @@
         "lines": 100,
         "sha256": "a37c0c49070626e22e5c49fca11bb2b07c48233e1f8bbc5fce8e6049ac97f017",
         "forward_only": true
+      },
+      {
+        "version": "V0110",
+        "file": "backend/marketops-server/src/main/resources/db/migration/V0110__bind_finite_listing_task_deferral_to_reassessment.sql",
+        "bytes": 7325,
+        "lines": 105,
+        "sha256": "6b191fbb747a71986fc9251b06c275305fec37f62100ab7da714e6ab64e68d63",
+        "forward_only": true
       }
     ],
-    "committed_migrations_through_V0108_byte_changes_at_checkpoint_32": 0
+    "committed_migrations_through_V0108_byte_changes_at_checkpoint_32": 0,
+    "committed_migrations_through_V0109_byte_changes_at_checkpoint_33": 0
   }
 }

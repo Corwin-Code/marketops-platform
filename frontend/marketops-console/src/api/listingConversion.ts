@@ -1444,6 +1444,66 @@ export function fetchMeaningReviewBasis(
   return request(context, `${ACTIONS}/${id(actionId)}/review-basis`, parseMeaningReviewBasis);
 }
 
+export interface ListingTaskDeferral {
+  readonly id: string;
+  readonly minutes: number;
+  readonly reason: string;
+  readonly requestedAt: string;
+  readonly expiresAt: string;
+  readonly state: 'ACTIVE' | 'REVIEW_DUE' | 'EXPIRED' | 'INVALIDATED';
+  readonly reviewHealthId: string | undefined;
+}
+
+export type ListingDeferralTarget =
+  | { readonly kind: 'ACTION'; readonly actionId: string }
+  | { readonly kind: 'DIAGNOSTIC'; readonly listingId: string; readonly taskId: string };
+
+export function parseListingTaskDeferral(body: unknown): ListingTaskDeferral | undefined {
+  const r = row(body),
+    deferralId = text(r?.id),
+    minutes = number(r?.minutes),
+    reason = text(r?.reason),
+    requestedAt = text(r?.requestedAt),
+    expiresAt = text(r?.expiresAt),
+    state = text(r?.state);
+  if (
+    deferralId === undefined ||
+    minutes === undefined ||
+    !Number.isInteger(minutes) ||
+    minutes < 1 ||
+    reason === undefined ||
+    requestedAt === undefined ||
+    expiresAt === undefined ||
+    (state !== 'ACTIVE' && state !== 'REVIEW_DUE' && state !== 'EXPIRED' && state !== 'INVALIDATED')
+  )
+    return undefined;
+  return {
+    id: deferralId,
+    minutes,
+    reason,
+    requestedAt,
+    expiresAt,
+    state,
+    reviewHealthId: text(r?.reviewHealthId),
+  };
+}
+
+export function deferListingTask(
+  context: ConsoleRequest,
+  target: ListingDeferralTarget,
+  minutes: number,
+  reason: string,
+): Promise<ConsoleOutcome<ListingTaskDeferral>> {
+  const url =
+    target.kind === 'ACTION'
+      ? `${ACTIONS}/${id(target.actionId)}/responsibility/deferrals`
+      : `${HEALTH}/listings/${id(target.listingId)}/responsibilities/${id(target.taskId)}/deferrals`;
+  return request(context, url, parseListingTaskDeferral, {
+    method: 'POST',
+    body: JSON.stringify({ minutes, reason }),
+  });
+}
+
 export interface ListingResponsibility {
   readonly bound: boolean;
   readonly status?: {
@@ -1462,6 +1522,7 @@ export interface ListingResponsibility {
     readonly acknowledgementBreached: boolean | undefined;
     readonly actionBreached: boolean | undefined;
     readonly wallClockAgeSeconds: number;
+    readonly deferral?: ListingTaskDeferral | undefined;
   };
 }
 
@@ -1484,9 +1545,15 @@ export function parseListingResponsibility(body: unknown): ListingResponsibility
     age === undefined
   )
     return undefined;
+  const deferral =
+    s.deferral === null || s.deferral === undefined
+      ? undefined
+      : parseListingTaskDeferral(s.deferral);
+  if (s.deferral !== null && s.deferral !== undefined && deferral === undefined) return undefined;
   return {
     bound: true,
     status: {
+      deferral,
       taskId,
       clockState,
       basisDigest,

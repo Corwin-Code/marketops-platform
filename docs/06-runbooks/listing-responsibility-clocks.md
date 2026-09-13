@@ -25,10 +25,12 @@ Ordinary-work configuration uses the existing governed calibration categories:
     "acknowledgementMinutes": 120,
     "actionMinutes": 180,
     "outcomeMaturityDays": 30,
+    "maximumDeferMinutes": 1440,
     "necessaryRisk": {
       "acknowledgementMinutes": 15,
       "actionMinutes": 60,
-      "outcomeMaturityDays": 30
+      "outcomeMaturityDays": 30,
+      "maximumDeferMinutes": 1440
     }
   },
   "RESPONSIBILITY_COVERAGE": {
@@ -73,7 +75,27 @@ Reading this list does not acknowledge. Its acknowledgement control checks the
 exact Listing and the shared Task's current store permission. The Task's cause
 must be resolved in retained diagnosis before closure; a click or caller-labelled
 action is insufficient. A later failed diagnosis reopens the same Task. Scope
-change fencing, cross-domain action attribution, finite holds/defer and complete
+change fencing, cross-domain action attribution, qualified dependency hold and complete
 opportunity activation remain unfinished at this intermediate checkpoint.
 No clock display releases occupations, closes an Outcome, lifts containment or
 enables a platform write.
+
+
+Finite deferral uses the original Task policy's explicit `maximumDeferMinutes`,
+with its `necessaryRisk` subobject for diagnostic work. Use the Chinese/Russian
+responsibility form to submit a finite reason and duration. Listing view alone is
+insufficient: the current actor also needs exact Task assignment scope. Repeating
+an identical request returns its original expiry; it does not extend it. All
+original SLO deadlines and Task age keep accumulating. This is not dependency HOLD.
+
+The current state is ACTIVE, REVIEW_DUE, EXPIRED or INVALIDATED. Expiry joins the
+existing recalculation worker, with expiry/queue committed together. The review
+field names an actual subsequent scoped retained Health result. An unchanged
+calculation does not invalidate the basis merely through a new timestamp. A
+failed review does not invent a review result or permit renewal; inspect the
+existing recalculation failure receipt. Do not enable a worker or retry a provider
+as a consequence of this local verification. The worker remains default OFF.
+
+This local mechanism does not yet qualify all reasons, major business changes,
+protections or opportunities. Qualified dependency pause/recovery and staffed
+release coverage remain open; a handover record alone cannot qualify a pause.

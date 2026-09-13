@@ -1,0 +1,135 @@
+[http-targeted] PASS_TARGETED_OVERLAPS_FINAL_AUTH
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT#finiteDeferralKeepsOriginalClocksAndReassessesChangedDiagnosis' test
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.94 s -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  30.094 s
+[INFO] Finished at: 2026-09-13T10:18:43+08:00
+
+[queue] FAIL_NEW_MANUAL_FIXTURE_MISSING_REQUESTING_USER
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingRecalculationLeaseIT' test
+[ERROR] Tests run: 7, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 13.69 s <<< FAILURE! -- in com.mimococo.marketops.ListingRecalculationLeaseIT
+[ERROR]   ListingRecalculationLeaseIT.expiredDeferralAndItsReviewQueueAreAtomicAndDoNotResetTaskAge:66 » IllegalArgument a manual calculation requires its actual requesting user
+[ERROR] Tests run: 7, Failures: 0, Errors: 1, Skipped: 0
+[INFO] BUILD FAILURE
+[INFO] Total time:  24.279 s
+[INFO] Finished at: 2026-09-13T10:21:57+08:00
+
+[queue-corrected] PASS_AFTER_SUPPLYING_ACTUAL_FIXTURE_REQUESTER
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingRecalculationLeaseIT' test
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.72 s -- in com.mimococo.marketops.ListingRecalculationLeaseIT
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  24.481 s
+[INFO] Finished at: 2026-09-13T10:26:41+08:00
+
+[auth] PASS
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingReworkAuthorizationIT' test
+[INFO] Tests run: 79, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 62.60 s -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[INFO] Tests run: 79, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:16 min
+[INFO] Finished at: 2026-09-13T10:28:23+08:00
+
+[launch-architecture] PASS_21_LAUNCH_5_SCHEDULE_76_ARCHITECTURE
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingActionLaunchIT,ListingResponsibilityScheduleTest,*ArchitectureTest' test
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.08 s -- in com.mimococo.marketops.ListingActionLaunchIT
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.366 s -- in Additional code-quality architecture safeguards
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.792 s -- in com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.498 s -- in rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.142 s -- in com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.361 s -- in com.mimococo.marketops.architecture.ModulithArchitectureTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.174 s -- in Additional code-quality rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.502 s -- in com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.253 s -- in TC-AUTHORITY-003 owner-published policy has no writer in this product
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.199 s -- in TC-AUTHORITY-004 listingconversion writes nothing a function or another module owns
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.128 s -- in TC-AUTHORITY-002 command creation has exactly one route
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.613 s -- in com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.mimococo.marketops.operationsworkflow.internal.domain.ListingResponsibilityScheduleTest
+[INFO] Tests run: 102, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  38.965 s
+[INFO] Finished at: 2026-09-13T10:30:04+08:00
+
+[task-journal] PASS
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=WorkTaskJournalIT' test
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.69 s -- in com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  23.527 s
+[INFO] Finished at: 2026-09-13T10:31:17+08:00
+
+[schema] PASS
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingConversionSchemaIT' test
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in TC-LC-SCHEMA-002 every listing table is inventoried, and none is routed
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.085 s -- in TC-LC-SCHEMA-001 what the application role may and may not write
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in TC-LC-SCHEMA-004 calibration resolves to one package or to a named failure
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in TC-LC-SCHEMA-003 the description command graph is data, and its shape is the safety property
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.352 s -- in com.mimococo.marketops.database.ListingConversionSchemaIT
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  16.949 s
+[INFO] Finished at: 2026-09-13T10:31:35+08:00
+
+[upgrade] PASS
+cwd: backend/marketops-server
+command: ./mvnw -B -ntp '-Dtest=ListingAtomicLaunchUpgradeIT' test
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.730 s -- in com.mimococo.marketops.ListingAtomicLaunchUpgradeIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  16.805 s
+[INFO] Finished at: 2026-09-13T10:31:53+08:00
+
+[frontend] PASS_BEFORE_TEST_ASSERTION_STYLE_FIX
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npx vitest run src/__tests__/ListingDeferral.test.tsx src/__tests__/ListingResponsibility.test.tsx
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Duration  1.48s (transform 220ms, setup 266ms, import 242ms, tests 318ms, environment 1.82s)
+
+[frontend-regression] PASS
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npx vitest run src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx
+ Test Files  3 passed (3)
+      Tests  35 passed (35)
+   Duration  3.66s (transform 1.17s, setup 447ms, import 1.40s, tests 3.05s, environment 2.85s)
+
+[frontend-fixed] PASS_AFTER_ASSERTION_STYLE_FIX_OVERLAPS_45
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npx vitest run src/__tests__/ListingDeferral.test.tsx
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Duration  1.98s (transform 260ms, setup 337ms, import 228ms, tests 196ms, environment 1.03s)
+
+[build] PASS_BEFORE_TEST_ASSERTION_STYLE_FIX
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npm run build
+> marketops-console@0.1.0 build
+> tsc --noEmit && vite build
+✓ built in 117ms
+
+[lint] FAIL_TEST_REQUEST_BODY_OBJECT_STRINGIFICATION
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npm run lint
+> marketops-console@0.1.0 lint
+> eslint . --max-warnings 0
+  53:32  error  'send.mock.calls[0]?.[1]?.body' may use Object's default stringification format ('[object Object]') when stringified  @typescript-eslint/no-base-to-string
+✖ 1 problem (1 error, 0 warnings)
+
+[lint-fixed] PASS
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npm run lint
+> marketops-console@0.1.0 lint
+> eslint . --max-warnings 0
+
+[typecheck-final] PASS_FINAL
+cwd: frontend/marketops-console
+command: fnm exec --using 24.19.0 npx tsc --noEmit

@@ -57,12 +57,14 @@ class ListingHealthConsoleController {
     private final MetadataAuditRecorder audit;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility;
     private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
 
     ListingHealthConsoleController(ListingHealthService health, ConversionMeasurementService measurements,
                                    ListingFactIntakeService facts, ListingScopeAuthorization listings,
                                    BusinessAuthorization authorization, MetadataAuditRecorder audit,
                                    com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
-                                   com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake) {
+                                   com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake,
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
         this.health = health;
         this.measurements = measurements;
         this.facts = facts;
@@ -71,7 +73,16 @@ class ListingHealthConsoleController {
         this.audit = audit;
         this.responsibility = responsibility;
         this.diagnosticIntake = diagnosticIntake;
+        this.deferrals = deferrals;
     }
+
+    @PostMapping("/listings/{listingId}/responsibilities/{taskId}/deferrals")
+    com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake.View defer(
+            AuthenticatedActor actor,@PathVariable UUID listingId,@PathVariable UUID taskId,@Valid @RequestBody DeferralRequest request) {
+        listings.require(actor,listingId,ActionScopeCode.LISTING_CONVERSION_VIEW);
+        return deferrals.request(actor,listingId,taskId,request.minutes(),request.reason());
+    }
+    record DeferralRequest(@Min(1) int minutes,@NotBlank String reason) { }
 
     @PostMapping("/listings/{listingId}/responsibilities/{taskId}/acknowledgement")
     @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)

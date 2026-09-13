@@ -31,13 +31,16 @@ public class RecalculationService {
     private final IdGenerator ids;
     private final Clock clock;
     private final org.springframework.transaction.support.TransactionTemplate transaction;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
 
     RecalculationService(GovernanceRepository governance, ListingHealthService health, IdGenerator ids, Clock clock,
-                         org.springframework.transaction.PlatformTransactionManager transactions) {
+                         org.springframework.transaction.PlatformTransactionManager transactions,
+                         com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
         this.governance = governance;
         this.health = health;
         this.ids = ids;
         this.clock = clock;
+        this.deferrals = deferrals;
         this.transaction = new org.springframework.transaction.support.TransactionTemplate(transactions);
         this.transaction.setPropagationBehavior(org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         this.transaction.setTimeout(120);
@@ -53,6 +56,15 @@ public class RecalculationService {
 
     @Transactional(propagation = Propagation.NEVER)
     public int runOnce(int limit) {
+        transaction.executeWithoutResult(status -> {
+            for(var review:deferrals.expireDue(limit)) {
+                UUID queueId=ids.newId();
+                governance.enqueue(queueId,review.organizationId(),review.listingId(),
+                        review.necessaryRisk()?RecalculationClass.RISK:RecalculationClass.ORDINARY,
+                        "task-deferral-expired:"+review.id(),review.expiredAt(),governance.databaseNow());
+                deferrals.queued(review.id(),queueId);
+            }
+        });
         int finished = 0;
         for (GovernanceRepository.QueuedRow row : governance.claim(limit)) {
             try {

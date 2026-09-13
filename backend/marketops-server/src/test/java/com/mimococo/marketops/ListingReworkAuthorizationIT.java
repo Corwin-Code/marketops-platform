@@ -1091,6 +1091,49 @@ class ListingReworkAuthorizationIT {
         return prepareDescriptionForExposure(reportedExposure,ListingConversionFixture.PRIOR_TEXT_ONE+".");
     }
 
+    @Test
+    void finiteDeferralKeepsOriginalClocksAndReassessesChangedDiagnosis() throws Exception {
+        UUID action=prepareDescriptionForExposure(java.math.BigDecimal.ZERO);
+        String healthEndpoint="/api/v1/console/listing/health/listings/"+fixture.id("listing");
+        mvc.perform(post(healthEndpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk());
+        String endpoint="/api/v1/console/listing/actions/"+action+"/responsibility";
+        var json=new tools.jackson.databind.ObjectMapper();
+        var initial=json.readTree(mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString()).path("status");
+        UUID task=UUID.fromString(initial.path("taskId").asText());
+        String request="{\"minutes\":60,\"reason\":\"Reconsider the same scoped work within an explicit finite period\"}";
+        mvc.perform(post(endpoint+"/deferrals").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(request)).andExpect(status().isForbidden());
+        users.grantScope(OPERATOR,userId,ActionScopeCode.TASK_ASSIGN,ResourceScopeType.STORE,fixture.id("store"),null);
+        var deferred=mvc.perform(post(endpoint+"/deferrals").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(request)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        var repeated=mvc.perform(post(endpoint+"/deferrals").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(request)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(json.readTree(repeated)).isEqualTo(json.readTree(deferred));
+        mvc.perform(post(endpoint+"/deferrals").header(HttpHeaders.AUTHORIZATION,bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(request.replace("60","1441")))
+                .andExpect(status().is4xxClientError());
+        mvc.perform(post(healthEndpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk());
+        mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.status.deferral.state").value("ACTIVE"));
+        fixture.contain(UUID.randomUUID(),fixture.id("ownerUser"),fixture.id("listing"));
+        mvc.perform(post(healthEndpoint+"/recompute").header(HttpHeaders.AUTHORIZATION,bearer())).andExpect(status().isOk());
+        var changed=json.readTree(mvc.perform(get(endpoint).header(HttpHeaders.AUTHORIZATION,bearer()))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString()).path("status");
+        assertThat(changed.path("deferral").path("state").asText()).isEqualTo("INVALIDATED");
+        assertThat(changed.path("deferral").path("reviewHealthId").asText()).isNotBlank();
+        for(String field:List.of("firstRaisedAt","acknowledgementDueAt","actionDueAt","outcomeMaturityDueAt","basisDigest"))
+            assertThat(changed.path(field)).isEqualTo(initial.path(field));
+        assertThat(changed.path("acknowledgedAt").isNull()).isTrue();
+        assertThat(changed.path("firstAttributableActionAt").isNull()).isTrue();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id AND event_kind='DEFERRED'")
+                .param("id",task).query(Long.class).single()).isEqualTo(1);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.work_task_event WHERE task_id=:id AND event_kind='REASSESSMENT_REQUIRED'")
+                .param("id",task).query(Long.class).single()).isEqualTo(1);
+    }
+
     private UUID prepareDescriptionForExposure(java.math.BigDecimal reportedExposure,String targetText) throws Exception {
         var json=new tools.jackson.databind.ObjectMapper();
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);

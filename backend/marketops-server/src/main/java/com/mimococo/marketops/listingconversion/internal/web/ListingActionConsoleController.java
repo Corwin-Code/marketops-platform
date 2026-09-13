@@ -61,18 +61,31 @@ class ListingActionConsoleController {
     private final MetadataAuditRecorder audit;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility;
     private final com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake;
+    private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
 
     ListingActionConsoleController(ListingActionService actions, EvaluationService evaluations,
                                    BusinessAuthorization authorization, MetadataAuditRecorder audit,
                                    com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
-                                   com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake) {
+                                   com.mimococo.marketops.operationsworkflow.ListingActionIntake taskIntake,
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
         this.actions = actions;
         this.evaluations = evaluations;
         this.authorization = authorization;
         this.audit = audit;
         this.responsibility = responsibility;
         this.taskIntake = taskIntake;
+        this.deferrals = deferrals;
     }
+
+    @PostMapping("/{actionId}/responsibility/deferrals")
+    com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake.View defer(
+            AuthenticatedActor actor,@PathVariable UUID actionId,@Valid @RequestBody DeferralRequest request) {
+        var action=actions.require(actor,actionId);
+        UUID task=taskIntake.taskForRecommendation(action.recommendationId()).orElseThrow(()->
+                com.mimococo.marketops.shared.OperationRejectedException.of(com.mimococo.marketops.shared.ErrorCode.RESOURCE_NOT_FOUND));
+        return deferrals.request(actor,action.platformListingId(),task,request.minutes(),request.reason());
+    }
+    record DeferralRequest(@jakarta.validation.constraints.Min(1) int minutes,@NotBlank String reason) { }
 
     // ------------------------------------------------------------------ candidates
 

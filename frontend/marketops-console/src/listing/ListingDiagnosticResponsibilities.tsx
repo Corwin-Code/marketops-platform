@@ -8,6 +8,7 @@ import { Code, ListingProblem } from './ListingCommon';
 import { ResponsibilityTimes } from './ListingResponsibility';
 import { useLanguage } from './i18n/language';
 import { t } from './i18n/ui';
+import { ListingDeferral } from './ListingDeferral';
 
 export function ListingDiagnosticResponsibilities({
   context,
@@ -69,6 +70,11 @@ export function ListingDiagnosticResponsibilities({
             {t('responsibilityAcknowledge', language)}
           </button>
           <ResponsibilityTimes status={status} />
+          <ListingDeferral
+            context={context}
+            target={{ kind: 'DIAGNOSTIC', listingId, taskId: status.taskId }}
+            current={status.deferral}
+          />
         </article>
       ))}
     </section>

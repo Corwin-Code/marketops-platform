@@ -483,3 +483,39 @@ and opportunities, cross-domain action attribution, finite qualified hold/defer
 expiry/recovery and staffed release coverage remain unfinished. The current
 retained PASS does not fabricate a personally attributable action or Outcome.
 No final LOCAL_VERIFIED, root closure, external verification or platform write.
+
+
+## Checkpoint 33 — finite deferral and existing reassessment queue
+
+Finite reason/duration requests use the original explicit Task calibration and
+current Listing/Task scope. Exact replay returns the original expiry. A retained
+scope/necessary/eligibility change invalidates the deferral and binds its actual
+subsequent Health; unchanged recalculation preserves it. Expiry and its exact
+scoped recalculation queue entry commit together, and worker replay cannot create
+a duplicate review. Original Task bytes, SLO deadlines, age and acknowledgement/
+action semantics remain unchanged. The bilingual form is explicit and discards
+late responses after account/target changes.
+
+The new historical expiry fixture initially omitted the actual requesting user
+for a MANUAL calculation. Existing ledger authority rejected it before the tested
+expiry path; only that fixture call was corrected. Seven queue cases then passed,
+including deferred-constraint rollback without a review queue, actual worker
+review result binding and zero duplicate work. Frontend lint rejected broad-body
+String conversion in an assertion; direct expected JSON comparison preserved the
+assertion without changing production code. Four affected frontend cases, lint
+and final tsc then passed. Failed runs remain separately identified in receipts.
+
+206 distinct backend cases pass: 79 authorization, 21 launch, 5 schedule,
+76 architecture, 7 queue, 7 shared journal, 10 schema and 1 historical upgrade.
+The earlier targeted HTTP case overlaps authorization. 45 frontend cases pass;
+the final four cases overlap that total. Build/lint/typecheck pass. Every process
+is terminal. Three frozen inputs, 109 previously committed migration files and
+31 forward migration inventory entries match their hashes. See
+checkpoint-33-test-receipts.json and checkpoint33-deferral-test-summary.txt.
+
+This is finite deferral, not qualified dependency HOLD. Complete reason
+qualification/invalidation, material business source changes, qualified
+protections/opportunities, cross-domain action attribution, risk ordering and
+staffed release coverage remain open. The retained Health projection does not
+prove these requirements. No root is closed by this checkpoint; 23 IN_PROGRESS,
+4 OPEN. No final LOCAL_VERIFIED, Controller verdict or production enablement.

@@ -33,6 +33,10 @@ public class GovernanceRepository {
         this.jdbc = jdbc;
     }
 
+    public Instant databaseNow() {
+        return jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
+    }
+
     // ------------------------------------------------------------------ batches
 
     public void insertBatch(UUID id, UUID organizationId, UUID storeId, String code, UUID createdBy, Instant now) {

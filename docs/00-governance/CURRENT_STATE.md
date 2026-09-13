@@ -50,7 +50,7 @@ slice_v1_004_owner_decision_count: 85
 slice_v1_004_decision_085: B
 slice_v1_004_scope_deltas_not_required: DELTA_01_DELTA_02_DELTA_03
 slice_v1_004_evidence_obligations_open: F_M01_F_M02_F_S01_F_W01_F_W02_E_04
-slice_v1_004_migrations: V0074_THROUGH_V0109
+slice_v1_004_migrations: V0074_THROUGH_V0110
 slice_v1_004_as_built_design: docs/02-architecture/designs/SLICE-V1-004-design.md
 slice_v1_004_acceptance_status: docs/07-phase-evidence/SLICE-V1-004/acceptance-status.md
 slice_v1_004_executable_evidence: docs/07-phase-evidence/SLICE-V1-004/executable-evidence.md
@@ -985,3 +985,16 @@ and final typecheck pass. All processes ended; 108 existing migration files and
 the three immutable inputs are unchanged. Remaining purpose-qualified activation,
 risk ordering, source-change triggering/fencing, finite holds/defer and staffed
 release coverage remain open. No whole-root closure or production enablement.
+
+SLICE-V1-004 continuous local rework update: checkpoint-33 adds finite deferral
+against original Task policy and current scoped authority. Exact replay preserves
+the initial expiry; Task deadlines, age and acknowledgement/action state stay
+unchanged. Existing Health recomputation records changed retained diagnosis; the
+existing worker commits expiry and exact review queue atomically. Chinese/Russian
+forms submit explicitly and discard late actor/target responses. This does not
+implement qualified dependency HOLD or complete reason/purpose/protection source
+qualification. Root 024 and whole-scope closure remain open; 23 IN_PROGRESS,
+4 OPEN, none closed. See checkpoint-33 receipts for the final affected local
+verification: 206 distinct backend and 45 frontend cases, build/lint/typecheck
+pass; all handles ended. Prior 109 migrations and three immutable inputs remain byte exact;
+V0110 is forward-only. Level 1 restrictions and default-OFF platform writes hold.
