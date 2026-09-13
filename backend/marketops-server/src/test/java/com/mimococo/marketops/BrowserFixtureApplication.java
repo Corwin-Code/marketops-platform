@@ -23,6 +23,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import tools.jackson.databind.ObjectMapper;
@@ -37,13 +38,15 @@ public final class BrowserFixtureApplication {
         if (!"ISOLATED_SYNTHETIC_DATABASE".equals(System.getenv("MARKETOPS_BROWSER_FIXTURE"))) {
             throw new IllegalStateException("Explicit isolated browser fixture required");
         }
+        String issuerPassword = UUID.randomUUID().toString();
         var application = new SpringApplication(MarketOpsServerApplication.class,
                 BrowserSigningFixture.class, SyntheticMarketplace.class);
         application.addInitializers(initial -> {
             var env = initial.getEnvironment();
             String url = env.getRequiredProperty("spring.datasource.url");
-            if (!url.matches("jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/marketops")) {
-                throw new IllegalStateException("Browser fixture requires the loopback compose database");
+            if (!url.matches("jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/marketops")
+                    || url.contains(":5432/")) {
+                throw new IllegalStateException("Browser fixture requires a dedicated loopback compose database");
             }
             var preflight = JdbcClient.create(new DriverManagerDataSource(url,
                     env.getRequiredProperty("spring.datasource.username"), env.getRequiredProperty("spring.datasource.password")));
@@ -51,6 +54,17 @@ public final class BrowserFixtureApplication {
             if (exists && preflight.sql("SELECT count(*) FROM core.organization").query(Long.class).single() != 0) {
                 throw new IllegalStateException("Browser fixture refuses nonempty data before migrations");
             }
+            var administrator = new DriverManagerDataSource(url, "postgres",
+                    env.getRequiredProperty("MARKETOPS_POSTGRES_SUPERUSER_PASSWORD"));
+            try (var connection = administrator.getConnection()) {
+                TestDatabase.enableSyntheticIdentityIssuer(connection, issuerPassword);
+            } catch (java.sql.SQLException unavailable) {
+                throw new IllegalStateException("Browser fixture could not activate the synthetic identity issuer");
+            }
+            env.getPropertySources().addFirst(new MapPropertySource("browserSyntheticIdentityIssuer", Map.of(
+                    "marketops.identity.invocation.jdbc-url", url,
+                    "marketops.identity.invocation.username", "marketops_identity_issuer",
+                    "marketops.identity.invocation.password", issuerPassword)));
         });
         var context = application.run("--spring.profiles.active=local",
                 "--marketops.identity.oidc.issuer-uri=" + BrowserSigningFixture.ISSUER,
