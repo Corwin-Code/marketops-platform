@@ -250,6 +250,14 @@ describe('every listing form posts what the operator entered', () => {
     expect(calls.find((call) => call.url.endsWith('/measurements'))?.body).toContain(
       '"retentionDays":30',
     );
+    expect(
+      JSON.parse(calls.find((call) => call.url.endsWith('/measurements'))?.body ?? '{}'),
+    ).toMatchObject({
+      windowStart: '2026-08-01T00:00:00Z',
+      windowEnd: '2026-08-31T00:00:00Z',
+      retentionDays: 30,
+      evidencePath: 'OFFICIAL_SUMMARY',
+    });
     expect(calls.find((call) => call.url.endsWith('/facts/description'))?.body).toContain(
       '"kizMarkedDeclared":false',
     );

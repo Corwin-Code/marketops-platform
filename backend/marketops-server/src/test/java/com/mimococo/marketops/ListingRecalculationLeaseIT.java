@@ -203,7 +203,7 @@ class ListingRecalculationLeaseIT {
         Instant to=Instant.now().minusSeconds(40L*86400).truncatedTo(ChronoUnit.SECONDS);
         Instant from=to.minusSeconds(86400);
         UUID originalSummary=facts.recordOfficialSummary(actor,fixture.id("listing"),from,to,100L,10L,
-                "Synthetic queue baseline",to.plusSeconds(31L*86400),30);
+                "Synthetic queue baseline",to.plusSeconds(31L*86400),30,null,null,null);
         facts.recordMeasurementCoverage(actor,fixture.id("listing"),EvidencePath.OFFICIAL_SUMMARY,from,to,30,
                 to.plusSeconds(31L*86400),"evidence://synthetic/queue-baseline",null,null,originalSummary);
         var originalMeasurement=measurements.measure(fixture.id("listing"),from,to,30,
@@ -222,7 +222,7 @@ class ListingRecalculationLeaseIT {
                 .param("listing",fixture.id("listing")).update();
         Instant correctedAt=Instant.now().minusSeconds(2).truncatedTo(ChronoUnit.MICROS);
         UUID correctedSummary=facts.recordOfficialSummary(actor,fixture.id("listing"),from,to,100L,11L,
-                "Synthetic queue correction",correctedAt,30);
+                "Synthetic queue correction",correctedAt,30,null,null,null);
         fixture.seed.sql("""
                 UPDATE core.lc_official_summary_observation SET supersedes_fact_id=:original WHERE id=:corrected
                 """).param("original",originalSummary).param("corrected",correctedSummary).update();

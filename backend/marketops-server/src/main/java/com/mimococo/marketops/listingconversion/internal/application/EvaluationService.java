@@ -5,7 +5,6 @@ import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.listingconversion.ConversionMeasurementView;
-import com.mimococo.marketops.listingconversion.EvidencePath;
 import com.mimococo.marketops.listingconversion.EvaluationView;
 import com.mimococo.marketops.listingconversion.NodeVerdict;
 import com.mimococo.marketops.listingconversion.ProtectionVerdict;
@@ -203,7 +202,7 @@ public class EvaluationService {
             result.put("sourceTime",string(reference.sourceTime()));
             result.put("acquisitionTime",string(reference.acquisitionTime()));
             result.put("computedAt",string(reference.computedAt()));
-            if (!reference.qualified() || reference.evidencePath()!=EvidencePath.DETAIL)
+            if (!reference.qualified())
                 gaps.add("PRE_ACTION_REFERENCE_SOURCE_UNQUALIFIED");
             if (reference.windowEnd().isAfter(at) || reference.computedAt()==null || reference.computedAt().isAfter(at)
                     || reference.sourceTime()==null || reference.acquisitionTime()==null
@@ -500,7 +499,7 @@ public class EvaluationService {
         if (target==null) commonGaps.add("TARGET_MEASUREMENT_UNAVAILABLE");
         if (reference!=null) {
             evidence.put("referenceInputDigest",reference.canonicalInputDigest());
-            boolean identity=reference.evidencePath()==EvidencePath.DETAIL && reference.qualified()
+            boolean identity=reference.qualified()
                     && frozen.path("definitionVersion").asInt(-1)==reference.definitionVersion()
                     && frozen.path("retentionDays").asInt(-1)==reference.retentionDays()
                     && reference.canonicalInputDigest()!=null
@@ -517,7 +516,7 @@ public class EvaluationService {
         }
         if (target!=null) {
             evidence.put("targetInputDigest",target.canonicalInputDigest());
-            boolean identity=method!=null && target.evidencePath()==EvidencePath.DETAIL && target.qualified()
+            boolean identity=method!=null && target.qualified()
                     && target.windowStart().equals(plan.frozenAt().plus(Duration.ofDays(method.windowStartDay())))
                     && target.windowEnd().equals(plan.frozenAt().plus(Duration.ofDays(method.windowEndDay())))
                     && target.retentionDays()==method.maturityDays();

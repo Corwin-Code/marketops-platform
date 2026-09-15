@@ -2917,13 +2917,64 @@ class ListingReworkAuthorizationIT {
     @Test
     void frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts() throws Exception {
         users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
-        qualifiedFormalOutcome(true);
+        qualifiedFormalOutcome(true,false);
+    }
+
+    @Test
+    void equivalentOfficialSummaryRunsTheSameFrozenFormalOutcomeWithoutVisitDetails() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        FormalOutcome outcome=qualifiedFormalOutcome(false,true);
+
+        assertThat(jdbc.sql("""
+                SELECT count(*) FROM core.lc_visit_fact v WHERE v.platform_listing_id=:listing
+                  AND v.visited_at>=(SELECT min(period_start) FROM core.lc_official_summary_observation
+                    WHERE platform_listing_id=:listing)
+                  AND v.visited_at<(SELECT max(period_end) FROM core.lc_official_summary_observation
+                    WHERE platform_listing_id=:listing)
+                """).param("listing",fixture.id("listing")).query(Long.class).single()).isZero();
+        assertThat(jdbc.sql("""
+                SELECT count(DISTINCT m.evidence_path) FROM ops.lc_node_result r
+                  JOIN mart.lc_conversion_measurement m ON m.id=r.measurement_id
+                 WHERE r.id=:result AND m.evidence_path='OFFICIAL_SUMMARY'
+                """).param("result",outcome.resultId()).query(Long.class).single()).isEqualTo(1);
+        assertThat(jdbc.sql("""
+                SELECT p.formal_nodes#>>'{0,comparisonReference,evidencePath}'='OFFICIAL_SUMMARY'
+                  AND p.formal_nodes#>>'{0,comparisonReference,state}'='FROZEN_REFERENCE'
+                  AND r.evaluation_evidence#>>'{formalTrafficComparison,state}'='QUALIFIED_FORMAL_COMPARISON'
+                  AND r.evaluation_evidence#>>'{formalTrafficComparison,criticalGroups,CORE,state}'=
+                      'QUALIFIED_INDEPENDENT_COMPARISON'
+                FROM ops.lc_node_result r JOIN ops.lc_evaluation_plan p ON p.id=r.plan_id WHERE r.id=:result
+                """).param("result",outcome.resultId()).query(Boolean.class).single()).isTrue();
+    }
+
+    @Test
+    void summaryMissingARequiredCriticalGroupCannotClaimThatProtection() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        FormalOutcome outcome=qualifiedFormalOutcome(false,true,false);
+
+        assertThat(jdbc.sql("""
+                SELECT verdict='MET' AND protection_verdict='UNDETERMINED'
+                  AND evaluation_evidence#>>'{formalTrafficComparison,state}'='QUALIFIED_FORMAL_COMPARISON'
+                  AND evaluation_evidence#>>'{formalTrafficComparison,criticalGroups,CORE,state}'='UNQUALIFIED'
+                  AND evaluation_evidence#>'{formalTrafficComparison,qualificationGaps}'
+                      @> '["CRITICAL_GROUP_CORE:CRITICAL_GROUP_TARGET_UNQUALIFIED"]'::jsonb
+                FROM ops.lc_node_result WHERE id=:result
+                """).param("result",outcome.resultId()).query(Boolean.class).single()).isTrue();
     }
 
     private record FormalOutcome(UUID actionId,UUID resultId) { }
 
     /** One shared material evaluator journey; unit tests retain the arithmetic boundary matrix. */
     private FormalOutcome qualifiedFormalOutcome(boolean exerciseRevisions) throws Exception {
+        return qualifiedFormalOutcome(exerciseRevisions,false);
+    }
+
+    private FormalOutcome qualifiedFormalOutcome(boolean exerciseRevisions,boolean officialSummary) throws Exception {
+        return qualifiedFormalOutcome(exerciseRevisions,officialSummary,true);
+    }
+
+    private FormalOutcome qualifiedFormalOutcome(boolean exerciseRevisions,boolean officialSummary,
+                                                   boolean includeTargetCriticalGroup) throws Exception {
         for(var scope:List.of(ActionScopeCode.INTERNAL_FACT_INTAKE,ActionScopeCode.LISTING_ACTION_PREPARE,
                 ActionScopeCode.LISTING_MANUAL_VERIFY,ActionScopeCode.LISTING_OUTCOME_EVALUATE))
             users.grantScope(OPERATOR,userId,scope,ResourceScopeType.STORE,fixture.id("store"),null);
@@ -2939,6 +2990,7 @@ class ListingReworkAuthorizationIT {
         Instant targetStart=frozen.plusSeconds(86400),targetEnd=frozen.plusSeconds(15L*86400);
         UUID referenceSource=seedFormalProvenance("reference",frozen.minusSeconds(2L*86400));
         UUID targetSource=seedFormalProvenance("target",now.minusSeconds(30));
+        if(officialSummary) seedSummaryProfile(true);
         String currentText=jdbc.sql("SELECT description_text FROM core.lc_description_observation WHERE id=:id")
                 .param("id",fixture.id("observationOne")).query(String.class).single();
         String targetText=jdbc.sql("SELECT target_text FROM ops.lc_action WHERE id=:id")
@@ -2949,11 +3001,19 @@ class ListingReworkAuthorizationIT {
         postListing("/facts/display",Map.of("displayState","DISPLAYED","displayedText",targetText,
                 "observedAt",targetStart.minusSeconds(2L*86400).toString(),
                 "evidenceReference","evidence://synthetic/formal-target-display"));
-        String referencePrefix="formal-r-"+UUID.randomUUID();
-        seedTrafficCohort(referenceSource,referencePrefix,referenceStart,frozen.minusSeconds(2L*86400),
-                180,36,20,20);
-        markCriticalGroup(referencePrefix,36);
-        var reference=measureDetailWindow(referenceStart,referenceEnd,56,200);
+        tools.jackson.databind.JsonNode reference;
+        if(officialSummary) {
+            reference=measureSummaryWindow(referenceStart,referenceEnd,200,56,
+                    Map.of("ADVERTISING",Map.of("visits",180,"retained",36),
+                            "ORGANIC",Map.of("visits",20,"retained",20)),
+                    formalCriticalGroupCounts(),"reference",true);
+        } else {
+            String referencePrefix="formal-r-"+UUID.randomUUID();
+            seedTrafficCohort(referenceSource,referencePrefix,referenceStart,frozen.minusSeconds(2L*86400),
+                    180,36,20,20);
+            markCriticalGroup(referencePrefix,36);
+            reference=measureDetailWindow(referenceStart,referenceEnd,56,200);
+        }
         UUID referenceMeasurement=UUID.fromString(reference.path("id").asText());
         Instant referenceAcquired=frozen.minusSeconds(12L*3600),referenceComputed=frozen.minusSeconds(6L*3600);
         fixture.seed.sql("""
@@ -2976,12 +3036,22 @@ class ListingReworkAuthorizationIT {
 
         int initialAdvertising=exerciseRevisions?20:400,initialAdvertisingRetained=exerciseRevisions?4:364;
         int initialOrganic=exerciseRevisions?180:400,initialOrganicRetained=exerciseRevisions?180:380;
-        String initialTargetPrefix="formal-t0-"+UUID.randomUUID();
-        seedTrafficCohort(targetSource,initialTargetPrefix,targetStart,now.minusSeconds(20),
-                initialAdvertising,initialAdvertisingRetained,initialOrganic,initialOrganicRetained);
-        markCriticalGroup(initialTargetPrefix,initialAdvertisingRetained);
-        var target=measureDetailWindow(targetStart,targetEnd,initialAdvertisingRetained+initialOrganicRetained,
-                initialAdvertising+initialOrganic);
+        tools.jackson.databind.JsonNode target;
+        if(officialSummary) {
+            target=measureSummaryWindow(targetStart,targetEnd,initialAdvertising+initialOrganic,
+                    initialAdvertisingRetained+initialOrganicRetained,
+                    Map.of("ADVERTISING",Map.of("visits",initialAdvertising,"retained",initialAdvertisingRetained),
+                            "ORGANIC",Map.of("visits",initialOrganic,"retained",initialOrganicRetained)),
+                    includeTargetCriticalGroup?formalCriticalGroupCounts():Map.of(),"target",
+                    includeTargetCriticalGroup);
+        } else {
+            String initialTargetPrefix="formal-t0-"+UUID.randomUUID();
+            seedTrafficCohort(targetSource,initialTargetPrefix,targetStart,now.minusSeconds(20),
+                    initialAdvertising,initialAdvertisingRetained,initialOrganic,initialOrganicRetained);
+            markCriticalGroup(initialTargetPrefix,initialAdvertisingRetained);
+            target=measureDetailWindow(targetStart,targetEnd,initialAdvertisingRetained+initialOrganicRetained,
+                    initialAdvertising+initialOrganic);
+        }
         if(exerciseRevisions) {
             mvc.perform(post(endpoint()).header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
                     .content(json.writeValueAsString(Map.of("nodeCode","D14","stage","OPERATIONAL",
@@ -2999,7 +3069,9 @@ class ListingReworkAuthorizationIT {
             target=measureDetailWindow(targetStart,targetEnd,744,1360);
             evaluateFormal(target,"evidence://synthetic/late-retained-correction");
         } else evaluateFormal(target,null);
-        assertLatestFormal("MET","PASS",false,"QUALIFIED_NOT_TRIGGERED",null);
+        if(!officialSummary || includeTargetCriticalGroup)
+            assertLatestFormal("MET","PASS",false,"QUALIFIED_NOT_TRIGGERED",
+                    exerciseRevisions?null:"0.634");
         if(exerciseRevisions) {
             assertThat(jdbc.sql("SELECT revision_no FROM ops.lc_node_result WHERE plan_id=:plan AND stage='OPERATIONAL' ORDER BY revision_no")
                     .param("plan",fixture.id("planOne")).query(Integer.class).list()).containsExactly(0,1,2);
@@ -3090,6 +3162,41 @@ class ListingReworkAuthorizationIT {
                 "retentionDays",14,"evidencePath","DETAIL"));
     }
 
+    private tools.jackson.databind.JsonNode measureSummaryWindow(Instant from,Instant to,long visits,long retained,
+            Map<String,?> sourceStrata,Map<String,?> criticalGroups,String label,
+            boolean criticalGroupsQualified) throws Exception {
+        Instant completeThrough=to.plusSeconds(14L*86400);
+        var request=new java.util.LinkedHashMap<String,Object>();
+        request.put("periodStart",from.toString());request.put("periodEnd",to.toString());
+        request.put("visits",visits);request.put("retainedPurchases",retained);request.put("retentionDays",14);
+        request.put("label","Synthetic equivalent formal "+label);request.put("observedAt",completeThrough.toString());
+        request.put("sourceMethodInputVersion",1);request.put("sourceStrata",sourceStrata);
+        request.put("criticalGroupSourceStrata",criticalGroups);
+        var summary=postListing("/facts/official-summary",request);
+        postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",14,"evidencePath","OFFICIAL_SUMMARY","sourceCompleteThrough",completeThrough.toString(),
+                "sourceReference","evidence://synthetic/formal-summary-"+label,
+                "summaryObservationId",summary.path("observationId").asText()));
+        var measured=postListing("/measurements",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",14,"evidencePath","OFFICIAL_SUMMARY"));
+        assertThat(measured.path("sourceStratified").asBoolean()).isTrue();
+        assertThat(measured.path("ratioState").asText()).isEqualTo("DEFINED");
+        assertThat(jdbc.sql("""
+                SELECT inputs->>'sourceStrataQualified'='true'
+                  AND (inputs->>'criticalGroupSourceStrataQualified')::boolean=:groupsQualified
+                FROM mart.lc_measurement_lineage WHERE measurement_id=:id
+                """).param("groupsQualified",criticalGroupsQualified)
+                .param("id",UUID.fromString(measured.path("id").asText()))
+                .query(Boolean.class).single()).isTrue();
+        return measured;
+    }
+
+    private static Map<String,?> formalCriticalGroupCounts() {
+        return Map.of("CORE",Map.of(
+                "ADVERTISING",Map.of("visits",20,"retained",4),
+                "ORGANIC",Map.of("visits",10,"retained",10)));
+    }
+
     private void seedOperationalProtectionPeriod(UUID provenance,String namespace,Instant from,Instant to,
                                                    Instant computed,BigDecimal profit,BigDecimal returns) {
         seedProtectionPeriod(provenance,namespace,"D14",from,to,computed,profit,returns);
@@ -3144,7 +3251,9 @@ class ListingReworkAuthorizationIT {
         reference.put("windowDurationDays",14);reference.put("retentionDays",14);
         reference.put("referenceMeasurementId",referenceMeasurement.toString());
         reference.put("referenceWindowStart",referenceStart.toString());reference.put("referenceWindowEnd",referenceEnd.toString());
-        reference.put("definitionVersion",1);reference.put("evidencePath","DETAIL");reference.put("canonicalInputDigest",digest);
+        String evidencePath=jdbc.sql("SELECT evidence_path FROM mart.lc_conversion_measurement WHERE id=:id")
+                .param("id",referenceMeasurement).query(String.class).single();
+        reference.put("definitionVersion",1);reference.put("evidencePath",evidencePath);reference.put("canonicalInputDigest",digest);
         reference.put("sourceTime",referenceEnd.plusSeconds(14L*86400).toString());
         reference.put("acquisitionTime",referenceAcquired.toString());reference.put("computedAt",referenceComputed.toString());
         reference.set("sourceWeights",json.valueToTree(Map.of("ADVERTISING",new BigDecimal("0.9"),"ORGANIC",new BigDecimal("0.1"))));
@@ -3769,6 +3878,82 @@ class ListingReworkAuthorizationIT {
         assertThat(result.path("qualificationReasonCodes").toString()).contains("SUMMARY_COUNTS_CONFLICTED");
         assertThat(jdbc.sql("SELECT inputs->'sourceInputs'->>'reported_retained_purchases' FROM mart.lc_measurement_lineage WHERE measurement_id=:id")
                 .param("id",UUID.fromString(result.path("id").asText())).query(String.class).single()).isEqualTo("11");
+    }
+
+    @Test
+    void nonEquivalentSummaryMethodInputsCannotBorrowFormalQualificationButKeepTheProvenTotal() throws Exception {
+        measurementGrants();
+        seedSummaryProfile(true);
+        Instant to=Instant.now().minusSeconds(40L*86400).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Instant from=to.minusSeconds(86400),complete=to.plusSeconds(31L*86400);
+        var malformed=new tools.jackson.databind.ObjectMapper().valueToTree(Map.of(
+                "periodStart",from.toString(),"periodEnd",to.toString(),"visits",100,"retainedPurchases",10,
+                "retentionDays",30,"observedAt",complete.toString(),"sourceMethodInputVersion",1,
+                "sourceStrata",List.of("not-a-count-map")));
+        mvc.perform(post("/api/v1/console/listing/health/listings/"+fixture.id("listing")+"/facts/official-summary")
+                .header(HttpHeaders.AUTHORIZATION,bearer()).contentType(MediaType.APPLICATION_JSON)
+                .content(malformed.toString())).andExpect(status().isBadRequest());
+        assertThat(jdbc.sql("SELECT count(*) FROM core.lc_official_summary_observation WHERE platform_listing_id=:id")
+                .param("id",fixture.id("listing")).query(Long.class).single()).isZero();
+        var body=new java.util.LinkedHashMap<String,Object>();
+        body.put("periodStart",from.toString());body.put("periodEnd",to.toString());body.put("visits",100);
+        body.put("retainedPurchases",10);body.put("retentionDays",30);body.put("observedAt",complete.toString());
+        body.put("sourceMethodInputVersion",1);
+        body.put("sourceStrata",Map.of("ADVERTISING",Map.of("visits",80,"retained",9),
+                "ORGANIC",Map.of("visits",20,"retained",2)));
+        body.put("criticalGroupSourceStrata",formalCriticalGroupCounts());
+        var summary=postListing("/facts/official-summary",body);
+        postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY","sourceCompleteThrough",complete.toString(),
+                "sourceReference","evidence://synthetic/non-equivalent-summary-method-inputs",
+                "summaryObservationId",summary.path("observationId").asText()));
+        var measured=postListing("/measurements",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY"));
+
+        assertThat(measured.path("pathQualified").asBoolean()).isTrue();
+        assertThat(measured.path("primaryRatio").decimalValue()).isEqualByComparingTo("0.1");
+        assertThat(measured.path("sourceStratified").asBoolean()).isFalse();
+        assertThat(jdbc.sql("""
+                SELECT inputs->>'sourceStrataQualified'='false'
+                  AND inputs->'summaryMethodInputQualificationReasonCodes'
+                      @> '["SUMMARY_SOURCE_STRATA_TOTAL_MISMATCH"]'::jsonb
+                FROM mart.lc_measurement_lineage WHERE measurement_id=:id
+                """).param("id",UUID.fromString(measured.path("id").asText()))
+                .query(Boolean.class).single()).isTrue();
+        assertThat(measurementEvidence.measuredSourceStrata(UUID.fromString(measured.path("id").asText()),
+                fixture.id("listing")).orElseThrow().qualified()).isFalse();
+    }
+
+    @Test
+    void expiredSummaryProfileCannotQualifyALaterMeasurement() throws Exception {
+        measurementGrants();
+        seedSummaryProfile(true);
+        Instant to=Instant.now().minusSeconds(40L*86400).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Instant from=to.minusSeconds(86400),complete=to.plusSeconds(31L*86400);
+        var body=new java.util.LinkedHashMap<String,Object>();
+        body.put("periodStart",from.toString());body.put("periodEnd",to.toString());body.put("visits",100);
+        body.put("retainedPurchases",10);body.put("retentionDays",30);body.put("observedAt",complete.toString());
+        body.put("sourceMethodInputVersion",1);
+        body.put("sourceStrata",Map.of("ADVERTISING",Map.of("visits",80,"retained",8),
+                "ORGANIC",Map.of("visits",20,"retained",2)));
+        body.put("criticalGroupSourceStrata",formalCriticalGroupCounts());
+        var summary=postListing("/facts/official-summary",body);
+        postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY","sourceCompleteThrough",complete.toString(),
+                "sourceReference","evidence://synthetic/profile-expiry",
+                "summaryObservationId",summary.path("observationId").asText()));
+        fixture.seed.sql("""
+                UPDATE core.lc_summary_equivalence_profile SET status='RETIRED',effective_to=clock_timestamp()
+                 WHERE organization_id=:org
+                """).param("org",fixture.id("organization")).update();
+        var measured=postListing("/measurements",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY"));
+
+        assertThat(measured.path("ratioState").asText()).isEqualTo("NOT_AVAILABLE");
+        assertThat(measured.path("visitCount").asLong()).isEqualTo(100);
+        assertThat(measured.path("retainedPurchaseVisitCount").asLong()).isEqualTo(10);
+        assertThat(measured.path("qualificationReasonCodes").toString()).contains("EQUIVALENCE_PROFILE_ABSENT");
+        assertThat(measured.path("sourceStratified").asBoolean()).isFalse();
     }
 
     @Test
@@ -4702,14 +4887,23 @@ class ListingReworkAuthorizationIT {
     }
 
     private void seedSummaryProfile() {
+        seedSummaryProfile(false);
+    }
+
+    private void seedSummaryProfile(boolean formalMethodInputs) {
         fixture.seed.sql("""
                 INSERT INTO core.lc_summary_equivalence_profile (id,organization_id,platform_code,summary_kind,
                   profile_version,proof_state,covers_numerator,covers_denominator,covers_time_attribution,
-                  covers_maturity,covers_revision,evidence_reference,published_by_user_id,published_at,effective_from,status)
+                  covers_maturity,covers_revision,evidence_reference,published_by_user_id,published_at,effective_from,status,
+                  source_method_input_version,covers_source_strata,covers_critical_groups)
                 VALUES (:id,:org,:platform,'VISITS_AND_RETAINED_PURCHASES',1,'PROVEN',true,true,true,true,true,
-                  'evidence://synthetic/summary-equivalence',:owner,now(),now()-interval '1 hour','ACTIVE')
+                  'evidence://synthetic/summary-equivalence',:owner,now()-interval '1 year',
+                  now()-interval '1 year','ACTIVE',
+                  :methodVersion,:coversSource,:coversGroups)
                 """).param("id", UUID.randomUUID()).param("org", fixture.id("organization"))
-                .param("platform", fixture.graph.platform()).param("owner",fixture.id("ownerUser")).update();
+                .param("platform", fixture.graph.platform()).param("owner",fixture.id("ownerUser"))
+                .param("methodVersion",formalMethodInputs?1:null).param("coversSource",formalMethodInputs)
+                .param("coversGroups",formalMethodInputs).update();
     }
 
     private String bearer() throws JOSEException {

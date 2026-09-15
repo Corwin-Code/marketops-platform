@@ -6,6 +6,7 @@ import com.mimococo.marketops.listingconversion.ConversionMeasurementView;
 import com.mimococo.marketops.listingconversion.EvidencePath;
 import com.mimococo.marketops.listingconversion.RatioState;
 import com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualification;
+import com.mimococo.marketops.listingconversion.internal.domain.OfficialSummaryMethodEvidence;
 import com.mimococo.marketops.listingconversion.internal.domain.VersionWindow;
 import com.mimococo.marketops.listingconversion.internal.domain.VisitConversion;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.ListingFactRepository;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Measures retained-visit conversion for one listing, window and evidence path.
@@ -103,12 +105,17 @@ public class ConversionMeasurementService {
         }
         boolean stratified = path == EvidencePath.DETAIL && !visits.isEmpty()
                 && visits.stream().noneMatch(v -> "UNKNOWN".equals(v.sourceChannel()));
-        var boundProfile = coverage.flatMap(c -> evidence.profile(c.profileId()));
+        var boundProfile = coverage.flatMap(c -> evidence.profile(c.profileId(), now));
         EvidencePathQualification.SummaryProfile profile = boundProfile.map(p ->
                 new EvidencePathQualification.SummaryProfile(true, "PROVEN".equals(p.path("proof_state").asText()),
                         p.path("covers_numerator").asBoolean(),p.path("covers_denominator").asBoolean(),
                         p.path("covers_time_attribution").asBoolean(),p.path("covers_maturity").asBoolean(),
-                        p.path("covers_revision").asBoolean())).orElse(EvidencePathQualification.SummaryProfile.absent());
+                        p.path("covers_revision").asBoolean(),
+                        p.path("source_method_input_version").isIntegralNumber()
+                                ?p.path("source_method_input_version").intValue():null,
+                        p.path("covers_source_strata").asBoolean(),
+                        p.path("covers_critical_groups").asBoolean()))
+                .orElse(EvidencePathQualification.SummaryProfile.absent());
         List<String> disqualifications = new java.util.ArrayList<>(EvidencePathQualification.disqualifications(
                 path, complete, complete, stratified, profile));
         if (!complete && path == EvidencePath.OFFICIAL_SUMMARY) disqualifications.add("SUMMARY_WINDOW_INCOMPLETE");
@@ -181,6 +188,30 @@ public class ConversionMeasurementService {
                 visitCount = null;
                 retainedCount = null;
             }
+            JsonNode summaryInput=source.orElseGet(() -> json.createObjectNode());
+            Integer methodVersion=summaryInput.path("source_method_input_version").isIntegralNumber()
+                    ?summaryInput.path("source_method_input_version").intValue():null;
+            var methodEvidence=OfficialSummaryMethodEvidence.assess(methodVersion,
+                    summaryInput.path("source_strata"),summaryInput.path("critical_group_source_strata"),
+                    visitCount,retainedCount);
+            boolean profileVersionMatches=profile.sourceMethodInputVersion()!=null
+                    && profile.sourceMethodInputVersion().equals(methodVersion);
+            boolean sourceQualified=qualified && maturity && profileVersionMatches
+                    && profile.coversSourceStrata() && methodEvidence.sourceStrataValid();
+            boolean groupsQualified=sourceQualified && profile.coversCriticalGroups()
+                    && methodEvidence.criticalGroupsValid();
+            var methodQualificationReasons=new java.util.ArrayList<>(methodEvidence.reasonCodes());
+            if(!profileVersionMatches) methodQualificationReasons.add("SUMMARY_METHOD_PROFILE_VERSION_MISMATCH");
+            if(!profile.coversSourceStrata()) methodQualificationReasons.add("SUMMARY_SOURCE_STRATA_PROFILE_UNCOVERED");
+            if(!profile.coversCriticalGroups()) methodQualificationReasons.add("SUMMARY_CRITICAL_GROUP_PROFILE_UNCOVERED");
+            lineage.set("sourceStrata",json.valueToTree(methodEvidence.sourceStrata()));
+            lineage.set("criticalGroupSourceStrata",json.valueToTree(methodEvidence.criticalGroups()));
+            lineage.put("sourceStrataQualified",sourceQualified);
+            lineage.put("criticalGroupSourceStrataQualified",groupsQualified);
+            lineage.set("summaryMethodInputQualificationReasonCodes",json.valueToTree(
+                    methodQualificationReasons.stream().distinct().toList()));
+            lineage.put("summaryMethodProfileVersionMatched",profileVersionMatches);
+            stratified=sourceQualified;
             if (!qualified || !maturity || visitCount == null || retainedCount == null) {
                 ratio = null;
                 state = RatioState.NOT_AVAILABLE;

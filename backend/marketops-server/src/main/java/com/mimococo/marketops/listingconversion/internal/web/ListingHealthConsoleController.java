@@ -206,7 +206,8 @@ class ListingHealthConsoleController {
                                             @Valid @RequestBody OfficialSummaryRequest request) {
         return Map.of("observationId", facts.recordOfficialSummary(actor, listingId, request.periodStart(),
                 request.periodEnd(), request.visits(), request.retainedPurchases(), request.label(),
-                request.observedAt(), request.retentionDays()));
+                request.observedAt(), request.retentionDays(), request.sourceMethodInputVersion(),
+                request.sourceStrata(), request.criticalGroupSourceStrata()));
     }
 
     @PostMapping(value = "/listings/{listingId}/facts/feedback-theme", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -259,7 +260,9 @@ class ListingHealthConsoleController {
     }
 
     record OfficialSummaryRequest(@NotNull Instant periodStart, @NotNull Instant periodEnd, Long visits,
-                                  Long retainedPurchases, String label, Instant observedAt, @NotNull Integer retentionDays) {
+                                  Long retainedPurchases, String label, Instant observedAt, @NotNull Integer retentionDays,
+                                  Integer sourceMethodInputVersion, tools.jackson.databind.JsonNode sourceStrata,
+                                  tools.jackson.databind.JsonNode criticalGroupSourceStrata) {
     }
 
     record FeedbackThemeRequest(@NotNull Instant periodStart, @NotNull Instant periodEnd, @NotBlank String themeCode,

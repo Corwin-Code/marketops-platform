@@ -376,7 +376,8 @@ public class ListingFactRepository {
                                                                    String summaryKind, Instant at) {
         return jdbc.sql("""
                 SELECT proof_state, covers_numerator, covers_denominator, covers_time_attribution,
-                       covers_maturity, covers_revision
+                       covers_maturity, covers_revision, source_method_input_version,
+                       covers_source_strata, covers_critical_groups
                   FROM core.lc_summary_equivalence_profile
                  WHERE organization_id = :org AND platform_code = :platform AND summary_kind = :kind
                    AND status = 'ACTIVE' AND effective_from <= :at AND (effective_to IS NULL OR effective_to > :at)
@@ -386,7 +387,9 @@ public class ListingFactRepository {
                 .query((rs, n) -> new EvidencePathQualification.SummaryProfile(true,
                         "PROVEN".equals(rs.getString("proof_state")), rs.getBoolean("covers_numerator"),
                         rs.getBoolean("covers_denominator"), rs.getBoolean("covers_time_attribution"),
-                        rs.getBoolean("covers_maturity"), rs.getBoolean("covers_revision")))
+                        rs.getBoolean("covers_maturity"), rs.getBoolean("covers_revision"),
+                        rs.getObject("source_method_input_version", Integer.class),
+                        rs.getBoolean("covers_source_strata"), rs.getBoolean("covers_critical_groups")))
                 .optional().orElse(EvidencePathQualification.SummaryProfile.absent());
     }
 
@@ -409,19 +412,25 @@ public class ListingFactRepository {
 
     public void insertOfficialSummary(UUID id, UUID organizationId, UUID provenanceId, UUID storeId, UUID listingId,
                                       String sourceFactKey, String summaryKind, Instant periodStart, Instant periodEnd,
-                                      Long visits, Long retained, String label, Instant observedAt, Instant acquiredAt, int retentionDays) {
+                                      Long visits, Long retained, String label, Instant observedAt, Instant acquiredAt,
+                                      int retentionDays, Integer methodInputVersion,
+                                      tools.jackson.databind.JsonNode sourceStrata,
+                                      tools.jackson.databind.JsonNode criticalGroupSourceStrata) {
         jdbc.sql("""
                 INSERT INTO core.lc_official_summary_observation (id, organization_id, provenance_id, store_id,
                     platform_listing_id, source_fact_key, summary_kind, period_start, period_end, reported_visits,
-                    reported_retained_purchases, reported_conversion_label, observed_at, acquired_at, retention_window_days)
+                    reported_retained_purchases, reported_conversion_label, observed_at, acquired_at, retention_window_days,
+                    source_method_input_version, source_strata, critical_group_source_strata)
                 VALUES (:id, :org, :provenance, :store, :listing, :key, :kind, :start, :end, :visits, :retained,
-                    :label, :observed, :acquired, :days)
+                    :label, :observed, :acquired, :days, :methodVersion, CAST(:sourceStrata AS jsonb), CAST(:groupStrata AS jsonb))
                 """).param("id", id).param("org", organizationId).param("provenance", provenanceId)
                 .param("store", storeId).param("listing", listingId).param("key", sourceFactKey)
                 .param("kind", summaryKind).param("start", Timestamp.from(periodStart))
                 .param("end", Timestamp.from(periodEnd)).param("visits", visits).param("retained", retained)
                 .param("label", label).param("days",retentionDays).param("observed", Timestamp.from(observedAt))
-                .param("acquired", Timestamp.from(acquiredAt)).update();
+                .param("acquired", Timestamp.from(acquiredAt)).param("methodVersion",methodInputVersion)
+                .param("sourceStrata",sourceStrata == null ? null : sourceStrata.toString())
+                .param("groupStrata",criticalGroupSourceStrata == null ? null : criticalGroupSourceStrata.toString()).update();
     }
 
     /** The latest sellability the platform reported for any variant of the listing. */

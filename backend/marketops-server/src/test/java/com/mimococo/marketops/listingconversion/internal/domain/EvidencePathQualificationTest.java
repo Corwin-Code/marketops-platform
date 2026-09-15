@@ -30,7 +30,8 @@ class EvidencePathQualificationTest {
     @Test
     @DisplayName("TC-LC-E03 an unproven or partial profile names every uncovered dimension")
     void partialProfileNamesEveryGap() {
-        var profile = new EvidencePathQualification.SummaryProfile(true, false, true, false, true, false, true);
+        var profile = new EvidencePathQualification.SummaryProfile(true, false, true, false, true, false, true,
+                null, false, false);
 
         assertThat(EvidencePathQualification.disqualifications(EvidencePath.OFFICIAL_SUMMARY, false, false, false,
                 profile))
@@ -41,7 +42,8 @@ class EvidencePathQualificationTest {
     @Test
     @DisplayName("TC-LC-E04 a proven complete profile qualifies the summary path without visit facts")
     void provenProfileQualifies() {
-        var profile = new EvidencePathQualification.SummaryProfile(true, true, true, true, true, true, true);
+        var profile = new EvidencePathQualification.SummaryProfile(true, true, true, true, true, true, true,
+                null, false, false);
 
         assertThat(EvidencePathQualification.disqualifications(EvidencePath.OFFICIAL_SUMMARY, false, false, false,
                 profile)).isEmpty();

@@ -75,7 +75,8 @@ public class MeasurementEvidenceRepository {
                      AND m.acquisition_time IS NOT NULL AND m.acquisition_time<=m.computed_at
                      AND m.source_time<=m.acquisition_time) AS qualified,
                     (l.inputs->'sourceStrata')::text AS counts,
-                    (l.inputs->'criticalGroupSourceStrata')::text AS group_counts,
+                    (CASE WHEN l.inputs->'criticalGroupSourceStrataQualified'='true'::jsonb
+                      THEN l.inputs->'criticalGroupSourceStrata' ELSE '{}'::jsonb END)::text AS group_counts,
                     (l.inputs->'versionCoverage')::text AS version_coverage,l.canonical_input_digest
                 FROM mart.lc_conversion_measurement m
                 JOIN mart.lc_measurement_lineage l ON l.measurement_id=m.id
@@ -170,10 +171,14 @@ public class MeasurementEvidenceRepository {
                 """).param("listing",listing).param("at",Timestamp.from(at)).query(UUID.class).optional();
     }
 
-    public Optional<JsonNode> profile(UUID id) {
+    public Optional<JsonNode> profile(UUID id, Instant at) {
         if (id == null) return Optional.empty();
-        return jdbc.sql("SELECT to_jsonb(p)::text FROM core.lc_summary_equivalence_profile p WHERE id=:id")
-                .param("id",id).query((rs,n) -> json.readTree(rs.getString(1))).optional();
+        return jdbc.sql("""
+                SELECT to_jsonb(p)::text FROM core.lc_summary_equivalence_profile p
+                 WHERE id=:id AND status='ACTIVE' AND effective_from<=:at
+                   AND (effective_to IS NULL OR effective_to>:at)
+                """).param("id",id).param("at",Timestamp.from(at))
+                .query((rs,n) -> json.readTree(rs.getString(1))).optional();
     }
 
     public void lineage(UUID measurement, UUID coverage, JsonNode inputs, String timezone, Instant now) {

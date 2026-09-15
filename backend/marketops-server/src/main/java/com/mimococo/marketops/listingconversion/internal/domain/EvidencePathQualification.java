@@ -22,9 +22,12 @@ public final class EvidencePathQualification {
     /** What is known about the summary equivalence profile that applies. */
     public record SummaryProfile(boolean present, boolean proven, boolean coversNumerator,
                                  boolean coversDenominator, boolean coversTimeAttribution,
-                                 boolean coversMaturity, boolean coversRevision) {
+                                 boolean coversMaturity, boolean coversRevision,
+                                 Integer sourceMethodInputVersion, boolean coversSourceStrata,
+                                 boolean coversCriticalGroups) {
         public static SummaryProfile absent() {
-            return new SummaryProfile(false, false, false, false, false, false, false);
+            return new SummaryProfile(false, false, false, false, false, false, false,
+                    null, false, false);
         }
     }
 

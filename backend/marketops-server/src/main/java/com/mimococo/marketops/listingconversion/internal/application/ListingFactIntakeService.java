@@ -222,7 +222,9 @@ public class ListingFactIntakeService {
 
     @Transactional
     public UUID recordOfficialSummary(AuthenticatedActor actor, UUID listingId, Instant periodStart, Instant periodEnd,
-                                      Long visits, Long retained, String label, Instant observedAt, int retentionDays) {
+                                      Long visits, Long retained, String label, Instant observedAt, int retentionDays,
+                                      Integer methodInputVersion, tools.jackson.databind.JsonNode sourceStrata,
+                                      tools.jackson.databind.JsonNode criticalGroupSourceStrata) {
         ListingFactRepository.ListingContext listing = require(actor, listingId, ActionScopeCode.INTERNAL_FACT_INTAKE);
         Instant now = clock.instant();
         if (periodStart == null || periodEnd == null || !periodStart.isBefore(periodEnd)) {
@@ -232,12 +234,20 @@ public class ListingFactIntakeService {
         if (observed.isAfter(now) || (retentionDays != 7 && retentionDays != 14 && retentionDays != 30)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
+        if ((sourceStrata != null && !sourceStrata.isObject())
+                || (criticalGroupSourceStrata != null && !criticalGroupSourceStrata.isObject())
+                || ((sourceStrata != null || criticalGroupSourceStrata != null)
+                && (methodInputVersion == null || methodInputVersion < 1
+                    || (sourceStrata != null && sourceStrata.toString().length() > 65_536)
+                    || (criticalGroupSourceStrata != null && criticalGroupSourceStrata.toString().length() > 65_536)))) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         UUID provenance = facts.insertProvenance(ids.newId(), listing.organizationId(), "MANUAL_ENTRY", null, observed,
                 now, actor.userId(), null);
         UUID id = ids.newId();
         facts.insertOfficialSummary(id, listing.organizationId(), provenance, listing.storeId(), listingId,
                 "summary:" + id, ConversionMeasurementService.SUMMARY_KIND, periodStart, periodEnd, visits, retained,
-                label, observed, now, retentionDays);
+                label, observed, now, retentionDays, methodInputVersion, sourceStrata, criticalGroupSourceStrata);
         governance.enqueue(ids.newId(), listing.organizationId(), listingId, RecalculationClass.ORDINARY,
                 "official-summary:" + id, observed, now);
         return id;
