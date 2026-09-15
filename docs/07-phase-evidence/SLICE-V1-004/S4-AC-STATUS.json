@@ -2,23 +2,37 @@
   "schema": "marketops.slice.acceptance-status.v2",
   "slice": "SLICE-V1-004",
   "checkpoint": "LEVEL_1_LOCAL_ROOT_CAUSE_REWORK_R1",
-  "verification_state": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+  "verification_state": "25_CONTROLLER_CLOSED_AT_EC0_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
   "reviewed_source": {
     "head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
     "tree": "b04fc98b9a3e156cc66e00fe878569306972c638"
   },
   "candidate_checkpoint": {
-    "head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
-    "tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1",
-    "meaning": "VERIFIED_IMPLEMENTATION_SOURCE; final evidence-only checkpoint is reported out of band"
+    "head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+    "tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+    "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+    "meaning": "VERIFIED_TARGETED_IMPLEMENTATION_SOURCE; final evidence-only checkpoint is reported out of band"
   },
-  "controller_verdict": "PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
-  "engineering_finding_state": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+  "controller_verdict": "CHANGES_REQUIRED_AT_EC0_TARGETED_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
+  "engineering_finding_state": "25_CONTROLLER_CLOSED_2_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
   "engineering_findings": {
     "total": 27,
-    "engineering_verified_controller_pending": 27,
+    "controller_closed_at_ec0": 25,
+    "targeted_rework_complete_controller_pending": 2,
+    "engineering_verified_controller_pending": 0,
     "final_matrix_pending": 0,
-    "closed_by_controller": 0
+    "closed_by_controller": 25,
+    "closed_by_this_checkpoint": 0
+  },
+  "controller_closure_reconciliation": {
+    "required_start_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+    "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
+    "closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+    "controller_closed": 25,
+    "residual_findings": ["S4-DR-R1-003", "S4-DR-R1-027"],
+    "residual_state": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+    "controller_closure_claimed_by_codex": false,
+    "next_review": "FINAL_CLOSURE_VERIFICATION"
   },
   "production_write_enabled": false,
   "real_provider_calls": "NONE",
@@ -111,6 +125,7 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
         "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
@@ -131,6 +146,7 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
         "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
@@ -151,6 +167,7 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
         "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
@@ -505,6 +522,7 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
         "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
@@ -525,6 +543,7 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
         "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
@@ -681,7 +700,7 @@
     {
       "id": "NFR-AC4",
       "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
-      "historical_maker_scope_inventory": "V0001–V0079 are byte-preserved; V0080–V0123 are 44 forward-only migrations; clean install, historical upgrade, checksum and privilege coverage passed.",
+      "historical_maker_scope_inventory": "V0001–V0079 are byte-preserved; V0080–V0124 are 45 forward-only migrations; targeted clean install, historical upgrade, rollback, checksum and privilege coverage passed for V0124.",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
         "MIGRATION-INVENTORY.json",
@@ -689,6 +708,8 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
+        "MIGRATION-INVENTORY.json",
         "rework-r1/executable-evidence.md"
       ]
     },
@@ -747,6 +768,7 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "rework-r1/executable-evidence.md"
       ]
     },

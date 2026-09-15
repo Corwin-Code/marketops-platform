@@ -1,8 +1,8 @@
 # SLICE-V1-004 R1 executable finding evidence
 
-Status: **Level 1 local engineering verified; independent Controller verification pending**.
+Status: **25 Controller-closed at ec0; 003/027 rework complete; independent Final Closure Verification pending**.
 
-This file maps the sole Frozen Finding Set to the current production repair and executable evidence. It is not a Controller verdict, Gate-EV/Gate-E evidence, production enablement, or a claim that any finding is independently closed.
+This file maps the sole Frozen Finding Set to production repair and executable evidence. The bound Controller record closed 25 findings at ec0; the targeted continuation repairs 003 and reconciles 027 but does not independently close either. It is not Gate-EV/Gate-E evidence or production enablement.
 
 ## Bound identities
 
@@ -13,10 +13,11 @@ This file maps the sole Frozen Finding Set to the current production repair and 
 | Contract SHA-256 | `5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983` |
 | Annex SHA-256 | `c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d` |
 | Frozen set SHA-256 | `204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843` |
-| Verified implementation source | Head `16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`, tree `98b9ff7d692eb869fb1f7bf704980259426e09f1` |
+| Required targeted start | Head `ec0e73b9b9451f63f0cef385aed623d63521596a`, tree `c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2` |
+| Verified targeted implementation | Head `6ccaa6c070cb5a786a91d447b474b44926f8837c`, tree `1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3`, sole parent `ec0e73b…` |
 | Final evidence-only checkpoint | Reported out of band after the canonical documents are committed; no self-referential identity is asserted here |
-| Controller verdict | `PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION` |
-| Findings claimed independently closed | `0` |
+| Controller disposition | `25 CLOSED_AT_LEVEL_1 at ec0; 003 and 027 targeted rework complete pending Final Closure Verification` |
+| Controller closures claimed by this checkpoint | `0` |
 
 ## Executed convergence regression
 
@@ -34,7 +35,11 @@ Working directory: `backend/marketops-server`
 
 This run is the bounded post-implementation convergence batch. It covers signed Console/DB root paths and strict simulation input qualification; the complete-layer receipts below supply the terminal verification.
 
-## Final Level 1 verification receipts
+## Historical Final Level 1 verification receipts
+
+The following complete-suite/browser receipts are preserved for their recorded
+historical source. They were not rerun or relabelled as a full pass at
+`6ccaa6c…`.
 
 | Field | Terminal value |
 | --- | --- |
@@ -44,6 +49,24 @@ This run is the bounded post-implementation convergence batch. It covers signed 
 | Browser | Complete run: 24/26. Direct evidence identified one invocation-environment fault and one synthetic coverage-window fault. The exact two failed tests then passed together at the verified implementation source: 2/2, exit 0. Across the bounded sequence, all 26 unique scenarios have a passing receipt; no single full green invocation is claimed. |
 | Source stability | Backend manifest 1,320 entries and frontend manifest 126 entries were byte-identical before/after the closing browser run. |
 | Canonical receipt | `FINAL_LEVEL1_LOCAL_VERIFICATION.json`; raw receipts under ignored `build/slice-v1-004-final-evidence/` |
+
+## Targeted Final Closure continuation
+
+The current changed/transitive evidence is
+[TARGETED_FINAL_CLOSURE_CHECKPOINT.json](TARGETED_FINAL_CLOSURE_CHECKPOINT.json).
+Its exact commands and retained raw artifacts show:
+
+- summary → Metric/comparison/Outcome: 21 unit and 9 signed-HTTP/isolated-DB
+  integration tests passed, exit 0;
+- V0124 migration/schema: 3 unit and 21 integration tests passed, exit 0;
+- late-summary recalculation: 3 unit and 1 isolated-DB integration test passed,
+  exit 0;
+- frontend OFFICIAL_SUMMARY payload: 26/26 passed, followed by typecheck and
+  formatting checks, all exit 0.
+
+The source manifests contain 1,320 old / 1,323 new backend entries and 126 old /
+126 new frontend entries. The exact diffs and all SHA-256 values are in the
+checkpoint. No full backend/frontend/browser suite at the new Head is claimed.
 
 ## 27-item root-cause mapping
 
@@ -73,15 +96,15 @@ This run is the bounded post-implementation convergence batch. It covers signed 
 
 ### S4-DR-R1-003 — 两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立
 
-**Production correction.** DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格；完整零购买保留为真实零，缺窗口或零分母状态不被改写为零比例，矛盾 summary 原样留存并拒绝资格。
+**Production correction.** DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格。OFFICIAL_SUMMARY 通过既有 intake 留存 exact method version、广告/自然 source strata 与可选 critical-group strata，分别验证并进入 measurement lineage；正式 fixed-traffic Metric、comparison 和 Outcome 消费合格证据而非 DETAIL 路径名。完整零购买保留为真实零；矛盾或非等价分层原样留存且不得借用正式资格。
 
-**Production evidence.** `V0081__record_listing_measurement_coverage_and_lineage.sql`; `ConversionMeasurementService`; `MeasurementEvidenceRepository`.
+**Production evidence.** `V0081__record_listing_measurement_coverage_and_lineage.sql`; `V0124__bridge_equivalent_summary_method_inputs.sql`; `OfficialSummaryMethodEvidence`; `ListingFactIntakeService`; `ListingFactRepository`; `ConversionMeasurementService`; `MeasurementEvidenceRepository`; `EvaluationService`.
 
-**Executed evidence in the 113-test pass.** `ListingReworkAuthorizationIT#completeDetailWindowWithZeroPurchasesIsMeasurableButMissingCoverageIsNot`; `ListingReworkAuthorizationIT#officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow`; `ListingReworkAuthorizationIT#contradictorySummaryRetainsRawCountsAndNeverClampsTheNumerator`; `ListingReworkAuthorizationIT#zeroDenominatorIsUndefinedOnlyWhenTheWholeEmptySourceWindowIsComplete`.
+**Targeted executed evidence.** `ListingReworkAuthorizationIT#equivalentOfficialSummaryRunsTheSameFrozenFormalOutcomeWithoutVisitDetails`; `#summaryMissingARequiredCriticalGroupCannotClaimThatProtection`; `#nonEquivalentSummaryMethodInputsCannotBorrowFormalQualificationButKeepTheProvenTotal`; `#expiredSummaryProfileCannotQualifyALaterMeasurement`; `#officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow`; `#contradictorySummaryRetainsRawCountsAndNeverClampsTheNumerator`; `#callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio`; `#frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts`; `#lineageCannotBorrowCoverageFromAnotherWindowOrDropAQualifiedReceipt`; `ListingRecalculationLeaseIT#workerPublishesExactResultsOnceAndPreservesTheSourceClock`; `ListingConversionForms.test.tsx` 26/26.
 
-**Same-class/transitive scan.** 扫描两条路径对购买明细存在性的隐式依赖、summaryKind/profile/window 错配、超界分子和空来源窗口；两条路径不互相借证。
+**Same-class/transitive scan.** 扫描 intake→存储→Metric→lineage→fixed-traffic comparison→formal Outcome→late-fact recalculation，以及 DETAIL 回归；覆盖 method/profile/window 错配、source/group 缺失或和数矛盾、超界分子、caller 数字和冻结 lineage，不允许两条路径互相借证。
 
-**Limits.** 只证明本地来源资格语义；真实平台访问/购买归因与指标来源资格仍受 F-M01/F-M02。F-S01 仅覆盖样本证据与方法适配，不提供或替代真实指标来源。 本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。
+**Limits.** 只证明本地来源资格语义；新 profile/Schema 默认资格 false 且不升级真实平台。真实访问/购买归因与指标来源资格仍受 F-M01/F-M02，F-S01 不提供或替代真实指标来源。本地隔离合成事实与 loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。状态为返工完成、等待独立 Final Closure Verification。
 
 ### S4-DR-R1-004 — 版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现
 
@@ -377,22 +400,22 @@ This run is the bounded post-implementation convergence batch. It covers signed 
 
 ### S4-DR-R1-027 — 验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺
 
-**Production correction.** 证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不再提升为完整结论。V0080–V0123 forward-only，历史迁移/合同保持字节不变，外部义务与默认关闭状态继续分列。OQ-121/124 与 Capability Matrix 的用途映射已纠正为 Description→F-W01/F-W02、Metric→F-M01/F-M02、样本证据/方法适配→F-S01。
+**Production correction.** 证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不提升为完整结论。Controller 在 ec0 已关闭 25 项，003/027 只报告返工完成并等待 Final Closure Verification。V0080–V0124 forward-only，历史迁移/Contract/Frozen Set 保持字节不变；旧全套日志只归属于历史 source，新 Head 仅声明实际重跑的改变与传递路径。69 项验收分布、外部义务与默认关闭状态继续分列。
 
-**Production evidence.** `finding-progress.json`; `executable-evidence.md`; `FINAL_LEVEL1_LOCAL_VERIFICATION.json`; `MIGRATION-INVENTORY.json`; `validate_production_readiness.py`; `docs/00-governance/OPEN_QUESTIONS.md`; `docs/04-api/V1_CAPABILITY_MATRIX.md`.
+**Production evidence.** `finding-progress.json`; `executable-evidence.md`; `FINAL_LEVEL1_LOCAL_VERIFICATION.json`（历史）; `TARGETED_FINAL_CLOSURE_CHECKPOINT.json`; `TARGETED_FINAL_CLOSURE_HANDOFF.md`; `MIGRATION-INVENTORY.json`; `validate_production_readiness.py`; `docs/00-governance/OPEN_QUESTIONS.md`; `docs/04-api/V1_CAPABILITY_MATRIX.md`.
 
-**Executed evidence in the 113-test pass.** `./mvnw -B -ntp -Dtest=ListingSimulationInputEvidenceTest,ListingReworkAuthorizationIT test → 113 tests, 0 failures, 0 errors, 0 skipped, BUILD SUCCESS`.
+**Targeted executed evidence.** Summary Outcome 21 unit + 9 normal-role HTTP/isolated-DB integration; V0124 migration/schema 3 unit + 21 integration; recalculation 3 unit + 1 isolated-DB integration; frontend payload 26/26 plus typecheck/format，均退出 0。原/新 backend/frontend manifests、准确 diff、raw XML/JSON/log 与 SHA-256 均记录在 targeted checkpoint。
 
-**Relevant final-matrix evidence.** `完整后端/DB/frontend/browser/governance matrix 的退出码与计数`; `最终 staged diff 检查及 exact local Head/tree`; `Controller 对 exact Head/tree 的独立最终核验`。前两项已记录；Controller 核验保持待办。
+**Relevant historical matrix evidence.** `完整后端/DB/frontend/browser/governance matrix 的退出码与计数` 保留于原收据，但不冒充 `6ccaa6c…` 全套通过；本次 exact local implementation Head/tree 及 scoped regressions 已记录；Controller 对当前 exact checkpoint 的独立最终核验保持待办。
 
-**Same-class/transitive scan.** 扫描全部 27 Frozen ID、V0001–V0079/既有迁移字节、共享价格/广告/身份/Raw/审批回归、OQ/Capability 的 F-M/F-W/F-S 用途映射、API 文档边界、未运行项和 remote/production 权限。
+**Same-class/transitive scan.** 以 Controller ec0 record 为状态基线，核对全部 27 Frozen ID、69 项验收、V0001–V0124、准确 source manifests、SUMMARY/DETAIL/Outcome/recalculation/frontend 传递路径、未重跑项和 remote/production 权限。
 
-**Limits.** Level 1 完整层级收据已形成，验证源码 Head/tree 已固定；最终证据 checkpoint 由集中交回记录，Controller verdict 保持 pending。 本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。
+**Limits.** 未机械重跑历史 31 小时全套或浏览器；它们保留准确历史归属。Codex 未签发 003/027 的 Controller 关闭，下一次仍是 Final Closure Verification。本地隔离合成事实与 loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。
 
 ## Scope and authority limits
 
 - Original Contract, annex, 85 decisions, three local substitutions and Q085-B remain unchanged.
-- V0001–V0079 and historical evidence are preserved; this rework uses forward migrations V0080–V0123.
+- V0001–V0079 and historical evidence are preserved; this rework uses forward migrations V0080–V0124.
 - No remote push/PR/merge/share, Level 2, real Provider/account call, production deployment/migration, Gate-EV, Gate-E or business side effect occurred.
 - All new platform writes remain disabled by default.
-- Final engineering handoff contains the completed matrix receipts and reports the exact local Head/tree out of band. Independent Controller verification remains a separate action.
+- The targeted handoff contains exact commands/artifacts/manifests and the exact implementation Head/tree. Independent Final Closure Verification remains a separate action.

@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-14
+as_of: 2026-09-15
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -31,6 +31,7 @@ slice_v1_004_source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
 slice_v1_004_source_base_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
 slice_v1_004_branch: codex/slice-v1-004-root-cause-rework-r1
 slice_v1_004_implementation_state: LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING
+slice_v1_004_targeted_implementation_state: TARGETED_LEVEL_1_REWORK_COMPLETE_FINAL_CLOSURE_VERIFICATION_PENDING
 slice_v1_004_rework_agent: CODEX
 slice_v1_004_reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
 slice_v1_004_reviewed_tree: b04fc98b9a3e156cc66e00fe878569306972c638
@@ -38,14 +39,24 @@ slice_v1_004_frozen_finding_set: docs/07-phase-evidence/SLICE-V1-004/rework-r1/0
 slice_v1_004_frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
 slice_v1_004_rework_progress: docs/07-phase-evidence/SLICE-V1-004/rework-r1/finding-progress.json
 slice_v1_004_rework_design: docs/02-architecture/designs/SLICE-V1-004-rework-r1-design.md
-slice_v1_004_rework_completion: ENGINEERING_VERIFIED_CONTROLLER_PENDING
-slice_v1_004_verified_source_head: 16eda4bf7e5f561b60d10c19a9a157bd62d21d6e
-slice_v1_004_verified_source_tree: 98b9ff7d692eb869fb1f7bf704980259426e09f1
-slice_v1_004_engineering_finding_status: 27_OF_27_ENGINEERING_VERIFIED_CONTROLLER_PENDING
-slice_v1_004_focused_regression: 113_OF_113_PASS
-slice_v1_004_full_verification: PASS_LOCAL_LAYER_RECEIPTS_WITH_BROWSER_DETERMINISTIC_CLOSURE
-slice_v1_004_controller_verdict: PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION
-slice_v1_004_rework_migrations: V0080_THROUGH_V0123
+slice_v1_004_rework_completion: 25_CONTROLLER_CLOSED_AT_EC0_003_AND_027_REWORK_COMPLETE_FINAL_CLOSURE_VERIFICATION_PENDING
+slice_v1_004_targeted_rework_start_head: ec0e73b9b9451f63f0cef385aed623d63521596a
+slice_v1_004_targeted_rework_start_tree: c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2
+slice_v1_004_verified_source_head: 6ccaa6c070cb5a786a91d447b474b44926f8837c
+slice_v1_004_verified_source_tree: 1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3
+slice_v1_004_verified_source_parent: ec0e73b9b9451f63f0cef385aed623d63521596a
+slice_v1_004_engineering_finding_status: 25_OF_27_CONTROLLER_CLOSED_AT_EC0_2_OF_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION
+slice_v1_004_focused_regression: HISTORICAL_113_OF_113_PASS_AT_PRE_TARGETED_SOURCE
+slice_v1_004_targeted_summary_outcome_regression: 21_UNIT_PLUS_9_INTEGRATION_PASS
+slice_v1_004_targeted_recalculation_regression: 3_UNIT_PLUS_1_INTEGRATION_PASS
+slice_v1_004_targeted_migration_schema_regression: 3_UNIT_PLUS_21_INTEGRATION_PASS
+slice_v1_004_targeted_frontend_regression: 26_OF_26_PASS_TYPECHECK_AND_FORMAT_PASS
+slice_v1_004_full_verification: HISTORICAL_EC0_PREDECESSOR_RECEIPTS_PRESERVED_NOT_RERUN_AT_6CCAA6C
+slice_v1_004_browser_verification: HISTORICAL_24_OF_26_PLUS_EXACT_2_OF_2_PRESERVED_NOT_RERUN_AT_6CCAA6C
+slice_v1_004_controller_verdict: CHANGES_REQUIRED_AT_EC0_TARGETED_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING
+slice_v1_004_rework_migrations: V0080_THROUGH_V0124
+slice_v1_004_targeted_final_closure_checkpoint: docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json
+slice_v1_004_targeted_final_closure_handoff: docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_HANDOFF.md
 slice_v1_004_controlled_write_target: LISTING_DESCRIPTION_CHANGE
 slice_v1_004_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_004_real_provider_calls: NONE
@@ -128,6 +139,7 @@ slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
 active_gate: CONTROLLER_SLICE_V1_004_LEVEL_1_CHECKPOINT_REVIEW
+slice_v1_004_targeted_active_gate: CONTROLLER_SLICE_V1_004_TARGETED_FINAL_CLOSURE_VERIFICATION_003_027
 authorization: FULL_SCOPE_IMPLEMENTATION
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
@@ -1021,3 +1033,23 @@ Verification remains pending. No Level 2, remote publication, real Provider or
 account call, Gate-EV, Gate-E, production migration or real business side effect
 was authorized or executed; all new platform writes remain default OFF. Exact
 receipts are in `docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json`.
+
+SLICE-V1-004 targeted Final Closure continuation (2026-09-15): the Controller
+record bound to exact Head `ec0e73b9b9451f63f0cef385aed623d63521596a`, tree
+`c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2`, closed 25 of the 27 frozen roots
+and retained 003 plus 027 for targeted correction. At implementation Head
+`6ccaa6c070cb5a786a91d447b474b44926f8837c`, tree
+`1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3`, an exact OFFICIAL_SUMMARY method
+bridge now reaches qualified Metric, fixed-traffic comparison and formal Outcome
+consumers, including normal-role signed HTTP, isolated database and recalculation
+coverage. Canonical status distinguishes the prior 25 Controller closures from
+the two reworks now pending independent Final Closure Verification; Codex claims
+no new Controller closure. The earlier complete backend/frontend/browser receipt
+is preserved as historical evidence for its own source and was not rerun or
+relabelled as a full pass at the new Head. Acceptance remains 54 engineering
+verified / 12 external evidence pending / 3 not applicable; F-M01, F-M02, F-S01,
+F-W01, F-W02 and E-04 remain open. V0124 is additive, defaults qualification
+false and upgrades no existing profile. No remote, Provider, production,
+Level 2, Gate EV or Gate E authority was created or exercised. Exact scope,
+commands, raw artifact hashes and manifests are in
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json`.

@@ -1,94 +1,89 @@
-# SLICE-V1-004 — Controller Final Closure Verification handoff
+# SLICE-V1-004 — targeted Final Closure Verification handoff
 
-Status: **READY FOR INDEPENDENT CONTROLLER FINAL CLOSURE VERIFICATION**.
+Status: **25 Controller-closed at ec0; 003/027 rework complete and ready for independent Final Closure Verification**.
 
-This is the single concentrated Level 1 local handoff for the 27-item R1 Frozen
-Finding Set. Codex reports every finding as
-`ENGINEERING_VERIFIED_CONTROLLER_PENDING`; it does not claim Controller closure.
+This is the current Level 1 local handoff for the two residual findings. The
+bound Controller record closed the other 25 at exact Head
+`ec0e73b9b9451f63f0cef385aed623d63521596a`, tree
+`c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2`. Codex reports 003 and 027 as
+`REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION` and claims no
+new Controller closure.
 
 ## Bound authority and source identity
 
 | Item | Value |
 | --- | --- |
-| Repository | `Corwin-Code/marketops-platform` |
-| Reviewed Head | `f91d107c53a0cf3964ae43c0e8353e0c244a2b59` |
-| Reviewed Tree | `b04fc98b9a3e156cc66e00fe878569306972c638` |
-| Verified implementation Head | `16eda4bf7e5f561b60d10c19a9a157bd62d21d6e` |
-| Verified implementation Tree | `98b9ff7d692eb869fb1f7bf704980259426e09f1` |
-| Contract | `docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md` |
+| Original reviewed Head / Tree | `f91d107c53a0cf3964ae43c0e8353e0c244a2b59` / `b04fc98b9a3e156cc66e00fe878569306972c638` |
+| Required targeted start Head / Tree | `ec0e73b9b9451f63f0cef385aed623d63521596a` / `c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2` |
+| Targeted implementation Head / Tree | `6ccaa6c070cb5a786a91d447b474b44926f8837c` / `1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3` |
+| Implementation sole parent | `ec0e73b9b9451f63f0cef385aed623d63521596a` |
 | Contract SHA-256 | `5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983` |
-| Bound annex | `docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md` (§1–2 and §4) |
 | Annex SHA-256 | `c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d` |
-| Frozen Finding Set | `rework-r1/01_FROZEN_FINDING_SET.json` |
 | Frozen Finding Set SHA-256 | `204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843` |
-| Frozen finding count | 27 |
+| Controller closure record SHA-256 | `b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c` |
+| Residual conditions SHA-256 | `b03e89548f87cfcc30997b1584df9222bffe2e394838947504cc6af4dd40f489` |
 | Owner decisions | 85 preserved; Q085-B preserved |
 | Local branch | `codex/slice-v1-004-root-cause-rework-r1` |
-| Evidence-only checkpoint | Exact final Head/tree is reported out of band after this document is committed; no self-referential identity is asserted here |
+| Evidence-only checkpoint | Exact final docs commit/tree is reported out of band; implementation identity above is self-contained |
 
-The original Contract, annex, Frozen Finding Set, three accepted local
-substitutions and Q085-B were not reopened. The prior Maker handoff remains
-byte-preserved at [historical-maker/controller-handoff.md](rework-r1/historical-maker/controller-handoff.md).
+The original Contract, annex and Frozen Finding Set were not modified. The
+Controller material is an input, not remote/environment/Provider authority. The
+prior Maker handoff remains byte-preserved at
+[historical-maker/controller-handoff.md](rework-r1/historical-maker/controller-handoff.md).
 
-## Engineering disposition
+## Residual disposition
 
-All 27 frozen roots and their demonstrated same-class/transitive consumers have
-terminal Level 1 local evidence. The implementation covers current object and
-purpose authorization, canonical measurement and formal Outcome, promotion
-economics and lifecycle, cumulative allowance, manual/display/deviation evidence,
-dependency containment, command/outbox execution, exact restoration,
-provider-protocol boundaries, recalculation, responsibility Tasks, bounded
-AI/feedback/review/experience projections, and the Chinese/Russian Console.
+- `S4-DR-R1-003`: existing OFFICIAL_SUMMARY intake now retains and validates
+  exact method/source/group inputs, then supplies qualified measurement lineage,
+  fixed-traffic comparison and formal Outcome consumers. A signed normal-role
+  HTTP test against isolated PostgreSQL proves the same formal `0.634` result as
+  DETAIL without visit-detail facts; negative group, sum, profile, malformed,
+  caller-number and lineage cases remain fail-closed.
+- `S4-DR-R1-027`: canonical files now distinguish the 25 prior Controller
+  closures from the two residual reworks, preserve accurate historical evidence
+  attribution, record exact new commands/artifacts/manifests, and leave the 69
+  acceptance rows and external obligations unchanged.
 
-No new product decision, platform write target, Provider API, generic finance,
-AI, reporting, Task or notification platform was added. Per-finding correction,
-scan and evidence are in [finding-progress.json](rework-r1/finding-progress.json).
+Details: [TARGETED_FINAL_CLOSURE_CHECKPOINT.json](rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json)
+and [TARGETED_FINAL_CLOSURE_HANDOFF.md](rework-r1/TARGETED_FINAL_CLOSURE_HANDOFF.md).
 
-## Migration chain
+## Migration and targeted verification
 
-- Reviewed V0001–V0079 remain byte-preserved.
-- Rework migrations V0080–V0123 are 44 forward-only files.
-- Clean install, historical upgrade, checksum and privilege coverage passed in
-  the clean Maven verification.
-- Exact bytes, line counts and hashes are in
-  [MIGRATION-INVENTORY.json](MIGRATION-INVENTORY.json).
+- V0001–V0079 remain byte-preserved; V0080–V0124 are 45 forward-only rework
+  migrations. V0124 is additive, defaults qualification false and upgrades no
+  existing profile.
+- Summary → Metric/comparison/Outcome: 21 unit + 9 signed-HTTP/isolated-DB
+  integration tests passed, exit 0.
+- Migration/schema: 3 unit + 21 integration tests passed through V0124, exit 0.
+- Recalculation: 3 unit + 1 isolated-DB integration test passed, exit 0.
+- Frontend: 26/26 request tests, typecheck and final format check passed, exit 0.
 
-## Terminal verification
+Raw logs, JUnit XML, frontend JSON, old/new source manifests and exact SHA-256
+values are retained under ignored local root
+`build/slice-v1-004-final-closure-ec0e73b9-r1/` and inventoried in the checkpoint.
 
-| Layer | Result |
-| --- | --- |
-| Focused convergence | 113/113 passed: 104 `ListingReworkAuthorizationIT` plus 9 `ListingSimulationInputEvidenceTest` |
-| Backend/database/migration/architecture | `./mvnw -B -ntp clean verify`, exit 0, `BUILD SUCCESS`; Maven declared 1,895 Surefire and 1,363 Failsafe tests, zero failures/errors/skips; JaCoCo line 86.880515%, branch 70.883436% |
-| Frontend | lint, format check, typecheck, `test:ci`, build and bundle verification passed under Node 24.19.0; 29 files and 418/418 tests; statements 84.32%, branches 76.68%, functions 84.42%, lines 85.31% |
-| Browser | Complete run at Head `fe98ecc…` passed 24/26. Its two deterministic failures were directly diagnosed: a missing `COMPOSE_PROJECT_NAME` and a synthetic enumeration interval that did not cover the governed promotion period. Only those exact tests were then rerun together at Head `16eda4bf…`, with the corrected environment and two-line fixture change: 2/2 passed, exit 0. All 26 unique scenarios have a passing receipt; no single all-green full invocation or claim that all 26 ran at `16eda4bf…` is made. |
-| Source stability | Backend manifest 1,320 entries and frontend manifest 126 entries were identical before and after the closing browser run |
-| Canonical validation | Recorded in `rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json` after document synchronization |
+## Historical receipts and non-regression boundary
 
-Raw logs and reporter outputs are ignored local artifacts under
-`build/slice-v1-004-final-evidence/`. Their exact hashes and the browser composite
-basis are retained in
-[FINAL_LEVEL1_LOCAL_VERIFICATION.json](rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json).
+Earlier terminal backend 1,895 Surefire + 1,363 Failsafe, frontend 418/418, and
+browser 24/26 + exact 2/2 receipts remain preserved at their historical sources.
+They were not rerun at `6ccaa6c…` and are not a new-Head full pass. The other 25
+closures rely on the bounded 15-file application/migration/test delta, exact manifests, additive
+default-false migration, and relevant changed/transitive DETAIL, Outcome,
+revision, lineage, schema and client regressions. No 31-hour repeat is claimed.
 
-## Acceptance disposition
+## Acceptance and authority boundary
 
-The 69-row register contains 54
-`ENGINEERING_VERIFIED_CONTROLLER_PENDING`, 12 `EXTERNAL_EVIDENCE_PENDING`, and
-3 `NOT_APPLICABLE_AT_LEVEL_1` rows. The 27 findings are all
-`ENGINEERING_VERIFIED_CONTROLLER_PENDING`; Controller-closed findings remain 0.
+The 69-row register remains 54 `ENGINEERING_VERIFIED_CONTROLLER_PENDING`, 12
+`EXTERNAL_EVIDENCE_PENDING`, and 3 `NOT_APPLICABLE_AT_LEVEL_1`. `F-M01`,
+`F-M02`, `F-S01`, `F-W01`, `F-W02` and `E-04` remain open.
 
-## Authority and release boundary
-
-- `production_write_enabled=false`; all new platform write paths remain
-  default-OFF and structurally unreachable without later capability and release
-  gates.
-- No real Ozon or Wildberries Provider, account or credential was called.
-- No remote push, PR, merge, sharing, Level 2 work, shared/production deployment
-  or migration, Gate EV, Gate E or real business side effect occurred.
-- `F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02` and `E-04` remain open at their
-  original consuming gates.
+`production_write_enabled=false`. No real Provider/account/credential call,
+push, PR, merge, sharing, deployment, production migration, Level 2, Gate EV,
+Gate E or business side effect occurred. All new platform writes remain
+default-OFF.
 
 ## Requested Controller action
 
-Independently verify the 27 findings against the frozen set and the exact local
-checkpoint reported with this handoff. Codex does not self-approve, authorize
-transport or issue final closure.
+Perform the next **Final Closure Verification** against 003, 027 and their
+transitive regressions at the exact checkpoint. Do not start a new Deep Review.
+Codex does not self-approve, authorize transport or issue final closure.

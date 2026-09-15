@@ -1,19 +1,26 @@
 {
   "schema": "marketops.slice-rework-finding-progress.v2",
   "slice": "SLICE-V1-004",
-  "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+  "status": "25_CONTROLLER_CLOSED_AT_EC0_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
   "source_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
   "source_tree": "b04fc98b9a3e156cc66e00fe878569306972c638",
-  "work_in_progress_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
-  "work_in_progress_head_tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1",
-  "final_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
-  "final_tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1",
+  "required_start_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+  "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
+  "work_in_progress_head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+  "work_in_progress_head_tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+  "final_head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+  "final_tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+  "final_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a",
   "contract_sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
   "annex_sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d",
   "frozen_set_sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
   "finding_count": 27,
-  "controller_verdict": "PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
-  "closed_findings_claimed": 0,
+  "controller_verdict": "CHANGES_REQUIRED_AT_EC0_TARGETED_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
+  "controller_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+  "controller_closed_findings": 25,
+  "residual_findings": ["S4-DR-R1-003", "S4-DR-R1-027"],
+  "checkpoint_closed_findings_claimed": 0,
+  "closed_findings_claimed": 25,
   "verification": {
     "combined_regression": {
       "status": "PASS",
@@ -87,9 +94,20 @@
       }
     },
     "final_git_checkpoint": {
-      "status": "VERIFIED_SOURCE_CHECKPOINT_RECORDED_EVIDENCE_CHECKPOINT_REPORTED_OUT_OF_BAND",
-      "head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
-      "tree": "98b9ff7d692eb869fb1f7bf704980259426e09f1"
+      "status": "VERIFIED_TARGETED_IMPLEMENTATION_SOURCE_RECORDED_EVIDENCE_CHECKPOINT_REPORTED_OUT_OF_BAND",
+      "head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+      "tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+      "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a"
+    },
+    "targeted_final_closure": {
+      "status": "PASS_FOR_CHANGED_AND_TRANSITIVE_PATHS",
+      "checkpoint": "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
+      "summary_outcome": "21 unit plus 9 normal-role signed-HTTP/isolated-DB integration tests passed",
+      "migration_schema": "3 unit plus 21 integration tests passed through V0124",
+      "recalculation": "3 unit plus 1 isolated-DB integration test passed",
+      "frontend": "26/26 payload tests plus typecheck and format passed",
+      "historical_complete_suite_rerun": false,
+      "browser_rerun": false
     }
   },
   "findings": [
@@ -97,7 +115,7 @@
       "id": "S4-DR-R1-001",
       "severity": "BLOCKER",
       "title": "Outcome写入口遗漏业务授权与对象边界，读权限检查不能覆盖写入口",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "Outcome 写入口在写入前消费当前 actor、组织、Store 和评价用途权限，并把 measurement 绑定到准确 Action、Listing、冻结节点窗口和阶段；拒绝发生在 calculation/result/Task 写入之前。",
       "production_evidence": [
         "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
@@ -119,7 +137,7 @@
       "pending_full_matrix_evidence": [],
       "same_class_and_transitive_scan": "扫描 Console 写路由、EvaluationService 直达入口、measurement 读取及同语句授权到期；跨对象和拒绝后的 calculation/result/Task 计数均纳入同类反例。",
       "limits": [
-        "Controller 尚未独立重放全部攻击场景。",
+        "Controller 已在 bound ec0 record 将本项 CLOSED_AT_LEVEL_1；本 checkpoint 未重开该结论。",
         "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
@@ -127,7 +145,7 @@
       "id": "S4-DR-R1-002",
       "severity": "MAJOR",
       "title": "最小授权投影未落实到模拟明细与已发人工包的当前访问",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "模拟、Action 详情和人工包的受限经济字段统一使用当前 Store 与完整受影响 Product Variant 的财务/Data Scope；列表、按 ID 读取和历史执行者视图均在每次请求重检，撤权后只保留审计身份与摘要。",
       "production_evidence": [
         "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
@@ -154,24 +172,40 @@
       "id": "S4-DR-R1-003",
       "severity": "MAJOR",
       "title": "两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
-      "root_cause_correction": "DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格；完整零购买保留为真实零，缺窗口或零分母状态不被改写为零比例，矛盾 summary 原样留存并拒绝资格。",
+      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "root_cause_correction": "DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格。OFFICIAL_SUMMARY 现通过既有 intake 留存 exact method version、广告/自然 source strata 与可选 critical-group strata，分别验证并进入 measurement lineage；正式 fixed-traffic Metric、comparison 和 Outcome 消费合格证据而非 DETAIL 路径名。完整零购买保留为真实零，缺窗口或零分母不改写为零，矛盾或非等价分层原样留存且不得借用正式资格。",
       "production_evidence": [
         "V0081__record_listing_measurement_coverage_and_lineage.sql",
+        "V0124__bridge_equivalent_summary_method_inputs.sql",
+        "OfficialSummaryMethodEvidence",
+        "ListingFactIntakeService",
+        "ListingFactRepository",
         "ConversionMeasurementService",
-        "MeasurementEvidenceRepository"
+        "MeasurementEvidenceRepository",
+        "EvaluationService"
       ],
       "executed_evidence": [
         "ListingReworkAuthorizationIT#completeDetailWindowWithZeroPurchasesIsMeasurableButMissingCoverageIsNot",
+        "ListingReworkAuthorizationIT#equivalentOfficialSummaryRunsTheSameFrozenFormalOutcomeWithoutVisitDetails",
+        "ListingReworkAuthorizationIT#summaryMissingARequiredCriticalGroupCannotClaimThatProtection",
+        "ListingReworkAuthorizationIT#nonEquivalentSummaryMethodInputsCannotBorrowFormalQualificationButKeepTheProvenTotal",
+        "ListingReworkAuthorizationIT#expiredSummaryProfileCannotQualifyALaterMeasurement",
         "ListingReworkAuthorizationIT#officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow",
         "ListingReworkAuthorizationIT#contradictorySummaryRetainsRawCountsAndNeverClampsTheNumerator",
+        "ListingReworkAuthorizationIT#callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio",
+        "ListingReworkAuthorizationIT#frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts",
+        "ListingReworkAuthorizationIT#lineageCannotBorrowCoverageFromAnotherWindowOrDropAQualifiedReceipt",
+        "ListingRecalculationLeaseIT#workerPublishesExactResultsOnceAndPreservesTheSourceClock",
+        "ListingConversionForms.test.tsx (26/26, exact OFFICIAL_SUMMARY payload)",
         "ListingReworkAuthorizationIT#zeroDenominatorIsUndefinedOnlyWhenTheWholeEmptySourceWindowIsComplete",
-        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json (historical)",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json"
       ],
       "pending_full_matrix_evidence": [],
-      "same_class_and_transitive_scan": "扫描两条路径对购买明细存在性的隐式依赖、summaryKind/profile/window 错配、超界分子和空来源窗口；两条路径不互相借证。",
+      "same_class_and_transitive_scan": "扫描 intake→存储→Metric→lineage→fixed-traffic comparison→formal Outcome→late-fact recalculation，以及 DETAIL 路径回归；覆盖 method/profile/window 错配、source/group 缺失或和数矛盾、超界分子、caller 数字和冻结 lineage，不允许两条路径互相借证。",
       "limits": [
         "只证明本地来源资格语义；真实平台访问/购买归因与指标来源资格仍受 F-M01/F-M02。F-S01 仅覆盖样本证据与方法适配，不提供或替代真实指标来源。",
+        "新 profile/Schema 仅是本地合成或文档证据；V0124 默认资格 false，不升级真实平台资格。",
         "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     },
@@ -179,7 +213,7 @@
       "id": "S4-DR-R1-004",
       "severity": "MAJOR",
       "title": "版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "实际 measurement 消费冻结版本覆盖、过渡日、有效 sale 修订/as-of 链和同一 cohort 的固定广告/自然流量结构；迟到退货/撤销创建新 measurement/Outcome revision 并保留原输入。",
       "production_evidence": [
         "V0081__record_listing_measurement_coverage_and_lineage.sql",
@@ -208,7 +242,7 @@
       "id": "S4-DR-R1-005",
       "severity": "BLOCKER",
       "title": "正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "正式 Outcome 从冻结范围的合格固定流量增量保守界、独立保护和关键群组/Variant 自身基准计算；调用者数字、绝对率、缺失 bound 或伪阶段不再生成 MET/PASS。",
       "production_evidence": [
         "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
@@ -234,7 +268,7 @@
       "id": "S4-DR-R1-006",
       "severity": "MAJOR",
       "title": "评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "评价在 review 前冻结 plan、method、node/window、critical groups 和可选 futility；历史 Outcome 继续使用原包/原边界，迟到事实只追加同范围 revision，NOT_MET 不再反推停止资格。",
       "production_evidence": [
         "V0086__preserve_frozen_listing_evaluation_semantics.sql",
@@ -263,7 +297,7 @@
       "id": "S4-DR-R1-007",
       "severity": "BLOCKER",
       "title": "启动Gate用结构性Listing Health代替利润、退货、供给与用途保障",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "利润、关联利润、退货、单位底线、需求与供给的当前权威按声明用途进入 preview、approval 和 execution 的同一 Guardrail；硬失败/未知不能由结构 Health 抵消，纠错、有界探索和正式改善保留各自有限准入。",
       "production_evidence": [
         "V0113__bind_current_listing_business_protection.sql",
@@ -292,7 +326,7 @@
       "id": "S4-DR-R1-008",
       "severity": "BLOCKER",
       "title": "普通/重大分类用字符差额和发起人暴露数字替代内容含义与真实经营暴露",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "内容重大性由有限结构化含义条件和 canonical 实际暴露独立决定；删除字符差额与请求 exposureShare 的权威性，任一重大轴走 Owner 路线，未知留在 DRAFT，并在批准/启动重检当前暴露。",
       "production_evidence": [
         "V0106__retain_canonical_listing_materiality_exposure.sql",
@@ -322,7 +356,7 @@
       "id": "S4-DR-R1-009",
       "severity": "MAJOR",
       "title": "正文误用512字符元数据校验并strip，合法长文被拒绝且准确文本被改写",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "正文使用 code-point 有界的准确文本类型，保留首尾空白、换行、多字节值和 digest；非法 Unicode/NUL、超限及敏感内容继续拒绝，管理回读和恢复使用准确前值。",
       "production_evidence": [
         "DescriptionText",
@@ -344,7 +378,7 @@
       "id": "S4-DR-R1-010",
       "severity": "MAJOR",
       "title": "完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "原生枚举的 completeness、分页/时间资格与实际映射 ID/version/effective interval 一同进入 affected-set snapshot/digest；成员或映射变动只失效依赖它的 Action，局部观察不冒充完整范围。",
       "production_evidence": [
         "V0083__bind_listing_affected_sets_to_mapping_versions.sql",
@@ -373,7 +407,7 @@
       "id": "S4-DR-R1-011",
       "severity": "MAJOR",
       "title": "Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "校准复用 Policy/Approval 边界完成 prepare→专业 validate→独立 Owner accept→activate，校验完整组合与 exact digest；消费者按 scope/purpose/实际依赖延续，历史评价保留冻结包。",
       "production_evidence": [
         "V0082__govern_listing_calibration_acceptance_and_activation.sql",
@@ -403,7 +437,7 @@
       "id": "S4-DR-R1-012",
       "severity": "BLOCKER",
       "title": "累计额度未绑定完整轴集合和准确需求，换版本可能把现存承担从余额中清零",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "累计额度按持续 obligation identity 和所有适用轴跨配置版本计算；需求来自绑定动作/促销上下文的 canonical demand，锁内原子取得，预算不足保留批准且不产生 launch/Command/occupation。",
       "production_evidence": [
         "V0098__accumulate_listing_allowance_across_configuration_versions.sql",
@@ -432,7 +466,7 @@
       "id": "S4-DR-R1-013",
       "severity": "BLOCKER",
       "title": "占用释放只验证有一条观察/旧值匹配，不能证明已经停止或不可能应用",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "促销承担分 NEW_TRANSACTIONS_STOPPED 与 OBLIGATIONS_CLEARED 两阶段、逐轴释放；证据绑定 exact engagement/purpose、独立 observer 和当前事实，未知或无关证据继续占用，应用角色无任意 state/amount 写权。",
       "production_evidence": [
         "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
@@ -457,7 +491,7 @@
       "id": "S4-DR-R1-014",
       "severity": "BLOCKER",
       "title": "促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "准确 promotion 条款、费用、并存背景、退出条件、完整集合与承担在 review 前冻结并绑定 simulation/recommendation/action/approval/launch；存量先登记实际承担，退出消费原授权并分阶段核验。",
       "production_evidence": [
         "V0099__freeze_promotion_declarations_before_review.sql",
@@ -485,7 +519,7 @@
       "id": "S4-DR-R1-015",
       "severity": "MAJOR",
       "title": "促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "模拟复用统一经济口径并绑定 exact activity/period/currency：固定费只扣一次，阶梯按适用 floor，buyer payment/seller revenue/compensation 分离，完整成员成本、治理需求场景、并存背景与利润基准共同决定资格。",
       "production_evidence": [
         "V0101__retain_conditional_promotion_simulation_basis.sql",
@@ -520,7 +554,7 @@
       "id": "S4-DR-R1-016",
       "severity": "MAJOR",
       "title": "人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "人工操作、执行报告、管理 match、顾客展示 observation 和 Outcome 各自绑定 Listing、target/version、operation、source/acquisition time 与独立职责；事实可记录但不会因存在而自动取得核验资格。",
       "production_evidence": [
         "V0090__bind_manual_listing_verification_to_exact_observations.sql",
@@ -545,7 +579,7 @@
       "id": "S4-DR-R1-017",
       "severity": "MAJOR",
       "title": "运行期偏离与跨域处理缺少权威证据闭环，任意核验ID可成为关闭依据",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "迟到关联按 LAWFUL_LATE_REPORT、UNAUTHORISED_DEVIATION、UNRESOLVED_CHANGE 分支保留历史；关闭绑定 exact event 的合格 verification 或后续独立 Action/approval/launch，任意报告/ID 不能恢复依赖。",
       "production_evidence": [
         "V0121__complete_listing_operations_queue_and_review.sql",
@@ -568,7 +602,7 @@
       "id": "S4-DR-R1-018",
       "severity": "MAJOR",
       "title": "限域隔离的依赖传播与重新启用未消费当前原因和调用权威",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "隔离范围由当前合格原因和实际 dependency closure 计算；共同消费者受限、独立范围不连坐；解除要求独立技术修复与经营同意、当前权限/调用证明且原因不再被消费。",
       "production_evidence": [
         "V0117__latch_listing_protection_failures_until_independent_release.sql",
@@ -595,7 +629,7 @@
       "id": "S4-DR-R1-019",
       "severity": "MAJOR",
       "title": "一次明确启动没有接通Description Command，命令结果也未闭合业务动作",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "一次准确 API 启动在当前 Gate 与额度锁后于同一事务建立唯一 launch、occupation 和 Description Command/Outbox；失败回滚，重放返回同一 Command；worker/Raw/readback/Task 结果回到同一 Action。",
       "production_evidence": [
         "V0091__create_listing_command_atomically_with_its_launch.sql",
@@ -620,7 +654,7 @@
       "id": "S4-DR-R1-020",
       "severity": "BLOCKER",
       "title": "精确恢复复用原命令和原批准，COMMAND_RESOLVE被扩成新的业务恢复授权",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "恢复建立新的 exact restoration Action、purpose basis、当前保护、独立 review/approval 和条件写；只复用捕获的完整前值与技术尝试连续性，不能借原改变批准授权相反业务动作。",
       "production_evidence": [
         "V0097__bind_exact_restoration_to_a_new_approved_action.sql",
@@ -644,7 +678,7 @@
       "id": "S4-DR-R1-021",
       "severity": "MAJOR",
       "title": "请求guard没有绑定准确原生目标和正文节点，跨平台硬编码又拒绝合法Schema",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "请求 guard 由治理 profile 校验 platform/native target、唯一 description attribute、准确正文、允许的非目标字段、JSON media type 和条件声明；目的地/权限在取 credential 前后重检，WB 未证写路径继续关闭。",
       "production_evidence": [
         "V0093__govern_description_protocol_configuration.sql",
@@ -671,7 +705,7 @@
       "id": "S4-DR-R1-022",
       "severity": "MAJOR",
       "title": "等待头和异步结果的完整协议语义未落实，可能提前重试或误认终局",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "native `Item-Retry-After` 分钟、`X-Ratelimit-Retry` 秒及标准 Retry-After 分开解析并保留较晚边界；Command 严分传输、受理 task、最终应用与 readback，task/item identity、lease fence、批准时限和重启恢复贯通。",
       "production_evidence": [
         "V0084__persist_provider_description_retry_timing.sql",
@@ -698,7 +732,7 @@
       "id": "S4-DR-R1-023",
       "severity": "MAJOR",
       "title": "5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "原重算队列以 generation/lease fence 原子 claim，过期可恢复；实际 source changes 和 60 分钟 sweep 入队，在同一 fenced transaction 发布 Health/measurement/protection/authorization consumer receipts，重放不重复目标结果。",
       "production_evidence": [
         "V0105__fence_listing_recalculation_result_publication.sql",
@@ -723,7 +757,7 @@
       "id": "S4-DR-R1-024",
       "severity": "MAJOR",
       "title": "责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "原 Task 使用治理 SLO/calendar 从 first raise 计算 acknowledgement/action；转派、reopen、recalculation 不重置。有限 dependency hold/deferral 绑定原因、最长时限和重评，实际风险/机会确定性排序并复用同一责任。",
       "production_evidence": [
         "V0108__freeze_listing_task_responsibility_clocks.sql",
@@ -752,7 +786,7 @@
       "id": "S4-DR-R1-025",
       "severity": "MAJOR",
       "title": "必需的按需AI、原文主题纠正、日周复盘与经验复用未形成实际业务路径",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "四种有限按需 AI 复用既有 Gateway，只接收 allowlisted、带原证据引用的字段且不能执行建议；反馈保留 Raw source/job 身份、追加式人工分类修订，日/周 review 同版本输出，经验按 exact evidence scope 适用并随来源撤权失效。",
       "production_evidence": [
         "V0114__retain_listing_feedback_identity_and_label_revisions.sql",
@@ -781,7 +815,7 @@
       "id": "S4-DR-R1-026",
       "severity": "MAJOR",
       "title": "双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_EC0E73B9_R1",
       "root_cause_correction": "现有中俄 Console 接通 purpose、保护、准确 review material、批准、启动、人工核验、Outcome、反馈/AI、日周 review、dependency hold 和批次局部阻塞；请求上下文变化时丢弃迟到响应，受限材料按当前权限隐藏。",
       "production_evidence": [
         "ListingConversionShell",
@@ -817,30 +851,36 @@
       "id": "S4-DR-R1-027",
       "severity": "MAJOR",
       "title": "验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
-      "root_cause_correction": "证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不再提升为完整结论。V0080–V0123 forward-only，历史迁移/合同保持字节不变，外部义务与默认关闭状态继续分列。OQ-121/124 与 Capability Matrix 的用途映射已纠正为 Description→F-W01/F-W02、Metric→F-M01/F-M02、样本证据/方法适配→F-S01。",
+      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "root_cause_correction": "证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不提升为完整结论。Controller 在 ec0 已关闭 25 项，003/027 仅报告本次工程返工完成并等待 Final Closure Verification。V0080–V0124 forward-only，历史迁移/Contract/Frozen Set 保持字节不变；旧全套日志只归属于其历史 source，新 Head 仅声明实际重跑的改变与传递路径。69 项验收分布、外部义务与默认关闭状态继续分列。",
       "production_evidence": [
         "finding-progress.json",
         "executable-evidence.md",
-        "FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+        "FINAL_LEVEL1_LOCAL_VERIFICATION.json (historical)",
+        "TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
+        "TARGETED_FINAL_CLOSURE_HANDOFF.md",
         "MIGRATION-INVENTORY.json",
         "validate_production_readiness.py",
         "docs/00-governance/OPEN_QUESTIONS.md",
         "docs/04-api/V1_CAPABILITY_MATRIX.md"
       ],
       "executed_evidence": [
-        "./mvnw -B -ntp -Dtest=ListingSimulationInputEvidenceTest,ListingReworkAuthorizationIT test → 113 tests, 0 failures, 0 errors, 0 skipped, BUILD SUCCESS",
-        "Final clean matrix: 完整后端/DB/frontend/browser 的退出码与计数",
-        "Canonical closeout: governance/readiness validators 与 git diff --check，结果见最终 Level 1 收据",
-        "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json"
+        "Targeted summary Outcome: 21 unit + 9 normal-role HTTP/isolated-DB integration, exit 0",
+        "Targeted migration/schema: 3 unit + 21 integration through V0124, exit 0",
+        "Targeted recalculation: 3 unit + 1 isolated-DB integration, exit 0",
+        "Frontend payload: 26/26; typecheck and final format check exit 0",
+        "Original/new backend and frontend source manifests plus exact diffs retained with SHA-256",
+        "Historical complete backend/frontend/browser receipts preserved without a new-Head full-suite claim",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json"
       ],
       "pending_full_matrix_evidence": [],
-      "same_class_and_transitive_scan": "扫描全部 27 Frozen ID、V0001–V0079/既有迁移字节、共享价格/广告/身份/Raw/审批回归、OQ/Capability 的 F-M/F-W/F-S 用途映射、API 文档边界、未运行项和 remote/production 权限。",
+      "same_class_and_transitive_scan": "以 Controller ec0 record 为状态基线，核对全部 27 Frozen ID、69 项验收、V0001–V0124、准确 source manifests、SUMMARY/DETAIL/Outcome/recalculation/frontend 传递路径、未重跑项和 remote/production 权限。",
       "limits": [
-        "Level 1 完整层级收据已形成，验证源码 Head/tree 已固定；Controller verdict 保持 pending。",
+        "本次未机械重跑历史 31 小时全套或浏览器；它们保留准确历史归属，当前 Head 只声明 targeted regression。",
+        "Codex 未签发 003/027 的 Controller 关闭；下一次仍是 Final Closure Verification。",
         "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
       ]
     }
   ],
-  "convergence_control": "Implementation scope frozen. Terminal verification used the already-completed backend/frontend results, one full browser run, and one targeted closure of its two directly diagnosed failures; no broader rerun or implementation expansion was performed."
+  "convergence_control": "Controller closed 25 findings at ec0. This continuation changed only 003/027 and their actual intake, Metric, comparison, Outcome, recalculation, schema and frontend transport consumers. The exact changed/transitive paths were rerun; historical complete backend/frontend and 24/26 plus 2/2 browser receipts remain attributed to their original sources and were not relabelled as current-Head full verification."
 }
