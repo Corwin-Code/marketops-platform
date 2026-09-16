@@ -1,6 +1,6 @@
 # SLICE-V1-004 evidence index
 
-Status: **LEVEL 1 LOCAL ENGINEERING VERIFIED — CONTROLLER VERIFICATION PENDING**.
+Status: **25 CONTROLLER-CLOSED AT ec0; 003/027 FINAL CLOSURE CONTINUATION COMPLETE — FINAL CLOSURE VERIFICATION R2 PENDING**.
 
 This directory contains the current canonical Level 1 evidence for SLICE-V1-004.
 The original Maker artifacts are preserved separately at
@@ -19,12 +19,18 @@ inputs and do not state the current rework result.
   summary; exact rework receipts are in
   [rework-r1/executable-evidence.md](rework-r1/executable-evidence.md).
 - [Migration inventory](MIGRATION-INVENTORY.json) — reviewed predecessor chain
-  and exact V0080–V0123 bytes, line counts and SHA-256 values.
+  and exact V0080–V0124 bytes, line counts and SHA-256 values.
 - [Finding progress](rework-r1/finding-progress.json) — all 27 frozen roots with
-  their correction, same-class/transitive scan, evidence and Controller-pending
-  disposition.
+  their correction, same-class/transitive scan, evidence and disposition.
+- [Final Closure continuation checkpoint](rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json)
+  and [handoff](rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1_HANDOFF.md) —
+  the current run: exact commands, counts, artifact hashes, inherited receipts
+  and authority boundary.
+- [Targeted Final Closure checkpoint](rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json)
+  and [handoff](rework-r1/TARGETED_FINAL_CLOSURE_HANDOFF.md) — the ec0
+  continuation at `6ccaa6c0…`, preserved unchanged.
 - [Final Level 1 verification receipt](rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json)
-  — exact local commands, counts, artifact hashes and authority boundary.
+  — historical complete-suite receipt for its own source.
 - [Rework design](../../02-architecture/designs/SLICE-V1-004-rework-r1-design.md)
   and [API document cross-check](rework-r1/API_CROSSCHECK.md).
 
@@ -35,6 +41,8 @@ inputs and do not state the current rework result.
 | Original Contract | `5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983` |
 | Bound acceptance annex | `c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d` |
 | R1 Frozen Finding Set | `204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843` |
+| ec0 Controller closure record | `b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c` |
+| Final Closure Verification R1 record | `e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53` |
 
 The Frozen Finding Set is bound to reviewed Head
 `f91d107c53a0cf3964ae43c0e8353e0c244a2b59` and Tree
@@ -42,14 +50,15 @@ The Frozen Finding Set is bound to reviewed Head
 
 ## Current boundary
 
-The verified implementation source is Head
-`16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`, Tree
-`98b9ff7d692eb869fb1f7bf704980259426e09f1`. The clean backend and complete
-frontend layers passed. The browser evidence comprises one complete 24/26 run
-and a 2/2 targeted closure of exactly those deterministic failures; all 26
-unique scenarios have a passing receipt, while no single all-green full
-invocation is claimed. All 27 findings are
-`ENGINEERING_VERIFIED_CONTROLLER_PENDING`; no Controller closure is claimed.
+The Controller record bound to `ec0e73b9…` closed 25 of the 27 frozen findings.
+Final Closure Verification R1 at `39d55e30…` (`CHANGES_REQUIRED`) found one
+residual inside 003 and left 027 pending on evidence delivery. Both are repaired
+at Head `d65c9185adc89955d6bab3b20ac7bd9f639b5335`, Tree
+`e01e510d5b8bce57f7556d3e5d6996a01f8d2d74`, sole parent `39d55e30…`, and remain
+`REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION`; no Controller
+closure is claimed here. The historical complete backend, frontend and browser
+receipts stay attributed to their own sources and were not rerun at
+`6ccaa6c0…` or `d65c9185…`.
 
 Production writes remain disabled. No real Provider/account call, remote Git
 write, Level 2 work, shared or production deployment/migration, Gate EV, Gate E

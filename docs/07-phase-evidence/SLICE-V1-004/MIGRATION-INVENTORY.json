@@ -467,5 +467,17 @@
     "committed_migrations_through_V0110_byte_changes_during_checkpoint_34": 0,
     "verified_source_head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
     "verified_source_tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3"
+  },
+  "final_closure_continuation_39d55e30_local_apply": {
+    "status": "INHERITED_NO_MIGRATION_OR_SCHEMA_CHANGE",
+    "range": "V0001-V0124",
+    "result": "No migration file changed between 6ccaa6c and d65c918 (git diff --name-only on db/migration is empty); V0124 bytes unchanged; the targeted migration/schema receipt (3 unit + 21 integration, exit 0) is inherited by identity and not rerun.",
+    "migration_files_changed_since_targeted_source": [],
+    "v0124_sha256": "f3fe79e8237dc088a54a4e00bff29afb0e6278f7b4c9055f5bad6d4114bb3802",
+    "verified_source_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+    "verified_source_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+    "evidence": "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json",
+    "inherited_raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/backend/migration-schema-regression.log",
+    "inherited_raw_log_sha256": "c6456702575c6fa87dd530a473dd343350493aff9c10f4598d4ae1438aac4961"
   }
 }

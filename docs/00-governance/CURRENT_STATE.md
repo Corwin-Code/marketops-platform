@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-15
+as_of: 2026-09-16
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -42,18 +42,31 @@ slice_v1_004_rework_design: docs/02-architecture/designs/SLICE-V1-004-rework-r1-
 slice_v1_004_rework_completion: 25_CONTROLLER_CLOSED_AT_EC0_003_AND_027_REWORK_COMPLETE_FINAL_CLOSURE_VERIFICATION_PENDING
 slice_v1_004_targeted_rework_start_head: ec0e73b9b9451f63f0cef385aed623d63521596a
 slice_v1_004_targeted_rework_start_tree: c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2
-slice_v1_004_verified_source_head: 6ccaa6c070cb5a786a91d447b474b44926f8837c
-slice_v1_004_verified_source_tree: 1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3
-slice_v1_004_verified_source_parent: ec0e73b9b9451f63f0cef385aed623d63521596a
+slice_v1_004_verified_source_head: d65c9185adc89955d6bab3b20ac7bd9f639b5335
+slice_v1_004_verified_source_tree: e01e510d5b8bce57f7556d3e5d6996a01f8d2d74
+slice_v1_004_verified_source_parent: 39d55e303eae5e046d0be2fd66ac2256f0c95e78
+slice_v1_004_targeted_verified_source_head: 6ccaa6c070cb5a786a91d447b474b44926f8837c
+slice_v1_004_targeted_verified_source_tree: 1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3
+slice_v1_004_final_closure_verification_r1: CONTROLLER_SLICE_V1_004_FINAL_CLOSURE_VERIFICATION_39D55E30_R1
+slice_v1_004_final_closure_verification_r1_verdict: CHANGES_REQUIRED_RESIDUAL_003_COMPLEMENT_FEASIBILITY_AND_027_PAYLOADS
+slice_v1_004_final_closure_verification_r1_reviewed_head: 39d55e303eae5e046d0be2fd66ac2256f0c95e78
+slice_v1_004_final_closure_verification_r1_reviewed_tree: 06ea3278543960368a6b891a990c167af874a901
+slice_v1_004_final_closure_verification_r1_record_sha256: e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53
+slice_v1_004_final_closure_continuation_start_head: 39d55e303eae5e046d0be2fd66ac2256f0c95e78
+slice_v1_004_final_closure_continuation_start_tree: 06ea3278543960368a6b891a990c167af874a901
+slice_v1_004_final_closure_continuation_agent: CLAUDE_MAKER_UNDER_OWNER_INSTRUCTION_CODEX_TOKEN_BUDGET_EXHAUSTED
+slice_v1_004_final_closure_continuation_checkpoint: docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json
+slice_v1_004_final_closure_continuation_handoff: docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1_HANDOFF.md
 slice_v1_004_engineering_finding_status: 25_OF_27_CONTROLLER_CLOSED_AT_EC0_2_OF_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION
 slice_v1_004_focused_regression: HISTORICAL_113_OF_113_PASS_AT_PRE_TARGETED_SOURCE
-slice_v1_004_targeted_summary_outcome_regression: 21_UNIT_PLUS_9_INTEGRATION_PASS
-slice_v1_004_targeted_recalculation_regression: 3_UNIT_PLUS_1_INTEGRATION_PASS
-slice_v1_004_targeted_migration_schema_regression: 3_UNIT_PLUS_21_INTEGRATION_PASS
-slice_v1_004_targeted_frontend_regression: 26_OF_26_PASS_TYPECHECK_AND_FORMAT_PASS
-slice_v1_004_full_verification: HISTORICAL_EC0_PREDECESSOR_RECEIPTS_PRESERVED_NOT_RERUN_AT_6CCAA6C
-slice_v1_004_browser_verification: HISTORICAL_24_OF_26_PLUS_EXACT_2_OF_2_PRESERVED_NOT_RERUN_AT_6CCAA6C
-slice_v1_004_controller_verdict: CHANGES_REQUIRED_AT_EC0_TARGETED_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING
+slice_v1_004_targeted_summary_outcome_regression: 24_UNIT_PLUS_12_INTEGRATION_PASS_AT_D65C9185
+slice_v1_004_targeted_recalculation_regression: 1_INTEGRATION_PASS_RERUN_AT_D65C9185_PLUS_NEW_QUALIFIED_SUMMARY_LATE_FACT_JOURNEY
+slice_v1_004_targeted_migration_schema_regression: 3_UNIT_PLUS_21_INTEGRATION_PASS_AT_6CCAA6C_INHERITED_NO_MIGRATION_OR_SCHEMA_CHANGE
+slice_v1_004_targeted_frontend_regression: 26_OF_26_PASS_TYPECHECK_AND_FORMAT_PASS_AT_6CCAA6C_INHERITED_NO_FRONTEND_CHANGE
+slice_v1_004_targeted_architecture_regression: 76_PASS_AT_D65C9185
+slice_v1_004_full_verification: HISTORICAL_EC0_PREDECESSOR_RECEIPTS_PRESERVED_NOT_RERUN_AT_6CCAA6C_OR_D65C9185
+slice_v1_004_browser_verification: HISTORICAL_24_OF_26_PLUS_EXACT_2_OF_2_PRESERVED_NOT_RERUN_AT_6CCAA6C_OR_D65C9185
+slice_v1_004_controller_verdict: CHANGES_REQUIRED_AT_39D55E30_R1_COMPLEMENT_RESIDUAL_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING
 slice_v1_004_rework_migrations: V0080_THROUGH_V0124
 slice_v1_004_targeted_final_closure_checkpoint: docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json
 slice_v1_004_targeted_final_closure_handoff: docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_HANDOFF.md
@@ -139,7 +152,7 @@ slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
 active_gate: CONTROLLER_SLICE_V1_004_LEVEL_1_CHECKPOINT_REVIEW
-slice_v1_004_targeted_active_gate: CONTROLLER_SLICE_V1_004_TARGETED_FINAL_CLOSURE_VERIFICATION_003_027
+slice_v1_004_targeted_active_gate: CONTROLLER_SLICE_V1_004_FINAL_CLOSURE_VERIFICATION_003_027_R2
 authorization: FULL_SCOPE_IMPLEMENTATION
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
@@ -1053,3 +1066,32 @@ false and upgrades no existing profile. No remote, Provider, production,
 Level 2, Gate EV or Gate E authority was created or exercised. Exact scope,
 commands, raw artifact hashes and manifests are in
 `docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json`.
+
+SLICE-V1-004 Final Closure continuation (2026-09-16): Final Closure Verification
+R1 (`CONTROLLER_SLICE_V1_004_FINAL_CLOSURE_VERIFICATION_39D55E30_R1`,
+`CHANGES_REQUIRED`) at exact Head `39d55e303eae5e046d0be2fd66ac2256f0c95e78`,
+tree `06ea3278543960368a6b891a990c167af874a901`, preserved the 25 ec0 closures,
+added no frozen finding, and found one residual inside 003: the new
+critical-group predicate checked only the two separate upper bounds, so a group
+covering every cohort visit with fewer successes than the cohort still received
+method qualification. Because Codex had no remaining token budget, the Human
+Owner redirected the Controller continuation prompt to Claude, the established
+Maker, under the same Level 1 local envelope; no authority was added. At
+implementation Head `d65c9185adc89955d6bab3b20ac7bd9f639b5335`, tree
+`e01e510d5b8bce57f7556d3e5d6996a01f8d2d74`, sole parent `39d55e30…`, a critical
+group is admitted only as a feasible subset of its own source stratum
+(`n <= N`, `k <= K`, `K - k <= N - n`) under the existing same-cohort reason;
+the group is retained, the source strata and the independent total stay
+qualified, overlapping groups remain lawful and no sum rule was added. Signed
+normal-role HTTP against isolated PostgreSQL shows the contradictory group
+cannot obtain a qualified protection through the formal Outcome, lawful
+complements still qualify, the equivalent DETAIL/SUMMARY 0.634 comparison holds,
+and a qualified late SUMMARY fact revises the frozen formal Outcome exactly once
+through the recalculation queue. The 31 indexed ec0 payloads verify 31/31 and are
+delivered verbatim beside the new run's own indexed directory; migration/schema
+and frontend receipts are inherited by identity because nothing in those paths
+changed. Acceptance remains 54 / 12 / 3; F-M01, F-M02, F-S01, F-W01, F-W02 and
+E-04 remain open; no Controller closure is claimed and the next action is
+independent Final Closure Verification R2. Exact commands, raw artifact hashes
+and manifests are in
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json`.

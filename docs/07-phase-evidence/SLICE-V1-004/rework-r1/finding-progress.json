@@ -6,19 +6,22 @@
   "source_tree": "b04fc98b9a3e156cc66e00fe878569306972c638",
   "required_start_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
   "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
-  "work_in_progress_head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
-  "work_in_progress_head_tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
-  "final_head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
-  "final_tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
-  "final_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+  "work_in_progress_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+  "work_in_progress_head_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+  "final_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+  "final_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+  "final_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
   "contract_sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
   "annex_sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d",
   "frozen_set_sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
   "finding_count": 27,
-  "controller_verdict": "CHANGES_REQUIRED_AT_EC0_TARGETED_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
+  "controller_verdict": "CHANGES_REQUIRED_AT_39D55E30_R1_RESIDUAL_003_COMPLEMENT_FEASIBILITY_REPAIRED_AT_D65C9185_FINAL_CLOSURE_VERIFICATION_R2_PENDING",
   "controller_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
   "controller_closed_findings": 25,
-  "residual_findings": ["S4-DR-R1-003", "S4-DR-R1-027"],
+  "residual_findings": [
+    "S4-DR-R1-003",
+    "S4-DR-R1-027"
+  ],
   "checkpoint_closed_findings_claimed": 0,
   "closed_findings_claimed": 25,
   "verification": {
@@ -173,7 +176,7 @@
       "severity": "MAJOR",
       "title": "两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立",
       "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
-      "root_cause_correction": "DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格。OFFICIAL_SUMMARY 现通过既有 intake 留存 exact method version、广告/自然 source strata 与可选 critical-group strata，分别验证并进入 measurement lineage；正式 fixed-traffic Metric、comparison 和 Outcome 消费合格证据而非 DETAIL 路径名。完整零购买保留为真实零，缺窗口或零分母不改写为零，矛盾或非等价分层原样留存且不得借用正式资格。",
+      "root_cause_correction": "DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格。OFFICIAL_SUMMARY 现通过既有 intake 留存 exact method version、广告/自然 source strata 与可选 critical-group strata，分别验证并进入 measurement lineage；正式 fixed-traffic Metric、comparison 和 Outcome 消费合格证据而非 DETAIL 路径名。完整零购买保留为真实零，缺窗口或零分母不改写为零，矛盾或非等价分层原样留存且不得借用正式资格。 Final Closure continuation（39d55e30 R1 残余）：关键群组只有作为同来源同窗口群体的真实子集才进入方法桥：n ≤ N、k ≤ K 且 K − k ≤ N − n（补集必须能承担剩余成功）；覆盖全部来源访问但成功数少于来源的群组在既有 SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL 规则下被拒绝，被拒群组原样留存，来源分层与独立总值资格不受影响，群组允许重叠，不新增求和规则。",
       "production_evidence": [
         "V0081__record_listing_measurement_coverage_and_lineage.sql",
         "V0124__bridge_equivalent_summary_method_inputs.sql",
@@ -199,15 +202,27 @@
         "ListingConversionForms.test.tsx (26/26, exact OFFICIAL_SUMMARY payload)",
         "ListingReworkAuthorizationIT#zeroDenominatorIsUndefinedOnlyWhenTheWholeEmptySourceWindowIsComplete",
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json (historical)",
-        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json"
+        "ListingReworkAuthorizationIT#infeasibleCriticalGroupComplementCannotBorrowQualifiedProtectionThroughTheFormalOutcome",
+        "ListingReworkAuthorizationIT#infeasibleCriticalGroupComplementKeepsTheProvenSourceStrataWhileLawfulComplementsQualify",
+        "ListingReworkAuthorizationIT#qualifiedSummaryLateFactRevisesTheFormalOutcomeThroughRecalculationOnce",
+        "OfficialSummaryMethodEvidenceTest (6 cases: both Controller counterexamples, lawful complement boundaries, overlapping groups, all-success cohort, individual bounds, unproven source)",
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "pending_full_matrix_evidence": [],
-      "same_class_and_transitive_scan": "扫描 intake→存储→Metric→lineage→fixed-traffic comparison→formal Outcome→late-fact recalculation，以及 DETAIL 路径回归；覆盖 method/profile/window 错配、source/group 缺失或和数矛盾、超界分子、caller 数字和冻结 lineage，不允许两条路径互相借证。",
+      "same_class_and_transitive_scan": "扫描 intake→存储→Metric→lineage→fixed-traffic comparison→formal Outcome→late-fact recalculation，以及 DETAIL 路径回归；覆盖 method/profile/window 错配、source/group 缺失或和数矛盾、超界分子、caller 数字和冻结 lineage，不允许两条路径互相借证。 续接扫描：within()→assess→lineage criticalGroupSourceStrataQualified→MeasurementEvidenceRepository group_counts→EvaluationService 独立群组比较→protection vector；ExactTrafficComparison 与 weightsFrom 只消费已合格计数；重算队列对合格 SUMMARY 晚事实的 LATE_FACT 修订、旧结果/冻结计划保留与重放不重复在同一签名 HTTP+隔离 DB 路径验证。",
       "limits": [
         "只证明本地来源资格语义；真实平台访问/购买归因与指标来源资格仍受 F-M01/F-M02。F-S01 仅覆盖样本证据与方法适配，不提供或替代真实指标来源。",
         "新 profile/Schema 仅是本地合成或文档证据；V0124 默认资格 false，不升级真实平台资格。",
         "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
-      ]
+      ],
+      "final_closure_verification_r1_residual": {
+        "state": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+        "repaired_at_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+        "rule": "n <= N and k <= K and K - k <= N - n per source stratum",
+        "reason_code": "SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL (existing same-cohort rule, no new vocabulary)",
+        "scoping": "source strata and independent total stay qualified; contradictory group retained; all groups of that observation lose method qualification (existing all-or-nothing group flag)"
+      }
     },
     {
       "id": "S4-DR-R1-004",
@@ -852,7 +867,7 @@
       "severity": "MAJOR",
       "title": "验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺",
       "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
-      "root_cause_correction": "证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不提升为完整结论。Controller 在 ec0 已关闭 25 项，003/027 仅报告本次工程返工完成并等待 Final Closure Verification。V0080–V0124 forward-only，历史迁移/Contract/Frozen Set 保持字节不变；旧全套日志只归属于其历史 source，新 Head 仅声明实际重跑的改变与传递路径。69 项验收分布、外部义务与默认关闭状态继续分列。",
+      "root_cause_correction": "证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不提升为完整结论。Controller 在 ec0 已关闭 25 项，003/027 仅报告本次工程返工完成并等待 Final Closure Verification。V0080–V0124 forward-only，历史迁移/Contract/Frozen Set 保持字节不变；旧全套日志只归属于其历史 source，新 Head 仅声明实际重跑的改变与传递路径。69 项验收分布、外部义务与默认关闭状态继续分列。 Final Closure continuation：原索引 31 项 ec0 载荷本地逐项哈希核对 31/31 OK、0 缺口，按原目录原样打包；本次新运行独立目录留存并附自身 SHA-256 索引；未受影响且身份适用的 migration/schema 与 frontend 收据明确继承并注明理由；合格 SUMMARY 晚事实经重算队列修订正式 Outcome 的证据为新增签名 HTTP+隔离 DB 场景，而非 null 方法输入的总值修订测试。",
       "production_evidence": [
         "finding-progress.json",
         "executable-evidence.md",
@@ -871,7 +886,11 @@
         "Frontend payload: 26/26; typecheck and final format check exit 0",
         "Original/new backend and frontend source manifests plus exact diffs retained with SHA-256",
         "Historical complete backend/frontend/browser receipts preserved without a new-Head full-suite claim",
-        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json"
+        "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
+        "Old indexed payloads: 31/31 hash OK against build/slice-v1-004-final-closure-ec0e73b9-r1/SHA256SUMS, 0 gaps, delivered verbatim",
+        "Continuation run: 24 unit + 13 integration (12 ListingReworkAuthorizationIT + 1 ListingRecalculationLeaseIT) exit 0; 76 architecture tests exit 0; raw XML/logs under build/slice-v1-004-final-closure-39d55e30-r1 with SHA256SUMS",
+        "Inherited by identity: migration/schema 3 unit + 21 integration (no migration or schema change) and frontend 26/26 + typecheck + format (frontend manifest 126/126 identical)",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "pending_full_matrix_evidence": [],
       "same_class_and_transitive_scan": "以 Controller ec0 record 为状态基线，核对全部 27 Frozen ID、69 项验收、V0001–V0124、准确 source manifests、SUMMARY/DETAIL/Outcome/recalculation/frontend 传递路径、未重跑项和 remote/production 权限。",
@@ -882,5 +901,22 @@
       ]
     }
   ],
-  "convergence_control": "Controller closed 25 findings at ec0. This continuation changed only 003/027 and their actual intake, Metric, comparison, Outcome, recalculation, schema and frontend transport consumers. The exact changed/transitive paths were rerun; historical complete backend/frontend and 24/26 plus 2/2 browser receipts remain attributed to their original sources and were not relabelled as current-Head full verification."
+  "convergence_control": "Controller closed 25 findings at ec0. This continuation changed only 003/027 and their actual intake, Metric, comparison, Outcome, recalculation, schema and frontend transport consumers. The exact changed/transitive paths were rerun; historical complete backend/frontend and 24/26 plus 2/2 browser receipts remain attributed to their original sources and were not relabelled as current-Head full verification.",
+  "final_closure_verification_r1": {
+    "record_id": "SLICE-V1-004-FINAL-CLOSURE-39D55E30-R1",
+    "reviewed_head": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+    "reviewed_tree": "06ea3278543960368a6b891a990c167af874a901",
+    "verdict": "CHANGES_REQUIRED",
+    "closure_record_sha256": "e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53",
+    "residual_conditions_sha256": "135f9610f731ab1d6f81778cd69456a2b50b478ac8fe98bba3f4d51ecd4802f7",
+    "continuation_prompt_sha256": "6b8bebdcb6db44ab26f31c7f1c3714806a79e055e9f0bbe9543746fc2772141a",
+    "prior_25_closures": "PRESERVED_AT_EC0",
+    "new_frozen_findings": 0,
+    "controller_closed_this_turn": 0,
+    "continuation_implementation_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+    "continuation_implementation_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+    "continuation_sole_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+    "continuation_executed_by": "CLAUDE_MAKER_UNDER_OWNER_CHAT_INSTRUCTION_2026_09_16_CODEX_TOKEN_BUDGET_EXHAUSTED",
+    "checkpoint": "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
+  }
 }

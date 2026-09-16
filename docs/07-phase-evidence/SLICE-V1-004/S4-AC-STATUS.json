@@ -2,18 +2,23 @@
   "schema": "marketops.slice.acceptance-status.v2",
   "slice": "SLICE-V1-004",
   "checkpoint": "LEVEL_1_LOCAL_ROOT_CAUSE_REWORK_R1",
-  "verification_state": "25_CONTROLLER_CLOSED_AT_EC0_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
+  "verification_state": "25_CONTROLLER_CLOSED_AT_EC0_2_FINAL_CLOSURE_CONTINUATION_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION_R2",
   "reviewed_source": {
     "head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
     "tree": "b04fc98b9a3e156cc66e00fe878569306972c638"
   },
   "candidate_checkpoint": {
-    "head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
-    "tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
-    "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a",
-    "meaning": "VERIFIED_TARGETED_IMPLEMENTATION_SOURCE; final evidence-only checkpoint is reported out of band"
+    "head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+    "tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+    "sole_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+    "meaning": "VERIFIED_FINAL_CLOSURE_CONTINUATION_SOURCE; the evidence-only checkpoint is reported out of band",
+    "predecessor_targeted_source": {
+      "head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+      "tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+      "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a"
+    }
   },
-  "controller_verdict": "CHANGES_REQUIRED_AT_EC0_TARGETED_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
+  "controller_verdict": "CHANGES_REQUIRED_AT_39D55E30_R1_COMPLEMENT_RESIDUAL_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
   "engineering_finding_state": "25_CONTROLLER_CLOSED_2_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
   "engineering_findings": {
     "total": 27,
@@ -29,10 +34,25 @@
     "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
     "closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
     "controller_closed": 25,
-    "residual_findings": ["S4-DR-R1-003", "S4-DR-R1-027"],
+    "residual_findings": [
+      "S4-DR-R1-003",
+      "S4-DR-R1-027"
+    ],
     "residual_state": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
     "controller_closure_claimed_by_codex": false,
-    "next_review": "FINAL_CLOSURE_VERIFICATION"
+    "next_review": "FINAL_CLOSURE_VERIFICATION_R2",
+    "final_closure_verification_r1": {
+      "record_id": "SLICE-V1-004-FINAL-CLOSURE-39D55E30-R1",
+      "reviewed_head": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+      "reviewed_tree": "06ea3278543960368a6b891a990c167af874a901",
+      "verdict": "CHANGES_REQUIRED",
+      "closure_record_sha256": "e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53",
+      "residual": [
+        "S4-DR-R1-003: within() omitted complement feasibility (K - k <= N - n); repaired at d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+        "S4-DR-R1-027: indexed payloads not delivered; qualified-SUMMARY late revision not separately proven; both delivered at d65c9185adc89955d6bab3b20ac7bd9f639b5335"
+      ]
+    },
+    "controller_closure_claimed_by_continuation": false
   },
   "production_write_enabled": false,
   "real_provider_calls": "NONE",
@@ -127,7 +147,8 @@
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
         "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
-        "docs/04-api/V1_CAPABILITY_MATRIX.md"
+        "docs/04-api/V1_CAPABILITY_MATRIX.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "external_obligations": [
         "F-M01",
@@ -148,7 +169,8 @@
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
         "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
-        "docs/04-api/V1_CAPABILITY_MATRIX.md"
+        "docs/04-api/V1_CAPABILITY_MATRIX.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "external_obligations": [
         "F-M01",
@@ -169,7 +191,8 @@
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
         "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
-        "docs/04-api/V1_CAPABILITY_MATRIX.md"
+        "docs/04-api/V1_CAPABILITY_MATRIX.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "external_obligations": [
         "F-M01",
@@ -524,7 +547,8 @@
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
         "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
-        "docs/04-api/V1_CAPABILITY_MATRIX.md"
+        "docs/04-api/V1_CAPABILITY_MATRIX.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "external_obligations": [
         "F-M01",
@@ -545,7 +569,8 @@
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
         "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
         "docs/00-governance/OPEN_QUESTIONS.md",
-        "docs/04-api/V1_CAPABILITY_MATRIX.md"
+        "docs/04-api/V1_CAPABILITY_MATRIX.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ],
       "external_obligations": [
         "F-M01",
@@ -564,7 +589,8 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
-        "rework-r1/executable-evidence.md"
+        "rework-r1/executable-evidence.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ]
     },
     {
@@ -769,7 +795,8 @@
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
         "rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
-        "rework-r1/executable-evidence.md"
+        "rework-r1/executable-evidence.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ]
     },
     {
@@ -782,7 +809,8 @@
       ],
       "final_evidence": [
         "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
-        "rework-r1/executable-evidence.md"
+        "rework-r1/executable-evidence.md",
+        "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
       ]
     },
     {

@@ -1,6 +1,18 @@
 # SLICE-V1-004 — canonical executable evidence
 
-Status: **LEVEL 1 LOCAL ENGINEERING VERIFIED — CONTROLLER VERIFICATION PENDING**.
+Status: **25 CONTROLLER-CLOSED AT ec0; 003/027 FINAL CLOSURE CONTINUATION COMPLETE — FINAL CLOSURE VERIFICATION R2 PENDING**.
+
+Current continuation: the Controller record bound to `ec0e73b9…` closed 25 of 27
+frozen findings; Final Closure Verification R1 at `39d55e30…` found one
+residual inside 003 (complement feasibility of critical groups) and left 027 on
+evidence delivery. Both are repaired at Head `d65c9185adc89955d6bab3b20ac7bd9f639b5335`, Tree
+`e01e510d5b8bce57f7556d3e5d6996a01f8d2d74`. The exact commands, counts, raw artifact
+hashes and inherited receipts are in
+[FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json](rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json);
+the ec0 continuation is preserved in
+[TARGETED_FINAL_CLOSURE_CHECKPOINT.json](rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json).
+The sections below are the historical Level 1 receipts for their own sources and
+are not relabelled as a full pass at any later Head.
 
 This page is the canonical summary for the Human Owner-authorized Level 1 local
 root-cause rework. Exact final commands and results are retained in the rework

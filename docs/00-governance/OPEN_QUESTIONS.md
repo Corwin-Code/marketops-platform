@@ -59,4 +59,8 @@ records local design, implementation, tests and documents only. OQ-121 through
 OQ-125, `F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02` and `E-04` retain their
 external/configuration dispositions; no Level 2 environment, remote publication,
 Gate EV, Gate E or Pilot authority was used or is implied, and
-`production_write_enabled=false`.
+`production_write_enabled=false`. The
+[Final Closure continuation handoff](../07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1_HANDOFF.md)
+(2026-09-16) repairs the 003 complement-feasibility residual and delivers the
+027 evidence payloads at the same authority level; every disposition above is
+unchanged.
