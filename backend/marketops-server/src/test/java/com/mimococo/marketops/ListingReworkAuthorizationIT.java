@@ -70,6 +70,7 @@ class ListingReworkAuthorizationIT {
     @Autowired com.mimococo.marketops.listingconversion.internal.application.CalibrationService calibration;
     @Autowired com.mimococo.marketops.operationsworkflow.ListingActionIntake listingIntake;
     @Autowired com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.MeasurementEvidenceRepository measurementEvidence;
+    @Autowired com.mimococo.marketops.listingconversion.internal.application.RecalculationService recalculation;
     @org.springframework.test.context.bean.override.mockito.MockitoBean
     com.mimococo.marketops.aicopilot.port.ModelGatewayPort modelGateway;
     private UUID providerId;
@@ -2962,6 +2963,223 @@ class ListingReworkAuthorizationIT {
                 """).param("result",outcome.resultId()).query(Boolean.class).single()).isTrue();
     }
 
+    @Test
+    void infeasibleCriticalGroupComplementCannotBorrowQualifiedProtectionThroughTheFormalOutcome() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        FormalOutcome outcome=qualifiedFormalOutcome(false,true,infeasibleCriticalGroupCounts(),false);
+
+        UUID target=jdbc.sql("SELECT measurement_id FROM ops.lc_node_result WHERE id=:result")
+                .param("result",outcome.resultId()).query(UUID.class).single();
+        // The source strata and the independent total stay qualified and the contradictory group is retained as
+        // reported; only its method qualification is refused, under the existing same-cohort rule.
+        assertThat(jdbc.sql("""
+                SELECT inputs->>'sourceStrataQualified'='true'
+                  AND inputs->>'criticalGroupSourceStrataQualified'='false'
+                  AND inputs->'summaryMethodInputQualificationReasonCodes'
+                      ='["SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL"]'::jsonb
+                  AND (inputs#>>'{criticalGroupSourceStrata,CORE,ADVERTISING,visits}')::bigint=400
+                  AND (inputs#>>'{criticalGroupSourceStrata,CORE,ADVERTISING,retained}')::bigint=300
+                  AND (inputs#>>'{sourceStrata,ADVERTISING,retained}')::bigint=364
+                FROM mart.lc_measurement_lineage WHERE measurement_id=:id
+                """).param("id",target).query(Boolean.class).single()).isTrue();
+        var measured=measurementEvidence.measuredSourceStrata(target,fixture.id("listing")).orElseThrow();
+        assertThat(measured.qualified()).isTrue();
+        assertThat(measured.criticalGroupCounts().isEmpty()).isTrue();
+        assertThat(jdbc.sql("""
+                SELECT verdict='MET' AND protection_verdict='UNDETERMINED'
+                  AND evaluation_evidence#>>'{formalTrafficComparison,state}'='QUALIFIED_FORMAL_COMPARISON'
+                  AND (evaluation_evidence#>>'{formalTrafficComparison,observedDifference}')::numeric=0.634
+                  AND evaluation_evidence#>>'{formalTrafficComparison,criticalGroups,CORE,state}'='UNQUALIFIED'
+                  AND evaluation_evidence#>>'{formalTrafficComparison,criticalGroups,CORE,verdict}'='UNDETERMINED'
+                  AND evaluation_evidence#>'{formalTrafficComparison,qualificationGaps}'
+                      @> '["CRITICAL_GROUP_CORE:CRITICAL_GROUP_TARGET_UNQUALIFIED"]'::jsonb
+                  AND protection_vector->>'CRITICAL_GROUP_CORE'='UNDETERMINED'
+                FROM ops.lc_node_result WHERE id=:result
+                """).param("result",outcome.resultId()).query(Boolean.class).single()).isTrue();
+    }
+
+    @Test
+    void infeasibleCriticalGroupComplementKeepsTheProvenSourceStrataWhileLawfulComplementsQualify() throws Exception {
+        measurementGrants();
+        seedSummaryProfile(true);
+        Instant to=Instant.now().minusSeconds(40L*86400).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Instant from=to.minusSeconds(86400),complete=to.plusSeconds(31L*86400);
+        var source=Map.of("ADVERTISING",Map.of("visits",80,"retained",8),"ORGANIC",Map.of("visits",20,"retained",2));
+        // All 80 advertising visits with only 7 successes cannot be a subset of 80 advertising visits with 8
+        // successes: the empty complement would have to carry one. Each bound alone (80 <= 80, 7 <= 8) holds.
+        var contradictory=recordQualifiedSummary(from,to,complete,source,Map.of("CORE",Map.of(
+                "ADVERTISING",Map.of("visits",80,"retained",7),"ORGANIC",Map.of("visits",4,"retained",1))),
+                "evidence://synthetic/infeasible-critical-group-complement");
+        assertThat(contradictory.path("pathQualified").asBoolean()).isTrue();
+        assertThat(contradictory.path("primaryRatio").decimalValue()).isEqualByComparingTo("0.1");
+        assertThat(contradictory.path("sourceStratified").asBoolean()).isTrue();
+        UUID contradictoryId=UUID.fromString(contradictory.path("id").asText());
+        assertThat(jdbc.sql("""
+                SELECT inputs->>'sourceStrataQualified'='true'
+                  AND inputs->>'criticalGroupSourceStrataQualified'='false'
+                  AND inputs->'summaryMethodInputQualificationReasonCodes'
+                      ='["SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL"]'::jsonb
+                  AND (inputs#>>'{criticalGroupSourceStrata,CORE,ADVERTISING,retained}')::bigint=7
+                FROM mart.lc_measurement_lineage WHERE measurement_id=:id
+                """).param("id",contradictoryId).query(Boolean.class).single()).isTrue();
+        var contradictoryStrata=measurementEvidence.measuredSourceStrata(contradictoryId,fixture.id("listing")).orElseThrow();
+        assertThat(contradictoryStrata.qualified()).isTrue();
+        assertThat(contradictoryStrata.criticalGroupCounts().isEmpty()).isTrue();
+
+        // Lawful complements on an earlier window: the whole cohort as one group, a zero-slack complement
+        // (every unsuccessful visit in the group) and their overlap. No rule requires groups to sum to the source.
+        Instant earlierTo=from.minusSeconds(86400),earlierFrom=earlierTo.minusSeconds(86400);
+        var lawful=recordQualifiedSummary(earlierFrom,earlierTo,complete,source,Map.of(
+                "WHOLE",Map.of("ADVERTISING",Map.of("visits",80,"retained",8),"ORGANIC",Map.of("visits",20,"retained",2)),
+                "EDGE",Map.of("ADVERTISING",Map.of("visits",72,"retained",0),"ORGANIC",Map.of("visits",18,"retained",0))),
+                "evidence://synthetic/lawful-critical-group-complements");
+        assertThat(lawful.path("sourceStratified").asBoolean()).isTrue();
+        UUID lawfulId=UUID.fromString(lawful.path("id").asText());
+        assertThat(jdbc.sql("""
+                SELECT inputs->>'sourceStrataQualified'='true'
+                  AND inputs->>'criticalGroupSourceStrataQualified'='true'
+                  AND inputs->'summaryMethodInputQualificationReasonCodes'='[]'::jsonb
+                FROM mart.lc_measurement_lineage WHERE measurement_id=:id
+                """).param("id",lawfulId).query(Boolean.class).single()).isTrue();
+        var lawfulStrata=measurementEvidence.measuredSourceStrata(lawfulId,fixture.id("listing")).orElseThrow();
+        assertThat(lawfulStrata.qualified()).isTrue();
+        assertThat(lawfulStrata.criticalGroupCounts().path("WHOLE").path("ADVERTISING").path("retained").asLong()).isEqualTo(8);
+        assertThat(lawfulStrata.criticalGroupCounts().path("EDGE").path("ORGANIC").path("visits").asLong()).isEqualTo(18);
+    }
+
+    @Test
+    void qualifiedSummaryLateFactRevisesTheFormalOutcomeThroughRecalculationOnce() throws Exception {
+        users.assignRole(OPERATOR,userId,BusinessRoleCode.OWNER,null);
+        FormalOutcome first=qualifiedFormalOutcome(false,true);
+        UUID plan=fixture.id("planOne");
+        String frozenPlan=jdbc.sql("SELECT plan_digest||':'||formal_nodes::text||':'||critical_groups::text FROM ops.lc_evaluation_plan WHERE id=:id")
+                .param("id",plan).query(String.class).single();
+        String original=jdbc.sql("SELECT measurement_id::text||':'||verdict||':'||evaluation_evidence::text FROM ops.lc_node_result WHERE id=:id")
+                .param("id",first.resultId()).query(String.class).single();
+        var target=jdbc.sql("""
+                SELECT m.window_start,m.window_end,c.summary_observation_id
+                FROM ops.lc_node_result r JOIN mart.lc_conversion_measurement m ON m.id=r.measurement_id
+                JOIN mart.lc_measurement_lineage l ON l.measurement_id=m.id
+                JOIN core.lc_measurement_coverage c ON c.id=l.coverage_id WHERE r.id=:id
+                """).param("id",first.resultId()).query((rs,n)->new Object[]{rs.getTimestamp("window_start").toInstant(),
+                rs.getTimestamp("window_end").toInstant(),rs.getObject("summary_observation_id",UUID.class)}).single();
+        Instant targetStart=(Instant)target[0],targetEnd=(Instant)target[1];
+        UUID originalSummary=(UUID)target[2];
+        String referenceMeasurement=jdbc.sql("SELECT evaluation_evidence#>>'{formalTrafficComparison,referenceMeasurementId}' FROM ops.lc_node_result WHERE id=:id")
+                .param("id",first.resultId()).query(String.class).single();
+
+        // Only the two late-fact events below belong to this worker receipt; unclaimed fan-out from the
+        // journey above and from earlier methods in this shared container is removed first.
+        fixture.seed.sql("""
+                DELETE FROM ops.lc_recalculation_queue q WHERE q.state='QUEUED'
+                  AND NOT EXISTS(SELECT 1 FROM ops.lc_task_deferral d WHERE d.review_queue_id=q.id)
+                  AND NOT EXISTS(SELECT 1 FROM ops.lc_task_dependency_hold h WHERE h.review_queue_id=q.id)
+                """).update();
+        Instant correctedAt=jdbc.sql("SELECT clock_timestamp()").query(java.time.OffsetDateTime.class).single()
+                .toInstant().minusSeconds(2).truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+        var request=new java.util.LinkedHashMap<String,Object>();
+        request.put("periodStart",targetStart.toString());request.put("periodEnd",targetEnd.toString());
+        request.put("visits",800);request.put("retainedPurchases",680);request.put("retentionDays",14);
+        request.put("label","Synthetic qualified late summary correction");request.put("observedAt",correctedAt.toString());
+        request.put("sourceMethodInputVersion",1);
+        request.put("sourceStrata",Map.of("ADVERTISING",Map.of("visits",400,"retained",300),
+                "ORGANIC",Map.of("visits",400,"retained",380)));
+        request.put("criticalGroupSourceStrata",formalCriticalGroupCounts());
+        UUID correctedSummary=UUID.fromString(postListing("/facts/official-summary",request).path("observationId").asText());
+        fixture.seed.sql("UPDATE core.lc_official_summary_observation SET supersedes_fact_id=:original WHERE id=:corrected")
+                .param("original",originalSummary).param("corrected",correctedSummary).update();
+        UUID correctedCoverage=UUID.fromString(postListing("/facts/measurement-coverage",Map.of(
+                "windowStart",targetStart.toString(),"windowEnd",targetEnd.toString(),"retentionDays",14,
+                "evidencePath","OFFICIAL_SUMMARY","sourceCompleteThrough",correctedAt.toString(),
+                "sourceReference","evidence://synthetic/qualified-summary-late-fact",
+                "summaryObservationId",correctedSummary.toString())).path("coverageId").asText());
+        String summaryReference="official-summary:"+correctedSummary;
+        UUID summaryQueue=jdbc.sql("SELECT id FROM ops.lc_recalculation_queue WHERE trigger_reference=:reference")
+                .param("reference",summaryReference).query(UUID.class).single();
+        UUID coverageQueue=jdbc.sql("SELECT id FROM ops.lc_recalculation_queue WHERE trigger_reference=:reference")
+                .param("reference","measurement-coverage:"+correctedCoverage).query(UUID.class).single();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_recalculation_queue WHERE state='QUEUED' AND id NOT IN (:a,:b)")
+                .param("a",summaryQueue).param("b",coverageQueue).query(Long.class).single()).isZero();
+
+        assertThat(recalculation.runOnce(10)).isEqualTo(2);
+
+        var results=jdbc.sql("""
+                SELECT id,revision_no,measurement_id FROM ops.lc_node_result
+                 WHERE plan_id=:plan AND node_code='D14' AND stage='OPERATIONAL' ORDER BY revision_no
+                """).param("plan",plan).query((rs,n)->new Object[]{rs.getObject("id",UUID.class),rs.getInt("revision_no"),
+                rs.getObject("measurement_id",UUID.class)}).list();
+        assertThat(results).hasSize(2);
+        assertThat(results.get(0)[0]).isEqualTo(first.resultId());
+        assertThat(results.get(1)[1]).isEqualTo(1);
+        UUID revised=(UUID)results.get(1)[0];
+        UUID revisedMeasurement=(UUID)results.get(1)[2];
+        // The original result, the frozen plan and both summary observations are preserved.
+        assertThat(jdbc.sql("SELECT measurement_id::text||':'||verdict||':'||evaluation_evidence::text FROM ops.lc_node_result WHERE id=:id")
+                .param("id",first.resultId()).query(String.class).single()).isEqualTo(original);
+        assertThat(jdbc.sql("SELECT plan_digest||':'||formal_nodes::text||':'||critical_groups::text FROM ops.lc_evaluation_plan WHERE id=:id")
+                .param("id",plan).query(String.class).single()).isEqualTo(frozenPlan);
+        assertThat(jdbc.sql("SELECT count(*) FROM core.lc_official_summary_observation WHERE id IN (:a,:b)")
+                .param("a",originalSummary).param("b",correctedSummary).query(Long.class).single()).isEqualTo(2);
+        // The revised result consumes the qualified late summary through the same frozen reference and method.
+        assertThat(jdbc.sql("""
+                SELECT m.evidence_path='OFFICIAL_SUMMARY' AND m.visit_count=800 AND m.retained_purchase_visit_count=680
+                  AND m.window_start=:from AND m.window_end=:to AND l.coverage_id=:coverage
+                  AND l.inputs->>'sourceStrataQualified'='true' AND l.inputs->>'criticalGroupSourceStrataQualified'='true'
+                FROM mart.lc_conversion_measurement m JOIN mart.lc_measurement_lineage l ON l.measurement_id=m.id
+                WHERE m.id=:id
+                """).param("from",java.sql.Timestamp.from(targetStart)).param("to",java.sql.Timestamp.from(targetEnd))
+                .param("coverage",correctedCoverage).param("id",revisedMeasurement).query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("""
+                SELECT verdict='MET' AND protection_verdict='PASS' AND stop_triggered=false
+                  AND evaluation_evidence->>'evaluationAuthority'='RECALCULATION_QUEUE'
+                  AND evaluation_evidence#>>'{formalTrafficComparison,state}'='QUALIFIED_FORMAL_COMPARISON'
+                  AND (evaluation_evidence#>>'{formalTrafficComparison,observedDifference}')::numeric=0.49
+                  AND evaluation_evidence#>>'{formalTrafficComparison,referenceMeasurementId}'=:reference
+                  AND evaluation_evidence#>>'{formalTrafficComparison,targetMeasurementId}'=:target
+                  AND evaluation_evidence#>>'{formalTrafficComparison,criticalGroups,CORE,state}'='QUALIFIED_INDEPENDENT_COMPARISON'
+                  AND protection_vector->>'CRITICAL_GROUP_CORE'='PASS'
+                FROM ops.lc_node_result WHERE id=:id
+                """).param("reference",referenceMeasurement).param("target",revisedMeasurement.toString())
+                .param("id",revised).query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("""
+                SELECT count(*) FROM ops.lc_outcome_revision WHERE plan_id=:plan AND original_result_id=:original
+                  AND revised_result_id=:revised AND revision_reason='LATE_FACT'
+                  AND late_fact_reference IN (:summaryReference,:coverageReference)
+                """).param("plan",plan).param("original",first.resultId()).param("revised",revised)
+                .param("summaryReference","recalculation-queue:"+summaryQueue)
+                .param("coverageReference","recalculation-queue:"+coverageQueue).query(Long.class).single()).isEqualTo(1);
+        assertThat(jdbc.sql("""
+                SELECT count(*)=2 AND bool_and(state='FINISHED') AND sum(cardinality(outcome_result_ids))=1
+                FROM ops.lc_recalculation_queue WHERE id IN (:summary,:coverage)
+                """).param("summary",summaryQueue).param("coverage",coverageQueue).query(Boolean.class).single()).isTrue();
+
+        // A delivery retry of the same late fact returns the finished request and republishes nothing.
+        assertThat(jdbc.sql("SELECT ops.lc_enqueue_source_recalculation(:org,:listing,'ORDINARY',:reference,:source)")
+                .param("org",fixture.id("organization")).param("listing",fixture.id("listing"))
+                .param("reference",summaryReference).param("source",java.sql.Timestamp.from(correctedAt))
+                .query(UUID.class).single()).isEqualTo(summaryQueue);
+        assertThat(recalculation.runOnce(10)).isZero();
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_node_result WHERE plan_id=:plan AND stage='OPERATIONAL'")
+                .param("plan",plan).query(Long.class).single()).isEqualTo(2);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.lc_outcome_revision WHERE plan_id=:plan")
+                .param("plan",plan).query(Long.class).single()).isEqualTo(1);
+    }
+
+    private tools.jackson.databind.JsonNode recordQualifiedSummary(Instant from,Instant to,Instant complete,
+            Map<String,?> sourceStrata,Map<String,?> criticalGroups,String reference) throws Exception {
+        var body=new java.util.LinkedHashMap<String,Object>();
+        body.put("periodStart",from.toString());body.put("periodEnd",to.toString());body.put("visits",100);
+        body.put("retainedPurchases",10);body.put("retentionDays",30);body.put("observedAt",complete.toString());
+        body.put("sourceMethodInputVersion",1);body.put("sourceStrata",sourceStrata);
+        body.put("criticalGroupSourceStrata",criticalGroups);
+        var summary=postListing("/facts/official-summary",body);
+        postListing("/facts/measurement-coverage",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY","sourceCompleteThrough",complete.toString(),
+                "sourceReference",reference,"summaryObservationId",summary.path("observationId").asText()));
+        return postListing("/measurements",Map.of("windowStart",from.toString(),"windowEnd",to.toString(),
+                "retentionDays",30,"evidencePath","OFFICIAL_SUMMARY"));
+    }
+
     private record FormalOutcome(UUID actionId,UUID resultId) { }
 
     /** One shared material evaluator journey; unit tests retain the arithmetic boundary matrix. */
@@ -2975,6 +3193,14 @@ class ListingReworkAuthorizationIT {
 
     private FormalOutcome qualifiedFormalOutcome(boolean exerciseRevisions,boolean officialSummary,
                                                    boolean includeTargetCriticalGroup) throws Exception {
+        return qualifiedFormalOutcome(exerciseRevisions,officialSummary,
+                includeTargetCriticalGroup?formalCriticalGroupCounts():Map.of(),includeTargetCriticalGroup);
+    }
+
+    /** The summary target's critical-group counts are supplied exactly, with the lineage qualification they must receive. */
+    private FormalOutcome qualifiedFormalOutcome(boolean exerciseRevisions,boolean officialSummary,
+                                                   Map<String,?> targetCriticalGroups,
+                                                   boolean targetCriticalGroupsQualified) throws Exception {
         for(var scope:List.of(ActionScopeCode.INTERNAL_FACT_INTAKE,ActionScopeCode.LISTING_ACTION_PREPARE,
                 ActionScopeCode.LISTING_MANUAL_VERIFY,ActionScopeCode.LISTING_OUTCOME_EVALUATE))
             users.grantScope(OPERATOR,userId,scope,ResourceScopeType.STORE,fixture.id("store"),null);
@@ -3042,8 +3268,7 @@ class ListingReworkAuthorizationIT {
                     initialAdvertisingRetained+initialOrganicRetained,
                     Map.of("ADVERTISING",Map.of("visits",initialAdvertising,"retained",initialAdvertisingRetained),
                             "ORGANIC",Map.of("visits",initialOrganic,"retained",initialOrganicRetained)),
-                    includeTargetCriticalGroup?formalCriticalGroupCounts():Map.of(),"target",
-                    includeTargetCriticalGroup);
+                    targetCriticalGroups,"target",targetCriticalGroupsQualified);
         } else {
             String initialTargetPrefix="formal-t0-"+UUID.randomUUID();
             seedTrafficCohort(targetSource,initialTargetPrefix,targetStart,now.minusSeconds(20),
@@ -3069,7 +3294,7 @@ class ListingReworkAuthorizationIT {
             target=measureDetailWindow(targetStart,targetEnd,744,1360);
             evaluateFormal(target,"evidence://synthetic/late-retained-correction");
         } else evaluateFormal(target,null);
-        if(!officialSummary || includeTargetCriticalGroup)
+        if(!officialSummary || targetCriticalGroupsQualified)
             assertLatestFormal("MET","PASS",false,"QUALIFIED_NOT_TRIGGERED",
                     exerciseRevisions?null:"0.634");
         if(exerciseRevisions) {
@@ -3194,6 +3419,17 @@ class ListingReworkAuthorizationIT {
     private static Map<String,?> formalCriticalGroupCounts() {
         return Map.of("CORE",Map.of(
                 "ADVERTISING",Map.of("visits",20,"retained",4),
+                "ORGANIC",Map.of("visits",10,"retained",10)));
+    }
+
+    /**
+     * Against the formal target source (advertising 400 visits / 364 successes) each bound alone holds
+     * (400 <= 400, 300 <= 364), yet all 400 visits with only 300 successes cannot be a subset of that
+     * cohort: the empty complement would have to carry 64 successes.
+     */
+    private static Map<String,?> infeasibleCriticalGroupCounts() {
+        return Map.of("CORE",Map.of(
+                "ADVERTISING",Map.of("visits",400,"retained",300),
                 "ORGANIC",Map.of("visits",10,"retained",10)));
     }
 

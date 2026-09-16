@@ -15,6 +15,16 @@ import tools.jackson.databind.JsonNode;
  * visit denominator counts for both supported source strata. Critical groups
  * use the same count shape. Reported totals remain independently usable when
  * these auxiliary method inputs are absent or invalid.
+ *
+ * <p>A critical group is admitted only as a subset of its own source cohort in
+ * the same window. For a cohort of {@code N} visits with {@code K} successes and a
+ * group of {@code n} visits with {@code k} successes that means {@code n <= N},
+ * {@code k <= K} and, because the complement must be able to carry the remaining
+ * successes, {@code K - k <= N - n}. Two separate upper bounds are not enough:
+ * every one of {@code N} visits with fewer than {@code K} successes is not a
+ * subset of the cohort. Groups may overlap; nothing requires them to sum to the
+ * cohort. A group that fails the rule is retained as reported and excluded from
+ * the method bridge; the source strata and the independent total are unaffected.
  */
 public final class OfficialSummaryMethodEvidence {
 
@@ -115,9 +125,14 @@ public final class OfficialSummaryMethodEvidence {
         return result;
     }
 
+    /** The group and its complement must both be realisable inside the same source cohort. */
     private static boolean within(Map<String, Count> group, Map<String, Count> total) {
-        return SOURCES.stream().allMatch(source -> group.get(source).visits() <= total.get(source).visits()
-                && group.get(source).retained() <= total.get(source).retained());
+        return SOURCES.stream().allMatch(source -> {
+            Count member = group.get(source), cohort = total.get(source);
+            return member.visits() <= cohort.visits()
+                    && member.retained() <= cohort.retained()
+                    && cohort.retained() - member.retained() <= cohort.visits() - member.visits();
+        });
     }
 
     private static long sumVisits(Map<String, Count> counts) {
