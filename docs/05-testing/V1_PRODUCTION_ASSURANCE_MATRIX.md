@@ -219,6 +219,18 @@ evidence_index: docs/07-phase-evidence/SLICE-V1-004/rework-r1/
 closure_index: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/
 ```
 
+<details>
+<summary>历史完整运行与作者待审说明；不代表当前Controller或Owner状态</summary>
+
+The current state is the Controller R2 FINAL PASS and the Owner Formal Closure
+recorded above. The table and the closing paragraph inside this block are the
+author's historical Level 1 status, kept for their run identities: every result
+stays attributed to its own original source (the complete backend, frontend and
+browser receipts belong to `16eda4bf…` and were not rerun at the closed Head).
+Their "Independent Controller verification" and "pending" wording describes that
+earlier moment; it is not a new Review request and changes no external release
+obligation.
+
 | Class | Current evidence boundary | Remaining requirement |
 | --- | --- | --- |
 | `SRC` | All 27 frozen engineering roots and their identified same-class/transitive consumers have production and necessary test source; V0080–V0123 are forward-only. Contract, annex, Frozen Finding Set and source manifests were rechecked. | Independent Controller verification and any separately authorized transport. |
@@ -233,6 +245,8 @@ closure_index: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/
 `27_OF_27` is the engineering finding status only. Controller verification remains
 pending on the exact checkpoint, and no local evidence changes external release
 obligations.
+
+</details>
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 
