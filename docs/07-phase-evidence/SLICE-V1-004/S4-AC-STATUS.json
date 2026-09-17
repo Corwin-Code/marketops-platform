@@ -2,7 +2,7 @@
   "schema": "marketops.slice.acceptance-status.v2",
   "slice": "SLICE-V1-004",
   "checkpoint": "LEVEL_1_LOCAL_ROOT_CAUSE_REWORK_R1",
-  "verification_state": "25_CONTROLLER_CLOSED_AT_EC0_2_FINAL_CLOSURE_CONTINUATION_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION_R2",
+  "verification_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
   "reviewed_source": {
     "head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
     "tree": "b04fc98b9a3e156cc66e00fe878569306972c638"
@@ -18,41 +18,33 @@
       "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a"
     }
   },
-  "controller_verdict": "CHANGES_REQUIRED_AT_39D55E30_R1_COMPLEMENT_RESIDUAL_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
-  "engineering_finding_state": "25_CONTROLLER_CLOSED_2_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
+  "controller_verdict": "PASS_LEVEL_1_ENGINEERING_R2_FINAL",
+  "engineering_finding_state": "27_OF_27_CLOSED_BY_CONTROLLER_OWNER_FORMALLY_CLOSED",
   "engineering_findings": {
     "total": 27,
     "controller_closed_at_ec0": 25,
-    "targeted_rework_complete_controller_pending": 2,
+    "controller_closed_at_r2_final": 2,
+    "closed_by_controller": 27,
+    "targeted_rework_complete_controller_pending": 0,
     "engineering_verified_controller_pending": 0,
     "final_matrix_pending": 0,
-    "closed_by_controller": 25,
-    "closed_by_this_checkpoint": 0
+    "closed_by_this_document_sync": 0
   },
   "controller_closure_reconciliation": {
-    "required_start_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
-    "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
-    "closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
-    "controller_closed": 25,
-    "residual_findings": [
-      "S4-DR-R1-003",
-      "S4-DR-R1-027"
-    ],
-    "residual_state": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
-    "controller_closure_claimed_by_codex": false,
-    "next_review": "FINAL_CLOSURE_VERIFICATION_R2",
-    "final_closure_verification_r1": {
-      "record_id": "SLICE-V1-004-FINAL-CLOSURE-39D55E30-R1",
-      "reviewed_head": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
-      "reviewed_tree": "06ea3278543960368a6b891a990c167af874a901",
-      "verdict": "CHANGES_REQUIRED",
-      "closure_record_sha256": "e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53",
-      "residual": [
-        "S4-DR-R1-003: within() omitted complement feasibility (K - k <= N - n); repaired at d65c9185adc89955d6bab3b20ac7bd9f639b5335",
-        "S4-DR-R1-027: indexed payloads not delivered; qualified-SUMMARY late revision not separately proven; both delivered at d65c9185adc89955d6bab3b20ac7bd9f639b5335"
-      ]
-    },
-    "controller_closure_claimed_by_continuation": false
+    "owner_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json",
+    "owner_record_sha256": "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c",
+    "controller_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
+    "controller_record_sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+    "closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "scope": "LEVEL_1_ENGINEERING_ONLY",
+    "owner_formal_closure": "COMPLETE",
+    "third_review_required": false,
+    "production_enablement_authorized": false,
+    "controller_closed": 27,
+    "residual_findings": [],
+    "residual_state": "NONE",
+    "next_review": "NONE_ENGINEERING_CLOSED"
   },
   "production_write_enabled": false,
   "real_provider_calls": "NONE",
@@ -69,19 +61,22 @@
     "E-04"
   ],
   "counts": {
-    "ENGINEERING_VERIFIED_CONTROLLER_PENDING": 54,
+    "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1": 54,
     "EXTERNAL_EVIDENCE_PENDING": 12,
     "NOT_APPLICABLE_AT_LEVEL_1": 3
   },
   "status_meaning": {
-    "ENGINEERING_VERIFIED_CONTROLLER_PENDING": "Applicable Level 1 local evidence passed; independent Controller verification has not occurred.",
     "EXTERNAL_EVIDENCE_PENDING": "The local fail-closed engineering boundary passed, while the named real-provider, real-environment or release evidence remains at its existing later Gate.",
-    "NOT_APPLICABLE_AT_LEVEL_1": "The criterion outcome requires an environment or authority outside Level 1 and is not claimed as executed; related local controls are recorded separately."
+    "NOT_APPLICABLE_AT_LEVEL_1": "The criterion outcome requires an environment or authority outside Level 1 and is not claimed as executed; related local controls are recorded separately.",
+    "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1": "Original local engineering evidence accepted by the cumulative Controller R2 final record; exact Level 1 object formally closed by Owner. Not real-provider or production acceptance."
   },
   "functional": [
     {
       "id": "C01-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Candidate → action → recommendation/task → binding → launch → evaluation is one traceable chain; the candidate carries evidence references, the action carries the frozen affected-set digest and author; an outcome with unmet target but complete evaluation is an honest NOT_MET result, never a success",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -121,7 +116,10 @@
     },
     {
       "id": "C01-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Content and promotion candidates exist side by side; a candidate never becomes an action without a person, and an action never launches without review, approval, binding, plan, health PASS and allowance",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -202,7 +200,10 @@
     },
     {
       "id": "C03-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Five protections are compared independently; one FAIL fails the vector whatever the others say; one gap leaves it UNDETERMINED",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -216,7 +217,10 @@
     },
     {
       "id": "C03-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Supply coverage is a separate protection input with its own bound and direction; an unknown value is UNDETERMINED, never a pass",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -230,7 +234,10 @@
     },
     {
       "id": "C03-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Occupations are released per basis with evidence; the promotion simulator applies the discount once and keeps the cross-period window from calibration",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -309,7 +316,10 @@
     },
     {
       "id": "C05-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Launch acquires every axis of the owner-published allowance under a per-allowance lock; two launches racing for one slot are serialised and exactly one wins; the loser is APPROVED_NOT_LAUNCHABLE",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -324,7 +334,10 @@
     },
     {
       "id": "C05-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "An occupation is released only with STOP_EVIDENCE, OBLIGATION_CLEARED or NOT_APPLIED_PROVEN and evidence, never by time; a technical retry of the same command occupies nothing new",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -338,7 +351,10 @@
     },
     {
       "id": "C05-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Containment scopes are LISTING/STORE/PLATFORM/ORGANIZATION/BATCH; isolation follows proven dependencies; re-enabling needs two people; a shortfall leaves the approval intact as APPROVED_NOT_LAUNCHABLE",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -353,7 +369,10 @@
     },
     {
       "id": "C06-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Health queue is ordered by necessary-condition state; responsibility clocks start at first raise and only a qualified hold pauses the action clock",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -385,7 +404,10 @@
     },
     {
       "id": "C06-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "The Console shows health, actions, allowance, launch answers, packets, containments and the recalculation queue in Chinese and Russian with the same facts; no new e-mail or private channel",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -399,7 +421,10 @@
     },
     {
       "id": "C07-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Simulation keeps assumptions, inverse and results apart; the discount is applied once; missing inputs are UNDETERMINED and named",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -413,7 +438,10 @@
     },
     {
       "id": "C07-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Exit needs a pre-approved reason and a one-use proof; release is two steps (new transactions stopped, obligations cleared)",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -428,7 +456,10 @@
     },
     {
       "id": "C07-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "An adopted engagement (action_id null) counts once and grants no new authorization",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -442,7 +473,10 @@
     },
     {
       "id": "C08-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "One authority: the guardrail verdict names the calibration package, the approval binds to the database authority snapshot, the Console reads the same views the API serves",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -476,7 +510,10 @@
     },
     {
       "id": "C08-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "A calibration package activates only complete; an activated package keeps its identity; resolution is RESOLVED, CALIBRATION_UNRESOLVED or CALIBRATION_CONFLICTED; bindings name the package version and go INAPPLICABLE when it is not current",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -508,7 +545,10 @@
     },
     {
       "id": "C09-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Feedback themes are recorded per period with mention counts and never become facts or root causes",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -522,7 +562,10 @@
     },
     {
       "id": "C09-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Every read is authorized by store scope and audited; the full Russian text is reviewable in the Console; no download pack is added (DELTA-03 not required)",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -580,7 +623,10 @@
     },
     {
       "id": "C10-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "The stop rule triggers only on an unmet target at a stop node after maturity; ending an evaluation reverses no external action",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -595,7 +641,10 @@
     },
     {
       "id": "C11-AC1",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Three layers, no score: unknown stays UNKNOWN, opportunities are named, a health PASS is not an execution licence (launch still needs approval, binding and allowance)",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -609,7 +658,10 @@
     },
     {
       "id": "C11-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Collaboration links and isolation dependencies are recorded with proof references; cross-domain task handover uses the existing work task journal",
       "historical_maker_status": "LOCAL_PARTIAL",
       "prior_inventory_references": [
@@ -623,7 +675,10 @@
     },
     {
       "id": "C11-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Late association is LAWFUL_LATE_REPORT, UNAUTHORISED_DEVIATION or UNRESOLVED_CHANGE with its own lifecycle; an unauthorised change keeps the gap",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -652,7 +707,10 @@
     },
     {
       "id": "C12-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Batch membership is append-only with sequence numbers; a member action keeps its own state and binding",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -666,7 +724,10 @@
     },
     {
       "id": "C12-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Chinese and Russian desktop Console with a completeness test over every backend code family; permissions and amounts do not change with language",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -697,7 +758,10 @@
     },
     {
       "id": "NFR-AC2",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Bounded pagination and the declared representative local performance profile passed, including RepresentativePerformanceIT over 616,000 rows; no production workload extrapolation is made.",
       "historical_maker_status": "NOT_RUN",
       "prior_inventory_references": [
@@ -710,7 +774,10 @@
     },
     {
       "id": "NFR-AC3",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Store-scope authorization on every endpoint, step-up on launch/release/resolution, author/executor independence enforced in the database, application role cannot write commands, launches, occupations or containments, no secret material in fixtures",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -725,7 +792,10 @@
     },
     {
       "id": "NFR-AC4",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "V0001–V0079 are byte-preserved; V0080–V0124 are 45 forward-only migrations; targeted clean install, historical upgrade, rollback, checksum and privilege coverage passed for V0124.",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -741,7 +811,10 @@
     },
     {
       "id": "NFR-AC5",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "UTF-8 Russian text, language switching, keyboard-operable forms and the browser journey passed through the recorded full-run plus deterministic two-test closure.",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -772,7 +845,10 @@
   "api_scenarios": [
     {
       "id": "API-T01",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "visits and purchases are separate facts with source channel and sellability; no ratio is emitted without visits",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -786,7 +862,10 @@
     },
     {
       "id": "API-T02",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "the summary path keeps the label text and fails closed without a PROVEN profile",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -801,7 +880,10 @@
     },
     {
       "id": "API-T03",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "revisions are append-only (ops.lc_outcome_revision); a first snapshot never claims later corrections",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -815,7 +897,10 @@
     },
     {
       "id": "API-T04",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "source, acquisition and processing times are distinct columns; recalculation targets are internal",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -829,7 +914,10 @@
     },
     {
       "id": "API-T05",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "raw responses are custodied by digest under lc-description-response; task UUIDs prove nothing about semantics",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -843,7 +931,10 @@
     },
     {
       "id": "API-T06",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "purchase links reference a visit key and a sales fact; an order is never renamed a visit",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -856,7 +947,10 @@
     },
     {
       "id": "API-T07",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "non-target fields, a second attribute and an unverified attribute key are refused; no attribute identity is guessed",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -869,7 +963,10 @@
     },
     {
       "id": "API-T08",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "per-command state; acceptance with a task waits for status, never success",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -882,7 +979,10 @@
     },
     {
       "id": "API-T09",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "management match and display state are separate columns on the verification",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -895,7 +995,10 @@
     },
     {
       "id": "API-T10",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "exact non-empty prior only; empty prior is RESTORE_UNSUPPORTED; a later lawful text blocks restore (PRIOR_TEXT_MOVED)",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -909,7 +1012,10 @@
     },
     {
       "id": "API-T11",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Ozon minutes and Wildberries seconds converted and capped; retry budget is separate from allowance",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -922,7 +1028,10 @@
     },
     {
       "id": "API-T12",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "a moved current text refuses command creation and closes the gate; a local lock claims nothing about external edits",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -935,7 +1044,10 @@
     },
     {
       "id": "API-T13",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "a missing or forged marking declaration is refused by the guard and an undeclared action by the gate",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -948,7 +1060,10 @@
     },
     {
       "id": "API-T14",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "length bounds come only from the calibration DESCRIPTION_LENGTH_RULE; out of bounds is a precise refusal, never truncation",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -962,7 +1077,10 @@
     },
     {
       "id": "API-T15",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "an empty answer is UNKNOWN_REQUIRES_READBACK, never success and never proof of non-application",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -975,7 +1093,10 @@
     },
     {
       "id": "API-T16",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "occupations are released on evidence, not on a timer",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -988,7 +1109,10 @@
     },
     {
       "id": "API-T17",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "the allowance is the one cumulative authority; nothing external starts before it is acquired",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1002,7 +1126,10 @@
     },
     {
       "id": "API-T18",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "no automatic retry; UNKNOWN stays until a readback; retry only with database proof",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1015,7 +1142,10 @@
     },
     {
       "id": "API-T19",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "no promotion API write path exists; exit needs authorization",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1029,7 +1159,10 @@
     },
     {
       "id": "API-T20",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "the discount is applied once; unknown fees are UNDETERMINED",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1042,7 +1175,10 @@
     },
     {
       "id": "API-T21",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "decimal money with explicit currency throughout; no zero-cost default",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1056,7 +1192,10 @@
     },
     {
       "id": "API-T22",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "capability rows carry verification state and evidence date; no real version difference has been registered",
       "historical_maker_status": "LOCAL_PARTIAL",
       "prior_inventory_references": [
@@ -1069,7 +1208,10 @@
     },
     {
       "id": "API-T23",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "supply coverage is UNDETERMINED without evidence, never zero risk",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1082,7 +1224,10 @@
     },
     {
       "id": "API-T24",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "Feedback themes are de-duplicated per period and theme; bounded listing-specific on-demand assistance uses an allowlisted evidence projection and cannot approve or execute.",
       "historical_maker_status": "LOCAL_PARTIAL",
       "prior_inventory_references": [
@@ -1095,7 +1240,10 @@
     },
     {
       "id": "API-T25",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "no secret material in fixtures, code or documents; a 200 answer is never a permission proof (capability_subject_status is a registry fact)",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1109,7 +1257,10 @@
     },
     {
       "id": "API-T26",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "fact intake and Console reads are separately authorized (INTERNAL_FACT_INTAKE vs LISTING_CONVERSION_VIEW)",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1123,7 +1274,10 @@
     },
     {
       "id": "API-T27",
-      "status": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "status": "ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1",
+      "historical_status_before_owner_formal_closure": "ENGINEERING_VERIFIED_CONTROLLER_PENDING",
+      "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+      "controller_final_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
       "historical_maker_scope_inventory": "documentary evidence only raises the capability row; production_write_enabled stays false; engineering completion and real coverage are separate facts",
       "historical_maker_status": "LOCAL_VERIFIED",
       "prior_inventory_references": [
@@ -1135,5 +1289,67 @@
         "rework-r1/executable-evidence.md"
       ]
     }
-  ]
+  ],
+  "historical_status_at_f71d4c8c": {
+    "verification_state": "25_CONTROLLER_CLOSED_AT_EC0_2_FINAL_CLOSURE_CONTINUATION_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION_R2",
+    "controller_verdict": "CHANGES_REQUIRED_AT_39D55E30_R1_COMPLEMENT_RESIDUAL_REWORK_COMPLETE_NEXT_FINAL_CLOSURE_VERIFICATION_PENDING",
+    "engineering_finding_state": "25_CONTROLLER_CLOSED_2_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
+    "engineering_findings": {
+      "total": 27,
+      "controller_closed_at_ec0": 25,
+      "targeted_rework_complete_controller_pending": 2,
+      "engineering_verified_controller_pending": 0,
+      "final_matrix_pending": 0,
+      "closed_by_controller": 25,
+      "closed_by_this_checkpoint": 0
+    },
+    "controller_closure_reconciliation": {
+      "required_start_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
+      "closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "controller_closed": 25,
+      "residual_findings": [
+        "S4-DR-R1-003",
+        "S4-DR-R1-027"
+      ],
+      "residual_state": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "controller_closure_claimed_by_codex": false,
+      "next_review": "FINAL_CLOSURE_VERIFICATION_R2",
+      "final_closure_verification_r1": {
+        "record_id": "SLICE-V1-004-FINAL-CLOSURE-39D55E30-R1",
+        "reviewed_head": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+        "reviewed_tree": "06ea3278543960368a6b891a990c167af874a901",
+        "verdict": "CHANGES_REQUIRED",
+        "closure_record_sha256": "e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53",
+        "residual": [
+          "S4-DR-R1-003: within() omitted complement feasibility (K - k <= N - n); repaired at d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+          "S4-DR-R1-027: indexed payloads not delivered; qualified-SUMMARY late revision not separately proven; both delivered at d65c9185adc89955d6bab3b20ac7bd9f639b5335"
+        ]
+      },
+      "controller_closure_claimed_by_continuation": false
+    },
+    "counts": {
+      "ENGINEERING_VERIFIED_CONTROLLER_PENDING": 54,
+      "EXTERNAL_EVIDENCE_PENDING": 12,
+      "NOT_APPLICABLE_AT_LEVEL_1": 3
+    },
+    "status_meaning": {
+      "ENGINEERING_VERIFIED_CONTROLLER_PENDING": "Applicable Level 1 local evidence passed; independent Controller verification has not occurred.",
+      "EXTERNAL_EVIDENCE_PENDING": "The local fail-closed engineering boundary passed, while the named real-provider, real-environment or release evidence remains at its existing later Gate.",
+      "NOT_APPLICABLE_AT_LEVEL_1": "The criterion outcome requires an environment or authority outside Level 1 and is not claimed as executed; related local controls are recorded separately."
+    }
+  },
+  "owner_formal_closure": {
+    "owner_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json",
+    "owner_record_sha256": "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c",
+    "controller_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
+    "controller_record_sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+    "closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "scope": "LEVEL_1_ENGINEERING_ONLY",
+    "owner_formal_closure": "COMPLETE",
+    "third_review_required": false,
+    "production_enablement_authorized": false
+  },
+  "all_69_production_pass": false
 }

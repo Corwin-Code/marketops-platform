@@ -1,3 +1,92 @@
+## 当前正式关闭状态
+
+**CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS — Level 1工程；Owner Formal Closure已完成。**
+
+Closed Head：`f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10`。原27项Finding均已由Controller关闭；69项保持54工程／12外部待补／3Level 1不适用，不宣称全部生产通过。
+
+Owner记录：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json`；Snapshot：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md`；Controller FINAL：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json`。
+
+没有新的Review、返工、全套重跑或再次接受要求；仅完成已有授权下的本地文档落位。本状态不提供push/PR/merge、部署、生产迁移、Level 2、真实Provider/账户、Gate EV/E、Pilot或生产写权限。
+
+## 当前69项分层
+
+| ID | 当前状态 | 外部义务／证据边界 |
+| --- | --- | --- |
+| `C01-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C01-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02 |
+| `C01-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C02-AC1` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02 |
+| `C02-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02 |
+| `C02-AC3` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02, F-S01 |
+| `C03-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C03-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C03-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C04-AC1` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02, E-04 |
+| `C04-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02, E-04 |
+| `C04-AC3` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02, E-04 |
+| `C05-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C05-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C05-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C06-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C06-AC2` | `EXTERNAL_EVIDENCE_PENDING` | E-04 |
+| `C06-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C07-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C07-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C07-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C08-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C08-AC2` | `EXTERNAL_EVIDENCE_PENDING` | E-04 |
+| `C08-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C09-AC1` | `EXTERNAL_EVIDENCE_PENDING` | E-04 |
+| `C09-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C09-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C10-AC1` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02, F-S01 |
+| `C10-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02, F-S01 |
+| `C10-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C11-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C11-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C11-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C12-AC1` | `NOT_APPLICABLE_AT_LEVEL_1` | 原权限／环境边界不变 |
+| `C12-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C12-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC1` | `NOT_APPLICABLE_AT_LEVEL_1` | 原权限／环境边界不变 |
+| `NFR-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC4` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC5` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC6` | `NOT_APPLICABLE_AT_LEVEL_1` | 原权限／环境边界不变 |
+| `API-T01` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T02` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T03` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T04` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T05` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T06` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T07` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T08` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T09` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T10` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T11` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T12` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T13` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T14` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T15` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T16` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T17` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T18` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T19` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T20` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T21` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T22` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T23` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T24` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T25` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T26` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T27` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+
+---
+
+<details>
+<summary>f71d4c8c历史验收原文；其中pending标签为当时作者状态</summary>
+
 # SLICE-V1-004 — Level 1 local rework acceptance status
 
 Status: **25 CONTROLLER-CLOSED AT ec0; 003/027 FINAL CLOSURE CONTINUATION COMPLETE — FINAL CLOSURE VERIFICATION R2 PENDING**.
@@ -114,3 +203,5 @@ The historical complete browser run passed 24 of 26 tests. Direct logs proved th
 - No status on this page authorizes a platform write, deployment, Pilot, Gate EV or Gate E.
 - This checkpoint represents no additional finding as Controller-closed; 003 and 027 require independent Final Closure Verification R2.
 - The continuation was executed by Claude under the Owner's 2026-09-16 chat redirection because Codex had no remaining token budget; it carries no authority beyond the existing Level 1 envelope.
+
+</details>

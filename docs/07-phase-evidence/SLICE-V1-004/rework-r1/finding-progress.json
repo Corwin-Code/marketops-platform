@@ -1,29 +1,26 @@
 {
   "schema": "marketops.slice-rework-finding-progress.v2",
   "slice": "SLICE-V1-004",
-  "status": "25_CONTROLLER_CLOSED_AT_EC0_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
+  "status": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
   "source_head": "f91d107c53a0cf3964ae43c0e8353e0c244a2b59",
   "source_tree": "b04fc98b9a3e156cc66e00fe878569306972c638",
   "required_start_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
   "required_start_tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2",
   "work_in_progress_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
   "work_in_progress_head_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
-  "final_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
-  "final_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
-  "final_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+  "final_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+  "final_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+  "final_parent": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
   "contract_sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
   "annex_sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d",
   "frozen_set_sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
   "finding_count": 27,
-  "controller_verdict": "CHANGES_REQUIRED_AT_39D55E30_R1_RESIDUAL_003_COMPLEMENT_FEASIBILITY_REPAIRED_AT_D65C9185_FINAL_CLOSURE_VERIFICATION_R2_PENDING",
-  "controller_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
-  "controller_closed_findings": 25,
-  "residual_findings": [
-    "S4-DR-R1-003",
-    "S4-DR-R1-027"
-  ],
+  "controller_verdict": "PASS_LEVEL_1_ENGINEERING_R2_FINAL",
+  "controller_closure_record_sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+  "controller_closed_findings": 27,
+  "residual_findings": [],
   "checkpoint_closed_findings_claimed": 0,
-  "closed_findings_claimed": 25,
+  "closed_findings_claimed": 27,
   "verification": {
     "combined_regression": {
       "status": "PASS",
@@ -175,7 +172,7 @@
       "id": "S4-DR-R1-003",
       "severity": "MAJOR",
       "title": "两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立",
-      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_F71D4C8C_R2_FINAL",
       "root_cause_correction": "DETAIL 与等价 OFFICIAL_SUMMARY 各自证明完整窗口、成熟度、来源/修订资格。OFFICIAL_SUMMARY 现通过既有 intake 留存 exact method version、广告/自然 source strata 与可选 critical-group strata，分别验证并进入 measurement lineage；正式 fixed-traffic Metric、comparison 和 Outcome 消费合格证据而非 DETAIL 路径名。完整零购买保留为真实零，缺窗口或零分母不改写为零，矛盾或非等价分层原样留存且不得借用正式资格。 Final Closure continuation（39d55e30 R1 残余）：关键群组只有作为同来源同窗口群体的真实子集才进入方法桥：n ≤ N、k ≤ K 且 K − k ≤ N − n（补集必须能承担剩余成功）；覆盖全部来源访问但成功数少于来源的群组在既有 SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL 规则下被拒绝，被拒群组原样留存，来源分层与独立总值资格不受影响，群组允许重叠，不新增求和规则。",
       "production_evidence": [
         "V0081__record_listing_measurement_coverage_and_lineage.sql",
@@ -222,6 +219,19 @@
         "rule": "n <= N and k <= K and K - k <= N - n per source stratum",
         "reason_code": "SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL (existing same-cohort rule, no new vocabulary)",
         "scoping": "source strata and independent total stay qualified; contradictory group retained; all groups of that observation lose method qualification (existing all-or-nothing group flag)"
+      },
+      "historical_status_before_owner_formal_closure": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "controller_final_closure": {
+        "owner_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json",
+        "owner_record_sha256": "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c",
+        "controller_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
+        "controller_record_sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+        "closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+        "closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+        "scope": "LEVEL_1_ENGINEERING_ONLY",
+        "owner_formal_closure": "COMPLETE",
+        "third_review_required": false,
+        "production_enablement_authorized": false
       }
     },
     {
@@ -866,7 +876,7 @@
       "id": "S4-DR-R1-027",
       "severity": "MAJOR",
       "title": "验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺",
-      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "status": "CLOSED_AT_LEVEL_1_BY_CONTROLLER_F71D4C8C_R2_FINAL",
       "root_cause_correction": "证据按 criterion→真实路径→命令/结果/环境记录；局部 helper、编译和表形状不提升为完整结论。Controller 在 ec0 已关闭 25 项，003/027 仅报告本次工程返工完成并等待 Final Closure Verification。V0080–V0124 forward-only，历史迁移/Contract/Frozen Set 保持字节不变；旧全套日志只归属于其历史 source，新 Head 仅声明实际重跑的改变与传递路径。69 项验收分布、外部义务与默认关闭状态继续分列。 Final Closure continuation：原索引 31 项 ec0 载荷本地逐项哈希核对 31/31 OK、0 缺口，按原目录原样打包；本次新运行独立目录留存并附自身 SHA-256 索引；未受影响且身份适用的 migration/schema 与 frontend 收据明确继承并注明理由；合格 SUMMARY 晚事实经重算队列修订正式 Outcome 的证据为新增签名 HTTP+隔离 DB 场景，而非 null 方法输入的总值修订测试。",
       "production_evidence": [
         "finding-progress.json",
@@ -898,7 +908,20 @@
         "本次未机械重跑历史 31 小时全套或浏览器；它们保留准确历史归属，当前 Head 只声明 targeted regression。",
         "Codex 未签发 003/027 的 Controller 关闭；下一次仍是 Final Closure Verification。",
         "本地隔离合成事实与 fake/loopback 边界；没有真实 Provider、账户、生产写、Gate-EV 或 Gate-E。"
-      ]
+      ],
+      "historical_status_before_owner_formal_closure": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "controller_final_closure": {
+        "owner_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json",
+        "owner_record_sha256": "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c",
+        "controller_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
+        "controller_record_sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+        "closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+        "closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+        "scope": "LEVEL_1_ENGINEERING_ONLY",
+        "owner_formal_closure": "COMPLETE",
+        "third_review_required": false,
+        "production_enablement_authorized": false
+      }
     }
   ],
   "convergence_control": "Controller closed 25 findings at ec0. This continuation changed only 003/027 and their actual intake, Metric, comparison, Outcome, recalculation, schema and frontend transport consumers. The exact changed/transitive paths were rerun; historical complete backend/frontend and 24/26 plus 2/2 browser receipts remain attributed to their original sources and were not relabelled as current-Head full verification.",
@@ -918,5 +941,32 @@
     "continuation_sole_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
     "continuation_executed_by": "CLAUDE_MAKER_UNDER_OWNER_CHAT_INSTRUCTION_2026_09_16_CODEX_TOKEN_BUDGET_EXHAUSTED",
     "checkpoint": "rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json"
-  }
+  },
+  "historical_status_at_f71d4c8c": {
+    "status": "25_CONTROLLER_CLOSED_AT_EC0_2_TARGETED_REWORK_COMPLETE_PENDING_FINAL_CLOSURE_VERIFICATION",
+    "controller_verdict": "CHANGES_REQUIRED_AT_39D55E30_R1_RESIDUAL_003_COMPLEMENT_FEASIBILITY_REPAIRED_AT_D65C9185_FINAL_CLOSURE_VERIFICATION_R2_PENDING",
+    "controller_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+    "controller_closed_findings": 25,
+    "residual_findings": [
+      "S4-DR-R1-003",
+      "S4-DR-R1-027"
+    ],
+    "closed_findings_claimed": 25,
+    "final_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+    "final_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+    "final_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78"
+  },
+  "owner_formal_closure": {
+    "owner_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json",
+    "owner_record_sha256": "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c",
+    "controller_record": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
+    "controller_record_sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+    "closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "scope": "LEVEL_1_ENGINEERING_ONLY",
+    "owner_formal_closure": "COMPLETE",
+    "third_review_required": false,
+    "production_enablement_authorized": false
+  },
+  "current_sync_claim": "Consumes unchanged Controller final record and explicit Owner closure; no new test execution or Controller review."
 }

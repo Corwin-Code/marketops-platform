@@ -175,13 +175,19 @@ full-source verification or a cancelled/stale CI run into a passed gate. The
 central R1 matrices retain unresolved verification explicitly until the actual
 run, artifact and input identity are recorded.
 
-## 2e. SLICE-V1-004 engineering-verified rework; Controller pending
+## 2e. SLICE-V1-004 engineering closed; Owner Formal Closure complete
 
 This factual section supersedes the reviewed Maker implementation claims for
 Slice 004 only. The original matrix is preserved byte-for-byte under
 `docs/07-phase-evidence/SLICE-V1-004/rework-r1/historical-maker/` with its source
 Head and hash. All normative evidence requirements and predecessor closures
-remain unchanged.
+remain unchanged. Controller Final Closure Verification R2 FINAL passed at
+Level 1 engineering scope with 27/27 frozen findings closed, and the Human Owner
+formally closed the exact object on 2026-09-16; the 69 acceptance rows stay
+54 engineering / 12 external evidence pending / 3 not applicable at Level 1 and
+no row is production acceptance. The complete-suite, frontend and browser
+receipts below keep their historical source identity and were not rerun at the
+closed Head.
 
 ```yaml
 slice: SLICE-V1-004
@@ -189,18 +195,28 @@ contract_sha256: 5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc98
 annex_sha256: c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
 reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
 frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
-implementation_state: ENGINEERING_VERIFIED_CONTROLLER_PENDING
-engineering_finding_status: 27_OF_27
+implementation_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+engineering_finding_status: 27_OF_27_CLOSED_AT_LEVEL_1
 focused_regression: 113_OF_113_PASS
 verified_source_head: 16eda4bf7e5f561b60d10c19a9a157bd62d21d6e
 verified_source_tree: 98b9ff7d692eb869fb1f7bf704980259426e09f1
-full_verification_matrix: PASS_LOCAL_LAYER_RECEIPTS_WITH_BROWSER_DETERMINISTIC_CLOSURE
-controller_final_closure: PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION
+full_verification_matrix: PASS_LOCAL_LAYER_RECEIPTS_WITH_BROWSER_DETERMINISTIC_CLOSURE_AT_HISTORICAL_SOURCE
+controller_final_closure: PASS_LEVEL_1_ENGINEERING_R2_FINAL
+controller_final_record_sha256: 3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0
+owner_formal_closure: COMPLETE_EXPLICIT_HUMAN_OWNER_DECLARATION
+owner_formal_closure_record_sha256: cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c
+formally_closed_head: f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10
+formally_closed_tree: b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47
+implementation_head: d65c9185adc89955d6bab3b20ac7bd9f639b5335
+implementation_tree: e01e510d5b8bce57f7556d3e5d6996a01f8d2d74
+acceptance_layers: 54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1
 finding_count: 27
+controller_closed_findings: 27
 closed_findings_claimed: 0
 remote_publication: NOT_AUTHORIZED
 production_write_enabled: false
 evidence_index: docs/07-phase-evidence/SLICE-V1-004/rework-r1/
+closure_index: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/
 ```
 
 | Class | Current evidence boundary | Remaining requirement |

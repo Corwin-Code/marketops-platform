@@ -681,6 +681,7 @@ class MigrationContractTests(unittest.TestCase):
                 "V0121__complete_listing_operations_queue_and_review.sql",
                 "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
                 "V0123__bind_qualified_promotion_simulation_to_action.sql",
+                "V0124__bridge_equivalent_summary_method_inputs.sql",
             ),
             APPROVED_MIGRATIONS,
         )

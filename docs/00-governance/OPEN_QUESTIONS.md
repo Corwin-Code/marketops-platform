@@ -63,4 +63,12 @@ Gate EV, Gate E or Pilot authority was used or is implied, and
 [Final Closure continuation handoff](../07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1_HANDOFF.md)
 (2026-09-16) repairs the 003 complement-feasibility residual and delivers the
 027 evidence payloads at the same authority level; every disposition above is
-unchanged.
+unchanged. After Controller Final Closure Verification R2 FINAL (`PASS`, 27/27
+frozen findings closed at Level 1 engineering scope) the Human Owner formally
+closed SLICE-V1-004 engineering on 2026-09-16 at Head `f71d4c8c…`; see the
+[formal closure receipt](../08-handoffs/OWNER-SLICE-V1-004-FORMAL-CLOSURE-RECEIPT-F71D4C8C-R2.md)
+and the
+[Closure Snapshot](../07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md).
+OQ-121 through OQ-125 and all evidence obligations keep the dispositions above;
+the closure creates no remote, Level 2, Gate EV, Gate E or Pilot authority and
+activates no next Slice.

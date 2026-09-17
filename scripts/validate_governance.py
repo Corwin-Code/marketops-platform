@@ -451,20 +451,36 @@ V1_ACTIVE_STATE = {
     "active_slice_amendment": "NONE_ACCEPTED",
     "active_slice_contract_bytes": V1_SLICE_004_CONTRACT_BYTES,
     "active_slice_contract_lines": V1_SLICE_004_CONTRACT_LINES,
-    "authorization": "FULL_SCOPE_IMPLEMENTATION",
+    "authorization": "CLOSED",
     "active_slice_annex": V1_SLICE_004_ANNEX_PATH,
     "active_slice_annex_sha256": V1_SLICE_004_ANNEX_SHA256,
     "active_slice_annex_git_blob_sha1": V1_SLICE_004_ANNEX_GIT_BLOB_SHA1,
     "slice_v1_004_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_004_owner_acceptance_statement": V1_SLICE_004_OWNER_STATEMENT_PATH,
     "slice_v1_004_owner_acceptance_statement_sha256": V1_SLICE_004_OWNER_STATEMENT_SHA256,
-    "slice_v1_004_execution_authority": "FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL_ONLY",
+    "slice_v1_004_execution_authority": "LOCAL_DOCUMENTATION_SYNC_ONLY_ENGINEERING_CLOSED",
     "slice_v1_004_maker": "CLAUDE",
     "slice_v1_004_source_base_commit": V1_SLICE_004_SOURCE_BASE_COMMIT,
     "slice_v1_004_source_base_tree": V1_SLICE_004_SOURCE_BASE_TREE,
-    "slice_v1_004_implementation_state": (
-        "LEVEL_1_LOCAL_IMPLEMENTATION_COMPLETE_CONTROLLER_REVIEW_PENDING"
+    "slice_v1_004_implementation_state": "LEVEL_1_ENGINEERING_FORMALLY_CLOSED",
+    "slice_v1_004_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_004_owner_formal_closure": "HUMAN_OWNER_EXPLICITLY_CONFIRMED",
+    "slice_v1_004_owner_formal_closure_record": (
+        "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json"
     ),
+    "slice_v1_004_owner_formal_closure_record_sha256": (
+        "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c"
+    ),
+    "slice_v1_004_owner_formal_closure_statement_sha256": (
+        "940fb24047a862ffadc88d37d8acbcc8f3728f2f6408696eb18ee3f17e55c9a8"
+    ),
+    "slice_v1_004_final_gate_record_sha256": (
+        "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0"
+    ),
+    "slice_v1_004_formally_closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "slice_v1_004_formally_closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "slice_v1_004_acceptance_layers": "54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1",
+    "slice_v1_004_publication_or_next_slice_authority": "NONE_CREATED_BY_FORMAL_CLOSURE",
     "slice_v1_004_controlled_write_target": "LISTING_DESCRIPTION_CHANGE",
     "slice_v1_004_controlled_write_provider_paths": (
         "STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE"
@@ -513,11 +529,13 @@ V1_ACTIVE_STATE = {
     ),
     "slice_v1_003_frozen_findings_closed": "22_OF_22",
     "slice_v1_003_source_branch": "DELETED_BY_ACCEPTED_CONFIGURATION",
-    "active_gate": "CONTROLLER_SLICE_V1_004_LEVEL_1_CHECKPOINT_REVIEW",
-    "candidate_state_scope": "SLICE_V1_004_LEVEL_1_LOCAL_CHECKPOINT_NOT_CONTROLLER_REVIEWED",
-    "next_authorized_actor": "CONTROLLER",
+    "active_gate": "NONE_SLICE_V1_004_ENGINEERING_CLOSED",
+    "candidate_state_scope": (
+        "SLICE_V1_004_LEVEL_1_ENGINEERING_FORMALLY_CLOSED_LOCAL_DOCUMENTATION_CHECKPOINT_NOT_PUBLISHED"
+    ),
+    "next_authorized_actor": "HUMAN_OWNER",
     "next_action": (
-        "INDEPENDENT_REVIEW_AND_LEVEL_3_PUBLICATION_DECISION_ON_EXACT_LOCAL_CHECKPOINT"
+        "LEVEL_3_PUBLICATION_DECISION_ON_FORMALLY_CLOSED_CHECKPOINT_NO_NEXT_SLICE_AUTHORIZED"
     ),
     "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_003_owner_acceptance_statement_sha256": (

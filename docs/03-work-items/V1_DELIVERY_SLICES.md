@@ -225,3 +225,23 @@ the final containing Head pending. See [the current handoff](../07-phase-evidenc
 This updates delivery progress only; no later Slice, extra write Capability,
 Ready/merge or production enablement is authorized. All 24 release obligations
 remain deferred and production-blocking.
+
+## SLICE-V1-004 engineering closure checkpoint
+
+The accepted-scope row above is preserved; its status token records the accepted
+Contract and the Level 1 authority granted at acceptance time. Controller Final
+Closure Verification R2 FINAL (`SLICE-V1-004-FINAL-CLOSURE-F71D4C8C-R2-FINAL`,
+PASS at Level 1 engineering scope, 27/27 frozen findings closed) and the Human
+Owner's formal closure of 2026-09-16 close SLICE-V1-004 engineering at exact Head
+`f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10`, tree
+`b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47` (implementation Head
+`d65c9185adc89955d6bab3b20ac7bd9f639b5335`). The Slice state is
+`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`; the 69 acceptance rows
+stay 54 engineering / 12 external evidence pending / 3 not applicable at Level 1;
+`F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02`, `E-04` and every prior release
+obligation remain open. See the
+[Closure Snapshot](../07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md)
+and the [Owner receipt](../08-handoffs/OWNER-SLICE-V1-004-FORMAL-CLOSURE-RECEIPT-F71D4C8C-R2.md).
+This records delivery progress only; no later Slice, extra write Capability,
+remote publication, Ready/merge, Gate EV, Gate E, Pilot or production
+enablement is authorized by it.

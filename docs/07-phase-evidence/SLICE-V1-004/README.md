@@ -1,3 +1,18 @@
+## 当前正式关闭状态
+
+**CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS — Level 1工程；Owner Formal Closure已完成。**
+
+Closed Head：`f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10`。原27项Finding均已由Controller关闭；69项保持54工程／12外部待补／3Level 1不适用，不宣称全部生产通过。
+
+Owner记录：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json`；Snapshot：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md`；Controller FINAL：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json`。
+
+没有新的Review、返工、全套重跑或再次接受要求；仅完成已有授权下的本地文档落位。本状态不提供push/PR/merge、部署、生产迁移、Level 2、真实Provider/账户、Gate EV/E、Pilot或生产写权限。
+
+---
+
+<details>
+<summary>历史作者checkpoint：f71d4c8c提交时的原文（不是当前待办）</summary>
+
 # SLICE-V1-004 evidence index
 
 Status: **25 CONTROLLER-CLOSED AT ec0; 003/027 FINAL CLOSURE CONTINUATION COMPLETE — FINAL CLOSURE VERIFICATION R2 PENDING**.
@@ -63,3 +78,5 @@ receipts stay attributed to their own sources and were not rerun at
 Production writes remain disabled. No real Provider/account call, remote Git
 write, Level 2 work, shared or production deployment/migration, Gate EV, Gate E
 or real business side effect is represented by this evidence.
+
+</details>

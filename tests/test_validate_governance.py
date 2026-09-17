@@ -2973,7 +2973,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_gate",
             ),
             (
-                "authorization: FULL_SCOPE_IMPLEMENTATION",
+                "authorization: CLOSED",
                 "authorization: DESIGN_ONLY",
                 "authorization",
             ),
