@@ -77,4 +77,33 @@ class AcceptedDemandEvidenceTest {
                 new BigDecimal("100"),"USD",at).get("gaps"))
                 .isEqualTo(List.of("PROFIT_REFERENCE_CURRENCY_MISMATCH"));
     }
+
+    private CalibrationService.Outcome acceptedWithMinimum(Object minimum) {
+        var basis = new java.util.HashMap<String, Object>(Map.of("periodStart", context.periodStart().toString(),
+                "periodEnd", context.periodEnd().toString(), "evidenceReference", "fixture://accepted-demand",
+                "currencyCode", "RUB", "profitEvidenceReference", "fixture://accepted-profit-line"));
+        if (minimum != null) basis.put("minimumContributionProfit", minimum);
+        var value = new CalibrationRepository.Value("DEMAND_SCENARIO_SET", null, null,
+                new ObjectMapper().valueToTree(Map.of("economicScenarioBases", Map.of(listing.toString(), basis))),
+                null, null, "fixture://accepted-package");
+        return new CalibrationService.Outcome(new CalibrationService.Resolved(UUID.randomUUID(), 1,
+                Map.of("DEMAND_SCENARIO_SET", value), at), "RESOLVED");
+    }
+
+    @Test
+    void absentNonNumericOrNegativeAcceptedMinimumNeverBecomesABoundProfitReference() {
+        for (Object minimum : java.util.Arrays.asList(null, "100")) {
+            var evidence = CalibrationService.profitReferenceEvidence(acceptedWithMinimum(minimum), listing, context,
+                    new BigDecimal("100"), "RUB", at);
+            assertThat(evidence.get("state")).isEqualTo("UNQUALIFIED");
+            assertThat(evidence.get("gaps")).isEqualTo(List.of("PROFIT_REFERENCE_VALUE_UNQUALIFIED",
+                    "PROFIT_REFERENCE_BELOW_ACCEPTED_MINIMUM"));
+            assertThat(evidence).doesNotContainKey("minimumContributionProfit");
+        }
+        var negative = CalibrationService.profitReferenceEvidence(acceptedWithMinimum(new BigDecimal("-1")), listing,
+                context, new BigDecimal("100"), "RUB", at);
+        assertThat(negative.get("state")).isEqualTo("UNQUALIFIED");
+        assertThat(negative.get("gaps")).isEqualTo(List.of("PROFIT_REFERENCE_VALUE_UNQUALIFIED"));
+        assertThat(negative).doesNotContainKey("minimumContributionProfit");
+    }
 }

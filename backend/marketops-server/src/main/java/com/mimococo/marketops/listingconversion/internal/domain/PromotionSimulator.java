@@ -194,7 +194,12 @@ public final class PromotionSimulator {
     private static Money money(Inputs inputs, BigDecimal value) { return Money.of(value, inputs.currencyCode()); }
 
     private static void requireNonNegative(BigDecimal value, boolean nullable) {
-        if (value == null) { if (!nullable) invalid(); return; }
+        if (value == null) {
+            if (!nullable) {
+                invalid();
+            }
+            return;
+        }
         if (value.signum() < 0 || value.precision() > 38 || Math.abs((long) value.scale()) > 18) invalid();
     }
 

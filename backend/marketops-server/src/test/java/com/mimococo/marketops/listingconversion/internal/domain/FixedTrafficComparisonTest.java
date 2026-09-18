@@ -35,6 +35,16 @@ class FixedTrafficComparisonTest {
         assertThat(FixedTrafficComparison.compare(WEIGHTS,counts(100,10,100,10),counts(100,90,100,90),new BigDecimal("2"),false).lowerDifference()).isNull();
     }
 
+    @Test void anyUnqualifiedCriticalValueLeavesBothBoundsAbsent() {
+        for (BigDecimal critical : java.util.Arrays.asList(null, BigDecimal.ZERO, new BigDecimal("-2"), new BigDecimal("1E+400"))) {
+            var r=FixedTrafficComparison.compare(WEIGHTS,counts(10000,100,10000,100),counts(10000,9000,10000,9000),critical,true);
+            assertThat(r.observedDifference()).isPositive();
+            assertThat(r.lowerDifference()).isNull();
+            assertThat(r.upperDifference()).isNull();
+            assertThat(r.qualification()).isEqualTo("METHOD_OR_SCHEDULE_UNQUALIFIED");
+        }
+    }
+
     @Test void missingStratumOrInvalidWeightsCannotBeRenormalized() {
         assertThat(FixedTrafficComparison.compare(Map.of("ADVERTISING",BigDecimal.ONE),counts(100,10,100,10),counts(100,20,100,20),new BigDecimal("2"),true).observedDifference()).isNull();
         assertThat(FixedTrafficComparison.compare(WEIGHTS,counts(100,10,100,10),counts(100,20,0,0),new BigDecimal("2"),true).observedDifference()).isNull();

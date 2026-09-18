@@ -192,6 +192,10 @@ class ListingGuardrailTest {
 
         assertThat(preview.verdict().reasons()).containsExactly(GuardrailReason.LISTING_ACTION_BLOCKED);
         assertThat(preview.scope()).isNull();
+        assertThat(preview.verdict().passed()).isFalse();
+        verify(evaluations).insert(eq(ID), eq(ID), eq(ID), isNull(), isNull(), isNull(), isNull(), isNull(),
+                isNull(), eq(GuardrailPurpose.APPROVAL), eq(false), eq(List.of(GuardrailReason.LISTING_ACTION_BLOCKED)),
+                eq(Map.of("scope", "UNAVAILABLE")), anyString(), anyString(), eq(NOW), any());
     }
 
     @Test

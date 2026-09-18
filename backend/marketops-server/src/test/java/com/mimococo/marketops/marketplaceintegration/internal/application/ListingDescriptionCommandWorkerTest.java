@@ -421,6 +421,35 @@ class ListingDescriptionCommandWorkerTest {
         }
 
         @Test
+        @DisplayName("an inconclusive status enquiry keeps polling the same task and never re-applies")
+        void inconclusiveStatusEnquiryKeepsPollingTheSameTask() {
+            claim("PLATFORM_PENDING");
+            when(commands.nativeTaskKey(COMMAND)).thenReturn(Optional.of("task-original"));
+            when(writePort.perform(any())).thenReturn(
+                    new DescriptionWriteResult(DescriptionWriteResult.Outcome.TIMEOUT, null, null, null,
+                            Instant.now(), "provider_did_not_answer", null, null),
+                    new DescriptionWriteResult(DescriptionWriteResult.Outcome.UNKNOWN_STATE, null, null, null,
+                            Instant.now(), "provider_did_not_answer", null, null),
+                    new DescriptionWriteResult(DescriptionWriteResult.Outcome.ACCEPTED, "200", null, null,
+                            Instant.now(), null, null, null));
+
+            for (int pass = 0; pass < 3; pass++) {
+                assertThat(worker.runOnce(Instant.now(), 10)).isEqualTo(1);
+            }
+
+            ArgumentCaptor<DescriptionWriteRequest> request = ArgumentCaptor.forClass(DescriptionWriteRequest.class);
+            verify(writePort, org.mockito.Mockito.times(3)).perform(request.capture());
+            assertThat(request.getAllValues()).extracting(DescriptionWriteRequest::operation)
+                    .containsOnly(DescriptionWriteRequest.Operation.STATUS_ENQUIRY);
+            assertThat(request.getAllValues()).extracting(DescriptionWriteRequest::nativeTaskKey)
+                    .containsOnly("task-original");
+            verify(commands, org.mockito.Mockito.times(3)).deferObservation(eq(COMMAND), eq(1L), anyString(),
+                    eq(properties.getRetryDelaySeconds()));
+            verify(commands, never()).lease(eq(COMMAND), anyString(), anyInt());
+            verify(commands, never()).transition(any(), anyLong(), anyString(), anyString(), any(), any(), any());
+        }
+
+        @Test
         @DisplayName("a resolved task must still be read back before success")
         void resolvedTaskReadsBack() {
             claim("PLATFORM_PENDING");

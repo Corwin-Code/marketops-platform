@@ -72,6 +72,11 @@ jobs:
     name: frontend-test
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      # One Compose project per run attempt. The isolated browser script, the
+      # dependency-recovery scenario it launches and the backstop cleanup all
+      # address exactly this project, never the developer default.
+      COMPOSE_PROJECT_NAME: marketops-browser-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -99,14 +104,9 @@ jobs:
         run: bash scripts/verify_coverage_thresholds.sh frontend
       - name: Install the Chromium runtime
         run: npx playwright install --with-deps chromium
-      - name: Generate isolated local configuration
-        working-directory: .
-        run: make env-init
-      - name: Start PostgreSQL
-        working-directory: .
-        run: make up
       - name: Exercise authenticated business flow and dependency recovery in Chromium
-        run: npm run test:browser
+        working-directory: .
+        run: bash scripts/validation/business_browser_isolated.sh
         env:
           MARKETOPS_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Stop the isolated database
@@ -114,7 +114,7 @@ jobs:
         working-directory: .
         run: |
           if [ -f .env.local ]; then
-            docker compose --project-name marketops-local \
+            docker compose --project-name "${COMPOSE_PROJECT_NAME:?}" \
               --env-file .env.local \
               -f infra/compose/docker-compose.yml \
               down --volumes --remove-orphans

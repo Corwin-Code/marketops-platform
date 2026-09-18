@@ -470,7 +470,9 @@ describe('actions, allowance and launch', () => {
     fireEvent.click(
       screen.getByRole('button', { name: 'Прочитать материалы окончательного решения' }),
     );
-    await waitFor(() => expect(approve).toBeEnabled());
+    await waitFor(() => {
+      expect(approve).toBeEnabled();
+    });
     fireEvent.click(approve);
 
     await waitFor(() => {

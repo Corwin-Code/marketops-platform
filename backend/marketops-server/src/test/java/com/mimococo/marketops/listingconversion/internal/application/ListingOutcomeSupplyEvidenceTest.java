@@ -3,6 +3,8 @@ package com.mimococo.marketops.listingconversion.internal.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mimococo.marketops.availabilityrisk.SupplyCoverageQuery;
@@ -52,5 +54,17 @@ class ListingOutcomeSupplyEvidenceTest {
         var result=new ListingOutcomeSupplyEvidence(supply,actions).assess(action,at);
         assertThat(result.verdict()).isEqualTo(ProtectionVerdict.UNDETERMINED);
         assertThat(result.gaps()).contains("FROZEN_SUPPLY_SCOPE_UNQUALIFIED","FROZEN_SUPPLY_SCENARIOS_UNQUALIFIED");
+    }
+
+    @Test void absentFrozenScenarioSetForAKnownProductIsUndeterminedWithoutProjection() {
+        UUID actionId=UUID.randomUUID(),productId=UUID.randomUUID();
+        when(action.id()).thenReturn(actionId);
+        when(actions.frozenDirectProductVariants(actionId)).thenReturn(List.of(productId));
+        when(actions.frozenCalibrationDependencies(actionId)).thenReturn(Optional.empty());
+        var result=new ListingOutcomeSupplyEvidence(supply,actions).assess(action,at);
+        assertThat(result.verdict()).isEqualTo(ProtectionVerdict.UNDETERMINED);
+        assertThat(result.gaps()).containsExactly("FROZEN_SUPPLY_SCENARIOS_UNQUALIFIED","FROZEN_SUPPLY_SCENARIO_MISSING:"+productId);
+        assertThat(result.references()).containsEntry("scenarioResults",List.of());
+        verify(supply,never()).project(any());
     }
 }

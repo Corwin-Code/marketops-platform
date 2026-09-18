@@ -161,6 +161,15 @@ class PromotionSimulatorTest {
     }
 
     @Test
+    void requiredAmountsCannotBeNullWhileDeclaredUnknownsMayBe() {
+        assertThatThrownBy(() -> new PromotionSimulator.Inputs(null, null, false, null, List.of(), false, null, null))
+                .isInstanceOf(OperationRejectedException.class);
+        assertThatThrownBy(() -> new PromotionSimulator.FeeStep(null, decimal("1"))).isInstanceOf(OperationRejectedException.class);
+        assertThatThrownBy(() -> new PromotionSimulator.FeeStep(decimal("0"), null)).isInstanceOf(OperationRejectedException.class);
+        assertThat(new PromotionSimulator.Inputs(decimal("1000"), null, false, null, List.of(), false, null, null).unitCost()).isNull();
+    }
+
+    @Test
     void ambiguousFeesInvalidDiscountNegativeAndFractionalQuantityAreRejected() {
         var duplicates = List.of(new PromotionSimulator.FeeStep(decimal("0"), decimal("1")),
                 new PromotionSimulator.FeeStep(decimal("0.0"), decimal("2")));

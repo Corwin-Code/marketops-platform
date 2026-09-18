@@ -200,6 +200,18 @@ class CanonicalScopeMetricServiceTest {
         assertThat(service.exposure(narrowed).gaps()).contains("EXPOSURE_STORE_VALUE_UNQUALIFIED","EXPOSURE_MEMBER_VALUE_UNQUALIFIED");
     }
 
+    @Test void missingStoreDenominatorIsUnknownAndReadsNoMemberWindow() {
+        when(metrics.currentValuesAt(SubjectKind.STORE,store,MetricWindow.D7,asOf)).thenReturn(Map.of());
+        var result=service.exposure(exposureScope());
+        assertThat(result.gaps()).containsExactly("EXPOSURE_STORE_VALUE_UNQUALIFIED");
+        assertThat(result.share()).isNull();
+        assertThat(result.available()).isFalse();
+        assertThat(result.storeValue()).isNull();
+        assertThat(result.memberValues()).isEmpty();
+        assertThat(result.reaches(new BigDecimal("0.2"))).isNull();
+        verify(metrics,never()).currentValuesForPeriodAt(eq(SubjectKind.PLATFORM_LISTING_VARIANT),any(),any(),any(),any(),any());
+    }
+
     @Test void foreignExposureScopeIsRefusedBeforeReadingMetrics() {
         when(identities.variantContext(b,asOf)).thenReturn(Optional.of(identity(b,UUID.randomUUID())));
         assertThatThrownBy(()->service.exposure(exposureScope())).isInstanceOf(OperationRejectedException.class);

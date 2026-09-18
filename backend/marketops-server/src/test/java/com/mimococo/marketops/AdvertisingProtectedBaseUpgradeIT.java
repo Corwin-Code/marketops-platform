@@ -67,8 +67,8 @@ class AdvertisingProtectedBaseUpgradeIT {
             UUID organization=UUID.randomUUID();
             jdbc.update("INSERT INTO core.organization(id,code,display_name,status,created_at,updated_at) VALUES(?,?,'Protected Base synthetic data','ACTIVE',clock_timestamp(),clock_timestamp())",organization,"upgrade-"+organization);
             var after=com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunner.migrate(source);
-            assertThat(after.migrationsApplied()).isEqualTo(88);
-            assertThat(after.schemaVersion()).isEqualTo("0123");
+            assertThat(after.migrationsApplied()).isEqualTo(89);
+            assertThat(after.schemaVersion()).isEqualTo("0124");
             assertThat(jdbc.queryForList("SELECT installed_rank,version,script,checksum,installed_on,success FROM public.flyway_schema_history WHERE installed_rank<=35 ORDER BY installed_rank")).isEqualTo(before);
             assertThat(jdbc.queryForObject("SELECT display_name FROM core.organization WHERE id=?",String.class,organization)).isEqualTo("Protected Base synthetic data");
             assertThat(com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunner.migrate(source).migrationsApplied()).isZero();

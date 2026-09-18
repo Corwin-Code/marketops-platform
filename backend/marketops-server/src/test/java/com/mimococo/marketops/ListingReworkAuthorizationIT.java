@@ -269,13 +269,20 @@ class ListingReworkAuthorizationIT {
         try(var connection=fixture.application.getConnection(); var statement=connection.createStatement()) {
             String utc,local;
             statement.execute("SET TIME ZONE 'UTC'");
-            try(var row=statement.executeQuery("SELECT ops.lc_calibration_digest('"+fixture.id("calibrationPackage")+"')")) {
-                row.next();utc=row.getString(1);
+            try(var query=connection.prepareStatement("SELECT ops.lc_calibration_digest(?)")) {
+                query.setObject(1,fixture.id("calibrationPackage"));
+                try(var row=query.executeQuery()) {
+                    assertThat(row.next()).isTrue();utc=row.getString(1);
+                }
             }
             statement.execute("SET TIME ZONE 'Asia/Taipei'");
-            try(var row=statement.executeQuery("SELECT ops.lc_calibration_digest('"+fixture.id("calibrationPackage")+"')")) {
-                row.next();local=row.getString(1);
+            try(var query=connection.prepareStatement("SELECT ops.lc_calibration_digest(?)")) {
+                query.setObject(1,fixture.id("calibrationPackage"));
+                try(var row=query.executeQuery()) {
+                    assertThat(row.next()).isTrue();local=row.getString(1);
+                }
             }
+            assertThat(utc).isNotNull();
             assertThat(local).isEqualTo(utc);
         }
         String original=identity.snapshot(listing,Instant.now()).digest();
