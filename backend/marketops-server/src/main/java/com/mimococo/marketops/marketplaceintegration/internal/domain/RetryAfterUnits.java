@@ -9,8 +9,10 @@ import java.util.Optional;
  * <p>Ozon reports its rate-limit wait in minutes and Wildberries in seconds.
  * Reading either as the other is silent in both directions: a sixty-fold
  * under-wait hammers a provider and a sixty-fold over-wait outlives an
- * approval. A platform this class was never told about yields no delay, and the
- * caller treats no delay as "do not retry on a timer", never as zero.
+ * approval. A platform this class was never told about, or another platform's
+ * native header, yields no hint. No hint is never a zero wait: the durable
+ * timing recorded from the same headers decides whether the command may be
+ * observed at all, and a configured delay applies only on top of it.
  *
  * <p>A converted delay never extends an approval; it only decides when the next
  * observation may happen inside the approval that already exists.
@@ -51,6 +53,10 @@ public final class RetryAfterUnits {
         Integer delay = null;
         for (var entry : headers.entrySet()) {
             String name = entry.getKey().toLowerCase(Locale.ROOT);
+            if ((name.equals("item-retry-after") || name.equals("x-ratelimit-retry")) && !name.equals(nativeName)) {
+                // Another platform's native unit is unknown here; the durable parser holds it.
+                return Optional.empty();
+            }
             if (name.equals(nativeName) || name.equals("retry-after")) {
                 // Dates and malformed/ambiguous timing are adjudicated by the
                 // durable database parser, not guessed by this worker hint.

@@ -170,7 +170,7 @@ declaration that is missing or differs from the declared value.
 | Description attribute identity | not recorded; never guessed from documentation samples | not recorded; never guessed from documentation samples |
 | Marking (КИЗ) declaration semantics | not recorded; the command carries the declared value and the gate refuses an undeclared action | same |
 | Length bound | published only by an Owner calibration package (`DESCRIPTION_LENGTH_RULE`); no default | same |
-| Retry-after unit | minutes, converted and capped at one hour (`RetryAfterUnits`) pending evidence | seconds, capped at one hour, pending evidence |
+| Retry-after unit | native `Item-Retry-After` read as minutes, standard `Retry-After` as seconds or an HTTP date; the longest wait applies and is never capped; a malformed, repeated, unrepresentable, over-bound or another platform's header holds the command as unknown (`ops.lc_description_retry_timing`, `RetryAfterUnits`); unit pending evidence | native `X-Ratelimit-Retry` and standard `Retry-After` read as seconds; same longest-wait and unknown-hold rules; unit pending evidence |
 | Write result model | fail-closed until verified | fail-closed until verified |
 | Gate authority | `ops.lc_gate_authority` has no Java writer; `production_write_enabled` is `false` | same |
 | Kill switch | `listing-description-write` GLOBAL and CAPABILITY flags must both be `ENABLED`; any scoped `DISABLED` closes the gate | same |

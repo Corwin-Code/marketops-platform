@@ -25,7 +25,11 @@ from scripts.validate_governance import (
     REQUIRED_FILES,
     SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS,
     SLICE3_R1_AUTHORITY_HASHES,
+    SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES,
+    V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH,
+    V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH,
     validate_slice3_r1_authority,
+    validate_slice4_pr35_supplement_authority,
     V1_ACTIVE_SLICE_CONTRACT_SHA256,
     SLICE_REWORK_ARTIFACT_HASHES,
     WP_P0_002_ID,
@@ -2895,6 +2899,129 @@ class Slice3R1AuthorityTests(unittest.TestCase):
                     validate_slice3_r1_authority(errors, documents)
                     self.assertEqual(len(errors), 1)
                     self.assertIn(name, errors[0])
+
+
+class Slice4Pr35SupplementAuthorityTests(unittest.TestCase):
+    """The bounded PR #35 supplement is exact Owner authority that never widens."""
+
+    def current(self) -> str:
+        return repository_governance_text("docs/00-governance/CURRENT_STATE.md")
+
+    def documents(self) -> dict[str, bytes]:
+        root = Path(__file__).resolve().parents[1]
+        return {relative: (root / relative).read_bytes() for relative in SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES}
+
+    def check(self, documents: dict[str, bytes], metadata: str | None = None) -> list[str]:
+        errors: list[str] = []
+        validate_slice4_pr35_supplement_authority(errors, documents, metadata)
+        return errors
+
+    def validate_current(self, current: str) -> list[str]:
+        errors: list[str] = []
+        validate_v1_current_state_text(
+            errors, current, repository_governance_text("docs/00-governance/PROJECT_CHARTER.md")
+        )
+        return errors
+
+    def replaced(self, old: str, new: str) -> str:
+        current = self.current()
+        self.assertEqual(1, current.count(old), old)
+        return current.replace(old, new, 1)
+
+    def test_the_committed_authority_is_exact(self) -> None:
+        self.assertEqual([], self.check(self.documents()))
+        self.assertEqual([], self.validate_current(self.current()))
+
+    def test_a_record_that_passes_by_changed_bytes_or_grants_authority_is_rejected(self) -> None:
+        documents = self.documents()
+        record = documents[V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH]
+        documents[V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH] = record.replace(
+            b'"merge": false', b'"merge": true', 1
+        )
+        errors = self.check(documents)
+        self.assertTrue(any("authority missing or changed" in error for error in errors))
+        self.assertIn("SLICE-V1-004 PR35 Controller record cannot itself grant authority", errors)
+
+    def test_an_old_or_wrong_start_head_is_rejected(self) -> None:
+        documents = self.documents()
+        documents[V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH] = documents[
+            V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH
+        ].replace(b"45474b6039edd46842e1e5f84391dca4264ddc1d", b"57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e")
+        self.assertTrue(any("Controller-reviewed Head" in error for error in self.check(documents)))
+        errors = self.validate_current(self.replaced(
+            "slice_v1_004_pr35_supplement_start_head: 45474b6039edd46842e1e5f84391dca4264ddc1d",
+            "slice_v1_004_pr35_supplement_start_head: 57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e",
+        ))
+        self.assertTrue(any("slice_v1_004_pr35_supplement_start_head" in error for error in errors))
+
+    def test_a_missing_or_rewritten_owner_statement_is_no_authority(self) -> None:
+        documents = self.documents()
+        del documents[V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH]
+        errors = self.check(documents)
+        self.assertTrue(any(V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH in error for error in errors))
+        self.assertTrue(any("does not state" in error for error in errors))
+        documents = self.documents()
+        documents[V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH] = documents[
+            V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH
+        ].replace("CLAUDE_OPUS_5".encode(), "CLAUDE_FABLE_5".encode())
+        errors = self.check(documents)
+        self.assertTrue(any("authority missing or changed" in error for error in errors))
+        self.assertTrue(any("CLAUDE_OPUS_5" in error for error in errors))
+
+    def test_a_widened_executor_or_remote_permission_is_rejected(self) -> None:
+        mutations = (
+            ("owner_git_execution_delegate: CODEX", "owner_git_execution_delegate: CLAUDE_OPUS_5",
+             "owner_git_execution_delegate"),
+            ("remote_git_publication_delegate: CODEX", "remote_git_publication_delegate: CLAUDE_OPUS_5",
+             "remote_git_publication_delegate"),
+            ("slice_v1_004_pr35_supplement_executor: CLAUDE_OPUS_5",
+             "slice_v1_004_pr35_supplement_executor: ANY_EXECUTOR", "slice_v1_004_pr35_supplement_executor"),
+            ("slice_v1_004_pr35_supplement_pr_state: DRAFT_UNMERGED_REQUIRED",
+             "slice_v1_004_pr35_supplement_pr_state: READY_FOR_REVIEW", "slice_v1_004_pr35_supplement_pr_state"),
+            ("merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+             "merge_authorization: AUTHORIZED", "merge_authorization"),
+            ("maker_remote_git_authority: DENIED", "maker_remote_git_authority: GRANTED",
+             "maker_remote_git_authority"),
+            ("slice_v1_004_pr35_supplement_merge_hold: ",
+             "slice_v1_004_pr35_supplement_merge_authority: GRANTED\nslice_v1_004_pr35_supplement_merge_hold: ",
+             "slice_v1_004_pr35_supplement_merge_authority"),
+        )
+        for old, new, field in mutations:
+            with self.subTest(field=field):
+                errors = self.validate_current(self.replaced(old, new))
+                self.assertTrue(any(field in error for error in errors), errors)
+
+    def test_a_shadowing_or_unregistered_key_form_is_rejected(self) -> None:
+        anchor = "production_write_enabled: false\n"
+        additions = (
+            ("authorization : FULL_SCOPE_IMPLEMENTATION\n", "not a plain `key: value` line"),
+            ("merge_authorization : AUTHORIZED\n", "not a plain `key: value` line"),
+            ('"production_write_enabled": true\n', "not a plain `key: value` line"),
+            ("SLICE_V1_004_PR35_SUPPLEMENT_PR_STATE: READY_FOR_REVIEW\n", "not a plain `key: value` line"),
+            ("slice_v1_004_pr35_merge_authority: GRANTED\n", "not a registered PR35 supplement field"),
+            ("slice_v1_004_pr35_supplemental_merge_authority: GRANTED\n",
+             "not a registered PR35 supplement field"),
+        )
+        for addition, expected in additions:
+            with self.subTest(addition=addition):
+                errors = self.validate_current(self.replaced(anchor, anchor + addition))
+                self.assertTrue(any(expected in error for error in errors), errors)
+        second = self.current() + "\n```yaml\nauthorization: FULL_SCOPE_IMPLEMENTATION\n```\n"
+        self.assertIn(
+            "CURRENT_STATE must contain exactly one fenced YAML metadata block", self.validate_current(second)
+        )
+
+    def test_reopening_production_write_or_full_scope_is_rejected(self) -> None:
+        mutations = (
+            ("production_write_enabled: false", "production_write_enabled: true", "production_write_enabled"),
+            ("\nauthorization: CLOSED\n", "\nauthorization: FULL_SCOPE_IMPLEMENTATION\n", "authorization"),
+            ("slice_v1_004_gate_ev_authority: NONE", "slice_v1_004_gate_ev_authority: GRANTED",
+             "slice_v1_004_gate_ev_authority"),
+        )
+        for old, new, field in mutations:
+            with self.subTest(field=field):
+                errors = self.validate_current(self.replaced(old, new))
+                self.assertTrue(any(field in error for error in errors), errors)
 
 
 class V1CurrentStateContractTests(unittest.TestCase):

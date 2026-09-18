@@ -1,0 +1,18 @@
+OWNER：我接受Controller对PR #35已授权修正的验收，以及当前等待头内部残余的限域裁定。
+
+绑定Record：SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1
+01_DECISION_RECORD.json SHA-256：fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c
+补充范围：S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01
+05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md SHA-256：723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970
+
+我授权已点名的CLAUDE_OPUS_5执行该文件A—E全部限定工作，包括B1原生等待信号生产传输修复与真实隔离联测、B2同类fresh-clone入口、B3准确状态与validator兼容；在同一命名分支和Draft PR #35作不改写历史的发布并取得现有CI。范围内普通设计、测试、文档及checkpoint不逐命令另批。如更换执行人，准确记录，不扩大权限。
+
+准确起点：45474b6039edd46842e1e5f84391dca4264ddc1d / 3b6faa1d58fadbfad374a63a2502b606c06df6f5
+Repository：Corwin-Code/marketops-platform
+Branch：codex/slice-v1-004-root-cause-rework-r1
+
+不修改冻结Contract/Annex/Frozen Set/原Controller及Owner关闭原件。原27项历史关闭和54/12/3保留，本次对022/027当前证据适用性的限定据实追加。现行6项外部义务及全部前序发布义务保留。
+
+不授予Ready/merge/auto-merge、直接main写入、force-push/rebase、分支删除、保护/Ruleset/权限/Secret变化、规则或阈值放宽、dismiss/skip、SQL迁移或新schema、部署、生产迁移、Level2、真实Provider/账户、Gate EV/E、Pilot、生产写及下一Slice。
+
+工具拒绝即停；Autofix不能扩大本授权。准确源或必要权限不匹配时只报最小差异。完成后集中交回新准确checkpoint和全部相关原始证据，仍停在Draft/Unmerged，等待Controller对这个有限残余验证。

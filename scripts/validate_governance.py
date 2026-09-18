@@ -345,6 +345,43 @@ V1_SLICE_004_OWNER_STATEMENT_SHA256 = (
 )
 V1_SLICE_004_SOURCE_BASE_COMMIT = "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd"
 V1_SLICE_004_SOURCE_BASE_TREE = "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400"
+# SLICE-V1-004 stays formally closed (authorization: CLOSED). One Owner-issued
+# bounded task overlays that record: the PR #35 residual supplement, run by one
+# named executor on the named branch and Draft PR only. It adds no
+# `authorization` value, does not reopen FULL_SCOPE_IMPLEMENTATION and does not
+# move the DR-0004 CODEX delegation.
+V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_SHA256 = (
+    "bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_EVIDENCE_DIR = (
+    "docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/controller-review-45474b60-r1/"
+)
+V1_SLICE_004_PR35_CONTROLLER_RECORD_ID = "SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1"
+V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH = (
+    V1_SLICE_004_PR35_SUPPLEMENT_EVIDENCE_DIR + "01_DECISION_RECORD.json"
+)
+V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256 = (
+    "fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_ID = "S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01"
+V1_SLICE_004_PR35_SUPPLEMENT_SCOPE_PATH = (
+    V1_SLICE_004_PR35_SUPPLEMENT_EVIDENCE_DIR + "05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_SHA256 = (
+    "723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_EXECUTOR = "CLAUDE_OPUS_5"
+V1_SLICE_004_PR35_REPOSITORY = "Corwin-Code/marketops-platform"
+V1_SLICE_004_PR35_BRANCH = "codex/slice-v1-004-root-cause-rework-r1"
+V1_SLICE_004_PR35_NUMBER = "35"
+V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD = "45474b6039edd46842e1e5f84391dca4264ddc1d"
+V1_SLICE_004_PR35_SUPPLEMENT_START_TREE = "3b6faa1d58fadbfad374a63a2502b606c06df6f5"
+V1_SLICE_004_PR35_REMOTE_WRITE_AUTHORITY = (
+    "S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_NON_REWRITING_PUSH_TO_NAMED_BRANCH_AND_DRAFT_PR_35_UPDATE_ONLY"
+)
 # The active Slice is SLICE-V1-004. The SLICE-V1-002 and SLICE-V1-003
 # identities above stay pinned so a closed Slice cannot lose its accepted bytes
 # when the active pointer moves.
@@ -458,7 +495,9 @@ V1_ACTIVE_STATE = {
     "slice_v1_004_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_004_owner_acceptance_statement": V1_SLICE_004_OWNER_STATEMENT_PATH,
     "slice_v1_004_owner_acceptance_statement_sha256": V1_SLICE_004_OWNER_STATEMENT_SHA256,
-    "slice_v1_004_execution_authority": "LOCAL_DOCUMENTATION_SYNC_ONLY_ENGINEERING_CLOSED",
+    "slice_v1_004_execution_authority": (
+        "OWNER_BOUNDED_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_B1_B2_B3_ONLY_ENGINEERING_CLOSURE_PRESERVED"
+    ),
     "slice_v1_004_maker": "CLAUDE",
     "slice_v1_004_source_base_commit": V1_SLICE_004_SOURCE_BASE_COMMIT,
     "slice_v1_004_source_base_tree": V1_SLICE_004_SOURCE_BASE_TREE,
@@ -481,12 +520,42 @@ V1_ACTIVE_STATE = {
     "slice_v1_004_formally_closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
     "slice_v1_004_acceptance_layers": "54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1",
     "slice_v1_004_publication_or_next_slice_authority": "NONE_CREATED_BY_FORMAL_CLOSURE",
+    "slice_v1_004_pr35_supplement_id": V1_SLICE_004_PR35_SUPPLEMENT_ID,
+    "slice_v1_004_pr35_supplement_layer": (
+        "BOUNDED_CURRENT_TASK_OVERLAY_AUTHORIZATION_CLOSED_RETAINED_FULL_SCOPE_NOT_REOPENED_"
+        "DR0004_CODEX_DELEGATION_UNCHANGED"
+    ),
+    "slice_v1_004_pr35_supplement_state": (
+        "EXECUTED_HANDED_BACK_PENDING_CONTROLLER_LIMITED_RESIDUAL_VERIFICATION"
+    ),
+    "slice_v1_004_pr35_supplement_owner_statement": V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH,
+    "slice_v1_004_pr35_supplement_owner_statement_sha256": (
+        V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_SHA256
+    ),
+    "slice_v1_004_pr35_supplement_controller_record": V1_SLICE_004_PR35_CONTROLLER_RECORD_ID,
+    "slice_v1_004_pr35_supplement_controller_record_sha256": (
+        V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256
+    ),
+    "slice_v1_004_pr35_supplement_scope_sha256": V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+    "slice_v1_004_pr35_supplement_executor": V1_SLICE_004_PR35_SUPPLEMENT_EXECUTOR,
+    "slice_v1_004_pr35_supplement_branch": V1_SLICE_004_PR35_BRANCH,
+    "slice_v1_004_pr35_supplement_pr": V1_SLICE_004_PR35_NUMBER,
+    "slice_v1_004_pr35_supplement_pr_state": "DRAFT_UNMERGED_REQUIRED",
+    "slice_v1_004_pr35_supplement_start_head": V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD,
+    "slice_v1_004_pr35_supplement_start_tree": V1_SLICE_004_PR35_SUPPLEMENT_START_TREE,
+    "slice_v1_004_pr35_supplement_merge_hold": (
+        "CONTROLLER_HOLD_PR35_NOTE_KEYPATH_01_UNTIL_LIMITED_RESIDUAL_VERIFICATION"
+    ),
+    "slice_v1_004_pr35_supplement_historical_closure": (
+        "27_OF_27_AND_54_12_3_PRESERVED_022_027_CURRENT_EVIDENCE_QUALIFIED_"
+        "CRCF_PR35_04_NO_NEW_FROZEN_FINDING"
+    ),
     "slice_v1_004_controlled_write_target": "LISTING_DESCRIPTION_CHANGE",
     "slice_v1_004_controlled_write_provider_paths": (
         "STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE"
     ),
     "slice_v1_004_real_provider_calls": "NONE",
-    "slice_v1_004_remote_write_authority": "NONE",
+    "slice_v1_004_remote_write_authority": V1_SLICE_004_PR35_REMOTE_WRITE_AUTHORITY,
     "slice_v1_004_level_2_authority": "NONE",
     "slice_v1_004_gate_ev_authority": "NONE",
     "slice_v1_004_gate_e_authority": "NONE",
@@ -531,11 +600,12 @@ V1_ACTIVE_STATE = {
     "slice_v1_003_source_branch": "DELETED_BY_ACCEPTED_CONFIGURATION",
     "active_gate": "NONE_SLICE_V1_004_ENGINEERING_CLOSED",
     "candidate_state_scope": (
-        "SLICE_V1_004_LEVEL_1_ENGINEERING_FORMALLY_CLOSED_LOCAL_DOCUMENTATION_CHECKPOINT_NOT_PUBLISHED"
+        "SLICE_V1_004_FORMALLY_CLOSED_ENGINEERING_ON_DRAFT_PR_35_UNMERGED_"
+        "BOUNDED_RESIDUAL_SUPPLEMENT_HANDED_BACK_CONTROLLER_MERGE_HOLD"
     ),
-    "next_authorized_actor": "HUMAN_OWNER",
+    "next_authorized_actor": "CONTROLLER",
     "next_action": (
-        "LEVEL_3_PUBLICATION_DECISION_ON_FORMALLY_CLOSED_CHECKPOINT_NO_NEXT_SLICE_AUTHORIZED"
+        "CONTROLLER_LIMITED_RESIDUAL_VERIFICATION_OF_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_DRAFT_UNMERGED"
     ),
     "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_003_owner_acceptance_statement_sha256": (
@@ -5040,6 +5110,118 @@ def validate_slice4_acceptance_authority(errors: list[str], documents: dict[str,
             errors.append(f"SLICE-V1-004 acceptance authority missing or changed: {relative}")
 
 
+# The bounded PR #35 supplement is authority only while the Owner's exact bytes,
+# the Controller record and the issued scope all hold. The statement itself must
+# name every identity the current-task fields rely on.
+SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES = {
+    V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH: V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_SHA256,
+    V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH: V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256,
+    V1_SLICE_004_PR35_SUPPLEMENT_SCOPE_PATH: V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+}
+SLICE4_PR35_SUPPLEMENT_STATEMENT_TOKENS = (
+    "绑定Record：" + V1_SLICE_004_PR35_CONTROLLER_RECORD_ID,
+    "01_DECISION_RECORD.json SHA-256：" + V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256,
+    "补充范围：" + V1_SLICE_004_PR35_SUPPLEMENT_ID,
+    "05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md SHA-256：" + V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+    "我授权已点名的" + V1_SLICE_004_PR35_SUPPLEMENT_EXECUTOR + "执行",
+    "Draft PR #" + V1_SLICE_004_PR35_NUMBER,
+    "准确起点：" + V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD
+    + " / " + V1_SLICE_004_PR35_SUPPLEMENT_START_TREE,
+    "Repository：" + V1_SLICE_004_PR35_REPOSITORY,
+    "Branch：" + V1_SLICE_004_PR35_BRANCH,
+    "不授予Ready/merge/auto-merge、直接main写入、force-push/rebase",
+    "仍停在Draft/Unmerged",
+)
+# While the supplement's remote authority is current, these bounds hold with it.
+SLICE4_PR35_SUPPLEMENT_REMOTE_BOUNDS = {
+    "authorization": "CLOSED",
+    "repository": V1_SLICE_004_PR35_REPOSITORY,
+    "merge_authorization": "NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+    "maker_remote_git_authority": "DENIED",
+    "production_write_enabled": "false",
+    "slice_v1_004_level_2_authority": "NONE",
+    "slice_v1_004_gate_ev_authority": "NONE",
+    "slice_v1_004_gate_e_authority": "NONE",
+    "slice_v1_004_pr35_supplement_pr_state": "DRAFT_UNMERGED_REQUIRED",
+}
+SLICE4_PR35_SUPPLEMENT_PREFIX = "slice_v1_004_pr35_supplement_"
+
+
+def validate_slice4_pr35_supplement_authority(
+    errors: list[str], documents: dict[str, bytes], metadata: str | None
+) -> None:
+    """A bounded current task comes from exact Owner bytes and never widens."""
+    for relative, expected in SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-004 PR35 supplement authority missing or changed: {relative}")
+    statement = documents.get(V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH, b"").decode(
+        "utf-8", errors="replace"
+    )
+    for token in SLICE4_PR35_SUPPLEMENT_STATEMENT_TOKENS:
+        if token not in statement:
+            errors.append(f"SLICE-V1-004 PR35 supplement Owner statement does not state: {token}")
+    try:
+        record = json.loads(documents.get(V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH, b"{}"))
+        derived = (
+            record["record_id"],
+            record["reviewed_head"],
+            record["reviewed_tree"],
+            record["proposal"]["id"],
+            record["proposal"]["sha256"],
+        )
+        if derived != (
+            V1_SLICE_004_PR35_CONTROLLER_RECORD_ID,
+            V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD,
+            V1_SLICE_004_PR35_SUPPLEMENT_START_TREE,
+            V1_SLICE_004_PR35_SUPPLEMENT_ID,
+            V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+        ):
+            errors.append(
+                "SLICE-V1-004 PR35 supplement start is not the Controller-reviewed Head, Tree and proposal"
+            )
+        granted = record["authority_granted_this_turn"]
+        if not isinstance(granted, dict) or any(value is not False for value in granted.values()):
+            errors.append("SLICE-V1-004 PR35 Controller record cannot itself grant authority")
+    except (KeyError, TypeError, ValueError, AttributeError):
+        errors.append("SLICE-V1-004 PR35 Controller record is unreadable")
+    if metadata is None:
+        return
+    known = {field for field in V1_ACTIVE_STATE if field.startswith(SLICE4_PR35_SUPPLEMENT_PREFIX)}
+    for field in re.findall(r"(?m)^([^:\n]*pr35[^:\n]*):", metadata, re.IGNORECASE):
+        if field not in known:
+            errors.append(f"CURRENT_STATE {field.strip()} is not a registered PR35 supplement field")
+    executor = unique_yaml_value(metadata, "slice_v1_004_pr35_supplement_executor")
+    for field in ("owner_git_execution_delegate", "remote_git_publication_delegate"):
+        if executor is not None and unique_yaml_value(metadata, field) == executor:
+            errors.append(f"CURRENT_STATE {field} must not carry the bounded supplement executor")
+    if unique_yaml_value(metadata, "slice_v1_004_remote_write_authority") == (
+        V1_SLICE_004_PR35_REMOTE_WRITE_AUTHORITY
+    ):
+        for field, expected in SLICE4_PR35_SUPPLEMENT_REMOTE_BOUNDS.items():
+            if unique_yaml_value(metadata, field) != expected:
+                errors.append(
+                    f"CURRENT_STATE {field} must be exactly {expected} under the bounded PR35 "
+                    "supplement remote authority"
+                )
+
+
+# The metadata is flat. A spaced, quoted or re-cased key would be read by YAML as a
+# second value for a pinned field without matching the exact-value checks.
+CURRENT_STATE_METADATA_LINE = re.compile(r"^[a-z0-9_]+: \S.*$")
+
+
+def validate_current_state_metadata_form(
+    errors: list[str], current_state_text: str, metadata: str
+) -> None:
+    """One metadata block, and every line in it one plain `key: value` pair."""
+    if current_state_text.count("```yaml") != 1:
+        errors.append("CURRENT_STATE must contain exactly one fenced YAML metadata block")
+    for number, line in enumerate(metadata.splitlines(), start=1):
+        if not CURRENT_STATE_METADATA_LINE.match(line):
+            errors.append(f"CURRENT_STATE metadata line {number} is not a plain `key: value` line")
+
+
 def validate_v1_current_state_text(
     errors: list[str],
     current_state_text: str,
@@ -5067,6 +5249,12 @@ def validate_v1_current_state_text(
         for relative in SLICE4_ACCEPTANCE_AUTHORITY_HASHES
         if (path := ROOT / relative).is_file()
     })
+    validate_current_state_metadata_form(errors, current_state_text, metadata)
+    validate_slice4_pr35_supplement_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    }, metadata)
     for field, expected in V1_ACTIVE_STATE.items():
         actual = unique_yaml_value(metadata, field)
         if actual != expected:

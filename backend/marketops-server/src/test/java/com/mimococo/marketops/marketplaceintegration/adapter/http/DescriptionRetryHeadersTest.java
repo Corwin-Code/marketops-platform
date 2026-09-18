@@ -28,7 +28,13 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-/** Real loopback sockets with synthetic bodies and literal test auth; no provider or account is contacted. */
+/**
+ * Real loopback sockets with synthetic bodies and literal test auth; no provider or account is contacted.
+ *
+ * <p>The transport here is a {@code java.net.http} stand-in, so this proves only how the adapter reads
+ * the headers it is handed. Whether a header survives the production response filter is proven by
+ * {@code BoundedOutboundHttpTest} and, end to end, by {@code ListingDescriptionProviderWaitTransportIT}.
+ */
 class DescriptionRetryHeadersTest {
     @Test
     void nativeHeadersSurviveTheHttpAdapterInTheirOwnUnits() throws Exception {
@@ -49,7 +55,8 @@ class DescriptionRetryHeadersTest {
     void duplicateAndMalformedValuesStayVisibleForDurableUnknownClassification() throws Exception {
         var duplicate=response("OZON",Map.of("Item-Retry-After",List.of("2","3")));
         assertThat(duplicate.retryAfterSeconds()).isNull();
-        assertThat(duplicate.response().headers().get("item-retry-after")).contains("2","3",",");
+        assertThat(duplicate.response().headers()).doesNotContainKey("item-retry-after");
+        assertThat(duplicate.response().unresolvedTiming()).containsEntry("item-retry-after",List.of("2","3"));
         var malformed=response("OZON",Map.of("Item-Retry-After",List.of("soon")));
         assertThat(malformed.retryAfterSeconds()).isNull();
         assertThat(malformed.response().headers()).containsEntry("item-retry-after","soon");

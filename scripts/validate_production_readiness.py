@@ -664,7 +664,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_003_controller_verdict: PASS_FINAL_CLOSURE_VERIFICATION",
     "slice_v1_003_actual_squash_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
     "slice_v1_003_actual_squash_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
-    "candidate_state_scope: SLICE_V1_004_LEVEL_1_ENGINEERING_FORMALLY_CLOSED_LOCAL_DOCUMENTATION_CHECKPOINT_NOT_PUBLISHED",
+    "candidate_state_scope: SLICE_V1_004_FORMALLY_CLOSED_ENGINEERING_ON_DRAFT_PR_35_UNMERGED_BOUNDED_RESIDUAL_SUPPLEMENT_HANDED_BACK_CONTROLLER_MERGE_HOLD",
     "slice_v1_004_implementation_state: LEVEL_1_ENGINEERING_FORMALLY_CLOSED",
     "slice_v1_004_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
     "slice_v1_004_owner_formal_closure: HUMAN_OWNER_EXPLICITLY_CONFIRMED",
@@ -672,12 +672,17 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_004_formally_closed_tree: b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
     "slice_v1_004_publication_or_next_slice_authority: NONE_CREATED_BY_FORMAL_CLOSURE",
     "slice_v1_003_owner_formal_closure: HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD",
-    "slice_v1_004_execution_authority: LOCAL_DOCUMENTATION_SYNC_ONLY_ENGINEERING_CLOSED",
-    "slice_v1_004_remote_write_authority: NONE",
+    "slice_v1_004_execution_authority: OWNER_BOUNDED_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_B1_B2_B3_ONLY_ENGINEERING_CLOSURE_PRESERVED",
+    "slice_v1_004_remote_write_authority: S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_NON_REWRITING_PUSH_TO_NAMED_BRANCH_AND_DRAFT_PR_35_UPDATE_ONLY",
     "slice_v1_004_gate_ev_authority: NONE",
     "slice_v1_004_gate_e_authority: NONE",
     "active_gate: NONE_SLICE_V1_004_ENGINEERING_CLOSED",
-    "next_authorized_actor: HUMAN_OWNER",
+    "next_authorized_actor: CONTROLLER",
+    "slice_v1_004_pr35_supplement_executor: CLAUDE_OPUS_5",
+    "slice_v1_004_pr35_supplement_owner_statement_sha256: bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641",
+    "slice_v1_004_pr35_supplement_start_head: 45474b6039edd46842e1e5f84391dca4264ddc1d",
+    "slice_v1_004_pr35_supplement_start_tree: 3b6faa1d58fadbfad374a63a2502b606c06df6f5",
+    "slice_v1_004_pr35_supplement_pr_state: DRAFT_UNMERGED_REQUIRED",
 )
 
 
@@ -715,6 +720,46 @@ POLLING_CONTRACT_TOKENS = (
 
 BUILT_PREVIEW_COMMAND = (
     "npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort"
+)
+
+# The fresh-clone entry keeps every stack off the generated default database port
+# and reaches the browser suite only through the isolated entry, which generates,
+# starts, tests and removes its own non-default database.
+FRESH_CLONE_ENTRY = "scripts/fresh_clone_check.sh"
+ISOLATED_BROWSER_ENTRY = "scripts/validation/business_browser_isolated.sh"
+FRESH_CLONE_CONTRACT_TOKENS = (
+    "MarketOps clone's verification",
+    "make env-init",
+    "./mvnw -B -ntp verify",
+    "npm ci",
+    "npm ls --all",
+    "npm run lint",
+    "npm run format:check",
+    "npm run typecheck",
+    "npm run test:ci",
+    "npm run build",
+    "npm run verify:bundle",
+    "scripts/verify_coverage_thresholds.sh all",
+    'docker ps -aq --filter "${label}" || return 1',
+    'require_no_resources "${project}" 6',
+    'lines[hits[0]] != "MARKETOPS_DB_PORT=5432\\n"',
+    "compose port postgres 5432",
+    'compose down --volumes --remove-orphans\nSTACK_STARTED=false\nrequire_no_resources "${COMPOSE_PROJECT_NAME}" 7',
+    'COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}"\nSTACK_STARTED=true',
+    f"bash {ISOLATED_BROWSER_ENTRY}",
+    'require_no_resources "${BROWSER_PROJECT}" 8',
+    "scripts/collect_supply_chain.py",
+    "scripts/verify_local_config.sh",
+    "down --volumes --remove-orphans",
+)
+FRESH_CLONE_PROHIBITED_TOKENS = ("npm run test:browser",)
+ISOLATED_BROWSER_CONTRACT_TOKENS = (
+    "make env-init",
+    'lines[hits[0]] != "MARKETOPS_DB_PORT=5432\\n"',
+    'make COMPOSE_PROJECT_NAME="$project" up',
+    '"${compose[@]}" port postgres 5432',
+    "npm run test:browser",
+    "down --volumes --remove-orphans",
 )
 
 BACKLOG_HEADER = ("ID", "Title", "Status", "Dependencies", "Core source requirements")
@@ -1003,7 +1048,7 @@ def check_repository_contracts(report: Report) -> None:
         if not (ROOT / relative).is_file():
             report.add(rule, relative, 0, "required foundation artefact is absent")
 
-    for relative in ("Makefile", "scripts/dev_doctor.py", "scripts/fresh_clone_check.sh"):
+    for relative in ("Makefile", "scripts/dev_doctor.py", FRESH_CLONE_ENTRY, ISOLATED_BROWSER_ENTRY):
         path = ROOT / relative
         text = read_text(path) or ""
         for number, line in matching_lines(text, PATH_RESTRICTION):
@@ -1443,29 +1488,10 @@ def check_repository_contracts(report: Report) -> None:
         ROOT / "scripts/collect_supply_chain.py",
         ("frontend-sbom.json", 'sbom.get("bomFormat") != "CycloneDX"'),
     )
-    require_tokens(
-        report,
-        rule,
-        ROOT / "scripts/fresh_clone_check.sh",
-        (
-            "MarketOps clone's verification",
-            "make env-init",
-            "./mvnw -B -ntp verify",
-            "npm ci",
-            "npm ls --all",
-            "npm run lint",
-            "npm run format:check",
-            "npm run typecheck",
-            "npm run test:ci",
-            "npm run build",
-            "npm run verify:bundle",
-            "scripts/verify_coverage_thresholds.sh all",
-            "npm run test:browser",
-            "scripts/collect_supply_chain.py",
-            "scripts/verify_local_config.sh",
-            "down --volumes --remove-orphans",
-        ),
-    )
+    fresh_clone = ROOT / FRESH_CLONE_ENTRY
+    require_tokens(report, rule, fresh_clone, FRESH_CLONE_CONTRACT_TOKENS)
+    reject_tokens(report, rule, fresh_clone, FRESH_CLONE_PROHIBITED_TOKENS)
+    require_tokens(report, rule, ROOT / ISOLATED_BROWSER_ENTRY, ISOLATED_BROWSER_CONTRACT_TOKENS)
 
 
 def declared_dependency_artifacts(pom_text: str) -> list[tuple[str, str]]:

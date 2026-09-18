@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import tools.jackson.databind.JsonNode;
@@ -49,6 +48,9 @@ import tools.jackson.databind.json.JsonMapper;
  * leaves. None of them throws.
  */
 public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWritePort {
+
+    private static final List<String> RETAINABLE_HEADERS = List.of("content-type", "retry-after",
+            "item-retry-after", "x-ratelimit-retry", "x-request-id", "etag", "x-version-id");
 
     private static final String CONTENT_WRITE = "CONTENT_WRITE";
 
@@ -212,42 +214,45 @@ public final class PlatformHttpDescriptionWriteAdapter implements DescriptionWri
 
     private DescriptionWriteResult classify(DescriptionWriteRequest request, String platformCode,
                                             OutboundHttp.Response response) {
-        Map<String, String> retained = new HashMap<>();
-        response.headers().forEach((name, values) -> {
-            if (!values.isEmpty()) {
-                // Preserve multiplicity. A duplicate numeric delay becomes
-                // explicit ambiguous evidence, never a silently selected value.
-                retained.merge(name.toLowerCase(Locale.ROOT), String.join(", ", values),
-                        (left, right) -> left + ", " + right);
+        Map<String, String> retained = new LinkedHashMap<>();
+        Map<String, List<String>> unresolvedTiming = new LinkedHashMap<>();
+        for (String name : RETAINABLE_HEADERS) {
+            List<String> values = response.headers().getOrDefault(name, List.of());
+            int withheld = response.withheldHeaders().getOrDefault(name, 0);
+            if (DescriptionWriteResult.Response.TIMING_HEADERS.contains(name)) {
+                // A wait signal is one exact field line. Several lines, or a line the
+                // transport withheld, stay recorded as exactly that ambiguity and are
+                // never joined, selected or dropped into a shorter or absent wait.
+                if (withheld > 0 || values.size() > 1) {
+                    List<String> lines = new ArrayList<>(values);
+                    for (int line = 0; line < withheld; line++) {
+                        lines.add(null);
+                    }
+                    unresolvedTiming.put(name, lines);
+                } else if (values.size() == 1) {
+                    retained.put(name, values.getFirst());
+                }
+            } else if (!values.isEmpty()) {
+                retained.put(name, String.join(", ", values));
             }
-        });
+        }
         DescriptionWriteResult.Response transport;
         try {
             transport = new DescriptionWriteResult.Response(response.statusCode(),
-                    filterRetainable(retained), request.digest(), "PROVIDER_RESPONSE",
-                    response.complete());
+                    retained, request.digest(), "PROVIDER_RESPONSE",
+                    response.complete(), unresolvedTiming);
         } catch (IllegalArgumentException notEvidence) {
             return new DescriptionWriteResult(DescriptionWriteResult.Outcome.UNKNOWN_STATE,
                     null, null, null, clock.instant(), "provider_evidence_missing_or_unbound", null, null);
         }
-        Integer retryAfter = RetryAfterUnits.secondsFromHeaders(platformCode, retained).orElse(null);
+        // An unresolved wait gives no hint; the durable timing decides and holds the command.
+        Integer retryAfter = unresolvedTiming.isEmpty()
+                ? RetryAfterUnits.secondsFromHeaders(platformCode, retained).orElse(null) : null;
         DescriptionWriteResult.Outcome proposed = response.complete() && response.statusCode() < 300
                 ? DescriptionWriteResult.Outcome.ACCEPTED
                 : DescriptionWriteResult.Outcome.UNKNOWN_STATE;
         return new DescriptionWriteResult(proposed, String.valueOf(response.statusCode()), null,
                 response.body(), clock.instant(), null, retryAfter, transport);
-    }
-
-    private static Map<String, String> filterRetainable(Map<String, String> headers) {
-        Map<String, String> retained = new LinkedHashMap<>();
-        for (String name : List.of("content-type", "retry-after", "item-retry-after", "x-ratelimit-retry",
-                "x-request-id", "etag", "x-version-id")) {
-            String value = headers.get(name);
-            if (value != null) {
-                retained.put(name, value);
-            }
-        }
-        return retained;
     }
 
     private Optional<String> headerValue(AuthHeaderSpec header, DescriptionWriteRequest request,

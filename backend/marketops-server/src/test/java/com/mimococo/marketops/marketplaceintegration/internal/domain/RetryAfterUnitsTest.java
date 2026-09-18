@@ -46,6 +46,15 @@ class RetryAfterUnitsTest {
     }
 
     @Test
+    void anotherPlatformsNativeHeaderIsAnUnknownUnitAndGivesNoHint() {
+        assertThat(RetryAfterUnits.secondsFromHeaders("OZON", java.util.Map.of("X-Ratelimit-Retry","120",
+                "Retry-After","1"))).isEmpty();
+        assertThat(RetryAfterUnits.secondsFromHeaders("WILDBERRIES", java.util.Map.of("Item-Retry-After","2"))).isEmpty();
+        assertThat(RetryAfterUnits.secondsFromHeaders("SOMEWHERE", java.util.Map.of("Item-Retry-After","2"))).isEmpty();
+        assertThat(RetryAfterUnits.secondsFromHeaders("SOMEWHERE", java.util.Map.of("Retry-After","2"))).contains(2);
+    }
+
+    @Test
     void responseEvidenceRetainsNativeHeadersAndRejectsUnrelatedHeaders() {
         var response = new com.mimococo.marketops.marketplaceintegration.port.DescriptionWriteResult.Response(
                 429,java.util.Map.of("item-retry-after","100","x-ratelimit-retry","123"),

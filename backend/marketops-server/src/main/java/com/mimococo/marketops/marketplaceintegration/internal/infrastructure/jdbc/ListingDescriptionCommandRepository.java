@@ -200,7 +200,7 @@ public class ListingDescriptionCommandRepository {
                 .param("content", contentId)
                 .param("body", result.body())
                 .param("httpStatus", response == null ? null : response.httpStatus())
-                .param("headers", response == null ? "{}" : headersJson(response.headers()))
+                .param("headers", response == null ? "{}" : headersJson(response))
                 .param("evidenceClass", response == null ? null : response.evidenceClass())
                 .param("requestDigest", requestDigest)
                 .param("responseComplete", response != null && response.complete())
@@ -325,16 +325,33 @@ public class ListingDescriptionCommandRepository {
                 .single());
     }
 
-    private static String headersJson(java.util.Map<String, String> headers) {
+    /** Retained headers as strings; an unresolved wait header as the array of its exact lines. */
+    private static String headersJson(DescriptionWriteResult.Response response) {
         StringBuilder json = new StringBuilder("{");
         boolean first = true;
-        for (var entry : headers.entrySet()) {
+        for (var entry : response.headers().entrySet()) {
             if (!first) {
                 json.append(',');
             }
             first = false;
             json.append('"').append(escapeJson(entry.getKey())).append('"').append(':')
                     .append('"').append(escapeJson(entry.getValue())).append('"');
+        }
+        for (var entry : response.unresolvedTiming().entrySet()) {
+            if (!first) {
+                json.append(',');
+            }
+            first = false;
+            json.append('"').append(escapeJson(entry.getKey())).append('"').append(":[");
+            boolean firstLine = true;
+            for (String line : entry.getValue()) {
+                if (!firstLine) {
+                    json.append(',');
+                }
+                firstLine = false;
+                json.append(line == null ? "null" : '"' + escapeJson(line) + '"');
+            }
+            json.append(']');
         }
         return json.append('}').toString();
     }

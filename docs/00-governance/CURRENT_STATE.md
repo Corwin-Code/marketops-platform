@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-16
+as_of: 2026-09-19
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -25,7 +25,7 @@ active_slice_annex_git_blob_sha1: 4d9e93c17e26deee5d2222c8fc51d61d619aa9c8
 slice_v1_004_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
 slice_v1_004_owner_acceptance_statement: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt
 slice_v1_004_owner_acceptance_statement_sha256: 2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3
-slice_v1_004_execution_authority: LOCAL_DOCUMENTATION_SYNC_ONLY_ENGINEERING_CLOSED
+slice_v1_004_execution_authority: OWNER_BOUNDED_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_B1_B2_B3_ONLY_ENGINEERING_CLOSURE_PRESERVED
 slice_v1_004_maker: CLAUDE
 slice_v1_004_source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
 slice_v1_004_source_base_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
@@ -73,7 +73,7 @@ slice_v1_004_targeted_final_closure_handoff: docs/07-phase-evidence/SLICE-V1-004
 slice_v1_004_controlled_write_target: LISTING_DESCRIPTION_CHANGE
 slice_v1_004_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_004_real_provider_calls: NONE
-slice_v1_004_remote_write_authority: NONE
+slice_v1_004_remote_write_authority: S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_NON_REWRITING_PUSH_TO_NAMED_BRANCH_AND_DRAFT_PR_35_UPDATE_ONLY
 slice_v1_004_level_2_authority: NONE
 slice_v1_004_gate_ev_authority: NONE
 slice_v1_004_gate_e_authority: NONE
@@ -319,7 +319,7 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: SLICE_V1_004_LEVEL_1_ENGINEERING_FORMALLY_CLOSED_LOCAL_DOCUMENTATION_CHECKPOINT_NOT_PUBLISHED
+candidate_state_scope: SLICE_V1_004_FORMALLY_CLOSED_ENGINEERING_ON_DRAFT_PR_35_UNMERGED_BOUNDED_RESIDUAL_SUPPLEMENT_HANDED_BACK_CONTROLLER_MERGE_HOLD
 merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
@@ -328,8 +328,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: HUMAN_OWNER
-next_action: LEVEL_3_PUBLICATION_DECISION_ON_FORMALLY_CLOSED_CHECKPOINT_NO_NEXT_SLICE_AUTHORIZED
+next_authorized_actor: CONTROLLER
+next_action: CONTROLLER_LIMITED_RESIDUAL_VERIFICATION_OF_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_DRAFT_UNMERGED
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -367,6 +367,22 @@ slice_v1_004_closure_snapshot: docs/07-phase-evidence/SLICE-V1-004/formal-closur
 slice_v1_004_acceptance_layers: 54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1
 slice_v1_004_third_engineering_review: NOT_REQUIRED
 slice_v1_004_publication_or_next_slice_authority: NONE_CREATED_BY_FORMAL_CLOSURE
+slice_v1_004_pr35_supplement_id: S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01
+slice_v1_004_pr35_supplement_layer: BOUNDED_CURRENT_TASK_OVERLAY_AUTHORIZATION_CLOSED_RETAINED_FULL_SCOPE_NOT_REOPENED_DR0004_CODEX_DELEGATION_UNCHANGED
+slice_v1_004_pr35_supplement_state: EXECUTED_HANDED_BACK_PENDING_CONTROLLER_LIMITED_RESIDUAL_VERIFICATION
+slice_v1_004_pr35_supplement_owner_statement: docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt
+slice_v1_004_pr35_supplement_owner_statement_sha256: bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641
+slice_v1_004_pr35_supplement_controller_record: SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1
+slice_v1_004_pr35_supplement_controller_record_sha256: fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c
+slice_v1_004_pr35_supplement_scope_sha256: 723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970
+slice_v1_004_pr35_supplement_executor: CLAUDE_OPUS_5
+slice_v1_004_pr35_supplement_branch: codex/slice-v1-004-root-cause-rework-r1
+slice_v1_004_pr35_supplement_pr: 35
+slice_v1_004_pr35_supplement_pr_state: DRAFT_UNMERGED_REQUIRED
+slice_v1_004_pr35_supplement_start_head: 45474b6039edd46842e1e5f84391dca4264ddc1d
+slice_v1_004_pr35_supplement_start_tree: 3b6faa1d58fadbfad374a63a2502b606c06df6f5
+slice_v1_004_pr35_supplement_merge_hold: CONTROLLER_HOLD_PR35_NOTE_KEYPATH_01_UNTIL_LIMITED_RESIDUAL_VERIFICATION
+slice_v1_004_pr35_supplement_historical_closure: 27_OF_27_AND_54_12_3_PRESERVED_022_027_CURRENT_EVIDENCE_QUALIFIED_CRCF_PR35_04_NO_NEW_FROZEN_FINDING
 ```
 
 ## Active authority
@@ -1122,3 +1138,19 @@ Owner已对 `f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10` / `b8a9e7d0450d24f2b58b95
 修正提交为`48298206794a81b0640b4a14363198465dbd86c0`（父提交`57c5efc4…`），证据索引为`docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/README.md`。历史frontend lint声明以append-only erratum限定；原Contract、Annex、Frozen Set、Controller R2 FINAL与Owner Formal Closure原件字节不变，`f71d4c8c…`的正式关闭保留为历史事实，修正Head独立验证、不倒填旧日志。
 
 上方YAML中与本Slice相关的钉定字段继续记录正式关闭时的工程状态与Slice Contract自身的权限；它们在不修改校验器的前提下无法表达一次进行中的有界修正，本记录不以放宽校验器的方式改写它们。本次修正的有界权限只由上述存证与本段正文表达。PR #35保持Draft／Unmerged；发布候选的CI与CodeQL结果在PR #35正文与外部交接中报告，不写回仓库。Ready、merge、部署、生产迁移、Level 2、真实Provider／账户、Gate EV／E、Pilot、生产写与下一Slice均未获授权。
+
+## SLICE-V1-004 — PR #35残余补充的当前任务层（2026-09-19）
+
+Controller审查`SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1`（`01_DECISION_RECORD.json` SHA-256 `fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c`）接受上一节所述05 A—F有界修正，确认`45474b60…`的12项必需检查通过；同时判定内部等待头残余`PR35-NOTE-KEYPATH-01`阻断Ready/merge，并登记`CRCF-PR35-04`：此前Controller接受了绕过生产传输的测试作为完整等待链证明。Owner签发补充范围`S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`（`05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md` SHA-256 `723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970`），原文存于`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt`（SHA-256 `bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641`），点名`CLAUDE_OPUS_5`从`45474b6039edd46842e1e5f84391dca4264ddc1d`／`3b6faa1d58fadbfad374a63a2502b606c06df6f5`起，在同一命名分支与Draft PR #35执行B1—B3。Controller原件副本见`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/controller-review-45474b60-r1/`，签发存证见`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-EVIDENCE.md`。
+
+上方YAML与本节分三层：
+
+1. 历史工程层：`authorization: CLOSED`、`f71d4c8c…`的正式关闭、27/27与54/12/3保持为历史事实；无期限的`FULL_SCOPE_IMPLEMENTATION`没有重新开启。
+2. 当前任务层：`slice_v1_004_pr35_supplement_*`字段，以及`slice_v1_004_execution_authority`、`slice_v1_004_remote_write_authority`、`candidate_state_scope`、`next_authorized_actor`、`next_action`，只表达本次补充。校验器把它们绑定到Owner原文、Controller记录与补充范围的准确字节，并拒绝：原文缺失或改变；执行人、分支、PR或起点与原文不一致；未登记的PR35字段；元数据中以空格、引号或大小写变体写出的键，以及第二个YAML元数据块；`authorization`、`merge_authorization`、`production_write_enabled`、Gate与委托等钉定字段的任何改变。本节正文本身不受校验器约束。
+3. 全局委托层：DR-0004的`owner_git_execution_delegate`与`remote_git_publication_delegate`仍为`CODEX`；本次点名的执行人不是全局委托人。
+
+上一节所称“不以放宽校验器的方式改写钉定字段”对那次修正成立。本次钉定字段与校验器的精确绑定调整由本次Owner原文的B3单独授权，没有删除检查，也没有扩大任何枚举。
+
+原S4-DR-R1-022与027的关闭记录不改写；其中“完整等待链及其证据已满足”对当前证据的可复用性按Controller裁定限定。其余25项不重开，不新增第028项Frozen Finding。F-M01、F-M02、F-S01、F-W01、F-W02、E-04六项外部义务与全部前序发布义务保留。
+
+本次补充交回后PR #35仍为Draft／Unmerged，等待Controller对B1—B3的有限残余验证；实施与文档提交、发布候选的CI与CodeQL结果在PR #35正文与外部交接中报告，不写回仓库。`production_write_enabled`保持`false`。Ready、merge、auto-merge、直接写main、force-push/rebase、分支删除、保护/Ruleset/权限/Secret变化、规则或阈值放宽、dismiss/skip、SQL迁移或新schema、部署、生产迁移、Level 2、真实Provider／账户、Gate EV／E、Pilot、生产写与下一Slice均未获授权。

@@ -120,16 +120,32 @@ public final class ListingConversionFixture {
         this(migration,application,admin,emptyPrior,nativeVariantsPerListing,allowanceAxes,false);
     }
 
+    /**
+     * The same fictional graph under a known platform code, so that platform's native header
+     * units apply. At most one per platform fits one database. It is not Provider evidence.
+     */
+    static ListingConversionFixture knownPlatform(DataSource migration,DataSource application,DataSource admin,
+                                                  String platform) throws Exception {
+        return new ListingConversionFixture(migration,application,admin,false,1,null,false,platform);
+    }
+
     private ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
                              boolean emptyPrior,int nativeVariantsPerListing,String allowanceAxes,
                              boolean browserJourney) throws Exception {
+        this(migration,application,admin,emptyPrior,nativeVariantsPerListing,allowanceAxes,browserJourney,null);
+    }
+
+    private ListingConversionFixture(DataSource migration,DataSource application,DataSource admin,
+                             boolean emptyPrior,int nativeVariantsPerListing,String allowanceAxes,
+                             boolean browserJourney,String knownPlatform) throws Exception {
         if (nativeVariantsPerListing<1 || nativeVariantsPerListing>4096) throw new IllegalArgumentException("finite fixture scope");
         this.migration = migration;
         this.application = application;
         this.admin = admin;
         this.seed = JdbcClient.create(migration);
         this.app = JdbcClient.create(application);
-        AdvertisingR1Fixture.Graph base = AdvertisingR1Fixture.seedManual(migration);
+        AdvertisingR1Fixture.Graph base = knownPlatform==null ? AdvertisingR1Fixture.seedManual(migration)
+                : AdvertisingR1Fixture.seedManualBrowser(migration,knownPlatform,null);
         Map<String, UUID> named = new HashMap<>(base.ids());
         Map<String, String> replacement = new HashMap<>();
         TEMPLATE.forEach((name, template) -> {

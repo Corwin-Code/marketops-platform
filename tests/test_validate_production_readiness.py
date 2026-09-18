@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 import unittest
 from pathlib import Path
+from unittest import mock
+
+import scripts.validate_production_readiness as readiness
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
@@ -26,6 +29,11 @@ from scripts.validate_production_readiness import (
     ACTION_REFERENCE,
     ARCHITECTURE_RULE_TOKENS,
     BUILT_PREVIEW_COMMAND,
+    FRESH_CLONE_CONTRACT_TOKENS,
+    FRESH_CLONE_ENTRY,
+    FRESH_CLONE_PROHIBITED_TOKENS,
+    ISOLATED_BROWSER_CONTRACT_TOKENS,
+    ISOLATED_BROWSER_ENTRY,
     BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
@@ -114,6 +122,119 @@ class DeferredEvidenceRegisterTests(unittest.TestCase):
         mutated["entries"].pop()
         errors = deferred_evidence_register_violations(mutated)
         self.assertTrue(any("exactly cover Amendment-002" in error for error in errors))
+
+
+class FreshCloneEntryContractTests(unittest.TestCase):
+    """Full mode keeps every stack off the default port and runs the browser only in isolation."""
+
+    def setUp(self) -> None:
+        self.fresh_clone = (ROOT / FRESH_CLONE_ENTRY).read_text(encoding="utf-8")
+        self.isolated = (ROOT / ISOLATED_BROWSER_ENTRY).read_text(encoding="utf-8")
+
+    def fresh_clone_violations(self, text: str) -> list[str]:
+        return contract_token_violations(
+            text,
+            required=FRESH_CLONE_CONTRACT_TOKENS,
+            prohibited=FRESH_CLONE_PROHIBITED_TOKENS,
+        )
+
+    def test_the_committed_entries_meet_their_contracts(self) -> None:
+        self.assertEqual([], self.fresh_clone_violations(self.fresh_clone))
+        self.assertEqual(
+            [],
+            contract_token_violations(self.isolated, required=ISOLATED_BROWSER_CONTRACT_TOKENS),
+        )
+        self.assertEqual([], matching_lines(self.isolated, PATH_RESTRICTION))
+
+    def test_a_browser_run_on_the_generated_default_database_is_rejected(self) -> None:
+        delegation = f"bash {ISOLATED_BROWSER_ENTRY}"
+        mutated = self.fresh_clone.replace(delegation, "npm run test:browser")
+        violations = self.fresh_clone_violations(mutated)
+        self.assertIn(f"required contract is absent: {delegation}", violations)
+        self.assertIn("prohibited contract is present: npm run test:browser", violations)
+
+    def test_a_configuration_stack_left_on_the_default_port_is_rejected(self) -> None:
+        start = self.fresh_clone.index('python3 - "${CLONE}/.env.local" "${DB_PORT}"')
+        end = self.fresh_clone.index("\nPY\n", start) + len("\nPY\n")
+        mutated = self.fresh_clone[:start] + self.fresh_clone[end:]
+        mutated = mutated.replace("compose port postgres 5432", "true")
+        violations = self.fresh_clone_violations(mutated)
+        self.assertIn(
+            'required contract is absent: lines[hits[0]] != "MARKETOPS_DB_PORT=5432\\n"', violations
+        )
+        self.assertIn("required contract is absent: compose port postgres 5432", violations)
+
+    def test_an_isolated_entry_without_the_browser_suite_or_port_check_is_rejected(self) -> None:
+        mutated = self.isolated.replace("npm run test:browser", "true")
+        self.assertEqual(
+            ["required contract is absent: npm run test:browser"],
+            contract_token_violations(mutated, required=ISOLATED_BROWSER_CONTRACT_TOKENS),
+        )
+        mutated = self.isolated.replace('"${compose[@]}" port postgres 5432', "echo")
+        self.assertEqual(
+            ['required contract is absent: "${compose[@]}" port postgres 5432'],
+            contract_token_violations(mutated, required=ISOLATED_BROWSER_CONTRACT_TOKENS),
+        )
+
+    def test_the_configuration_stack_is_removed_before_the_isolated_entry_runs(self) -> None:
+        teardown = self.fresh_clone.index("\ncompose down --volumes --remove-orphans\n")
+        removal = self.fresh_clone.index('rm -f -- "${CLONE}/.env.local"')
+        delegation = self.fresh_clone.index(f"bash {ISOLATED_BROWSER_ENTRY}")
+        self.assertLess(teardown, removal)
+        self.assertLess(removal, delegation)
+
+    def test_both_entries_refuse_the_same_inherited_database_sources(self) -> None:
+        def refused(text: str) -> str:
+            return next(line.strip() for line in text.splitlines() if "MARKETOPS_DB_*|" in line)
+
+        self.assertEqual(refused(self.isolated), refused(self.fresh_clone))
+
+    def contract_violations(self, relative: str, text: str) -> list[str]:
+        """Run the repository contract check with one entry replaced in memory."""
+        original = readiness.read_text
+
+        def patched(path: Path) -> str | None:
+            return text if path == ROOT / relative else original(path)
+
+        report = readiness.Report()
+        with mock.patch.object(readiness, "read_text", patched):
+            readiness.check_repository_contracts(report)
+        return [violation.detail for violation in report.violations if violation.path == relative]
+
+    def test_the_repository_check_enforces_both_entries(self) -> None:
+        self.assertEqual([], self.contract_violations(FRESH_CLONE_ENTRY, self.fresh_clone))
+        self.assertEqual([], self.contract_violations(ISOLATED_BROWSER_ENTRY, self.isolated))
+        mutated = self.fresh_clone.replace(f"bash {ISOLATED_BROWSER_ENTRY}", "npm run test:browser")
+        self.assertIn(
+            "prohibited contract is present: npm run test:browser",
+            self.contract_violations(FRESH_CLONE_ENTRY, mutated),
+        )
+        mutated = self.isolated.replace("npm run test:browser", "true")
+        self.assertIn(
+            "required contract is absent: npm run test:browser",
+            self.contract_violations(ISOLATED_BROWSER_ENTRY, mutated),
+        )
+
+    def test_the_browser_stage_backstop_and_teardown_are_bound(self) -> None:
+        mutations = (
+            'COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}"\nSTACK_STARTED=true\n',
+            "compose down --volumes --remove-orphans\nSTACK_STARTED=false\n",
+            'require_no_resources "${project}" 6',
+            '  docker ps -aq --filter "${label}" || return 1\n',
+        )
+        for removed in mutations:
+            with self.subTest(removed=removed):
+                self.assertIn(removed, self.fresh_clone)
+                violations = self.contract_violations(FRESH_CLONE_ENTRY, self.fresh_clone.replace(removed, ""))
+                self.assertTrue(any(v.startswith("required contract is absent") for v in violations))
+
+    def test_path_avoidance_wording_in_the_isolated_entry_is_rejected(self) -> None:
+        mutated = self.isolated + "\n# move the clone to a path without spaces\n"
+        self.assertTrue(matching_lines(mutated, PATH_RESTRICTION))
+        self.assertTrue(any(
+            v.startswith("repository path restriction")
+            for v in self.contract_violations(ISOLATED_BROWSER_ENTRY, mutated)
+        ))
 
 
 class RepositoryContractPatternTests(unittest.TestCase):
