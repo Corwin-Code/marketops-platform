@@ -1114,3 +1114,11 @@ and manifests are in
 ## SLICE-V1-004 — Owner Formal Closure（2026-09-16）
 
 Owner已对 `f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10` / `b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47` 正式完成Level 1工程关闭。Controller R2 FINAL为PASS，27/27原Finding关闭；69项仍为54工程／12外部证据待补／3本地不适用。准确记录见 `docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json`，Closure Snapshot见 `docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md`。上文历史段落中的pending/CHANGES_REQUIRED保留其原时点，不是当前状态。F-M01/F-M02/F-S01/F-W01/F-W02/E-04及全部前序发布义务保留；不授予远程、生产、Level 2、真实Provider、Gate EV/E或Pilot权限，不自动激活下一Slice。
+
+## SLICE-V1-004 — 关闭后CI与证据一致性修正（PR #35，2026-09-18）
+
+2026-09-17的有界远程交付把`57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e`发布到PR #35（Draft）。其首次CI为12项必需检查8过4败：后端两个job因V0124后8处迁移期望过期而失败，`frontend-lint`在一处测试回调失败，`frontend-test`因fixture拒绝CI生成的5432端口而无法启动；非必需的CodeQL结果检查报告2条测试SQL拼接high告警。Controller裁定`SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1`（记录SHA-256 `f62a8484d030392ad770dff26d7e366efd7ea7652a29ad9d273d1ecfd6cf734b`）接受传输、判定CI不合格，并提出一次有界修正；Owner签发该授权并点名Opus 5为执行者，存证见`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-BOUNDED-CORRECTION-AUTHORIZATION-EVIDENCE.md`。
+
+修正提交为`48298206794a81b0640b4a14363198465dbd86c0`（父提交`57c5efc4…`），证据索引为`docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/README.md`。历史frontend lint声明以append-only erratum限定；原Contract、Annex、Frozen Set、Controller R2 FINAL与Owner Formal Closure原件字节不变，`f71d4c8c…`的正式关闭保留为历史事实，修正Head独立验证、不倒填旧日志。
+
+上方YAML中与本Slice相关的钉定字段继续记录正式关闭时的工程状态与Slice Contract自身的权限；它们在不修改校验器的前提下无法表达一次进行中的有界修正，本记录不以放宽校验器的方式改写它们。本次修正的有界权限只由上述存证与本段正文表达。PR #35保持Draft／Unmerged；发布候选的CI与CodeQL结果在PR #35正文与外部交接中报告，不写回仓库。Ready、merge、部署、生产迁移、Level 2、真实Provider／账户、Gate EV／E、Pilot、生产写与下一Slice均未获授权。

@@ -968,5 +968,19 @@
     "third_review_required": false,
     "production_enablement_authorized": false
   },
-  "current_sync_claim": "Consumes unchanged Controller final record and explicit Owner closure; no new test execution or Controller review."
+  "current_sync_claim": "Consumes unchanged Controller final record and explicit Owner closure; no new test execution or Controller review.",
+  "post_closure_evidence_qualification": {
+    "meaning": "Append-only qualification after the Owner Formal Closure. The 27 historical closures stand; no finding status changes and no 28th finding is added.",
+    "controller_arbitration": "SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1",
+    "qualified_finding": "S4-DR-R1-027",
+    "qualification": "Unqualified reuse of the historical frontend lint and format statements for the final source is withdrawn; see the erratum. The migration-upgrade suites affected by V0124 are verified again on the correction commit.",
+    "historical_lint_erratum": "docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/HISTORICAL_LINT_ERRATUM.md",
+    "controller_coverage_corrections": [
+      "CRCF-PR35-01",
+      "CRCF-PR35-02",
+      "CRCF-PR35-03"
+    ],
+    "coverage_correction_record": "docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/CONTROLLER_COVERAGE_CORRECTIONS.md",
+    "correction_implementation_head": "48298206794a81b0640b4a14363198465dbd86c0"
+  }
 }

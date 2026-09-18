@@ -1,0 +1,656 @@
+{
+  "schema": "marketops.evidence.codeql-note-keypath-check.v1",
+  "prepared_date": "2026-09-18",
+  "source": "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e (CodeQL alerts anchored on merge 950ef64af8817682b4f731d9dbc35e0d732c892b, analysis 1791578981, CodeQL 2.27.0)",
+  "scope": "All open java/unused-parameter, java/local-variable-is-never-read, java/uncaught-number-format-exception and java/internal-representation-exposure alerts on the PR #35 ref (36 alerts), per Controller Q5: a limited key-path check before any note is deferred.",
+  "method": "Read-only source tracing by one analyst per file group; production-code groups independently re-checked by an adversarial verifier instructed to refute. Not a dynamic test.",
+  "result_counts": {
+    "SECURITY_RELEVANT_DEFECT": 0,
+    "NOT_A_CONTROL_GAP": 28,
+    "MAINTENANCE_DEBT": 8
+  },
+  "related_defect_found": {
+    "id": "PR35-NOTE-KEYPATH-01",
+    "alert_context": 238,
+    "classification": "SECURITY_RELEVANT_DEFECT_LATENT",
+    "summary": "The production transport drops the platform-native retry headers item-retry-after (Ozon, minutes) and x-ratelimit-retry (Wildberries, seconds), so neither the description worker's delay hint nor the V0084 provider-wait gate sees them; the database then records ABSENT instead of UNKNOWN and the MO092 wait gates do not hold for a provider wait expressed only in a native header.",
+    "evidence": [
+      "BoundedOutboundHttp.java:45-47 RESPONSE_HEADERS lacks item-retry-after and x-ratelimit-retry; :180 filters response headers by that allowlist",
+      "BoundedOutboundHttp is the only OutboundHttp implementation in src/main; PlatformHttpDescriptionWriteAdapter reads response.headers() from it",
+      "RetryAfterUnits.java:47-48 expects exactly those native names",
+      "V0084__persist_provider_description_retry_timing.sql:60 returns ABSENT when no timing header is present; :76 updates provider_not_before only for KNOWN; :89 states missing timing cannot be certified ABSENT; MO092 gates at :102 and :118",
+      "ListingDescriptionWriteProperties.java:23 default retry delay 60 seconds",
+      "DescriptionRetryHeadersTest uses a java.net.http stub transport and never exercises BoundedOutboundHttp"
+    ],
+    "exposure": "Latent: live Ozon/Wildberries description writes require verified capability rows and an Owner-published Gate EV/E; production_write_enabled=false and no such gate exists.",
+    "origin": "BoundedOutboundHttp last changed in db92cf2f (SLICE-V1-001); the native-header reliance was added in SLICE-V1-004 without widening the transport allowlist.",
+    "disposition": "NOT_FIXED_OUTSIDE_ENVELOPE_05_REPORTED_TO_OWNER_AND_CONTROLLER",
+    "minimal_difference": "Add the two native header names to BoundedOutboundHttp.RESPONSE_HEADERS and add a test that goes through the real bounded transport. This touches a shared production file not named in envelope 05 and needs a separate decision."
+  },
+  "alerts": [
+    {
+      "number": 130,
+      "rule_id": "java/local-variable-is-never-read",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingTargetedWorker.java",
+      "line": 79,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Instant startedAt, the local start time of the worker's processing (AdvertisingTargetedWorker.java:79); not an input to any control",
+      "enforcement_or_gap": "No control reads a processing start time. The lease is taken with 'now' from runOnce (AdvertisingTargetedWorker.java:64-67; AdvertisingRecalculationRepository.java:117-126). Acknowledgement is fenced by lease_owner and calculation_as_of (AdvertisingRecalculationRepository.java:166-175). Retry and abandon are driven by attemptCount (AdvertisingTargetedWorker.java:92). The SLO latency is deliberately measured from factAcceptedAt to finishedAt (:106-119, 134-137). The failure audit trace is written with finishedAt (:99-101).",
+      "note": "This is a harmless dead local; either delete it or use it for a processing-duration metric.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "MAINTENANCE_DEBT",
+        "evidence": "Confirmed. The lease is taken with runOnce's now (AdvertisingTargetedWorker.java:64-67; AdvertisingRecalculationRepository.java:117-126). The DB started_at is set by claim (:122), not by this local. finish is fenced by state='LEASED', lease_owner and calculation_as_of (:166-175). Retry and abandon use attemptCount (AdvertisingTargetedWorker.java:92). SLO latency runs from factAcceptedAt to finishedAt by design (:106-119, 134-137). The failure trace uses finishedAt (:99-101). No lease-expiry or fail-closed decision could use a local start time, because refresh has already run by the time it would be checked."
+      }
+    },
+    {
+      "number": 131,
+      "rule_id": "java/local-variable-is-never-read",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingGraphFixture.java",
+      "line": 216,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "test-code",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Local `String owner = \"owner\"` at AdvertisingGraphFixture.java:216 in seedPolicy. It looks like a policy owner, but it is never bound.",
+      "enforcement_or_gap": "No assertion or fixture control is lost. Every seedPolicy case binds :owner to graph.executorUserId(), for example at :232, :245, :263, :274, :285, :295, :309, :324 and :339. The target column is `owner_user_id uuid NOT NULL REFERENCES iam.user_account(id)` (V0058__seal_advertising_authority_and_control_execution.sql:114), so the string literal could never have been a valid value. A different local, `owner=\"boundary-fixture\"` at :78, is the one actually used, for lease_owner at :204.",
+      "note": "Pre-existing on main (2026-09-05, SLICE-V1-003; introduced with 0f26d0ed). Cleanup: delete the dead local.",
+      "adversarial_verification": null
+    },
+    {
+      "number": 132,
+      "rule_id": "java/uncaught-number-format-exception",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+      "line": 55,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "test-code",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Long.valueOf(clicks) at AdvertisingCanonicalFactsIT.java:55 (the new BigDecimal(spend) on the same line is similar), in the test helper fact() that seeds synthetic ledger.ad_object_fact rows.",
+      "enforcement_or_gap": "No external input reaches this parse, and no assertion is silently skipped. Null is handled explicitly by the `clicks==null?null:` guard at :55. Every caller passes a literal (\"10\", \"5\", \"7\", \"2\") or null: :61, :66, :70, :75, :76, :82. A NumberFormatException would fail the test loudly. The canonical-fact assertions themselves are at :62-63, :67, :71-72 and :77-79.",
+      "note": "Pre-existing on main (2026-09-05, SLICE-V1-003).",
+      "adversarial_verification": null
+    },
+    {
+      "number": 133,
+      "rule_id": "java/internal-representation-exposure",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteResult.java",
+      "line": 95,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "marketplace-parsing",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "The exact provider response bytes (body) of an ad-bid write attempt, which the database stores as evidence and uses to re-classify the outcome.",
+      "enforcement_or_gap": "No caller can reach the internal array, so this is a false positive. The compact constructor copies the input at AdBidWriteResult.java:97 (body = body == null ? null : body.clone()), so later changes to the caller's array do not affect the stored field. The overridden accessor at AdBidWriteResult.java:100-103 returns a fresh clone. withResponse (AdBidWriteResult.java:106-108) also goes through the copying constructor. No variable named 'original' exists in the source. That name appears to come from how CodeQL models the reassigned compact-constructor parameter. Both consumers read copies through body(): custody.store at AdBidCommandWorker.java:347 and the :body parameter at AdBidCommandRepository.java:208. The database then decides the outcome: ops.complete_ad_bid_command_attempt (AdBidCommandRepository.java:197-215) re-derives outcome_class, which is read back at AdBidCommandRepository.java:217-222. The adapter's outcome is only a proposal (AdBidWriteResult.java:13-16). The file is unchanged from main (SLICE-V1-003 code, last touched in 0f26d0ed, PR #30).",
+      "note": "This could be dismissed as a false positive with the clone at :97 and :102 as the reason, but the Owner statement forbids dismissing alerts to get CI green. A regression test that mutates the input array after construction would be enough source/regression evidence.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP (false positive)",
+        "evidence": "CONFIRMED. The canonical compact constructor defensively copies the array (AdBidWriteResult.java:95-98: body = body == null ? null : body.clone()), and the overridden accessor returns a fresh clone (AdBidWriteResult.java:100-103). The record field is private. The only other in-class uses are withResponse (:106-108) and refusedBeforeDispatch (:117-120), and both go through the copying constructor. No code path hands out the stored array. Consumers read copies: custody.store at AdBidCommandWorker.java:346-347 and the :body parameter at AdBidCommandRepository.java:208. There is also a second enforcement the analyst did not cite. Even if the two copies differed, the only definition of ops.complete_ad_bid_command_attempt (V0043:288, never redefined) rejects bytes whose sha256 differs from the custody hash (V0043:360-365, MO093). It then derives outcome_class from those bytes itself (V0043:370-380ff), and the Java side reads that result back (AdBidCommandRepository.java:217-222). The adapter's Outcome is only a proposal (AdBidWriteResult.java:13-16). The file is unchanged between merge-base 0f26d0ed (PR #30, SLICE-V1-003) and 57c5efc4 (git diff --stat is empty). The analyst correctly advises against dismissing the alert. A regression test that mutates the input array after construction, and the array returned by body(), would provide the evidence."
+      }
+    },
+    {
+      "number": 197,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "line": 330,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "affectedSet (the resolved affected-variant scope) passed to profitOf; ignored when computing contribution profit (AdvertisingCaseCalculationService.java:329-332)",
+      "enforcement_or_gap": "The affected-set gate is enforced on other paths, all in the same calculation. (1) dataDefectOf returns AFFECTED_SET_UNRESOLVED and adds the set's reason codes as blockers (AdvertisingCaseCalculationService.java:497-500). (2) evidenceStateOf drops to INCOMPLETE (:598-600). (3) The conversion is not write-grade unless affectedSet.sufficientForWrite() (:297), and qualification requires AFFECTED_SET freshness plus minimum set coverage (:551-552, :573-574). (4) Allowable spend and Max CPC are limited to the set: cpaByVariant is filled only for the set's product variants (AdvertisingEvidenceGatherer.java:225-238). Any sale line outside the set sets cpaComplete=false (AdvertisingAttributedEconomics.java:59-63), so allowable spend becomes POLICY_BLOCKED (:84) and MaxCpc is absent (AdvertisingCaseCalculationService.java:322-323). (5) Downstream, a proposal is refused without a resolved set (AdvertisingProposalService.java:151-158). Outcome planning requires a.resolution_state='COMPLETE' and a matching digest (AdvertisingOutcomePlanningService.java:69). Profit is attributed per ad object by design: sales are filtered by org and object (AdvertisingEvidenceRepository.java:328).",
+      "note": "The parameter has been unused since 0f26d0ed (#30, 2026-09-07), when profitOf became a delegate to economicsOf. The test comment at AdvertisingWriteEnabledFixture.java:1083-1092 still describes the old profitOf body and is stale.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Refutation attempt failed. affectedSet was never meant to filter sales in profit. The original body, in branch commit 342c4656 (not on main), took net sales over ALL completed sales and used affectedSet.productVariantIds() only to choose which variants' cost components to sum. The current per-line cost lookup is stricter: a line with no economics blocks profit (AdvertisingAttributedEconomics.java:35-41). Sales stay scoped to the organization and the object (AdvertisingEvidenceRepository.java:328). The set gates are confirmed: dataDefectOf (AdvertisingCaseCalculationService.java:497-500), evidenceStateOf (:598-600), conversion write-grade (:297), qualification (:551-552, :573-574), CPA only for set variants (AdvertisingEvidenceGatherer.java:232-238, AdvertisingAttributedEconomics.java:59-63, :84), proposal needs a COMPLETE set (AdvertisingProposalService.java:151-158, AdvertisingCandidateRepository.java:118-119), and outcome needs a COMPLETE set (AdvertisingOutcomePlanningService.java:69). Correction 1: when allowable spend is POLICY_BLOCKED it is notAvailable, so Max CPC is absent at AdvertisingCaseCalculationService.java:317-320, not :322-323. Correction 2: on main the parameter was never used. 0f26d0ed created the file (git log --follow shows only 0f26d0ed), and the delegate body first appeared in branch commit 60638b1f. Caveat, not a gap: the cause-bound PROVEN_ADVERTISING_LOSS route drops AD_LINKED_CONVERSION_NOT_WRITE_GRADE (AdActionDependencyPolicy.java:32-35; V0066:21-22). So an object-level loss that includes linked lines outside the set can still produce a decrease-only proposal. That proposal remains bounded by AFFECTED_SET purpose evidence, a COMPLETE-set digest match and the target-policy checks (AdCaseCalculation.java:120-135; V0066:47-49, :52-68) and by the approval chain. This is business semantics, not authorization, tenancy or audit."
+      }
+    },
+    {
+      "number": 198,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+      "line": 338,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-repositories",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "organizationId in AdvertisingDecisionRepository.materialityRoute(UUID organizationId, BigDecimal changeAmount). It looks like a tenancy scope, but the method never reads data. It returns the constant fail-closed value \"MATERIALITY_UNRESOLVED\" (AdvertisingDecisionRepository.java:337-340).",
+      "enforcement_or_gap": "No production code calls this overload. The only callers are AdvertisingDecisionQueryIT.java:77 and :79 (test code). The production route is materialityRouteForRecommendation (AdvertisingDecisionService.java:108-109). That query scopes by tenant: the bundle must match r.organization_id and r.store_id (AdvertisingDecisionRepository.java:356), the sibling-uniqueness check uses the same scope (:361), and it defaults to MATERIALITY_UNRESOLVED (:373). The authoritative tenancy and role check for approval is in the database: ops.seal_ad_action_authorization calls ad_actor_has_role_scope and ad_actor_covers_affected_set on r.organization_id and r.store_id (V0058__seal_advertising_authority_and_control_execution.sql:325-331). That function is still reached through the V0066 wrapper (V0066__qualify_economic_cause_bound_protection.sql:76-85). Because the stub returns a constant, ignoring organizationId cannot leak or mix tenants.",
+      "note": "This alert already existed on main (created 2026-09-05, SLICE-V1-003). The overload is test-only dead code that always fails closed. Removing or deprecating it together with its test is maintenance only.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "I could not refute this one. At 57c5efc4, AdvertisingDecisionRepository.java:337-340 returns the constant \"MATERIALITY_UNRESOLVED\" and reads no data, so it cannot touch any organization's rows. git grep shows only two callers, both in tests: AdvertisingDecisionQueryIT.java:77 and :79. No production code calls it. The production route is materialityRouteForRecommendation, reached from AdvertisingDecisionService.java:108-109. Its bundle join is scoped by tenant: b.organization_id=r.organization_id AND b.store_id=r.store_id (AdvertisingDecisionRepository.java:356), and the sibling count uses the same scope (:361). Final approval checks tenancy and role in the database: V0058:326-330 calls ad_actor_has_role_scope and ad_actor_covers_affected_set on r.organization_id/r.store_id. This still applies because the V0066:76-85 wrapper delegates to the renamed original. The method sits in internal.infrastructure.jdbc, so other modules cannot legitimately call it. Classification: dead test-only stub that fails closed. The fix is maintenance only."
+      }
+    },
+    {
+      "number": 199,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+      "line": 338,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-repositories",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "changeAmount in AdvertisingDecisionRepository.materialityRoute(...). This is the materiality-gate input that decides whether a bid change is ORDINARY_IMPACT (OPS_LEAD approval) or MATERIAL_IMPACT (OWNER approval). The stub ignores it and always returns MATERIALITY_UNRESOLVED (AdvertisingDecisionRepository.java:338-339).",
+      "enforcement_or_gap": "Materiality is never taken from a caller-supplied amount. Production gets it from ops.ad_materiality_assessment(bundle, candidate) (AdvertisingDecisionRepository.java:346, function defined at V0064__reconcile_expired_advertising_authority.sql:90). In Java, an unresolved route fails closed: anything other than ORDINARY_IMPACT needs OWNER and exactly MATERIAL_IMPACT, otherwise ACTION_NOT_PERMITTED (AdvertisingHumanDecisionService.java:169-177). The database seal refuses final approval unless the route is ORDINARY_IMPACT or MATERIAL_IMPACT (V0058:321-323). It binds the required role to that route (V0058:324-331). Command creation re-checks that the sealed route still matches the current assessment (V0058:419-420). A caller has no path to feed an amount into any gate.",
+      "note": "This alert already existed on main (2026-09-05). The stub always returns a fail-closed value and only AdvertisingDecisionQueryIT.java:77-80 calls it.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "I could not refute this one. No caller can supply an amount to any materiality gate. Production gets the route from ops.ad_materiality_assessment(bundle,candidate) (AdvertisingDecisionRepository.java:346; defined at V0064:90, granted at V0064:216). Java fails closed: anything other than ORDINARY_IMPACT needs OWNER and exactly MATERIAL_IMPACT, or it throws ACTION_NOT_PERMITTED (AdvertisingHumanDecisionService.java:169-177). The database seal accepts only ORDINARY_IMPACT or MATERIAL_IMPACT (V0058:321-323) and binds the approver role to the route (V0058:324-331). Command creation re-checks the sealed route against the current assessment (V0058:419-420, still reached through the V0066:92-99 wrapper). The only callers of the stub are AdvertisingDecisionQueryIT.java:77-80."
+      }
+    },
+    {
+      "number": 200,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualPacketRepository.java",
+      "line": 83,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-repositories",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "now in AdvertisingManualPacketRepository.expire(Instant now). This is the time cutoff for expiring manual execution packets. The method calls ops.expire_ad_manual_packets() without passing it (AdvertisingManualPacketRepository.java:83-84).",
+      "enforcement_or_gap": "The expiry authority uses the database clock on purpose. The sweep function takes no argument and expires DRAFT, ENDORSED and ISSUED packets where expires_at <= clock_timestamp() (V0060__govern_manual_proposals_packets_and_configuration_proof.sql:410-418). Because a caller cannot supply the time, it cannot move expiry earlier or later. Packet transitions fail closed on expiry even without a sweep: packet.expires_at is copied from proposal.expires_at (V0060:226), ad_manual_proposal_current requires expires_at > statement_timestamp() (V0060:188), and both decide_ad_manual_packet (V0060:244) and start_ad_manual_execution (V0060:266) require that check. No later migration redefines these functions. Java packet writes are also sealed: issue, recordVerification and revoke all throw ACTION_NOT_PERMITTED (AdvertisingManualPacketRepository.java:47-48, 65-66, 71-72).",
+      "note": "This alert already existed on main (2026-09-05). Separate observation: no production code calls expire(). The only caller is the test AdvertisingManualShadowIT.java:113, which passes year 9999 and asserts only >= 0. As a result, a packet past its expiry can still show a pre-expiry state when read, but every state change is refused on database time. This is display staleness, not a control gap.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "The classification stands, but one side claim needs correcting. Ignoring `now` protects the system on purpose. ops.expire_ad_manual_packets() takes no argument and uses clock_timestamp() (V0060:411-418), and AdvertisingManualShadowIT.java:112 states the intent: a caller cannot expire live instructions by picking a distant clock. Every transition refuses an expired packet using database time. expires_at is copied from the proposal (V0060:226). ad_manual_proposal_current requires expires_at>statement_timestamp() (V0060:188). decide_ad_manual_packet and start_ad_manual_execution both require that check (V0060:244, :266). Observation recording needs execution already started (V0060:312-316). Java issue/recordVerification/revoke all throw (AdvertisingManualPacketRepository.java:47-48, 65-66, 71-72). The UI and projection also check expiry (AdvertisingDisclosureService.java:298-300; ManualExecutionPacketView.java:128-130; AdvertisingExceptionService.java:294). ops.take_ad_action_reservation's CONFIRMED_MANUAL_PACKET branch checks state='MANUAL_PACKET_ISSUED' without checking expiry (V0058:719-721), and it is granted to marketops_app (V0058:740). However, its only production invoker is start_ad_manual_execution (V0060:279), which checks expiry first, and the only Java caller passes CONTROLLED_AD_BID_CHANGE (AdvertisingDecisionService.java:215). A reservation is also only a hold: it does not change the packet's state or authorize anything. CORRECTION to the note: the effect is more than stale display. No @Scheduled method or other production code calls expire() (AdvertisingRecalculationScheduler.java:76-133 has no sweep; the only callers are tests). As a result, an expired, unstarted MANUAL_PACKET_ISSUED packet keeps its place in the per-object live-instruction unique index (V0073:8-9) and the issue guard (V0073:13-18). While it stays there, no new manual packet for that ad_native_object_id can reach ISSUED. It is cleared only by containment activation (V0058:898-905) or a human-authority-change revocation (V0058:1899-1902). This is a liveness block that fails closed, not a weakened control, and honoring `now` would not fix it because nothing calls the method. It belongs as a separate registration: the missing production expiry sweep."
+      }
+    },
+    {
+      "number": 201,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+      "line": 250,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-repositories",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "containmentId in AdvertisingOutcomeRepository.reopenAfterRegression. This is a caller-generated identity for the ACTION_OUTCOME_QUARANTINE containment, supplied as ids.newId() (AdvertisingOutcomeService.java:76). The idempotency and containment key are affected.",
+      "enforcement_or_gap": "The containment identity is created in the database and is idempotent per observation. ops.activate_ad_regression_containment(p_observation) takes a per-organization advisory lock (V0069__reopen_invalidated_protection_outcomes.sql:69). It returns the existing containment for evidence_reference 'ad-outcome:'||observation when one exists (V0069:70-71); otherwise it calls gen_random_uuid() (V0069:72). V0058 removed caller-chosen identity on purpose. Its comment says a caller-selected role or containment identity cannot create another route, and it revokes the old four-argument reopen_ad_lineage_after_regression from marketops_app (V0058:1872-1875). AdvertisingPrivilegeBoundaryIT.java:318-346 proves that revocation. The app role cannot write ops.ad_containment directly (V0058:1561). Ignoring the parameter therefore strengthens idempotency and the single-writer rule.",
+      "note": "This alert already existed on main (2026-09-05, SLICE-V1-003). The parameter is vestigial from the retired V0050 signature. Removing it only needs a matching update to AdvertisingOutcomeServiceTest.java:117 and :203-204.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "I could not refute this one. The containment identity comes from the database and is idempotent per observation. V0069:69 takes a per-organization advisory lock, V0069:70-71 returns the existing row for evidence_reference 'ad-outcome:'||observation, and V0069:72 otherwise uses gen_random_uuid(). The function is SECURITY DEFINER and granted to marketops_app (V0058:1564); CREATE OR REPLACE at V0069:53 keeps that grant. The legacy four-argument function that accepted a caller-chosen id is revoked (V0058:1872-1875), and AdvertisingPrivilegeBoundaryIT.java:318-346 proves the revocation. INSERT/UPDATE/DELETE on ops.ad_containment is revoked from the application role (V0058:1561), and no later migration grants it back (the only grant is V0041:769, which predates the revoke). The ignored ids.newId() at AdvertisingOutcomeService.java:76 is vestigial. Only the test AdvertisingOutcomeServiceTest.java:117 and :203-204 depends on the method's signature."
+      }
+    },
+    {
+      "number": 202,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+      "line": 250,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-repositories",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "accountableRoleCode in AdvertisingOutcomeRepository.reopenAfterRegression. The only caller passes the constant \"OPS_LEAD\" (AdvertisingOutcomeService.java:76). It stands for actor attribution: who is responsible for reviewing the regression containment.",
+      "enforcement_or_gap": "The database binds accountability to a specific person, not a role code. It sets review_owner_user_id to the endorser of the action authorization (V0069:61, :79), or to the manual packet endorser (V0069:66). It fails closed with MO097 when no endorser exists (V0069:68). The role/scope checks on that endorser were already applied at sealing: OPS_LEAD with AD_BID_CHANGE_ENDORSE on the organization, store and affected set (V0058:329-330), and at manual start (V0060:272-273). V0058:1872-1875 intentionally stopped accepting a caller-selected role. The legacy column ops.ad_containment.accountable_role_code (V0050__cause_specific_outcomes_and_same_lineage_reopen.sql:158-166) is left NULL. No SQL or Java reads it for ad_containment; the only other accountable_role_code readers are the unrelated availability case tables (V0030).",
+      "note": "This alert already existed on main (2026-09-05). The value is a constant that does not come from any actor, so ignoring it loses no attribution. The column is vestigial schema.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "I could not refute this one. The value is the constant \"OPS_LEAD\" (AdvertisingOutcomeService.java:76), not input from any actor. The database binds accountability to a specific person: review_owner_user_id is the authorization endorser (V0069:61, :79) or the manual packet endorser (V0069:66). If there is none, the call fails with MO097 (V0069:68). That endorser's OPS_LEAD/AD_BID_CHANGE_ENDORSE scope was checked at sealing (V0058:329-330) or at manual start (V0060:272-273). The MO097 branch cannot be reached in practice: a command requires an authorization (V0058:409-413) with a non-null endorsement (V0058:303), and a manual path requires endorser_user_id to be set (V0060:265). The column ops.ad_containment.accountable_role_code (V0050:158-166) is written only by the revoked V0050 function (V0050:234-240). The only accountable_role_code readers in the repository belong to the availability case tables (V0030:1097; AvailabilityCaseRepository.java:364, :382). The legacy V0050 function also gated on a settled, guarded regression (V0050:207-208). The current function contains more broadly (V0069:58), which is the conservative direction and does not depend on this parameter."
+      }
+    },
+    {
+      "number": 203,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
+      "line": 250,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-repositories",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "correlationId in AdvertisingOutcomeRepository.reopenAfterRegression, supplied as CorrelationId.current() (AdvertisingOutcomeService.java:76). It is the audit correlation for the containment.",
+      "enforcement_or_gap": "The containment still gets its correlation id, taken from the observation that triggered it: ad_containment.correlation_id = outcome.correlation_id (V0069:79). That observation is inserted in the same @Transactional evaluate() (AdvertisingOutcomeService.java:38-39) with the same CorrelationId.current() (AdvertisingOutcomeService.java:63, bound at AdvertisingOutcomeRepository.java:202 and :233). The two values are therefore identical. Both columns are NOT NULL (ad_outcome_observation.correlation_id at V0049__create_advertising_outcome_plan_and_lineage.sql:160; ad_containment.correlation_id at V0041__create_advertising_containment_and_decision_bundle.sql:285). evidence_reference 'ad-outcome:'||observation (V0069:78) links the containment back to its evidence. The application role cannot insert, update or delete ad_containment (V0058:1561), so the row cannot be rewritten.",
+      "note": "This alert already existed on main (2026-09-05). Separate observation, unrelated to the parameter: the retired V0050 function also wrote a metadata_audit_event KILL_SWITCH row (V0050:242-251). The V0058 and V0069 activation functions do not, and neither does any other V0058 containment function (none in V0058 writes metadata_audit_event). The containment row itself is the durable record. Whether it is also required in metadata_audit_event is a design question for the Owner, not something this alert decides.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "The classification stands, but the supporting claim that the two correlation values are identical is REFUTED for the main production path. CorrelationId.current() returns the MDC value if one exists and otherwise calls generate() to make a new random UUID on every call (CorrelationId.java:96-99). Only the HTTP CorrelationIdFilter sets the MDC (CorrelationIdFilter.java:37). The main path is the scheduled outcome pass: AdvertisingRecalculationScheduler.java:101-104, then AdvertisingOutcomeWorker.java:54, then AdvertisingOutcomeService.evaluate. It runs with no MDC. There, AdvertisingOutcomeService.java:63 (the observation's correlation_id, bound at AdvertisingOutcomeRepository.java:233) and :76 (the ignored parameter) produce two different random UUIDs. The worker log lines at AdvertisingOutcomeWorker.java:63 and :71 produce more unrelated ones. The values match only on the HTTP-driven evaluateManual path. Even so, no control is lost. The containment row stores outcome.correlation_id (V0069:79), which exactly matches the stored observation (both NOT NULL: V0049:160, V0041:285), and evidence_reference 'ad-outcome:'||observation (V0069:78) links them durably. The discarded parameter was an unrecorded random value, so honoring it would have given the containment an id that matches no other record. The application role cannot rewrite the row (V0058:1561). I confirm the analyst's separate audit observation. The revoked V0050 function wrote a metadata_audit_event KILL_SWITCH row (V0050:242-251). V0058 and V0069 write none; git grep lists no metadata_audit_event writer in V0058, V0069 or any migration after V0050 related to ad_containment. That is an Owner design question and should be registered separately. The broken correlation of scheduled outcome passes (a new id on every CorrelationId.current() call outside HTTP) is observability debt that exists independently of this alert."
+      }
+    },
+    {
+      "number": 204,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+      "line": 31,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST .../decision-bundles/{bundleId}/activation (Owner activation of a Bundle), AdBundleControlController.java:31",
+      "enforcement_or_gap": "The service issues a BUNDLE_APPROVE grant from the SecurityContext principal (AdBundleControlService.java:32 -> AuthenticatedInvocationIssuer.java:56-59,82-88). ops.activate_ad_bundle consumes it at V0058:1336. It then refuses an approver who is the maker or the endorser, and requires OWNER/ADVERTISING_POLICY_MANAGE scope, a matching endorsement snapshot, and an exact ACTIVE, in-period gate matching org/store/platform/account/direction/basis (V0058:1341-1349). Whole-bundle validation follows (1350-1351). approved_by_user_id is set to g.actor_user_id (1357).",
+      "note": "Pre-existing on main (2026-09-05). The approver identity cannot be supplied by the caller.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The proof is BUNDLE_APPROVE (AdBundleControlService.java:32) and is consumed at V0058:1336. The approver must not be the maker or endorser (1341). OWNER/ADVERTISING_POLICY_MANAGE scope is required in the bundle's org and store (1342). The endorsement snapshot must match (1343). The gate must match exactly on id, bundle, store, org, platform, account, direction and basis, and be in period (1344-1348). Whole-bundle validation runs at 1350-1351. approved_by comes from g.actor_user_id (1357). Caller-supplied gateAuthorityId is re-validated, and there is no caller path to the approver identity. One observation that does not change the verdict: the IN(...) test at 1341 would not catch a NULL activated_by_user_id. But activated_by is always set at 1274, and the app cannot INSERT bundles directly (V0058:962)."
+      }
+    },
+    {
+      "number": 205,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+      "line": 27,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST .../decision-bundles/{bundleId}/endorsement (endorse a Bundle), AdBundleControlController.java:27",
+      "enforcement_or_gap": "The actor comes from the SecurityContext through AuthenticatedInvocationIssuer.java:56-59,82-88, called with purpose BUNDLE_ENDORSE at AdBundleControlService.java:31. ops.endorse_ad_bundle consumes the one-use grant at V0058:1283. It then enforces maker != endorser (b.activated_by_user_id = g.actor_user_id is refused), OPS_LEAD/ADVERTISING_POLICY_MANAGE scope in the bundle's org and store, and an exact ACTIVE gate in the same org (V0058:1285-1290). The endorser is recorded as g.actor_user_id at V0058:1291, in a table that is immutable (V0058:1262-1263) and revoked from marketops_app (1260-1261). The resolver refuses anonymous callers (AuthenticatedActorArgumentResolver.java:37-43).",
+      "note": "Pre-existing on main (2026-09-05). Separation of duties and attribution come from the DB-verified grant actor, not from the controller argument.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The proof is BUNDLE_ENDORSE bound to (bundleId, gateId) (AdBundleControlService.java:31). It is consumed at V0058:1283. Maker/endorser separation is at V0058:1285 (b.activated_by_user_id=g.actor_user_id raises). Scope is checked in the bundle's org and store (1285-1286). There is no explicit g.org=b.org test, but ad_actor_has_role_scope requires actor.organization_id=p_org (V0058:1065-1067), and consume requires actor.organization_id=g.organization_id (1052). So by transitivity grant org = bundle org. The gate must match exactly and be ACTIVE (1287-1289). A missing bundle fails closed through the NULL-org scope check. The endorser comes from the grant (1291), in a table that is immutable (1262-1263) and revoked from the app (1260-1261). The functions for this table are not redefined after V0058; my grep over later migrations found only consume_ad_control_invocation callers."
+      }
+    },
+    {
+      "number": 206,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdBundleControlController.java",
+      "line": 23,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST /api/v1/console/advertising/decision-bundles (draft a Decision/Policy Bundle), AdBundleControlController.java:23",
+      "enforcement_or_gap": "The parameter still does work: declaring it runs AuthenticatedActorArgumentResolver.java:37-43 (registered at IdentityWebConfig.java:25), which refuses any request without an AuthenticatedActor principal. The filter chain also requires authentication at IdentitySecurityConfig.java:98. For authorization and attribution, AdBundleControlService.java:28,33-35 calls AuthenticatedInvocationIssuer.java:56-62. The issuer re-reads the same principal from the SecurityContext, requires step-up, and binds userId/orgId/provider/subject/session into a one-use BUNDLE_DRAFT grant (lines 82-88). ops.create_ad_bundle_draft consumes that grant at V0058:1269 (consume checks at V0058:1046-1055: purpose, target, version, backend pid, txid, actor ACTIVE in the same org, provider VERIFIED). It then requires bundle org = grant org plus OPS_LEAD/ADVERTISING_POLICY_MANAGE store scope (V0058:1270-1272), forces DRAFT state (1273) and sets activated_by_user_id to g.actor_user_id (1274). No request field carries an actor id.",
+      "note": "Pre-existing on main (created 2026-09-05, SLICE-V1-003), not introduced by PR #35. Keep the parameter, because it acts as the resolver-level authentication guard; a rename or suppression would be enough to silence the alert.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "I could not refute this. The only caller of AdBundleControlService is AdBundleControlController.java:21-24, and the only caller of the repository's create_ad_bundle_draft is AdBundleControlRepository.java:16. The service mints a BUNDLE_DRAFT proof from the SecurityContext principal (AdBundleControlService.java:28,33-35 -> AuthenticatedInvocationIssuer.java:56-62,82-88). The step-up check is at :59. ops.create_ad_bundle_draft consumes the proof at V0058:1269, and the consume checks are at V0058:1046-1055 (actor ACTIVE in grant org, provider VERIFIED). It then requires b.organization_id=g.organization_id plus OPS_LEAD/ADVERTISING_POLICY_MANAGE scope at 1270-1272; a NULL org or store fails closed because ad_actor_has_role_scope at 1060-1072 returns false. marketops_app has no INSERT/UPDATE/DELETE on the bundle table (V0058:962 revokes the V0041:770 grant), and I found no later re-grant. CORRECTION: the claim that no request field carries an actor id is imprecise. Draft.references is a free-form Map (AdBundleControlController.java:34) that is merged into the bundle row (AdBundleControlService.java:24 -> V0058:1268). A caller CAN send activated_by_user_id, endorsed_by_user_id, approved_by_user_id, status or gate_authority_id keys. V0058:1273-1275 overwrites all of them (activated_by := g.actor_user_id; endorsed/approved/gate := NULL; status := DRAFT), so attribution is still not caller-controlled. Second correction: calling the parameter the resolver-level guard overstates it. It is redundant defense in depth, because IdentitySecurityConfig.java:98 and AuthenticatedInvocationIssuer.java:56-62 refuse an unauthenticated caller on their own."
+      }
+    },
+    {
+      "number": 207,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+      "line": 39,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST .../containments/{containmentId}/reenablement (Owner re-enablement after containment), AdContainmentControlController.java:39",
+      "enforcement_or_gap": "The service mints a CONTAINMENT_REENABLE grant (AdContainmentControlService.java:38,40-42 -> AuthenticatedInvocationIssuer.java:56-59,82-88). ops.reenable_ad_containment consumes it at V0058:1514. It requires grant org = containment org and an OPERATIONS_ENDORSEMENT to exist. The approver must differ from both the endorser and the activator and must hold OWNER scope (V0058:1517-1521). Required attestations, the security attestation for technical causes, no in-flight commands and a valid replacement bundle and gate are also required (1522-1551). approved_by_user_id is set to g.actor_user_id (1554). Separation is also backed by table CHECKs (V0041:360-367, 370-374).",
+      "note": "Pre-existing on main (2026-09-05). Re-enablement stays fail-closed without an independent, scoped, DB-verified actor.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The CONTAINMENT_REENABLE proof is bound to (id, newBundle) (AdContainmentControlService.java:37-38) and consumed at V0058:1514. The grant org must equal the containment org, and an OPERATIONS_ENDORSEMENT must exist (1516-1517). The approver must differ from both the endorser and the activator (1518) and must hold OWNER scope, organization-wide for AUTHORITY_VERSION (1519-1521). Attestor scopes, required attestations, the security attestation for technical causes, no in-flight commands, and a valid replacement bundle and gate in the same org are checked at 1522-1550. approved_by comes from g.actor_user_id (1554). The table CHECKs at V0041:360-367 and 370-374 back up the separation. No bypass exists: the service's only caller is the controller, and the repository at AdContainmentControlRepository.java:33-35 is the only Java caller of reenable_ad_containment."
+      }
+    },
+    {
+      "number": 208,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+      "line": 33,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST .../containments/authority-versions/{authorityId}/stop (organization-wide authority-version quarantine), AdContainmentControlController.java:33",
+      "enforcement_or_gap": "The service mints an AUTHORITY_VERSION_STOP grant (AdContainmentControlService.java:32-35 -> AuthenticatedInvocationIssuer.java:56-59,82-88). ops.activate_ad_authority_version_containment consumes it at V0058:1576. The actor must hold organization-wide OWNER or OPS_LEAD ADVERTISING_POLICY_MANAGE, and the review owner must hold OPS_LEAD (V0058:1581-1587, helper at 1472-1485). The authority version must be consumed within the grant's org (1588-1593). activated_by_user_id is set to g.actor_user_id (1598). Regression evidence: AdvertisingAuthorityVersionStopIT.java:68-99 sends a signed-token HTTP call and asserts activated_by_user_id equals the token's person with no cross-organization effect. AdvertisingAuthorityVersionStopIT.java:100-105 asserts a store-only actor gets 403 RESOURCE_SCOPE_DENIED with nothing published.",
+      "note": "Pre-existing on main (2026-09-05). The HTTP-level tests show the actor is attributed and authorized even though the controller does not pass it along.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The AUTHORITY_VERSION_STOP proof (AdContainmentControlService.java:30-35) is consumed at V0058:1576. The actor must hold organization-wide OWNER or OPS_LEAD, and the caller-supplied review owner must hold OPS_LEAD, both via ad_actor_has_organization_role_scope (1581-1587, 1472-1485). The version must be consumed inside the grant org (1588-1593). activated_by comes from g.actor_user_id (1598). MO064 maps to RESOURCE_SCOPE_DENIED (ConsoleProblemAdvice.java:126). The HTTP IT confirms both attribution and denial: AdvertisingAuthorityVersionStopIT.java:76-90 shows activated_by_user_id equal to the token person and no effect on the foreign org (82-84), and AdvertisingAuthorityVersionStopIT.java:100-105 shows a 403 RESOURCE_SCOPE_DENIED for a store-only actor. The later issuer redefinitions (V0074:410, V0082:60, V0117:112, V0120:1076) keep the AUTHORITY_VERSION_STOP purpose and delegate to iam.issue_ad_invocation_grant with the V0058:35 checks. CREATE OR REPLACE keeps the V0058:1037-1038 revoke from marketops_app."
+      }
+    },
+    {
+      "number": 209,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+      "line": 28,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST .../containments/{containmentId}/attestations (recovery attestation or operations endorsement), AdContainmentControlController.java:28",
+      "enforcement_or_gap": "The service mints a grant of purpose CONTAINMENT_ATTEST or CONTAINMENT_ENDORSE from the SecurityContext actor (AdContainmentControlService.java:27-28 -> AuthenticatedInvocationIssuer.java:56-59,82-88). ops.attest_ad_containment consumes it at V0058:1493-1494. It then checks role scope per condition (TECH_DATA/ADVERTISING_TECHNICAL_ATTEST for the security attestation, OPS_LEAD otherwise, and organization-wide scope for AUTHORITY_VERSION) at 1495-1501. It also requires grant org = containment org, not REENABLED, and an endorser different from the activator (1502-1504). actor_user_id is set to g.actor_user_id (1506), in a table that is immutable (1383-1384) and revoked from the app (1381-1382).",
+      "note": "Pre-existing on main (2026-09-05).",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The purpose is derived from the condition in both Java (AdContainmentControlService.java:28) and SQL (V0058:1493-1494), so the two are consistent. It is bound to (id, id). Role scope per condition and scope kind is checked at 1495-1501, using organization-wide scope for AUTHORITY_VERSION (1472-1485, revoked from the app at 1486). Refusal on a missing containment, a cross-org grant, a REENABLED containment, missing evidence, or an endorser equal to the activator is at 1502-1504. actor_user_id comes from the grant (1506), in a table that is immutable (1383-1384) with the app limited to SELECT (1381-1382). As at 210, MO097 maps to 500, not 403 (ConsoleProblemAdvice.java:132), which is still fail-closed."
+      }
+    },
+    {
+      "number": 210,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdContainmentControlController.java",
+      "line": 23,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-control-actors",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AuthenticatedActor on POST /api/v1/console/advertising/containments/objects/{objectId}/stop (human kill switch / containment stop), AdContainmentControlController.java:23",
+      "enforcement_or_gap": "The service mints a CONTAINMENT_STOP grant bound to the SecurityContext actor with step-up (AdContainmentControlService.java:24,40-42 -> AuthenticatedInvocationIssuer.java:56-59,82-88). ops.activate_ad_human_containment consumes it at V0058:1429. It requires object org = grant org (1434) and applies the per-role scope/cause/kind matrix (MARKETPLACE_OPERATOR, OPS_LEAD, TECH_DATA, plus the account-level technical-stop grant) at 1436-1451. It also requires an OPS_LEAD review owner in the same org (1452-1453). activated_by_user_id is set to g.actor_user_id (1458). marketops_app has no direct INSERT/UPDATE/DELETE on ops.ad_containment (V0058:1561).",
+      "note": "Pre-existing on main (2026-09-05). This is a narrowing, fail-closed control: an unauthenticated caller, missing step-up or out-of-scope actor raises MO092/MO097 and nothing is inserted.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The CONTAINMENT_STOP proof is bound to (object, random id) (AdContainmentControlService.java:20-24,40-42) and consumed at V0058:1429. The object org must equal the grant org (1434). A missing object gives a NULL store, so every has_role_scope call returns false and the stop is refused at 1452-1453. The role/scope/cause matrix is at 1436-1451. The review owner (caller-supplied reviewOwnerUserId) must hold OPS_LEAD in the same org and store (1452-1453). activated_by comes from g.actor_user_id (1458). The app has no direct DML on ad_containment (V0058:1561, revoking V0041:769, no later re-grant). CORRECTION on the note: an MO097 refusal is fail-closed (the transaction rolls back), but ConsoleProblemAdvice.java:124-132 has no MO097 case, so it surfaces as INTERNAL_ERROR/500 and not 403. The same applies to the issuer's IllegalStateException when step-up is missing. This is an error-mapping cosmetic issue, not a control gap."
+      }
+    },
+    {
+      "number": 211,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "line": 663,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "AdPolicySet policies (the versions and references of the governing policies) passed to score(); ignored when building a ScoredCase (AdvertisingCaseCalculationService.java:660-717)",
+      "enforcement_or_gap": "The policy set is built once per calculation (AdvertisingCaseCalculationService.java:127) and carried on the AdCaseCalculation record (:147-150; AdCaseCalculation.java:30), not on each ScoredCase. For every case, AdvertisingProjectionWriter persists it as policy_version_digest (AdvertisingProjectionWriter.java:103) and as mart.ad_case_evidence reference rows (:141-175). Ranking weights come from evidence.priority() (AdvertisingCaseCalculationService.java:703-710), the same source as policies.priorityPolicyId (:653-654), so the weights used cannot differ from the recorded provenance.",
+      "note": "Removing the dead parameter from score() is enough.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. ScoredCase has no policy field (AdCaseCalculation.java:47-60). The policy set is on the calculation (AdCaseCalculation.java:30) and built once (AdvertisingCaseCalculationService.java:127). It is persisted for every case as policy_version_digest (AdvertisingProjectionWriter.java:103) and as reference rows (:145-175). Ranking weights come from evidence.priority() (AdvertisingCaseCalculationService.java:703-710). policySetOf records the same evidence.priority() id and version (:653-654), so the provenance cannot differ from the weights used. No path uses policies to restrict the actor, the organization or a gate inside score()."
+      }
+    },
+    {
+      "number": 213,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+      "line": 139,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "ScoredCase scored passed to writeEvidence; the audit and provenance rows use only calculation-level data (AdvertisingProjectionWriter.java:139-183)",
+      "enforcement_or_gap": "Each evidence row is bound to its exact case by the caseId and calculationId arguments, with organization_id taken from the calculation (AdvertisingProjectionWriter.java:162-164, 172-174, 179-181). The database enforces that ownership with FK (case_id, organization_id) -> mart.ad_case(id, organization_id) (V0038__create_advertising_case_projection_and_orchestration.sql:479-481) and requires at least one reference (:502-505). Both cases of one calculation come from the same gathered evidence and the same AdPolicySet (AdvertisingCaseCalculationService.java:130, 143), so there is no per-case provenance to lose. Consumers read by (case_id, calculation_id) (V0061__bind_advertising_exception_risk_and_preview_evidence.sql:23-26).",
+      "note": "This is a dead parameter; the audit trail is complete.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. Each evidence row is bound to its case by caseId, calculationId and calculation.organizationId() (AdvertisingProjectionWriter.java:162-164, 172-174, 179-181). caseId is the id PostgreSQL returns from the upsert (:82). The FK (case_id, organization_id) -> mart.ad_case (V0038:479-481) and the at-least-one-reference CHECK (V0038:502-505) enforce this in the database. Both cases come from one gathered evidence set and one AdPolicySet (AdvertisingCaseCalculationService.java:130, 143), so no per-case input is lost. Per-case lane, cause and blockers are persisted on the ad_case row (AdvertisingProjectionWriter.java:86-92). Consumers join on (case_id, calculation_id) (V0061:22-26). Side observation, unrelated to this alert: the fallback at :178-182 would violate the V0038:502-505 CHECK if affectedSetId were null. That path fails closed through a transaction rollback."
+      }
+    },
+    {
+      "number": 214,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+      "line": 254,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "ScoredCase scored (current bid, Max CPC and cause) passed to generate() (AdvertisingProposalService.java:253-272)",
+      "enforcement_or_gap": "The caller's generator lambdas capture scored directly and use it. The Max CPC route uses scored.currentBid() and scored.maxCpc() (AdvertisingProposalService.java:127-131). The cause-bound route uses scored.currentBid() plus policy.allowsCauseBoundStep(causeCode) (:140-143). The candidate set is bounded again by scored.maxCpc() (:174-176). Target-policy resolution is limited to org, platform, store, object kind, direction, basis and asOf (:262-265). Earlier gates in propose() (blockers :93-96, write qualification :103-104, independently-controllable refusal :111-117) run before generate is reached.",
+      "note": "This is a redundant parameter; the lambda closure is the real consumer.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The generator lambdas capture scored and use it: currentBid and maxCpc (AdvertisingProposalService.java:127-131), and currentBid plus policy.allowsCauseBoundStep(causeCode) (:140-143). BidCandidateSet re-bounds by scored.maxCpc() (:174-176; BidCandidateSet.java:31-32). Policy resolution inside generate() is scoped to org, platform, store, objectKind, direction, basis and asOf (:262-265). The SQL authority separately re-checks the cause-bound target policy by cause_bound_causes (V0066:52-57). The gates before generate() are confirmed: action blockers (:93-96), write qualification (:103-104), and grid plus controllability (:109-117)."
+      }
+    },
+    {
+      "number": 215,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+      "line": 256,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "ProviderBidGrid grid (the provider's bid unit, currency and step normalization) passed to generate() (AdvertisingProposalService.java:256)",
+      "enforcement_or_gap": "The same effectively-final grid (AdvertisingProposalService.java:118) is captured by the generator lambdas (:128-131, :141-142) and passed to BidCandidateSet.generate (:174-176). Grid normalization, unit and currency binding happen there: BidCandidate.decrease (BidCandidate.java:76-90), increase (:107-120), causeBoundDecrease with the grid.usable() refusal (:145-162), and BidCandidateSet.generate (BidCandidateSet.java:14-32). An object with no grid is refused before generate is called (AdvertisingProposalService.java:109-117).",
+      "note": "This is a redundant parameter; the grid is used through the closure.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. grid is assigned once from context (AdvertisingProposalService.java:118) and captured by both lambdas (:128-131, :141-142) and by BidCandidateSet.generate (:175). Grid unit, currency and normalization are applied in BidCandidate.decrease (BidCandidate.java:76-90), increase (:107-120) and causeBoundDecrease (the grid.usable() refusal is at :145, the normalization at :152-162), and again in BidCandidateSet.generate (BidCandidateSet.java:14-32). The parameter being ignored cannot substitute a different grid."
+      }
+    },
+    {
+      "number": 217,
+      "rule_id": "java/local-variable-is-never-read",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
+      "line": 128,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "ad-services",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "String purpose (the freshness decision purpose for each Outcome stage), computed and never read (AdvertisingOutcomePlanningService.java:128)",
+      "enforcement_or_gap": "The purpose is derived again from the stage, with the identical mapping, in AdvertisingOutcomeFreshness.purpose (AdvertisingOutcomeFreshness.java:21-26) and applied in resolve() (:47). resolveFreshness keeps it as a WHERE filter, decision_purpose = ANY(...) (AdvertisingPolicyRepository.java:398-401, 425). qualify() re-checks profile.decisionPurpose against the purpose (AdvertisingOutcomeFreshness.java:56-57). The database canonical check recomputes purpose_code from the stage and requires decision_purpose=purpose_code on the frozen profile (V0072__resolve_outcome_policy_with_explicit_scope_state.sql:167, 183-186), and that check gates baseline reuse (AdvertisingOutcomePlanningService.java:103).",
+      "note": "This is a dead duplicate of AdvertisingOutcomeFreshness.purpose(stage). The only risk is future drift between the two mappings; the fix is to delete the line.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Confirmed. The same mapping is recomputed in AdvertisingOutcomeFreshness.purpose (AdvertisingOutcomeFreshness.java:21-26). It is used by resolve() (:47), which reaches the WHERE decision_purpose = ANY(...) filter (AdvertisingPolicyRepository.java:398-401, 425), and by qualify() (:56-57). Every snapshot qualification goes through freshnessRules.qualify(...stage...) (AdvertisingOutcomeEvidenceService.java:111-224). The DB canonical check recomputes purpose_code and kind_code from the stage and requires them on the frozen profile (V0072:167-168, 183-186). That check gates baseline reuse (AdvertisingOutcomePlanningService.java:103). V0072 holds the latest definition; no later migration redefines ad_outcome_baseline_is_canonical. The sibling variable kind at :129 is live (:131)."
+      }
+    },
+    {
+      "number": 218,
+      "rule_id": "java/local-variable-is-never-read",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+      "line": 292,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "test-code",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Local `Instant half=to` at AdvertisingFrozenOutcomeIT.java:292 in the fixture advanceSettlement. It is left over from an earlier way of building the fixture's data.",
+      "enforcement_or_gap": "No assertion is lost. In 60638b1f, `half` was the period_start of an extra zero-spend ad_object_fact covering half->to. Commit 131b4b2b replaced that with a CORRECTION fact that supersedes the original fact over from->to at spend 100 / clicks 100 (current :296-303), which left `half` unused. The tests that call this fixture assert exact results that depend on the full-window correction: IMPROVED, observed_absolute_profit 200, profit_per_rub 2 and sales 1100 (:217-226); REGRESSED with reopened containment, FINANCE_ANALYST responsibility and profit 0 (:231-241); INDETERMINATE with null profit (:244-250). A fixture that did not take effect would fail these assertions.",
+      "note": "Pre-existing on main (2026-09-05, SLICE-V1-003).",
+      "adversarial_verification": null
+    },
+    {
+      "number": 219,
+      "rule_id": "java/uncaught-number-format-exception",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePurposeFreshnessIT.java",
+      "line": 182,
+      "created_at": "2026-09-05",
+      "introduced_by_pr35": false,
+      "group": "test-code",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Integer.valueOf(state) at AdvertisingOutcomePurposeFreshnessIT.java:182, in the test helper physicalReport. It parses the synthetic available_quantity for listing_stock_observation.",
+      "enforcement_or_gap": "No external input reaches this parse, and no assertion is silently skipped. The parse runs only on the non-SELLABILITY branch. The only callers of that branch pass literal numbers: \"100\" at PurposeFreshnessIT:214 and AdvertisingOutcomeRevisionFreshnessIT:163, and \"0\" at PurposeFreshnessIT:223 and RevisionFreshnessIT:166. Every other caller (PurposeFreshnessIT:185-409, AdvertisingOutcomeInputIntegrityIT:39-74, RevisionFreshnessIT:153,156) passes SELLABILITY with YES/NO/UNKNOWN, which goes to the :179 branch and is never parsed. If the parse ever threw, the NumberFormatException would propagate out of the @Test and fail it loudly.",
+      "note": "Pre-existing on main (2026-09-05, SLICE-V1-003).",
+      "adversarial_verification": null
+    },
+    {
+      "number": 228,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+      "line": 883,
+      "created_at": "2026-09-06",
+      "introduced_by_pr35": false,
+      "group": "test-code",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Test-helper boolean `actualPlanner` in AdvertisingManualWorkflowIT.selected(boolean,String) (line 883). It looks like a switch between 'use the real outcome planner' and some other baseline path, but no such branch has ever existed.",
+      "enforcement_or_gap": "No assertion is silently skipped. Every caller passes true: selected() -> selected(true) at :862, the delegating overload at :882, and the explicit calls at :447 and :672. No call has passed false since the parameter was introduced in 60638b1f. The body at :884 always delegates to selectedWithPolicy, which always runs the real planner and asserts on it: outcomePlanning.prepareManual at :892, isNotNull at :893, baseline state COMPLETE at :894 and idempotent baseline reuse at :895. The negative case (a baseline seeded without the planner) has its own test, applicationCannotInsertOrSelfAttestACanonicalLookingBaseline at :733-741. It asserts 'permission denied' on a direct INSERT into ops.ad_outcome_baseline, on self-attestation, and on the plan-grant issue.",
+      "note": "Pre-existing on main (2026-09-06, SLICE-V1-003). The same disposition was already recorded in the engineering evidence JSON in commit 3ed3f4c8. Cleanup: remove the dead parameter.",
+      "adversarial_verification": null
+    },
+    {
+      "number": 236,
+      "rule_id": "java/local-variable-is-never-read",
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java",
+      "line": 1913,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "test-code",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "Local `var json=new ObjectMapper()` at ListingReworkAuthorizationIT.java:1913, inside the DEMAND branch of the fixture helper changeCurrentPromotionProtection. It is not an assertion input.",
+      "enforcement_or_gap": "No assertion is lost. The DEMAND branch changes the draft directly through Jackson node APIs (:1918-1921) and returns the id of the newly activated replacement package (:1923), so it never needs a mapper. The caller then asserts the whole control chain: calibrationRecheck state CALIBRATION_DEPENDENCIES_CHANGED with currentPackageId equal to the returned id (:1589-1590); launch rejected with OperationRejectedException BINDING_INAPPLICABLE (:1591, :1596-1600); and zero ops.lc_launch, lc_description_command and lc_exposure_occupation rows (:1601-1605). The unused local copies the per-method `var json=new ObjectMapper()` pattern used elsewhere in the file (for example :1429 and :5048).",
+      "note": "New in PR #35 (SLICE-V1-004). Minor test-strength observation unrelated to this alert: the loop at :1918 does not assert that a DEMAND_SCENARIO_SET value was found before it is changed.",
+      "adversarial_verification": null
+    },
+    {
+      "number": 237,
+      "rule_id": "java/uncaught-number-format-exception",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationService.java",
+      "line": 148,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "evaluation",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "The 'maturityDays' value of each formal node in the resolved calibration package. Plan freeze reads it on the action prepare and launch paths (ListingActionService.java:305 and :504 call EvaluationService.freezePlan).",
+      "enforcement_or_gap": "The parse cannot throw. EvaluationService.java:144-146 rejects the node (fail-closed OperationRejectedException CALIBRATION_UNRESOLVED) unless the value is a JsonNode whose asText() is exactly one of \"7\", \"14\" or \"30\". Only those three strings ever reach Integer.parseInt(days.asText()) at :148. Malformed values fail closed in two ways. A non-JsonNode or null fails the instanceof check. Non-integer or out-of-set text such as \"7.0\", \"abc\" or \"-1\" fails the Set.of check. Either way the request gets a rejected-operation response before any plan row is inserted (:177-180), so no NumberFormatException, 500 or partial plan is possible.",
+      "note": "This is a CodeQL false positive: the whitelist check just before the parse is not modelled. At most a readability note; no fix is needed.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "CONFIRMED NOT_A_CONTROL_GAP (CodeQL false positive). The value comes from CalibrationService.formalNodes (CalibrationService.java:258-271), which returns deep-copied JsonNode values. EvaluationService.java:143-146 rejects the value with CALIBRATION_UNRESOLVED unless it is a JsonNode whose asText() is exactly \"7\", \"14\" or \"30\". A missing key (null), a NullNode (\"null\"), a DoubleNode (\"7.0\"), negative values and text are all rejected. Integer.parseInt at :148 therefore only ever receives one of those three literals and cannot throw. The rejection happens before insertPlan (:177-180), inside @Transactional freezePlan (:105). The callers are ListingActionService.java:305 (prepare) and :504 (launch, before launcher.launch at :505). OperationRejectedException is mapped by ConsoleProblemAdvice.java:87, so the caller gets a rejected-operation problem response, not a 500, and no partial plan is written."
+      }
+    },
+    {
+      "number": 238,
+      "rule_id": "java/uncaught-number-format-exception",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/domain/RetryAfterUnits.java",
+      "line": 32,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "marketplace-parsing",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "The provider's Retry-After / item-retry-after (Ozon, minutes) / x-ratelimit-retry (Wildberries, seconds) header value, converted to a seconds hint for the description-write worker. It is external provider data, but it is not an authorization, approval, tenancy, idempotency or audit input. It is only an advisory re-observation delay and never extends an approval (RetryAfterUnits.java:15-16).",
+      "enforcement_or_gap": "The NumberFormatException cannot happen. RetryAfterUnits.java:28 trims the value, and RetryAfterUnits.java:29 returns Optional.empty() unless it fully matches ^[0-9]{1,10}$, which allows only ASCII digits, is non-empty and caps the value at 9,999,999,999. Long.MAX_VALUE is about 9.22e18, so Long.parseLong at :32 always succeeds, and value*60 at :34 cannot overflow a long. RetryAfterUnits.java:38-40 returns empty for anything above Integer.MAX_VALUE, and RetryAfterUnitsTest.java:27 covers \"9999999999\" -> empty. The only production caller is PlatformHttpDescriptionWriteAdapter.java:233. Malformed or ambiguous values reach it as Optional.empty() (RetryAfterUnits.java:59), which becomes a null hint, and the worker then uses the configured default (ListingDescriptionCommandWorker.java:235-237). The worker value is not authoritative. The durable timing control lives in the database. V0084__persist_provider_description_retry_timing.sql:8-63 re-parses the retained headers with the same 10-digit bound, and returns UNKNOWN for duplicates, units, dates or overflow. The trigger at V0084:66-85 then sets provider_not_before and provider_retry_timing_unknown. The lease and attempt triggers refuse to proceed while the wait is unknown or has not elapsed: V0084:95-108 and V0084:111-124, ERRCODE MO092, still referenced at V0095:105. No later migration drops them. The worker cannot shorten the deferral either, because next_attempt_at=greatest(provider_not_before, ...) at V0084:151.",
+      "note": "Latent hazard, not currently reachable. NumberFormatException is a subclass of IllegalArgumentException. If any IllegalArgumentException were ever thrown from classify(), which runs after the request has gone out (PlatformHttpDescriptionWriteAdapter.java:185 and :193), the outer catch at PlatformHttpDescriptionWriteAdapter.java:194-195 would record it as refusedBeforeDispatch(\"outbound_destination_refused\") instead of UNKNOWN_STATE. Keep the regex guard at RetryAfterUnits.java:29 so this parse stays exception-free.",
+      "adversarial_verification": {
+        "agree": false,
+        "corrected_classification": "The NumberFormatException at RetryAfterUnits.java:32 cannot be triggered, so the alert itself is a false positive. The analyst's 'enforced elsewhere' claim is wrong for the platform-native retry headers, though. Register a separate SECURITY_RELEVANT_DEFECT against the control input: the production transport drops item-retry-after and x-ratelimit-retry, so neither the worker hint nor the V0084 wait gate ever sees them.",
+        "evidence": "CONFIRMED, NumberFormatException is unreachable. RetryAfterUnits.java:28-29 trims the value and requires ^[0-9]{1,10}$ (ASCII digits, at most 10) before Long.parseLong at :32, so the parse cannot throw. The largest value times 60 at :34 is about 6e11, far below Long.MAX_VALUE. :38-40 rejects anything above Integer.MAX_VALUE, and RetryAfterUnitsTest.java:27 covers it. The only production caller is PlatformHttpDescriptionWriteAdapter.java:233. The latent-hazard note also checks out today. The outer catch (IllegalArgumentException) at PlatformHttpDescriptionWriteAdapter.java:194-195 would mislabel a post-dispatch IllegalArgumentException, but classify() currently throws none that escape: the Response IllegalArgumentException is caught at :229-231, and the DescriptionWriteResult compact constructor (DescriptionWriteResult.java:69-72) only calls requireNonNull. BoundedOutboundHttp.exchange throws IllegalArgumentException (refused()) only before sending, at BoundedOutboundHttp.java:139 and :144.\n\nREFUTED, the claimed enforcement does not cover native headers. The retry value is a control input: it feeds the provider-wait gate, provider_not_before and provider_retry_timing_unknown (V0084:66-80), which the lease trigger enforces (V0084:99-102), as do the attempt trigger (V0084:117-118) and the task-query guard (V0095:104-105), all with ERRCODE MO092. The analyst says V0084 re-parses the retained headers, including item-retry-after (Ozon, minutes) and x-ratelimit-retry (Wildberries). In production those headers never arrive. The only OutboundHttp implementation in src/main is BoundedOutboundHttp (@Component, BoundedOutboundHttp.java:37-40). Its only Response constructor call (:201) is built from safeHeaders, and :178-183 keeps only names in RESPONSE_HEADERS. RESPONSE_HEADERS at :45-47 contains retry-after but NOT item-retry-after or x-ratelimit-retry. BoundedOutboundHttp was last changed in db92cf2f (SLICE-V1-001). The SLICE-V1-004 change 827df815 widened DescriptionWriteResult.java:37-39, PlatformHttpDescriptionWriteAdapter.java:243 and V0084:22,28, but not the transport. The consequence: a provider 429 that carries only a native wait reaches classify with no timing header. RetryAfterUnits returns empty (:51,63), so retryAfterSeconds is null, and the worker falls back to the configured default (ListingDescriptionCommandWorker.java:236-237; the default is 60s, ListingDescriptionWriteProperties.java:23). The DB receives p_headers without the header, and V0084:58-60 returns ABSENT, not UNKNOWN. provider_not_before is then left unchanged (V0084:76-79) and provider_retry_timing_unknown stays false (:75). None of the MO092 gates hold. Three calls can then go out inside the provider's native wait: an immediate same-fence READBACK after a RETRIABLE_ERROR on APPLY (ListingDescriptionCommandWorker.java:120-122, with the check at :179 passing); later observations; and a proven-retry APPLY re-dispatch (ListingDescriptionCommandWorker.java:203-210). This is the sixty-fold under-wait RetryAfterUnits.java:9-13 warns about. It also contradicts V0084:88-90, which says missing timing is never certified ABSENT, so it fails open. A related smaller case: a standard Retry-After value longer than 1024 characters or containing control characters is also silently dropped at BoundedOutboundHttp.java:180-181, and V0084 again records ABSENT rather than UNKNOWN. The test that appears to prove native headers survive (DescriptionRetryHeadersTest.java:34-41) swaps in a java.net.http stub transport (:90-105) and so never exercises BoundedOutboundHttp. Reachability requires live Ozon/Wildberries description writes, which currently need verified registry rows and Gate EV/E. That none are enabled limits current exposure, but the gate is still ineffective as built. Fix note (one sentence): add the two native header names to BoundedOutboundHttp's RESPONSE_HEADERS and cover it with a test that goes through the real transport."
+      }
+    },
+    {
+      "number": 239,
+      "rule_id": "java/internal-representation-exposure",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/EvaluationView.java",
+      "line": 36,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "evaluation",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "EvaluationView.NodeResult.evaluationEvidence, the read-only projection of the persisted ops.lc_node_result.evaluation_evidence journal. The variable 'evidence' named in the alert is the test map at EvaluationViewTest.java:14-20.",
+      "enforcement_or_gap": "The top-level map is copied and wrapped as unmodifiable in the compact constructor (EvaluationView.java:39-40). EvaluationViewTest.java:13-25 proves two things: mutating the source map after construction does not leak in, and put() throws UnsupportedOperationException. Nested values are fresh deepCopy() JsonNodes made per row on every read (EvaluationRepository.java:204-212 and :301-305), and the view is rebuilt from the database on every call (EvaluationService.java:773-791). A holder could mutate only its own transient copy. No main code reads evaluationEvidence() for any gate, verdict, idempotency or audit decision. The only consumers are JSON serialization in ListingActionConsoleController.java:257-262 and :267-276, and the read bundle in ListingOperationsReviewService.java:99-100. The idempotency comparison uses the service's own local map (EvaluationService.java:384, :441-443), not the view. The persisted authority cannot be changed through the application: the app role has only SELECT and INSERT (V0079...sql:331), and inserts are validated by the V0122 trigger (V0122...sql:33-114).",
+      "note": "Maintenance debt only: the copy is shallow, so nested JsonNode values stay mutable on the in-memory view. An immutable deep copy would silence the analyzer, but no security-relevant state can be mutated.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "CONFIRMED NOT_A_CONTROL_GAP, with maintenance debt only. The compact constructor at EvaluationView.java:36-40 copies the map (new LinkedHashMap) and wraps it as unmodifiable. The 'evidence' variable the alert names is the test map at EvaluationViewTest.java:14-20; the test proves the post-construction put does not leak in (:20-22) and that put() on the view throws (:23-24). The nested values are per-read JsonNode deepCopy() results (EvaluationRepository.java:212, :301-305), and viewAuthorized rebuilds the view from the database on every call (EvaluationService.java:773-791). I searched for any decision read of evaluationEvidence() in main code and found none. The consumers are controller serialization (ListingActionConsoleController.java:257-262, :267-276) and the review bundle (ListingOperationsReviewService.java:99-100). The review bundle's lane() (:158-165) reads only health, tasks and action state. Idempotency compares the service's local map with the stored jsonb (EvaluationService.java:384, :441-443; EvaluationRepository.java:155), not the view. The persisted journal is insert-only for the app role (V0079...sql:331; no later migration grants UPDATE on lc_node_result), and inserts are validated by the V0122 trigger (V0122...sql:33-41). The residual issue is that nested ObjectNode values on a transient view object remain mutable; this is not security-relevant."
+      }
+    },
+    {
+      "number": 648,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationService.java",
+      "line": 328,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "evaluation",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "Client-supplied 'conservativeBound' (NodeEvaluationRequest field, ListingActionConsoleController.java:326-327, forwarded at :274-275). It is a legacy wire field. The formal outcome bound is not supposed to come from the client.",
+      "enforcement_or_gap": "Leaving the parameter unused is the control. EvaluationService.java:425-428 takes the bound from the frozen comparison (bound = traffic.lowerDifference()) and gives it to ProtectionVector.nodeVerdict, and :456-457 persists that value. The database enforces the same rule. The V0122 trigger ops.lc_node_evidence_matches_plan (V0122__bind_formal_listing_outcome_to_frozen_comparison.sql:94-110) refuses any conservative_bound that differs from formalTrafficComparison.lowerDifference, and refuses any bound when the comparison is unqualified. V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql:55-60 blocks a MET or NOT_MET that the stored bound does not support. The caller is authorized before evaluation and again after the plan lock (EvaluationService.java:332 and :344, through ListingScopeAuthorization.java:39-42 org check plus store-scoped LISTING_OUTCOME_EVALUATE). Regression test ListingReworkAuthorizationIT.java:2830-2844 posts conservativeBound 0.099 and asserts verdict UNDETERMINED and conservative_bound IS NULL in the database.",
+      "note": "Ignoring the client value is the intended fail-closed design. Actually using it would create a gap. Remaining debt is the dead signature and wire field only.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "CONFIRMED NOT_A_CONTROL_GAP. I tried to refute it and could not. conservativeBound is received at EvaluationService.java:328 and is never passed on: the public method (:327-334) forwards only action, actor, nodeCode, stage, measurementId and lateFactReference to the private evaluateNode (:336). The only bound persisted is the server-computed one. It is BigDecimal bound = traffic.lowerDifference() (:427), which is non-null only when the frozen comparison is fully qualified (:575-579), is used at :428, and is inserted at :456-457. The design at docs/02-architecture/designs/SLICE-V1-004-rework-r1-design.md:296 says the request conservativeBound is 'not authoritative evidence'. The pre-fix code in docs/07-phase-evidence/SLICE-V1-004/rework-r1/01_FROZEN_FINDING_SET.json:95 used 'conservativeBound.min(ratio)', and that was the defect being fixed. Ignoring the value is therefore the fix. Authorization is not weakened. action.listingId comes from the database (:330). The org check and the store-scoped LISTING_OUTCOME_EVALUATE check run at :332 (ListingScopeAuthorization.java:39-42) and again after the plan lock (:342-344). I found no other caller of the public method in main code (ListingActionConsoleController.java:274-275 only). Corrections to the analyst's citations (the classification is unaffected): (1) The V0122 bound-equality check (V0122...sql:94-110) runs only when the node method is EXACT_BINOMIAL_FIXED_TRAFFIC_BONFERRONI_V1 (V0122...sql:43). For other methods the server bound is the only source: method==null adds FROZEN_METHOD_OR_SCHEDULE_UNQUALIFIED (EvaluationService.java:488), so lower=null (:577). V0079...sql:55-60 then forces UNDETERMINED and refuses an unsupported MET/NOT_MET. (2) The regression test ListingReworkAuthorizationIT.java:2830-2844 covers only that unregistered-method path (it asserts qualificationGaps[0]=FROZEN_METHOD_OR_SCHEDULE_UNQUALIFIED at :2842), not the registered-method trigger path. What remains is debt: the dead parameter and wire field are accepted silently with a 200."
+      }
+    },
+    {
+      "number": 649,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationService.java",
+      "line": 328,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "evaluation",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "Client-supplied 'protections' (EvaluationService.ProtectionInputs, EvaluationService.java:298-304, documented as 'Legacy request fields retained for wire compatibility; none is authoritative Outcome evidence'). Built from request fields at ListingActionConsoleController.java:269-273.",
+      "enforcement_or_gap": "Leaving the parameter unused is the control. The protection vector comes only from canonical server-side evidence. EvaluationService.java:406-412 uses outcomeMetrics.read/compare for accounting verdicts, :413-417 uses outcomeSupply.assess for SUPPLY_COVERAGE, and :435 takes critical-group verdicts from the frozen traffic comparison. All inputs default to UNDETERMINED (:430-434) and are folded by ProtectionVector.verdictOf at :436. The database recomputes the verdict from the vector and refuses a mismatch (V0079...sql:76-99, trigger at :116-118). The vector must hold every required key (V0079...sql:61-67), and a FAIL is latched by the V0117 lc_outcome_failure_publication trigger (V0117__latch_listing_protection_failures_until_independent_release.sql:108). Regression test ListingReworkAuthorizationIT.java:2831-2839 posts extreme favourable protection inputs (profit 999999, return rate 0, supply 999) and asserts protectionVerdict UNDETERMINED.",
+      "note": "Client numbers cannot raise the protection verdict. Only the unused parameter and wire field remain as maintenance debt.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": null,
+        "evidence": "CONFIRMED NOT_A_CONTROL_GAP. protections (ProtectionInputs, EvaluationService.java:298-304) is never read. The adversarial concern was the client-supplied minimumSupplyCoverageDays, priorContributionProfit and priorReturnRate: were these guardrail thresholds with no server-side replacement? They are not. SUPPLY_COVERAGE comes from ListingOutcomeSupplyEvidence.assess (EvaluationService.java:413-416, :434). That method validates the frozen per-scenario coverageDays and demand rate from the action's frozen calibration dependencies (ListingOutcomeSupplyEvidence.java:34-40, :50-62) and returns UNDETERMINED on any gap and FAIL on any failed projection (:83). The profit and return bounds come from the frozen NON_WORSENING_PROFIT_BOUND and NON_WORSENING_RETURN_BOUND (ListingOutcomeMetricEvidence.java:110-111). Critical groups use frozen per-group bounds (EvaluationService.java:585-607). Every REQUIRED key defaults to UNDETERMINED (:431). The pre-fix code in 01_FROZEN_FINDING_SET.json:359 and :372 built the whole vector from these POST fields, which is the defect that was removed, so ignoring them is the control. The database derives the verdict from the vector (V0079...sql:96-99, trigger :116-118; the function body was replaced at V0086...sql:10-31, still FAIL-dominant and UNDETERMINED on missing keys) and requires all five keys (V0079...sql:61-67). The app role can only SELECT and INSERT (V0079...sql:331). Correction: V0117...sql:108 is an advisory-lock trigger that serializes FAIL publication with launch admission (:99-106); it is not a latch. The classification is unaffected. The regression test (ListingReworkAuthorizationIT.java:2831-2839) asserts protectionVerdict UNDETERMINED for extreme favourable inputs."
+      }
+    },
+    {
+      "number": 650,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java",
+      "line": 479,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "listing-action-authority",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "`requested` (Map<String,BigDecimal>) in ListingActionService.allowancePreview (ListingActionService.java:479). These are the per-axis allowance amounts the client asks for, sent in the AxesRequest body (ListingActionConsoleController.java:231-236, record at :320) to POST /api/v1/console/listing/actions/{id}/allowance-preview. It is a read-only preview (@Transactional(readOnly=true), :478).",
+      "enforcement_or_gap": "Ignoring the parameter is deliberate. Demand comes from the server, so the client never controls it (comment at ListingActionService.java:481). Authorization is still enforced before the projection runs. requireAction (:480, body :572-579) checks the org (:575) and requires LISTING_CONVERSION_VIEW at store scope (:578). The preview returns ops.lc_allowance_projection(action, at) (ListingActionRepository.java:603-620). That projection computes requestedValue from canonical demand, not from caller input (V0120__close_promotion_operation_and_exposure_lifecycle.sql:633, :736-834). The real launch uses the same rule. ListingActionLaunchService.launch validates the client axes (non-negative, text axis name; ListingActionLaunchService.java:97-105) and passes them as p_requested (:146-149). But ops.acquire_lc_launch_allowance only declares p_requested (V0118__bind_launch_plan_to_declared_listing_purpose.sql:101) and never reads it. It decides sufficiency from lc_allowance_projection (:204-216) and records occupations with requested_value = occupied_value = canonicalDemand (:219-225). So preview and launch agree, and neither can be inflated or deflated by the caller. A client that sends an arbitrary or empty axes map gets the policy-owned projection. The launch gates stay intact: org/store authorization and step-up (ListingActionLaunchService.java:84-90, 133-136), approval binding (:91-93, 125-127), state (:94-96, 128-130), execution guardrail (:138-142) and the DB allowance check.",
+      "note": "Maintenance note: the vestigial `requested` field is kept only for transport compatibility and flows all the way into SQL. It could be removed from the Java signature (or annotated as intentionally unused) without any change in behaviour.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Checked at 57c5efc4. I could not refute this. The cited lines are correct. ListingActionService.java:478 is @Transactional(readOnly=true), :479 is the signature, :480 calls requireAction(VIEW) and :481 is the transport-compatibility comment. requireAction (:572-579) does the org check at :575 and the store-scope authorization at :578. JdbcBusinessAuthorization.java:112 also refuses a resolved store chain from another organization. The controller passes request.axes() at ListingActionConsoleController.java:231-236, and AxesRequest is at :320. The preview calls ops.lc_allowance_projection(:action,:at) with no client input (ListingActionRepository.java:603-605). That function takes only (p_action, p_at) (V0120:633). Demand is canonical: requested := canonical at V0120:825-826 and sufficiency at :834. Launch cannot use client numbers either. ListingActionService.launch (:486-505) forwards `requested` to ListingActionLaunchService.launch. That method only checks the values are non-null and non-negative and the axis text is valid (:97-105), then binds them as p_requested (:146-149). The only function marketops_app can execute is the 6-arg V0118:100-101, and its body (:122-239) never references p_requested. Sufficiency comes from the projection (:204-216), and occupations are written with requested_value = occupied_value = canonicalDemand (:222-225). The older 5-arg overloads did read client demand (V0077:920,946; V0091:174,200; V0098:128). V0118:99 revokes EXECUTE on that 5-arg signature from marketops_app, and no later migration (V0119-V0124) re-grants it or redefines either function. So there is no path back to client-driven demand. Two refutation attempts failed. (a) Exposure: the requestedValue/canonical demand in the preview is already visible to VIEW holders through occupations in require()/toView (ListingActionService.java:546-547, 567; ListingActionRepository.java:591-600), so the ignored parameter adds nothing. (b) The preview uses clock.instant() (:482) while launch uses DB clock_timestamp (V0118:131). That is cosmetic and does not affect authority. The parameter is vestigial maintenance debt only."
+      }
+    },
+    {
+      "number": 651,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/EvidencePathQualification.java",
+      "line": 36,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "qualification-isolation",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "sourceStratified: whether every in-window visit has a known source channel. It is a real control input, but it gates only the standardised source-stratified comparison, not whether the raw actual retained-visit total qualifies.",
+      "enforcement_or_gap": "Ignoring it in EvidencePathQualification.disqualifications (EvidencePathQualification.java:35-46) is intentional, per the Javadoc at EvidencePathQualification.java:10-15. A regression test pins this behaviour: EvidencePathQualificationTest.java:51-55 asserts that DETAIL with sourceStratified=false returns no disqualifications. The only production caller is ConversionMeasurementService.java:119-120, and it applies stratification itself: it computes it at :106-107, writes lineage sourceStrataQualified/criticalGroupSourceStrataQualified = qualified && maturity && stratified at :161-162 (DETAIL), sets the summary path's value from profile version, strata coverage and method evidence at :197-210 and :214, and stores it via insertMeasurement at :232 in mart.lc_conversion_measurement.source_stratified (NOT NULL, V0075__create_listing_conversion_facts_and_health.sql:372). Every comparison that reads it is gated: MeasurementEvidenceRepository.java:73-74 marks a reference cohort qualified only if m.source_stratified AND l.inputs->'sourceStrataQualified'='true'. ListingHealthAssessment.java:62 requires it for detail-path eligibility, and :80 raises SOURCE_STRATIFICATION_MISSING. The parameter has no authorization, tenancy, actor, idempotency or audit role. Leaving it out cannot make an unstratified measurement eligible for comparison.",
+      "note": "Maintenance only: remove the parameter, or document it as intentionally unused, so the signature does not suggest it affects the raw-total qualification.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Refutation attempt failed. All citations check out at 57c5efc4. EvidencePathQualification.java:35-46 ignores sourceStratified on purpose (Javadoc :10-15), and EvidencePathQualificationTest.java:51-55 pins that. The only production caller is ConversionMeasurementService.java:119-120. It computes stratified at :106-107, writes lineage sourceStrataQualified and criticalGroupSourceStrataQualified = qualified && maturity && stratified at :161-162, overwrites it for the summary path at :199-214, and persists it at :232 through ListingHealthRepository.java:140-158 into a NOT NULL column (V0075:372). I looked for a gate that consumes a DETAIL measurement that is path-qualified but unstratified, and none exists; every one fails closed. (a) MeasurementEvidenceRepository.java:73-76 makes qualified require m.source_stratified and lineage sourceStrataQualified='true'. (b) Reference freeze adds PRE_ACTION_REFERENCE_SOURCE_UNQUALIFIED when !reference.qualified() (EvaluationService.java:205-206). (c) The formal comparison requires target.qualified() (EvaluationService.java:519-524), so lower/upper are null when unqualified (:575-578). ProtectionVector.nodeVerdict then returns UNDETERMINED for a null bound (ProtectionVector.java:68-72), even though the raw ratio from EvaluationService.java:369-370 is DEFINED. (d) Critical-group counts are replaced with {} unless criticalGroupSourceStrataQualified is true (MeasurementEvidenceRepository.java:78-79), which gives CRITICAL_GROUP_TARGET_UNQUALIFIED (EvaluationService.java:600) and an UNDETERMINED group verdict (ProtectionVector.java:40-43). (e) Health eligibility requires sourceStratified (ListingHealthAssessment.java:62) and flags SOURCE_STRATIFICATION_MISSING (:80-81). The parameter plays no role in authorization, tenancy, actor, idempotency or audit, so ignoring it cannot make an unstratified measurement drive a verdict, gate or protection."
+      }
+    },
+    {
+      "number": 652,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/IsolationScope.java",
+      "line": 48,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "qualification-isolation",
+      "classification": "MAINTENANCE_DEBT",
+      "control_input": "nodeVerdict: the primary-target verdict (MET/NOT_MET/UNDETERMINED) passed to IsolationScope.isolates, a domain predicate for whether a result state may trigger isolation.",
+      "enforcement_or_gap": "Ignoring it is by design: IsolationScope.java:14-17 and :47 say an unmet primary target is not a failure and widens nothing. The predicate at IsolationScope.java:48-50 triggers only on protectionVerdict == \"FAIL\", as pinned by IsolationScopeTest.java:35-37. isolates() and widen() have no production callers; at 57c5efc4, git grep finds them only in IsolationScopeTest.java:22,29,35-37. Production isolation never uses this helper. The scope is computed in the database by ops.lc_current_isolation_scope, which is organization-bound, follows only retained dependencies whose shared cause is currently in use, and is SECURITY DEFINER (V0120__close_promotion_operation_and_exposure_lifecycle.sql:1163-1183). The call path is GovernanceRepository.java:185-187 -> GovernanceService.java:208-209 -> ListingGovernanceConsoleController.java:156-161, a read-only view with an authorization check at :158 and audit at :160. Isolation state changes only through operator-initiated containment: GovernanceService.java:139-153 requires LISTING_CONTAINMENT_STOP authority, step-up, a one-time LISTING_CONTAINMENT_STOP proof and an audit record. The trigger ops.lc_shared_containment_has_current_cause (V0120:1043-1074) also requires a retained dependency and a current exact cause. Dependencies are recorded only through ops.record_lc_isolation_dependency (V0120:1095-1126): same-organization listings (:1100-1106), grant consume plus matching actor, organization and PREPARE authority on both stores (:1109-1114), current shared-cause use (:1115-1118), and direct INSERT revoked from marketops_app (:1126). On the Java side, GovernanceService.java:196-204 applies an authorization check, step-up and proof. The unused parameter weakens no authorization, tenancy, gate, fail-closed, idempotency or audit behaviour.",
+      "note": "This is a test-only domain helper that duplicates database logic. Consider removing nodeVerdict or the helper, or wiring it in, so it does not look like an unenforced gate.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "MAINTENANCE_DEBT",
+        "evidence": "Refutation attempt failed. git grep at 57c5efc4 finds IsolationScope.isolates/widen called only in IsolationScopeTest.java:22,29,35-37; there is no production caller. The predicate ignores nodeVerdict by design (IsolationScope.java:14-17, :47-49). The analyst named ops.lc_current_isolation_scope (V0120:1163-1183) as production isolation, but that is only the read-only scope view (GovernanceRepository.java:185-189 -> GovernanceService.java:207-209 -> ListingGovernanceConsoleController.java:156-161, with LISTING_CONVERSION_VIEW at :158, actor.organizationId() at :159 and audit at :160). The real production counterpart of isolates() is the automatic protection-failure latch. ops.lc_unreleased_outcome_failures selects node results WHERE protection_verdict='FAIL' only, never the node verdict (V0117:2-11). It feeds ops.lc_scope_contained (V0117:16-20, re-wrapped at V0120:1185-1191), which blocks launches, commands and manual packets (for example V0120:516 and :575, V0118:167, V0098:185). So production enforcement uses exactly the same predicate as isolates(): an unmet NOT_MET target does not isolate, and a protection FAIL does. Release of that latch also depends on protection_verdict and vector dimensions, not on the node verdict (V0117:69-91). Changes to isolation state are authorized, step-up-checked, grant-bound and audited: GovernanceService.java:139-153; GovernanceService.java:196-204 plus V0120:1095-1126 (org-bound listings :1100-1106, grant, actor and org match plus PREPARE on both stores :1109-1114, INSERT revoked :1126); and trigger V0120:1043-1074. Residual observation, not caused by this parameter: the automatic FAIL latch contains only the failing listing (V0117:7-10). Widening across dependencies happens only for operator-recorded SHARED_VERSION containments (V0120:1128-1160, :1188-1190). Whether a protection FAIL should also widen automatically is a question about widen(), not about nodeVerdict. Ignoring nodeVerdict weakens no authorization, tenancy, gate, fail-closed, idempotency or audit behaviour."
+      }
+    },
+    {
+      "number": 653,
+      "rule_id": "java/unused-parameter",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingActionDecisionAuthority.java",
+      "line": 43,
+      "created_at": "2026-09-17",
+      "introduced_by_pr35": true,
+      "group": "listing-action-authority",
+      "classification": "NOT_A_CONTROL_GAP",
+      "control_input": "`approvalDecisionId` (UUID) in ListingActionDecisionAuthority.recordRejection (ListingActionDecisionAuthority.java:43). This is the id of the REJECTED approval_decision row that was just inserted. The only implementation is ListingActionDecisionService.recordRejection (ListingActionDecisionService.java:270-278; the only `implements`, at :39; tests use mock() or the Spring bean). That method only moves a DRAFT/REVIEWED lc_action to CANCELLED (:273-276) and never reads the id.",
+      "enforcement_or_gap": "The only caller is ApprovalService.reject (ApprovalService.java:168-187), in one transaction. That caller already enforces every control this id could serve. Authorization: requireDecidable (:171, :264-282) requires LISTING_ACTION_APPROVE_MATERIAL/ORDINARY at store scope (:267-268, :298-305), plus expectedVersion (:269), READY_FOR_REVIEW state (:272) and freshness (:278). Actor attribution and audit: record() (:175, :316-338) inserts ops.approval_decision with decided_by_user_id and recommendation_id, and writes a MetadataAuditChange for the decision (:325-336). The DB enforces a non-null human actor for REJECTED rows (V0018__create_recommendation_task_and_approval_workflow.sql:205-207) and stamps the authority snapshot (V0077__create_listing_actions_launch_manual_path_and_containment.sql:1475-1498). The recommendation moves to REJECTED with actor attribution (ApprovalService.java:177-178). The link from the listing task to the decision is written by listingIntake.recordTaskAction(actor, …, \"approval-decision:\"+decisionId, reason) (:183-184). The id is never needed to reach a later gate. A rejected proposal cannot be approved, because requireDecidable needs READY_FOR_REVIEW (:272). It cannot be launched either: launch needs an lc_action_binding.approval_decision_id and APPROVED state (ListingActionLaunchService.java:91-96, 125-130), and only bindApproval creates that binding (ListingActionDecisionService.java:228-267).",
+      "note": "Separate from this alert, recordRejection ignores the boolean from moveAction (ListingActionDecisionService.java:275; the UPDATE is version-guarded at ListingActionRepository.java:340-345). After a concurrent version bump the lc_action could stay REVIEWED while the recommendation is REJECTED. Every approval and launch gate above still refuses it, so this is a consistency and maintenance item, not a bypass. The same method also uses clock.instant() rather than databaseNow(). One-sentence option: either drop the parameter, or persist it on the cancellation and raise VERSION_CONFLICT when moveAction returns false.",
+      "adversarial_verification": {
+        "agree": true,
+        "corrected_classification": "NOT_A_CONTROL_GAP",
+        "evidence": "Checked at 57c5efc4. I could not find a bypass. The only implementation is ListingActionDecisionService.java:39; recordRejection is at :272-278, and :275 ignores the id and the boolean. The only caller is ApprovalService.java:182. Authorization: requireDecidable requires the store-scope approve grant (:267-268, 298-305), the version (:269), READY_FOR_REVIEW (:272) and freshness (:278). RecommendationService.require (:209-213) does not filter by org, but tenancy still holds at JdbcBusinessAuthorization.java:112. Attribution: record() inserts the decision with decided_by_user_id and writes APPROVAL_DECISION audit (ApprovalService.java:316-336). V0018:205-207 requires a human actor on REJECTED rows. The BEFORE INSERT trigger stamps authority_snapshot (V0077:1475-1498; trigger V0020:480). Terminality: REJECTED is terminal in Java (RecommendationState.java:61, :81), and the recommendation transition is version-guarded (RecommendationRepository.java:135). Launch is still blocked. APPROVED needs a BOUND binding in the DB (V0077:1371-1373). Bindings are only inserted by bindApproval (ListingActionDecisionService.java:260), and its only caller is the approve path (ApprovalService.java:159). The DB launch also needs a binding and APPROVED state (V0118:124-128). The listing task links the decision via \"approval-decision:\"+decisionId (ApprovalService.java:183-184). Two refinements, neither a control gap. (1) Audit completeness: the rejection-driven lc_action DRAFT/REVIEWED->CANCELLED move writes no lc_action-entity STATUS_CHANGE audit and does not store the decision id. ListingActionService.cancel does write one (:472-473). The move is still reconstructible, because lc_action.recommendation_id links to the attributed REJECTED approval_decision and its audit. This is audit-trail debt. (2) Correction to the side note: if moveAction returned false, the action would stay REVIEWED. It would keep the unique lc_action_live_uq slot (V0077:164-166) and block any new action on that listing until someone runs a manual cancel (ListingActionService.java:455-470, LISTING_ACTION_PREPARE). That fails closed and is an availability issue, not a bypass. It also looks practically unreachable. No DB function bumps a REVIEWED action's version: the V0118 updates at :213 and :233 act only on APPROVED/APPROVED_NOT_LAUNCHABLE actions. A concurrent approve or cancel would either hit the recommendation version guard first (ApprovalService.java:177-178 via RecommendationRepository.java:135) or deadlock and roll back."
+      }
+    }
+  ]
+}

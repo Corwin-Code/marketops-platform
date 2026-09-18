@@ -219,6 +219,29 @@ evidence_index: docs/07-phase-evidence/SLICE-V1-004/rework-r1/
 closure_index: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/
 ```
 
+### Post-closure CI and evidence correction (PR #35)
+
+The first PR #35 CI at `57c5efc4` passed 8 of 12 required checks: the backend
+jobs failed on eight latest-migration expectations left behind by V0124, lint
+failed on one test callback, and the Chromium step could not start because the
+fixture refuses the port that CI generated; the CodeQL result check reported
+two high-severity alerts in test SQL. Controller arbitration
+`SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1` accepted the
+transport and required one bounded correction, which the Owner issued. The
+correction commit is `48298206794a81b0640b4a14363198465dbd86c0`; its evidence
+index is `docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/`.
+
+The YAML above records the formal closure and is not rewritten. Its
+`full_verification_matrix` line is qualified by
+`pr35-ci-evidence-correction-r1/HISTORICAL_LINT_ERRATUM.md`: the historical
+lint statement does not hold for the final frontend source. The current overlay
+is: NFR-AC4 migration-upgrade regression and NFR-AC5 CI browser entry point,
+both verified locally on the correction commit; NFR-AC3 alert disposition,
+whose code changes and negative regressions ran locally while alert closure
+depends on the CodeQL scan of the published Head; and the NFR-AC6 evidence
+erratum. These are internal CI and evidence defects, not external evidence. The
+published Head's CI and CodeQL results are reported in PR #35, not here.
+
 <details>
 <summary>历史完整运行与作者待审说明；不代表当前Controller或Owner状态</summary>
 

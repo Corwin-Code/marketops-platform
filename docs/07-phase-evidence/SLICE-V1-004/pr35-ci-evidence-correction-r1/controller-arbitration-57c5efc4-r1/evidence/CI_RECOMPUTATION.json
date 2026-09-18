@@ -1,0 +1,249 @@
+{
+  "basis": "Supplied raw check-runs plus Ruleset; matched both name and integration_id. Live PR, Ruleset, check-runs and backend jobs also read. No CI run dispatched.",
+  "required": [
+    {
+      "name": "governance",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566527
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "backend-build",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566099
+      ],
+      "conclusions": [
+        "failure"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "architecture-boundary",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129565757
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "backend-integration",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566003
+      ],
+      "conclusions": [
+        "failure"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "frontend-lint",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566253
+      ],
+      "conclusions": [
+        "failure"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "frontend-typecheck",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566297
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "frontend-test",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566209
+      ],
+      "conclusions": [
+        "failure"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "frontend-build",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566062
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "dependency-review",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566117
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "codeql-java",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566214
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "codeql-typescript",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129565918
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    },
+    {
+      "name": "infrastructure-validation",
+      "expected_app_id": 15368,
+      "matches": 1,
+      "check_run_ids": [
+        105129566323
+      ],
+      "conclusions": [
+        "success"
+      ],
+      "head_shas": [
+        "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e"
+      ]
+    }
+  ],
+  "required_summary": {
+    "total": 12,
+    "success": 8,
+    "failure": 4,
+    "missing": 0
+  },
+  "non_required_failures": [
+    {
+      "name": "CodeQL",
+      "check_run_id": 105130010045,
+      "output": {
+        "title": "419 new alerts including 2 high severity security vulnerabilities",
+        "summary": "### New alerts in code changed by this pull request\n\nSecurity Alerts:\n * 2 high\n\nOther Alerts:\n * 7 warnings\n * 410 notes\n\n_Alerts not introduced by this pull request might have been detected because the code changes were too large._\n\nSee annotations below for details.\n\n[View all branch alerts](/Corwin-Code/marketops-platform/security/code-scanning?query=pr%3A35+tool%3ACodeQL+is%3Aopen).",
+        "text": null,
+        "annotations_count": 100,
+        "annotations_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/105130010045/annotations"
+      }
+    }
+  ],
+  "failed_or_skipped_steps": [
+    {
+      "job": "frontend-test",
+      "step": "Exercise authenticated business flow and dependency recovery in Chromium",
+      "conclusion": "failure"
+    },
+    {
+      "job": "frontend-test",
+      "step": "Exercise governed advertising roles in a fresh isolated database",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "frontend-test",
+      "step": "Post Set up Node",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "frontend-lint",
+      "step": "Lint",
+      "conclusion": "failure"
+    },
+    {
+      "job": "frontend-lint",
+      "step": "Check formatting",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "frontend-lint",
+      "step": "Post Set up Node",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "backend-integration",
+      "step": "Run the database and application integration tests",
+      "conclusion": "failure"
+    },
+    {
+      "job": "backend-build",
+      "step": "Run full backend verification and the combined coverage gate",
+      "conclusion": "failure"
+    },
+    {
+      "job": "backend-build",
+      "step": "Prove the backend coverage gate rejects an unmet threshold",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "backend-build",
+      "step": "Verify packaged migration resolver and isolated runtime artifacts",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "backend-build",
+      "step": "Publish the dependency inventory and the software bill of materials",
+      "conclusion": "skipped"
+    }
+  ]
+}

@@ -1351,5 +1351,24 @@
     "third_review_required": false,
     "production_enablement_authorized": false
   },
-  "all_69_production_pass": false
+  "all_69_production_pass": false,
+  "post_closure_ci_evidence_correction": {
+    "meaning": "Append-only overlay after the Owner Formal Closure. It qualifies the current applicability of four rows; it changes no row status, no count and no closure record.",
+    "authority": "docs/08-handoffs/OWNER-SLICE-V1-004-PR35-BOUNDED-CORRECTION-AUTHORIZATION-EVIDENCE.md",
+    "controller_arbitration": "SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1",
+    "evidence_index": "docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/",
+    "correction_start_head": "57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e",
+    "correction_implementation_head": "48298206794a81b0640b4a14363198465dbd86c0",
+    "formally_closed_head_preserved": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "overlay": {
+      "NFR-AC3": "PR_SECURITY_ALERT_DISPOSITION_RECORDED_NEW_SCAN_ON_PUBLISHED_HEAD_REPORTED_IN_PR_35",
+      "NFR-AC4": "CURRENT_MIGRATION_UPGRADE_EXPECTATIONS_CORRECTED_LOCAL_FULL_VERIFY_RECORDED_PUBLISHED_HEAD_CI_REPORTED_IN_PR_35",
+      "NFR-AC5": "CI_BROWSER_ENTRYPOINT_ISOLATED_LOCAL_BROWSER_26_AND_12_PASS_PUBLISHED_HEAD_CI_REPORTED_IN_PR_35",
+      "NFR-AC6": "LOCAL_TOOLCHAIN_LINT_EVIDENCE_CORRECTED_BY_ERRATUM_ORIGINAL_LEVEL_1_NON_APPLICABILITY_UNCHANGED"
+    },
+    "internal_defects_reclassified_as_external": false,
+    "historical_lint_erratum": "docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/HISTORICAL_LINT_ERRATUM.md",
+    "published_head_ci": "REPORTED_OUTSIDE_THE_REPOSITORY",
+    "pull_request_state_required": "DRAFT_UNMERGED"
+  }
 }

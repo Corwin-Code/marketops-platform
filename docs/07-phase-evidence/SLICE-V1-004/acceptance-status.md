@@ -8,6 +8,23 @@ Owner记录：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OW
 
 没有新的Review、返工、全套重跑或再次接受要求；仅完成已有授权下的本地文档落位。本状态不提供push/PR/merge、部署、生产迁移、Level 2、真实Provider/账户、Gate EV/E、Pilot或生产写权限。
 
+## 关闭后CI与证据一致性修正（PR #35，2026-09-18）
+
+**Owner有界授权下的CI／证据一致性修正；正式关闭作为历史事实保留，不被替换。**
+
+PR #35在`57c5efc4`上的首次CI：12项必需检查8过4败——`backend-build`、`backend-integration`（V0124后8处迁移期望过期）、`frontend-lint`（`ListingConversion.test.tsx:473`）、`frontend-test`（fixture拒绝5432而CI生成5432）；另有非必需的`CodeQL`结果检查失败（2条测试SQL拼接high告警）。Controller裁定`SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1`：传输接受、CI不合格、需一次有界修正。Owner签发05 A–F授权并点名Opus 5为执行者：`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-BOUNDED-CORRECTION-AUTHORIZATION-EVIDENCE.md`。
+
+修正提交：`48298206794a81b0640b4a14363198465dbd86c0`。证据与说明：`docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/README.md`。
+
+| ID | 关闭后覆盖状态（不改下表／原表分层） |
+| --- | --- |
+| `NFR-AC3` | PR安全告警处置：2条high所在的测试SQL已改为参数化查询，告警是否关闭以发布Head的新扫描为准；7条warning逐条以源码、分析身份（CodeQL 2.27.0，SARIF已取得）和负向回归处置，未dismiss；结果见PR #35 |
+| `NFR-AC4` | 当前迁移升级回归：8处V0124期望按fixture推导修正，未改SQL迁移；修正提交的本地完整后端`clean verify`见证据目录；发布Head CI见PR #35 |
+| `NFR-AC5` | CI浏览器与前端：隔离的非5432 loopback入口；修正提交本地业务流26/26、广告浏览器12/12；发布Head CI见PR #35 |
+| `NFR-AC6` | 本地工具链lint证据以append-only erratum更正（`HISTORICAL_LINT_ERRATUM.md`）；Level 1环境结果不适用的原分层不变 |
+
+以上是内部CI与证据缺陷，不归入12项外部待补。54／12／3、27/27历史关闭、`F-M01`／`F-M02`／`F-S01`／`F-W01`／`F-W02`／`E-04`及全部前序发布义务不变。发布候选的CI结果不写回仓库，见PR #35正文与外部交接；PR保持Draft／Unmerged，Ready／merge另需准确授权。上一段"没有新的Review、返工、全套重跑"描述的是正式关闭时的状态。
+
 ## 当前69项分层
 
 | ID | 当前状态 | 外部义务／证据边界 |
