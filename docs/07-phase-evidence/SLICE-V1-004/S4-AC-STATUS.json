@@ -1370,5 +1370,49 @@
     "historical_lint_erratum": "docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/HISTORICAL_LINT_ERRATUM.md",
     "published_head_ci": "REPORTED_OUTSIDE_THE_REPOSITORY",
     "pull_request_state_required": "DRAFT_UNMERGED"
+  },
+  "post_closure_pr35_residual_supplement": {
+    "meaning": "Append-only overlay after the Owner Formal Closure and the PR #35 bounded correction. It qualifies the current reuse of the S4-DR-R1-022 and S4-DR-R1-027 closure evidence for the provider wait chain and records the bounded supplement that repairs that chain; it changes no row status, no count and no closure record.",
+    "authority": "docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt",
+    "authority_sha256": "bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641",
+    "controller_review": "SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1",
+    "controller_review_sha256": "fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c",
+    "supplement": "S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01",
+    "supplement_sha256": "723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970",
+    "executor": "CLAUDE_OPUS_5",
+    "evidence_index": "docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/",
+    "supplement_start_head": "45474b6039edd46842e1e5f84391dca4264ddc1d",
+    "supplement_implementation_head": "3bcc38fafa2760fe59c2144fe54887e212044d30",
+    "formally_closed_head_preserved": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "residual": "PR35-NOTE-KEYPATH-01",
+    "controller_coverage_correction": "CRCF-PR35-04",
+    "qualified_current_evidence": {
+      "S4-DR-R1-022": "CLOSURE_RECORD_UNCHANGED_CURRENT_REUSE_QUALIFIED_WAIT_SIGNALS_WERE_DROPPED_BY_THE_SHARED_TRANSPORT_FILTER_BEFORE_THIS_SUPPLEMENT",
+      "S4-DR-R1-027": "CLOSURE_RECORD_UNCHANGED_EVIDENCE_SUFFICIENCY_FOR_THE_WAIT_CHAIN_QUALIFIED_CORRESPONDINGLY"
+    },
+    "rows_of_the_qualified_wait_chain": [
+      "C04-AC2",
+      "API-T05",
+      "API-T08",
+      "API-T11",
+      "API-T15",
+      "API-T18"
+    ],
+    "row_status_changed": false,
+    "counts_changed": false,
+    "other_25_findings_reopened": false,
+    "new_frozen_finding": false,
+    "internal_defect_reclassified_as_external": false,
+    "external_obligations_unchanged": [
+      "F-M01",
+      "F-M02",
+      "F-S01",
+      "F-W01",
+      "F-W02",
+      "E-04"
+    ],
+    "published_head_ci": "REPORTED_OUTSIDE_THE_REPOSITORY",
+    "pull_request_state_required": "DRAFT_UNMERGED",
+    "controller_limited_residual_verification": "PENDING"
   }
 }

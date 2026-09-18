@@ -242,6 +242,23 @@ depends on the CodeQL scan of the published Head; and the NFR-AC6 evidence
 erratum. These are internal CI and evidence defects, not external evidence. The
 published Head's CI and CodeQL results are reported in PR #35, not here.
 
+### PR #35 residual supplement
+
+Controller review `SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1` accepted the
+bounded correction and found that the shared transport dropped the platforms'
+native wait headers (`PR35-NOTE-KEYPATH-01`), which blocks Ready and merge; it
+registered `CRCF-PR35-04`. The Owner issued supplement
+`S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`; its implementation commit is
+`3bcc38fafa2760fe59c2144fe54887e212044d30` and its evidence index is
+`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/`. The wait
+chain (C04-AC2, API-T05, API-T08, API-T11, API-T15, API-T18, from the original
+S4-DR-R1-022 scope) is now proven through the production transport, adapter,
+PostgreSQL and worker; the fresh-clone entry keeps every stack off the default
+port; `CURRENT_STATE` carries a validator-bound current-task overlay. Row
+statuses, 54 / 12 / 3 and the 27/27 closure record are unchanged; the current
+reuse of S4-DR-R1-022 and S4-DR-R1-027 evidence is qualified. The published
+Head's CI and CodeQL results are reported in PR #35, not here.
+
 <details>
 <summary>历史完整运行与作者待审说明；不代表当前Controller或Owner状态</summary>
 

@@ -25,6 +25,23 @@ PR #35在`57c5efc4`上的首次CI：12项必需检查8过4败——`backend-buil
 
 以上是内部CI与证据缺陷，不归入12项外部待补。54／12／3、27/27历史关闭、`F-M01`／`F-M02`／`F-S01`／`F-W01`／`F-W02`／`E-04`及全部前序发布义务不变。发布候选的CI结果不写回仓库，见PR #35正文与外部交接；PR保持Draft／Unmerged，Ready／merge另需准确授权。上一段"没有新的Review、返工、全套重跑"描述的是正式关闭时的状态。
 
+## PR #35残余补充（2026-09-19）
+
+**Owner有界补充授权下的残余修复；正式关闭与上一节修正均作为历史事实保留。**
+
+Controller审查`SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1`接受上一节修正与`45474b60`的12项必需检查，同时判定共享传输丢弃原生等待头（`PR35-NOTE-KEYPATH-01`）阻断Ready/merge，并登记`CRCF-PR35-04`。Owner签发补充范围`S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`并点名`CLAUDE_OPUS_5`：`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-EVIDENCE.md`。
+
+实施提交：`3bcc38fafa2760fe59c2144fe54887e212044d30`。证据与说明：`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/README.md`。
+
+| 范围 | 补充后状态（不改下表／原表分层） |
+| --- | --- |
+| B1 等待信号 | 原生`Item-Retry-After`／`X-Ratelimit-Retry`经生产`BoundedOutboundHttp`保留；越界值以withheld事实传递并持久为UNKNOWN；真实传输→adapter→PostgreSQL→worker联测11项，修复前代码上6项缺陷场景失败、5项对照通过 |
+| B2 fresh-clone入口 | full模式不再使用默认5432；配置栈与浏览器栈均为本次运行独有的Compose项目与loopback端口，浏览器仅经`business_browser_isolated.sh` |
+| B3 状态与校验器 | `CURRENT_STATE`有界当前任务层绑定Owner原文、Controller记录与补充范围；`authorization: CLOSED`与DR-0004 `CODEX`委托不变 |
+| S4-DR-R1-022／027 | 关闭记录不改写；其等待链证据的当前可复用性按Controller裁定限定，见`HISTORICAL_CLOSURE_QUALIFICATION.md` |
+
+以上是内部控制链缺陷与验证入口缺陷，不归入12项外部待补。54／12／3、27/27历史关闭、`F-M01`／`F-M02`／`F-S01`／`F-W01`／`F-W02`／`E-04`及全部前序发布义务不变，不新增第028项。发布候选的CI结果不写回仓库，见PR #35正文与外部交接；PR保持Draft／Unmerged，等待Controller有限残余验证，Ready／merge另需准确授权。
+
 ---
 
 <details>

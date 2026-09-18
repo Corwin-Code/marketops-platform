@@ -1,0 +1,7 @@
+class	tests	failures	errors	skipped	outcome
+com.mimococo.marketops.AdvertisingMinimumExpiryIT	17	0	0	0	PASS
+com.mimococo.marketops.ListingDescriptionWriteGateIT	8	0	0	0	PASS
+com.mimococo.marketops.ListingActionLaunchIT	25	0	0	0	PASS
+com.mimococo.marketops.AvailabilityCaseLifecycleIT	25	0	0	0	PASS
+com.mimococo.marketops.RegistryVerificationFlowIT	35	0	26	0	NOT_PASS
+# totals (in log order): 110/0/26/0
