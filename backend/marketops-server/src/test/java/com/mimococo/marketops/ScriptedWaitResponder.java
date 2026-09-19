@@ -85,9 +85,15 @@ final class ScriptedWaitResponder implements AutoCloseable {
         int length = 0;
         for (String line : lines) {
             if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
-                length = Integer.parseInt(line.substring("content-length:".length()).trim());
+                try {
+                    length = Integer.parseInt(line.substring("content-length:".length()).trim());
+                } catch (NumberFormatException malformed) {
+                    return;
+                }
             }
         }
+        // A request this responder cannot frame is dropped; the client sees the exchange fail.
+        if (length < 0 || length > HEAD_LIMIT) return;
         byte[] body = input.readNBytes(length);
         received.add(requestLine[0] + " " + requestLine[1]);
         bodies.add(new String(body, StandardCharsets.UTF_8));

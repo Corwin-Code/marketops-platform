@@ -8,6 +8,7 @@ Supplement `S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`, issued by the Owner over C
 | Start (Controller-reviewed) | `45474b6039edd46842e1e5f84391dca4264ddc1d` | `3b6faa1d58fadbfad374a63a2502b606c06df6f5` |
 | Implementation checkpoint C | `3bcc38fafa2760fe59c2144fe54887e212044d30` | `d1ff55461fe6325266e69964c20f64f22563c787` |
 | This documentation successor D | the commit that adds this file (parent C) | — |
+| Alert follow-up E | the commit that adds this row (parent D) | — |
 | Formally closed engineering object (historical, not replaced) | `f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10` | `b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47` |
 
 Authority: [`OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt`](../../../08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt)
@@ -45,6 +46,14 @@ review-driven validator additions.
 | Governance and readiness validators, 440 validator unit tests | C (inside the fresh clone) and this successor | pass | `b2-fresh-clone-3bcc38fafa27/fresh-clone-full.log.gz`; `validators-this-successor.txt` |
 | Frozen inputs | working tree vs `45474b60…` | migrations V0001–V0124 unchanged; Contract, annex and Frozen Finding Set equal the Controller's identities | `frozen-input-check.txt` |
 | Remote before publication | `origin`, PR #35 | branch at `45474b60…`, `main` at `0f26d0ed…`, PR open Draft, no auto-merge | `remote-before-publication/` |
+
+## CodeQL follow-up
+
+The CodeQL analysis of D reported one note introduced by this supplement: alert #654,
+`java/uncaught-number-format-exception`, at the `Content-Length` parse of the test-support
+`ScriptedWaitResponder`. Commit E catches that exception and bounds the length, dropping a request the
+responder cannot frame; no production code changes. The provider-wait IT passed 11/11 afterwards
+(`local-verification/provider-wait-it-after-654.log.gz`). CI and CodeQL results are reported in PR #35.
 
 ## Not run, and limits
 
