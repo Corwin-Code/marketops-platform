@@ -1,0 +1,12 @@
+source_head=48298206794a81b0640b4a14363198465dbd86c0 source_tree=3531f580200e8802f9a27ab24f7c3049e6b5e3b0 stamp=20260918t091144z compose_project=marketops-browser-local-20260918t091144z
+node=v24.19.0 npm=11.17.0 java=openjdk version "21.0.10" 2026-01-20 LTS
+docker=29.7.2 compose=5.5.1
+uname=Darwin 25.6.0 arm64
+a85c4b327856249a91d5081631a9bfcb2d5a6c1d7cfbe407337d05e01c250293  frontend/marketops-console/package-lock.json
+7e8a2fa94951112b894a3dbe3d05efef5e9263741fa49125f0a70f40fedab4cc  frontend/marketops-console/.node-version
+ports_in_use_before:
+  5432 free
+  8080 free
+  8082 free
+  4173 free
+  5173 free

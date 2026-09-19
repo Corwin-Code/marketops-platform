@@ -14,6 +14,7 @@ import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.shared.MetadataFieldPolicy;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import java.time.Clock;
+import java.time.Instant;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
@@ -45,11 +46,13 @@ public class WorkTaskService {
     private final IdGenerator ids;
     private final AdvertisingTaskGovernance advertising;
     private final tools.jackson.databind.ObjectMapper json;
+    private final ListingTaskSloService listingClocks;
 
     WorkTaskService(WorkTaskRepository tasks, MetadataAuditRecorder auditRecorder,
                     Clock clock, BusinessAuthorization authorization,
                     WorkTaskEventRepository journal, IdGenerator ids,
-                    AdvertisingTaskGovernance advertising, tools.jackson.databind.ObjectMapper json) {
+                    AdvertisingTaskGovernance advertising, tools.jackson.databind.ObjectMapper json,
+                    ListingTaskSloService listingClocks) {
         this.tasks = tasks;
         this.auditRecorder = auditRecorder;
         this.clock = clock;
@@ -58,6 +61,7 @@ public class WorkTaskService {
         this.ids = ids;
         this.advertising = advertising;
         this.json = json;
+        this.listingClocks = listingClocks;
     }
 
     /**
@@ -128,6 +132,7 @@ public class WorkTaskService {
         WorkTaskView task = require(taskId);
         String reason = MetadataFieldPolicy.requireText("closureReason", closureReason);
         advertising.requireClosure(taskId);
+        listingClocks.requireQualifiedDisposition(taskId);
         String state = done ? "DONE" : "CANCELLED";
         if (!tasks.close(taskId, state, reason, clock.instant(), expectedVersion)) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
@@ -199,7 +204,7 @@ public class WorkTaskService {
         journal.append(new WorkTaskEventRepository.Event(
                 ids.newId(), taskId, task.organizationId(), "ACKNOWLEDGED", lineageOf(task),
                 null, null, null, null, null, null, null, actor.userId(), null,
-                "the task was acknowledged", clock.instant(), "task-acknowledge:" + taskId));
+                "the task was acknowledged", tasks.databaseNow(), "task-acknowledge:" + taskId));
     }
 
     /**
@@ -215,6 +220,7 @@ public class WorkTaskService {
     public void recordAction(AuthenticatedActor actor, UUID taskId, String actionKind,
                              String evidenceReference, String reason) {
         requireTaskAction(actor, taskId, false);
+        listingClocks.requireBusinessActionProducer(taskId);
         WorkTaskView task = require(taskId);
         String reference = MetadataFieldPolicy.requireText("evidenceReference",
                 evidenceReference);
@@ -224,7 +230,7 @@ public class WorkTaskService {
                 MetadataFieldPolicy.requireText("actionKind", actionKind),
                 json.writeValueAsString(Map.of("reference", reference)),
                 reference, null, null, null, null, actor.userId(), null,
-                MetadataFieldPolicy.requireText("reason", reason), clock.instant(),
+                MetadataFieldPolicy.requireText("reason", reason), tasks.databaseNow(),
                 "task-action:" + taskId));
     }
 
@@ -237,7 +243,7 @@ public class WorkTaskService {
         journal.append(new WorkTaskEventRepository.Event(ids.newId(),taskId,task.organizationId(),"ACTION_RECORDED",
                 lineageOf(task),actionKind,json.writeValueAsString(Map.of("reference",reference)),reference,
                 null,null,null,null,actor.userId(),null,MetadataFieldPolicy.requireText("reason",reason),
-                clock.instant(),"manual-task-action:"+taskId));
+                tasks.databaseNow(),"manual-task-action:"+taskId));
     }
 
     /**
@@ -275,14 +281,15 @@ public class WorkTaskService {
         requireTaskAction(actor, taskId, false);
         if (!escalated) advertising.requireNewAction(taskId);
         WorkTaskView task = require(taskId);
-        if (!escalated && !tasks.reopen(taskId, clock.instant(), task.version())) {
+        Instant reopenedAt = tasks.databaseNow();
+        if (!escalated && !tasks.reopen(taskId, reopenedAt, task.version())) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
         }
         journal.append(new WorkTaskEventRepository.Event(
                 ids.newId(), taskId, task.organizationId(),
                 escalated ? "ESCALATED" : "REOPENED", lineageOf(task),
                 null, null, null, null, null, null, null, actor.userId(), null,
-                MetadataFieldPolicy.requireText("reason", reason), clock.instant(),
+                MetadataFieldPolicy.requireText("reason", reason), reopenedAt,
                 "task-reopen:" + taskId));
     }
 
@@ -304,7 +311,8 @@ public class WorkTaskService {
      * from a different proposal is different work whatever it is called.
      */
     private String lineageOf(WorkTaskView task) {
-        return advertising.lineage(task.id(), "recommendation:" + task.recommendationId());
+        return advertising.lineage(task.id(), task.recommendationId()==null
+                ? "listing-diagnosis:"+task.id() : "recommendation:" + task.recommendationId());
     }
 
     public void requireTaskAction(AuthenticatedActor actor, UUID taskId, boolean readOnly) {

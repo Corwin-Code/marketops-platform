@@ -1,0 +1,131 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "3eb53015fc328a8a8eb62c69d7f442a3580c6c4c",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/CalibrationService.java": "85741217193867e07d1e1724cfb353f804107c0b8e9ff0f364995a67dbb9b012",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionDecisionService.java": "3d67da850dc6584d31c03c9e9d3f5055a2212618beeaafb1d0dd1063f9967466",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/CalibrationRepository.java": "029aa251e5ae3bb4cdf64d487624fe633dc177aed5f8ec8723a20482936c71b7",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingDecisionScope.java": "dc6af5e2386454feb5d22249889d3de755b9e8350b305face0cf10fa9bd4d32f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java": "b3b7467b319fec3674d3e08018f6b7348ae03d71f9543fdafc22ec543627cf82",
+    "backend/marketops-server/src/main/resources/db/migration/V0103__recheck_exact_listing_calibration_dependencies.sql": "cea6a88e247fb86f8544304df9434271064b184598531258ce81f0f6b9dbf44c",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingAtomicLaunchUpgradeIT.java": "2dfad65ea9dc57e93f48b79597fb7ecdcb56c0c50bb4d3c943dc1c3185e4c694",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "d2697205f5fd9c4f9a47980acc029f6d8ee814a571f41ec9db6440901a5a1672",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingGuardrailTest.java": "ff033808fe3dad8cd7b4831468205de4d1f722b5446bf50f4c05d5fe61b7f85c"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 47,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Before final additional original-package scope guard; final two-case probe records the last guard change separately.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-authorization.log",
+      "raw_log_sha256": "2357b174b91e814770d4cfbefed156f1ac225c850e60f4636d811aa76295281d",
+      "summary_path": "calibration-continuation-authorization-summary.txt",
+      "summary_sha256": "d9759e99ea1a24f3412ef911d88f433b11bfda6cb7aabd9ef8d802388714cf96"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingActionLaunchIT,ListingGuardrailTest,CalibrationSnapshotTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 108,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Before final additional original-package scope guard; final two-case probe records the last guard change separately.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-launch-domain-architecture.log",
+      "raw_log_sha256": "027fa2b65369a8dece7d4c877127cd0a38243967b36c8138c94644fc363f4d0c",
+      "summary_path": "calibration-continuation-launch-domain-architecture-summary.txt",
+      "summary_sha256": "702e33061f583c03e6249ec4348f3e10bbd82016bc2e29816c8f3df037892d6c"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingDescriptionWriteGateIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 8,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Before final additional original-package scope guard; final two-case probe records the last guard change separately.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-write-gate.log",
+      "raw_log_sha256": "38b89d8c93fffd61e7addb1eb6cfecba5165381ce5718d4a1d39f0a4ec95951f",
+      "summary_path": "calibration-continuation-write-gate-summary.txt",
+      "summary_sha256": "2658d3e6bfd273e8f95d0007dd26188c95527bab9970d8a184a44bd5a4210e65"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingDescriptionResponseIdentityIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 21,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Before final additional original-package scope guard; final two-case probe records the last guard change separately.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-response-identity.log",
+      "raw_log_sha256": "290398c2450e45132fb6ecc8d8555427946fd0f0a567fa3f4400af435ae076cd",
+      "summary_path": "calibration-continuation-response-identity-summary.txt",
+      "summary_sha256": "7c053c729b320c84668932bdaff46596553caa8d1dcb7be8e131e36bc26e95f3"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingConversionSchemaIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 10,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Before final additional original-package scope guard; final two-case probe records the last guard change separately.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-schema.log",
+      "raw_log_sha256": "5c7116868a59b768f6f307bcfb2a127fd9419e0557c98a6766ab43568e08a300",
+      "summary_path": "calibration-continuation-schema-summary.txt",
+      "summary_sha256": "0269e2f0027ccd626d54960c3fe3306f98ae769a8815b7ed914062a127877aea"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingAtomicLaunchUpgradeIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Before final additional original-package scope guard; final two-case probe records the last guard change separately.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-upgrade.log",
+      "raw_log_sha256": "0e83d40c4a61689f317b3df5de4d91f1fa2d2bda2ac432d2e50645389ad27270",
+      "summary_path": "calibration-continuation-upgrade-summary.txt",
+      "summary_sha256": "357ab9c8ad9a58d1e65b499d4041181b7d0674f615e8624b8144eddd3072d8ec"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT#governedReplacementContinuesUnchangedDependenciesAndStopsChangedOnes+historicalCalibrationRemainsBoundAfterRetirementAndCannotBorrowAnotherVersion'",
+      "working_directory": "backend/marketops-server",
+      "tests": 2,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "source_note": "Final source after original-package scope guard; overlaps the earlier signed class.",
+      "raw_log_local_path": "build/slice4-rework/calibration-continuation-scope-final.log",
+      "raw_log_sha256": "31dd062fd7b7d7ff9a3b64552576451dab258f2cdba9a4010fdcab3b13914bf3",
+      "summary_path": "calibration-continuation-scope-final-summary.txt",
+      "summary_sha256": "63fcefe6ea0e70f62d0fa1091db85d0a9c6f634a2af99e44d5c4ad4c2ac102aa"
+    }
+  ],
+  "report_xml_sha256": {
+    "build/slice4-rework/calibration-continuation-reports/authorization/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml": "fd743e459a836c6ff28dc985a1afd8ca25b95b792d0e29709a78d6351630fc97",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.ListingActionLaunchIT.xml": "125d3b6e02c8a6f88aceb832ab7f46a97c2116daaddf0606e888c3138aabbd1f",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml": "c3a3c91033b54bc01ac65b40ca02ddabcef59749ca1a910a06ec1f76de5c863b",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml": "c01ad01ec21802ed56983be0ef3988a5e2e8d05cbedcdb465749404e76372816",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml": "47c4be72fb057b921cb42ee3b6200dd38685a8a2dcbc427105b6a77330d81d8b",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml": "2cba98508d99fef6f274002de87585a26a92d382f9a99a8e6888ad82f142f66c",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml": "d5109d0a82de1b488db3ec7914e7ada65230313ae76f9e60c5d5ec1dd44e362f",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.listingconversion.internal.application.CalibrationSnapshotTest.xml": "01cedb65d403331474497e0525de26361c16c28741e4ee7c4c1c7ca8ad07d356",
+    "build/slice4-rework/calibration-continuation-reports/launch-domain-architecture/TEST-com.mimococo.marketops.operationsworkflow.internal.application.ListingGuardrailTest.xml": "4dae9d08bf84cb425e62bd95126fa6b87eadf86e55483291448b24975d720d05",
+    "build/slice4-rework/calibration-continuation-reports/write-gate/TEST-com.mimococo.marketops.ListingDescriptionWriteGateIT.xml": "5e30992000d90be68f4684960388b1f25af7fa0d4e1a8dd37c4b776cc1b4fee8",
+    "build/slice4-rework/calibration-continuation-reports/response-identity/TEST-com.mimococo.marketops.ListingDescriptionResponseIdentityIT.xml": "2007ec598a94a785f2a849ebf5bc421f24f828c08d44d3e0ff4bc9cd7a4e648a",
+    "build/slice4-rework/calibration-continuation-reports/schema/TEST-com.mimococo.marketops.database.ListingConversionSchemaIT.xml": "bcaa2195bffdc359c96320f78baa9d825f72d80cd4872105235f43e6b285f4c0",
+    "build/slice4-rework/calibration-continuation-reports/upgrade/TEST-com.mimococo.marketops.ListingAtomicLaunchUpgradeIT.xml": "1ea94c685b04bc4f1a086f6eb89f7a51dad014c555a0c60d08c1f09915db5796",
+    "build/slice4-rework/calibration-continuation-reports/scope-final/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml": "a11d3bac136dc62b4e2a10df8cc53b945ffecefb223e533bc164bba92172c5ca"
+  },
+  "diagnostics": [
+    {
+      "log": "build/slice4-rework/calibration-continuation-connected.log",
+      "sha256": "a422ba44893e2c9e25cda763cdbd6d0d29d67ce3dd282530e9c17e796ceb6955",
+      "note": "Fixture reassigned an existing active Owner role on the second replacement; IAM exclusion correctly refused. Helper preserves the role and provisions distinct accepting Owners."
+    },
+    {
+      "log": "build/slice4-rework/calibration-continuation-connected-corrected.log",
+      "sha256": "44a30daacfcaf0698e184a9c7f597f1cb87645d12045242997c6daefdbefcbbe",
+      "note": "One connected case PASS before closed-category inventory and final original-scope guard; overlaps final signed coverage."
+    }
+  ],
+  "limitations": [
+    "No root is CLOSED. Exact action-purpose preparation, purpose-specific complete combinations, complete business safeguards and late-evidence consumers remain open.",
+    "The dependency projection is a closed current-consumer inventory. Future dependencies require an explicit versioned model change; no generic dependency graph is introduced.",
+    "Original accepted authority, dependency bytes and historical plans remain frozen. Historical NULL projections are not backfilled for continuation.",
+    "Relevant regression was followed by a two-case probe for the final original-package scope predicate. Intermediate and final counts overlap; this is not a full final-head closure suite.",
+    "No frontend source or UI workflow changed; no browser evidence is claimed.",
+    "All execution is local and fictional. No real Provider/account, Level 2, remote publication, shared/production migration, Gate EV/E or business effects. Platform writes default OFF."
+  ]
+}

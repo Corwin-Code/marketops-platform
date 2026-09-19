@@ -1,0 +1,31 @@
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.833 s -- in TC-LC-WORKER-006 a refusal from the database is not a failure of the pass
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in TC-LC-WORKER-001 each answer moves the command somewhere different
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in TC-LC-WORKER-004 compensation restores exactly the captured prior text or nothing
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in TC-LC-WORKER-005 a platform's pending task is polled, never re-applied
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in TC-LC-WORKER-003 an unknown result is observed, never repeated
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in TC-LC-WORKER-002 every call carries the one verified attribute and the declared marking
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.975 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.ListingDescriptionCommandWorkerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.mimococo.marketops.marketplaceintegration.internal.domain.RetryAfterUnitsTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.565 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-CLASSIFY-005 a pointer reads only what it names
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-CLASSIFY-002 an apply is read through the recorded task pointer
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-CLASSIFY-001 an unanswered write is not the same as an unanswered read
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-CLASSIFY-003 a task's fate is read in the platform's own words
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in TC-CLASSIFY-004 an observed price is read from where it was recorded
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.286 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.DescriptionRetryHeadersTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.327 s -- in Additional code-quality architecture safeguards
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.222 s -- in com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.642 s -- in rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.406 s -- in com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.028 s -- in com.mimococo.marketops.architecture.ModulithArchitectureTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.151 s -- in Additional code-quality rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.517 s -- in com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.270 s -- in TC-AUTHORITY-003 owner-published policy has no writer in this product
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.174 s -- in TC-AUTHORITY-004 listingconversion writes nothing a function or another module owns
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.116 s -- in TC-AUTHORITY-002 command creation has exactly one route
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.600 s -- in com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest
+[INFO] Tests run: 179, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

@@ -175,6 +175,8 @@ public class MetricEngine {
         putMoney(metrics, MetricCode.RETAINED_NET_SALES, retained.netAmount(),
                 retained.evidence());
         putMoney(metrics, MetricCode.SETTLED_NET_SALES, settled.netAmount(), settled.evidence());
+        putCount(metrics, MetricCode.SETTLED_UNITS,
+                settled.available() ? settled.units() : null, settled.evidence());
 
         putCount(metrics, MetricCode.RETURN_UNITS,
                 returns.available() ? returns.units() : null, returns.evidence());
@@ -400,8 +402,8 @@ public class MetricEngine {
                     append(states, "currencyCompatible=false"));
         }
 
-        Money profit = sales.netAmount().minus(cost).minus(fees.total())
-                .minus(returns.lossAmount()).minus(advertising.spendAmount()).minus(tax);
+        Money profit = com.mimococo.marketops.analyticsdecision.ContributionProfitCalculation.calculate(
+                sales.netAmount(),cost,fees.total(),returns.lossAmount(),advertising.spendAmount(),tax);
         ConfidenceState confidence;
         if (variableTax.confidenceState() == ConfidenceState.ESTIMATED_EXPLAINED) {
             confidence = ConfidenceState.ESTIMATED_EXPLAINED;

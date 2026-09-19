@@ -1,0 +1,6 @@
+[INFO] Running com.mimococo.marketops.ListingDescriptionRetryTimingIT
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.741 s -- in com.mimococo.marketops.ListingDescriptionRetryTimingIT
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  16.821 s
+[INFO] Finished at: 2026-09-10T21:10:34+08:00

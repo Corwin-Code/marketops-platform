@@ -1,0 +1,350 @@
+{
+  "schema": "marketops.slice.targeted-final-closure-checkpoint.v1",
+  "slice": "SLICE-V1-004",
+  "checkpoint": "SLICE_V1_004_TARGETED_FINAL_CLOSURE_EC0E73B9_R1",
+  "as_of": "2026-09-15",
+  "status": "TARGETED_REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+  "authority": {
+    "level": "OWNER_LEVEL_1_LOCAL_ROOT_CAUSE_REWORK",
+    "source": "rework-r1/TAKEOVER_RECEIPT.md",
+    "continuity": "EXISTING_AUTHORITY_REMAINS_APPLICABLE",
+    "allowed": [
+      "LOCAL_SOURCE_AND_TEST_CHANGES_WITHIN_THE_FROZEN_SLICE",
+      "LOCAL_SYNTHETIC_PROFILE_AND_SCHEMA_EVIDENCE",
+      "NORMAL_ROLE_SIGNED_LOOPBACK_HTTP",
+      "ISOLATED_TESTCONTAINERS_POSTGRESQL",
+      "LOCAL_CHECKPOINT_COMMIT"
+    ],
+    "not_authorized": [
+      "PUSH",
+      "PR",
+      "MERGE",
+      "DEPLOYMENT",
+      "PRODUCTION_MIGRATION",
+      "REAL_ACCOUNT_OR_PROVIDER_CALL",
+      "LEVEL_2",
+      "GATE_EV",
+      "GATE_E",
+      "PRODUCTION_ENABLEMENT"
+    ]
+  },
+  "bound_inputs": {
+    "required_start": {
+      "head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "tree": "c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2"
+    },
+    "implementation_commit": {
+      "head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+      "tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+      "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a"
+    },
+    "contract": {
+      "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md",
+      "sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983"
+    },
+    "annex": {
+      "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md",
+      "sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d"
+    },
+    "frozen_finding_set": {
+      "path": "docs/07-phase-evidence/SLICE-V1-004/rework-r1/01_FROZEN_FINDING_SET.json",
+      "sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
+      "mutation": "NONE"
+    },
+    "controller_closure_record": {
+      "path": "attached-controller-package/01_CLOSURE_RECORD.json",
+      "sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "meaning": "CONTROLLER_RECORD_FOR_EC0E73B9;_NOT_NEW_AUTHORITY"
+    },
+    "controller_residual_scope": {
+      "path": "attached-controller-package/04_RESIDUAL_003_AND_027.md",
+      "sha256": "b03e89548f87cfcc30997b1584df9222bffe2e394838947504cc6af4dd40f489"
+    },
+    "controller_continuation": {
+      "path": "attached-controller-package/05_TARGETED_CONTINUATION_PROMPT.md",
+      "sha256": "4de47e47e207a3af4a15dbaa79f92fbc8c8e5dec649b535275d7aaf32c887da7"
+    },
+    "accepted_amendments": "NONE"
+  },
+  "controller_reconciliation": {
+    "frozen_findings_total": 27,
+    "controller_closed_at_required_start": 25,
+    "residual_findings": [
+      "S4-DR-R1-003",
+      "S4-DR-R1-027"
+    ],
+    "residual_checkpoint_status": "2_OF_2_REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+    "closed_by_this_checkpoint": 0,
+    "new_deep_review": false,
+    "next_review": "FINAL_CLOSURE_VERIFICATION"
+  },
+  "residual_closure": [
+    {
+      "finding": "S4-DR-R1-003",
+      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "root_cause": "OFFICIAL_SUMMARY totals could be independently measurable, but the path did not retain and qualify exact advertising/organic and critical-group method inputs, so formal fixed-traffic Outcome consumers rejected it by path name.",
+      "correction": "The existing summary intake now retains exact method version, source strata and optional critical-group strata; deterministic validators prove source/group sums and bounds; measurement lineage separately qualifies total, source and group evidence; formal Metric comparison and Outcome consume those qualified inputs without a DETAIL-only predicate.",
+      "positive_counterexample": "A normal-role signed HTTP intake into an isolated PostgreSQL database, with no visit-detail facts, produces the same frozen formal 0.634 fixed-traffic outcome as DETAIL and qualifies critical protection when exact groups are present.",
+      "negative_counterexamples": [
+        "Missing a required critical group leaves that protection UNDETERMINED while the primary formal outcome remains MET.",
+        "Source totals that do not equal the official total preserve the independently proven 0.1 total but cannot borrow formal source qualification.",
+        "An expired summary profile leaves counts visible but the ratio NOT_AVAILABLE.",
+        "Malformed aggregate structure is rejected as HTTP 400 and creates no observation.",
+        "Caller numbers, wrong lineage, contradiction and zero-denominator behavior remain fail-closed."
+      ]
+    },
+    {
+      "finding": "S4-DR-R1-027",
+      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "root_cause": "The ec0 engineering status said all 27 were Controller-pending even though the Controller closure record had closed 25 and left only 003 plus the status/evidence reconciliation itself.",
+      "correction": "Canonical status now distinguishes 25 Controller-closed findings from two targeted reworks pending Final Closure Verification, preserves the 69-row acceptance counts and external obligations, and labels the old complete-suite/browser receipts historical for ec0 rather than claiming they ran at the new source Head.",
+      "evidence_boundary": "This checkpoint records engineering completion only and issues no Controller closure."
+    }
+  ],
+  "impact": {
+    "implementation_commit_diff_vs_required_start": {
+      "files": 15,
+      "insertions": 539,
+      "deletions": 44,
+      "name_status": "build/slice-v1-004-final-closure-ec0e73b9-r1/diff-name-status.txt",
+      "name_status_sha256": "27cf5b03dbb9957f373ac57ab0ba78a98517dab5cbe525ca153aee49654b87de",
+      "stat": "build/slice-v1-004-final-closure-ec0e73b9-r1/diff-stat.txt",
+      "stat_sha256": "ba183719abb08e86267cdbce62be67c369d1a2f4695d747ed9b197f19450eb8b"
+    },
+    "evidence_checkpoint_addition": "Canonical documents plus the exact one-line V0124 approved-migration registry synchronization are committed separately; their final commit/tree and complete diff versus ec0 are reported out of band to avoid self-reference.",
+    "production_paths": [
+      "SUMMARY_PROFILE_AND_OBSERVATION_SCHEMA",
+      "FACT_INTAKE_HTTP_AND_REPOSITORY",
+      "MEASUREMENT_AND_LINEAGE_QUALIFICATION",
+      "FORMAL_FIXED_TRAFFIC_COMPARISON_AND_OUTCOME",
+      "LATE_FACT_RECALCULATION_PUBLICATION"
+    ],
+    "test_and_client_paths": [
+      "NORMAL_ROLE_HTTP_WITH_ISOLATED_POSTGRESQL",
+      "DOMAIN_METHOD_VALIDATION",
+      "MIGRATION_AND_SCHEMA",
+      "FRONTEND_SUMMARY_PAYLOAD_PROPAGATION"
+    ],
+    "canonical_evidence_sync": [
+      "CURRENT_STATE",
+      "S4_ACCEPTANCE_STATUS",
+      "FINDING_PROGRESS",
+      "EXECUTABLE_EVIDENCE",
+      "CONTROLLER_HANDOFF",
+      "MIGRATION_INVENTORY",
+      "EXACT_V0124_APPROVED_MIGRATION_REGISTRY_ENTRY"
+    ],
+    "new_provider_or_write_path": false,
+    "production_write_enabled": false,
+    "real_provider_calls": "NONE"
+  },
+  "migration": {
+    "version": "V0124",
+    "file": "backend/marketops-server/src/main/resources/db/migration/V0124__bridge_equivalent_summary_method_inputs.sql",
+    "lines": 39,
+    "bytes": 2706,
+    "sha256": "f3fe79e8237dc088a54a4e00bff29afb0e6278f7b4c9055f5bad6d4114bb3802",
+    "forward_only": true,
+    "existing_profiles_upgraded": false,
+    "qualification_default": false,
+    "meaning": "LOCAL_SYNTHETIC_AND_DOCUMENTARY_EVIDENCE_ONLY;NO_REAL_PLATFORM_QUALIFICATION"
+  },
+  "executed_commands": [
+    {
+      "id": "T01",
+      "command": "./mvnw -B -ntp -Dtest=EvidencePathQualificationTest,OfficialSummaryMethodEvidenceTest,VisitConversionTest,ExactTrafficComparisonTest '-Dit.test=ListingReworkAuthorizationIT#equivalentOfficialSummaryRunsTheSameFrozenFormalOutcomeWithoutVisitDetails+summaryMissingARequiredCriticalGroupCannotClaimThatProtection+nonEquivalentSummaryMethodInputsCannotBorrowFormalQualificationButKeepTheProvenTotal+expiredSummaryProfileCannotQualifyALaterMeasurement+officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow+contradictorySummaryRetainsRawCountsAndNeverClampsTheNumerator+callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio+frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts+lineageCannotBorrowCoverageFromAnotherWindowOrDropAQualifiedReceipt' -Djacoco.skip=true verify",
+      "cwd": "backend/marketops-server",
+      "exit_code": 0,
+      "result": "21_UNIT_PLUS_9_INTEGRATION_PASS;ZERO_FAILURE_ERROR_SKIP;BUILD_SUCCESS",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/backend/summary-outcome-regression.log",
+      "raw_log_sha256": "a947de59bfbb244708f7fb09817bcf6255bb11822f0caa4a0b622a3bacd3158c"
+    },
+    {
+      "id": "T02",
+      "command": "./mvnw -B -ntp -Dtest=OfficialSummaryMethodEvidenceTest -Dit.test=FlywayMigrationIT,ListingConversionSchemaIT -Djacoco.skip=true verify",
+      "cwd": "backend/marketops-server",
+      "exit_code": 0,
+      "result": "3_UNIT_PLUS_21_INTEGRATION_PASS;V0001_THROUGH_V0124_CLEAN_UPGRADE_ROLLBACK_AND_SCHEMA;BUILD_SUCCESS",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/backend/migration-schema-regression.log",
+      "raw_log_sha256": "c6456702575c6fa87dd530a473dd343350493aff9c10f4598d4ae1438aac4961"
+    },
+    {
+      "id": "T03",
+      "command": "./mvnw -B -ntp -Dtest=OfficialSummaryMethodEvidenceTest '-Dit.test=ListingRecalculationLeaseIT#workerPublishesExactResultsOnceAndPreservesTheSourceClock' -Djacoco.skip=true verify",
+      "cwd": "backend/marketops-server",
+      "exit_code": 0,
+      "result": "3_UNIT_PLUS_1_REAL_ISOLATED_DATABASE_INTEGRATION_PASS;BUILD_SUCCESS",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/backend/summary-recalculation-regression.log",
+      "raw_log_sha256": "98ba9f8678dafce4596ee37d13c81b63192ffcd9feb62937be418dc44d3227c0"
+    },
+    {
+      "id": "T04",
+      "command": "npm test -- --run src/__tests__/ListingConversionForms.test.tsx --reporter=default --reporter=json --outputFile.json=../../build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/listing-conversion-forms.json",
+      "cwd": "frontend/marketops-console",
+      "exit_code": 0,
+      "result": "26_OF_26_PASS",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/listing-conversion-forms.log",
+      "raw_log_sha256": "ec690c3f94ebfe4c350daa7d84c761ec9ffb1d715bda23b71487f62f2dbeeeb9",
+      "raw_json": "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/listing-conversion-forms.json",
+      "raw_json_sha256": "2bc8d3e8d5e00dc2fee151fe728d8298e21f945693439e90c8d83ebd08477815"
+    },
+    {
+      "id": "T05",
+      "command": "npm run typecheck",
+      "cwd": "frontend/marketops-console",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/typecheck.log",
+      "raw_log_sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    },
+    {
+      "id": "T06",
+      "command": "npx prettier --check src/__tests__/ListingConversionForms.test.tsx",
+      "cwd": "frontend/marketops-console",
+      "exit_code": 0,
+      "result": "PASS_AFTER_FORMATTING",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/format-check.log",
+      "raw_log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "id": "T07",
+      "command": "jq empty TARGETED_FINAL_CLOSURE_CHECKPOINT.json finding-progress.json S4-AC-STATUS.json MIGRATION-INVENTORY.json",
+      "cwd": "repository root (paths expanded to their canonical locations)",
+      "exit_code": 0,
+      "result": "ALL_CHANGED_JSON_PARSES"
+    },
+    {
+      "id": "T08",
+      "command": "python3 scripts/validate_governance.py",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "GOVERNANCE_VALIDATION_PASSED",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/governance-validation.log",
+      "raw_log_sha256": "d16ddd0173e27cf60e9e5642df238396e067ba7c8770d890d56d4ae4b005805d"
+    },
+    {
+      "id": "T09",
+      "command": "python3 scripts/validate_production_readiness.py",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "TC_GLOBAL_001_THROUGH_004_PASS",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/production-readiness-validation.log",
+      "raw_log_sha256": "41cf8609ec0e2373fd19c532656d1564c380a869a1d24f8dc50ea3a0b68b7649"
+    },
+    {
+      "id": "T10",
+      "command": "git diff --check",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "T11",
+      "command": "shasum -a 256 -c MANIFEST.sha256",
+      "cwd": "attached SLICE-V1-004-Final-Closure-Verification-ec0e73b9-R1 package root",
+      "exit_code": 0,
+      "result": "ALL_CONTROLLER_PACKAGE_FILES_OK"
+    }
+  ],
+  "superseded_diagnostics": [
+    {
+      "command": "shasum -a 256 -c <attached package>/MANIFEST.sha256",
+      "exit_code": 1,
+      "cause": "MANIFEST_RELATIVE_PATHS_WERE_INCORRECTLY_RESOLVED_FROM_THE_REPOSITORY_ROOT",
+      "correction": "RERAN_T11_FROM_THE_ATTACHMENT_PACKAGE_ROOT;ALL_24_FILES_OK",
+      "input_mutated": false
+    },
+    {
+      "command": "python3 scripts/validate_governance.py",
+      "exit_code": 1,
+      "cause": "TWO_LEGACY_COMPATIBILITY_FIELDS_WERE_CHANGED_TO_NEW_TARGETED_ENUMS_WHILE_THE_VALIDATOR_REQUIRES_THE_EXISTING_GENERAL_LEVEL_1_VALUES",
+      "correction": "RESTORED_THE_TWO_GENERAL_FIELDS_AND_ADDED_SEPARATE_EXPLICIT_TARGETED_STATE_AND_GATE_FIELDS;AUTHORITATIVE_T08_PASSED",
+      "control_weakened": false
+    },
+    {
+      "command": "python3 scripts/validate_production_readiness.py",
+      "exit_code": 1,
+      "cause": "EXACT_APPROVED_MIGRATION_SET_STOPPED_AT_V0123",
+      "correction": "ADDED_ONLY_THE_EXACT_V0124_FILENAME_TO_THE_APPROVED_SET;AUTHORITATIVE_T09_PASSED",
+      "control_weakened": false
+    },
+    {
+      "command": "./mvnw -DskipTests -Dit.test=FlywayMigrationIT failsafe:integration-test failsafe:verify",
+      "exit_code": 0,
+      "evidence_value": "NONE_TESTS_WERE_SKIPPED;NOT_USED"
+    },
+    {
+      "command": "first three-method negative integration selection",
+      "exit_code": 1,
+      "cause": "TEST_ASSERTION_USED_POSTGRESQL_QUESTION_MARK_OPERATOR_THROUGH_JDBCCLIENT_AND_WAS_PARSED_AS_A_PARAMETER",
+      "correction": "TEST_ASSERTION_CHANGED_TO_EQUIVALENT_JSONB_CONTAINMENT_OPERATOR;AUTHORITATIVE_T01_RERUN_PASSED",
+      "production_failure": false
+    },
+    {
+      "command": "npx prettier --check src/__tests__/ListingConversionForms.test.tsx",
+      "exit_code": 1,
+      "cause": "NEW_TEST_FORMATTING",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/format-check-initial-failed.log",
+      "raw_log_sha256": "de7edd54867eaae4a40a2b642967906fd4a31226af3448afc86e6e6ce20dbe81",
+      "correction": "PRETTIER_WRITE_THEN_T04_T05_T06_RERUN_PASS"
+    }
+  ],
+  "raw_test_reports": [
+    {"file": "backend/TEST-com.mimococo.marketops.ListingRecalculationLeaseIT.xml", "sha256": "e6bf6f117cc3eed170ce05f188d8d9e9f508a6b89a67b4d2357f9d111fb4c082"},
+    {"file": "backend/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml", "sha256": "599e72ff42fbfb99992d8ec56bdd3b48ba7163dc1b1fc6795cb81705cf246be9"},
+    {"file": "backend/TEST-com.mimococo.marketops.database.FlywayMigrationIT.xml", "sha256": "d9d44c0e447ec7708f673f3f4b56d7f15f96528ade47f8a5aa6c8991ecca88a6"},
+    {"file": "backend/TEST-com.mimococo.marketops.database.ListingConversionSchemaIT.xml", "sha256": "8dfd953ad0c167911d46ecc14be7ba97a0aa1c352706b4ca61fd692705f37de0"},
+    {"file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualificationTest.xml", "sha256": "0b08760e820742de8bf1f153bb3ac2c335a985e397645686fd089b8c0307a634"},
+    {"file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.ExactTrafficComparisonTest.xml", "sha256": "57a17da25eaf9160e089d0f097360cbaf6782372eb4aa17fbd49bc3eae8c0cb9"},
+    {"file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.OfficialSummaryMethodEvidenceTest.xml", "sha256": "39345611b4d88eed2f133fc0b07629234a2143d46573cea2d4837c59130b9d47"},
+    {"file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.VisitConversionTest.xml", "sha256": "60b375b2a7f40a8f7eb1b1b3417210311dfe33ebb8c321d27e8f1ad9996de452"}
+  ],
+  "source_manifests": {
+    "old_backend": {"entries": 1320, "file": "manifests/backend-source-ec0e73b9.sha256", "sha256": "0a2f938bc0205da1f3158ca1853c7c65d96448c78efdb0538fa484a913f969af"},
+    "new_backend": {"entries": 1323, "file": "manifests/backend-source-new.sha256", "sha256": "25f280a58ca9d778239015aff02b4dfaf3de7106838d2b79ce6594a98fccc89d"},
+    "backend_diff": {"file": "manifests/backend-source-diff.txt", "sha256": "bb5131520d31c3dc84f61f8294868652361bcc6b0a58f8c499415281ac617eae"},
+    "old_frontend": {"entries": 126, "file": "manifests/frontend-source-ec0e73b9.sha256", "sha256": "7705b6ed9b93a06c7c14e49bd3a9768105635db72de0fcf447614476525d0c53"},
+    "new_frontend": {"entries": 126, "file": "manifests/frontend-source-new.sha256", "sha256": "b207f4792845ec454e441f4a694079cdc977054ba15c9d182800965b7be38a76"},
+    "frontend_diff": {"file": "manifests/frontend-source-diff.txt", "sha256": "3bb27c57d60695084ded85268ab8c08105dbfc28aa987aa27948c26658633850"},
+    "root": "build/slice-v1-004-final-closure-ec0e73b9-r1",
+    "sha256s_file": "SHA256SUMS",
+    "sha256s_file_hash_reporting": "REPORTED_OUT_OF_BAND_AFTER_FINAL_COMMIT_TO_AVOID_SELF_REFERENCE"
+  },
+  "historical_terminal_evidence": {
+    "receipt": "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+    "source_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
+    "backend": "1895_SUREFIRE_PLUS_1363_FAILSAFE_PASS_AT_HISTORICAL_SOURCE",
+    "frontend": "418_OF_418_PASS_AT_HISTORICAL_SOURCE",
+    "browser": "24_OF_26_COMPLETE_RUN_PLUS_EXACT_2_OF_2_CLOSING_RERUN",
+    "preserved": true,
+    "current_head_full_suite_claim": false,
+    "current_head_browser_rerun_claim": false
+  },
+  "other_25_non_regression_basis": {
+    "controller_record": "25 findings were Controller-closed at ec0e73b9 by the bound closure record.",
+    "bounded_diff": "The implementation diff is limited to summary intake/qualification/comparison/outcome/recalculation, V0124, exact tests and frontend summary payload propagation.",
+    "transitive_regression": "Relevant DETAIL formal/revision, caller-number refusal, lineage, independent total, contradiction, profile chronology, schema/privilege and frontend payload tests passed.",
+    "migration_safety": "V0124 is additive, defaults every new qualification flag false, does not rewrite old profiles, and passed clean/upgrade/rollback/schema coverage.",
+    "unchanged_authority": "No provider, write-gate, approval, allowance, command, compensation, credential, AI, financial, task or notification authority was changed.",
+    "claim": "NO_REOPENED_FINDING_OBSERVED_IN_CHANGED_AND_TRANSITIVE_PATHS;NOT_A_NEW_FULL_31_HOUR_RUN"
+  },
+  "acceptance_reconciliation": {
+    "total": 69,
+    "ENGINEERING_VERIFIED_CONTROLLER_PENDING": 54,
+    "EXTERNAL_EVIDENCE_PENDING": 12,
+    "NOT_APPLICABLE_AT_LEVEL_1": 3,
+    "external_evidence_criteria": [
+      "C01-AC2", "C02-AC1", "C02-AC2", "C02-AC3", "C04-AC1", "C04-AC2", "C04-AC3", "C06-AC2", "C08-AC2", "C09-AC1", "C10-AC1", "C10-AC2"
+    ],
+    "not_applicable_criteria": ["C12-AC1", "NFR-AC1", "NFR-AC6"],
+    "external_obligations_open": ["F-M01", "F-M02", "F-S01", "F-W01", "F-W02", "E-04"]
+  },
+  "claim_boundary": {
+    "controller_final_closure_issued": false,
+    "all_69_controller_closed_claim": false,
+    "full_suite_rerun_at_implementation_head": false,
+    "historical_31_hour_run_repeated": false,
+    "remote_or_environment_authority_created": false,
+    "new_platform_writes_default_off": true
+  }
+}

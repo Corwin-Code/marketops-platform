@@ -1,0 +1,8 @@
+COMMAND: ./mvnw -B -ntp test -Dtest=ListingConversionSchedulerTest
+WORKING_DIRECTORY: backend/marketops-server
+RESULT: PASS_TARGETED_ONLY
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.590 s -- in com.mimococo.marketops.listingconversion.internal.application.ListingConversionSchedulerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  14.190 s
+[INFO] Finished at: 2026-09-10T21:33:08+08:00

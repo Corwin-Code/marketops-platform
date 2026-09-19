@@ -1,0 +1,8 @@
+COMMAND: ./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify '-Dit.test=ListingReworkAuthorizationIT#oneSignedLaunchRunsRealWorkerAdapterCustodyReadbackAndReturnsExecutionToConsole'
+WORKING_DIRECTORY: backend/marketops-server
+RESULT: PASS_TARGETED_ONLY
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.17 s -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  24.573 s
+[INFO] Finished at: 2026-09-10T21:40:31+08:00

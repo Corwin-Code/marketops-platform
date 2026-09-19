@@ -55,6 +55,17 @@ class SoleAuthorityArchitectureTest {
                     "the ops.record_ad_bid_command_readback function"),
             Map.entry("ops.ad_bid_command_transition", "the ad bid transition function"),
             Map.entry("ops.price_command", "marketplaceintegration PriceCommandRepository"),
+            Map.entry("ops.lc_description_command", "the ops.create_lc_description_command function"),
+            Map.entry("ops.lc_description_command_attempt",
+                    "the ops.open_lc_description_command_attempt function"),
+            Map.entry("ops.lc_description_command_readback",
+                    "the ops.record_lc_description_command_readback function"),
+            Map.entry("ops.lc_description_command_transition", "the description transition function"),
+            Map.entry("ops.lc_launch", "the ops.acquire_lc_launch_allowance function"),
+            Map.entry("ops.lc_exposure_occupation", "the launch, observe and release functions"),
+            Map.entry("ops.lc_containment", "the ops.record_lc_containment function"),
+            Map.entry("ops.lc_containment_attestation", "the ops.attest_lc_containment function"),
+            Map.entry("raw.lc_description_response_observation", "marketplaceintegration RawCustody"),
             Map.entry("raw.ad_bid_response_observation", "marketplaceintegration RawCustody"),
             Map.entry("mart.metric_value", "analyticsdecision"),
             Map.entry("mart.metric_value_evaluation", "analyticsdecision"),
@@ -83,7 +94,13 @@ class SoleAuthorityArchitectureTest {
             Map.entry("core.ad_allowable_cpa_definition", "owner-published allowable CPA"),
             Map.entry("core.ad_freshness_profile", "owner-published freshness bounds"),
             Map.entry("core.ad_optimization_qualification_policy",
-                    "owner-published qualification tiers"));
+                    "owner-published qualification tiers"),
+            Map.entry("core.lc_calibration_package", "owner-published listing calibration package"),
+            Map.entry("core.lc_calibration_value", "owner-published listing calibration value"),
+            Map.entry("core.lc_calibration_category", "owner-published listing calibration catalogue"),
+            Map.entry("core.lc_summary_equivalence_profile", "owner-published summary equivalence proof"),
+            Map.entry("ops.lc_exposure_allowance", "owner-published exposure allowance"),
+            Map.entry("ops.lc_gate_authority", "owner-published description write gate authority"));
 
     /** Statements that write. A SELECT of any of these tables is fine. */
     private static final Pattern WRITE_STATEMENT = Pattern.compile(
@@ -224,6 +241,72 @@ class SoleAuthorityArchitectureTest {
         }
     }
 
+    @Nested
+    @DisplayName("TC-AUTHORITY-004 listingconversion writes nothing a function or another module owns")
+    class ListingConversionAuthority {
+
+        @Test
+        @DisplayName("no SQL in the module writes a table with a writer elsewhere")
+        void noSqlInTheModuleWritesAForeignTable() throws IOException {
+            List<String> violations = new ArrayList<>();
+            for (Path file : javaFilesUnder(SOURCE_ROOT.resolve("listingconversion"))) {
+                violations.addAll(foreignWriteViolations(file,
+                        Files.readString(file, StandardCharsets.UTF_8)));
+            }
+            // The listing module prepares, reviews, evaluates and reports. The
+            // recommendation, the approval, the launch, the occupation, the
+            // containment and the command are all written by somebody else.
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("no Java anywhere inserts a description command, a launch, an occupation or a containment")
+        void noJavaWritesAFunctionOwnedListingTable() throws IOException {
+            List<String> violations = new ArrayList<>();
+            for (Path file : javaFilesUnder(SOURCE_ROOT)) {
+                String source = Files.readString(file, StandardCharsets.UTF_8);
+                var matcher = WRITE_STATEMENT.matcher(source);
+                while (matcher.find()) {
+                    String table = matcher.group(2).toLowerCase(Locale.ROOT);
+                    if (table.startsWith("ops.lc_description_command") || table.equals("ops.lc_launch")
+                            || table.equals("ops.lc_exposure_occupation")
+                            || table.startsWith("ops.lc_containment")
+                            || table.equals("ops.lc_gate_authority")) {
+                        violations.add(file.getFileName() + " " + matcher.group(1) + " " + table);
+                    }
+                }
+            }
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("the migration defines exactly one function that inserts a description command")
+        void exactlyOneFunctionCreatesDescriptionCommands() throws IOException {
+            Path migrations = Path.of("src/main/resources/db/migration");
+            java.util.Set<String> creators = new java.util.HashSet<>();
+            try (Stream<Path> files = Files.list(migrations)) {
+                for (Path file : files.filter(p -> p.toString().endsWith(".sql")).toList()) {
+                    String sql = Files.readString(file, StandardCharsets.UTF_8);
+                    creators.addAll(descriptionCommandCreators(sql));
+                }
+            }
+            assertThat(creators).containsExactly("ops.create_lc_description_command");
+        }
+
+        @Test
+        void descriptionCreationScanRejectsASecondFunctionAndTopLevelWriteButAllowsForwardReplacement() {
+            String original="CREATE FUNCTION ops.create_lc_description_command(p_id uuid) RETURNS uuid LANGUAGE plpgsql AS $$ BEGIN INSERT INTO ops.lc_description_command(id) VALUES(p_id); RETURN p_id; END; $$;";
+            assertThat(descriptionCommandCreators(original+original.replace("CREATE FUNCTION","CREATE OR REPLACE FUNCTION")))
+                    .containsOnly("ops.create_lc_description_command");
+            assertThat(descriptionCommandCreators(original.replace("ops.create_lc_description_command(","ops.other_creator(")))
+                    .containsExactly("ops.other_creator");
+            assertThat(descriptionCommandCreators("INSERT INTO ops.lc_description_command(id) VALUES(gen_random_uuid());"))
+                    .containsExactly("OUTSIDE_FUNCTION");
+            assertThat(descriptionCommandCreators(original+"\nINSERT INTO ops.lc_description_command(id) VALUES(gen_random_uuid());"))
+                    .containsExactly("ops.create_lc_description_command","OUTSIDE_FUNCTION");
+        }
+    }
+
     private static List<Path> javaFilesUnder(Path root) throws IOException {
         if (!Files.isDirectory(root)) {
             return List.of();
@@ -231,6 +314,25 @@ class SoleAuthorityArchitectureTest {
         try (Stream<Path> walk = Files.walk(root)) {
             return walk.filter(p -> p.toString().endsWith(".java")).toList();
         }
+    }
+
+    /** Every textual INSERT must lie inside the sole creator; a forward
+     * CREATE OR REPLACE preserves function identity, not a second writer. The
+     * integration test independently inspects the installed pg_proc bodies. */
+    private static List<String> descriptionCommandCreators(String sql) {
+        var functions=java.util.regex.Pattern.compile(
+                "(?is)\\bCREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+([a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*)\\s*\\(.*?\\)\\s*RETURNS\\b.*?\\bAS\\s*(\\$(?:[a-z_][a-z0-9_]*)?\\$).*?\\2\\s*;").matcher(sql);
+        record FunctionRegion(int start,int end,String name) { }
+        List<FunctionRegion> regions=new ArrayList<>();
+        while (functions.find()) regions.add(new FunctionRegion(functions.start(),functions.end(),functions.group(1).toLowerCase(Locale.ROOT)));
+        var inserts=java.util.regex.Pattern.compile("(?is)\\binsert\\s+into\\s+ops\\.lc_description_command\\s*\\(").matcher(sql);
+        List<String> creators=new ArrayList<>();
+        while (inserts.find()) {
+            int position=inserts.start();
+            creators.add(regions.stream().filter(region->region.start()<=position && position<region.end())
+                    .map(FunctionRegion::name).findFirst().orElse("OUTSIDE_FUNCTION"));
+        }
+        return creators;
     }
 
     /** Shared by the actual source scan and its deliberate forbidden-writer example. */

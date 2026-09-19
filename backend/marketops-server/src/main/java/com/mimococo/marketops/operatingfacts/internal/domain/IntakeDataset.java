@@ -47,6 +47,11 @@ public enum IntakeDataset {
             new Field("valueKind", FieldKind.TEXT, true),
             new Field("effectiveFrom", FieldKind.INSTANT, true),
             new Field("scopeCode", FieldKind.TEXT, false),
+            new Field("promotionKind", FieldKind.TEXT, false),
+            new Field("nativePromotionKey", FieldKind.TEXT, false),
+            new Field("promotionListingId", FieldKind.TEXT, false),
+            new Field("promotionTermsDigest", FieldKind.TEXT, false),
+            new Field("effectiveTo", FieldKind.INSTANT, false),
             new Field("rateValue", FieldKind.DECIMAL, false),
             new Field("amountValue", FieldKind.DECIMAL, false),
             new Field("currencyCode", FieldKind.TEXT, false)));

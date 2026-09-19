@@ -1,0 +1,8 @@
+COMMAND: ./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingReworkAuthorizationIT
+WORKING_DIRECTORY: backend/marketops-server
+RESULT: PASS_TARGETED_ONLY
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.92 s -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  34.592 s
+[INFO] Finished at: 2026-09-10T21:42:14+08:00

@@ -1,0 +1,132 @@
+{
+  "format": "CONTROLLER_SUMMARY_OF_ACTUAL_TOOL_READS_NOT_RAW_API_RESPONSE",
+  "review_date": "2026-09-19",
+  "pr": 35,
+  "draft": true,
+  "merged": false,
+  "head": "45474b6039edd46842e1e5f84391dca4264ddc1d",
+  "tree": "3b6faa1d58fadbfad374a63a2502b606c06df6f5",
+  "main": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+  "synthetic_merge": {
+    "sha": "a2767e0f1583960c2faa69654c922d00166a6ebc",
+    "tree": "3b6faa1d58fadbfad374a63a2502b606c06df6f5",
+    "parents": [
+      "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+      "45474b6039edd46842e1e5f84391dca4264ddc1d"
+    ]
+  },
+  "a_to_b": {
+    "only_changed_top_level": "docs",
+    "unchanged": [
+      "backend",
+      "frontend",
+      "infra",
+      ".github",
+      "scripts",
+      "tests",
+      "fixtures"
+    ]
+  },
+  "required_checks": 12,
+  "required_success": 12,
+  "additional_codeql_result": "success",
+  "backend_frontend_live_job_steps": "all reported completed/success, formerly skipped downstream steps executed",
+  "source_items": [
+    {
+      "name": "PR35",
+      "url": "https://github.com/Corwin-Code/marketops-platform/pull/35",
+      "tool_citation": "turn882file0",
+      "purpose": "current PR, draft/open/head"
+    },
+    {
+      "name": "Ruleset",
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/rulesets/20734984",
+      "tool_citation": "turn885file0",
+      "purpose": "12 strict contexts/no bypass"
+    },
+    {
+      "name": "Head checks",
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/commits/45474b6039edd46842e1e5f84391dca4264ddc1d/check-runs?per_page=100",
+      "tool_citation": "turn884file0",
+      "purpose": "13 results"
+    },
+    {
+      "name": "A diff",
+      "url": "https://github.com/Corwin-Code/marketops-platform/commit/48298206794a81b0640b4a14363198465dbd86c0",
+      "tool_citation": "turn883file0",
+      "purpose": "15 files +239/-22"
+    },
+    {
+      "name": "B diff",
+      "url": "https://github.com/Corwin-Code/marketops-platform/commit/45474b6039edd46842e1e5f84391dca4264ddc1d",
+      "tool_citation": "turn894file0",
+      "purpose": "documentation successor"
+    },
+    {
+      "name": "Owner authority",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/docs/08-handoffs/OWNER-SLICE-V1-004-PR35-BOUNDED-CORRECTION-AUTHORIZATION-EVIDENCE.md",
+      "tool_citation": "turn895file0",
+      "purpose": "source/executor/scope"
+    },
+    {
+      "name": "Transport",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+      "tool_citation": "turn889file0",
+      "purpose": "filter source"
+    },
+    {
+      "name": "Adapter",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpDescriptionWriteAdapter.java",
+      "tool_citation": "turn899file0",
+      "purpose": "consumer path"
+    },
+    {
+      "name": "Timing SQL",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/backend/marketops-server/src/main/resources/db/migration/V0084__persist_provider_description_retry_timing.sql",
+      "tool_citation": "turn891file0",
+      "purpose": "KNOWN/UNKNOWN/ABSENT/MO092"
+    },
+    {
+      "name": "Header tests",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/DescriptionRetryHeadersTest.java",
+      "tool_citation": "turn910file0",
+      "purpose": "custom OutboundHttp bypasses productionfilter"
+    },
+    {
+      "name": "Isolated script",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/scripts/validation/business_browser_isolated.sh",
+      "tool_citation": "turn892file0",
+      "purpose": "guard/config/cleanup"
+    },
+    {
+      "name": "Fresh clone",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/scripts/fresh_clone_check.sh",
+      "tool_citation": "turn893file0",
+      "purpose": "full entry residual"
+    },
+    {
+      "name": "Disposition",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/CODEQL_DISPOSITION.md",
+      "tool_citation": "turn888file0",
+      "purpose": "scoped alerts plus reported defect"
+    },
+    {
+      "name": "Erratum",
+      "url": "https://github.com/Corwin-Code/marketops-platform/blob/45474b6039edd46842e1e5f84391dca4264ddc1d/docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/HISTORICAL_LINT_ERRATUM.md",
+      "tool_citation": "turn900file0",
+      "purpose": "append-only corrected claim"
+    },
+    {
+      "name": "Query",
+      "url": "https://github.com/github/codeql/blob/c6baf479093fafc81d4655dc2014dc583360308e/java/ql/src/Likely%20Bugs/Statements/MissingEnumInSwitch.ql",
+      "tool_citation": "turn902file0",
+      "purpose": "specific analyzer implementation"
+    },
+    {
+      "name": "Library",
+      "url": "https://github.com/github/codeql/blob/c6baf479093fafc81d4655dc2014dc583360308e/java/ql/lib/semmle/code/java/Statement.qll",
+      "tool_citation": "turn903file0",
+      "purpose": "getValue index0"
+    }
+  ]
+}

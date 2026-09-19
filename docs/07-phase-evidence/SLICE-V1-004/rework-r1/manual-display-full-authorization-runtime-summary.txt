@@ -1,0 +1,5 @@
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.31 s -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  27.632 s
+[INFO] Finished at: 2026-09-10T17:13:50+08:00

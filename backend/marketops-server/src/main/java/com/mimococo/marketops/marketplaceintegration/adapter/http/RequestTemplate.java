@@ -28,7 +28,7 @@ final class RequestTemplate {
     /**
      * Every placeholder any recorded template may contain.
      *
-     * <p>The set is the union across both controlled writes, and it is
+     * <p>The set is the union across the three controlled writes, and it is
      * deliberately not partitioned here: the capability-shape trigger in the
      * database already refuses a price operation that mentions a bid and an
      * advertising operation that mentions a price, and duplicating that rule in
@@ -37,7 +37,8 @@ final class RequestTemplate {
     private static final java.util.Set<String> ALLOWED = java.util.Set.of(
             "cursor", "limit", "accountKey", "endpointCode", "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
-            "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode");
+            "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",
+            "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared");
 
     /** How a substituted value is escaped for the position it occupies. */
     enum Escaping {

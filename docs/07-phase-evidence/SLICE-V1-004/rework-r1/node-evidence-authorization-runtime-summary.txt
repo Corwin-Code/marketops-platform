@@ -1,0 +1,6 @@
+[ERROR] Tests run: 23, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 19.88 s <<< FAILURE! -- in com.mimococo.marketops.ListingReworkAuthorizationIT
+[ERROR] Failures: 
+[ERROR] Tests run: 23, Failures: 1, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
+[INFO] Total time:  28.710 s
+[INFO] Finished at: 2026-09-10T17:00:01+08:00

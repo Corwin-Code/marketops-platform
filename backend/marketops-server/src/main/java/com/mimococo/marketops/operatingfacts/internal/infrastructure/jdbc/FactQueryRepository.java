@@ -374,6 +374,29 @@ public class FactQueryRepository {
                 .list();
     }
 
+    /** Retained purchase-cost intervals intersecting the period, with explicit knowledge-time fencing. */
+    public List<com.mimococo.marketops.operatingfacts.CostPeriodSnapshot> purchaseCosts(UUID organizationId,
+            UUID productVariantId, Instant periodStart, Instant periodEnd, Instant asOf) {
+        if (organizationId == null || productVariantId == null || periodStart == null || periodEnd == null
+                || asOf == null || !periodStart.isBefore(periodEnd)) return List.of();
+        return jdbc.sql("""
+                SELECT c.id,c.unit_cost,c.currency_code,c.effective_from,c.effective_to,c.provenance_id
+                  FROM core.cost_version c JOIN core.fact_provenance p
+                    ON p.id=c.provenance_id AND p.organization_id=c.organization_id
+                 WHERE c.organization_id=:org AND c.product_variant_id=:variant AND c.cost_kind='PURCHASE'
+                   AND c.status IN ('ACTIVE','ENDED') AND c.effective_from<:end
+                   AND (c.effective_to IS NULL OR c.effective_to>:start)
+                   AND c.created_at<=:at AND p.ingestion_time<=:at AND p.source_time<=:at
+                 ORDER BY c.effective_from,c.id
+                """).param("org",organizationId).param("variant",productVariantId)
+                .param("start",Timestamp.from(periodStart)).param("end",Timestamp.from(periodEnd)).param("at",Timestamp.from(asOf))
+                .query((r,n)->new com.mimococo.marketops.operatingfacts.CostPeriodSnapshot(
+                    new com.mimococo.marketops.operatingfacts.CostSnapshot(r.getObject("id",UUID.class),
+                        com.mimococo.marketops.shared.Money.of(r.getBigDecimal("unit_cost"),r.getString("currency_code")),
+                        r.getTimestamp("effective_from").toInstant(),r.getObject("provenance_id",UUID.class)),
+                    instantOrNull(r,"effective_to"))).list();
+    }
+
     /** The purchase cost version in force at an instant. */
     public Optional<CostRow> unitCost(UUID productVariantId, Instant asOf) {
         return jdbc.sql("""
@@ -404,6 +427,48 @@ public class FactQueryRepository {
      * caller resolves identically: a variant-scoped version wins over a
      * store-scoped one, which wins over an organization-scoped one.
      */
+    public List<FinanceInputRow> promotionRevenueInputs(UUID organizationId,UUID storeId,UUID listingId,
+            String promotionKind,String nativePromotionKey,String termsDigest,Instant periodStart,Instant periodEnd,Instant asOf) {
+        if (periodStart==null || periodEnd==null || asOf==null || !periodStart.isBefore(periodEnd))
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        return jdbc.sql("""
+                SELECT f.id,f.input_code,f.value_kind,f.rate_value,f.amount_value,f.currency_code,f.effective_from,f.provenance_id
+                FROM core.finance_input_version f JOIN core.fact_provenance p ON p.id=f.provenance_id
+                WHERE f.organization_id=:org AND p.organization_id=:org AND f.store_ref_id=:store
+                  AND f.scope_kind='PROMOTION' AND f.promotion_listing_ref_id=:listing AND f.promotion_terms_digest=:digest
+                  AND f.input_code IN ('PROMOTION_BUYER_PAYMENT_PER_UNIT','PROMOTION_SELLER_REVENUE_PER_UNIT','PROMOTION_PLATFORM_COMPENSATION_PER_UNIT')
+                  AND f.promotion_kind=:kind AND f.native_promotion_key=:key AND f.status IN ('ACTIVE','ENDED')
+                  AND f.value_kind='AMOUNT' AND f.effective_from<=:start AND f.effective_to>=:end
+                  AND f.created_at<=:at AND p.ingestion_time<=:at AND p.source_time<=:at
+                ORDER BY f.input_code
+                """).param("org",organizationId).param("store",storeId).param("listing",listingId).param("digest",termsDigest)
+                .param("kind",promotionKind).param("key",nativePromotionKey).param("start",Timestamp.from(periodStart))
+                .param("end",Timestamp.from(periodEnd)).param("at",Timestamp.from(asOf))
+                .query((rs,n)->new FinanceInputRow(rs.getObject("id",UUID.class),rs.getString("input_code"),rs.getString("value_kind"),
+                        rs.getBigDecimal("rate_value"),rs.getBigDecimal("amount_value"),rs.getString("currency_code"),
+                        rs.getTimestamp("effective_from").toInstant(),rs.getObject("provenance_id",UUID.class))).list();
+    }
+
+    public Optional<FinanceInputRow> promotionFixedFee(UUID organizationId,UUID storeId,String promotionKind,
+            String nativePromotionKey,Instant periodStart,Instant periodEnd,Instant asOf) {
+        if (periodStart==null || periodEnd==null || asOf==null || !periodStart.isBefore(periodEnd))
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        return jdbc.sql("""
+                SELECT f.id,f.input_code,f.value_kind,f.rate_value,f.amount_value,f.currency_code,f.effective_from,f.provenance_id
+                FROM core.finance_input_version f JOIN core.fact_provenance p ON p.id=f.provenance_id
+                WHERE f.organization_id=:org AND p.organization_id=:org AND f.store_ref_id=:store
+                  AND f.scope_kind='PROMOTION' AND f.input_code='PROMOTION_FIXED_FEE'
+                  AND f.promotion_kind=:kind AND f.native_promotion_key=:key
+                  AND f.status IN ('ACTIVE','ENDED') AND f.value_kind='AMOUNT'
+                  AND f.effective_from<=:start AND f.effective_to>=:end
+                  AND f.created_at<=:at AND p.ingestion_time<=:at AND p.source_time<=:at
+                """).param("org",organizationId).param("store",storeId).param("kind",promotionKind).param("key",nativePromotionKey)
+                .param("start",Timestamp.from(periodStart)).param("end",Timestamp.from(periodEnd)).param("at",Timestamp.from(asOf))
+                .query((rs,n)->new FinanceInputRow(rs.getObject("id",UUID.class),rs.getString("input_code"),rs.getString("value_kind"),
+                        rs.getBigDecimal("rate_value"),rs.getBigDecimal("amount_value"),rs.getString("currency_code"),
+                        rs.getTimestamp("effective_from").toInstant(),rs.getObject("provenance_id",UUID.class))).optional();
+    }
+
     public Optional<FinanceInputRow> financeInput(UUID organizationId,
                                                   String inputCode,
                                                   UUID storeId,

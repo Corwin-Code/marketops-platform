@@ -1,0 +1,421 @@
+{
+  "schema": "marketops.slice.final-closure-continuation-checkpoint.v1",
+  "slice": "SLICE-V1-004",
+  "checkpoint": "SLICE_V1_004_FINAL_CLOSURE_CONTINUATION_39D55E30_R1",
+  "as_of": "2026-09-16",
+  "status": "RESIDUAL_003_AND_027_REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION_R2",
+  "authority": {
+    "level": "OWNER_LEVEL_1_LOCAL_ROOT_CAUSE_REWORK",
+    "source": "rework-r1/TAKEOVER_RECEIPT.md",
+    "continuity": "EXISTING_AUTHORITY_REMAINS_APPLICABLE",
+    "executed_by": "CLAUDE_MAKER",
+    "execution_basis": "Human Owner chat instruction of 2026-09-16 redirecting the Controller continuation prompt (05_TARGETED_CONTINUATION_PROMPT.md) to Claude because Codex had no remaining token budget; the prompt adds no authority",
+    "allowed": [
+      "LOCAL_SOURCE_AND_TEST_CHANGES_WITHIN_THE_FROZEN_SLICE",
+      "NORMAL_ROLE_SIGNED_LOOPBACK_HTTP",
+      "ISOLATED_TESTCONTAINERS_POSTGRESQL",
+      "LOCAL_CHECKPOINT_COMMIT",
+      "LOCAL_EVIDENCE_PACKAGING"
+    ],
+    "not_authorized": [
+      "PUSH",
+      "PR",
+      "MERGE",
+      "DEPLOYMENT",
+      "PRODUCTION_MIGRATION",
+      "REAL_ACCOUNT_OR_PROVIDER_CALL",
+      "LEVEL_2",
+      "GATE_EV",
+      "GATE_E",
+      "PILOT",
+      "PRODUCTION_WRITE",
+      "CONTRACT_OR_FROZEN_SET_MUTATION",
+      "CONTROLLER_CLOSURE_SELF_ISSUANCE"
+    ]
+  },
+  "bound_inputs": {
+    "required_start": {
+      "head": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+      "tree": "06ea3278543960368a6b891a990c167af874a901",
+      "meaning": "Controller Final Closure Verification R1 accurate object; working tree verified clean before any change"
+    },
+    "implementation_commit": {
+      "head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+      "tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+      "sole_parent": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+      "subject": "fix(slice-v1-004): require feasible critical-group complements"
+    },
+    "predecessor_targeted_implementation": {
+      "head": "6ccaa6c070cb5a786a91d447b474b44926f8837c",
+      "tree": "1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3",
+      "sole_parent": "ec0e73b9b9451f63f0cef385aed623d63521596a"
+    },
+    "contract": {
+      "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md",
+      "sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
+      "mutation": "NONE"
+    },
+    "annex": {
+      "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md",
+      "sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d",
+      "mutation": "NONE"
+    },
+    "frozen_finding_set": {
+      "path": "docs/07-phase-evidence/SLICE-V1-004/rework-r1/01_FROZEN_FINDING_SET.json",
+      "sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
+      "mutation": "NONE"
+    },
+    "controller_package": {
+      "name": "SLICE-V1-004-Final-Closure-Verification-39d55e30-R1",
+      "manifest_check": "shasum -a 256 -c MANIFEST.sha256: 24/24 OK",
+      "meaning": "CONTROLLER_RECORD_FOR_39D55E30; INPUT_NOT_NEW_AUTHORITY",
+      "files": {
+        "00_CONTROLLER_VERDICT.md": "fe6f3e5c18eadfa1f7e3ff9304eecb56db14a1182d8bd9d7ce09f3fedaef667d",
+        "01_CLOSURE_RECORD.json": "e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53",
+        "02_SOURCE_AND_TEST_REVIEW.md": "3038cdb489d1fd048909c7a8ac3889b903e96b06a6b9b43009411de6ff2c10b1",
+        "03_RESIDUAL_003_027.md": "135f9610f731ab1d6f81778cd69456a2b50b478ac8fe98bba3f4d51ecd4802f7",
+        "04_EVIDENCE_INVENTORY.json": "2080571feb17b86a41b10b70c633e8858a4f9a7389fa196edbcacb0aee7f4d0b",
+        "05_TARGETED_CONTINUATION_PROMPT.md": "6b8bebdcb6db44ab26f31c7f1c3714806a79e055e9f0bbe9543746fc2772141a",
+        "probe/result.jsonl": "364e5687e1057449b289f4f352b8352daa55014678fc725a315281478ced82f7"
+      }
+    },
+    "prior_ec0_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+    "accepted_amendments": "NONE"
+  },
+  "controller_reconciliation": {
+    "frozen_findings_total": 27,
+    "controller_closed_at_ec0": 25,
+    "final_closure_verification_r1_verdict": "CHANGES_REQUIRED",
+    "new_frozen_findings": 0,
+    "residual_findings": [
+      "S4-DR-R1-003",
+      "S4-DR-R1-027"
+    ],
+    "residual_checkpoint_status": "2_OF_2_REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION_R2",
+    "closed_by_this_checkpoint": 0,
+    "new_deep_review": false,
+    "next_review": "FINAL_CLOSURE_VERIFICATION_R2"
+  },
+  "residual_closure": [
+    {
+      "finding": "S4-DR-R1-003",
+      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "controller_residual": "OfficialSummaryMethodEvidence.within() checked only n <= N and k <= K, so a group covering every cohort visit with fewer successes than the cohort (or leaving its complement more successes than visits) received criticalGroupsValid=true.",
+      "correction": "within() now requires n <= N, k <= K and K - k <= N - n per source stratum: the complement must be able to carry the remaining successes. The refusal uses the existing same-cohort reason SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL; the reported group is retained in lineage; source strata and the independent total keep their qualification; overlapping groups remain lawful; no sum-to-total rule was added; no metric, group vocabulary, threshold or approval was created.",
+      "scoping": "A contradictory group removes method qualification for that observation's groups only (existing all-or-nothing flag); pathQualified, primaryRatio, sourceStratified and sourceStrataQualified are unchanged, so the primary Outcome remains computable and the affected protection reads UNDETERMINED, never PASS.",
+      "positive_counterexamples": [
+        "Lawful whole-cohort, empty, zero-slack and overlapping groups qualify at unit and signed-HTTP/isolated-DB level (retained group counts exposed to the formal comparison).",
+        "The equivalent DETAIL/SUMMARY 0.634 formal comparison still holds (rerun).",
+        "A qualified late SUMMARY fact (source strata + critical group, superseding the original) is enqueued by the existing intake, processed once by RecalculationService.runOnce, produces one LATE_FACT revision with observedDifference 0.49 under the same frozen reference, keeps the original result, the frozen plan and both observations, and a delivery retry republishes nothing."
+      ],
+      "negative_counterexamples": [
+        "Both Controller counterexamples (N=10,K=9: n=10,k=8 and n=9,k=0) are refused at unit level with exactly SUMMARY_CRITICAL_GROUP_OUTSIDE_TOTAL.",
+        "Signed normal-role HTTP intake of an 80/7 group inside an 80/8 source stratum keeps pathQualified, primaryRatio 0.1 and sourceStrataQualified=true, sets criticalGroupSourceStrataQualified=false with that reason, and exposes no group counts to the comparison.",
+        "Through the formal Outcome journey the same class of group leaves verdict MET, protection UNDETERMINED, CORE state UNQUALIFIED with CRITICAL_GROUP_TARGET_UNQUALIFIED and observedDifference 0.634 intact.",
+        "Individual bounds (n > N, k > K), unproven source totals, missing group, missing/expired profile, wrong version, malformed structure, contradiction and caller numbers remain fail-closed (rerun)."
+      ]
+    },
+    {
+      "finding": "S4-DR-R1-027",
+      "status": "REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION",
+      "controller_residual": "Only the checksum index and the final diff list had been transferred; the qualified-SUMMARY late revision was not separately proven; canonical status needed the 25/2 distinction kept with the new implementation and run results bound to their own identities.",
+      "correction": "All 31 indexed ec0e73b9-r1 payloads exist locally, verify 31/31 against their SHA256SUMS (modification times 2026-09-15T12:04:42 to 12:38:29 +08:00) and are packaged verbatim; the new run lives in build/slice-v1-004-final-closure-39d55e30-r1 with its own SHA256SUMS; inherited receipts are listed with their identity reason; canonical documents bind the new implementation Head separately from the ec0 record and the 6ccaa6c targeted source; no Controller closure is claimed.",
+      "evidence_boundary": "Engineering completion only; the next action is independent Final Closure Verification R2."
+    }
+  ],
+  "impact": {
+    "implementation_commit_diff_vs_required_start": {
+      "files": 3,
+      "summary": "3 files changed, 344 insertions(+), 5 deletions(-)",
+      "name_status": "build/slice-v1-004-final-closure-39d55e30-r1/diff-name-status.txt",
+      "name_status_sha256": "c24fc180527cca4452d42a04faf48a58d2ed4c0d5eab8f33a84bd6f21f0588e7",
+      "stat": "build/slice-v1-004-final-closure-39d55e30-r1/diff-stat.txt",
+      "stat_sha256": "0f03f4d55336d37836fbf744504659e369eb40d5fed160075aab441caf88ce87",
+      "changed_files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/OfficialSummaryMethodEvidence.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/listingconversion/internal/domain/OfficialSummaryMethodEvidenceTest.java"
+      ]
+    },
+    "production_paths": [
+      "SUMMARY_CRITICAL_GROUP_METHOD_QUALIFICATION (OfficialSummaryMethodEvidence.within)"
+    ],
+    "test_paths": [
+      "DOMAIN_METHOD_VALIDATION",
+      "NORMAL_ROLE_HTTP_WITH_ISOLATED_POSTGRESQL",
+      "RECALCULATION_QUEUE_LATE_FACT_REVISION"
+    ],
+    "test_changes": [
+      {
+        "file": "OfficialSummaryMethodEvidenceTest.java",
+        "change": "+3 tests: Controller counterexamples; lawful complement boundaries and overlapping groups; individual bounds and unproven source scoping"
+      },
+      {
+        "file": "ListingReworkAuthorizationIT.java",
+        "change": "+RecalculationService autowire; qualifiedFormalOutcome(boolean,boolean,boolean) now delegates to a 4-arg overload taking exact target critical-group counts and the expected lineage flag (existing callers unchanged); +infeasibleCriticalGroupCounts() and recordQualifiedSummary(...) helpers; +3 journeys"
+      }
+    ],
+    "migrations_changed": false,
+    "schema_changed": false,
+    "frontend_changed": false,
+    "scripts_changed": false,
+    "new_provider_or_write_path": false,
+    "production_write_enabled": false,
+    "real_provider_calls": "NONE",
+    "evidence_checkpoint_addition": "Canonical documents are committed separately after this record; their commit/tree and the complete diff versus 39d55e30 are reported out of band to avoid self-reference"
+  },
+  "executed_commands": [
+    {
+      "id": "C01",
+      "command": "./mvnw -B -ntp -Dtest=OfficialSummaryMethodEvidenceTest,EvidencePathQualificationTest,VisitConversionTest,ExactTrafficComparisonTest -Djacoco.skip=true test",
+      "cwd": "backend/marketops-server",
+      "exit_code": 0,
+      "result": "24_UNIT_PASS_AND_ALL_TEST_SOURCES_INCLUDING_IT_COMPILED;BUILD_SUCCESS",
+      "raw_log": "build/slice-v1-004-final-closure-39d55e30-r1/backend/domain-unit-regression.log",
+      "raw_log_sha256": "9e6f675f1e01e43983916ace78adda0d414a89fd7db4a41801fd89ad230f75ed",
+      "note": "pre-check at the same working tree; its surefire XMLs were superseded by C02"
+    },
+    {
+      "id": "C02",
+      "command": "./mvnw -B -ntp -Dtest=EvidencePathQualificationTest,OfficialSummaryMethodEvidenceTest,VisitConversionTest,ExactTrafficComparisonTest '-Dit.test=ListingReworkAuthorizationIT#equivalentOfficialSummaryRunsTheSameFrozenFormalOutcomeWithoutVisitDetails+summaryMissingARequiredCriticalGroupCannotClaimThatProtection+nonEquivalentSummaryMethodInputsCannotBorrowFormalQualificationButKeepTheProvenTotal+expiredSummaryProfileCannotQualifyALaterMeasurement+officialSummaryIsIndependentOfVisitDetailsAndBoundToItsExactCertifiedWindow+contradictorySummaryRetainsRawCountsAndNeverClampsTheNumerator+callerNumbersCannotCertifyImprovementOrProtectionsFromAnAbsoluteSummaryRatio+frozenFixedTrafficOutcomeRunsThroughSignedHttpAndRevisesOnlyForNewQualifiedFacts+lineageCannotBorrowCoverageFromAnotherWindowOrDropAQualifiedReceipt+infeasibleCriticalGroupComplementCannotBorrowQualifiedProtectionThroughTheFormalOutcome+infeasibleCriticalGroupComplementKeepsTheProvenSourceStrataWhileLawfulComplementsQualify+qualifiedSummaryLateFactRevisesTheFormalOutcomeThroughRecalculationOnce,ListingRecalculationLeaseIT#workerPublishesExactResultsOnceAndPreservesTheSourceClock' -Djacoco.skip=true verify",
+      "cwd": "backend/marketops-server",
+      "exit_code": 0,
+      "result": "24_UNIT_PLUS_13_INTEGRATION_PASS (12 ListingReworkAuthorizationIT incl. 3 new, 1 ListingRecalculationLeaseIT); zero failures/errors/skips; BUILD_SUCCESS; finished 2026-09-16T16:59:01+08:00; total 47.1 s",
+      "raw_log": "build/slice-v1-004-final-closure-39d55e30-r1/backend/summary-outcome-and-recalculation-regression.log",
+      "raw_log_sha256": "7df138e640aae0b79ec6d4418081be1a40e8f9c0a4520c3f8fb1ad97536e8c35"
+    },
+    {
+      "id": "C03",
+      "command": "./mvnw -B -ntp \"-Dtest=*ArchitectureTest\" -Djacoco.skip=true test",
+      "cwd": "backend/marketops-server",
+      "exit_code": 0,
+      "result": "76_ARCHITECTURE_TESTS_PASS;BUILD_SUCCESS",
+      "raw_log": "build/slice-v1-004-final-closure-39d55e30-r1/backend/architecture-regression.log",
+      "raw_log_sha256": "354d51922437a7570e42b4d9e115e5ce34bcbeb4d7b396c59df2d43a42bb2352"
+    },
+    {
+      "id": "C04",
+      "command": "git diff --check",
+      "cwd": "repository root (before the implementation commit)",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "C05",
+      "command": "shasum -a 256 -c build/slice-v1-004-final-closure-ec0e73b9-r1/SHA256SUMS",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "31_OF_31_OK;INDEX_SHA256_afd03d57d…;0_GAPS"
+    },
+    {
+      "id": "C06",
+      "command": "shasum -a 256 -c MANIFEST.sha256",
+      "cwd": "attached SLICE-V1-004-Final-Closure-Verification-39d55e30-R1 package root",
+      "exit_code": 0,
+      "result": "24_OF_24_OK"
+    },
+    {
+      "id": "C07",
+      "command": "git ls-tree/git show manifests for 39d55e30 and d65c9185 plus git diff HEAD --quiet",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "BACKEND_1323_OLD_1323_NEW_3_CHANGED;FRONTEND_126_OLD_126_NEW_0_CHANGED;TESTED_WORKING_TREE_EQUALS_COMMIT_TREE"
+    },
+    {
+      "id": "C08",
+      "command": "python3 scripts/validate_governance.py",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "GOVERNANCE_VALIDATION_PASSED",
+      "raw_log": "build/slice-v1-004-final-closure-39d55e30-r1/governance-validation.log",
+      "raw_log_sha256": "e5b864caa6cdbd2d10272426354e58ccff9c7f827eee39cf7f464e756555aacc"
+    },
+    {
+      "id": "C09",
+      "command": "python3 scripts/validate_production_readiness.py",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "TC_GLOBAL_001_THROUGH_004_PASS;PRODUCTION_READINESS_VALIDATION_PASSED",
+      "raw_log": "build/slice-v1-004-final-closure-39d55e30-r1/production-readiness-validation.log",
+      "raw_log_sha256": "f71c6da6525d0a32ae487ce518f3bc721a8c54545741a7cbcebbf1b9eaa51b9a"
+    },
+    {
+      "id": "C10",
+      "command": "python3 -m json.tool on every changed JSON document",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "result": "ALL_CHANGED_JSON_PARSES (finding-progress, S4-AC-STATUS, MIGRATION-INVENTORY, this checkpoint)"
+    },
+    {
+      "id": "C11",
+      "command": "git diff --check",
+      "cwd": "repository root (canonical documents before the evidence commit)",
+      "exit_code": 0,
+      "result": "PASS"
+    }
+  ],
+  "inherited_receipts": [
+    {
+      "scope": "MIGRATION_AND_SCHEMA",
+      "receipt": "T02 of rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json (3 unit + 21 integration, exit 0) at 6ccaa6c070cb5a786a91d447b474b44926f8837c",
+      "reason": "no file under db/migration and no schema-bearing source changed between 6ccaa6c and d65c918; V0124 sha256 unchanged",
+      "raw_log": "build/slice-v1-004-final-closure-ec0e73b9-r1/backend/migration-schema-regression.log",
+      "raw_log_sha256": "c6456702575c6fa87dd530a473dd343350493aff9c10f4598d4ae1438aac4961",
+      "rerun": false
+    },
+    {
+      "scope": "FRONTEND_SUMMARY_PAYLOAD_TYPECHECK_FORMAT",
+      "receipt": "T04-T06 of rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json (26/26, typecheck, format; exit 0) at 6ccaa6c070cb5a786a91d447b474b44926f8837c",
+      "reason": "frontend source manifest 126/126 byte-identical between 39d55e3 and d65c918",
+      "raw_logs": [
+        "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/listing-conversion-forms.log",
+        "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/listing-conversion-forms.json",
+        "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/typecheck.log",
+        "build/slice-v1-004-final-closure-ec0e73b9-r1/frontend/format-check.log"
+      ],
+      "rerun": false
+    },
+    {
+      "scope": "LATE_SUMMARY_RECALCULATION_TOTALS",
+      "receipt": "T03 of rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json",
+      "reason": "superseded: the same ListingRecalculationLeaseIT method was rerun in C02 and the qualified-SUMMARY revision is now proven by a new journey",
+      "rerun": true
+    }
+  ],
+  "raw_test_reports": [
+    {
+      "file": "backend/TEST-com.mimococo.marketops.ListingRecalculationLeaseIT.xml",
+      "sha256": "145bde4d2da8969d1c371c85fb706c90aaf9747983f42cd447e8e87d6c757b3e",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "backend/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml",
+      "sha256": "ac451b25e593e33e89c339d288c64ade6ea7c8d0ef10c32985b1dc3a3e7788d4",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualificationTest.xml",
+      "sha256": "3b0816f43f4a4b0a4d001b7143aade7a10d6912c7fef1cd990b2d5c4767b4592",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.ExactTrafficComparisonTest.xml",
+      "sha256": "dab90f35ba73338aab9acfd0899a2c34979101f17054c223f3314003be12aae8",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.OfficialSummaryMethodEvidenceTest.xml",
+      "sha256": "6a8168bf4fc1055d2227692f26537b75a52bcdfe614a2405b20b3aae31d0529b",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "backend/TEST-com.mimococo.marketops.listingconversion.internal.domain.VisitConversionTest.xml",
+      "sha256": "21144bd38b3f9a1d0cd65df371c5221a40512becc2dd7b437ae801403f9e8bf6",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0
+    }
+  ],
+  "source_manifests": {
+    "root": "build/slice-v1-004-final-closure-39d55e30-r1",
+    "old_backend": {
+      "entries": 1323,
+      "file": "manifests/backend-source-39d55e30.sha256",
+      "sha256": "df693d7032f188e39fd10086ee07a94ad4bb21fa1076a9a30e652c58496b3bd2"
+    },
+    "new_backend": {
+      "entries": 1323,
+      "file": "manifests/backend-source-new.sha256",
+      "sha256": "e281e29991b6b9950e2fecf69042a729235b83346eccd365247ec153a698f00e"
+    },
+    "backend_diff": {
+      "file": "manifests/backend-source-diff.txt",
+      "sha256": "80e86a215305a75f1d3c94e181487115e0376bf2da8da7d3f36f3e294d0ca908",
+      "changed_entries": 3
+    },
+    "old_frontend": {
+      "entries": 126,
+      "file": "manifests/frontend-source-39d55e30.sha256",
+      "sha256": "b207f4792845ec454e441f4a694079cdc977054ba15c9d182800965b7be38a76"
+    },
+    "new_frontend": {
+      "entries": 126,
+      "file": "manifests/frontend-source-new.sha256",
+      "sha256": "b207f4792845ec454e441f4a694079cdc977054ba15c9d182800965b7be38a76"
+    },
+    "frontend_diff": {
+      "file": "manifests/frontend-source-diff.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changed_entries": 0
+    },
+    "basis": "both manifests are computed from committed blobs (git show); the working tree equalled the commit tree (git diff HEAD empty) when C01-C03 ran",
+    "sha256s_file": "SHA256SUMS",
+    "sha256s_file_hash_reporting": "REPORTED_OUT_OF_BAND_AFTER_FINAL_COMMIT_TO_AVOID_SELF_REFERENCE"
+  },
+  "old_indexed_payloads": {
+    "root": "build/slice-v1-004-final-closure-ec0e73b9-r1",
+    "index": "SHA256SUMS",
+    "index_sha256": "afd03d57daf4f0f68051762286026b6c67a00d1b2dc103bee5f592ae7735e59d",
+    "indexed_files": 31,
+    "present": 31,
+    "hash_match": 31,
+    "gaps": [],
+    "delivery": "packaged verbatim beside this run; nothing regenerated or relabelled"
+  },
+  "historical_terminal_evidence": {
+    "receipt": "rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json",
+    "source_head": "16eda4bf7e5f561b60d10c19a9a157bd62d21d6e",
+    "backend": "1895_SUREFIRE_PLUS_1363_FAILSAFE_PASS_AT_HISTORICAL_SOURCE",
+    "frontend": "418_OF_418_PASS_AT_HISTORICAL_SOURCE",
+    "browser": "24_OF_26_COMPLETE_RUN_PLUS_EXACT_2_OF_2_CLOSING_RERUN",
+    "preserved": true,
+    "current_head_full_suite_claim": false,
+    "current_head_browser_rerun_claim": false
+  },
+  "other_25_non_regression_basis": {
+    "controller_record": "25 findings were Controller-closed at ec0e73b9 by the bound closure record and were not reopened by Final Closure Verification R1.",
+    "bounded_diff": "One domain predicate plus tests; no repository, service, controller, migration, frontend or script change.",
+    "transitive_regression": "The nine prior summary/DETAIL/outcome/lineage journeys, the recalculation worker journey and 76 architecture tests passed at the new tree.",
+    "claim": "NO_REOPENED_FINDING_OBSERVED_IN_CHANGED_AND_TRANSITIVE_PATHS;NOT_A_NEW_FULL_31_HOUR_RUN"
+  },
+  "acceptance_reconciliation": {
+    "total": 69,
+    "ENGINEERING_VERIFIED_CONTROLLER_PENDING": 54,
+    "EXTERNAL_EVIDENCE_PENDING": 12,
+    "NOT_APPLICABLE_AT_LEVEL_1": 3,
+    "changed_by_this_checkpoint": 0,
+    "external_obligations_open": [
+      "F-M01",
+      "F-M02",
+      "F-S01",
+      "F-W01",
+      "F-W02",
+      "E-04"
+    ]
+  },
+  "claim_boundary": {
+    "controller_final_closure_issued": false,
+    "all_69_controller_closed_claim": false,
+    "full_suite_rerun_at_implementation_head": false,
+    "historical_31_hour_run_repeated": false,
+    "remote_or_environment_authority_created": false,
+    "new_platform_writes_default_off": true,
+    "owner_decisions_preserved": 85,
+    "q085_b_preserved": true,
+    "scope_deltas_not_required_preserved": [
+      "DELTA-01",
+      "DELTA-02",
+      "DELTA-03"
+    ]
+  }
+}

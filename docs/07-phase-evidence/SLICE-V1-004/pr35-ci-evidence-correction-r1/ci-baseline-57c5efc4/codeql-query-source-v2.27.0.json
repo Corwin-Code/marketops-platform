@@ -1,0 +1,46 @@
+{
+  "schema": "marketops.evidence.codeql-query-source-identity.v1",
+  "purpose": "Source of the analyzer behaviour cited for alert #641 (java/missing-case-in-switch)",
+  "repository": "github/codeql",
+  "tag": "codeql-cli/v2.27.0",
+  "tag_commit": "c6baf479093fafc81d4655dc2014dc583360308e",
+  "analysis_tool_version": "CodeQL 2.27.0 (analysis 1791578981)",
+  "license": "MIT (github/codeql)",
+  "files": [
+    {
+      "path": "java/ql/src/Likely Bugs/Statements/MissingEnumInSwitch.ql",
+      "git_blob_sha": "0e6584bb4e5c51642f94ed872c01a2c6df82e69d",
+      "size": 2012,
+      "relevant_lines": [
+        "18:   not exists(switch.getDefaultCase()) and",
+        "19:   exists(EnumType enum |",
+        "20:     switch.getExpr().getType() = enum and",
+        "21:     result =",
+        "22:       rank[index](EnumConstant ec |",
+        "23:         ec.getDeclaringType() = enum and",
+        "24:         not switch.getAConstCase().getValue() = ec.getAnAccess()",
+        "25:       |",
+        "26:         ec order by ec.getName()"
+      ]
+    },
+    {
+      "path": "java/ql/lib/semmle/code/java/Statement.qll",
+      "git_blob_sha": "558e148d71ee4b40be9eebdeb675e997c16828df",
+      "size": 34284,
+      "relevant_lines": [
+        "532: class ConstCase extends SwitchCase {",
+        "533:   ConstCase() {",
+        "534:     exists(Expr e | e.getParent() = this and e.getIndex() >= 0 and not e instanceof PatternExpr) and",
+        "535:     // For backward compatibility, we don't include `case null, default:` here, on the assumption",
+        "536:     // this will come as a surprise to CodeQL that predates that statement's validity.",
+        "537:     not isNullDefaultCase(this)",
+        "538:   }",
+        "539: ",
+        "540:   /** Gets the `case` constant at index 0. */",
+        "541:   Expr getValue() { result.isNthChildOf(this, 0) }",
+        "542: "
+      ]
+    }
+  ],
+  "reading": "nthMissing treats an enum constant as covered only when it equals switch.getAConstCase().getValue(), and ConstCase.getValue() is the case constant at index 0. The second label of a multi-label case (case TIMEOUT, UNKNOWN_STATE ->) is therefore reported as missing."
+}

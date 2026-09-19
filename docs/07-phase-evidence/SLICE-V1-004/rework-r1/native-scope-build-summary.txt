@@ -1,0 +1,3 @@
+> marketops-console@0.1.0 build
+> tsc --noEmit && vite build
+✓ built in 92ms

@@ -11,10 +11,6 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-if __package__:
-    from .validation.finalize_slice3_rework_assessment import validated_current_phase
-else:
-    from validation.finalize_slice3_rework_assessment import validated_current_phase
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -296,14 +292,104 @@ V1_SLICE_003_ACCEPTANCE_SHA256 = (
 V1_SLICE_003_OWNER_STATEMENT_SHA256 = (
     "0ffaf4e865447ad18e0cb18f2527a3183553366295274e1be0811db3e2b19634"
 )
-# The active Slice is SLICE-V1-003. The SLICE-V1-002 identities above stay
-# pinned so a closed Slice cannot lose its accepted bytes when the active
-# pointer moves.
-V1_ACTIVE_SLICE_CONTRACT_PATH = V1_SLICE_003_CONTRACT_PATH
-V1_ACTIVE_SLICE_CONTRACT_SHA256 = V1_SLICE_003_CONTRACT_SHA256
-V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = V1_SLICE_003_CONTRACT_GIT_BLOB_SHA1
-V1_ACTIVE_SLICE_ACCEPTANCE_PATH = V1_SLICE_003_ACCEPTANCE_PATH
-V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = V1_SLICE_003_ACCEPTANCE_SHA256
+V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md"
+)
+V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_SHA256 = (
+    "48f1ee92c6acbab04857cd8a85f03e722ab14fe34069b4e86e92e4776c47e947"
+)
+V1_SLICE_003_MERGE_READBACK_SNAPSHOT_PATH = (
+    "docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/"
+    "POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md"
+)
+V1_SLICE_003_MERGE_READBACK_SNAPSHOT_SHA256 = (
+    "be014d7462f12dfc214d491dd60176d337951c968fec1a8a12b19060b1a1ec54"
+)
+V1_SLICE_003_MERGE_READBACK_VERDICT_PATH = (
+    "docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/VERDICT.json"
+)
+V1_SLICE_003_MERGE_READBACK_VERDICT_SHA256 = (
+    "b839b9962c843d7ef22ea4907d18112acbf94434269364a4bfe26ce27fb1a25b"
+)
+V1_SLICE_004_CONTRACT_PATH = (
+    "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md"
+)
+V1_SLICE_004_CONTRACT_SHA256 = (
+    "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983"
+)
+V1_SLICE_004_CONTRACT_GIT_BLOB_SHA1 = (
+    "8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9"
+)
+V1_SLICE_004_CONTRACT_BYTES = "70847"
+V1_SLICE_004_CONTRACT_LINES = "669"
+V1_SLICE_004_ANNEX_PATH = (
+    "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md"
+)
+V1_SLICE_004_ANNEX_SHA256 = (
+    "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d"
+)
+V1_SLICE_004_ANNEX_GIT_BLOB_SHA1 = (
+    "4d9e93c17e26deee5d2222c8fc51d61d619aa9c8"
+)
+V1_SLICE_004_ACCEPTANCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md"
+)
+V1_SLICE_004_ACCEPTANCE_SHA256 = (
+    "5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb"
+)
+V1_SLICE_004_OWNER_STATEMENT_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt"
+)
+V1_SLICE_004_OWNER_STATEMENT_SHA256 = (
+    "2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3"
+)
+V1_SLICE_004_SOURCE_BASE_COMMIT = "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd"
+V1_SLICE_004_SOURCE_BASE_TREE = "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400"
+# SLICE-V1-004 stays formally closed (authorization: CLOSED). One Owner-issued
+# bounded task overlays that record: the PR #35 residual supplement, run by one
+# named executor on the named branch and Draft PR only. It adds no
+# `authorization` value, does not reopen FULL_SCOPE_IMPLEMENTATION and does not
+# move the DR-0004 CODEX delegation.
+V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_SHA256 = (
+    "bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_EVIDENCE_DIR = (
+    "docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/controller-review-45474b60-r1/"
+)
+V1_SLICE_004_PR35_CONTROLLER_RECORD_ID = "SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1"
+V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH = (
+    V1_SLICE_004_PR35_SUPPLEMENT_EVIDENCE_DIR + "01_DECISION_RECORD.json"
+)
+V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256 = (
+    "fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_ID = "S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01"
+V1_SLICE_004_PR35_SUPPLEMENT_SCOPE_PATH = (
+    V1_SLICE_004_PR35_SUPPLEMENT_EVIDENCE_DIR + "05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_SHA256 = (
+    "723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970"
+)
+V1_SLICE_004_PR35_SUPPLEMENT_EXECUTOR = "CLAUDE_OPUS_5"
+V1_SLICE_004_PR35_REPOSITORY = "Corwin-Code/marketops-platform"
+V1_SLICE_004_PR35_BRANCH = "codex/slice-v1-004-root-cause-rework-r1"
+V1_SLICE_004_PR35_NUMBER = "35"
+V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD = "45474b6039edd46842e1e5f84391dca4264ddc1d"
+V1_SLICE_004_PR35_SUPPLEMENT_START_TREE = "3b6faa1d58fadbfad374a63a2502b606c06df6f5"
+V1_SLICE_004_PR35_REMOTE_WRITE_AUTHORITY = (
+    "S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_NON_REWRITING_PUSH_TO_NAMED_BRANCH_AND_DRAFT_PR_35_UPDATE_ONLY"
+)
+# The active Slice is SLICE-V1-004. The SLICE-V1-002 and SLICE-V1-003
+# identities above stay pinned so a closed Slice cannot lose its accepted bytes
+# when the active pointer moves.
+V1_ACTIVE_SLICE_CONTRACT_PATH = V1_SLICE_004_CONTRACT_PATH
+V1_ACTIVE_SLICE_CONTRACT_SHA256 = V1_SLICE_004_CONTRACT_SHA256
+V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = V1_SLICE_004_CONTRACT_GIT_BLOB_SHA1
+V1_ACTIVE_SLICE_ACCEPTANCE_PATH = V1_SLICE_004_ACCEPTANCE_PATH
+V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = V1_SLICE_004_ACCEPTANCE_SHA256
 V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH = (
     "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
 )
@@ -391,8 +477,8 @@ V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
     "delivery_model": "PRODUCTION_VERTICAL_SLICES",
-    "active_delivery_slice": "SLICE-V1-003",
-    "active_slice_title": "Advertising & Traffic Efficiency",
+    "active_delivery_slice": "SLICE-V1-004",
+    "active_slice_title": "Promotion & Listing Conversion",
     "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
     "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
     "active_slice_contract_git_blob_sha1": V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1,
@@ -400,9 +486,127 @@ V1_ACTIVE_STATE = {
     "active_slice_acceptance_evidence": V1_ACTIVE_SLICE_ACCEPTANCE_PATH,
     "active_slice_acceptance_evidence_sha256": V1_ACTIVE_SLICE_ACCEPTANCE_SHA256,
     "active_slice_amendment": "NONE_ACCEPTED",
-    "active_slice_contract_bytes": V1_SLICE_003_CONTRACT_BYTES,
-    "active_slice_contract_lines": V1_SLICE_003_CONTRACT_LINES,
-    "authorization": "FULL_SCOPE_IMPLEMENTATION",
+    "active_slice_contract_bytes": V1_SLICE_004_CONTRACT_BYTES,
+    "active_slice_contract_lines": V1_SLICE_004_CONTRACT_LINES,
+    "authorization": "CLOSED",
+    "active_slice_annex": V1_SLICE_004_ANNEX_PATH,
+    "active_slice_annex_sha256": V1_SLICE_004_ANNEX_SHA256,
+    "active_slice_annex_git_blob_sha1": V1_SLICE_004_ANNEX_GIT_BLOB_SHA1,
+    "slice_v1_004_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
+    "slice_v1_004_owner_acceptance_statement": V1_SLICE_004_OWNER_STATEMENT_PATH,
+    "slice_v1_004_owner_acceptance_statement_sha256": V1_SLICE_004_OWNER_STATEMENT_SHA256,
+    "slice_v1_004_execution_authority": (
+        "OWNER_BOUNDED_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_B1_B2_B3_ONLY_ENGINEERING_CLOSURE_PRESERVED"
+    ),
+    "slice_v1_004_maker": "CLAUDE",
+    "slice_v1_004_source_base_commit": V1_SLICE_004_SOURCE_BASE_COMMIT,
+    "slice_v1_004_source_base_tree": V1_SLICE_004_SOURCE_BASE_TREE,
+    "slice_v1_004_implementation_state": "LEVEL_1_ENGINEERING_FORMALLY_CLOSED",
+    "slice_v1_004_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_004_owner_formal_closure": "HUMAN_OWNER_EXPLICITLY_CONFIRMED",
+    "slice_v1_004_owner_formal_closure_record": (
+        "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json"
+    ),
+    "slice_v1_004_owner_formal_closure_record_sha256": (
+        "cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c"
+    ),
+    "slice_v1_004_owner_formal_closure_statement_sha256": (
+        "940fb24047a862ffadc88d37d8acbcc8f3728f2f6408696eb18ee3f17e55c9a8"
+    ),
+    "slice_v1_004_final_gate_record_sha256": (
+        "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0"
+    ),
+    "slice_v1_004_formally_closed_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "slice_v1_004_formally_closed_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "slice_v1_004_acceptance_layers": "54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1",
+    "slice_v1_004_publication_or_next_slice_authority": "NONE_CREATED_BY_FORMAL_CLOSURE",
+    "slice_v1_004_pr35_supplement_id": V1_SLICE_004_PR35_SUPPLEMENT_ID,
+    "slice_v1_004_pr35_supplement_layer": (
+        "BOUNDED_CURRENT_TASK_OVERLAY_AUTHORIZATION_CLOSED_RETAINED_FULL_SCOPE_NOT_REOPENED_"
+        "DR0004_CODEX_DELEGATION_UNCHANGED"
+    ),
+    "slice_v1_004_pr35_supplement_state": (
+        "EXECUTED_HANDED_BACK_PENDING_CONTROLLER_LIMITED_RESIDUAL_VERIFICATION"
+    ),
+    "slice_v1_004_pr35_supplement_owner_statement": V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH,
+    "slice_v1_004_pr35_supplement_owner_statement_sha256": (
+        V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_SHA256
+    ),
+    "slice_v1_004_pr35_supplement_controller_record": V1_SLICE_004_PR35_CONTROLLER_RECORD_ID,
+    "slice_v1_004_pr35_supplement_controller_record_sha256": (
+        V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256
+    ),
+    "slice_v1_004_pr35_supplement_scope_sha256": V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+    "slice_v1_004_pr35_supplement_executor": V1_SLICE_004_PR35_SUPPLEMENT_EXECUTOR,
+    "slice_v1_004_pr35_supplement_branch": V1_SLICE_004_PR35_BRANCH,
+    "slice_v1_004_pr35_supplement_pr": V1_SLICE_004_PR35_NUMBER,
+    "slice_v1_004_pr35_supplement_pr_state": "DRAFT_UNMERGED_REQUIRED",
+    "slice_v1_004_pr35_supplement_start_head": V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD,
+    "slice_v1_004_pr35_supplement_start_tree": V1_SLICE_004_PR35_SUPPLEMENT_START_TREE,
+    "slice_v1_004_pr35_supplement_merge_hold": (
+        "CONTROLLER_HOLD_PR35_NOTE_KEYPATH_01_UNTIL_LIMITED_RESIDUAL_VERIFICATION"
+    ),
+    "slice_v1_004_pr35_supplement_historical_closure": (
+        "27_OF_27_AND_54_12_3_PRESERVED_022_027_CURRENT_EVIDENCE_QUALIFIED_"
+        "CRCF_PR35_04_NO_NEW_FROZEN_FINDING"
+    ),
+    "slice_v1_004_controlled_write_target": "LISTING_DESCRIPTION_CHANGE",
+    "slice_v1_004_controlled_write_provider_paths": (
+        "STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE"
+    ),
+    "slice_v1_004_real_provider_calls": "NONE",
+    "slice_v1_004_remote_write_authority": V1_SLICE_004_PR35_REMOTE_WRITE_AUTHORITY,
+    "slice_v1_004_level_2_authority": "NONE",
+    "slice_v1_004_gate_ev_authority": "NONE",
+    "slice_v1_004_gate_e_authority": "NONE",
+    "slice_v1_004_owner_decision_count": "85",
+    "slice_v1_004_decision_085": "B",
+    "slice_v1_004_scope_deltas_not_required": "DELTA_01_DELTA_02_DELTA_03",
+    "slice_v1_004_evidence_obligations_open": "F_M01_F_M02_F_S01_F_W01_F_W02_E_04",
+    "slice_v1_004_migrations": "V0074_THROUGH_V0079",
+    "slice_v1_003_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_rework_status": "CODEX_ENGINEERING_COMPLETE_CONTROLLER_PASS_MERGED",
+    "slice_v1_003_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
+    "slice_v1_003_engineering_closure_claim": (
+        "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS"
+    ),
+    "slice_v1_003_controller_final_gate": (
+        "CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_ECB3385_R2"
+    ),
+    "slice_v1_003_controller_verdict": "PASS_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_003_owner_formal_closure": "HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD",
+    "slice_v1_003_owner_formal_closure_receipt": V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_PATH,
+    "slice_v1_003_owner_formal_closure_receipt_sha256": (
+        V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_SHA256
+    ),
+    "slice_v1_003_accepted_head": "ecb33851cd507c0443daab5f40e79fa008be24bb",
+    "slice_v1_003_pr": "30",
+    "slice_v1_003_pr_state": "MERGED_PROTECTED_SQUASH",
+    "slice_v1_003_actual_squash_commit": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "slice_v1_003_actual_squash_tree": "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+    "slice_v1_003_actual_squash_sole_parent": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "slice_v1_003_actual_squash_merged_at": "2026-09-07T03:09:19Z",
+    "slice_v1_003_merge_readback": (
+        "CONTROLLER_SLICE_V1_003_READY_MERGE_EXECUTION_ACCEPTANCE_0F26D0E_R1"
+    ),
+    "slice_v1_003_merge_readback_verdict": "PASS_MERGE_EXECUTION_AND_READBACK",
+    "slice_v1_003_merge_readback_snapshot": V1_SLICE_003_MERGE_READBACK_SNAPSHOT_PATH,
+    "slice_v1_003_merge_readback_snapshot_sha256": V1_SLICE_003_MERGE_READBACK_SNAPSHOT_SHA256,
+    "slice_v1_003_merge_readback_verdict_record": V1_SLICE_003_MERGE_READBACK_VERDICT_PATH,
+    "slice_v1_003_merge_readback_verdict_record_sha256": (
+        V1_SLICE_003_MERGE_READBACK_VERDICT_SHA256
+    ),
+    "slice_v1_003_frozen_findings_closed": "22_OF_22",
+    "slice_v1_003_source_branch": "DELETED_BY_ACCEPTED_CONFIGURATION",
+    "active_gate": "NONE_SLICE_V1_004_ENGINEERING_CLOSED",
+    "candidate_state_scope": (
+        "SLICE_V1_004_FORMALLY_CLOSED_ENGINEERING_ON_DRAFT_PR_35_UNMERGED_"
+        "BOUNDED_RESIDUAL_SUPPLEMENT_HANDED_BACK_CONTROLLER_MERGE_HOLD"
+    ),
+    "next_authorized_actor": "CONTROLLER",
+    "next_action": (
+        "CONTROLLER_LIMITED_RESIDUAL_VERIFICATION_OF_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_DRAFT_UNMERGED"
+    ),
     "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_003_owner_acceptance_statement_sha256": (
         V1_SLICE_003_OWNER_STATEMENT_SHA256
@@ -4863,6 +5067,161 @@ def validate_slice3_r1_authority(errors: list[str], documents: dict[str, bytes])
             errors.append(f"SLICE-V1-003 R1 authority missing or changed: {relative}")
 
 
+# SLICE-V1-003 is closed and merged. Its final engineering assessment, the
+# execution manifest it was derived from, the Controller merge readback and
+# the Owner's formal closure receipt are history: pinned by exact bytes, never
+# re-derived against a source tree that the next Slice has legitimately moved.
+SLICE3_CLOSURE_AUTHORITY_HASHES = {
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json":
+        "98a3f25af157e85e00d20b25a63a16aa9b30ced6555e76e10dedda0e985d5528",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json":
+        "663b8b4ea095c3b9633e32e3568328e89a79925e0b4298e6b87f082144204cb0",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json":
+        "93cdba1abaa27b2c94c3b005560e6c5a47841d1390cd012391d400e26055ceab",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json":
+        "7dd14916ffa42a894aa4f3de9c9391f7531f7cf96ee8c535e520de581e93b1ee",
+    V1_SLICE_003_MERGE_READBACK_SNAPSHOT_PATH: V1_SLICE_003_MERGE_READBACK_SNAPSHOT_SHA256,
+    V1_SLICE_003_MERGE_READBACK_VERDICT_PATH: V1_SLICE_003_MERGE_READBACK_VERDICT_SHA256,
+    V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_PATH: V1_SLICE_003_OWNER_FORMAL_CLOSURE_RECEIPT_SHA256,
+}
+
+
+def validate_slice3_closure_authority(errors: list[str], documents: dict[str, bytes]) -> None:
+    """The closed Slice's assessment, readback and closure receipt keep their bytes."""
+    for relative, expected in SLICE3_CLOSURE_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-003 closure authority missing or changed: {relative}")
+
+
+# The active Slice's authority is the exact bytes the Owner accepted: the
+# Contract, its bound normative annex and the attributable acceptance statement.
+SLICE4_ACCEPTANCE_AUTHORITY_HASHES = {
+    V1_SLICE_004_ANNEX_PATH: V1_SLICE_004_ANNEX_SHA256,
+    V1_SLICE_004_OWNER_STATEMENT_PATH: V1_SLICE_004_OWNER_STATEMENT_SHA256,
+}
+
+
+def validate_slice4_acceptance_authority(errors: list[str], documents: dict[str, bytes]) -> None:
+    """An accepted annex or statement that changed is no longer what was accepted."""
+    for relative, expected in SLICE4_ACCEPTANCE_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-004 acceptance authority missing or changed: {relative}")
+
+
+# The bounded PR #35 supplement is authority only while the Owner's exact bytes,
+# the Controller record and the issued scope all hold. The statement itself must
+# name every identity the current-task fields rely on.
+SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES = {
+    V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH: V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_SHA256,
+    V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH: V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256,
+    V1_SLICE_004_PR35_SUPPLEMENT_SCOPE_PATH: V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+}
+SLICE4_PR35_SUPPLEMENT_STATEMENT_TOKENS = (
+    "绑定Record：" + V1_SLICE_004_PR35_CONTROLLER_RECORD_ID,
+    "01_DECISION_RECORD.json SHA-256：" + V1_SLICE_004_PR35_CONTROLLER_RECORD_SHA256,
+    "补充范围：" + V1_SLICE_004_PR35_SUPPLEMENT_ID,
+    "05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md SHA-256：" + V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+    "我授权已点名的" + V1_SLICE_004_PR35_SUPPLEMENT_EXECUTOR + "执行",
+    "Draft PR #" + V1_SLICE_004_PR35_NUMBER,
+    "准确起点：" + V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD
+    + " / " + V1_SLICE_004_PR35_SUPPLEMENT_START_TREE,
+    "Repository：" + V1_SLICE_004_PR35_REPOSITORY,
+    "Branch：" + V1_SLICE_004_PR35_BRANCH,
+    "不授予Ready/merge/auto-merge、直接main写入、force-push/rebase",
+    "仍停在Draft/Unmerged",
+)
+# While the supplement's remote authority is current, these bounds hold with it.
+SLICE4_PR35_SUPPLEMENT_REMOTE_BOUNDS = {
+    "authorization": "CLOSED",
+    "repository": V1_SLICE_004_PR35_REPOSITORY,
+    "merge_authorization": "NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+    "maker_remote_git_authority": "DENIED",
+    "production_write_enabled": "false",
+    "slice_v1_004_level_2_authority": "NONE",
+    "slice_v1_004_gate_ev_authority": "NONE",
+    "slice_v1_004_gate_e_authority": "NONE",
+    "slice_v1_004_pr35_supplement_pr_state": "DRAFT_UNMERGED_REQUIRED",
+}
+SLICE4_PR35_SUPPLEMENT_PREFIX = "slice_v1_004_pr35_supplement_"
+
+
+def validate_slice4_pr35_supplement_authority(
+    errors: list[str], documents: dict[str, bytes], metadata: str | None
+) -> None:
+    """A bounded current task comes from exact Owner bytes and never widens."""
+    for relative, expected in SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-004 PR35 supplement authority missing or changed: {relative}")
+    statement = documents.get(V1_SLICE_004_PR35_SUPPLEMENT_STATEMENT_PATH, b"").decode(
+        "utf-8", errors="replace"
+    )
+    for token in SLICE4_PR35_SUPPLEMENT_STATEMENT_TOKENS:
+        if token not in statement:
+            errors.append(f"SLICE-V1-004 PR35 supplement Owner statement does not state: {token}")
+    try:
+        record = json.loads(documents.get(V1_SLICE_004_PR35_CONTROLLER_RECORD_PATH, b"{}"))
+        derived = (
+            record["record_id"],
+            record["reviewed_head"],
+            record["reviewed_tree"],
+            record["proposal"]["id"],
+            record["proposal"]["sha256"],
+        )
+        if derived != (
+            V1_SLICE_004_PR35_CONTROLLER_RECORD_ID,
+            V1_SLICE_004_PR35_SUPPLEMENT_START_HEAD,
+            V1_SLICE_004_PR35_SUPPLEMENT_START_TREE,
+            V1_SLICE_004_PR35_SUPPLEMENT_ID,
+            V1_SLICE_004_PR35_SUPPLEMENT_SHA256,
+        ):
+            errors.append(
+                "SLICE-V1-004 PR35 supplement start is not the Controller-reviewed Head, Tree and proposal"
+            )
+        granted = record["authority_granted_this_turn"]
+        if not isinstance(granted, dict) or any(value is not False for value in granted.values()):
+            errors.append("SLICE-V1-004 PR35 Controller record cannot itself grant authority")
+    except (KeyError, TypeError, ValueError, AttributeError):
+        errors.append("SLICE-V1-004 PR35 Controller record is unreadable")
+    if metadata is None:
+        return
+    known = {field for field in V1_ACTIVE_STATE if field.startswith(SLICE4_PR35_SUPPLEMENT_PREFIX)}
+    for field in re.findall(r"(?m)^([^:\n]*pr35[^:\n]*):", metadata, re.IGNORECASE):
+        if field not in known:
+            errors.append(f"CURRENT_STATE {field.strip()} is not a registered PR35 supplement field")
+    executor = unique_yaml_value(metadata, "slice_v1_004_pr35_supplement_executor")
+    for field in ("owner_git_execution_delegate", "remote_git_publication_delegate"):
+        if executor is not None and unique_yaml_value(metadata, field) == executor:
+            errors.append(f"CURRENT_STATE {field} must not carry the bounded supplement executor")
+    if unique_yaml_value(metadata, "slice_v1_004_remote_write_authority") == (
+        V1_SLICE_004_PR35_REMOTE_WRITE_AUTHORITY
+    ):
+        for field, expected in SLICE4_PR35_SUPPLEMENT_REMOTE_BOUNDS.items():
+            if unique_yaml_value(metadata, field) != expected:
+                errors.append(
+                    f"CURRENT_STATE {field} must be exactly {expected} under the bounded PR35 "
+                    "supplement remote authority"
+                )
+
+
+# The metadata is flat. A spaced, quoted or re-cased key would be read by YAML as a
+# second value for a pinned field without matching the exact-value checks.
+CURRENT_STATE_METADATA_LINE = re.compile(r"^[a-z0-9_]+: \S.*$")
+
+
+def validate_current_state_metadata_form(
+    errors: list[str], current_state_text: str, metadata: str
+) -> None:
+    """One metadata block, and every line in it one plain `key: value` pair."""
+    if current_state_text.count("```yaml") != 1:
+        errors.append("CURRENT_STATE must contain exactly one fenced YAML metadata block")
+    for number, line in enumerate(metadata.splitlines(), start=1):
+        if not CURRENT_STATE_METADATA_LINE.match(line):
+            errors.append(f"CURRENT_STATE metadata line {number} is not a plain `key: value` line")
+
+
 def validate_v1_current_state_text(
     errors: list[str],
     current_state_text: str,
@@ -4880,12 +5239,23 @@ def validate_v1_current_state_text(
         for relative in SLICE3_R1_AUTHORITY_HASHES
         if (path := ROOT / relative).is_file()
     })
-    try:
-        phase = validated_current_phase()
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
-        errors.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
-        phase = {}
-    for field, expected in {**V1_ACTIVE_STATE, **phase}.items():
+    validate_slice3_closure_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE3_CLOSURE_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    })
+    validate_slice4_acceptance_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE4_ACCEPTANCE_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    })
+    validate_current_state_metadata_form(errors, current_state_text, metadata)
+    validate_slice4_pr35_supplement_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE4_PR35_SUPPLEMENT_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    }, metadata)
+    for field, expected in V1_ACTIVE_STATE.items():
         actual = unique_yaml_value(metadata, field)
         if actual != expected:
             errors.append(f"CURRENT_STATE {field} must be exactly: {expected}")
@@ -5128,7 +5498,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         "product_version": "V1",
         "delivery_model": "PRODUCTION_VERTICAL_SLICES",
         "source_contract": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
-        "active_slice": "SLICE-V1-003",
+        "active_slice": "SLICE-V1-004",
         "old_phase_zero_backlog": "SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN",
         "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
     }
@@ -5151,7 +5521,13 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
             # readable next to it.
             "SLICE-V1-002 — Inventory & Availability Optimization",
             "SLICE-V1-003 — Advertising & Traffic Efficiency",
-            "CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION",
+            "SLICE-V1-004 — Promotion & Listing Conversion",
+            "CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL",
+            "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+            # The roadmap placeholder this Contract narrowed stays readable
+            # beside the one selected write target.
+            "selected promotion/listing command",
+            "LISTING_DESCRIPTION_CHANGE",
             # The same honesty rule as above: the open-ended controlled-write
             # phrase this Contract narrowed must stay readable beside the row.
             "new controlled-write target: selected budget/bid/campaign command",

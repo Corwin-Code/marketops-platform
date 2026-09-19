@@ -1,0 +1,137 @@
+{
+  "schema": "marketops.evidence.codeql-sarif-alignment.v1",
+  "analysis_id": 1791578981,
+  "tool": "CodeQL 2.27.0",
+  "sarif_file": "codeql-java-1791578981.sarif.gz",
+  "sarif_sha256_uncompressed": "06019ee5fe58d216092af4cb2b9b5b42bb03f24c44e1d3928bb3a8b7a257901f",
+  "sarif_results": 520,
+  "inventory": "controller-arbitration-57c5efc4-r1/evidence/CODEQL_ALERT_INVENTORY.json",
+  "alerts": [
+    {
+      "alert": 233,
+      "rule_id": "java/concatenated-sql-query",
+      "inventory_path": "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java",
+      "inventory_line": 272,
+      "sarif_matches": 1,
+      "sarif_message": "Query built by concatenation with [this expression](1), which may be untrusted.",
+      "sarif_region": {
+        "endColumn": 122,
+        "endLine": 272,
+        "startColumn": 48,
+        "startLine": 272
+      }
+    },
+    {
+      "alert": 234,
+      "rule_id": "java/concatenated-sql-query",
+      "inventory_path": "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java",
+      "inventory_line": 276,
+      "sarif_matches": 1,
+      "sarif_message": "Query built by concatenation with [this expression](1), which may be untrusted.",
+      "sarif_region": {
+        "endColumn": 122,
+        "endLine": 276,
+        "startColumn": 48,
+        "startLine": 276
+      }
+    },
+    {
+      "alert": 641,
+      "rule_id": "java/missing-case-in-switch",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/ListingDescriptionCommandWorker.java",
+      "inventory_line": 137,
+      "sarif_matches": 1,
+      "sarif_message": "Switch statement does not have a case for [UNKNOWN_STATE](1).",
+      "sarif_region": {
+        "endColumn": 34,
+        "endLine": 137,
+        "startColumn": 9,
+        "startLine": 137
+      }
+    },
+    {
+      "alert": 642,
+      "rule_id": "java/misleading-indentation",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/PromotionSimulator.java",
+      "inventory_line": 197,
+      "sarif_matches": 1,
+      "sarif_message": "Indentation suggests that [the next statement](1) belongs to [the control structure](2), but this is not the case; consider adding braces or adjusting indentation.",
+      "sarif_region": {
+        "endColumn": 55,
+        "endLine": 197,
+        "startColumn": 45,
+        "startLine": 197
+      }
+    },
+    {
+      "alert": 643,
+      "rule_id": "java/dereferenced-value-may-be-null",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/CanonicalScopeMetricService.java",
+      "inventory_line": 143,
+      "sarif_matches": 1,
+      "sarif_message": "Variable [denominator](1) may be null at this access as suggested by [this](2) null guard.",
+      "sarif_region": {
+        "endColumn": 41,
+        "endLine": 143,
+        "startColumn": 30,
+        "startLine": 143
+      }
+    },
+    {
+      "alert": 644,
+      "rule_id": "java/dereferenced-value-may-be-null",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/CalibrationService.java",
+      "inventory_line": 190,
+      "sarif_matches": 1,
+      "sarif_message": "Variable [minimum](1) may be null at this access as suggested by [this](2) null guard.\nVariable [minimum](1) may be null at this access as suggested by [this](3) null guard.",
+      "sarif_region": {
+        "endColumn": 61,
+        "endLine": 190,
+        "startColumn": 54,
+        "startLine": 190
+      }
+    },
+    {
+      "alert": 645,
+      "rule_id": "java/dereferenced-value-may-be-null",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingOutcomeSupplyEvidence.java",
+      "inventory_line": 45,
+      "sarif_matches": 1,
+      "sarif_message": "Variable [scenarios](1) may be null at this access because of [this](2) assignment.",
+      "sarif_region": {
+        "endColumn": 61,
+        "endLine": 45,
+        "startColumn": 52,
+        "startLine": 45
+      }
+    },
+    {
+      "alert": 646,
+      "rule_id": "java/dereferenced-value-may-be-null",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/FixedTrafficComparison.java",
+      "inventory_line": 58,
+      "sarif_matches": 1,
+      "sarif_message": "Variable [criticalValue](1) may be null at this access as suggested by [this](2) null guard.",
+      "sarif_region": {
+        "endColumn": 51,
+        "endLine": 58,
+        "startColumn": 38,
+        "startLine": 58
+      }
+    },
+    {
+      "alert": 647,
+      "rule_id": "java/dereferenced-value-may-be-null",
+      "inventory_path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+      "inventory_line": 170,
+      "sarif_matches": 1,
+      "sarif_message": "Variable [scope](1) may be null at this access as suggested by [this](2) null guard.\nVariable [scope](1) may be null at this access as suggested by [this](3) null guard.\nVariable [scope](1) may be null at this access as suggested by [this](4) null guard.\nVariable [scope](1) may be null at this access as suggested by [this](5) null guard.\nVariable [scope](1) may be null at this access as suggested by [this](6) null guard.\nVariable [scope](1) may be null at this access as suggested by [this](7) null guard.\nVariable [scope](1) may be null at this access as suggested by [this](8) null guard.",
+      "sarif_region": {
+        "endColumn": 31,
+        "endLine": 170,
+        "startColumn": 26,
+        "startLine": 170
+      }
+    }
+  ]
+}

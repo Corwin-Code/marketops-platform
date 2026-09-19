@@ -1,0 +1,273 @@
+{
+  "document_type": "CONTROLLER_POST_MERGE_EXECUTION_ACCEPTANCE_AND_FACTUAL_CLOSURE_SNAPSHOT",
+  "verification_id": "CONTROLLER_SLICE_V1_003_READY_MERGE_EXECUTION_ACCEPTANCE_0F26D0E_R1",
+  "verification_date": "2026-09-07",
+  "verdict": "PASS_MERGE_EXECUTION_AND_READBACK",
+  "authorization_id": "READY_MERGE_ECB3385_R1",
+  "authorization_disposition": "COMPLETED_NO_FURTHER_MUTATION_AUTHORITY",
+  "repository": "Corwin-Code/marketops-platform",
+  "git": {
+    "accepted_head": "ecb33851cd507c0443daab5f40e79fa008be24bb",
+    "accepted_tree": "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+    "source_base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "prior_tested_merge": "0f77a1be91854218f779e99dafe7c44bdeb2c4f1",
+    "actual_squash_commit": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "actual_squash_tree": "9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+    "actual_squash_parents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+    ],
+    "github_signature_verified": true,
+    "signature_reason": "valid",
+    "observed_main": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "same_tree_as_accepted_candidate": true,
+    "additional_candidate_source_or_docs_commits_observed": 0
+  },
+  "pull_request": {
+    "number": 30,
+    "state": "closed",
+    "merged": true,
+    "draft": false,
+    "merged_at": "2026-09-07T03:09:19Z",
+    "review_records": [
+      {
+        "id": 5120875981,
+        "state": "COMMENTED"
+      },
+      {
+        "id": 5125556809,
+        "state": "COMMENTED"
+      }
+    ],
+    "new_approval_review_observed": false
+  },
+  "events": [
+    {
+      "event": "authorization_comment",
+      "id": 5564471871,
+      "created_at": "2026-09-07T03:08:20Z"
+    },
+    {
+      "event": "ready_for_review",
+      "id": 30662877930,
+      "created_at": "2026-09-07T03:08:28Z"
+    },
+    {
+      "event": "merged",
+      "id": 30662905305,
+      "created_at": "2026-09-07T03:09:19Z",
+      "commit": "0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd"
+    },
+    {
+      "event": "head_ref_deleted",
+      "id": 30662906690,
+      "created_at": "2026-09-07T03:09:22Z"
+    }
+  ],
+  "source_branch": {
+    "name": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "deleted_event_observed": true,
+    "absent_from_live_branch_list": true,
+    "automatic_deletion": "CONSISTENT_WITH_ACCEPTED_CONFIGURATION_AND_CODEX_REPORT",
+    "restore_or_manual_delete_requested": false
+  },
+  "protection": {
+    "ruleset_id": 20734984,
+    "enforcement": "active",
+    "bypass_actors": [],
+    "current_user_can_bypass": "never",
+    "required_review_thread_resolution": true,
+    "required_approving_review_count": 0,
+    "strict_required_status_checks": true,
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "allow_auto_merge": false,
+    "rule_suite_execution_audit": "NOT_ACCESSIBLE_HTTP_403",
+    "review_threads_4_of_4": "CODEX_PR_RECORD_NOT_INDEPENDENTLY_REQUERIED_PER_THREAD_THIS_TURN"
+  },
+  "checks": {
+    "head": "ecb33851cd507c0443daab5f40e79fa008be24bb",
+    "required_total": 12,
+    "required_success": 12,
+    "entries": [
+      {
+        "name": "governance",
+        "run_id": 34053001566,
+        "job_id": 101539832904,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "backend-build",
+        "run_id": 34053001640,
+        "job_id": 101539871918,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "architecture-boundary",
+        "run_id": 34053001640,
+        "job_id": 101539871913,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "backend-integration",
+        "run_id": 34053001640,
+        "job_id": 101539871750,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend-lint",
+        "run_id": 34053001642,
+        "job_id": 101539833373,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend-typecheck",
+        "run_id": 34053001642,
+        "job_id": 101539833441,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend-test",
+        "run_id": 34053001642,
+        "job_id": 101539833450,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend-build",
+        "run_id": 34053001642,
+        "job_id": 101539833276,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "dependency-review",
+        "run_id": 34053001572,
+        "job_id": 101539833027,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "codeql-java",
+        "run_id": 34053001572,
+        "job_id": 101539833021,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "codeql-typescript",
+        "run_id": 34053001572,
+        "job_id": 101539832905,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "infrastructure-validation",
+        "run_id": 34053001601,
+        "job_id": 101539832995,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "additional_codeql": {
+      "check_run_id": 101540016585,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "new_ci_triggered_by_controller": false,
+    "tests_rerun_by_controller": false,
+    "post_merge_main_workflows": "NOT_USED_AS_A_NEW_ACCEPTANCE_GATE"
+  },
+  "closure": {
+    "engineering": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "controller_final_gate": "PASS_FINAL_CLOSURE_VERIFICATION_INHERITED_FROM_ECB3385_R2",
+    "owner_formal_closure": "PREVIOUSLY_ACCEPTED_FOR_EXACT_HEAD",
+    "frozen_findings_closed": 22,
+    "AC200": "PREVIOUS_CONTROLLER_PASS_PRESERVED",
+    "canonical_repository_status": "PRE_MERGE_STATUS_SNAPSHOT_NOT_SYNCHRONIZED_THIS_TURN",
+    "snapshot_location": "EXTERNAL_TO_GIT_CREATED_THIS_TURN"
+  },
+  "release": {
+    "register_git_blob": "25f7b19bd7cc583e58db6dba9e704a08491493f9",
+    "obligations": "S3-REL-001..024",
+    "state": "DEFERRED_PRODUCTION_BLOCKING",
+    "production_write_enabled": false,
+    "real_provider_or_deployment_authority": "NONE",
+    "runtime_no_external_action_claim": "CODEX_REPORT_AND_INHERITED_BOUNDARY_NOT_A_FULL_SESSION_AUDIT"
+  },
+  "next_recommendation": {
+    "actor": "CONTROLLER",
+    "candidate_slice": "SLICE-V1-004",
+    "roadmap_title": "Promotion & Listing Conversion",
+    "roadmap_user_outcome": "Listing Health, content/promotion diagnosis, experiments and governed content/promotion workflow",
+    "entry": "READ_ONLY_REHYDRATION_THEN_SOCRATIC_CONTRACT_DISCOVERY",
+    "status": "RECOMMENDED_NOT_ACTIVATED_THIS_TURN",
+    "controlled_write_target": "UNSELECTED_ROADMAP_PLACEHOLDER_NOT_AUTHORIZATION",
+    "next_design_implementation_release_or_remote_write": "NOT_AUTHORIZED"
+  },
+  "verification_limits": [
+    "Connector reads establish Git identities, events, current rules, checks and source pointers; no full local product test was rerun.",
+    "The rule-suite audit API returned 403; no claim is made to have inspected the full historical bypass audit.",
+    "Four resolved threads are recorded by Codex in the immutable-at-read comment; this turn did not independently query their GraphQL resolved flags.",
+    "Expected-SHA request payload, absence of every local/untracked/external action, and 5m31s execution duration are Codex reports, not a complete session trace available to the Controller.",
+    "The result does not authorize post-merge docs writes, ref restoration, deployment, Provider calls, or a later Slice."
+  ],
+  "local_authority_hashes": {
+    "accepted_contract": {
+      "filename": "SLICE-V1-003-advertising-traffic-efficiency.md",
+      "bytes": 129400,
+      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+    },
+    "frozen_findings": {
+      "filename": "SLICE-V1-003-FROZEN-FINDING-SET-001.md",
+      "bytes": 41538,
+      "sha256": "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1"
+    },
+    "controller_final_report": {
+      "filename": "FINAL-CLOSURE-VERIFICATION.md",
+      "bytes": 11437,
+      "sha256": "f390849ec0ba157f8ab9639c2425866454f3cae7bc382599a6bb160c9d997317"
+    },
+    "controller_final_verdict": {
+      "filename": "VERDICT.json",
+      "bytes": 4774,
+      "sha256": "1fddf7765d9b18fc1f8741063f7f1bec058fac521d3f77d9b48b1efa602bce21"
+    },
+    "owner_formal_closure_receipt": {
+      "filename": "OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md",
+      "bytes": 3351,
+      "sha256": "48f1ee92c6acbab04857cd8a85f03e722ab14fe34069b4e86e92e4776c47e947"
+    },
+    "ready_merge_accepted_proposal": {
+      "filename": "SLICE-V1-003-READY-MERGE-ECB3385-R1-PROPOSED.md",
+      "bytes": 5236,
+      "sha256": "cba169dcf90e725df240c684f108a3c8b923c685bce345d622189b8c9ca7f274"
+    },
+    "ready_merge_active_receipt": {
+      "filename": "CODEX-READY-MERGE-ECB3385-R1-ACTIVE.md",
+      "bytes": 8039,
+      "sha256": "fca93478277135e34e209a4baeca139b6246232b1ba739877a9a17cea82e5e00"
+    }
+  },
+  "sources": {
+    "pr": "https://github.com/Corwin-Code/marketops-platform/pull/30",
+    "authorization_comment": "https://github.com/Corwin-Code/marketops-platform/pull/30#issuecomment-5564471871",
+    "merge_commit": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/commits/0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "main_ref": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/ref/heads/main",
+    "pr_events": "https://api.github.com/repos/Corwin-Code/marketops-platform/issues/30/events?per_page=100",
+    "branches": "https://api.github.com/repos/Corwin-Code/marketops-platform/branches?per_page=100",
+    "reviews": "https://api.github.com/repos/Corwin-Code/marketops-platform/pulls/30/reviews?per_page=100",
+    "ruleset": "https://api.github.com/repos/Corwin-Code/marketops-platform/rulesets/20734984",
+    "head_checks": "https://api.github.com/repos/Corwin-Code/marketops-platform/commits/ecb33851cd507c0443daab5f40e79fa008be24bb/check-runs?per_page=100",
+    "current_state": "https://github.com/Corwin-Code/marketops-platform/blob/0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd/docs/00-governance/CURRENT_STATE.md",
+    "roadmap": "https://github.com/Corwin-Code/marketops-platform/blob/0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd/docs/03-work-items/V1_DELIVERY_SLICES.md",
+    "release_register": "https://github.com/Corwin-Code/marketops-platform/blob/0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd/docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json"
+  },
+  "controller_repository_writes": 0
+}

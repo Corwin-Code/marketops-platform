@@ -1,0 +1,5 @@
+[ERROR] Tests run: 8, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 0.180 s <<< FAILURE! -- in com.mimococo.marketops.availabilityrisk.internal.domain.SupplyEvidenceChronologyTest
+[ERROR] Tests run: 8, Failures: 5, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
+[INFO] Total time:  11.032 s
+[INFO] Finished at: 2026-09-13T08:31:53+08:00

@@ -1,0 +1,193 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "2316521dffa6a1a7b384ea53eb683caf83cdd38a",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationService.java": "ab7a378b692f752e9160a848d4571d9bcb31e8aace60c4e025678632ce46870c",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java": "c489288e1a40bb48c8336f41dac42157982580cce098414f290d470cf83a8036",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingFactIntakeService.java": "fef7dbfa85429e6c143e00511c1d43e7a079d2d1ea96b6469cabed5e80d52e0c",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingHealthService.java": "58382b3391b4540f639d253f6150f7f27dbae1145e6a18cbe731099d11c95ee4",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ManualPathService.java": "70e5f1d5ea5910f2b9d7b17d276ed7e8d7a70cdf493ebf6ca8409eb38a8732bb",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/AffectedSetResolution.java": "1e3d154debb10289082df862da3734c1c0fa592b54e45dc3fb96f9e9997af85a",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingActionRepository.java": "639981d5f42b1ccc8b4538cf26b70d4e79773420b5d98e2f4a24eed49f828f05",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingFactRepository.java": "618af1e8be2ddd162a5a2c4552dfb6529569df0b0add374958d370fc4d74eee1",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingHealthConsoleController.java": "a3875393c593e1798af11ec587bb4eb843f5e1029e1ea2c58a853e72062e29ff",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/ListingScopeEvidence.java": "178c4c8927b86156106ea9c178c2fefc0a37548fbf986faf07778cf674629fe8",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/application/ListingScopeEvidenceService.java": "7c8869dec82343a60a2e31d5893082fc658c0b35da101861a3ba3c8468575499",
+    "backend/marketops-server/src/main/resources/db/migration/V0102__bind_listing_scope_to_native_enumeration_evidence.sql": "6f886e4b037e49fd9b049c1b3fe541bb53b5e6e50155210eabf386a0e520cac2",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingAtomicLaunchUpgradeIT.java": "b357bbd72920f1a5ff67c19cec67455981e94f90054024821d9012c82d491dd3",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingConversionFixture.java": "82f8353b2762ea5afb05d53753023cba3e2d3f7cd30c215a2e48eda100683088",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "0a2499abec0fa841442060245b395baf4851ac21ced02a415b3a483c7ade9e4a",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/database/ListingConversionSchemaIT.java": "ef62e980cde2e1186eb5d408116dccdb6f5150bbda198559db9a0b087e86104d",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/listingconversion/internal/domain/AffectedSetResolutionTest.java": "2ebe3168fd32d7ca97bc71733022cb9fc24c9ed23f9c3519a5a39dbe8503a1e8",
+    "frontend/marketops-console/src/__tests__/ListingConversionForms.test.tsx": "932a0018f457f54dd4f951b4097be22cdcad2c9ee013c648852f3618a72a3afc",
+    "frontend/marketops-console/src/api/listingConversion.ts": "df4a392fa02c3f01d5c3d87b1e733ab6c37beba089a3be685c389b1479614e0b",
+    "frontend/marketops-console/src/listing/ListingHealthPanel.tsx": "945f256697230de3e79adc40aea84ec7905226cd186f70f4918647274f9213b8",
+    "frontend/marketops-console/src/listing/ListingNativeScope.tsx": "bcac33b32f9ae9ef02613ef3fc1f92c3ef6db5c646ff83f2edc4f45a47132d85",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "55fc97860573c7453e128b39c20f1ce0501bfbf2f4ecc3d0a8c7fb328bd3c9aa"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 46,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/native-scope-authorization-final.log",
+      "raw_log_sha256": "bb82eebe652911997235522a70c28872bd4e8059757a002870acd7b6fc5cc0ae",
+      "summary_path": "native-scope-authorization-final-summary.txt",
+      "summary_sha256": "dcaf275255bb132f2bb3e45d8e270ed06bbd2b3b00a6e6b127d1926019da4268"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingActionLaunchIT,AffectedSetResolutionTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 101,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/native-scope-launch-architecture-final.log",
+      "raw_log_sha256": "7db037e68f89fd28502468c2cf3f95d32a1c16c11f7d7a6d3a9a7f27bb25f1e0",
+      "summary_path": "native-scope-launch-architecture-final-summary.txt",
+      "summary_sha256": "2bd1d12b0696f521dc4eb607c7c9f69a8a83ec6bf553adf8519d4f376acd8107"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingConversionSchemaIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 10,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/native-scope-schema-final.log",
+      "raw_log_sha256": "0f1585fd83a92cb2f4a566611c4b6bccc053b9c0d0a2e726159e87f5421d463a",
+      "summary_path": "native-scope-schema-final-summary.txt",
+      "summary_sha256": "65657f304644c1f1b45576f5db3bdcecb775b6b0da6aae2d147766114260e112"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingAtomicLaunchUpgradeIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/native-scope-upgrade-final.log",
+      "raw_log_sha256": "413c87616d2ba1f493fb3cf2dd77ade1e94600428a73ba3c703ae460d9cafc1e",
+      "summary_path": "native-scope-upgrade-final-summary.txt",
+      "summary_sha256": "c65f36d1fd930717a45cba4d2f5d0e7cd581a742a3b7978a4f8958b81dee9c96"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 32,
+      "result": "PASS",
+      "note": "Before final FormData getter lint correction; overlaps final 16 forms.",
+      "raw_log_local_path": "build/slice4-rework/native-scope-frontend-corrected.log",
+      "raw_log_sha256": "bca362308a51a27c4026ed1e9b66cb5f5c8c37d2566dc1a220692950b8ffadc3",
+      "summary_path": "native-scope-frontend-corrected-summary.txt",
+      "summary_sha256": "fcea780ac94545f3a359ffc747f06265d5f7f3a91541dc0b7ef13ab12b1576a3"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 16,
+      "result": "PASS",
+      "note": "Final corrected form source; overlaps prior 32.",
+      "raw_log_local_path": "build/slice4-rework/native-scope-forms-final.log",
+      "raw_log_sha256": "2b6b5d5a33762469757cbbc9d47f7485cee28e4afac7f0cbcd0f8d9f9bf1bc2a",
+      "summary_path": "native-scope-forms-final-summary.txt",
+      "summary_sha256": "c370b2af18647f892ab549a9eabbe71f38d0bbe7f5534961b3e28c5986175858"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS",
+      "note": "Final frontend source.",
+      "raw_log_local_path": "build/slice4-rework/native-scope-lint-corrected.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "native-scope-lint-corrected-summary.txt",
+      "summary_sha256": "5550c139ddc4ba059b8315c6cce9acb75c9803afb1f945352295193ffda2b0fd"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS",
+      "note": "Includes TypeScript noEmit and Vite build.",
+      "raw_log_local_path": "build/slice4-rework/native-scope-build.log",
+      "raw_log_sha256": "a0915229d80c0eea4ee4ad5a248a37008ee22a1b3c5ab1ad32e47e9f8b0a2da7",
+      "summary_path": "native-scope-build-summary.txt",
+      "summary_sha256": "3d9ebd627b6bbfe55c455fef88155cf1311eab09ba814acf1186286e2ca4a6ab"
+    }
+  ],
+  "report_xml_sha256": {
+    "build/slice4-rework/native-scope-final-reports/authorization-final/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml": "c965569e9d89d23f99a46a83991116a39a7a4f584bab4a36797f5c470739451b",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.ListingActionLaunchIT.xml": "14317b3bf33dc801aa8f2c8157d1f857fb8388f0fc32479e5da0f28e00ce9340",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml": "78e1d0abe23434c03f690238f1c466276e15d35b998984c3cc382e395ce525c1",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml": "4fa91e0726fe08f3225518b4f3e622d9cdb2a83118132b748b6c3eab6dad261d",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml": "48982dab514cae335d32d97499a1f93768c3bcc59c80ed777a9a5163c93455e9",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml": "9b37e5c106044d33fd0debe80bf831dff3a389f12a88ccc7c9aae95ffc7a316d",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml": "923e8bedd56650e6a65dd9a90c8f092e2caa65ef03e08cc66ec0d6e39875c368",
+    "build/slice4-rework/native-scope-final-reports/launch-architecture-final/TEST-com.mimococo.marketops.listingconversion.internal.domain.AffectedSetResolutionTest.xml": "479536ef426354c250516a992e20c9a8daef5d1530b5bcae5205959e9fdbe091",
+    "build/slice4-rework/native-scope-final-reports/schema-final/TEST-com.mimococo.marketops.database.ListingConversionSchemaIT.xml": "70c2b93603f3b4ebfda4d5f6b7cd3eab4792d0a902e56a140426da62b74addd8",
+    "build/slice4-rework/native-scope-final-reports/upgrade-final/TEST-com.mimococo.marketops.ListingAtomicLaunchUpgradeIT.xml": "ad00771fe023d259cc60c398ac60b7d3bfe48f7726bd5558e2a9c9e387d0546c"
+  },
+  "diagnostics": [
+    {
+      "log": "build/slice4-rework/native-scope-connected.log",
+      "sha256": "549c413a13084beb2f8f5ace8608a7f7b4636c74714ed6bf7e613b741650f4a4",
+      "note": "Fixture DO block split by ScriptUtils; corrected to data-modifying CTE."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-connected-corrected.log",
+      "sha256": "d9472e17066ed8e8f50356ae331af32f95f40725e19b6838b07ac6d204212ca4",
+      "note": "Control threw MO092; test incorrectly expected returned false. Corrected to assert denial."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-connected-denial-corrected.log",
+      "sha256": "02736ea98da92543e79674bda600fd2b09d672588ab0e3b4d53777ded47f00e3",
+      "note": "One early connected PASS; overlaps final 46."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-frontend.log",
+      "sha256": "325981e7b2942330b11028aa49ba64b543c95ee317a1eb161c0418939b4d20b3",
+      "note": "Wrong LanguageProvider prop: initialLanguage corrected to initial."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-lint.log",
+      "sha256": "ddce504d358dff95d5e7c96626b4754c9b5d089aebea88e9b8f4ddf747bbf8da",
+      "note": "FormData.get includes File; no-base-to-string fixed with string type guard."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-freshness-connected.log",
+      "sha256": "a74c8a7fcfff9b1e8d4de38a81731d7e92ca8a34bc554bb5afec627af0d73894",
+      "note": "Fixture digest contained absent governance rationale during INSERT; corrected ordering."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-freshness-corrected.log",
+      "sha256": "dc43b8e68e439ffe5908b59e451a6ae1c75585108451e483a78b9f0e404f6256",
+      "note": "Further failure exposed session-timezone-dependent Policy digest; fixed UTC serialization."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-freshness-canonical.log",
+      "sha256": "f16965b2fd76cb79ca4d0653b7a2431903db1bd685914cd392627895bfa4ae38",
+      "note": "Two connected PASS after corrections; overlaps final 46."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-domain-architecture.log",
+      "sha256": "f56f443d0252c712d964b0932388cebf3f21f345ffeed6d0ce885925b88fb92e",
+      "note": "Early 80 PASS superseded by final 101."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-authorization.log",
+      "sha256": "751918bd78b70a8353f5c2b8c1aadc6dc598bf78318217aa7abaa47f3aaa6d58",
+      "note": "Intermediate 45 PASS before freshness, superseded by final 46."
+    },
+    {
+      "log": "build/slice4-rework/native-scope-launch-architecture.log",
+      "sha256": "84a02c20eedf0a8ca786b558e4cfab76a224a7970ad35dea21fd625dec0caa4b",
+      "note": "Intermediate 101 PASS before freshness, superseded by final 101."
+    }
+  ],
+  "limitations": [
+    "No root is CLOSED. Purpose-dependent scope freshness and approval continuation remain in root 011; official native acquisition and complete review UI remain tracked.",
+    "Manual intake is MANUAL_ENTRY. Reserved Raw kind is not an implemented qualified provider acquisition adapter.",
+    "Historical receipts and accepted hashes are never fabricated or silently reaccepted. Acceptance hashes differing from canonical serialization remain unqualified for current use.",
+    "The 10 schema/role cases and one V0090 upgrade are not full-schema historical parity.",
+    "Frontend component/API checks, lint and build do not claim native browser journeys.",
+    "Reruns followed diagnosed failures or relevant changes. Intermediate and final counts overlap. Receipt-generation parser initially captured an architecture diagnostic as a class name; corrected extraction used existing logs and did not rerun tests.",
+    "No real Provider/account, Level 2, remote Git publication, shared/production migration, Gate EV/E or business effects. All new platform writes default OFF."
+  ]
+}

@@ -1,0 +1,19 @@
+@网页搜索我接受 SLICE-V1-004-PRODUCTION-ACCEPTANCE-CONTRACT v1.0：
+
+主文件：01_CONTRACT.md
+拟canonical路径：docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md
+SHA-256：5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983
+
+绑定规范性验收附录：02_ACCEPTANCE_AND_TRACEABILITY.md（§1—2及§4）
+拟canonical路径：docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md
+SHA-256：c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
+
+代码起点：Corwin-Code/marketops-platform
+Commit：0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
+Tree：9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
+
+本次接受同时授予合同§15 Level 1内的完整本地Detailed Design、Full-Scope Implementation、Tests、canonical docs和本地Git checkpoint权限，不再逐次申请普通设计、测试和本地提交批准。
+
+保持85项已接受决定、三项局部替代和Q085-B。EVIDENCE-REQUEST-M/W及F-S01、既有账户/配置义务按合同所列实际消费边界处理。未证成指标不得用代理替换，文档不代替真实账户/展示/恢复证明；核心要求若被可靠新证据击穿，仅提交准确最小差异。
+
+本次不授权任何Level2环境、远程push/PR/merge、生产部署/迁移、真实Provider/账户调用、Gate EV、Gate E或真实业务副作用；这些按专门准确授权执行。所有新平台写默认关闭。

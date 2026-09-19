@@ -3,7 +3,7 @@
 ```yaml
 document_type: production_assurance_contract
 product_version: V1
-active_slice: SLICE-V1-003
+active_slice: SLICE-V1-004
 review_style: RISK_DRIVEN
 quality_policy: PRODUCTION_GRADE_NO_COMPROMISE
 ```
@@ -174,6 +174,119 @@ Targeted passes are checkpoint evidence. They do not convert an incomplete
 full-source verification or a cancelled/stale CI run into a passed gate. The
 central R1 matrices retain unresolved verification explicitly until the actual
 run, artifact and input identity are recorded.
+
+## 2e. SLICE-V1-004 engineering closed; Owner Formal Closure complete
+
+This factual section supersedes the reviewed Maker implementation claims for
+Slice 004 only. The original matrix is preserved byte-for-byte under
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/historical-maker/` with its source
+Head and hash. All normative evidence requirements and predecessor closures
+remain unchanged. Controller Final Closure Verification R2 FINAL passed at
+Level 1 engineering scope with 27/27 frozen findings closed, and the Human Owner
+formally closed the exact object on 2026-09-16; the 69 acceptance rows stay
+54 engineering / 12 external evidence pending / 3 not applicable at Level 1 and
+no row is production acceptance. The complete-suite, frontend and browser
+receipts below keep their historical source identity and were not rerun at the
+closed Head.
+
+```yaml
+slice: SLICE-V1-004
+contract_sha256: 5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983
+annex_sha256: c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
+reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
+frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
+implementation_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+engineering_finding_status: 27_OF_27_CLOSED_AT_LEVEL_1
+focused_regression: 113_OF_113_PASS
+verified_source_head: 16eda4bf7e5f561b60d10c19a9a157bd62d21d6e
+verified_source_tree: 98b9ff7d692eb869fb1f7bf704980259426e09f1
+full_verification_matrix: PASS_LOCAL_LAYER_RECEIPTS_WITH_BROWSER_DETERMINISTIC_CLOSURE_AT_HISTORICAL_SOURCE
+controller_final_closure: PASS_LEVEL_1_ENGINEERING_R2_FINAL
+controller_final_record_sha256: 3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0
+owner_formal_closure: COMPLETE_EXPLICIT_HUMAN_OWNER_DECLARATION
+owner_formal_closure_record_sha256: cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c
+formally_closed_head: f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10
+formally_closed_tree: b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47
+implementation_head: d65c9185adc89955d6bab3b20ac7bd9f639b5335
+implementation_tree: e01e510d5b8bce57f7556d3e5d6996a01f8d2d74
+acceptance_layers: 54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1
+finding_count: 27
+controller_closed_findings: 27
+closed_findings_claimed: 0
+remote_publication: NOT_AUTHORIZED
+production_write_enabled: false
+evidence_index: docs/07-phase-evidence/SLICE-V1-004/rework-r1/
+closure_index: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/
+```
+
+### Post-closure CI and evidence correction (PR #35)
+
+The first PR #35 CI at `57c5efc4` passed 8 of 12 required checks: the backend
+jobs failed on eight latest-migration expectations left behind by V0124, lint
+failed on one test callback, and the Chromium step could not start because the
+fixture refuses the port that CI generated; the CodeQL result check reported
+two high-severity alerts in test SQL. Controller arbitration
+`SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1` accepted the
+transport and required one bounded correction, which the Owner issued. The
+correction commit is `48298206794a81b0640b4a14363198465dbd86c0`; its evidence
+index is `docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/`.
+
+The YAML above records the formal closure and is not rewritten. Its
+`full_verification_matrix` line is qualified by
+`pr35-ci-evidence-correction-r1/HISTORICAL_LINT_ERRATUM.md`: the historical
+lint statement does not hold for the final frontend source. The current overlay
+is: NFR-AC4 migration-upgrade regression and NFR-AC5 CI browser entry point,
+both verified locally on the correction commit; NFR-AC3 alert disposition,
+whose code changes and negative regressions ran locally while alert closure
+depends on the CodeQL scan of the published Head; and the NFR-AC6 evidence
+erratum. These are internal CI and evidence defects, not external evidence. The
+published Head's CI and CodeQL results are reported in PR #35, not here.
+
+### PR #35 residual supplement
+
+Controller review `SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1` accepted the
+bounded correction and found that the shared transport dropped the platforms'
+native wait headers (`PR35-NOTE-KEYPATH-01`), which blocks Ready and merge; it
+registered `CRCF-PR35-04`. The Owner issued supplement
+`S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`; its implementation commit is
+`3bcc38fafa2760fe59c2144fe54887e212044d30` and its evidence index is
+`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/`. The wait
+chain (C04-AC2, API-T05, API-T08, API-T11, API-T15, API-T18, from the original
+S4-DR-R1-022 scope) is now proven through the production transport, adapter,
+PostgreSQL and worker; the fresh-clone entry keeps every stack off the default
+port; `CURRENT_STATE` carries a validator-bound current-task overlay. Row
+statuses, 54 / 12 / 3 and the 27/27 closure record are unchanged; the current
+reuse of S4-DR-R1-022 and S4-DR-R1-027 evidence is qualified. The published
+Head's CI and CodeQL results are reported in PR #35, not here.
+
+<details>
+<summary>历史完整运行与作者待审说明；不代表当前Controller或Owner状态</summary>
+
+The current state is the Controller R2 FINAL PASS and the Owner Formal Closure
+recorded above. The table and the closing paragraph inside this block are the
+author's historical Level 1 status, kept for their run identities: every result
+stays attributed to its own original source (the complete backend, frontend and
+browser receipts belong to `16eda4bf…` and were not rerun at the closed Head).
+Their "Independent Controller verification" and "pending" wording describes that
+earlier moment; it is not a new Review request and changes no external release
+obligation.
+
+| Class | Current evidence boundary | Remaining requirement |
+| --- | --- | --- |
+| `SRC` | All 27 frozen engineering roots and their identified same-class/transitive consumers have production and necessary test source; V0080–V0123 are forward-only. Contract, annex, Frozen Finding Set and source manifests were rechecked. | Independent Controller verification and any separately authorized transport. |
+| `UNIT` | Focused convergence passed 113/113. The final clean Maven verification declared 1,895 Surefire and 1,363 Failsafe tests with zero failures/errors/skips; JaCoCo line 86.880515%, branch 70.883436%. Frontend Vitest passed 418/418. | No remaining Level 1 engineering test gap is claimed. |
+| `RDB` / `SEC_NEG` | Clean verification exercised signed HTTP/current grants, actual isolated PostgreSQL, migrations, exact facts, formal Outcome, purpose/protection, promotion, Raw/feedback and security-negative paths. | Real identity/provider interoperability remains external. |
+| `REPLAY` / `OPS` | Specialized concurrency, lease, restart, late-revision, queue, atomic Command/loopback/readback, restoration and Task paths passed within clean verification. | Shared/production recovery evidence remains at its existing gate. |
+| `BROWSER` | The complete browser run passed 24/26. Its exact two deterministic failures were diagnosed and then passed together, 2/2, on the verified source. All 26 unique scenarios therefore have a passing receipt; no single all-green full invocation is claimed. | Real Provider/account behavior is not inferred from the synthetic local journey. |
+| `PERF` / `DR` | The clean backend run includes the declared representative local performance and recovery suites; `RepresentativePerformanceIT` ran against 616,000 rows. | Production workload, Yandex PITR and deployed-environment claims remain external. |
+| `AUDIT` | `finding-progress.json`, `executable-evidence.md` and `FINAL_LEVEL1_LOCAL_VERIFICATION.json` map 27/27 roots to corrections, commands, artifact hashes, scans and limits. | Controller retains final finding authority. |
+| `OBJ` / `REAL_EXT` | Only synthetic local facts, protocols and isolated databases are authorized. | Existing external obligations remain assigned to their exact consuming Gate; no local fixture grants Gate EV, Gate E or release authority. |
+
+`27_OF_27` is the engineering finding status only. Controller verification remains
+pending on the exact checkpoint, and no local evidence changes external release
+obligations.
+
+</details>
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 

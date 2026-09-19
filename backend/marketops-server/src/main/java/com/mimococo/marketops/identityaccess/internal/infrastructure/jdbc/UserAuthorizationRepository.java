@@ -180,6 +180,12 @@ public class UserAuthorizationRepository {
                            NULL::uuid AS product_variant_id FROM ops.work_task t
                       JOIN ops.recommendation r ON r.id = t.recommendation_id
                        AND r.organization_id = t.organization_id WHERE t.id = :resourceId
+                    UNION ALL
+                    SELECT t.organization_id,l.store_id,NULL::uuid AS product_variant_id
+                      FROM ops.work_task t JOIN ops.lc_task_responsibility b
+                        ON b.task_id=t.id AND b.organization_id=t.organization_id AND b.source_health_id IS NOT NULL
+                      JOIN core.platform_listing l ON l.id=b.platform_listing_id AND l.organization_id=t.organization_id
+                     WHERE t.id=:resourceId AND t.recommendation_id IS NULL
                     """;
             case RECOMMENDATION -> "SELECT organization_id, store_id,"
                     + " NULL::uuid AS product_variant_id"

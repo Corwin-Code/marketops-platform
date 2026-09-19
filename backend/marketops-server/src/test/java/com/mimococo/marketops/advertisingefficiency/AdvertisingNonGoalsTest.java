@@ -236,7 +236,8 @@ class AdvertisingNonGoalsTest {
     @DisplayName("TC-ADV-NONGOAL-007 governed Manual instructions cannot add an executable write family")
     void governedManualActionsCannotEnterCommandOrOutbox() {
         assertThat(Arrays.stream(ActionKind.values()).filter(ActionKind::writeCapable))
-                .containsExactly(ActionKind.PRICE_CHANGE, ActionKind.AD_BID_CHANGE);
+                .containsExactly(ActionKind.PRICE_CHANGE, ActionKind.AD_BID_CHANGE,
+                        ActionKind.LISTING_DESCRIPTION_CHANGE);
         String manual = read(repositoryRoot().resolve(
                 "backend/marketops-server/src/main/resources/db/migration/"
                         + "V0060__govern_manual_proposals_packets_and_configuration_proof.sql"));

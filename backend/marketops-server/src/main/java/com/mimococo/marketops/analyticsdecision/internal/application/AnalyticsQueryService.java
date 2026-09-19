@@ -120,6 +120,17 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
 
     @Override
     @Transactional(readOnly = true, timeout = 5)
+    public Map<MetricCode, MetricValueView> currentValuesForPeriodAt(SubjectKind subjectKind,
+            UUID subjectId, MetricWindow window, Instant periodFrom, Instant periodTo, Instant at) {
+        Map<MetricCode, MetricValueView> values = metrics.currentValuesForPeriodAt(
+                subjectKind, subjectId, window, periodFrom, periodTo, at);
+        Map<MetricCode, MetricValueView> withEvidence = new java.util.EnumMap<>(MetricCode.class);
+        values.forEach((code, value) -> withEvidence.put(code, withEvidence(value)));
+        return Map.copyOf(withEvidence);
+    }
+
+    @Override
+    @Transactional(readOnly = true, timeout = 5)
     public List<MetricValueView> history(MetricCode metricCode, SubjectKind subjectKind,
                                          UUID subjectId, MetricWindow window, int limit) {
         return metrics.history(metricCode, subjectKind, subjectId, window,

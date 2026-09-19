@@ -48,6 +48,19 @@ class MetricEngineTest {
     private static final FactWindow WINDOW = FactWindow.endingAt(END, Duration.ofDays(30));
 
     @Test
+    void settledUnitsComeFromTheSameSettledSalesSourceAsSettledProfit() {
+        Fixture fixture=new Fixture();
+        when(fixture.facts.sales(fixture.listingId,SaleStage.SETTLED,null,WINDOW))
+                .thenReturn(new SalesTotals(3,Money.of(new BigDecimal("300"),"RUB"),
+                        Money.of(new BigDecimal("300"),"RUB"),fixture.evidence()));
+        var metrics=fixture.compute();
+        assertThat(metrics.get(MetricCode.COMPLETED_UNITS).numericValue()).isEqualByComparingTo("10");
+        assertThat(metrics.get(MetricCode.SETTLED_UNITS).numericValue()).isEqualByComparingTo("3");
+        when(fixture.facts.sales(fixture.listingId,SaleStage.SETTLED,null,WINDOW)).thenReturn(SalesTotals.absent());
+        assertThat(fixture.compute().get(MetricCode.SETTLED_UNITS).valueState()).isEqualTo(ValueState.NOT_AVAILABLE);
+    }
+
+    @Test
     void everyFactQueryUsesTheRunOwnedExactWindow() {
         Fixture fixture = new Fixture();
 

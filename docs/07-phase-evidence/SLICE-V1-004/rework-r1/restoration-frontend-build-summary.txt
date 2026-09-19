@@ -1,0 +1,6 @@
+Command: fnm exec --using 24.19.0 npm run build
+Working directory: frontend/marketops-console
+Result: PASS (exit 0)
+Tests: not a test count
+Raw local log SHA-256: 6f42dd3df30e717adbef5f26b867bd5a0c5b587dda0d1ad6db3d84b7dfcc2cba
+Scope: targeted local synthetic verification; not final Slice closure.

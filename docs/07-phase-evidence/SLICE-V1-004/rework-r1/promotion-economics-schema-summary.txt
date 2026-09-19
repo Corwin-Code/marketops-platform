@@ -1,0 +1,9 @@
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in TC-LC-SCHEMA-002 every listing table is inventoried, and none is routed
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.069 s -- in TC-LC-SCHEMA-001 what the application role may and may not write
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in TC-LC-SCHEMA-004 calibration resolves to one package or to a named failure
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in TC-LC-SCHEMA-003 the description command graph is data, and its shape is the safety property
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.113 s -- in com.mimococo.marketops.database.ListingConversionSchemaIT
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  17.284 s
+[INFO] Finished at: 2026-09-13T04:39:24+08:00

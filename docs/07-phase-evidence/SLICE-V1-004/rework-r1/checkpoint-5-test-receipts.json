@@ -1,0 +1,55 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "b4ef20d5af18e79d46d6bdcbab2668a17bbf5f46",
+  "input_identity": "Working-tree subsets. Final signed HTTP/database run includes V0087 and the scoped source-stratum reader. Scope Metric runtime precedes V0087, which does not change its consumed tables. Unit/architecture precedes the final lineage reader; all final sources compiled in the HTTP run.",
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=CanonicalScopeMetricServiceTest,VisitConversionTest,FixedTrafficComparisonTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 91,
+      "raw_log_local_path": "build/slice4-rework/canonical-scope-strata-unit.log",
+      "raw_log_sha256": "6ad791a88008eb0c2ecb95c71a31a5bca21735626cc082895b73caad6fb0516f",
+      "summary_path": "canonical-scope-strata-unit-summary.txt",
+      "summary_sha256": "86445a1fad1490a6044be2c5a8b94e6b61b02063cdafa9fab18691433962a240",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=AnalyticsMetricReevaluationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 17,
+      "raw_log_local_path": "build/slice4-rework/canonical-scope-projection-runtime.log",
+      "raw_log_sha256": "428fc9c24a3590489d7e5e11039b6165b67d554babc85100a520f61b738bbcf8",
+      "summary_path": "canonical-scope-projection-runtime-summary.txt",
+      "summary_sha256": "042202d14dc4e6ed8731a706f5f9f35e05f87d490b61730ff31eec482c7868d7",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 21,
+      "raw_log_local_path": "build/slice4-rework/canonical-source-strata-final-runtime.log",
+      "raw_log_sha256": "b620626bd0f05f9eb1278cf8a5f62a8987148f2aa47b529ef9d93e316367551b",
+      "summary_path": "canonical-source-strata-final-runtime-summary.txt",
+      "summary_sha256": "359d83561b7df0c93b089ce0945a4aeb01ecdce54cfa7b9cabb83d409647bd08",
+      "result": "PASS_TARGETED_ONLY"
+    }
+  ],
+  "retained_failed_runs": [
+    {
+      "path": "build/slice4-rework/canonical-scope-projection-missing-source-failed.log",
+      "sha256": "2f22c7fe9707e2b9147fcd2d189b334cc6070a25f07c6832ef49565aec5a1c5e",
+      "resolution": "Synthetic native advertising fixture lacked canonical Metric spend/tax inputs; published them through existing fact repositories and reran actual engine."
+    },
+    {
+      "path": "build/slice4-rework/canonical-lineage-generated-expression-failed.log",
+      "sha256": "0a87ad26e1949ca0d9e3f7f586c8008a1cc52ed256156951766fc3574a2d8ae0",
+      "resolution": "PostgreSQL correctly rejected a STABLE encoding conversion in a generated expression. Used a derived column, insert trigger and matching CHECK; did not mislabel the function immutable."
+    }
+  ],
+  "limitations": [
+    "Scope projection is not protection/method qualification or proof of native membership completeness.",
+    "Pre-approval comparison plan, full target-version coverage, positive formal Outcome and downstream consumers remain unfinished.",
+    "Full clean/upgrade, frontend/browser, performance/recovery and final exact-Head verification remain required.",
+    "All local isolated evidence only; no real provider/account calls, remote Git publication or shared/production/business writes."
+  ]
+}

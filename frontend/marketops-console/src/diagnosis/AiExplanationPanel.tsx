@@ -76,50 +76,79 @@ export function AiExplanationPanel({
           ) : (
             <p>All displayed claims passed output validation. They remain model statements.</p>
           )}
-          {(['FACT', 'INFERENCE', 'RECOMMENDATION', 'UNKNOWN'] as const).map((kind) => {
-            const accepted = output.claims.filter((claim) => claim.kind === kind && claim.accepted);
-            return accepted.length === 0 ? null : (
-              <section aria-label={`Model ${kind.toLowerCase()} claims`} key={kind}>
-                <h4>{kind}</h4>
-                <ul>
-                  {accepted.map((claim) => (
-                    <li key={claim.claimId}>
-                      <p>{claim.statement}</p>
-                      {claim.confidenceLabel !== null && (
-                        <p>Model confidence: {claim.confidenceLabel}</p>
-                      )}
-                      {Object.keys(claim.payload).length > 0 && (
-                        <pre>{JSON.stringify(claim.payload, null, 2)}</pre>
-                      )}
-                      <p>
-                        Evidence:{' '}
-                        {[...claim.metricValueRefs, ...claim.findingRefs].join(', ') ||
-                          'none cited'}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
-          {output.claims.some((claim) => !claim.accepted) && (
-            <details>
-              <summary>
-                Rejected model claims ({output.claims.filter((claim) => !claim.accepted).length})
-              </summary>
-              <ul>
-                {output.claims
-                  .filter((claim) => !claim.accepted)
-                  .map((claim) => (
-                    <li key={claim.claimId}>
-                      {claim.kind} · {claim.rejectionCode}: {claim.statement}
-                    </li>
-                  ))}
-              </ul>
-            </details>
-          )}
+          <AiClaimGroups output={output} />
         </div>
       )}
     </section>
+  );
+}
+
+export interface AiClaimLabels {
+  readonly FACT: string;
+  readonly INFERENCE: string;
+  readonly RECOMMENDATION: string;
+  readonly UNKNOWN: string;
+  readonly confidence: string;
+  readonly evidence: string;
+  readonly noEvidence: string;
+  readonly rejected: string;
+}
+
+/** Shared claim presentation; callers choose language, never authority or validation. */
+export function AiClaimGroups({
+  output,
+  labels,
+}: {
+  readonly output: AiExplanation;
+  readonly labels?: AiClaimLabels;
+}): React.JSX.Element {
+  return (
+    <>
+      {(['FACT', 'INFERENCE', 'RECOMMENDATION', 'UNKNOWN'] as const).map((kind) => {
+        const accepted = output.claims.filter((claim) => claim.kind === kind && claim.accepted);
+        return accepted.length === 0 ? null : (
+          <section aria-label={labels?.[kind] ?? `Model ${kind.toLowerCase()} claims`} key={kind}>
+            <h4>{labels?.[kind] ?? kind}</h4>
+            <ul>
+              {accepted.map((claim) => (
+                <li key={claim.claimId}>
+                  <p>{claim.statement}</p>
+                  {claim.confidenceLabel !== null && (
+                    <p>
+                      {labels?.confidence ?? 'Model confidence'}: {claim.confidenceLabel}
+                    </p>
+                  )}
+                  {Object.keys(claim.payload).length > 0 && (
+                    <pre>{JSON.stringify(claim.payload, null, 2)}</pre>
+                  )}
+                  <p>
+                    {labels?.evidence ?? 'Evidence'}:{' '}
+                    {[...claim.metricValueRefs, ...claim.findingRefs].join(', ') ||
+                      (labels?.noEvidence ?? 'none cited')}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+      {output.claims.some((claim) => !claim.accepted) && (
+        <details>
+          <summary>
+            {labels?.rejected ?? 'Rejected model claims'} (
+            {output.claims.filter((claim) => !claim.accepted).length})
+          </summary>
+          <ul>
+            {output.claims
+              .filter((claim) => !claim.accepted)
+              .map((claim) => (
+                <li key={claim.claimId}>
+                  {labels?.[claim.kind] ?? claim.kind} · {claim.rejectionCode}: {claim.statement}
+                </li>
+              ))}
+          </ul>
+        </details>
+      )}
+    </>
   );
 }

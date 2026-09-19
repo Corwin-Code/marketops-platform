@@ -1,0 +1,79 @@
+{
+  "scope": "MATERIAL_IDENTITY_CONSISTENCY_NOT_PRODUCT_TESTS",
+  "checks": [
+    {
+      "check": "uploaded_zip_sha256",
+      "pass": true
+    },
+    {
+      "check": "uploaded_zip_crc",
+      "pass": true
+    },
+    {
+      "check": "manifest_40_match",
+      "pass": true
+    },
+    {
+      "check": "required_unique_12",
+      "pass": true
+    },
+    {
+      "check": "required_success_and_identity",
+      "pass": true
+    },
+    {
+      "check": "codeql_result_success",
+      "pass": true
+    },
+    {
+      "check": "all_current_job_steps_success",
+      "pass": true
+    },
+    {
+      "check": "probe_eight_expected_current_behaviors",
+      "pass": true
+    },
+    {
+      "check": "mixed_header_two_underwait_counterexamples",
+      "pass": true
+    },
+    {
+      "check": "BoundedOutboundHttp.java_sha256",
+      "pass": true
+    },
+    {
+      "check": "BoundedOutboundHttp.java_git_blob",
+      "pass": true
+    },
+    {
+      "check": "RetryAfterUnits.java_sha256",
+      "pass": true
+    },
+    {
+      "check": "RetryAfterUnits.java_git_blob",
+      "pass": true
+    },
+    {
+      "check": "proposal_hash_binding",
+      "pass": true
+    },
+    {
+      "check": "authority_not_implicitly_granted",
+      "pass": true
+    },
+    {
+      "check": "original_frozen_findings_not_added",
+      "pass": true
+    },
+    {
+      "check": "record_identity_in_template",
+      "pass": true
+    },
+    {
+      "check": "all_json_parses",
+      "pass": true
+    }
+  ],
+  "count": 18,
+  "all_pass": true
+}

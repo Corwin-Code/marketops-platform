@@ -21,6 +21,11 @@ public class InternalReferenceRepository {
         this.jdbc = jdbc;
     }
 
+    public boolean promotionListingBelongsToStore(UUID organizationId,UUID storeId,UUID listingId) {
+        return jdbc.sql("SELECT EXISTS(SELECT 1 FROM core.platform_listing WHERE id=:listing AND organization_id=:org AND store_id=:store)")
+                .param("listing",listingId).param("org",organizationId).param("store",storeId).query(Boolean.class).single();
+    }
+
     /** The live internal variant with one stock-keeping unit code. */
     public Optional<UUID> productVariantIdBySku(UUID organizationId, String skuCode) {
         return jdbc.sql("""
@@ -92,9 +97,21 @@ public class InternalReferenceRepository {
     /** End the finance input version currently in force for one scope. */
     public void endOpenFinanceInput(UUID organizationId, String inputCode, String scopeKind,
                                     UUID scopeId, java.time.Instant at, String reason) {
+        endOpenFinanceInput(organizationId,inputCode,scopeKind,scopeId,at,reason,null,null);
+    }
+
+    public void endOpenFinanceInput(UUID organizationId,String inputCode,String scopeKind,UUID scopeId,
+                                    java.time.Instant at,String reason,String promotionKind,String nativePromotionKey) {
+        endOpenFinanceInput(organizationId,inputCode,scopeKind,scopeId,at,reason,promotionKind,nativePromotionKey,null);
+    }
+
+    public void endOpenFinanceInput(UUID organizationId,String inputCode,String scopeKind,UUID scopeId,
+            java.time.Instant at,String reason,String promotionKind,String nativePromotionKey,UUID promotionListingId) {
         jdbc.sql("""
                         UPDATE core.finance_input_version
-                        SET status = 'ENDED', effective_to = :at, reason = :reason,
+                        SET status = CASE WHEN :scopeKind='PROMOTION' AND effective_from=:at THEN 'CANCELLED' ELSE 'ENDED' END,
+                            effective_to = CASE WHEN :scopeKind='PROMOTION' AND effective_from=:at THEN effective_to ELSE :at END,
+                            reason = :reason,
                             updated_at = :at, version = version + 1
                         WHERE organization_id = :organizationId
                           AND input_code = :inputCode
@@ -103,9 +120,15 @@ public class InternalReferenceRepository {
                                        '00000000-0000-0000-0000-000000000000'::uuid)
                               = coalesce(CAST(:scopeId AS uuid),
                                          '00000000-0000-0000-0000-000000000000'::uuid)
+                          AND promotion_kind IS NOT DISTINCT FROM CAST(:promotionKind AS text)
+                          AND native_promotion_key IS NOT DISTINCT FROM CAST(:nativePromotionKey AS text)
+                          AND promotion_listing_ref_id IS NOT DISTINCT FROM CAST(:promotionListingId AS uuid)
                           AND status = 'ACTIVE'
-                          AND effective_to IS NULL
+                          AND (:scopeKind<>'PROMOTION' OR effective_from<=:at)
+                          AND (effective_to IS NULL OR (:scopeKind='PROMOTION' AND effective_to>:at))
                         """)
+                .param("promotionListingId",promotionListingId)
+                .param("promotionKind",promotionKind).param("nativePromotionKey",nativePromotionKey)
                 .param("at", java.sql.Timestamp.from(at))
                 .param("reason", reason)
                 .param("organizationId", organizationId)
@@ -148,16 +171,32 @@ public class InternalReferenceRepository {
                                    java.math.BigDecimal amountValue, String currencyCode,
                                    UUID provenanceId, java.time.Instant effectiveFrom,
                                    java.time.Instant now) {
+        insertFinanceInput(id,organizationId,inputCode,scopeKind,storeRefId,variantRefId,valueKind,rateValue,amountValue,
+                currencyCode,provenanceId,effectiveFrom,now,null,null,null);
+    }
+
+    public void insertFinanceInput(UUID id,UUID organizationId,String inputCode,String scopeKind,UUID storeRefId,
+            UUID variantRefId,String valueKind,java.math.BigDecimal rateValue,java.math.BigDecimal amountValue,
+            String currencyCode,UUID provenanceId,java.time.Instant effectiveFrom,java.time.Instant now,
+            String promotionKind,String nativePromotionKey,java.time.Instant effectiveTo) {
+        insertFinanceInput(id,organizationId,inputCode,scopeKind,storeRefId,variantRefId,valueKind,rateValue,amountValue,
+                currencyCode,provenanceId,effectiveFrom,now,promotionKind,nativePromotionKey,effectiveTo,null,null);
+    }
+
+    public void insertFinanceInput(UUID id,UUID organizationId,String inputCode,String scopeKind,UUID storeRefId,
+            UUID variantRefId,String valueKind,java.math.BigDecimal rateValue,java.math.BigDecimal amountValue,
+            String currencyCode,UUID provenanceId,java.time.Instant effectiveFrom,java.time.Instant now,
+            String promotionKind,String nativePromotionKey,java.time.Instant effectiveTo,UUID promotionListingId,String promotionTermsDigest) {
         jdbc.sql("""
                         INSERT INTO core.finance_input_version (
                             id, organization_id, input_code, scope_kind, store_ref_id,
                             product_variant_ref_id, value_kind, rate_value, amount_value,
                             currency_code, provenance_id, effective_from, effective_to,
-                            status, reason, created_at, updated_at, version)
+                            status, reason, created_at, updated_at, version,promotion_kind,native_promotion_key,promotion_listing_ref_id,promotion_terms_digest)
                         VALUES (:id, :organizationId, :inputCode, :scopeKind, :storeRefId,
                             :variantRefId, :valueKind, :rateValue, :amountValue,
-                            :currencyCode, :provenanceId, :effectiveFrom, NULL,
-                            'ACTIVE', NULL, :now, :now, 0)
+                            :currencyCode, :provenanceId, :effectiveFrom, :effectiveTo,
+                            'ACTIVE', NULL, :now, :now, 0,:promotionKind,:nativePromotionKey,:promotionListingId,:promotionTermsDigest)
                         """)
                 .param("id", id)
                 .param("organizationId", organizationId)
@@ -165,6 +204,9 @@ public class InternalReferenceRepository {
                 .param("scopeKind", scopeKind)
                 .param("storeRefId", storeRefId)
                 .param("variantRefId", variantRefId)
+                .param("promotionListingId",promotionListingId).param("promotionTermsDigest",promotionTermsDigest)
+                .param("promotionKind",promotionKind).param("nativePromotionKey",nativePromotionKey)
+                .param("effectiveTo",effectiveTo==null?null:java.sql.Timestamp.from(effectiveTo))
                 .param("valueKind", valueKind)
                 .param("rateValue", rateValue)
                 .param("amountValue", amountValue)

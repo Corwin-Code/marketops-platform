@@ -114,7 +114,7 @@ public class RawEvidenceRepository {
         return jdbc.sql("""
                         SELECT observation.id, observation.run_id, observation.call_seq,
                                observation.native_status, observation.outcome_class,
-                               observation.ingestion_time, unit.id AS unit_id,
+                               observation.ingestion_time, unit.id AS unit_id, unit.job_id,
                                unit.unit_kind, unit.source_unit_key, unit.source_time,
                                content.id AS content_id, content.hash_value,
                                content.byte_length, content.object_ref
@@ -145,7 +145,7 @@ public class RawEvidenceRepository {
         return jdbc.sql("""
                         SELECT observation.id, observation.run_id, observation.call_seq,
                                observation.native_status, observation.outcome_class,
-                               observation.ingestion_time, unit.id AS unit_id,
+                               observation.ingestion_time, unit.id AS unit_id, unit.job_id,
                                unit.unit_kind, unit.source_unit_key, unit.source_time,
                                content.id AS content_id, content.hash_value,
                                content.byte_length, content.object_ref
@@ -182,6 +182,7 @@ public class RawEvidenceRepository {
                 rows.getObject("id", UUID.class),
                 rows.getObject("run_id", UUID.class),
                 rows.getObject("unit_id", UUID.class),
+                rows.getObject("job_id", UUID.class),
                 rows.getString("unit_kind"),
                 rows.getString("source_unit_key"),
                 sourceTime == null ? null : sourceTime.toInstant(),
@@ -201,6 +202,7 @@ public class RawEvidenceRepository {
      * @param id observation identifier
      * @param runId run that produced it
      * @param logicalUnitId the source page it observed
+     * @param jobId ingestion job that owns the source page
      * @param unitKind kind of page
      * @param sourceUnitKey the source's own key for the page
      * @param sourceTime when the source considered it true, or {@code null}
@@ -217,6 +219,7 @@ public class RawEvidenceRepository {
             UUID id,
             UUID runId,
             UUID logicalUnitId,
+            UUID jobId,
             String unitKind,
             String sourceUnitKey,
             Instant sourceTime,

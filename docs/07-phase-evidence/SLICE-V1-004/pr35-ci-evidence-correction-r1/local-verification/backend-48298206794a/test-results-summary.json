@@ -1,0 +1,2159 @@
+{
+  "schema": "marketops.evidence.backend-test-results-summary.v1",
+  "source": "target/surefire-reports and target/failsafe-reports of the local backend-build run at 48298206794a81b0640b4a14363198465dbd86c0",
+  "maven_summary": {
+    "surefire": "Tests run: 1907, Failures: 0, Errors: 0, Skipped: 0",
+    "failsafe": "Tests run: 1370, Failures: 0, Errors: 0, Skipped: 0"
+  },
+  "counting": "Counts are testcase elements, which match the Maven summary. One pre-existing report file declares a tests attribute one lower than the testcase elements it contains; that is recorded, not corrected.",
+  "surefire-reports": {
+    "totals": {
+      "testcases": 1907,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "report_files": 165,
+    "tests_attribute_differs_from_testcase_elements": [
+      {
+        "file": "TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+        "tests_attribute": 12,
+        "testcase_elements": 13
+      }
+    ],
+    "per_suite": [
+      {
+        "name": "com.mimococo.marketops.ApplicationConfigurationTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.054
+      },
+      {
+        "name": "com.mimococo.marketops.ApplicationEnvironmentFailClosedTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.018
+      },
+      {
+        "name": "com.mimococo.marketops.LoggingContractTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.086
+      },
+      {
+        "name": "com.mimococo.marketops.adminobservability.MetaStatusControllerTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.194
+      },
+      {
+        "name": "com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest",
+        "testcases": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.197
+      },
+      {
+        "name": "com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.101
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.674
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.AdvertisingRankFactorSerializationTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.024
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+        "testcases": 41,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.048
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.088
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.135
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicHeadroomTest",
+        "testcases": 33,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.034
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.216
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPhysicalPurposeFreshnessTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.06
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest",
+        "testcases": 29,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.166
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.313
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.302
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingSegmentPurposeFreshnessTest",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest",
+        "testcases": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.012
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest",
+        "testcases": 22,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.013
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest",
+        "testcases": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.015
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.004
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.004
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.188
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.004
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest",
+        "testcases": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.009
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest",
+        "testcases": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.02
+      },
+      {
+        "name": "com.mimococo.marketops.aicopilot.internal.application.ListingAssistanceGatewayTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.149
+      },
+      {
+        "name": "com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest",
+        "testcases": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.147
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest",
+        "testcases": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.105
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.67
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsQueryServicePriorityTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.82
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.internal.application.CanonicalScopeMetricServiceTest",
+        "testcases": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 2.352
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.147
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.6
+      },
+      {
+        "name": "com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest",
+        "testcases": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 4.464
+      },
+      {
+        "name": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 6.763
+      },
+      {
+        "name": "com.mimococo.marketops.architecture.ModulithArchitectureTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.577
+      },
+      {
+        "name": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest",
+        "testcases": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.424
+      },
+      {
+        "name": "com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.36
+      },
+      {
+        "name": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.519
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.13
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.363
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.23
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.05
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.004
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.0
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest",
+        "testcases": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest",
+        "testcases": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.005
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.SupplyEvidenceChronologyTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.015
+      },
+      {
+        "name": "com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.322
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest",
+        "testcases": 42,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.398
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.167
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest",
+        "testcases": 26,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.091
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.EvaluationViewTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.ListingConversionCodesTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.SimulationReviewMaterialTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.017
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.AcceptedDemandEvidenceTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.019
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.CalibrationSnapshotTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.004
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.EvaluationPlanFreezeTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.347
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.ListingConversionSchedulerTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.081
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.ListingCurrentAccountingProtectionTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.268
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.ListingFeedbackServiceTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.082
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.ListingOutcomeMetricEvidenceTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.225
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.ListingOutcomeSupplyEvidenceTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.042
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.application.ListingSimulationInputEvidenceTest",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.044
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.AffectedSetResolutionTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.AllowanceCheckTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.CanonicalAccountingComparisonTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.DescriptionTextTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.033
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.EvidencePathQualificationTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.ExactTrafficComparisonTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.052
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.FixedTrafficComparisonTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.005
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.FrozenComparisonMethodTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.004
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.FrozenFutilityRuleTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.007
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.FrozenNodeWindowTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.IsolationScopeTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.ListingHealthAssessmentTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.007
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.MaterialityClassifierTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.001
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.OfficialSummaryMethodEvidenceTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.01
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.PromotionSimulatorTest",
+        "testcases": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.007
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.ProtectionScopeBasisTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.ProtectionVectorTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.ResponsibilityClocksTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.VersionWindowTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.014
+      },
+      {
+        "name": "com.mimococo.marketops.listingconversion.internal.domain.VisitConversionTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.005
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest",
+        "testcases": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.072
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest",
+        "testcases": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.117
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.142
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.DescriptionExactRequestTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.195
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.DescriptionRetryHeadersTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.206
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest",
+        "testcases": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.259
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest",
+        "testcases": 38,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.088
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.009
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.174
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest",
+        "testcases": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.462
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest",
+        "testcases": 33,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.286
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.407
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest",
+        "testcases": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.441
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.129
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.141
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.153
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.ListingDescriptionCommandWorkerTest",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.377
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.315
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.RegistryDescriptionDefinitionTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.236
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.549
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.domain.DescriptionChangeGuardTest",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.213
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.029
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.domain.RetryAfterUnitsTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.043
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.027
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.396
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.856
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.385
+      },
+      {
+        "name": "com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.062
+      },
+      {
+        "name": "com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest",
+        "testcases": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.271
+      },
+      {
+        "name": "com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.165
+      },
+      {
+        "name": "com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest",
+        "testcases": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.441
+      },
+      {
+        "name": "com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest",
+        "testcases": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.16
+      },
+      {
+        "name": "com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest",
+        "testcases": 57,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.946
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.005
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest",
+        "testcases": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.013
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.RecommendationStateTest",
+        "testcases": 42,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.016
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest",
+        "testcases": 56,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.055
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.039
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest",
+        "testcases": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.023
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.248
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest",
+        "testcases": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.301
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.ListingGuardrailTest",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.294
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.003
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.002
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.domain.ListingResponsibilityScheduleTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.009
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.011
+      },
+      {
+        "name": "com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.011
+      },
+      {
+        "name": "com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.008
+      },
+      {
+        "name": "com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.616
+      },
+      {
+        "name": "com.mimococo.marketops.shared.CorrelationIdTest",
+        "testcases": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.107
+      },
+      {
+        "name": "com.mimococo.marketops.shared.ErrorCodeTest",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.014
+      },
+      {
+        "name": "com.mimococo.marketops.shared.MetadataFieldPolicyTest",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.119
+      },
+      {
+        "name": "com.mimococo.marketops.shared.SecretMaterialGuardTest",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.039
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.config.CorsContractTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 2.798
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.config.WriteGateBindingTest",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.167
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.006
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest",
+        "testcases": 46,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.414
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest",
+        "testcases": 23,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.378
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest",
+        "testcases": 36,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.33
+      }
+    ]
+  },
+  "failsafe-reports": {
+    "totals": {
+      "testcases": 1370,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "report_files": 100,
+    "tests_attribute_differs_from_testcase_elements": [],
+    "per_suite": [
+      {
+        "name": "com.mimococo.marketops.AdBidDispatchAuthorityIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.103
+      },
+      {
+        "name": "com.mimococo.marketops.AdBidWriteGateAdversarialIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 12.42
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingActorRevocationIT",
+        "testcases": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 25.403
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingAggregateExposureIT",
+        "testcases": 33,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 21.169
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingAuthorityBindingIT",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.298
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 12.977
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingBrowserHistoryIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 8.26
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingCommandSubstitutionIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 6.539
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingCrossDomainIsolationIT",
+        "testcases": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 19.8
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingDecisionQueryIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.674
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingDisclosureIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 14.127
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingFinanceReviewIT",
+        "testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.508
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingFreshnessScopeSealIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.696
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingGateScopeIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 23.668
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingGateScopeMatrixIT",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 25.363
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 39.517
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingManualObservationUpgradeIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 4.119
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingManualShadowIT",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.551
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+        "testcases": 51,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 60.679
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingMaterialityIT",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.216
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingMinimumExpiryIT",
+        "testcases": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 266.443
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 8.592
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 9.69
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingOrdinaryApprovalIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 12.379
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingOutcomePolicyResolutionIT",
+        "testcases": 29,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 14.766
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingProtectedBaseUpgradeIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.252
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingReservationIT",
+        "testcases": 42,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 38.053
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 9.994
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingRetryProofIT",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 24.319
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingRetryWorkerIT",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 24.493
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+        "testcases": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.698
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingTargetedTriggerIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 11.977
+      },
+      {
+        "name": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.292
+      },
+      {
+        "name": "com.mimococo.marketops.ApplicationSmokeIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.25
+      },
+      {
+        "name": "com.mimococo.marketops.AvailabilityCaseLifecycleIT",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 4.658
+      },
+      {
+        "name": "com.mimococo.marketops.AvailabilityConsoleAuthorizationIT",
+        "testcases": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.904
+      },
+      {
+        "name": "com.mimococo.marketops.AvailabilityRecalculationLoopIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 13.598
+      },
+      {
+        "name": "com.mimococo.marketops.AvailabilityRiskFlowIT",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 2.483
+      },
+      {
+        "name": "com.mimococo.marketops.DiagnosticExportIT",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 49.844
+      },
+      {
+        "name": "com.mimococo.marketops.FileIntakeFlowIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 30.859
+      },
+      {
+        "name": "com.mimococo.marketops.ListingActionLaunchIT",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 20.963
+      },
+      {
+        "name": "com.mimococo.marketops.ListingAtomicLaunchUpgradeIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 6.492
+      },
+      {
+        "name": "com.mimococo.marketops.ListingContainmentIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 11.301
+      },
+      {
+        "name": "com.mimococo.marketops.ListingDescriptionRegistryIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 14.021
+      },
+      {
+        "name": "com.mimococo.marketops.ListingDescriptionResponseIdentityIT",
+        "testcases": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 38.482
+      },
+      {
+        "name": "com.mimococo.marketops.ListingDescriptionRetryTimingIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.173
+      },
+      {
+        "name": "com.mimococo.marketops.ListingDescriptionWriteGateIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 12.729
+      },
+      {
+        "name": "com.mimococo.marketops.ListingManualVerificationIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.161
+      },
+      {
+        "name": "com.mimococo.marketops.ListingMeaningReviewIT",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 6.791
+      },
+      {
+        "name": "com.mimococo.marketops.ListingRecalculationLeaseIT",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 72.237
+      },
+      {
+        "name": "com.mimococo.marketops.ListingReworkAuthorizationIT",
+        "testcases": 111,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 107.031
+      },
+      {
+        "name": "com.mimococo.marketops.MaintenanceWriteGateApiIT",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.047
+      },
+      {
+        "name": "com.mimococo.marketops.ManagedMigrationRunnerIT",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.047
+      },
+      {
+        "name": "com.mimococo.marketops.MetadataMaintenanceApiIT",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.812
+      },
+      {
+        "name": "com.mimococo.marketops.OperatingFlowIT",
+        "testcases": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 23.769
+      },
+      {
+        "name": "com.mimococo.marketops.PriceCommandWorkerIT",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 18.174
+      },
+      {
+        "name": "com.mimococo.marketops.PromotionClosureIT",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 9.089
+      },
+      {
+        "name": "com.mimococo.marketops.RegistryVerificationFlowIT",
+        "testcases": 35,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 68.434
+      },
+      {
+        "name": "com.mimococo.marketops.RepresentativePerformanceIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 894.521
+      },
+      {
+        "name": "com.mimococo.marketops.TestDatabaseIssuerIT",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 2.383
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingBriefPublicationIT",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 8.036
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.508
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT",
+        "testcases": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 55.751
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT",
+        "testcases": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 9.118
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFreshnessBulkResolutionIT",
+        "testcases": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 13.842
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 9.096
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomePolicyIT",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 10.933
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 386.553
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedPreparationIT",
+        "testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 9.29
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOptimizationOutcomePolicyIT",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 11.048
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 267.845
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInferenceScopeIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 5.34
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeInputIntegrityIT",
+        "testcases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 5.809
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePolicyConsumerIT",
+        "testcases": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 20.335
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+        "testcases": 31,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 20.362
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT",
+        "testcases": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 11.398
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 15.827
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AnalyticsMetricReevaluationIT",
+        "testcases": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 21.49
+      },
+      {
+        "name": "com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingPurposeEvidenceBatchIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 8.56
+      },
+      {
+        "name": "com.mimococo.marketops.database.AdBidWritePathIT",
+        "testcases": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.331
+      },
+      {
+        "name": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.749
+      },
+      {
+        "name": "com.mimococo.marketops.database.AuthorizedAcquisitionFlowIT",
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.665
+      },
+      {
+        "name": "com.mimococo.marketops.database.AvailabilityRiskSchemaIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 5.267
+      },
+      {
+        "name": "com.mimococo.marketops.database.CallAuthorityExclusivityIT",
+        "testcases": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 16.211
+      },
+      {
+        "name": "com.mimococo.marketops.database.ControlBoundaryCompletenessIT",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.905
+      },
+      {
+        "name": "com.mimococo.marketops.database.ControlEpochTriggerIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 1.497
+      },
+      {
+        "name": "com.mimococo.marketops.database.DatabasePrivilegeIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.292
+      },
+      {
+        "name": "com.mimococo.marketops.database.FlywayMigrationIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.627
+      },
+      {
+        "name": "com.mimococo.marketops.database.IngestionAuthorityAndEvidenceIT",
+        "testcases": 45,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 5.658
+      },
+      {
+        "name": "com.mimococo.marketops.database.ListingConversionSchemaIT",
+        "testcases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.212
+      },
+      {
+        "name": "com.mimococo.marketops.database.MembershipGuardIT",
+        "testcases": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 3.734
+      },
+      {
+        "name": "com.mimococo.marketops.database.MetadataConstraintIT",
+        "testcases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 0.319
+      },
+      {
+        "name": "com.mimococo.marketops.database.MetadataPrivilegeIT",
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 5.124
+      },
+      {
+        "name": "com.mimococo.marketops.database.PriceWritePathIT",
+        "testcases": 89,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 26.969
+      },
+      {
+        "name": "com.mimococo.marketops.database.StoredRawReplayIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 12.569
+      },
+      {
+        "name": "com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT",
+        "testcases": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.607
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.AdBidParameterContractParityIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 7.868
+      },
+      {
+        "name": "com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT",
+        "testcases": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 8.205
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+        "testcases": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 23.244
+      },
+      {
+        "name": "com.mimococo.marketops.shared.internal.secret.MountedSecretFilesystemIT",
+        "testcases": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "time": 2.447
+      }
+    ]
+  }
+}

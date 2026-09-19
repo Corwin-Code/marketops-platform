@@ -1,0 +1,95 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "312d3d00bc7ca99dff4f3317ba9274ebe5d394a2",
+  "input_identity": "Final V0092 native identity, typed response selection, task relation, pre-socket context and no-response status handling. Separate disposable database processes; no provider calls or dispatch enablement.",
+  "tested_file_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/ListingDescriptionCommandWorker.java": "8610d09d2793396ebe91f0698ef3463704fb9e2b2719aaaf27cec7d452a0945f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/ListingDescriptionCommandRepository.java": "2b9cc266850842dc98084a2be8bf312e36f7e6456c52323b824e7b7bf86c5142",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PlatformCallSpecRepository.java": "9053c62ea21474e1bad2e3f4b568c89d9ae6bee02e08e23eb4aee83be4dad049",
+    "backend/marketops-server/src/main/resources/db/migration/V0092__bind_description_response_to_frozen_native_identity.sql": "ad7bab92dbe33003c507c3c0efd7a7aaf983d37bebbe9579432d9854aa212913",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingDescriptionResponseIdentityIT.java": "e8c9e2b593f2462137eb0655bf5084aede19b8e220d74c29e9939dacb4dc8e57",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/ListingDescriptionCommandWorkerTest.java": "a80f77837672d178be8a0d3dd3623a5028cbf962c7495f577f1af68e13761500"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingDescriptionCommandWorkerTest,*ArchitectureTest,PlatformHttpAdaptersTest,AdBidWriteDispatchTest,PriceWriteClassificationTest,DescriptionRetryHeadersTest,RetryAfterUnitsTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 182,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/response-identity-final-shared-unit.log",
+      "raw_log_sha256": "a8c8da4ae5dabd42f47e0553bf97002e9bfa7547f5750f390fc6dd580e814fba",
+      "summary_path": "response-identity-final-shared-unit-summary.txt",
+      "summary_sha256": "61020bd5d8730567a9733a7a98fb93855703dbdad657398f3da6fa413fe6e246"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingDescriptionResponseIdentityIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 11,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/response-identity-verified-ListingDescriptionResponseIdentityIT.log",
+      "raw_log_sha256": "4743189b585913050c8cf9026908a5bdef94e37a1534b229aa254158436bc1e3",
+      "summary_path": "response-identity-verified-ListingDescriptionResponseIdentityIT-summary.txt",
+      "summary_sha256": "b9c9bce0b8ba579cf9c12b730788cbff51a967a0bd5d9dba07a71876c5749bd2"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingDescriptionRetryTimingIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 7,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/response-identity-verified-ListingDescriptionRetryTimingIT.log",
+      "raw_log_sha256": "4021a4dab5fdc5b1d18fb846515932247542efd34d8fef124f7e27257531dba9",
+      "summary_path": "response-identity-verified-ListingDescriptionRetryTimingIT-summary.txt",
+      "summary_sha256": "f9bc8d26a712eea6e82eeb5c5d47793429a4c75570c8d6a2a563fab9b864d728"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingActionLaunchIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 10,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/response-identity-verified-ListingActionLaunchIT.log",
+      "raw_log_sha256": "ee3032e3ec6ae32482cc77602192771ebb17c0f7129a4ea627fc5f7ec1b8e141",
+      "summary_path": "response-identity-verified-ListingActionLaunchIT-summary.txt",
+      "summary_sha256": "61c26b90061fdb2d1a830e84b7eac2614eda58d63aca1d2fabaa41eff82f086a"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 27,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/response-identity-verified-ListingReworkAuthorizationIT.log",
+      "raw_log_sha256": "03b2b0a58fc17e85d693a6aad3d04fa19f00bf540a83c80d5dea2b21dd4d3d07",
+      "summary_path": "response-identity-verified-ListingReworkAuthorizationIT-summary.txt",
+      "summary_sha256": "d6b9971bd6eda27829187f2c882a8f2e10e5c9a3f811f06129e0a9b7684a5835"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingAtomicLaunchUpgradeIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/response-identity-verified-ListingAtomicLaunchUpgradeIT.log",
+      "raw_log_sha256": "b70ea4d24c79f262ceb4ffb032256e3a5bb82d1df2f03446e7cd724bcd3d6367",
+      "summary_path": "response-identity-verified-ListingAtomicLaunchUpgradeIT-summary.txt",
+      "summary_sha256": "9bed3fbaa3fc9e11b4be3a14abdc529a1cb1d4da5f15dcb17ff1850d0e8e4a85"
+    }
+  ],
+  "corrected_failed_runs": [
+    {
+      "raw_log_local_path": "build/slice4-rework/response-identity-initial-runtime.log",
+      "raw_log_sha256": "999f7da719c3dbc3cd2455b1ea43bbd97fcaa74f32cd4879a0466e340361d293",
+      "cause": "8 tests, 3 setup errors: synthetic status endpoint lacked the required native task placeholder. Corrected the fixture endpoint; registry constraints were preserved."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/response-identity-context-runtime.log",
+      "raw_log_sha256": "6c698acdf16981bf13c77af1042e1c4c82f1ec0cbda730ed5493e24634838d61",
+      "cause": "9 tests, 1 setup error: identical synthetic task-receipt bytes conflicted with content-addressed Raw uniqueness. Fixture now reuses the existing hash record; exact bytes and production dedup remain unchanged."
+    }
+  ],
+  "limitations": [
+    "Descriptors in these tests are synthetic fixtures. The existing controlled registry draft/review path still needs Description-specific field and purpose support.",
+    "Echo matching is implemented. Providers whose response lacks an echo need a verified exact-query binding; no undocumented provider echo or attribute mapping is assumed.",
+    "Exact management value is not proof of which unresolved write applied, customer display or formal Outcome. Business-result propagation remains unfinished.",
+    "The isolated pre-socket positive test seeds a fabricated REAL_ACCOUNT-state verification case solely to exercise the SQL branch; it is not real-account or provider qualification evidence.",
+    "Upgrade subset covers V0090 through current migrations only; full baseline upgrade, combined scheduler/DB/fake-HTTP and final regression remain outstanding.",
+    "Earlier intermittent preparation 403 remains unexplained; subsequent passes do not establish its root cause."
+  ]
+}

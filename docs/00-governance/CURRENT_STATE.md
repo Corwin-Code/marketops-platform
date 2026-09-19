@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-06
+as_of: 2026-09-19
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -9,16 +9,104 @@ lifecycle_state: EXECUTING_V1
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 legacy_phase_model: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
-active_delivery_slice: SLICE-V1-003
-active_slice_title: Advertising & Traffic Efficiency
-active_slice_contract: docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md
-active_slice_contract_sha256: 1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c
-active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a
-active_slice_contract_bytes: 129400
-active_slice_contract_lines: 2687
-active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md
-active_slice_acceptance_evidence_sha256: d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d
+active_delivery_slice: SLICE-V1-004
+active_slice_title: Promotion & Listing Conversion
+active_slice_contract: docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md
+active_slice_contract_sha256: 5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983
+active_slice_contract_git_blob_sha1: 8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9
+active_slice_contract_bytes: 70847
+active_slice_contract_lines: 669
+active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md
+active_slice_acceptance_evidence_sha256: 5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb
 active_slice_amendment: NONE_ACCEPTED
+active_slice_annex: docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md
+active_slice_annex_sha256: c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d
+active_slice_annex_git_blob_sha1: 4d9e93c17e26deee5d2222c8fc51d61d619aa9c8
+slice_v1_004_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
+slice_v1_004_owner_acceptance_statement: docs/08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-STATEMENT.txt
+slice_v1_004_owner_acceptance_statement_sha256: 2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3
+slice_v1_004_execution_authority: OWNER_BOUNDED_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_B1_B2_B3_ONLY_ENGINEERING_CLOSURE_PRESERVED
+slice_v1_004_maker: CLAUDE
+slice_v1_004_source_base_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
+slice_v1_004_source_base_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
+slice_v1_004_branch: codex/slice-v1-004-root-cause-rework-r1
+slice_v1_004_implementation_state: LEVEL_1_ENGINEERING_FORMALLY_CLOSED
+slice_v1_004_targeted_implementation_state: CLOSED_BY_CONTROLLER_R2_FINAL_AND_OWNER
+slice_v1_004_rework_agent: CODEX
+slice_v1_004_reviewed_head: f91d107c53a0cf3964ae43c0e8353e0c244a2b59
+slice_v1_004_reviewed_tree: b04fc98b9a3e156cc66e00fe878569306972c638
+slice_v1_004_frozen_finding_set: docs/07-phase-evidence/SLICE-V1-004/rework-r1/01_FROZEN_FINDING_SET.json
+slice_v1_004_frozen_finding_set_sha256: 204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843
+slice_v1_004_rework_progress: docs/07-phase-evidence/SLICE-V1-004/rework-r1/finding-progress.json
+slice_v1_004_rework_design: docs/02-architecture/designs/SLICE-V1-004-rework-r1-design.md
+slice_v1_004_rework_completion: 27_OF_27_CLOSED_OWNER_FORMAL_CLOSURE_COMPLETE
+slice_v1_004_targeted_rework_start_head: ec0e73b9b9451f63f0cef385aed623d63521596a
+slice_v1_004_targeted_rework_start_tree: c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2
+slice_v1_004_verified_source_head: d65c9185adc89955d6bab3b20ac7bd9f639b5335
+slice_v1_004_verified_source_tree: e01e510d5b8bce57f7556d3e5d6996a01f8d2d74
+slice_v1_004_verified_source_parent: 39d55e303eae5e046d0be2fd66ac2256f0c95e78
+slice_v1_004_targeted_verified_source_head: 6ccaa6c070cb5a786a91d447b474b44926f8837c
+slice_v1_004_targeted_verified_source_tree: 1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3
+slice_v1_004_final_closure_verification_r1: CONTROLLER_SLICE_V1_004_FINAL_CLOSURE_VERIFICATION_39D55E30_R1
+slice_v1_004_final_closure_verification_r1_verdict: CHANGES_REQUIRED_RESIDUAL_003_COMPLEMENT_FEASIBILITY_AND_027_PAYLOADS
+slice_v1_004_final_closure_verification_r1_reviewed_head: 39d55e303eae5e046d0be2fd66ac2256f0c95e78
+slice_v1_004_final_closure_verification_r1_reviewed_tree: 06ea3278543960368a6b891a990c167af874a901
+slice_v1_004_final_closure_verification_r1_record_sha256: e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53
+slice_v1_004_final_closure_continuation_start_head: 39d55e303eae5e046d0be2fd66ac2256f0c95e78
+slice_v1_004_final_closure_continuation_start_tree: 06ea3278543960368a6b891a990c167af874a901
+slice_v1_004_final_closure_continuation_agent: CLAUDE_MAKER_UNDER_OWNER_INSTRUCTION_CODEX_TOKEN_BUDGET_EXHAUSTED
+slice_v1_004_final_closure_continuation_checkpoint: docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json
+slice_v1_004_final_closure_continuation_handoff: docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1_HANDOFF.md
+slice_v1_004_engineering_finding_status: 27_OF_27_CLOSED_AT_LEVEL_1
+slice_v1_004_focused_regression: HISTORICAL_113_OF_113_PASS_AT_PRE_TARGETED_SOURCE
+slice_v1_004_targeted_summary_outcome_regression: 24_UNIT_PLUS_12_INTEGRATION_PASS_AT_D65C9185
+slice_v1_004_targeted_recalculation_regression: 1_INTEGRATION_PASS_RERUN_AT_D65C9185_PLUS_NEW_QUALIFIED_SUMMARY_LATE_FACT_JOURNEY
+slice_v1_004_targeted_migration_schema_regression: 3_UNIT_PLUS_21_INTEGRATION_PASS_AT_6CCAA6C_INHERITED_NO_MIGRATION_OR_SCHEMA_CHANGE
+slice_v1_004_targeted_frontend_regression: 26_OF_26_PASS_TYPECHECK_AND_FORMAT_PASS_AT_6CCAA6C_INHERITED_NO_FRONTEND_CHANGE
+slice_v1_004_targeted_architecture_regression: 76_PASS_AT_D65C9185
+slice_v1_004_full_verification: HISTORICAL_EC0_PREDECESSOR_RECEIPTS_PRESERVED_NOT_RERUN_AT_6CCAA6C_OR_D65C9185
+slice_v1_004_browser_verification: HISTORICAL_24_OF_26_PLUS_EXACT_2_OF_2_PRESERVED_NOT_RERUN_AT_6CCAA6C_OR_D65C9185
+slice_v1_004_controller_verdict: PASS_LEVEL_1_ENGINEERING_R2_FINAL
+slice_v1_004_rework_migrations: V0080_THROUGH_V0124
+slice_v1_004_targeted_final_closure_checkpoint: docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json
+slice_v1_004_targeted_final_closure_handoff: docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_HANDOFF.md
+slice_v1_004_controlled_write_target: LISTING_DESCRIPTION_CHANGE
+slice_v1_004_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
+slice_v1_004_real_provider_calls: NONE
+slice_v1_004_remote_write_authority: S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_NON_REWRITING_PUSH_TO_NAMED_BRANCH_AND_DRAFT_PR_35_UPDATE_ONLY
+slice_v1_004_level_2_authority: NONE
+slice_v1_004_gate_ev_authority: NONE
+slice_v1_004_gate_e_authority: NONE
+slice_v1_004_owner_decision_count: 85
+slice_v1_004_decision_085: B
+slice_v1_004_scope_deltas_not_required: DELTA_01_DELTA_02_DELTA_03
+slice_v1_004_evidence_obligations_open: F_M01_F_M02_F_S01_F_W01_F_W02_E_04
+slice_v1_004_migrations: V0074_THROUGH_V0079
+slice_v1_004_as_built_design: docs/02-architecture/designs/SLICE-V1-004-design.md
+slice_v1_004_acceptance_status: docs/07-phase-evidence/SLICE-V1-004/acceptance-status.md
+slice_v1_004_executable_evidence: docs/07-phase-evidence/SLICE-V1-004/executable-evidence.md
+slice_v1_004_migration_inventory: docs/07-phase-evidence/SLICE-V1-004/MIGRATION-INVENTORY.json
+slice_v1_004_handoff: docs/07-phase-evidence/SLICE-V1-004/controller-handoff.md
+slice_v1_003_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+slice_v1_003_controller_final_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_ECB3385_R2
+slice_v1_003_owner_formal_closure: HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD
+slice_v1_003_owner_formal_closure_receipt: docs/08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md
+slice_v1_003_owner_formal_closure_receipt_sha256: 48f1ee92c6acbab04857cd8a85f03e722ab14fe34069b4e86e92e4776c47e947
+slice_v1_003_accepted_head: ecb33851cd507c0443daab5f40e79fa008be24bb
+slice_v1_003_pr: 30
+slice_v1_003_pr_state: MERGED_PROTECTED_SQUASH
+slice_v1_003_actual_squash_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd
+slice_v1_003_actual_squash_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400
+slice_v1_003_actual_squash_sole_parent: 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
+slice_v1_003_actual_squash_merged_at: 2026-09-07T03:09:19Z
+slice_v1_003_merge_readback: CONTROLLER_SLICE_V1_003_READY_MERGE_EXECUTION_ACCEPTANCE_0F26D0E_R1
+slice_v1_003_merge_readback_verdict: PASS_MERGE_EXECUTION_AND_READBACK
+slice_v1_003_merge_readback_snapshot: docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md
+slice_v1_003_merge_readback_snapshot_sha256: be014d7462f12dfc214d491dd60176d337951c968fec1a8a12b19060b1a1ec54
+slice_v1_003_merge_readback_verdict_record: docs/07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/VERDICT.json
+slice_v1_003_merge_readback_verdict_record_sha256: b839b9962c843d7ef22ea4907d18112acbf94434269364a4bfe26ce27fb1a25b
+slice_v1_003_frozen_findings_closed: 22_OF_22
+slice_v1_003_source_branch: DELETED_BY_ACCEPTED_CONFIGURATION
 slice_v1_003_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
 slice_v1_003_owner_acceptance_statement_sha256: 0ffaf4e865447ad18e0cb18f2527a3183553366295274e1be0811db3e2b19634
 slice_v1_003_source_protected_main: 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
@@ -33,9 +121,9 @@ slice_v1_003_rework_starting_head: a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb
 slice_v1_003_rework_starting_tree: fb4d242d62febd87191da9dce353bdef99f5a77d
 slice_v1_003_frozen_findings_sha256: 15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1
 slice_v1_003_rework_takeover: docs/07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md
-slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PENDING
+slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PASS_MERGED
 slice_v1_003_rework_transport: APPEND_ONLY_NAMED_BRANCH_ONE_DRAFT_PR_AND_CI_AUTHORIZED
-slice_v1_003_implementation_state: RESIDUAL_REWORK_ENGINEERING_VERIFIED
+slice_v1_003_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_003_controlled_write_target: AD_BID_CHANGE
 slice_v1_003_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_003_real_provider_calls: NONE
@@ -63,8 +151,9 @@ slice_v1_001_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
 slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION
-authorization: FULL_SCOPE_IMPLEMENTATION
+active_gate: NONE_SLICE_V1_004_ENGINEERING_CLOSED
+slice_v1_004_targeted_active_gate: NONE_ENGINEERING_CLOSED
+authorization: CLOSED
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
 slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
@@ -147,8 +236,8 @@ slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/rework-r1/
 slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json
 slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/
 slice_v1_003_runbooks: docs/06-runbooks/
-slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_COMPLETE_INDEPENDENT_CONTROLLER_PENDING
-slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW
+slice_v1_003_engineering_closure_claim: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+slice_v1_003_controller_verdict: PASS_FINAL_CLOSURE_VERIFICATION
 slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED
 slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a
 slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127
@@ -230,7 +319,7 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: SLICE_V1_003_ENGINEERING_COMPLETE_NOT_CONTROLLER_APPROVED
+candidate_state_scope: SLICE_V1_004_FORMALLY_CLOSED_ENGINEERING_ON_DRAFT_PR_35_UNMERGED_BOUNDED_RESIDUAL_SUPPLEMENT_HANDED_BACK_CONTROLLER_MERGE_HOLD
 merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
@@ -240,7 +329,7 @@ slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-s
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: CONTROLLER
-next_action: INDEPENDENT_FINAL_CLOSURE_VERIFICATION_ON_EXACT_CURRENT_HEAD
+next_action: CONTROLLER_LIMITED_RESIDUAL_VERIFICATION_OF_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_DRAFT_UNMERGED
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -250,6 +339,8 @@ ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 ozon_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+ozon_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+wildberries_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 pilot: NOT_AUTHORIZED
 release_v1_001: RESERVED_NOT_ACTIVATED
 production_infrastructure: YANDEX_CLOUD_RU_CENTRAL1
@@ -261,34 +352,102 @@ owner_git_execution_delegation: ACTIVE
 owner_git_execution_delegate: CODEX
 owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
 owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
+active_delivery_slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+slice_v1_004_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+slice_v1_004_owner_formal_closure: HUMAN_OWNER_EXPLICITLY_CONFIRMED
+slice_v1_004_owner_formal_closure_record: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json
+slice_v1_004_owner_formal_closure_record_sha256: cf162aaaa8911c37d2d05ea1e988d81a0a5ac8d82e6e46933e253d16049bf13c
+slice_v1_004_owner_formal_closure_statement: docs/08-handoffs/OWNER-SLICE-V1-004-FORMAL-CLOSURE-STATEMENT-F71D4C8C-R2.txt
+slice_v1_004_owner_formal_closure_statement_sha256: 940fb24047a862ffadc88d37d8acbcc8f3728f2f6408696eb18ee3f17e55c9a8
+slice_v1_004_final_gate_record: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json
+slice_v1_004_final_gate_record_sha256: 3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0
+slice_v1_004_formally_closed_head: f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10
+slice_v1_004_formally_closed_tree: b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47
+slice_v1_004_closure_snapshot: docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md
+slice_v1_004_acceptance_layers: 54_ENGINEERING_12_EXTERNAL_PENDING_3_NOT_APPLICABLE_LEVEL_1
+slice_v1_004_third_engineering_review: NOT_REQUIRED
+slice_v1_004_publication_or_next_slice_authority: NONE_CREATED_BY_FORMAL_CLOSURE
+slice_v1_004_pr35_supplement_id: S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01
+slice_v1_004_pr35_supplement_layer: BOUNDED_CURRENT_TASK_OVERLAY_AUTHORIZATION_CLOSED_RETAINED_FULL_SCOPE_NOT_REOPENED_DR0004_CODEX_DELEGATION_UNCHANGED
+slice_v1_004_pr35_supplement_state: EXECUTED_HANDED_BACK_PENDING_CONTROLLER_LIMITED_RESIDUAL_VERIFICATION
+slice_v1_004_pr35_supplement_owner_statement: docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt
+slice_v1_004_pr35_supplement_owner_statement_sha256: bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641
+slice_v1_004_pr35_supplement_controller_record: SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1
+slice_v1_004_pr35_supplement_controller_record_sha256: fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c
+slice_v1_004_pr35_supplement_scope_sha256: 723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970
+slice_v1_004_pr35_supplement_executor: CLAUDE_OPUS_5
+slice_v1_004_pr35_supplement_branch: codex/slice-v1-004-root-cause-rework-r1
+slice_v1_004_pr35_supplement_pr: 35
+slice_v1_004_pr35_supplement_pr_state: DRAFT_UNMERGED_REQUIRED
+slice_v1_004_pr35_supplement_start_head: 45474b6039edd46842e1e5f84391dca4264ddc1d
+slice_v1_004_pr35_supplement_start_tree: 3b6faa1d58fadbfad374a63a2502b606c06df6f5
+slice_v1_004_pr35_supplement_merge_hold: CONTROLLER_HOLD_PR35_NOTE_KEYPATH_01_UNTIL_LIMITED_RESIDUAL_VERIFICATION
+slice_v1_004_pr35_supplement_historical_closure: 27_OF_27_AND_54_12_3_PRESERVED_022_027_CURRENT_EVIDENCE_QUALIFIED_CRCF_PR35_04_NO_NEW_FROZEN_FINDING
 ```
 
 ## Active authority
 
-SLICE-V1-003 is the active Slice. Its accepted Contract is
-[SLICE-V1-003-advertising-traffic-efficiency.md](../03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md)
-at SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`
-and Git blob `669c38dc4d9429249e663da0e684dabf570c4a4a`, exactly 129400 bytes
-and 2687 lines, with Human Owner acceptance recorded in
-[OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md)
-at SHA-256 `d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d`.
-Those bytes are frozen: a normative change requires a separately identified,
-exact, Owner-accepted additive Amendment, and no Amendment to this Contract has
-been accepted. The Contract is anchored to protected `main`
-`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`, tree
-`0ca229112bcf351ab5c572dd8d375c647bab61c0`.
+SLICE-V1-004 is the active Slice. Its accepted Contract is
+[SLICE-V1-004-promotion-listing-conversion.md](../03-work-items/SLICE-V1-004-promotion-listing-conversion.md)
+at SHA-256 `5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983`
+and Git blob `8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9`, exactly 70847 bytes
+and 669 lines, bound to its normative acceptance annex
+[SLICE-V1-004-promotion-listing-conversion-acceptance.md](../03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md)
+at SHA-256 `c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d`
+(sections 1, 2 and 4 normative; section 3 a traceability index). Human Owner
+acceptance is recorded in
+[OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-004-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb`,
+with the attributable Owner statement preserved at SHA-256
+`2d49c1bda22fd55e8f7d14af6672c2d545ac530ebac2ae4cd52dd2b162c19ed3`. Those bytes
+are frozen: the original files still carry their issue-time wording
+(`OFFERED_FOR_EXACT_OWNER_ACCEPTANCE`, `NOT_OBTAINED`), and a normative change
+requires a separately identified, exact, Owner-accepted additive Amendment; no
+Amendment has been accepted. The Contract is anchored to protected `main`
+`0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd`, tree
+`9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400`.
 
-Exact acceptance authorizes `FULL_SCOPE_IMPLEMENTATION_WITHIN_EXECUTION_ENVELOPE_V1`
-and nothing beyond it. The selected controlled-write family is `AD_BID_CHANGE`
-on both Ozon and Wildberries, engineered to production quality with every
-unverified Provider write path structurally unreachable. The initial Ordinary
-nonzero envelope is zero, so every nonzero `AD_BID_CHANGE` is Material and
-requires Human Owner final per-command approval; Standing Policy automation is
-not authorized. All 47 incorporated Owner decisions, `S3-AC-001` through
-`S3-AC-200` and `S3-REL-001` through `S3-REL-024` are in force. No acceptance
-here activates `RELEASE-V1-001`, Gate EV, Gate E, Pilot, deployment, real
-Credentials, real Provider access or production write, and
-`production_write_enabled` remains `false`.
+Exact acceptance grants Contract section 15 Level 1 authority only:
+`FULL_SCOPE_IMPLEMENTATION` as Detailed Design, full-scope implementation,
+tests, canonical documents and a local Git checkpoint, performed by Claude as
+the established Maker and handed to the Controller. The one new controlled
+write is `LISTING_DESCRIPTION_CHANGE`: the exact Russian Description of one
+listing, on the API path only where a verified capability exists, with every
+Provider write path structurally unreachable behind the verified registry, the
+kill switches, the Pilot allowlist and an Owner-published gate authority whose
+`production_write_enabled` is `false`. Promotion actions are Manual-path only.
+All 85 incorporated Owner decisions, decision 085 option B, the three scope
+deltas that are not required, `EVIDENCE-REQUEST-M`, `EVIDENCE-REQUEST-W`,
+`F-S01`, `E-04` and the existing account and configuration obligations remain in
+force. Nothing here authorizes a Level 2 environment, a remote push, PR or
+merge, deployment, a real Provider or account call, Gate EV, Gate E, Pilot or
+production write.
+
+SLICE-V1-003 is formally closed as
+`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. Its accepted Contract
+[bytes](../03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md)
+at SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`
+and Git blob `669c38dc4d9429249e663da0e684dabf570c4a4a`, its
+[acceptance evidence](../08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d`,
+its frozen finding set, its final Codex engineering assessment and the
+historical Controller report are preserved unchanged. The exact candidate
+`ecb33851cd507c0443daab5f40e79fa008be24bb` received
+`PASS_FINAL_CLOSURE_VERIFICATION` (`CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION_ECB3385_R2`),
+the Human Owner accepted its Formal Closure for that exact head
+([receipt](../08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md)),
+and PR #30 merged it as protected squash
+`0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd` (tree
+`9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400`, sole parent
+`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`, `2026-09-07T03:09:19Z`) with the
+Controller's
+[merge readback](../07-phase-evidence/SLICE-V1-003/post-merge-readback-20260907/POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md)
+recording `PASS_MERGE_EXECUTION_AND_READBACK`. `S3-REL-001` through
+`S3-REL-024` stay production-blocking; the closed Slice's engineering
+assessment is history pinned by exact bytes and is not re-derived against a
+source tree the active Slice has moved. SLICE-V1-004 may consume SLICE-V1-003
+advertising facts, Tasks, Manual Shadow and control paths; it does not reopen
+`AD_BID_CHANGE`, price or availability authority.
 
 SLICE-V1-002 is formally closed as
 `CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. Its accepted Contract
@@ -664,3 +823,334 @@ one Draft PR and CI; it does not permit Ready, merge, force-push, real Provider
 access, shared/production access or production enablement. No finding or AC status
 is inherited as verified in this R1 cycle. `production_write_enabled=false` remains
 in force; all 24 external release obligations remain production-blocking.
+
+SLICE-V1-004 continuous local rework update: finite frozen statistical-method
+parameters, exact node-window/deadline admission, retained result qualification
+gaps and serialized revisions now have targeted local evidence in
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-7-test-receipts.json`.
+104 unit/architecture, 24 signed HTTP/database and 8 schema/role checks passed.
+The receipt also preserves an unexplained intermittent preparation 403 for
+continued investigation. Qualified positive formal Outcome and complete root-cause
+closure remain unfinished: 0/27 findings closed, final handoff NOT_READY.
+
+SLICE-V1-004 local rework update: display input custody and exact manual
+verification now have 91 unit/architecture, 26 signed HTTP/database and 8
+application-role manual-evidence tests in `checkpoint-8-test-receipts.json`.
+Instant display evidence is explicitly distinguished from whole-window coverage.
+Final handoff remains NOT_READY, 0/27 findings closed; this is local progress only.
+
+SLICE-V1-004 local rework update: atomic API launch and command now have
+76 architecture, 10 launch/database, 27 signed HTTP/database, 8 write-Gate and
+1 V0090-to-V0091 upgrade checks in `checkpoint-9-test-receipts.json`.
+Qualified result-to-business propagation remains unfinished. Local checkpoint
+only: no remote action, no provider calls, 0/27 closed, final handoff NOT_READY.
+
+SLICE-V1-004 local rework update: frozen native response identity and safe task
+classification have targeted receipts in `checkpoint-10-test-receipts.json`: 182
+shared unit/architecture, 11 response/database, 7 waiting, 10 launch, 27 signed
+HTTP/database and 1 upgrade checks passed. Fixtures do not certify a provider.
+Controlled registry configuration and remaining business/runtime work continue;
+0/27 closed, final handoff NOT_READY, no production enablement.
+
+SLICE-V1-004 local rework update: controlled Description registry maintenance
+and independent verification have targeted evidence in `checkpoint-11-test-receipts.json`:
+76 architecture, 5 Description registry, 35 shared Registry, 11 response and
+27 signed listing HTTP/database checks passed. Only fictional attestation data
+was used. 0/27 closed; final handoff NOT_READY and all production enablement unchanged.
+
+SLICE-V1-004 continuous local rework update: checkpoint-16 receipts now cover
+new exact restoration through normal preparation, independent review, current
+approval, execution Guardrail, allowance and the sole Description Worker/Raw
+path. The former command-compensation authority cannot reuse the opposite
+approval. Controlled database-clock chronology fixes the earlier preparation
+refusal without relaxing plan-before-review constraints. Targeted results:
+39 signed HTTP/database, 132 unit/architecture, 21 response identity, 7 timing,
+8 Gate, 1 historical upgrade, 22 UI; frontend typecheck/lint/build pass.
+See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-16-test-receipts.json`.
+This supersedes earlier partial-path limitations only to that measured extent;
+all 27 findings remain open for final closure. No Level-2, remote publication,
+real-account verification, shared migration or production enablement occurred.
+
+SLICE-V1-004 continuous local rework update: checkpoint-17 corrects cumulative
+allowance identity across configuration versions and makes Console preview and
+launch consume the same complete-axis Policy projection. Required scope
+composition/reserve and real 100/70/70 API/manual concurrency are tested.
+Unsafe observation/old-value release and arbitrary zero overwrite are refused;
+exact never-submitted termination is a purpose-bound positive release. Results:
+21 database, 40 signed HTTP/database, 81 calibration/architecture, 1 upgrade,
+24 frontend; Node 24 typecheck/lint/build pass. See
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-17-test-receipts.json`.
+Qualified monetary demand, preexisting promotion obligations and independent
+stop/historical-clearing flows remain in the continuous rework. 0/27 CLOSED;
+no production enablement, real-account call, shared migration or remote Git
+publication has occurred.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-18 freezes the existing
+two-kind promotion declaration before review, binds its exact digest to normal
+recommendation approval and manual packets, and refuses different entry terms
+or replacement of bound commitments. Full declaration reads recheck current
+store and every frozen product financial scope; bilingual preparation/read is
+available. Results: 42 signed HTTP/database, 102 launch/calibration/architecture,
+1 historical upgrade, 27 frontend; final exact-reference correction passes
+2 connected promotion cases and 8 manual-verification tests. Lint/build pass.
+See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-18-test-receipts.json`
+for overlapping coverage, failure diagnoses and source/log hashes. Native
+participation, exact conditional exit, economics, adoption and residual release
+remain in progress. 0/27 CLOSED; final Controller handoff NOT_READY. All new
+platform writes remain default OFF; no Level-2 or remote publication occurred.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-19 extends current
+financial disclosure to existing promotion engagement reads and every mutation
+response, removing the actorless public detail route. Unknown historical product
+scope in adopted records is not replaced with current store mappings. Results:
+43 signed HTTP/database, 76 architecture, 27 frontend; lint/build pass. See
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-19-test-receipts.json`.
+No migration or transport change; 0/27 CLOSED, final Controller handoff NOT_READY.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-20 binds independent
+promotion participation to exact native/approved terms, actual operation and
+source custody in the existing manual verification chain. Unknown commercial
+terms remain facts and cannot pass target matching. Evidence states are kept
+separate from display, economics and release; occupations remain. Console
+observation capture and explicit verification IDs are connected. The manual
+and allowance runbooks no longer recommend old-text/internal-state release.
+Results: 43 signed HTTP/database, 84 manual/architecture, 9 schema/role,
+1 historical upgrade, 30 frontend; lint/build pass. See
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-20-test-receipts.json`.
+0/27 CLOSED; remaining economic, exit, adoption/residual and final verification
+work continues. No production enablement or real provider call occurred.
+
+SLICE-V1-004 continuous local rework update: checkpoint-21 repairs conditional
+promotion arithmetic, fixed-fee/inverse consistency, missing inputs and Money
+currency/rounding, and retains exact unqualified simulation basis in V0101.
+Conditional comparisons cannot grant admission or publish fabricated D30 metric
+runs. Current finance revocation masks new snapshots and comparisons; historical
+rows remain unqualified without invented inputs. Results: 44 signed HTTP/database,
+100 domain/metric/architecture, 1 historical upgrade, 9 schema/role; all pass.
+See `docs/07-phase-evidence/SLICE-V1-004/rework-r1/checkpoint-21-test-receipts.json`.
+Source/Policy, full payer/timing/coexistence and approval consumers continue;
+0/27 CLOSED, final Controller handoff NOT_READY, platform writes default OFF.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-22 separates native
+universe evidence from observed mappings. Partial, unknown, conflicting or stale
+scope cannot be COMPLETE; unchanged qualified refresh preserves the semantic
+set. Native/mapping changes invalidate dependencies. Manual custody, financial
+scope and bilingual intake are connected. Policy digests use canonical UTC;
+historical acceptance is not rewritten. Results: 46 signed HTTP/database, 101
+launch/domain/architecture, 10 schema/role, 1 historical upgrade PASS; frontend
+32 then final overlapping 16 forms, lint/build PASS. See the rework evidence
+`checkpoint-22-test-receipts.json`. Purpose qualification, official acquisition
+and full review journeys continue; 0/27 CLOSED, Controller Final Closure
+Verification NOT_READY. Platform writes default OFF; no remote publication
+or real-account call.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-23 rechecks actual rule
+dependencies across exact accepted packages. Unchanged consumed rules can retain
+an original approval after current checks; changed or unproved dependencies stop
+related work. Original authority/plan remains frozen; historical NULL is not
+backfilled. Java decision, SQL binding and allowance paths share the recheck,
+with current package evidence in existing Guardrail records. Results: 47 signed
+HTTP/database, 108 launch/domain/architecture, 8 write-gate, 21 response identity,
+10 schema/role, 1 historical upgrade PASS; final original-package scope predicate
+has 2 overlapping connected checks. Exact stages are in rework evidence
+`checkpoint-23-test-receipts.json`. Purpose preparation and complete combinations
+continue; 0/27 CLOSED, final Controller handoff NOT_READY, platform writes OFF.
+
+
+SLICE-V1-004 continuous local rework update: checkpoint-24 selects calibration
+category dependencies by declared purpose. Correction can omit growth-only
+parameters while preserving required safety categories. Exact-purpose read
+resolution and required-category detail are connected. Results: 48 signed
+HTTP/database, 102 launch/domain/architecture, 10 schema/role, 1 historical
+upgrade PASS, with no failing/retried run in this source stage. Evidence:
+`checkpoint-24-test-receipts.json`. Structured-rule semantics and actual
+correction/exploration safeguards remain in progress. 0/27 CLOSED, final
+Controller handoff NOT_READY; no production enablement or remote publication.
+Owner's reiterated convergence constraints are retained in finding-progress.json.
+
+SLICE-V1-004 continuous local rework update: checkpoint-25 fences the existing
+queue and publishes exact Health/calculation results atomically. Expired claims
+are recoverable; stale generations cannot acknowledge successors. Future accepted
+times remain queued without rewriting their clocks, and failed/unbound receipts
+do not satisfy latency. Results: 93 queue/domain/architecture, 48 signed
+authorization, 10 schema/role and 1 historical upgrade PASS. Two diagnosed initial
+failures are retained in `checkpoint-25-test-receipts.json`. Periodic full review
+and the full canonical consumer chain remain open. 0/27 CLOSED; Controller Final
+Closure Verification NOT_READY; platform writes OFF and no remote publication.
+
+SLICE-V1-004 continuous local rework update: checkpoint-26 replaces caller
+exposure with the Metric owner's full affected-member/store same-window retained
+sales evidence. Exact threshold comparison, explicit qualification, immutable
+snapshot and missing-exposure review refusal are connected. The Console no
+longer requests the input. Results: 52 signed HTTP/database, 114 launch/domain/
+architecture, 10 schema/role, 1 historical upgrade, 32 frontend tests and lint/
+build PASS. See `checkpoint-26-test-receipts.json` for exact sources and resolved
+diagnostics. Semantic classification and current approval/launch rechecks remain
+open; 0/27 CLOSED, final Controller handoff NOT_READY, platform writes OFF.
+
+SLICE-V1-004 continuous local rework update: checkpoint-27 replaces character
+proxy and blanket-promotion meaning with finite accepted conditions and exact
+independent review, with a bilingual scoped review form and immutable binding
+proof. 192 affected backend cases, 35 frontend cases, build and typed lint pass;
+see `checkpoint-27-test-receipts.json`. Current-evidence recheck at approval/launch
+and remaining frozen-root closure are still pending. Level 1 local authority
+continues; no real platform write or remote Git operation occurred.
+
+SLICE-V1-004 continuous local rework update: checkpoint-28 rechecks current
+canonical exposure in the existing approval/execution Guardrail, using one shared
+projection and retaining supplemental proof without altering its database-owned
+authority snapshot. 79 signed HTTP/Guardrail and 113 launch/domain/architecture
+cases pass. Atomic dependency fencing, full lifecycle work and an unconfirmed
+earlier native-scope test failure remain open; see checkpoint-28 receipts.
+No schema, frontend, provider or production-enablement change in this checkpoint.
+
+SLICE-V1-004 continuous local rework update: checkpoint-29 fixes the independently
+reproduced native-capture clock-domain defect with database recording chronology,
+retaining exact source time and strict future-source rejection. Two pre-fix red
+cases, four targeted post-fix cases, then 75 signed HTTP and 80 domain/architecture
+cases establish the change. The original intermittent incident has no measured
+offset and is not retrospectively declared proven. Full frozen-root work remains
+active under Level 1 local-only authority; see checkpoint-29 receipts.
+
+SLICE-V1-004 continuous local rework update: checkpoint-30 prevents future stock
+or inbound verification and missing freshness bounds from providing current
+supply. Existing owner algorithms and exclusions are retained. 118 availability
+unit, 76 architecture and 12 PostgreSQL flow cases pass; the flow's historical
+fixture dates were repaired after a diagnosed time-dependent failure. Complete
+Listing business protection remains open. See checkpoint-30 receipts; local-only
+authority and all production-write restrictions continue unchanged.
+
+SLICE-V1-004 continuous local rework update: checkpoint-31 connects ordinary
+Listing preparation to frozen original Task SLO/calendar values, scoped bilingual
+clock read and explicit acknowledgement. Real business disposition gates closure;
+reopen retains original deadlines and needs new episode evidence. System event
+chronology uses database time. Historical Tasks remain unchanged and unbound.
+211 distinct affected backend and 39 frontend cases pass across documented
+stages; build/lint pass. The three immutable input hashes, 107 prior migration
+files and 29 forward migration inventory entries are verified. Continuous-risk
+timing, finite qualified hold/defer, automatic activation, actual release coverage
+and final whole-scope verification remain unfinished. 23 findings are IN_PROGRESS,
+4 OPEN, none closed. See checkpoint-31 receipts; Level 1 boundaries remain in force.
+
+SLICE-V1-004 continuous local rework update: checkpoint-32 activates an existing
+Task from retained failed mapping/containment diagnoses before Action preparation.
+An exact diagnostic binding preserves required ownership without manufacturing a
+Recommendation or unowned Task. Explicit necessary-risk SLO counts continuously;
+Listing detail displays original clocks and current-store-scoped acknowledgement.
+Resolved then recurring causes reuse the original Task and history. 204 distinct
+backend and 41 frontend cases pass across documented final stages; build, lint
+and final typecheck pass. All processes ended; 108 existing migration files and
+the three immutable inputs are unchanged. Remaining purpose-qualified activation,
+risk ordering, source-change triggering/fencing, finite holds/defer and staffed
+release coverage remain open. No whole-root closure or production enablement.
+
+SLICE-V1-004 continuous local rework update: checkpoint-33 adds finite deferral
+against original Task policy and current scoped authority. Exact replay preserves
+the initial expiry; Task deadlines, age and acknowledgement/action state stay
+unchanged. Existing Health recomputation records changed retained diagnosis; the
+existing worker commits expiry and exact review queue atomically. Chinese/Russian
+forms submit explicitly and discard late actor/target responses. This does not
+implement qualified dependency HOLD or complete reason/purpose/protection source
+qualification. Root 024 and whole-scope closure remain open; 23 IN_PROGRESS,
+4 OPEN, none closed. See checkpoint-33 receipts for the final affected local
+verification: 206 distinct backend and 45 frontend cases, build/lint/typecheck
+pass; all handles ended. Prior 109 migrations and three immutable inputs remain byte exact;
+V0110 is forward-only. Level 1 restrictions and default-OFF platform writes hold.
+
+SLICE-V1-004 terminal Level 1 local rework update (2026-09-14): this terminal
+record supersedes the progress counts in checkpoints 01–33. The verified
+implementation source is Head `16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`,
+Tree `98b9ff7d692eb869fb1f7bf704980259426e09f1`; all 27 frozen findings are
+`ENGINEERING_VERIFIED_CONTROLLER_PENDING`, with zero findings claimed closed by
+the Controller. Backend and frontend terminal matrices passed. The complete
+browser run supplied 24/26 passing receipts; its two directly diagnosed failures
+then passed together 2/2 at the verified source, so all 26 distinct scenarios
+have a passing receipt without claiming a single all-green full invocation.
+Acceptance classification is 54 engineering verified / 12 external evidence
+pending / 3 not applicable at Level 1. Independent Controller Final Closure
+Verification remains pending. No Level 2, remote publication, real Provider or
+account call, Gate-EV, Gate-E, production migration or real business side effect
+was authorized or executed; all new platform writes remain default OFF. Exact
+receipts are in `docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json`.
+
+SLICE-V1-004 targeted Final Closure continuation (2026-09-15): the Controller
+record bound to exact Head `ec0e73b9b9451f63f0cef385aed623d63521596a`, tree
+`c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2`, closed 25 of the 27 frozen roots
+and retained 003 plus 027 for targeted correction. At implementation Head
+`6ccaa6c070cb5a786a91d447b474b44926f8837c`, tree
+`1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3`, an exact OFFICIAL_SUMMARY method
+bridge now reaches qualified Metric, fixed-traffic comparison and formal Outcome
+consumers, including normal-role signed HTTP, isolated database and recalculation
+coverage. Canonical status distinguishes the prior 25 Controller closures from
+the two reworks now pending independent Final Closure Verification; Codex claims
+no new Controller closure. The earlier complete backend/frontend/browser receipt
+is preserved as historical evidence for its own source and was not rerun or
+relabelled as a full pass at the new Head. Acceptance remains 54 engineering
+verified / 12 external evidence pending / 3 not applicable; F-M01, F-M02, F-S01,
+F-W01, F-W02 and E-04 remain open. V0124 is additive, defaults qualification
+false and upgrades no existing profile. No remote, Provider, production,
+Level 2, Gate EV or Gate E authority was created or exercised. Exact scope,
+commands, raw artifact hashes and manifests are in
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json`.
+
+SLICE-V1-004 Final Closure continuation (2026-09-16): Final Closure Verification
+R1 (`CONTROLLER_SLICE_V1_004_FINAL_CLOSURE_VERIFICATION_39D55E30_R1`,
+`CHANGES_REQUIRED`) at exact Head `39d55e303eae5e046d0be2fd66ac2256f0c95e78`,
+tree `06ea3278543960368a6b891a990c167af874a901`, preserved the 25 ec0 closures,
+added no frozen finding, and found one residual inside 003: the new
+critical-group predicate checked only the two separate upper bounds, so a group
+covering every cohort visit with fewer successes than the cohort still received
+method qualification. Because Codex had no remaining token budget, the Human
+Owner redirected the Controller continuation prompt to Claude, the established
+Maker, under the same Level 1 local envelope; no authority was added. At
+implementation Head `d65c9185adc89955d6bab3b20ac7bd9f639b5335`, tree
+`e01e510d5b8bce57f7556d3e5d6996a01f8d2d74`, sole parent `39d55e30…`, a critical
+group is admitted only as a feasible subset of its own source stratum
+(`n <= N`, `k <= K`, `K - k <= N - n`) under the existing same-cohort reason;
+the group is retained, the source strata and the independent total stay
+qualified, overlapping groups remain lawful and no sum rule was added. Signed
+normal-role HTTP against isolated PostgreSQL shows the contradictory group
+cannot obtain a qualified protection through the formal Outcome, lawful
+complements still qualify, the equivalent DETAIL/SUMMARY 0.634 comparison holds,
+and a qualified late SUMMARY fact revises the frozen formal Outcome exactly once
+through the recalculation queue. The 31 indexed ec0 payloads verify 31/31 and are
+delivered verbatim beside the new run's own indexed directory; migration/schema
+and frontend receipts are inherited by identity because nothing in those paths
+changed. Acceptance remains 54 / 12 / 3; F-M01, F-M02, F-S01, F-W01, F-W02 and
+E-04 remain open; no Controller closure is claimed and the next action is
+independent Final Closure Verification R2. Exact commands, raw artifact hashes
+and manifests are in
+`docs/07-phase-evidence/SLICE-V1-004/rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json`.
+
+## SLICE-V1-004 — Owner Formal Closure（2026-09-16）
+
+Owner已对 `f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10` / `b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47` 正式完成Level 1工程关闭。Controller R2 FINAL为PASS，27/27原Finding关闭；69项仍为54工程／12外部证据待补／3本地不适用。准确记录见 `docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json`，Closure Snapshot见 `docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md`。上文历史段落中的pending/CHANGES_REQUIRED保留其原时点，不是当前状态。F-M01/F-M02/F-S01/F-W01/F-W02/E-04及全部前序发布义务保留；不授予远程、生产、Level 2、真实Provider、Gate EV/E或Pilot权限，不自动激活下一Slice。
+
+## SLICE-V1-004 — 关闭后CI与证据一致性修正（PR #35，2026-09-18）
+
+2026-09-17的有界远程交付把`57c5efc4b2c77a3b4d257aeb82ff37b325b21f0e`发布到PR #35（Draft）。其首次CI为12项必需检查8过4败：后端两个job因V0124后8处迁移期望过期而失败，`frontend-lint`在一处测试回调失败，`frontend-test`因fixture拒绝CI生成的5432端口而无法启动；非必需的CodeQL结果检查报告2条测试SQL拼接high告警。Controller裁定`SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1`（记录SHA-256 `f62a8484d030392ad770dff26d7e366efd7ea7652a29ad9d273d1ecfd6cf734b`）接受传输、判定CI不合格，并提出一次有界修正；Owner签发该授权并点名Opus 5为执行者，存证见`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-BOUNDED-CORRECTION-AUTHORIZATION-EVIDENCE.md`。
+
+修正提交为`48298206794a81b0640b4a14363198465dbd86c0`（父提交`57c5efc4…`），证据索引为`docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/README.md`。历史frontend lint声明以append-only erratum限定；原Contract、Annex、Frozen Set、Controller R2 FINAL与Owner Formal Closure原件字节不变，`f71d4c8c…`的正式关闭保留为历史事实，修正Head独立验证、不倒填旧日志。
+
+上方YAML中与本Slice相关的钉定字段继续记录正式关闭时的工程状态与Slice Contract自身的权限；它们在不修改校验器的前提下无法表达一次进行中的有界修正，本记录不以放宽校验器的方式改写它们。本次修正的有界权限只由上述存证与本段正文表达。PR #35保持Draft／Unmerged；发布候选的CI与CodeQL结果在PR #35正文与外部交接中报告，不写回仓库。Ready、merge、部署、生产迁移、Level 2、真实Provider／账户、Gate EV／E、Pilot、生产写与下一Slice均未获授权。
+
+## SLICE-V1-004 — PR #35残余补充的当前任务层（2026-09-19）
+
+Controller审查`SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1`（`01_DECISION_RECORD.json` SHA-256 `fc937ca7e9f17bb1c910b7059b86e7cdc8d6ab713fae5168bb832f84291b817c`）接受上一节所述05 A—F有界修正，确认`45474b60…`的12项必需检查通过；同时判定内部等待头残余`PR35-NOTE-KEYPATH-01`阻断Ready/merge，并登记`CRCF-PR35-04`：此前Controller接受了绕过生产传输的测试作为完整等待链证明。Owner签发补充范围`S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`（`05_SUPPLEMENTAL_SCOPE_AND_PROMPT.md` SHA-256 `723df53992091fdadb0d4e0d4d0ac8049902631ba7839e7f6843dccf187e8970`），原文存于`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-STATEMENT.txt`（SHA-256 `bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641`），点名`CLAUDE_OPUS_5`从`45474b6039edd46842e1e5f84391dca4264ddc1d`／`3b6faa1d58fadbfad374a63a2502b606c06df6f5`起，在同一命名分支与Draft PR #35执行B1—B3。Controller原件副本见`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/controller-review-45474b60-r1/`，签发存证见`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-EVIDENCE.md`。实施提交为`3bcc38fafa2760fe59c2144fe54887e212044d30`，证据索引见`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/README.md`。
+
+上方YAML与本节分三层：
+
+1. 历史工程层：`authorization: CLOSED`、`f71d4c8c…`的正式关闭、27/27与54/12/3保持为历史事实；无期限的`FULL_SCOPE_IMPLEMENTATION`没有重新开启。
+2. 当前任务层：`slice_v1_004_pr35_supplement_*`字段，以及`slice_v1_004_execution_authority`、`slice_v1_004_remote_write_authority`、`candidate_state_scope`、`next_authorized_actor`、`next_action`，只表达本次补充。校验器把它们绑定到Owner原文、Controller记录与补充范围的准确字节，并拒绝：原文缺失或改变；执行人、分支、PR或起点与原文不一致；未登记的PR35字段；元数据中以空格、引号或大小写变体写出的键，以及第二个YAML元数据块；`authorization`、`merge_authorization`、`production_write_enabled`、Gate与委托等钉定字段的任何改变。本节正文本身不受校验器约束。
+3. 全局委托层：DR-0004的`owner_git_execution_delegate`与`remote_git_publication_delegate`仍为`CODEX`；本次点名的执行人不是全局委托人。
+
+上一节所称“不以放宽校验器的方式改写钉定字段”对那次修正成立。本次钉定字段与校验器的精确绑定调整由本次Owner原文的B3单独授权，没有删除检查，也没有扩大任何枚举。
+
+原S4-DR-R1-022与027的关闭记录不改写；其中“完整等待链及其证据已满足”对当前证据的可复用性按Controller裁定限定。其余25项不重开，不新增第028项Frozen Finding。F-M01、F-M02、F-S01、F-W01、F-W02、E-04六项外部义务与全部前序发布义务保留。
+
+本次补充交回后PR #35仍为Draft／Unmerged，等待Controller对B1—B3的有限残余验证；实施与文档提交、发布候选的CI与CodeQL结果在PR #35正文与外部交接中报告，不写回仓库。`production_write_enabled`保持`false`。Ready、merge、auto-merge、直接写main、force-push/rebase、分支删除、保护/Ruleset/权限/Secret变化、规则或阈值放宽、dismiss/skip、SQL迁移或新schema、部署、生产迁移、Level 2、真实Provider／账户、Gate EV／E、Pilot、生产写与下一Slice均未获授权。

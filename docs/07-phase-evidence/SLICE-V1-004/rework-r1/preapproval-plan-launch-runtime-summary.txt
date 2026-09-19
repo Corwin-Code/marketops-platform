@@ -1,0 +1,5 @@
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.904 s -- in com.mimococo.marketops.ListingActionLaunchIT
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  22.038 s
+[INFO] Finished at: 2026-09-10T16:41:57+08:00

@@ -111,6 +111,19 @@ marketops:
     # process is honest about what it is not doing, not so the others can be
     # relaxed.
     worker-enabled: false
+  listing-description-write:
+    # Off. The description write is the third controlled write and the only
+    # new one in this Slice. No listing-description capability is verified
+    # anywhere, so the adapter refuses before any socket and the attempt-opening
+    # function refuses before any attempt row; this flag only decides whether
+    # this process is one of the ones that tries, and it does not try.
+    worker-enabled: false
+  listing-conversion:
+    # The recalculation loop for Listing Health and retained-visit conversion.
+    # Off by default; it reads facts and writes projections and reaches no
+    # marketplace at all.
+    worker-enabled: false
+    listings-per-pass: 50
   advertising:
     # The calculation loop, not a write path. Off by default so a workstation or
     # a test container does not start scanning; the loop reads facts and writes

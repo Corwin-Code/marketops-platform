@@ -26,8 +26,15 @@ public final class PriceEconomicsCalculator {
 
     /** Project every required family at one exact price. */
     public static Projection project(PriceEconomicsProfile profile, BigDecimal price) {
+        return project(profile, price, Map.of(PriceEconomicsProfile.PriceBasis.PROPOSED_PRICE, price));
+    }
+
+    /** Exact commercial bases are supplied by the owning qualified-input consumer, never inferred. */
+    public static Projection project(PriceEconomicsProfile profile, BigDecimal price,
+                                     Map<PriceEconomicsProfile.PriceBasis, BigDecimal> priceBases) {
         Objects.requireNonNull(profile, "profile");
         Objects.requireNonNull(price, "price");
+        Objects.requireNonNull(priceBases, "priceBases");
 
         List<String> reasons = new ArrayList<>();
         Map<FeeFamily, FeeCoverageState> coverage = new EnumMap<>(FeeFamily.class);
@@ -72,9 +79,27 @@ public final class PriceEconomicsCalculator {
             BigDecimal familyTotal = BigDecimal.ZERO;
             boolean complete = true;
             for (String componentCode : componentCodes) {
-                List<PriceEconomicsProfile.Component> applicable = familyComponents.stream()
-                        .filter(component -> component.componentCode().equals(componentCode))
-                        .filter(component -> component.appliesAt(price)).toList();
+                var tiers = familyComponents.stream()
+                        .filter(component -> component.componentCode().equals(componentCode)).toList();
+                boolean priceIndependent = tiers.size() == 1
+                        && tiers.getFirst().kind() == PriceEconomicsProfile.ComponentKind.FIXED
+                        && tiers.getFirst().lowerPriceInclusive() == null
+                        && tiers.getFirst().upperPriceExclusive() == null;
+                var bases = tiers.stream().map(PriceEconomicsProfile.Component::priceBasis).distinct().toList();
+                BigDecimal componentPrice = bases.size() == 1 ? priceBases.get(bases.getFirst()) : null;
+                if (!priceIndependent && (componentPrice == null || componentPrice.signum() < 0)) {
+                    complete = false;
+                    reasons.add("COMPONENT_PRICE_BASIS_UNQUALIFIED:" + family + ':' + componentCode);
+                    continue;
+                }
+                if (!priceIndependent && (componentPrice.compareTo(profile.minimumSupportedPrice()) < 0
+                        || componentPrice.compareTo(profile.maximumSupportedPrice()) > 0)) {
+                    complete = false;
+                    reasons.add("COMPONENT_PRICE_OUT_OF_SUPPORTED_RANGE:" + family + ':' + componentCode);
+                    continue;
+                }
+                List<PriceEconomicsProfile.Component> applicable = priceIndependent ? tiers : tiers.stream()
+                        .filter(component -> component.appliesAt(componentPrice)).toList();
                 if (applicable.size() != 1) {
                     complete = false;
                     reasons.add((applicable.isEmpty() ? "COMPONENT_TIER_MISSING:"
@@ -82,7 +107,7 @@ public final class PriceEconomicsCalculator {
                     continue;
                 }
                 PriceEconomicsProfile.Component component = applicable.getFirst();
-                BigDecimal amount = amount(component, price);
+                BigDecimal amount = amount(component, priceIndependent ? BigDecimal.ZERO : componentPrice);
                 if (amount == null || amount.signum() < 0) {
                     complete = false;
                     reasons.add("COMPONENT_SHAPE_UNSUPPORTED:" + family + ':' + componentCode);
@@ -132,6 +157,12 @@ public final class PriceEconomicsCalculator {
                 || !profile.currencyCode().equals(requiredProfit.currencyCode())
                 || !profile.currencyCode().equals(safetyBuffer.currencyCode())) {
             return Solution.unavailable("SOLVER_CURRENCY_CONFLICT");
+        }
+        if (profile.components().stream().anyMatch(component ->
+                component.priceBasis() != PriceEconomicsProfile.PriceBasis.PROPOSED_PRICE
+                        && (component.kind() != PriceEconomicsProfile.ComponentKind.FIXED
+                            || component.lowerPriceInclusive() != null || component.upperPriceExclusive() != null))) {
+            return Solution.unavailable("SOLVER_COMMERCIAL_PRICE_RELATION_UNQUALIFIED");
         }
         if (!monotone(profile)) {
             return Solution.unavailable("NON_MONOTONE_PROFILE");

@@ -1,0 +1,18 @@
+2026-09-18T23:44:05Z
+$ netstat -an -p tcp | state counts
+5373 ESTABLISHED
+5266 FIN_WAIT_2
+3602 CLOSE_WAIT
+2783 TIME_WAIT
+  28 LISTEN
+$ owner of the loopback endpoint 127.0.0.1:15732 (two sample rows)
+tcp4 127.0.0.1.15732 127.0.0.1.61483 CLOSE_WAIT ViewTurboCore-un:1513
+tcp4 127.0.0.1.61483 127.0.0.1.15732 FIN_WAIT_2 ViewTurboCore-un:1513
+$ loopback connections to 127.0.0.1:15732 by state
+2687 CLOSE_WAIT
+3692 ESTABLISHED
+2687 FIN_WAIT_2
+1382 TIME_WAIT
+$ sysctl ephemeral range
+net.inet.ip.portrange.first: 49152
+net.inet.ip.portrange.last: 65535

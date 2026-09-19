@@ -9,6 +9,15 @@ The rule underneath all of them: a company answer never becomes safe by
 default. When a material input is missing the card stays visible and stays
 somebody's work, because the alternative is a green card over a real stockout.
 
+Stock observations and inbound verification must be no later than the calculation
+instant and inside an explicitly positive freshness bound. Future timestamps and
+missing/zero bounds follow the existing freshness refusal path; they cannot supply
+current units or make a future consignment eligible. Compare the retained source
+time with the calculation time when investigating `CHANNEL_OBSERVATION_STALE` or
+`COMPANY_SUPPLY_STALE_OBSERVATION`; preserve the source record and correct its
+origin rather than extending freshness to conceal a clock error. A qualified
+consignment still enters supply only at the latest edge of its arrival window.
+
 ## The company child is unresolved and data-blocked
 
 The card carries `COMPANY_SUPPLY_OWNERSHIP_NOT_DECLARED` or a similar blocker.

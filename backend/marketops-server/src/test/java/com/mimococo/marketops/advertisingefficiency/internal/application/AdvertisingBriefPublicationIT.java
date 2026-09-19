@@ -89,11 +89,12 @@ class AdvertisingBriefPublicationIT {
                 VALUES (:id, :organizationId, 1, 'ORGANIZATION', 'Europe/Moscow',
                     540, ARRAY[1,2,3,4,5]::smallint[], 1, 540, 168, :owner,
                     'synthetic reporting calendar for a publication test',
-                    'evidence://fixture/ad/calendar', now() - interval '7 days', 'ACTIVE', now())
+                    'evidence://fixture/ad/calendar', :effectiveFrom, 'ACTIVE', now())
                 """)
                 .param("id", calendarId)
                 .param("organizationId", graph.organizationId())
                 .param("owner", graph.executorUserId())
+                .param("effectiveFrom", Timestamp.from(AS_OF.minus(java.time.Duration.ofDays(7))))
                 .update();
     }
 

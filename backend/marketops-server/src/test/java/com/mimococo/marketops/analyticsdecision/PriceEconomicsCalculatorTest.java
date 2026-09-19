@@ -21,6 +21,38 @@ class PriceEconomicsCalculatorTest {
     private static final Instant NOW = Instant.parse("2026-08-30T06:00:00Z");
 
     @Test
+    void commercialFeesUseTheirOwnBasisForBothTierSelectionAndAmount() {
+        var original=tieredProfile("MARKETPLACE_FULFILLED",1);
+        var coverage=new EnumMap<FeeFamily,PriceEconomicsProfile.Applicability>(FeeFamily.class);
+        for (var family:FeeFamily.values()) coverage.put(family,PriceEconomicsProfile.Applicability.VERIFIED_NOT_APPLICABLE);
+        coverage.put(FeeFamily.COMMISSION,PriceEconomicsProfile.Applicability.REQUIRED);
+        coverage.put(FeeFamily.VARIABLE_TAX,PriceEconomicsProfile.Applicability.REQUIRED);
+        var lower=new PriceEconomicsProfile.Component(UUID.randomUUID(),"COMMISSION",FeeFamily.COMMISSION,
+                PriceEconomicsProfile.ComponentKind.PERCENTAGE,null,decimal("0.10"),null,decimal("90"),
+                "fixture:buyer-tier",PriceEconomicsProfile.PriceBasis.BUYER_PAYMENT);
+        var upper=new PriceEconomicsProfile.Component(UUID.randomUUID(),"COMMISSION",FeeFamily.COMMISSION,
+                PriceEconomicsProfile.ComponentKind.PERCENTAGE,null,decimal("0.20"),decimal("90"),null,
+                "fixture:buyer-tier",PriceEconomicsProfile.PriceBasis.BUYER_PAYMENT);
+        var tax=new PriceEconomicsProfile.Component(UUID.randomUUID(),"TAX",FeeFamily.VARIABLE_TAX,
+                PriceEconomicsProfile.ComponentKind.PERCENTAGE,null,decimal("0.05"),null,null,
+                "fixture:seller-tax",PriceEconomicsProfile.PriceBasis.SELLER_REVENUE);
+        var profile=copyWith(original,coverage,List.of(lower,upper,tax));
+        var result=PriceEconomicsCalculator.project(profile,decimal("100"),Map.of(
+                PriceEconomicsProfile.PriceBasis.BUYER_PAYMENT,decimal("80"),
+                PriceEconomicsProfile.PriceBasis.SELLER_REVENUE,decimal("100")));
+        assertThat(result.available()).isTrue();
+        assertThat(result.totalVariableCost()).isEqualByComparingTo("13");
+        assertThat(result.componentIds()).contains(lower.componentId(),tax.componentId()).doesNotContain(upper.componentId());
+        assertThat(PriceEconomicsCalculator.project(profile,decimal("100")).available()).isFalse();
+        assertThat(PriceEconomicsCalculator.solve(profile,money("10"),money("1"),money("0")).reasons())
+                .containsExactly("SOLVER_COMMERCIAL_PRICE_RELATION_UNQUALIFIED");
+        var incomplete=PriceEconomicsCalculator.project(profile,decimal("100"),Map.of(
+                PriceEconomicsProfile.PriceBasis.SELLER_REVENUE,decimal("100")));
+        assertThat(incomplete.available()).isFalse();
+        assertThat(incomplete.reasons()).contains("COMPONENT_PRICE_BASIS_UNQUALIFIED:COMMISSION:COMMISSION");
+    }
+
+    @Test
     void sameTierUsesTheSameComponentAndExactProposedPrice() {
         PriceEconomicsProfile profile = tieredProfile("MARKETPLACE_FULFILLED", 1);
 

@@ -1,0 +1,80 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "d117a6ccb8da9ea2084199c40e3f2e2f41d94154",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/CalibrationService.java": "aead990b5283c24304e2ab77de7eaa4e6710e6e5944b218b7bb7f0c35b22c487",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/CalibrationRepository.java": "1feb06e39544df1169ce2d523053994fe035ac819a1d09d781cc85f4d8e74f17",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingCalibrationService.java": "ad2b9769594fe3e08d1c362a01c35c7cfc793cc22cf007b5033d7066784f6587",
+    "backend/marketops-server/src/main/resources/db/migration/V0104__validate_calibration_combinations_for_their_declared_purpose.sql": "61159bd5a1055e826670ead1dfcee3819141566012c8b3abf7cce021a1c86ca8",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "03f197b96f9f59b7a583140728dff35d3f79b2a3766450ad2da93db938bbe79d"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 48,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/calibration-purpose-authorization.log",
+      "raw_log_sha256": "b9becf6119ee797d8a3279781e44db46c78bd726f631cae11cca53066b767f0b",
+      "summary_path": "calibration-purpose-authorization-summary.txt",
+      "summary_sha256": "4604004af4a91604c9a504f6bd2cf2965cb38d05df1ebec6edf9bf82e9e9a0d7"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingActionLaunchIT,CalibrationSnapshotTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 102,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/calibration-purpose-launch-domain-architecture.log",
+      "raw_log_sha256": "ef6643de1ee925b7cff3ff110d62476fb51571be74bd1168a84726a24d3d5ef2",
+      "summary_path": "calibration-purpose-launch-domain-architecture-summary.txt",
+      "summary_sha256": "0dfe4e447f12be90820955d5b2f3c9e96b31c03fb7d8768b5174a334eb58a724"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingConversionSchemaIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 10,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/calibration-purpose-schema.log",
+      "raw_log_sha256": "8cc8f524658ad70d24d9945cb40e6f85a81ee4098e4c97c56b4df18de8718762",
+      "summary_path": "calibration-purpose-schema-summary.txt",
+      "summary_sha256": "393c3f5c9efcfcc8f3e4e8a4b545441c5e9affe845cb4c46d71736957ff1a664"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingAtomicLaunchUpgradeIT'",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/calibration-purpose-upgrade.log",
+      "raw_log_sha256": "4e14ea7e9651f9068ca488101fda8328e66ce04f7234e29b820841f47cd3cc25",
+      "summary_path": "calibration-purpose-upgrade-summary.txt",
+      "summary_sha256": "51d93bec6453ca5501e70bcb2abb3bf8b995b78765cb50450ecc094e0e71467b"
+    }
+  ],
+  "report_xml_sha256": {
+    "build/slice4-rework/calibration-purpose-reports/authorization/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml": "e36853ee482d1ca6248d359693e2cf42fe69e2319e9799d67d3df53c549cb2c1",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.ListingActionLaunchIT.xml": "62ad91e0971824079c91fb540664a71e778fb5ca858cf061fbfccc3ecee2cf7f",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml": "9997c97a3d66ee6c1500a9222867841b6b9a5f56d7a407ca47865eabef740bdb",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml": "3ec59fd80fbf352adcf2d94d577a5b01f7812d7c9638d02fc26b5d8bf39f434b",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml": "a30235ea278b976885dca1a4407121b0d7071e0526804e52c1f594be9ee7bf86",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml": "dab14d44420b0ec13fe47920b01ab79d27c2fb61b6e32b0ae81093a1cc0c729a",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml": "89b07fca1c98b7eace50b20f4a7dee9f79736eeaee1f6bc651c244761dc71de6",
+    "build/slice4-rework/calibration-purpose-reports/launch-domain-architecture/TEST-com.mimococo.marketops.listingconversion.internal.application.CalibrationSnapshotTest.xml": "2a2a8f0402685eac65781a30b841c45b6a4c0c26faba0290742a10250b5f0673",
+    "build/slice4-rework/calibration-purpose-reports/schema/TEST-com.mimococo.marketops.database.ListingConversionSchemaIT.xml": "a27a56096033bdada282b2bbab8baf4a77ab3953acc70e9770baa40ad19e373e",
+    "build/slice4-rework/calibration-purpose-reports/upgrade/TEST-com.mimococo.marketops.ListingAtomicLaunchUpgradeIT.xml": "1ef55bd66ec8a50ea092a82a5d638bd078cfbbfabdca75fcf15894977b24bd61"
+  },
+  "diagnostics": [
+    {
+      "log": "build/slice4-rework/calibration-purpose-connected.log",
+      "sha256": "aab9cb87c8144780f209cc4626fc614e50ac6cd3d28c9065756b4c3030d5a9bc",
+      "note": "Two connected cases passed; overlap final 48. No failed run or automatic retry in this source stage."
+    }
+  ],
+  "limitations": [
+    "No root is CLOSED. This change corrects required-category selection and explicit-purpose read resolution; it does not establish all structured-rule semantic validation or correction/exploration action safety.",
+    "The governed positive case is correction. Other purpose category selections do not claim completed execution journeys.",
+    "Existing action preparation and native freshness consumers retain their current behavior until purpose-specific safeguards are connected. No current execution permission is inferred from package acceptance.",
+    "No frontend source changed; no browser journey is claimed.",
+    "Only local fictional tests. No real Provider/account, Level 2, remote publication, shared/production migration, Gate EV/E or business effects. Platform writes default OFF."
+  ]
+}

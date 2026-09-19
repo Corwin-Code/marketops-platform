@@ -7,6 +7,7 @@ import com.mimococo.marketops.operationsworkflow.*;
 import com.mimococo.marketops.operationsworkflow.internal.application.*;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRiskRefreshService;
+import com.mimococo.marketops.listingconversion.internal.application.CalibrationService;
 import com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWritePort;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult;
@@ -18,10 +19,12 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import javax.sql.DataSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import tools.jackson.databind.ObjectMapper;
@@ -36,13 +39,15 @@ public final class BrowserFixtureApplication {
         if (!"ISOLATED_SYNTHETIC_DATABASE".equals(System.getenv("MARKETOPS_BROWSER_FIXTURE"))) {
             throw new IllegalStateException("Explicit isolated browser fixture required");
         }
+        String issuerPassword = UUID.randomUUID().toString();
         var application = new SpringApplication(MarketOpsServerApplication.class,
                 BrowserSigningFixture.class, SyntheticMarketplace.class);
         application.addInitializers(initial -> {
             var env = initial.getEnvironment();
             String url = env.getRequiredProperty("spring.datasource.url");
-            if (!url.matches("jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/marketops")) {
-                throw new IllegalStateException("Browser fixture requires the loopback compose database");
+            if (!url.matches("jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/marketops")
+                    || url.contains(":5432/")) {
+                throw new IllegalStateException("Browser fixture requires a dedicated loopback compose database");
             }
             var preflight = JdbcClient.create(new DriverManagerDataSource(url,
                     env.getRequiredProperty("spring.datasource.username"), env.getRequiredProperty("spring.datasource.password")));
@@ -50,6 +55,17 @@ public final class BrowserFixtureApplication {
             if (exists && preflight.sql("SELECT count(*) FROM core.organization").query(Long.class).single() != 0) {
                 throw new IllegalStateException("Browser fixture refuses nonempty data before migrations");
             }
+            var administrator = new DriverManagerDataSource(url, "postgres",
+                    env.getRequiredProperty("MARKETOPS_POSTGRES_SUPERUSER_PASSWORD"));
+            try (var connection = administrator.getConnection()) {
+                TestDatabase.enableSyntheticIdentityIssuer(connection, issuerPassword);
+            } catch (java.sql.SQLException unavailable) {
+                throw new IllegalStateException("Browser fixture could not activate the synthetic identity issuer");
+            }
+            env.getPropertySources().addFirst(new MapPropertySource("browserSyntheticIdentityIssuer", Map.of(
+                    "marketops.identity.invocation.jdbc-url", url,
+                    "marketops.identity.invocation.username", "marketops_identity_issuer",
+                    "marketops.identity.invocation.password", issuerPassword)));
         });
         var context = application.run("--spring.profiles.active=local",
                 "--marketops.identity.oidc.issuer-uri=" + BrowserSigningFixture.ISSUER,
@@ -66,8 +82,9 @@ public final class BrowserFixtureApplication {
             if (!url.matches("jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/marketops")) {
                 throw new IllegalStateException("Browser fixture requires the loopback compose database");
             }
-            var fixture = JdbcClient.create(new DriverManagerDataSource(url,
-                    env.getRequiredProperty("spring.flyway.user"), env.getRequiredProperty("spring.flyway.password")));
+            var migrationSource = new DriverManagerDataSource(url,
+                    env.getRequiredProperty("spring.flyway.user"), env.getRequiredProperty("spring.flyway.password"));
+            var fixture = JdbcClient.create(migrationSource);
             if (fixture.sql("SELECT count(*) FROM core.organization").query(Integer.class).single() != 0) {
                 throw new IllegalStateException("Browser fixture refuses a nonempty database");
             }
@@ -85,6 +102,49 @@ public final class BrowserFixtureApplication {
                 users.grantScope("synthetic-browser", graph.userId(), action,
                         ResourceScopeType.ORGANIZATION, graph.organizationId(), validFrom);
             }
+            var listing = ListingConversionFixture.browserJourney(migrationSource,
+                    context.getBean(DataSource.class),migrationSource);
+            // The raw fixture seeds this already-approved manual Action outside prepare(),
+            // so add the responsibility Task that the normal application path creates.
+            var calibration = context.getBean(CalibrationService.class);
+            Instant responsibilityRaisedAt = Instant.now();
+            context.getBean(ListingActionIntake.class).ensureGovernedResponsibilityTask(
+                    listing.id("organization"), listing.id("recommendationTwo"),
+                    "Review the proposed listing description change",
+                    CalibrationService.responsibilityBasis(calibration.resolve(
+                            listing.id("organization"), listing.graph.platform(), listing.id("store"), responsibilityRaisedAt)),
+                    responsibilityRaisedAt);
+            fixture.sql("""
+                    INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,
+                      organization_ref_id,status,effective_from,reason,created_at,updated_at)
+                    SELECT gen_random_uuid(),:org,:owner,code,:org,
+                      'ACTIVE',clock_timestamp()-interval '1 hour',
+                      'Synthetic browser evaluation and disclosure',clock_timestamp(),clock_timestamp()
+                      FROM unnest(ARRAY['LISTING_DECISION_EVIDENCE_VIEW','LISTING_OUTCOME_EVALUATE']) code
+                    ON CONFLICT DO NOTHING
+                    """).param("org",listing.id("organization"))
+                    .param("owner",listing.id("ownerUser")).update();
+            // The browser issuer is unique. Bind the three fictional listing people to
+            // that verified issuer while retaining their separate organization and store.
+            fixture.sql("""
+                    UPDATE iam.user_account SET identity_provider_id=:browserProvider,
+                      credentials_valid_from=clock_timestamp()-interval '1 hour'
+                     WHERE id IN (:author,:reviewer,:owner)
+                    """).param("browserProvider", graph.providerId())
+                    .param("author", listing.id("executorUser"))
+                    .param("reviewer", listing.id("verifierUser"))
+                    .param("owner", listing.id("ownerUser")).update();
+            String revokedSubject = "listing-revoked-" + UUID.randomUUID();
+            UUID revokedUser = users.provision("synthetic-browser", listing.id("organization"),
+                    graph.providerId(), revokedSubject, null, "Revoked Listing Reader", null).id();
+            fixture.sql("UPDATE iam.user_account SET credentials_valid_from=clock_timestamp()-interval '1 hour' WHERE id=:id")
+                    .param("id", revokedUser).update();
+            users.assignRole("synthetic-browser", revokedUser, BusinessRoleCode.AUDITOR, null);
+            var revokedGrant = users.grantScope("synthetic-browser", revokedUser,
+                    ActionScopeCode.LISTING_CONVERSION_VIEW, ResourceScopeType.ORGANIZATION,
+                    listing.id("organization"), validFrom);
+            users.revokeScope("synthetic-browser", revokedGrant.id(),
+                    "Synthetic browser verifies current revocation", revokedGrant.version());
             seedMetrics(fixture, graph);
             UUID availabilityVariant = seedAvailability(context, fixture, graph);
             var actor = new AuthenticatedActor(graph.userId(), graph.organizationId(), graph.providerId(),
@@ -116,9 +176,33 @@ public final class BrowserFixtureApplication {
             driver.createContext("/fixture", exchange -> {
                 try {
                     if (!"GET".equals(exchange.getRequestMethod())) { exchange.sendResponseHeaders(405, -1); return; }
+                    Map<String,Object> listingJourney = new LinkedHashMap<>();
+                    listingJourney.put("storeId", listing.id("store"));
+                    listingJourney.put("listingId", listing.id("listing"));
+                    listingJourney.put("otherListingId", listing.id("listingTwo"));
+                    listingJourney.put("supersededActionId", listing.id("actionOne"));
+                    listingJourney.put("manualActionId", listing.id("actionTwo"));
+                    listingJourney.put("affectedListingVariantId",listing.id("listingVariant"));
+                    listingJourney.put("affectedProductVariantId",listing.id("productVariant"));
+                    listingJourney.put("authorUserId", listing.id("executorUser"));
+                    listingJourney.put("reviewerUserId", listing.id("verifierUser"));
+                    listingJourney.put("ownerUserId", listing.id("ownerUser"));
+                    listingJourney.put("authorToken", BrowserSigningFixture.token(subject(fixture,
+                            listing.id("executorUser"))));
+                    listingJourney.put("reviewerToken", BrowserSigningFixture.token(subject(fixture,
+                            listing.id("verifierUser"))));
+                    listingJourney.put("ownerToken", BrowserSigningFixture.token(subject(fixture,
+                            listing.id("ownerUser"))));
+                    listingJourney.put("revokedToken", BrowserSigningFixture.token(revokedSubject));
+                    listingJourney.put("currentText", ListingConversionFixture.PRIOR_TEXT_ONE);
+                    listingJourney.put("targetText", ListingConversionFixture.TARGET_TEXT_ONE + " браузер");
+                    listingJourney.put("manualTargetText", fixture.sql(
+                            "SELECT target_text FROM ops.lc_action WHERE id=:id")
+                            .param("id", listing.id("actionTwo")).query(String.class).single());
                     byte[] bytes = mapper.writeValueAsBytes(Map.of("accessToken", BrowserSigningFixture.token(subject),
                             "storeId", STORE, "subjectId", graph.subjectId(), "recommendationId", recommendation,
-                            "provenanceId", graph.provenanceId(), "productVariantId", availabilityVariant));
+                            "provenanceId", graph.provenanceId(), "productVariantId", availabilityVariant,
+                            "listingJourney", listingJourney));
                     exchange.getResponseHeaders().set("Content-Type", "application/json");
                     exchange.getResponseHeaders().set("Cache-Control", "no-store");
                     exchange.sendResponseHeaders(200, bytes.length); exchange.getResponseBody().write(bytes);
@@ -137,6 +221,50 @@ public final class BrowserFixtureApplication {
                     exchange.getResponseHeaders().set("Content-Type", "application/json");
                     exchange.sendResponseHeaders(200, bytes.length); exchange.getResponseBody().write(bytes);
                 } catch (Exception failed) { exchange.sendResponseHeaders(500, -1); }
+                finally { exchange.close(); }
+            });
+            driver.createContext("/listing/allowance/expand", exchange -> {
+                try {
+                    if (!"POST".equals(exchange.getRequestMethod())
+                            || !"browser-test".equals(exchange.getRequestHeaders()
+                            .getFirst("X-Fixture-Driver"))) {
+                        exchange.sendResponseHeaders(405, -1); return;
+                    }
+                    int retired = fixture.sql("""
+                            UPDATE ops.lc_exposure_allowance
+                               SET status='RETIRED',effective_to=clock_timestamp()
+                             WHERE id IN (:concurrent,:variants) AND status='ACTIVE'
+                            """).param("concurrent", listing.id("allowanceConcurrent"))
+                            .param("variants", listing.id("allowanceVariants")).update();
+                    if (retired != 2) throw new IllegalStateException("Expected two active fixture allowances");
+                    int published = fixture.sql("""
+                            INSERT INTO ops.lc_exposure_allowance(id,organization_id,allowance_version,
+                              scope_kind,platform_code,store_ref_id,axis_code,limit_value,reserve_value,
+                              unit_code,published_by_user_id,published_at,evidence_reference,effective_from,
+                              effective_to,status)
+                            SELECT gen_random_uuid(),organization_id,allowance_version+1,scope_kind,
+                              platform_code,store_ref_id,axis_code,
+                              CASE WHEN axis_code='CONCURRENT_LISTINGS' THEN 2 ELSE limit_value END,
+                              reserve_value,unit_code,:owner,clock_timestamp(),
+                              'fixture://browser/allowance-expanded-after-partial',clock_timestamp(),NULL,'ACTIVE'
+                              FROM ops.lc_exposure_allowance
+                             WHERE id IN (:concurrent,:variants) AND status='RETIRED'
+                            """).param("owner", listing.id("ownerUser"))
+                            .param("concurrent", listing.id("allowanceConcurrent"))
+                            .param("variants", listing.id("allowanceVariants")).update();
+                    if (published != 2) throw new IllegalStateException("Expected two replacement allowances");
+                    byte[] bytes = mapper.writeValueAsBytes(Map.of("state", "EXPANDED", "limit", 2));
+                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    exchange.getResponseBody().write(bytes);
+                } catch (Exception failed) {
+                    byte[] bytes = (failed.getClass().getSimpleName() + ": "
+                            + Objects.toString(failed.getMessage(), "no message"))
+                            .getBytes(StandardCharsets.UTF_8);
+                    exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+                    exchange.sendResponseHeaders(500, bytes.length);
+                    exchange.getResponseBody().write(bytes);
+                }
                 finally { exchange.close(); }
             });
             driver.createContext("/availability/reopen-and-exception", exchange -> {
@@ -198,6 +326,11 @@ public final class BrowserFixtureApplication {
 
     private static CommercialPolicyService.LimitDraft rate(String code, String value) {
         return new CommercialPolicyService.LimitDraft(code, new BigDecimal(value), null, null, null);
+    }
+
+    private static String subject(JdbcClient jdbc, UUID userId) {
+        return jdbc.sql("SELECT external_subject FROM iam.user_account WHERE id=:id")
+                .param("id", userId).query(String.class).single();
     }
 
     /**

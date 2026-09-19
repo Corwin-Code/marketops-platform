@@ -21,12 +21,15 @@ import com.mimococo.marketops.operationsworkflow.AdvertisingBidProjection;
 import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
+import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.GuardrailRepository;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,9 +61,11 @@ class AdBidGuardrailTest {
             mock(AdvertisingDecisionAuthority.class);
     private final IdGenerator ids = mock(IdGenerator.class);
     private final AdvertisingImpactEvidenceService impact = mock(AdvertisingImpactEvidenceService.class);
+    private final ListingActionDecisionAuthority listingDecisions = mock(ListingActionDecisionAuthority.class);
 
     private final GuardrailService service = new GuardrailService(
-            metrics, diagnosis, evaluations, changeHistory, advertising, ids,impact);
+            metrics, diagnosis, evaluations, changeHistory, advertising, ids, impact, listingDecisions,
+            Clock.fixed(NOW, ZoneOffset.UTC));
 
     private static RecommendationView proposal() {
         return new RecommendationView(ID, ID, ID, SubjectKind.AD_NATIVE_OBJECT, ID,
