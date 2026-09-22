@@ -973,6 +973,8 @@ export interface Containment {
   readonly id: string;
   readonly scopeKind: string;
   readonly platformListingId: string | undefined;
+  /** The stopped store, for a STORE scope. */
+  readonly storeId?: string | undefined;
   readonly causeClass: string;
   readonly causeOwnerRoleCode: string;
   readonly stoppedByUserId: string;
@@ -1878,6 +1880,7 @@ export function parseContainment(body: unknown): Containment | undefined {
     id,
     scopeKind,
     platformListingId: text(r.platformListingId),
+    storeId: text(r.storeId),
     causeClass,
     causeOwnerRoleCode,
     stoppedByUserId,
@@ -3180,13 +3183,16 @@ export function closeBatch(
   });
 }
 
+/** At most this many stops are listed; a full list may leave some out. */
+export const CONTAINMENT_LIST_LIMIT = 50;
+
 export function fetchContainments(
   context: ConsoleRequest,
   activeOnly: boolean,
 ): Promise<ConsoleOutcome<readonly Containment[]>> {
   return request(
     context,
-    `${GOVERNANCE}/containments?activeOnly=${String(activeOnly)}&limit=50`,
+    `${GOVERNANCE}/containments?activeOnly=${String(activeOnly)}&limit=${String(CONTAINMENT_LIST_LIMIT)}`,
     (body) => list(body, parseContainment),
   );
 }

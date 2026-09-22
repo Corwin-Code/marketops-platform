@@ -107,6 +107,9 @@ export const verifyText = {
   manualPromotionNeedsHuman: '人工录入的观察只能用于独立人工核实',
   marketplacePromotionNeedsOfficial: '平台原始观察须以官方证据核实',
   promotionSourceUnsupported: '此来源不能作为核实证据',
+  otherPromotion: '属于另一项促销（平台促销标识或参与方式与操作不同）',
+  promotionIdentityUnknown:
+    '无法读取操作的促销条款，不能在此排除其他促销的观察；请确认所选观察的平台促销标识与操作一致，否则提交会被拒绝。',
   officialRequiresDescription: '官方证据须选择一条来自平台原始数据的管理端正文观察',
   comparison: '系统比对',
   comparisonNone: '未选择证据，管理端结论只能为「未知」。',
@@ -122,14 +125,25 @@ export const verifyText = {
   promotionMatchLabel: '促销参与比对结论',
   promotionComparisonState: '观察到的参与状态',
   promotionComparisonKey: '平台促销标识',
+  promotionActionKey: '操作的平台促销标识',
   promotionTermsChecked: '声明条款是否与操作一致，由后端按观察核对。',
   promotionUnknownState: '观察到的参与状态为未知，只能记录为「未知」。',
   displayLocked: '按所选展示观察自动填入，不能修改；未选择展示观察时为「未知」。',
   attest: '我已亲自核对上述证据，且不是本包执行人',
   attestRequired: '请确认已亲自核对证据，且不是本包执行人',
   previewVerified: '提交后：执行包与操作将变为已核实',
-  previewVerifiedCaveat: '最终结果以后端判定为准；如不满足，仍只记录证据。',
+  previewVerifiedCaveat:
+    '最终结果以后端判定为准；未解除的评估保护失败等也会使该 Listing 处于停止范围，此时仍只记录证据。',
+  previewConditional: '提交后：以下各项由后端判定，全部满足时执行包与操作才会变为已核实：',
   previewEvidenceOnly: '提交后：仅记录证据，操作保持已启动，原因：',
+  checkContainmentPossible:
+    '有生效中的紧急停止可能覆盖该 Listing（平台或批次范围、共享版本隔离，此处无法判定）；覆盖时仅记录证据',
+  checkContainmentUnknown:
+    '此处未能确认紧急停止状态（读取中、无权读取或列表不完整）；该 Listing 是否处于停止范围由后端判定，处于范围内时仅记录证据',
+  checkPromotionIdentity:
+    '所选观察是否属于操作的同一促销（平台促销标识与参与方式）由后端核对；不一致时提交会被拒绝',
+  checkPromotionTerms:
+    '观察到的声明条款须与操作的条款一致，由后端核对；不一致或没有声明时提交会被拒绝，可改选「未知」只记录证据',
   reasonNoManagement: '未选择管理端正文观察',
   reasonMatch: (label: string): string => `管理端结论为「${label}」，不是「与目标一致」`,
   reasonMatchPending: '管理端结论尚未确认',

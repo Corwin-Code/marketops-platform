@@ -186,6 +186,10 @@ export const launchText = {
   allowanceUnpublishedDetail:
     '校准包未给出额度维度，或某个维度没有已发布的额度上限；须由 Owner 发布额度后才能启动。',
   checkAllowanceUnpublished: '额度未发布或没有额度维度，不能按"不限"处理',
+  allowanceCalibrationStale: '操作的校准依据已非当前或无法解析，无法确定额度策略',
+  allowanceCalibrationStaleDetail:
+    '操作绑定的校准包无法解析，或已不是当前适用的版本且其依赖未经证明或已变化，因此无法据此确定额度策略；发布额度不能解决此问题，须在当前校准包上重新准备该操作并重新审批后才能启动。',
+  checkAllowanceCalibrationStale: '额度策略无法确定，不能按"不限"处理',
   confirmApi: '确认启动并创建写入指令',
   confirmManual: '确认启动（占用额度）',
   consequenceApi:

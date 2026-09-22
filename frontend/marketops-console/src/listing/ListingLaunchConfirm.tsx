@@ -40,17 +40,24 @@ function settled<T>(
 }
 
 /**
- * A projection gap meaning no allowance is published for this action: the axes
- * policy is missing or not current, or an axis has no active allowance row.
+ * A projection gap meaning no allowance is published for this action: the
+ * current calibration package gives no usable axes policy, or an axis has no
+ * active allowance row.
  */
 function isUnpublishedGap(gap: string): boolean {
   return (
     gap === 'ALLOWANCE_AXES_UNRESOLVED' ||
-    gap === 'ALLOWANCE_POLICY_UNRESOLVED' ||
     gap === 'ALLOWANCE_MISSING' ||
     gap.endsWith(':ALLOWANCE_MISSING')
   );
 }
+
+/**
+ * The projection gap for an action whose calibration basis is no longer
+ * current (or no package resolves now): the allowance policy cannot be taken
+ * from it, and publishing an allowance does not change that.
+ */
+const CALIBRATION_STALE_GAP = 'ALLOWANCE_POLICY_UNRESOLVED';
 
 /** One line of the rule check, with its verdict. */
 function Check({
@@ -158,13 +165,30 @@ export function LaunchConfirm({
     allowanceValue !== undefined &&
     allowanceValue.axes.length > 0 &&
     allowanceValue.axes.every((axis) => axis.sufficient);
+  // A stale calibration basis leaves the policy, and so the axes, unresolved;
+  // it is stated as itself, because publishing an allowance cannot clear it.
+  const calibrationStale = allowanceValue?.gaps.includes(CALIBRATION_STALE_GAP) === true;
   // No axis is not "unlimited": it means the Owner has not published an
   // allowance (or its axes), so launch stays refused with that stated plainly
   // rather than as a generic insufficiency.
   const unpublished =
     allowanceValue !== undefined &&
+    !calibrationStale &&
     ((allowanceValue.resolved && allowanceValue.axes.length === 0) ||
       allowanceValue.gaps.some(isUnpublishedGap));
+  const allowanceProblem = calibrationStale
+    ? {
+        headline: launchText.allowanceCalibrationStale,
+        detail: launchText.allowanceCalibrationStaleDetail,
+        check: launchText.checkAllowanceCalibrationStale,
+      }
+    : unpublished
+      ? {
+          headline: launchText.allowanceUnpublished,
+          detail: launchText.allowanceUnpublishedDetail,
+          check: launchText.checkAllowanceUnpublished,
+        }
+      : undefined;
   const bindingClear = action.bindingGaps.length === 0;
   const necessaryState =
     detail.kind === 'ok' ? (detail.value.health?.necessaryState ?? 'UNKNOWN') : undefined;
@@ -177,9 +201,7 @@ export function LaunchConfirm({
       ? launchText.loading
       : allowance.kind === 'failed'
         ? launchText.allowanceFailed(failureMessage(allowance.failure))
-        : unpublished
-          ? launchText.allowanceUnpublished
-          : undefined;
+        : allowanceProblem?.headline;
 
   const guard: WriteGuard | undefined =
     allowance.kind === 'ok' && detail.kind !== 'loading'
@@ -187,31 +209,27 @@ export function LaunchConfirm({
           passed: resolved && sufficient && bindingClear && healthPassed,
           content: (
             <Flex vertical gap={6}>
-              {unpublished && (
+              {allowanceProblem !== undefined && (
                 <Typography.Text type="danger" strong>
-                  {launchText.allowanceUnpublished}
+                  {allowanceProblem.headline}
                 </Typography.Text>
               )}
               <Check
                 passed={resolved}
                 label={launchText.checkAllowanceResolved}
-                {...(unpublished
-                  ? {
+                {...(allowanceProblem === undefined
+                  ? {}
+                  : {
                       detail: (
                         <Typography.Text type="secondary">
-                          {launchText.allowanceUnpublishedDetail}
+                          {allowanceProblem.detail}
                         </Typography.Text>
                       ),
-                    }
-                  : {})}
+                    })}
               />
               <Check
                 passed={sufficient}
-                label={
-                  unpublished
-                    ? launchText.checkAllowanceUnpublished
-                    : launchText.checkAllowanceSufficient
-                }
+                label={allowanceProblem?.check ?? launchText.checkAllowanceSufficient}
               />
               <Check
                 passed={bindingClear}

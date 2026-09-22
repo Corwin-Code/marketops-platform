@@ -25,9 +25,11 @@ import type {
   PromotionObservationSummary,
 } from '../api/listingConversion';
 import {
+  CONTAINMENT_LIST_LIMIT,
   fetchAction,
   fetchContainments,
   fetchListingObservations,
+  fetchPromotionTerms,
   verifyPacket,
 } from '../api/listingConversion';
 import { dialog } from '../i18n/zh/common';
@@ -60,6 +62,7 @@ const MARKETPLACE = 'MARKETPLACE_RAW';
 const MANUAL_ENTRY = 'MANUAL_ENTRY';
 const UNKNOWN = 'UNKNOWN';
 const MATCHED_TARGET = 'MATCHED_TARGET';
+const SHARED_VERSION = 'SHARED_VERSION';
 /** Report qualifications the database accepts for a qualified verification. */
 const QUALIFYING_REPORTS: ReadonlySet<string> = new Set([
   'WITHIN_PACKET_AUTHORITY',
@@ -70,6 +73,19 @@ type Match = 'MATCHED_TARGET' | 'MATCHED_PRIOR' | 'DIFFERENT' | 'UNKNOWN';
 
 /** Which evidence the packet's action is verified with. */
 type Mode = 'description' | 'promotion' | 'unknown';
+
+/**
+ * Whether active emergency stops cover the listing, as far as this client can
+ * tell: certainly, possibly (a scope it cannot resolve), unknown (the stops
+ * could not be read in full) or provably not.
+ */
+type Coverage = 'CONTAINED' | 'POSSIBLE' | 'UNKNOWN' | 'CLEAR';
+
+/** The promotion the action declared: an observation of any other is refused. */
+interface PromotionIdentity {
+  readonly nativePromotionKey: string;
+  readonly engagementKind: string;
+}
 
 interface VerifyValues {
   basis?: string;
@@ -150,6 +166,8 @@ interface EvidenceRules {
   readonly excluded: ReadonlySet<string>;
   readonly basis: string | undefined;
   readonly targetDigest: string | undefined;
+  /** The action's promotion, when its terms can be read. */
+  readonly promotion: PromotionIdentity | undefined;
 }
 
 function tooEarly(observedAt: string, rules: EvidenceRules): boolean {
@@ -211,6 +229,13 @@ function promotionBlock(
   observation: PromotionObservationSummary,
   rules: EvidenceRules,
 ): string | undefined {
+  if (
+    rules.promotion !== undefined &&
+    (observation.nativePromotionKey !== rules.promotion.nativePromotionKey ||
+      observation.engagementKind !== rules.promotion.engagementKind)
+  ) {
+    return verifyText.otherPromotion;
+  }
   if (tooEarly(observation.observedAt, rules)) return verifyText.tooEarly;
   if (recordedByExcluded(observation.recordedByUserId, rules)) return verifyText.notIndependent;
   if (observation.sourceKind === MANUAL_ENTRY) {
@@ -241,8 +266,12 @@ function compareDescription(
 }
 
 /**
- * The participation match an observation supports. Whether the declared terms
- * equal the action's is not in the list read, so the database decides that.
+ * The participation match an observation of the action's own promotion
+ * supports: an observation of another promotion is blocked, because the
+ * database refuses it whatever the match. Whether the observed declaration
+ * equals the action's terms is not in the list read, so a participation is
+ * offered as 与目标一致 with the database checking the terms, and 不一致 only
+ * when the listing does not take part.
  */
 function comparePromotion(observation: PromotionObservationSummary): Match {
   if (observation.participationState === 'PARTICIPATING') return 'MATCHED_TARGET';
@@ -250,16 +279,46 @@ function comparePromotion(observation: PromotionObservationSummary): Match {
   return 'UNKNOWN';
 }
 
-/** Whether an active emergency stop certainly covers the listing. */
-function containedListing(
+/**
+ * Whether one active stop's own scope covers the action's listing, or
+ * undefined when the action read cannot tell: its platform and batch
+ * membership are not in it.
+ */
+function scopeCovers(containment: Containment, action: ListingAction): boolean | undefined {
+  switch (containment.scopeKind) {
+    case 'ORGANIZATION':
+      return true;
+    case 'LISTING':
+      return containment.platformListingId === undefined
+        ? undefined
+        : containment.platformListingId === action.platformListingId;
+    case 'STORE':
+      return containment.storeId === undefined ? undefined : containment.storeId === action.storeId;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * How the active stops cover the listing. A shared-version stop also covers
+ * listings that depend on one in its scope, which this client cannot follow,
+ * so it is only ever provably unrelated when it is not a shared-version stop.
+ * The database also contains a listing on an unreleased outcome failure,
+ * which no stop lists; the verified preview says so.
+ */
+function containmentCoverage(
   containments: readonly Containment[] | undefined,
-  listingId: string | undefined,
-): boolean {
-  return (containments ?? []).some(
-    (containment) =>
-      containment.scopeKind === 'ORGANIZATION' ||
-      (containment.scopeKind === 'LISTING' && containment.platformListingId === listingId),
-  );
+  action: ListingAction | undefined,
+): Coverage {
+  if (containments === undefined || action === undefined) return 'UNKNOWN';
+  let possible = false;
+  for (const containment of containments) {
+    const covers = scopeCovers(containment, action);
+    if (covers === true) return 'CONTAINED';
+    if (covers === undefined || containment.causeClass === SHARED_VERSION) possible = true;
+  }
+  if (possible) return 'POSSIBLE';
+  return containments.length >= CONTAINMENT_LIST_LIMIT ? 'UNKNOWN' : 'CLEAR';
 }
 
 /** A listed record chosen by id, when it is still listed. */
@@ -361,9 +420,11 @@ function DescriptionComparison({
 function PromotionComparison({
   observation,
   computed,
+  identity,
 }: {
   readonly observation: PromotionObservationSummary | undefined;
   readonly computed: Match;
+  readonly identity: PromotionIdentity | undefined;
 }): React.JSX.Element {
   if (observation === undefined) {
     return <Typography.Text type="secondary">{verifyText.comparisonNone}</Typography.Text>;
@@ -385,6 +446,11 @@ function PromotionComparison({
       <Typography.Text>
         {verifyText.promotionComparisonKey}：{observation.nativePromotionKey}
       </Typography.Text>
+      {identity !== undefined && (
+        <Typography.Text type="secondary">
+          {verifyText.promotionActionKey}：{identity.nativePromotionKey}
+        </Typography.Text>
+      )}
       <Typography.Text type="secondary">
         {computed === 'UNKNOWN'
           ? verifyText.promotionUnknownState
@@ -394,8 +460,40 @@ function PromotionComparison({
   );
 }
 
-/** What the verification will do once submitted, and why when it only records evidence. */
-function ResultPreview({ reasons }: { readonly reasons: readonly string[] }): React.JSX.Element {
+/** A short list of reasons or checks inside a preview. */
+function PreviewList({ items }: { readonly items: readonly string[] }): React.JSX.Element {
+  return (
+    <ul style={{ margin: 0, paddingInlineStart: 20 }}>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * What the verification will do once submitted: why it only records evidence,
+ * what the backend still has to confirm, or that it will verify.
+ */
+function ResultPreview({
+  reasons,
+  checks,
+}: {
+  readonly reasons: readonly string[];
+  readonly checks: readonly string[];
+}): React.JSX.Element {
+  if (reasons.length === 0 && checks.length > 0) {
+    return (
+      <div data-preview="conditional">
+        <Alert
+          type="info"
+          showIcon
+          title={verifyText.previewConditional}
+          description={<PreviewList items={checks} />}
+        />
+      </div>
+    );
+  }
   if (reasons.length === 0) {
     return (
       <div data-preview="verified">
@@ -414,13 +512,7 @@ function ResultPreview({ reasons }: { readonly reasons: readonly string[] }): Re
         type="warning"
         showIcon
         title={verifyText.previewEvidenceOnly}
-        description={
-          <ul style={{ margin: 0, paddingInlineStart: 20 }}>
-            {reasons.map((reason) => (
-              <li key={reason}>{reason}</li>
-            ))}
-          </ul>
-        }
+        description={<PreviewList items={reasons} />}
       />
     </div>
   );
@@ -431,7 +523,7 @@ function evidenceOnlyReasons({
   mode,
   packet,
   action,
-  contained,
+  coverage,
   evidence,
   match,
   display,
@@ -439,7 +531,7 @@ function evidenceOnlyReasons({
   readonly mode: Mode;
   readonly packet: ManualPacket;
   readonly action: ListingAction | undefined;
-  readonly contained: boolean;
+  readonly coverage: Coverage;
   readonly evidence: boolean;
   readonly match: string | undefined;
   readonly display: DisplayObservationSummary | undefined;
@@ -450,7 +542,7 @@ function evidenceOnlyReasons({
   if (action.state !== 'LAUNCHED') {
     reasons.push(verifyText.reasonActionState(codeText('actionState', action.state)));
   }
-  if (contained) reasons.push(verifyText.reasonContained);
+  if (coverage === 'CONTAINED') reasons.push(verifyText.reasonContained);
   const deviation = packet.reports.find(
     (report) => report.operationQualification === 'UNAUTHORISED_DEVIATION',
   );
@@ -504,6 +596,34 @@ function evidenceOnlyReasons({
   return reasons;
 }
 
+/**
+ * What only the backend can confirm before a verification with these choices
+ * verifies: stops this client cannot resolve and, for a promotion, the
+ * observed promotion and declared terms.
+ */
+function backendChecks({
+  mode,
+  coverage,
+  promotionKnown,
+  evidence,
+  match,
+}: {
+  readonly mode: Mode;
+  readonly coverage: Coverage;
+  readonly promotionKnown: boolean;
+  readonly evidence: boolean;
+  readonly match: string | undefined;
+}): string[] {
+  const checks: string[] = [];
+  if (coverage === 'POSSIBLE') checks.push(verifyText.checkContainmentPossible);
+  if (coverage === 'UNKNOWN') checks.push(verifyText.checkContainmentUnknown);
+  if (mode === 'promotion' && evidence) {
+    if (!promotionKnown) checks.push(verifyText.checkPromotionIdentity);
+    if (match === MATCHED_TARGET) checks.push(verifyText.checkPromotionTerms);
+  }
+  return checks;
+}
+
 /** The form body: evidence, conclusions, attestation and the result preview. */
 function VerifyForm({
   packet,
@@ -512,7 +632,9 @@ function VerifyForm({
   observations,
   observationsLoading,
   observationsFailed,
-  contained,
+  coverage,
+  promotionIdentity,
+  promotionTermsUnreadable,
 }: {
   readonly packet: ManualPacket;
   readonly action: ListingAction | undefined;
@@ -520,7 +642,10 @@ function VerifyForm({
   readonly observations: ListingObservations | undefined;
   readonly observationsLoading: boolean;
   readonly observationsFailed: boolean;
-  readonly contained: boolean;
+  readonly coverage: Coverage;
+  readonly promotionIdentity: PromotionIdentity | undefined;
+  /** The action's promotion terms were read and are not disclosed, or the read failed. */
+  readonly promotionTermsUnreadable: boolean;
 }): React.JSX.Element {
   const form = Form.useFormInstance<VerifyValues>();
   const basis = Form.useWatch('basis', form);
@@ -536,6 +661,7 @@ function VerifyForm({
     excluded: executorsOf(packet),
     basis,
     targetDigest: action?.targetTextDigest,
+    promotion: promotionIdentity,
   };
   const management = chosen(observations?.description, managementId);
   const display = chosen(observations?.display, displayId);
@@ -554,11 +680,17 @@ function VerifyForm({
   const allowed: readonly Match[] =
     evidence === undefined || computed === 'UNKNOWN' ? ['UNKNOWN'] : [computed, 'UNKNOWN'];
 
-  // A basis change can make chosen evidence ineligible: drop exactly that.
-  const previousBasis = useRef(basis);
+  // A basis change, or the action's promotion becoming known, can make chosen
+  // evidence ineligible: drop exactly that.
+  const rulesKey = JSON.stringify([
+    basis ?? null,
+    promotionIdentity?.nativePromotionKey ?? null,
+    promotionIdentity?.engagementKind ?? null,
+  ]);
+  const previousRules = useRef(rulesKey);
   useEffect(() => {
-    if (previousBasis.current === basis) return;
-    previousBasis.current = basis;
+    if (previousRules.current === rulesKey) return;
+    previousRules.current = rulesKey;
     if (management !== undefined && descriptionBlock(management, rules) !== undefined) {
       form.setFieldValue('managementObservationId', undefined);
     }
@@ -611,7 +743,11 @@ function VerifyForm({
       <Form.Item
         name="promotionObservationId"
         label={packetText.verifyPromotion}
-        extra={verifyText.promotionHelp}
+        extra={
+          promotionTermsUnreadable
+            ? `${verifyText.promotionHelp}${verifyText.promotionIdentityUnknown}`
+            : verifyText.promotionHelp
+        }
       >
         <EvidenceSelect
           loading={observationsLoading}
@@ -682,7 +818,11 @@ function VerifyForm({
       <SubTitle>{verifyText.conclusionSection}</SubTitle>
       <div style={{ marginBottom: 16 }}>
         {promotion ? (
-          <PromotionComparison observation={participation} computed={computed} />
+          <PromotionComparison
+            observation={participation}
+            computed={computed}
+            identity={promotionIdentity}
+          />
         ) : mode === 'description' ? (
           <DescriptionComparison
             targetText={packet.targetText ?? action?.targetText}
@@ -759,10 +899,17 @@ function VerifyForm({
           mode,
           packet,
           action,
-          contained,
+          coverage,
           evidence: evidence !== undefined,
           match,
           display,
+        })}
+        checks={backendChecks({
+          mode,
+          coverage,
+          promotionKnown: promotionIdentity !== undefined,
+          evidence: evidence !== undefined,
+          match,
         })}
       />
     </>
@@ -803,7 +950,8 @@ export function VerifyDrawer({
     open && listingId !== undefined ? `observations:${listingId}` : undefined,
     () => fetchListingObservations(context, listingId ?? '', OBSERVATION_LIMIT),
   );
-  // Best effort: a verifier without the governance read simply sees no stop.
+  // A verifier without the governance read cannot rule a stop out: the
+  // preview then leaves containment to the backend.
   const containments = useRemote(open ? 'containments:active' : undefined, () =>
     fetchContainments(context, true),
   );
@@ -813,6 +961,20 @@ export function VerifyDrawer({
       : action.value.actionKind === 'LISTING_PROMOTION_ACTION'
         ? 'promotion'
         : 'description';
+  // The declared promotion is disclosed only with financial access; without
+  // it, other promotions' observations cannot be ruled out here.
+  const terms = useRemote(
+    open && mode === 'promotion' ? `promotion-terms:${packet.actionId}` : undefined,
+    () => fetchPromotionTerms(context, packet.actionId),
+  );
+  const declared = terms.value?.terms;
+  const promotionIdentity: PromotionIdentity | undefined =
+    declared === undefined
+      ? undefined
+      : {
+          nativePromotionKey: declared.nativePromotionKey,
+          engagementKind: declared.engagementKind,
+        };
   const latest = packet.reports.at(-1);
 
   return (
@@ -880,7 +1042,11 @@ export function VerifyDrawer({
         observations={observations.value}
         observationsLoading={observations.loading}
         observationsFailed={action.failed || observations.failed}
-        contained={containedListing(containments.value, listingId)}
+        coverage={containmentCoverage(containments.value, action.value)}
+        promotionIdentity={promotionIdentity}
+        promotionTermsUnreadable={
+          mode === 'promotion' && !terms.loading && promotionIdentity === undefined
+        }
       />
     </FormDrawer>
   );
