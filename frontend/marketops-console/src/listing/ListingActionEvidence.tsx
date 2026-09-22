@@ -1,7 +1,9 @@
+import { ReloadOutlined } from '@ant-design/icons';
 import {
   Alert,
+  App,
+  AutoComplete,
   Button,
-  Card,
   Col,
   Flex,
   Form,
@@ -15,25 +17,30 @@ import {
   Typography,
 } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import type {
   Allowance,
   AllowanceAxis,
+  ConversionMeasurement,
   DescriptionCommand,
   Evaluation,
   EvaluationNodeResult,
+  ListingAction,
 } from '../api/listingConversion';
-import { evaluateNode } from '../api/listingConversion';
-import { formatDecimal } from '../format';
+import { evaluateNode, fetchEvaluation, fetchListingDetail } from '../api/listingConversion';
+import { formatDecimal, formatStoreTime } from '../format';
+import { contentPreparationText, detailText, evaluationText } from '../i18n/zh/listingActions';
 import { t } from '../i18n/zh/listing';
-import { EmptyState, LoadingState, TechnicalDetails } from '../ui';
+import { ActionModal, EmptyState, FailureAlert, LoadingState, TechnicalDetails } from '../ui';
+import { UUID_PATTERN } from './ListingActionFields';
 import {
   Code,
   Codes,
   Details,
   Hint,
   IdText,
+  ListingProblem,
   SubTitle,
   When,
   codeOptions,
@@ -138,99 +145,196 @@ export function AllowanceTable({
   );
 }
 
-export function NodeEvaluationForm({
+/** Measurement choices as the evaluation dialog knows them. */
+type MeasurementsState =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'listed'; readonly measurements: readonly ConversionMeasurement[] }
+  | { readonly kind: 'unavailable' };
+
+interface NodeEvaluationValues {
+  readonly nodeCode?: string;
+  readonly stage?: 'OPERATIONAL' | 'SETTLED';
+  readonly measurementId?: string;
+  readonly lateFactReference?: string;
+}
+
+/** Recording one node's result against the frozen plan, in a dialog. */
+function NodeEvaluationModal({
   context,
-  actionId,
+  action,
   evaluation,
   onEvaluated,
-  onFailure,
 }: {
   readonly context: ConsoleRequest;
-  readonly actionId: string;
+  readonly action: ListingAction;
   readonly evaluation: Evaluation;
   readonly onEvaluated: (value: Evaluation) => void;
-  readonly onFailure: (failure: ConsoleFailure | undefined) => void;
 }): React.JSX.Element {
-  const [nodeCode, setNodeCode] = useState(evaluation.formalNodes[0]?.nodeCode ?? '');
-  const [stage, setStage] = useState<'OPERATIONAL' | 'SETTLED'>('OPERATIONAL');
-  const [measurementId, setMeasurementId] = useState('');
-  const [lateFactReference, setLateFactReference] = useState('');
-  const [pending, setPending] = useState(false);
+  const [measurements, setMeasurements] = useState<MeasurementsState>({ kind: 'loading' });
+  const epoch = useRef(0);
+  const launched = action.launch !== undefined;
+  const firstNode = evaluation.formalNodes[0]?.nodeCode;
   return (
-    <Card size="small" type="inner" title={t('evaluationRecord')}>
-      <Form
-        layout="vertical"
-        aria-label={t('evaluationRecord')}
-        onFinish={() => {
-          setPending(true);
-          void evaluateNode(context, actionId, {
-            nodeCode,
-            stage,
-            ...(measurementId.trim() === '' ? {} : { measurementId: measurementId.trim() }),
-            ...(lateFactReference.trim() === ''
-              ? {}
-              : { lateFactReference: lateFactReference.trim() }),
-          }).then((outcome) => {
-            setPending(false);
-            if (outcome.ok) {
-              onEvaluated(outcome.value);
-              onFailure(undefined);
-            } else onFailure(outcome.failure);
-          });
-        }}
+    <ActionModal<NodeEvaluationValues>
+      trigger={{
+        label: evaluationText.record,
+        disabled: !launched || firstNode === undefined,
+        disabledReason: evaluationText.onlyAfterLaunch,
+      }}
+      title={evaluationText.recordTitle}
+      consequence={evaluationText.recordConsequence}
+      initialValues={{
+        stage: 'OPERATIONAL',
+        ...(firstNode === undefined ? {} : { nodeCode: firstNode }),
+      }}
+      onOpen={() => {
+        const ticket = ++epoch.current;
+        setMeasurements({ kind: 'loading' });
+        void fetchListingDetail(context, action.platformListingId).then((outcome) => {
+          if (ticket !== epoch.current) return;
+          setMeasurements(
+            outcome.ok
+              ? { kind: 'listed', measurements: outcome.value.measurements }
+              : { kind: 'unavailable' },
+          );
+        });
+      }}
+      onSubmit={async (values) => {
+        const measurementId = (values.measurementId ?? '').trim();
+        const lateFactReference = (values.lateFactReference ?? '').trim();
+        const outcome = await evaluateNode(context, action.id, {
+          nodeCode: values.nodeCode ?? '',
+          stage: values.stage ?? 'OPERATIONAL',
+          ...(measurementId === '' ? {} : { measurementId }),
+          ...(lateFactReference === '' ? {} : { lateFactReference }),
+        });
+        if (!outcome.ok) return outcome.failure;
+        onEvaluated(outcome.value);
+        return undefined;
+      }}
+    >
+      <Row gutter={16}>
+        <Col xs={24} md={12}>
+          <Form.Item
+            name="nodeCode"
+            label={evaluationText.node}
+            rules={[{ required: true, message: evaluationText.nodeRequired }]}
+          >
+            <Select
+              options={evaluation.formalNodes.map((node) => ({
+                value: node.nodeCode,
+                label: node.nodeCode,
+              }))}
+            />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item name="stage" label={evaluationText.stage} rules={[{ required: true }]}>
+            <Select options={codeOptions('evaluationStage', ['OPERATIONAL', 'SETTLED'])} />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Form.Item
+        name="measurementId"
+        label={evaluationText.measurement}
+        rules={[{ pattern: UUID_PATTERN, message: evaluationText.measurementInvalid }]}
+        {...(measurements.kind === 'unavailable'
+          ? { extra: contentPreparationText.listUnavailable }
+          : {})}
       >
-        <Row gutter={16}>
-          <Col xs={24} md={6}>
-            <Form.Item label={t('nodes')} required>
-              <Select<string | undefined>
-                value={nodeCode === '' ? undefined : nodeCode}
-                onChange={(next) => {
-                  setNodeCode(next ?? '');
-                }}
-                options={evaluation.formalNodes.map((node) => ({
-                  value: node.nodeCode,
-                  label: node.nodeCode,
-                }))}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={6}>
-            <Form.Item label={t('evaluationStage')}>
-              <Select<'OPERATIONAL' | 'SETTLED'>
-                value={stage}
-                onChange={setStage}
-                options={codeOptions('evaluationStage', ['OPERATIONAL', 'SETTLED']).map(
-                  (option) => ({ ...option, value: option.value as 'OPERATIONAL' | 'SETTLED' }),
-                )}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={6}>
-            <Form.Item label={t('measurementId')}>
-              <Input
-                value={measurementId}
-                onChange={(event) => {
-                  setMeasurementId(event.target.value);
-                }}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={6}>
-            <Form.Item label={t('lateFactReference')}>
-              <Input
-                value={lateFactReference}
-                onChange={(event) => {
-                  setLateFactReference(event.target.value);
-                }}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Button type="primary" htmlType="submit" loading={pending} disabled={nodeCode === ''}>
-          {t('evaluationRecord')}
+        <AutoComplete
+          allowClear
+          placeholder={evaluationText.measurementPlaceholder}
+          options={(measurements.kind === 'listed' ? measurements.measurements : []).map(
+            (measurement) => ({
+              value: measurement.id,
+              label: (
+                <Space size={6} wrap>
+                  <Typography.Text>
+                    {formatStoreTime(measurement.windowStart)} –{' '}
+                    {formatStoreTime(measurement.windowEnd)}
+                  </Typography.Text>
+                  <Code family="ratioState" code={measurement.ratioState} />
+                  <Typography.Text type="secondary" code style={{ fontSize: 12 }}>
+                    {measurement.id.slice(0, 8)}
+                  </Typography.Text>
+                </Space>
+              ),
+            }),
+          )}
+          {...(measurements.kind === 'loading'
+            ? { notFoundContent: <LoadingState rows={1} /> }
+            : {})}
+        />
+      </Form.Item>
+      <Form.Item name="lateFactReference" label={evaluationText.lateFact}>
+        <Input maxLength={512} />
+      </Form.Item>
+    </ActionModal>
+  );
+}
+
+/**
+ * The evaluation plan and results of one action, read as soon as it is shown.
+ * Results are recorded only after launch, against the plan frozen then.
+ */
+export function ActionEvaluation({
+  context,
+  action,
+}: {
+  readonly context: ConsoleRequest;
+  readonly action: ListingAction;
+}): React.JSX.Element {
+  const { message } = App.useApp();
+  const [evaluation, setEvaluation] = useState<Evaluation | undefined>(undefined);
+  const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const [generation, setGeneration] = useState(0);
+  const actionId = action.id;
+
+  useEffect(() => {
+    let active = true;
+    void fetchEvaluation(context, actionId).then((outcome) => {
+      if (!active) return;
+      if (outcome.ok) {
+        setEvaluation(outcome.value);
+        setFailure(undefined);
+      } else {
+        setEvaluation(undefined);
+        setFailure(outcome.failure);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [context, actionId, generation]);
+
+  return (
+    <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+      <Flex justify="flex-end" gap={8} wrap>
+        {evaluation !== undefined && (
+          <NodeEvaluationModal
+            context={context}
+            action={action}
+            evaluation={evaluation}
+            onEvaluated={(value) => {
+              void message.success(evaluationText.recorded);
+              setEvaluation(value);
+            }}
+          />
+        )}
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            setGeneration((value) => value + 1);
+          }}
+        >
+          {evaluationText.refresh}
         </Button>
-      </Form>
-    </Card>
+      </Flex>
+      {failure !== undefined && <ListingProblem failure={failure} />}
+      {evaluation === undefined && failure === undefined && <LoadingState rows={4} />}
+      {evaluation !== undefined && <EvaluationTable evaluation={evaluation} />}
+    </Space>
   );
 }
 
@@ -424,9 +528,12 @@ export function EvaluationTable({
 export function CommandTimeline({
   command,
   gate,
+  gateFailure,
 }: {
   readonly command: DescriptionCommand;
   readonly gate: readonly string[] | undefined;
+  /** A gate read that failed: the gate is then unknown, never shown as open. */
+  readonly gateFailure?: ConsoleFailure | undefined;
 }): React.JSX.Element {
   return (
     <section
@@ -479,7 +586,14 @@ export function CommandTimeline({
         />
         <div>
           <SubTitle>{t('gate')}</SubTitle>
-          {gate === undefined ? (
+          {gateFailure !== undefined ? (
+            <Alert
+              type="warning"
+              showIcon
+              title={detailText.commandUnknown}
+              description={<FailureAlert failure={gateFailure} />}
+            />
+          ) : gate === undefined ? (
             <LoadingState rows={1} />
           ) : gate.length === 0 ? (
             <Alert type="success" showIcon title={t('gateOpen')} />

@@ -1,6 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Flex, Tabs } from 'antd';
-import { useState } from 'react';
 import type { ConsoleRequest } from '../api/console';
 import { t } from '../i18n/zh/listing';
 import { ListingActionsPanel } from './ListingActionsPanel';
@@ -8,7 +7,7 @@ import { ListingGovernancePanel } from './ListingGovernancePanel';
 import { ListingHealthPanel } from './ListingHealthPanel';
 import { ListingManualPanel } from './ListingManualPanel';
 import { ListingOperationsReviewPanel } from './ListingOperationsReviewPanel';
-import { useSearchParam } from '../ui/useSearchParam';
+import { useSearchParam, useSearchParamsPatch } from '../ui/useSearchParam';
 
 export interface ListingConversionShellProps {
   readonly context: ConsoleRequest;
@@ -48,10 +47,9 @@ export function ListingConversionShell({
   const setTab = (next: Tab): void => {
     setRawTab(next === DEFAULT_TAB ? undefined : next);
   };
-  const [prepareListing, setPrepareListing] = useState<string | undefined>(undefined);
-  // Each "准备" opens a fresh actions panel for that listing, even when the
-  // panel was showing an action's detail; other tabs keep their state.
-  const [prepareRequest, setPrepareRequest] = useState(0);
+  // "准备" hands a listing to the actions tab through the address bar: the tab,
+  // the listing to prepare on and a closed action detail change in one step.
+  const patch = useSearchParamsPatch();
   return (
     <section aria-label={t('title')} lang="zh-CN">
       {onBack !== undefined && (
@@ -75,9 +73,12 @@ export function ListingConversionShell({
                 <ListingHealthPanel
                   context={context}
                   onPrepare={(listingId) => {
-                    setPrepareListing(listingId);
-                    setPrepareRequest((value) => value + 1);
-                    setTab('actions');
+                    patch({
+                      [TAB_PARAM]: 'actions',
+                      for: listingId,
+                      action: undefined,
+                      atab: undefined,
+                    });
                   }}
                 />
               ),
@@ -85,13 +86,7 @@ export function ListingConversionShell({
             {
               key: 'actions',
               label: t('tabActions'),
-              children: (
-                <ListingActionsPanel
-                  key={prepareRequest}
-                  context={context}
-                  {...(prepareListing === undefined ? {} : { listingId: prepareListing })}
-                />
-              ),
+              children: <ListingActionsPanel context={context} />,
             },
             {
               key: 'manual',
