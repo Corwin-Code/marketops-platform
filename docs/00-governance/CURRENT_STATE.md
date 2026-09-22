@@ -1154,3 +1154,5 @@ Controller审查`SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1`（`01_DECISION
 原S4-DR-R1-022与027的关闭记录不改写；其中“完整等待链及其证据已满足”对当前证据的可复用性按Controller裁定限定。其余25项不重开，不新增第028项Frozen Finding。F-M01、F-M02、F-S01、F-W01、F-W02、E-04六项外部义务与全部前序发布义务保留。
 
 本次补充交回后PR #35仍为Draft／Unmerged，等待Controller对B1—B3的有限残余验证；实施与文档提交、发布候选的CI与CodeQL结果在PR #35正文与外部交接中报告，不写回仓库。`production_write_enabled`保持`false`。Ready、merge、auto-merge、直接写main、force-push/rebase、分支删除、保护/Ruleset/权限/Secret变化、规则或阈值放宽、dismiss/skip、SQL迁移或新schema、部署、生产迁移、Level 2、真实Provider／账户、Gate EV／E、Pilot、生产写与下一Slice均未获授权。
+
+2026-09-22 B2续办：`CLAUDE_OPUS_5`按外部交接`02_PR35_B2_CONTINUATION.md`续办B2。因宿主另一项目占用`*:8080`，Owner指示改用9999端口；实施提交`e0ee75e2511e855df6a09cdf7d45170bae2fe534`只改fresh-clone入口链的后端端口与拒绝逻辑。在该提交上的fresh-clone full真实运行因宿主临时端口耗尽在backend verify中失败（Surefire 1922/0，Failsafe已运行277项中97项连接获取失败），前端与浏览器阶段未到达；Owner随后决定不再重跑本地full、据实交回，以已发布Head的CI为完整回归。记录见`docs/07-phase-evidence/SLICE-V1-004/pr35-b2-continuation-r1/README.md`。上方YAML、历史关闭与本补充的交回状态不变，未填报Controller PASS。
