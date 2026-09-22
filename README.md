@@ -11,7 +11,7 @@
 | `backend/marketops-server` | Java 21 / Spring Boot 模块化单体，PostgreSQL + Flyway |
 | `frontend/marketops-console` | React + TypeScript 运营控制台（Vite） |
 | `infra/compose` | 本地 PostgreSQL |
-| `scripts` | 本地环境生成与自检（`make env-init`、`make doctor`） |
+| `scripts` | 本地配置生成（`make env-init`） |
 | `docs/product` | 产品概览、各 Slice 产品说明、原始需求与命名约定 |
 | `docs/architecture` | 架构概览 |
 | `docs/api` | 已有 API 说明 |
@@ -41,3 +41,5 @@ make frontend-dev
 ```
 
 完整说明见 [本地开发](docs/development.md)。开发约定见 [CLAUDE.md](CLAUDE.md)。
+
+本仓库仅用于 MarketOps Russia 内部产品研发，不授予公开发布、再许可或对外分发权利。

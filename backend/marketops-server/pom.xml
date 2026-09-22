@@ -27,8 +27,8 @@
          source tree produce different bytes. -->
     <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
 
-    <!-- Continuous integration supplies the commit a contributor authored. A local
-         build leaves the literal below, which the metadata endpoint reports as-is. -->
+    <!-- A build may pass the commit it was made from; otherwise the literal below
+         is reported as-is by the metadata endpoint. -->
     <marketops.build.gitCommit>unknown</marketops.build.gitCommit>
 
     <spring-modulith.version>2.1.0</spring-modulith.version>

@@ -13,16 +13,15 @@ import org.springframework.stereotype.Component;
  * refusal and would have no signal about why. Failing startup turns that into a
  * message at the moment somebody can act on it.
  *
- * <p>The workstation and continuous-integration environments are exempt because
- * they exercise the boundary with their own decoder rather than a real provider.
- * They are named explicitly, so a new environment is covered by the rule rather
- * than by an omission.
+ * <p>The workstation environment is exempt because it exercises the boundary
+ * with its own decoder rather than a real provider. It is named explicitly, so a
+ * new environment is covered by the rule rather than by an omission.
  */
 @Component
 class IdentityConfigurationContract implements InitializingBean {
 
     /** Environments that legitimately run without a real identity provider. */
-    private static final Set<String> EXEMPT_ENVIRONMENTS = Set.of("local", "ci");
+    private static final Set<String> EXEMPT_ENVIRONMENTS = Set.of("local");
 
     private final String environment;
     private final IdentityProperties properties;

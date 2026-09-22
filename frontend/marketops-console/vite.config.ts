@@ -20,7 +20,7 @@ const environmentDirectory =
 /**
  * Bundler configuration for the operations console.
  *
- * Two decisions here carry a security consequence and are asserted by tests:
+ * Two decisions here carry a security consequence:
  * the environment prefix, which decides what may reach a public artefact, and
  * the set of replaced identifiers, which is exactly two.
  */
