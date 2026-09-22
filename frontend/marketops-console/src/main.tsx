@@ -32,7 +32,7 @@ if (container === null) {
 
 createRoot(container).render(
   <StrictMode>
-    <ConfigProvider locale={zhCN} theme={THEME}>
+    <ConfigProvider locale={zhCN} theme={THEME} button={{ autoInsertSpace: false }}>
       <AntApp>
         <App />
       </AntApp>

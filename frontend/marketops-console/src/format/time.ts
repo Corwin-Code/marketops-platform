@@ -104,3 +104,18 @@ export function toStoreDayjs(iso: string | null | undefined): Dayjs | undefined 
 export function storeLocalToIso(d: Dayjs): string {
   return dayjs.tz(d.format('YYYY-MM-DDTHH:mm:ss'), STORE_TIMEZONE).toISOString();
 }
+
+const ZONE_NAMES: Readonly<Record<string, string>> = {
+  'Europe/Moscow': '莫斯科时间',
+  'Asia/Shanghai': '北京时间',
+  UTC: '协调世界时',
+};
+
+/** A zone as operators read it, e.g. `莫斯科时间（Europe/Moscow）`; unknown zones stay as their id. */
+export function timezoneLabel(zone: string | null | undefined): string {
+  if (zone === null || zone === undefined || zone.trim() === '') {
+    return '—';
+  }
+  const name = ZONE_NAMES[zone];
+  return name === undefined ? zone : `${name}（${zone}）`;
+}

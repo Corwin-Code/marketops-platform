@@ -11,10 +11,10 @@ import type { CodeLabels } from '../labels';
 /** Section titles and one-line hints. */
 export const availabilityText = {
   queueTitle: '缺货与可售风险',
-  queueEmpty: '当前范围内没有商品存在可售风险。队列为空不代表未被监控。',
+  queueEmpty: '当前范围内没有商品存在可售风险；监控仍在进行。',
   casesTitle: '可售风险责任工单',
   casesEmpty: '当前范围内没有需要处理的工单。“观察”级风险只在队列中显示，不会生成工单。',
-  authorityTitle: '供应权限',
+  authorityTitle: '入库证明与提前期策略',
   authorityHint:
     '登记可追溯的入库证明和按生效时间管理的提前期策略。每次变更都会触发重新计算，不会调用任何电商平台接口。',
 } as const;

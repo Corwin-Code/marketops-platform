@@ -24,6 +24,7 @@ import {
   type ListingReviewReading,
   type ListingReviewRow,
 } from '../api/listingConversion';
+import { timezoneLabel } from '../format';
 import { t } from '../i18n/zh/listing';
 import { EmptyState, LoadingState, SectionCard, TechnicalDetails } from '../ui';
 import {
@@ -125,7 +126,11 @@ export function ListingOperationsReviewPanel({
               <>
                 <Details
                   items={[
-                    { key: 'tz', label: t('reviewTimezone'), children: bundle.timezone },
+                    {
+                      key: 'tz',
+                      label: t('reviewTimezone'),
+                      children: timezoneLabel(bundle.timezone),
+                    },
                     {
                       key: 'asOf',
                       label: t('feedbackSnapshot'),

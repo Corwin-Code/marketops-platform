@@ -1,31 +1,46 @@
-import { useMemo } from 'react';
+import { lazy, useMemo } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import type { ConsoleRequest } from './api/console';
 import type { ConsoleConfig } from './config';
 import { AppLayout } from './layout/AppLayout';
 import { ROUTES } from './layout/navigation';
 import { NotFoundPage } from './pages/NotFoundPage';
-import {
-  AdvertisingBriefPage,
-  AdvertisingCasePage,
-  AdvertisingOperationsPage,
-  AdvertisingQueuePage,
-} from './pages/advertising';
-import {
-  AvailabilityAuthorityPage,
-  AvailabilityCasesPage,
-  AvailabilityRisksPage,
-} from './pages/availability';
-import { ListingPage } from './pages/listing';
-import {
-  CommandPage,
-  PricingExportPage,
-  PricingQueuePage,
-  ReviewPage,
-  SubjectPage,
-} from './pages/pricing';
-import { SystemStatusPage } from './pages/system';
 import type { Session } from './session/session';
+
+// Each business area is its own chunk, loaded when one of its pages is opened.
+const pricing = () => import('./pages/pricing');
+const availability = () => import('./pages/availability');
+const advertising = () => import('./pages/advertising');
+const PricingQueuePage = lazy(async () => ({ default: (await pricing()).PricingQueuePage }));
+const SubjectPage = lazy(async () => ({ default: (await pricing()).SubjectPage }));
+const ReviewPage = lazy(async () => ({ default: (await pricing()).ReviewPage }));
+const CommandPage = lazy(async () => ({ default: (await pricing()).CommandPage }));
+const PricingExportPage = lazy(async () => ({ default: (await pricing()).PricingExportPage }));
+const AvailabilityRisksPage = lazy(async () => ({
+  default: (await availability()).AvailabilityRisksPage,
+}));
+const AvailabilityCasesPage = lazy(async () => ({
+  default: (await availability()).AvailabilityCasesPage,
+}));
+const AvailabilityAuthorityPage = lazy(async () => ({
+  default: (await availability()).AvailabilityAuthorityPage,
+}));
+const AdvertisingQueuePage = lazy(async () => ({
+  default: (await advertising()).AdvertisingQueuePage,
+}));
+const AdvertisingCasePage = lazy(async () => ({
+  default: (await advertising()).AdvertisingCasePage,
+}));
+const AdvertisingOperationsPage = lazy(async () => ({
+  default: (await advertising()).AdvertisingOperationsPage,
+}));
+const AdvertisingBriefPage = lazy(async () => ({
+  default: (await advertising()).AdvertisingBriefPage,
+}));
+const ListingPage = lazy(async () => ({ default: (await import('./pages/listing')).ListingPage }));
+const SystemStatusPage = lazy(async () => ({
+  default: (await import('./pages/system')).SystemStatusPage,
+}));
 
 /** What the shell needs in order to show a signed-in operator their work. */
 export interface ConsoleShellProps {

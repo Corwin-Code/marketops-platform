@@ -64,7 +64,7 @@ export const CAUSE_LABELS: CodeLabels = {
 
 /** Accountable business roles. */
 export const ROLE_LABELS: CodeLabels = {
-  OWNER: '负责人（Owner）',
+  OWNER: '所有者',
   OPERATIONS: '运营',
   FINANCE: '财务',
   READ_ONLY: '只读',
@@ -881,7 +881,7 @@ export const REASON_LABELS: CodeLabels = {
   COMPENSATION_GATE_SCOPE_ABSENT: '缺少恢复闸门范围',
   COMPENSATION_HARD_AUTHORITY_INVALID: '恢复的硬性授权无效',
   COMPENSATION_HARD_STOP_ACTIVE: '恢复硬性停止生效中',
-  COMPENSATION_OWNER_AUTHORITY_EXPIRED: '恢复的 Owner 授权已过期',
+  COMPENSATION_OWNER_AUTHORITY_EXPIRED: '恢复所需的所有者授权已过期',
   COMPLETE_AUTHORITY_SNAPSHOT_CHANGED: '完整授权快照已变化',
   CONTRADICTORY_NATIVE_TASK_RESULT: '平台任务结果相互矛盾',
   CONTROL_GRANULARITY_UNPROVEN: '控制粒度未证实',

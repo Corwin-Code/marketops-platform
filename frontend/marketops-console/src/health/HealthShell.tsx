@@ -231,8 +231,9 @@ function StatusDetails({
   return (
     <Descriptions
       size="small"
-      column={columns}
+      column={columns === 1 ? 1 : { xs: 1, sm: 1, md: 2, lg: 2, xl: 2, xxl: 2 }}
       bordered
+      styles={{ label: { whiteSpace: 'nowrap' } }}
       items={[
         { key: 'application', label: text.application, children: status.application },
         {

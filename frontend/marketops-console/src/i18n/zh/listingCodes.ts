@@ -234,7 +234,7 @@ export const LISTING_CODES = {
     RETURN_RATE_ABOVE_BOUND: '退货率高于上限',
     SUPPLY_COVERAGE_LOST: '库存覆盖丧失',
     PLATFORM_TERMS_CHANGED: '平台条款变更',
-    OWNER_DECISION: 'Owner 决定',
+    OWNER_DECISION: '所有者决定',
   },
   occupationState: {
     ACQUIRED: '已获取',
@@ -404,7 +404,7 @@ export const LISTING_CODES = {
     REMOVED: '已移除',
   },
   causeOwnerRole: {
-    OWNER: 'Owner',
+    OWNER: '所有者',
     TECH_DATA: '技术与数据',
     OPS_LEAD: '运营负责人',
     MARKETPLACE_OPERATOR: '平台运营',

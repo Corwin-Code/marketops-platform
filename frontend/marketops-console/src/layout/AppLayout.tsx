@@ -20,7 +20,7 @@ import {
   theme,
 } from 'antd';
 import type { MenuProps } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
   environmentLabel,
@@ -29,6 +29,7 @@ import {
   shell as text,
   shortId,
 } from '../i18n/zh/shell';
+import { LoadingState } from '../ui';
 import { NAV_GROUPS, placeRoute } from './navigation';
 
 /** How long before expiry the operator is warned. */
@@ -152,7 +153,11 @@ export function AppLayout({
         }}
         trigger={null}
         width={220}
-        style={narrow && !collapsed ? { position: 'fixed', height: '100vh', zIndex: 20 } : {}}
+        style={
+          narrow && !collapsed
+            ? { position: 'fixed', height: '100vh', zIndex: 20 }
+            : { position: 'sticky', top: 0, height: '100vh', overflow: 'auto' }
+        }
       >
         <div
           style={{
@@ -205,6 +210,9 @@ export function AppLayout({
           aria-label={text.header}
           style={{
             background: token.colorBgContainer,
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
             padding: '0 16px',
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
             display: 'flex',
@@ -279,7 +287,9 @@ export function AppLayout({
             />
           </nav>
           <main>
-            <Outlet />
+            <Suspense fallback={<LoadingState />}>
+              <Outlet />
+            </Suspense>
           </main>
         </Layout.Content>
       </Layout>

@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, Flex, Tabs, Typography } from 'antd';
+import { Button, Flex, Tabs } from 'antd';
 import { useState } from 'react';
 import type { ConsoleRequest } from '../api/console';
 import { t } from '../i18n/zh/listing';
@@ -12,7 +12,8 @@ import { ListingOperationsReviewPanel } from './ListingOperationsReviewPanel';
 export interface ListingConversionShellProps {
   readonly context: ConsoleRequest;
   readonly storeId: string;
-  readonly onBack: () => void;
+  /** Shown as a back button only when given; the routed page supplies its own title. */
+  readonly onBack?: (() => void) | undefined;
   /**
    * @deprecated The console is Chinese only; kept so existing callers still compile.
    */
@@ -35,14 +36,13 @@ export function ListingConversionShell({
   const [prepareListing, setPrepareListing] = useState<string | undefined>(undefined);
   return (
     <section aria-label={t('title')} lang="zh-CN">
-      <Flex align="center" gap={12} wrap style={{ marginBottom: 8 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
-          {t('back')}
-        </Button>
-        <Typography.Title level={3} style={{ margin: 0 }}>
-          {t('title')}
-        </Typography.Title>
-      </Flex>
+      {onBack !== undefined && (
+        <Flex align="center" gap={12} wrap style={{ marginBottom: 8 }}>
+          <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
+            {t('back')}
+          </Button>
+        </Flex>
+      )}
       <div>
         <Tabs
           activeKey={tab}

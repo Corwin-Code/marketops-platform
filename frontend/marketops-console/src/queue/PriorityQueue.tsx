@@ -212,7 +212,7 @@ export function PriorityQueue({
 
   return (
     <section aria-label="今日工作" data-state={state}>
-      <SectionCard title="今日工作" extra={refresh} state={state}>
+      <SectionCard title="待处理商品" extra={refresh} state={state}>
         <Typography.Paragraph type="secondary" style={{ marginTop: 0 }}>
           按处理优先级排列的商品；标记为已阻断的商品当前不能调价。
         </Typography.Paragraph>

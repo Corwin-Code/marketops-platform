@@ -10,5 +10,6 @@ export {
   STORE_TIMEZONE,
   STORE_TIMEZONE_LABEL,
   storeLocalToIso,
+  timezoneLabel,
   toStoreDayjs,
 } from './time';
