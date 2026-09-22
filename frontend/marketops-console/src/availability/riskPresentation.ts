@@ -1,3 +1,11 @@
+import { codeLabel } from '../i18n/labels';
+import {
+  CAUSE_LABELS,
+  FULFILLMENT_MODE_LABELS,
+  LANE_LABELS,
+  PLATFORM_LABELS,
+} from '../i18n/zh/availability';
+
 /**
  * How the availability surface is allowed to present a risk.
  *
@@ -44,58 +52,56 @@ const EVIDENCE = new Map<string, RiskPresentation>(
   Object.entries({
     CONFIRMED: {
       tone: 'confirmed',
-      label: 'Confirmed',
-      explanation: 'Fresh, complete and unconflicted evidence of record.',
+      label: '已确认',
+      explanation: '证据新鲜、完整且无冲突，可作为定论。',
       establishedFact: true,
     },
     OPERATIONAL: {
       tone: 'confirmed',
-      label: 'Operational',
-      explanation: 'Fresh and complete, from the operational rather than settled source.',
+      label: '运营数据',
+      explanation: '证据新鲜完整，来自运营数据源而非结算数据源。',
       establishedFact: true,
     },
     PROVISIONAL: {
       tone: 'qualified',
-      label: 'Provisional',
-      explanation:
-        'A conservative lower bound already proves the danger. The full picture is not known.',
+      label: '暂定',
+      explanation: '保守下限已证明存在风险，但全貌尚不清楚。',
       establishedFact: false,
     },
     CARRIED_FORWARD: {
       tone: 'qualified',
-      label: 'Carried forward',
-      explanation:
-        'The last eligible answer, carried for a bounded period while observation is lost.',
+      label: '沿用上次',
+      explanation: '观测中断期间，在限定时间内沿用最近一次有效结果。',
       establishedFact: false,
     },
     DATA_BLOCKED: {
       tone: 'blocked',
-      label: 'Data blocked',
-      explanation: 'A fact that decides the answer is missing. No urgency can be claimed.',
+      label: '数据阻断',
+      explanation: '缺少决定结论的关键数据，无法判断紧急程度。',
       establishedFact: false,
     },
     POLICY_BLOCKED: {
       tone: 'blocked',
-      label: 'Policy blocked',
-      explanation: 'No valid policy version resolves for the required scope.',
+      label: '策略阻断',
+      explanation: '所需范围内没有可用的有效策略版本。',
       establishedFact: false,
     },
     CONFLICTED: {
       tone: 'blocked',
-      label: 'Conflicted',
-      explanation: 'Two attributable sources disagree and neither wins deterministically.',
+      label: '数据冲突',
+      explanation: '两个可追溯的数据源结论不一致，且无法确定以哪个为准。',
       establishedFact: false,
     },
     STALE: {
       tone: 'blocked',
-      label: 'Stale',
-      explanation: 'The evidence exists but is older than its freshness bound.',
+      label: '数据过期',
+      explanation: '证据存在，但已超出新鲜度时限。',
       establishedFact: false,
     },
     UNKNOWN: {
       tone: 'blocked',
-      label: 'Unknown',
-      explanation: 'Nothing attributable was found.',
+      label: '未知',
+      explanation: '没有找到可追溯的证据。',
       establishedFact: false,
     },
   }),
@@ -104,19 +110,19 @@ const EVIDENCE = new Map<string, RiskPresentation>(
 /** The answer when a state arrives that this console does not recognise. */
 const UNRECOGNISED: RiskPresentation = {
   tone: 'blocked',
-  label: 'Unknown',
-  explanation: 'Nothing attributable was found.',
+  label: '未知',
+  explanation: '没有找到可追溯的证据。',
   establishedFact: false,
 };
 
-const LANES = new Map<string, { readonly label: string; readonly severity: number }>(
+const LANES = new Map<string, { readonly severity: number }>(
   Object.entries({
-    HEALTHY: { label: 'Healthy', severity: 0 },
-    WATCH: { label: 'Watch', severity: 1 },
-    HIGH: { label: 'High', severity: 2 },
-    CRITICAL: { label: 'Critical', severity: 3 },
-    REVIEW: { label: 'Review', severity: 2 },
-    UNRESOLVED: { label: 'Unresolved', severity: 2 },
+    HEALTHY: { severity: 0 },
+    WATCH: { severity: 1 },
+    HIGH: { severity: 2 },
+    CRITICAL: { severity: 3 },
+    REVIEW: { severity: 2 },
+    UNRESOLVED: { severity: 2 },
   }),
 );
 
@@ -127,7 +133,9 @@ export function presentEvidence(state: string): RiskPresentation {
 
 /** The operator-facing name of a lane. */
 export function laneLabel(lane: string): string {
-  return LANES.get(lane)?.label ?? 'Unresolved';
+  return Object.hasOwn(LANE_LABELS, lane)
+    ? codeLabel(LANE_LABELS, lane)
+    : codeLabel(LANE_LABELS, 'UNRESOLVED');
 }
 
 /**
@@ -158,55 +166,26 @@ export function childLabel(
   fulfillmentModeCode: string | null,
 ): string {
   if (childKind === 'COMPANY') {
-    return 'Company supply';
+    return '公司库存';
   }
-  const platform = platformCode ?? 'Channel';
+  const platform =
+    platformCode === null
+      ? '渠道'
+      : Object.hasOwn(PLATFORM_LABELS, platformCode)
+        ? codeLabel(PLATFORM_LABELS, platformCode)
+        : platformCode;
   const mode = fulfillmentModeCode === null ? '' : ` · ${modeLabel(fulfillmentModeCode)}`;
   return `${platform}${mode}`;
 }
 
 /** The operator-facing name of a fulfillment mode. */
 export function modeLabel(code: string): string {
-  switch (code) {
-    case 'MARKETPLACE_FULFILLED':
-      return 'Marketplace fulfilled';
-    case 'SELLER_FULFILLED':
-      return 'Seller fulfilled';
-    default:
-      return 'Unknown mode';
-  }
+  return Object.hasOwn(FULFILLMENT_MODE_LABELS, code)
+    ? codeLabel(FULFILLMENT_MODE_LABELS, code)
+    : '未知发货模式';
 }
 
 /** Why somebody is needed, in words rather than a code. */
 export function causeLabel(code: string): string {
-  switch (code) {
-    case 'CHANNEL_OUT_OF_STOCK':
-      return 'Channel has nothing available';
-    case 'CHANNEL_COVER_SHORT':
-      return 'Channel runs out inside its horizon';
-    case 'CHANNEL_NOT_SELLABLE':
-      return 'Listing cannot be bought';
-    case 'COMPANY_SUPPLY_SHORT':
-      return 'Company runs out inside lead time and safety';
-    case 'COMPANY_INBOUND_LAPSED':
-      return 'Inbound the cover depended on has lapsed';
-    case 'STOCK_DATA_DEFECT':
-      return 'Stock evidence is missing or contradictory';
-    case 'OWNERSHIP_UNDECLARED':
-      return 'Platform and internal stock are not proven distinct';
-    case 'LEAD_TIME_POLICY_MISSING':
-      return 'No lead-time and safety policy resolves';
-    case 'DEMAND_POLICY_MISSING':
-      return 'No demand policy version is in force';
-    case 'DEMAND_UNOBSERVABLE':
-      return 'Demand cannot be observed';
-    case 'PROFIT_DATA_BLOCKED':
-      return 'Profit evidence is stale, incomplete or conflicted';
-    case 'RETURN_QUALITY_REVIEW':
-      return 'Return and quality evidence needs a judgement';
-    case 'NONE':
-      return 'No action needed';
-    default:
-      return code;
-  }
+  return codeLabel(CAUSE_LABELS, code);
 }

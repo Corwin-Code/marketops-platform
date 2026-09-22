@@ -11,6 +11,8 @@ interface ImportMetaEnv {
   readonly VITE_MARKETOPS_API_BASE_URL?: string;
   /** Name of the environment the console is pointed at. */
   readonly VITE_MARKETOPS_ENVIRONMENT?: string;
+  /** IANA zone the store operates in; Europe/Moscow when absent or unknown. */
+  readonly VITE_MARKETOPS_STORE_TIMEZONE?: string;
 }
 
 interface ImportMeta {

@@ -1,3 +1,6 @@
+import { Alert, Button, Descriptions, Progress, Space, Steps, Typography } from 'antd';
+import type { StepsProps } from 'antd';
+import { DownloadOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useRef, useState } from 'react';
 import type { ConsoleRequest } from '../api/console';
 import {
@@ -6,6 +9,35 @@ import {
   submitDiagnosticExport,
 } from '../api/diagnosticExport';
 import type { ExportJob } from '../api/diagnosticExport';
+import { codeLabel } from '../i18n';
+import {
+  EXPORT_FAILURE_LABELS,
+  EXPORT_STATE_COLORS,
+  EXPORT_STATE_LABELS,
+  EXPORT_WINDOW_LABELS,
+} from '../i18n/zh/pricing';
+import { CodeTag, DateTime, SectionCard } from '../ui';
+
+/** Where the job is on its way to a downloadable file. */
+function exportSteps(job: ExportJob | undefined): {
+  readonly current: number;
+  readonly status: NonNullable<StepsProps['status']>;
+} {
+  switch (job?.state) {
+    case undefined:
+      return { current: 0, status: 'wait' };
+    case 'QUEUED':
+      return { current: 1, status: 'process' };
+    case 'RUNNING':
+      return { current: 2, status: 'process' };
+    case 'SUCCEEDED':
+      return { current: 3, status: 'finish' };
+    case 'FAILED':
+      return { current: 2, status: 'error' };
+    case 'EXPIRED':
+      return { current: 3, status: 'error' };
+  }
+}
 
 /** Asynchronous store export; errors never produce a partially downloaded file. */
 export function DiagnosticExportPanel({
@@ -19,6 +51,7 @@ export function DiagnosticExportPanel({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [failed, setFailed] = useState(false);
+  const [verifiedParts, setVerifiedParts] = useState<number>();
   const key = useRef<string | undefined>(undefined);
   const request = useRef<AbortController | undefined>(undefined);
   useEffect(
@@ -35,16 +68,16 @@ export function DiagnosticExportPanel({
     key.current ??= crypto.randomUUID();
     setBusy(true);
     setFailed(false);
-    setMessage('Queuing the export…');
+    setMessage('正在提交导出请求…');
     const result = await submitDiagnosticExport(context, storeId, key.current, controller.signal);
     if (controller.signal.aborted) return;
     setBusy(false);
     if (result.ok) {
       setJob(result.value);
-      setMessage('Export queued.');
+      setMessage('导出已排队。');
     } else {
       setFailed(true);
-      setMessage('Export request failed. Retry uses the same request key.');
+      setMessage('导出请求失败。重试会沿用同一个请求编号，不会重复导出。');
     }
   };
 
@@ -59,16 +92,16 @@ export function DiagnosticExportPanel({
           setFailed(false);
           setMessage(
             result.value.state === 'SUCCEEDED'
-              ? 'Export ready. Download expires after one hour.'
+              ? '导出已就绪，下载链接一小时后失效。'
               : result.value.state === 'FAILED'
-                ? 'Export failed. No downloadable file was published.'
+                ? '导出失败，没有生成可下载的文件。'
                 : result.value.state === 'EXPIRED'
-                  ? 'Export expired.'
-                  : 'Preparing the export…',
+                  ? '导出已过期。'
+                  : '正在生成导出…',
           );
         } else {
           setFailed(true);
-          setMessage('Cannot read export status. Check access and refresh status.');
+          setMessage('无法读取导出状态，请检查权限后刷新状态。');
         }
       });
     }, 2000);
@@ -90,10 +123,10 @@ export function DiagnosticExportPanel({
     if (result.ok && result.value.storeId === storeId) {
       setJob(result.value);
       setFailed(false);
-      setMessage(`Export state: ${result.value.state}.`);
+      setMessage(`导出状态：${codeLabel(EXPORT_STATE_LABELS, result.value.state)}。`);
     } else {
       setFailed(true);
-      setMessage('Cannot read export status. Check access and refresh status.');
+      setMessage('无法读取导出状态，请检查权限后刷新状态。');
     }
   };
 
@@ -103,16 +136,20 @@ export function DiagnosticExportPanel({
     request.current = controller;
     setBusy(true);
     setFailed(false);
-    setMessage('Verifying export parts…');
+    setVerifiedParts(0);
+    setMessage('正在校验导出分片…');
     const result = await downloadDiagnosticExport(context, job, controller.signal, (parts) => {
-      if (!controller.signal.aborted)
-        setMessage(`Verified ${String(parts)} of ${String(job.completedParts)} parts.`);
+      if (!controller.signal.aborted) {
+        setVerifiedParts(parts);
+        setMessage(`已校验 ${String(parts)} / ${String(job.completedParts)} 个分片。`);
+      }
     });
     if (controller.signal.aborted) return;
     setBusy(false);
     if (!result.ok) {
       setFailed(true);
-      setMessage('Download refused or incomplete. No file was saved.');
+      setVerifiedParts(undefined);
+      setMessage('下载被拒绝或不完整，未保存任何文件。');
       return;
     }
     const url = URL.createObjectURL(result.value);
@@ -125,80 +162,165 @@ export function DiagnosticExportPanel({
     setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 1000);
-    setMessage('Verified export sent to the browser download manager.');
+    setMessage('已校验的导出文件已交给浏览器下载。');
   };
 
-  return (
-    <section aria-label="Diagnostic export">
-      <h2>Export store diagnosis</h2>
-      <p>
-        Last 30 days: current store and listing metrics, findings and evidence references. Prepared
-        in the background.
-      </p>
+  const steps = exportSteps(job);
+  const percent =
+    verifiedParts === undefined || job === undefined || job.completedParts === 0
+      ? undefined
+      : Math.min(100, Math.round((verifiedParts / job.completedParts) * 100));
+
+  const actionsBar = (
+    <Space wrap>
       {job === undefined && (
-        <button
-          type="button"
+        <Button
+          type="primary"
+          icon={<ExportOutlined />}
+          loading={busy}
           disabled={busy}
           onClick={() => {
             void begin();
           }}
         >
-          Prepare export
-        </button>
-      )}
-      {job !== undefined && (
-        <p>
-          Export state: {job.state}. Records: {String(job.rowCount)}.
-        </p>
+          {failed ? '重试导出' : '准备导出'}
+        </Button>
       )}
       {job?.state === 'SUCCEEDED' && (
-        <button
-          type="button"
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          loading={busy}
           disabled={busy}
           onClick={() => {
             void download();
           }}
         >
-          Download verified export
-        </button>
+          下载已校验的导出
+        </Button>
       )}
       {job !== undefined && failed && (
-        <button
-          type="button"
+        <Button
+          icon={<ReloadOutlined />}
           disabled={busy}
           onClick={() => {
             void refresh();
           }}
         >
-          Refresh export status
-        </button>
+          刷新导出状态
+        </Button>
       )}
       {(job?.state === 'FAILED' || job?.state === 'EXPIRED') && (
-        <button
-          type="button"
+        <Button
           onClick={() => {
             key.current = undefined;
             setJob(undefined);
             setMessage('');
             setFailed(false);
+            setVerifiedParts(undefined);
           }}
         >
-          New export
-        </button>
+          新建导出
+        </Button>
       )}
-      {message !== '' && <p role={failed ? 'alert' : 'status'}>{message}</p>}
       {busy && (
-        <button
-          type="button"
+        <Button
+          type="text"
           onClick={() => {
             request.current?.abort();
             setBusy(false);
-            setMessage('Stopped waiting. Background work may continue.');
+            setMessage('已停止等待，后台任务可能仍在继续。');
           }}
         >
-          Stop waiting
-        </button>
+          停止等待
+        </Button>
       )}
+    </Space>
+  );
+
+  return (
+    <section aria-label="诊断导出" data-state={job?.state ?? 'idle'}>
+      <SectionCard title="导出店铺诊断" extra={actionsBar}>
+        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+          <Typography.Text type="secondary">
+            导出近 30 天的店铺与商品指标、规则结论和证据引用，在后台生成。
+          </Typography.Text>
+          <Steps
+            size="small"
+            current={steps.current}
+            status={steps.status}
+            items={[
+              { title: '提交请求' },
+              { title: '排队' },
+              { title: '生成' },
+              { title: job?.state === 'EXPIRED' ? '已过期' : '可下载' },
+            ]}
+          />
+          {job !== undefined && (
+            <Descriptions
+              bordered
+              size="small"
+              column={{ xs: 1, md: 2, xl: 3 }}
+              items={[
+                {
+                  key: 'state',
+                  label: '导出状态',
+                  children: (
+                    <CodeTag
+                      labels={EXPORT_STATE_LABELS}
+                      code={job.state}
+                      colors={EXPORT_STATE_COLORS}
+                    />
+                  ),
+                },
+                {
+                  key: 'window',
+                  label: '时间范围',
+                  children: codeLabel(EXPORT_WINDOW_LABELS, job.window),
+                },
+                { key: 'rows', label: '记录数', children: String(job.rowCount) },
+                { key: 'created', label: '创建时间', children: <DateTime value={job.createdAt} /> },
+                {
+                  key: 'snapshot',
+                  label: '快照时间',
+                  children: <DateTime value={job.snapshotAt} />,
+                },
+                { key: 'expires', label: '下载截止', children: <DateTime value={job.expiresAt} /> },
+                ...(job.failureCode === null
+                  ? []
+                  : [
+                      {
+                        key: 'failure',
+                        label: '失败原因',
+                        children: (
+                          <CodeTag
+                            labels={EXPORT_FAILURE_LABELS}
+                            code={job.failureCode}
+                            colors={{ [job.failureCode]: 'error' }}
+                          />
+                        ),
+                      },
+                    ]),
+              ]}
+            />
+          )}
+          {percent !== undefined && (
+            <Progress
+              percent={percent}
+              status={failed ? 'exception' : percent === 100 ? 'success' : 'active'}
+              aria-label="分片校验进度"
+            />
+          )}
+          {message !== '' && (
+            <Alert
+              type={failed ? 'error' : 'info'}
+              showIcon
+              role={failed ? 'alert' : 'status'}
+              title={message}
+            />
+          )}
+        </Space>
+      </SectionCard>
     </section>
   );
 }

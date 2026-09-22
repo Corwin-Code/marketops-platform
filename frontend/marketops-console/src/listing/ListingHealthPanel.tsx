@@ -1,8 +1,19 @@
-import { ListingDiagnosticResponsibilities } from './ListingDiagnosticResponsibilities';
-import { ListingFeedbackPanel } from './ListingFeedbackPanel';
-import { ListingAssistancePanel } from './ListingAssistancePanel';
-import { PromotionObservationForm } from './ListingPromotionTerms';
-import { NativeScopeObservationForm } from './ListingNativeScope';
+import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
+import {
+  App,
+  Button,
+  Col,
+  Flex,
+  Form,
+  Input,
+  Row,
+  Segmented,
+  Select,
+  Space,
+  Table,
+  Typography,
+} from 'antd';
+import type { TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import type { ConversionMeasurement, ListingDetail, ListingHealth } from '../api/listingConversion';
@@ -14,9 +25,28 @@ import {
   recordDescriptionFact,
   recordDisplayFact,
 } from '../api/listingConversion';
-import { Code, ListingProblem, When } from './ListingCommon';
-import { useLanguage } from './i18n/language';
-import { t } from './i18n/ui';
+import { formatPercent } from '../format';
+import { t } from '../i18n/zh/listing';
+import { EmptyState, LoadingState, SectionCard, TechnicalDetails } from '../ui';
+import { ListingAssistancePanel } from './ListingAssistancePanel';
+import {
+  Code,
+  Codes,
+  Details,
+  Hint,
+  IdText,
+  InstantPicker,
+  ListingProblem,
+  Stack,
+  SubTitle,
+  When,
+  codeOptions,
+  codeText,
+} from './ListingCommon';
+import { ListingDiagnosticResponsibilities } from './ListingDiagnosticResponsibilities';
+import { ListingFeedbackPanel } from './ListingFeedbackPanel';
+import { NativeScopeObservationForm } from './ListingNativeScope';
+import { PromotionObservationForm } from './ListingPromotionTerms';
 
 export interface ListingHealthPanelProps {
   readonly context: ConsoleRequest;
@@ -24,6 +54,29 @@ export interface ListingHealthPanelProps {
 }
 
 const HEALTH_STATES = ['PASS', 'FAIL', 'UNKNOWN'] as const;
+const ALL = 'ALL';
+
+/** Eligibility per purpose, as tags. */
+function Eligibility({
+  eligibility,
+}: {
+  readonly eligibility: Readonly<Record<string, string>>;
+}): React.JSX.Element {
+  const entries = Object.entries(eligibility);
+  if (entries.length === 0) return <Typography.Text type="secondary">—</Typography.Text>;
+  return (
+    <Flex wrap gap={4}>
+      {entries.map(([purpose, state]) => (
+        <Space key={purpose} size={2}>
+          <Typography.Text type="secondary">
+            {codeText('eligibilityPurpose', purpose)}
+          </Typography.Text>
+          <Code family="eligibility" code={state} />
+        </Space>
+      ))}
+    </Flex>
+  );
+}
 
 /**
  * Listing Health as three layers and never as a score.
@@ -37,11 +90,11 @@ export function ListingHealthPanel({
   context,
   onPrepare,
 }: ListingHealthPanelProps): React.JSX.Element {
-  const { language } = useLanguage();
   const [filter, setFilter] = useState<string | undefined>(undefined);
   const [rows, setRows] = useState<readonly ListingHealth[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [generation, setGeneration] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -58,7 +111,7 @@ export function ListingHealthPanel({
     return () => {
       active = false;
     };
-  }, [context, filter]);
+  }, [context, filter, generation]);
 
   if (selected !== undefined) {
     return (
@@ -73,91 +126,97 @@ export function ListingHealthPanel({
     );
   }
 
-  return (
-    <section
-      aria-label={t('healthQueue', language)}
-      data-state={rows === undefined ? 'loading' : 'loaded'}
-    >
-      <h3>{t('healthQueue', language)}</h3>
-      <p>{t('noScore', language)}</p>
-      <fieldset>
-        <legend>{t('healthNecessary', language)}</legend>
-        <button
-          type="button"
-          aria-pressed={filter === undefined}
+  const columns: TableColumnsType<ListingHealth> = [
+    {
+      key: 'listing',
+      title: t('listing'),
+      render: (_, health) => (
+        <Button
+          type="link"
+          style={{ padding: 0 }}
           onClick={() => {
-            setFilter(undefined);
+            setSelected(health.platformListingId);
           }}
         >
-          —
-        </button>
-        {HEALTH_STATES.map((state) => (
-          <button
-            key={state}
-            type="button"
-            aria-pressed={filter === state}
+          {health.nativeListingKey}
+        </Button>
+      ),
+    },
+    {
+      key: 'necessary',
+      title: t('healthNecessary'),
+      render: (_, health) => <Code family="healthState" code={health.necessaryState} />,
+    },
+    {
+      key: 'eligibility',
+      title: t('healthEligibility'),
+      render: (_, health) => <Eligibility eligibility={health.eligibility} />,
+    },
+    {
+      key: 'opportunities',
+      title: t('healthOpportunities'),
+      render: (_, health) => (
+        <Codes family="opportunity" codes={health.opportunities.map((entry) => entry.code)} />
+      ),
+    },
+    {
+      key: 'computedAt',
+      title: t('computedAt'),
+      render: (_, health) => <When value={health.computedAt} />,
+    },
+  ];
+
+  return (
+    <section aria-label={t('healthQueue')} data-state={rows === undefined ? 'loading' : 'loaded'}>
+      <SectionCard
+        title={t('healthQueue')}
+        extra={
+          <Button
+            icon={<ReloadOutlined />}
             onClick={() => {
-              setFilter(state);
+              setGeneration((value) => value + 1);
             }}
           >
-            <Code family="healthState" code={state} />
-          </button>
-        ))}
-      </fieldset>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      {rows === undefined && failure === undefined && <p>{t('loading', language)}</p>}
-      {rows?.length === 0 && <p>{t('nothing', language)}</p>}
-      {rows !== undefined && rows.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>{t('listing', language)}</th>
-              <th>{t('healthNecessary', language)}</th>
-              <th>{t('healthEligibility', language)}</th>
-              <th>{t('healthOpportunities', language)}</th>
-              <th>{t('computedAt', language)}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((health) => (
-              <tr key={health.id} data-listing={health.platformListingId}>
-                <td>{health.nativeListingKey}</td>
-                <td>
-                  <Code family="healthState" code={health.necessaryState} />
-                </td>
-                <td>
-                  {Object.entries(health.eligibility).map(([purpose, state]) => (
-                    <span key={purpose}>
-                      {purpose}: <Code family="eligibility" code={state} />{' '}
-                    </span>
-                  ))}
-                </td>
-                <td>
-                  {health.opportunities.map((opportunity) => (
-                    <span key={opportunity.code}>
-                      <Code family="opportunity" code={opportunity.code} />{' '}
-                    </span>
-                  ))}
-                </td>
-                <td>
-                  <When value={health.computedAt} />
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelected(health.platformListingId);
-                    }}
-                  >
-                    {t('open', language)}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            {t('refresh')}
+          </Button>
+        }
+      >
+        <Stack>
+          <Hint>{t('noScore')}</Hint>
+          <Space wrap>
+            <Typography.Text type="secondary">{t('healthNecessary')}</Typography.Text>
+            <Segmented<string>
+              aria-label={t('healthNecessary')}
+              value={filter ?? ALL}
+              options={[
+                { value: ALL, label: t('all') },
+                ...HEALTH_STATES.map((state) => ({
+                  value: state,
+                  label: codeText('healthState', state),
+                })),
+              ]}
+              onChange={(value) => {
+                setFilter(value === ALL ? undefined : value);
+              }}
+            />
+          </Space>
+          {failure !== undefined && <ListingProblem failure={failure} />}
+          {rows === undefined && failure === undefined && <LoadingState />}
+          {rows?.length === 0 && <EmptyState description={t('noHealthRows')} />}
+          {rows !== undefined && rows.length > 0 && (
+            <Table<ListingHealth>
+              size="middle"
+              rowKey="id"
+              columns={columns}
+              dataSource={[...rows]}
+              pagination={false}
+              onRow={(health) =>
+                ({ 'data-listing': health.platformListingId }) as React.HTMLAttributes<HTMLElement>
+              }
+            />
+          )}
+        </Stack>
+      </SectionCard>
     </section>
   );
 }
@@ -169,18 +228,20 @@ interface ListingDetailViewProps {
   readonly onPrepare: (listingId: string) => void;
 }
 
+type Kiz = 'undeclared' | 'yes' | 'no';
+
 function ListingDetailView({
   context,
   listingId,
   onBack,
   onPrepare,
 }: ListingDetailViewProps): React.JSX.Element {
-  const { language } = useLanguage();
+  const { message } = App.useApp();
   const [detail, setDetail] = useState<ListingDetail | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [generation, setGeneration] = useState(0);
   const [descriptionText, setDescriptionText] = useState('');
-  const [kiz, setKiz] = useState<'undeclared' | 'yes' | 'no'>('undeclared');
+  const [kiz, setKiz] = useState<Kiz>('undeclared');
   const [displayState, setDisplayState] = useState('DISPLAYED');
   const [displayedText, setDisplayedText] = useState('');
   const [evidenceReference, setEvidenceReference] = useState('');
@@ -188,7 +249,7 @@ function ListingDetailView({
   const [windowEnd, setWindowEnd] = useState('');
   const [retentionDays, setRetentionDays] = useState('14');
   const [evidencePath, setEvidencePath] = useState('DETAIL');
-  const [message, setMessage] = useState<string | undefined>(undefined);
+  const [busy, setBusy] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     let active = true;
@@ -212,262 +273,348 @@ function ListingDetailView({
     setGeneration((value) => value + 1);
   };
   const report = (outcome: { readonly ok: boolean; readonly failure?: ConsoleFailure }): void => {
+    setBusy(undefined);
     if (outcome.ok) {
-      setMessage(t('done', language));
+      void message.success(t('done'));
       setFailure(undefined);
       refresh();
     } else if (outcome.failure !== undefined) {
       setFailure(outcome.failure);
     }
   };
+  const kizOptions: { value: Kiz; label: string }[] = [
+    { value: 'undeclared', label: t('undeclared') },
+    { value: 'yes', label: t('yes') },
+    { value: 'no', label: t('no') },
+  ];
 
   return (
-    <section aria-label={t('listing', language)} data-listing={listingId}>
-      <button type="button" onClick={onBack}>
-        ← {t('healthQueue', language)}
-      </button>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      {message !== undefined && <p role="status">{message}</p>}
-      {detail === undefined && failure === undefined && <p>{t('loading', language)}</p>}
-      {detail !== undefined && (
-        <>
-          <h3>
-            {t('listing', language)} {detail.nativeListingKey} ({detail.platformCode})
-          </h3>
-          <button
-            type="button"
-            onClick={() => {
-              void recomputeHealth(context, listingId).then(report);
-            }}
-          >
-            {t('recompute', language)}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              onPrepare(listingId);
-            }}
-          >
-            {t('candidates', language)}
-          </button>
-          {detail.health === undefined ? (
-            <p>{t('nothing', language)}</p>
-          ) : (
-            <HealthLayers health={detail.health} />
-          )}
-          <ListingDiagnosticResponsibilities
-            context={context}
-            listingId={listingId}
-            responsibilities={detail.diagnosticResponsibilities ?? []}
-            refresh={refresh}
-          />
-          <Measurements measurements={detail.measurements} />
-          <form
-            aria-label={t('measure', language)}
-            onSubmit={(event) => {
-              event.preventDefault();
-              void measureConversion(
-                context,
-                listingId,
-                windowStart,
-                windowEnd,
-                Number(retentionDays),
-                evidencePath,
-              ).then(report);
-            }}
-          >
-            <label>
-              {t('window', language)}{' '}
-              <input
-                value={windowStart}
-                onChange={(e) => {
-                  setWindowStart(e.target.value);
-                }}
-                placeholder="2026-08-01T00:00:00Z"
-              />
-            </label>
-            <label>
-              →{' '}
-              <input
-                value={windowEnd}
-                onChange={(e) => {
-                  setWindowEnd(e.target.value);
-                }}
-                placeholder="2026-08-31T00:00:00Z"
-              />
-            </label>
-            <label>
-              {t('retentionDays', language)}
-              <select
-                value={retentionDays}
-                onChange={(e) => {
-                  setRetentionDays(e.target.value);
-                }}
-              >
-                {['7', '14', '30'].map((days) => (
-                  <option key={days} value={days}>
-                    {days}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              {t('evidencePath', language)}
-              <select
-                value={evidencePath}
-                onChange={(e) => {
-                  setEvidencePath(e.target.value);
-                }}
-              >
-                {['DETAIL', 'OFFICIAL_SUMMARY'].map((path) => (
-                  <option key={path} value={path}>
-                    {path}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button type="submit">{t('measure', language)}</button>
-          </form>
-          <NativeScopeObservationForm context={context} listingId={listingId} />
-          <PromotionObservationForm context={context} listingId={listingId} />
-          <ListingFeedbackPanel key={listingId} context={context} listingId={listingId} />
-          <ListingAssistancePanel
-            key={`assistance-${listingId}`}
-            context={context}
-            listingId={listingId}
-          />
-          <form
-            aria-label={t('targetText', language)}
-            onSubmit={(event) => {
-              event.preventDefault();
-              void recordDescriptionFact(
-                context,
-                listingId,
-                descriptionText,
-                kiz === 'undeclared' ? undefined : kiz === 'yes',
-                '',
-              ).then(report);
-            }}
-          >
-            <label>
-              {t('targetText', language)}
-              <textarea
-                value={descriptionText}
-                onChange={(e) => {
-                  setDescriptionText(e.target.value);
-                }}
-              />
-            </label>
-            <label>
-              {t('kiz', language)}
-              <select
-                value={kiz}
-                onChange={(e) => {
-                  setKiz(e.target.value as 'undeclared' | 'yes' | 'no');
+    <section aria-label={t('listing')} data-listing={listingId}>
+      <Stack>
+        <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
+          {t('healthQueue')}
+        </Button>
+        {failure !== undefined && <ListingProblem failure={failure} />}
+        {detail === undefined && failure === undefined && <LoadingState rows={6} />}
+        {detail !== undefined && (
+          <>
+            <SectionCard
+              title={
+                <Space>
+                  {t('listing')}
+                  <span>{detail.nativeListingKey}</span>
+                  <Typography.Text type="secondary">{detail.platformCode}</Typography.Text>
+                </Space>
+              }
+              extra={
+                <Space wrap>
+                  <Button
+                    icon={<ReloadOutlined />}
+                    loading={busy === 'recompute'}
+                    onClick={() => {
+                      setBusy('recompute');
+                      void recomputeHealth(context, listingId).then(report);
+                    }}
+                  >
+                    {t('recompute')}
+                  </Button>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      onPrepare(listingId);
+                    }}
+                  >
+                    {t('prepareCandidates')}
+                  </Button>
+                </Space>
+              }
+            >
+              {detail.health === undefined ? (
+                <EmptyState description={t('noHealth')} />
+              ) : (
+                <HealthLayers health={detail.health} />
+              )}
+            </SectionCard>
+            <ListingDiagnosticResponsibilities
+              context={context}
+              listingId={listingId}
+              responsibilities={detail.diagnosticResponsibilities ?? []}
+              refresh={refresh}
+            />
+            <SectionCard title={t('measurements')}>
+              <Stack>
+                <Measurements measurements={detail.measurements} />
+                <SubTitle>{t('measure')}</SubTitle>
+                <Form
+                  layout="vertical"
+                  aria-label={t('measure')}
+                  onFinish={() => {
+                    setBusy('measure');
+                    void measureConversion(
+                      context,
+                      listingId,
+                      windowStart,
+                      windowEnd,
+                      Number(retentionDays),
+                      evidencePath,
+                    ).then(report);
+                  }}
+                >
+                  <Row gutter={16}>
+                    <Col xs={24} md={6}>
+                      <Form.Item label={t('windowStart')}>
+                        <InstantPicker
+                          value={windowStart}
+                          onChange={setWindowStart}
+                          ariaLabel={t('windowStart')}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={6}>
+                      <Form.Item label={t('windowEnd')}>
+                        <InstantPicker
+                          value={windowEnd}
+                          onChange={setWindowEnd}
+                          ariaLabel={t('windowEnd')}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={6}>
+                      <Form.Item label={t('retentionDays')}>
+                        <Select
+                          value={retentionDays}
+                          onChange={setRetentionDays}
+                          options={['7', '14', '30'].map((days) => ({
+                            value: days,
+                            label: `${days} 天`,
+                          }))}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={6}>
+                      <Form.Item label={t('evidencePath')}>
+                        <Select
+                          value={evidencePath}
+                          onChange={setEvidencePath}
+                          options={codeOptions('evidencePath', ['DETAIL', 'OFFICIAL_SUMMARY'])}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Button type="primary" htmlType="submit" loading={busy === 'measure'}>
+                    {t('measure')}
+                  </Button>
+                </Form>
+              </Stack>
+            </SectionCard>
+            <NativeScopeObservationForm context={context} listingId={listingId} />
+            <PromotionObservationForm context={context} listingId={listingId} />
+            <ListingFeedbackPanel key={listingId} context={context} listingId={listingId} />
+            <ListingAssistancePanel
+              key={`assistance-${listingId}`}
+              context={context}
+              listingId={listingId}
+            />
+            <SectionCard title={t('descriptionFact')}>
+              <Hint>{t('descriptionFactHelp')}</Hint>
+              <Form
+                layout="vertical"
+                aria-label={t('targetText')}
+                onFinish={() => {
+                  setBusy('description');
+                  void recordDescriptionFact(
+                    context,
+                    listingId,
+                    descriptionText,
+                    kiz === 'undeclared' ? undefined : kiz === 'yes',
+                    '',
+                  ).then(report);
                 }}
               >
-                <option value="undeclared">{t('undeclared', language)}</option>
-                <option value="yes">{t('yes', language)}</option>
-                <option value="no">{t('no', language)}</option>
-              </select>
-            </label>
-            <button type="submit">{t('submit', language)}</button>
-          </form>
-          <form
-            aria-label={t('evidence', language)}
-            onSubmit={(event) => {
-              event.preventDefault();
-              void recordDisplayFact(
-                context,
-                listingId,
-                displayState,
-                displayedText,
-                evidenceReference,
-              ).then(report);
-            }}
-          >
-            <label>
-              <Code family="displayState" code={displayState} />
-              <select
-                value={displayState}
-                onChange={(e) => {
-                  setDisplayState(e.target.value);
+                <Form.Item label={t('observedDescription')}>
+                  <Input.TextArea
+                    lang="ru"
+                    value={descriptionText}
+                    autoSize={{ minRows: 4, maxRows: 12 }}
+                    onChange={(e) => {
+                      setDescriptionText(e.target.value);
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label={t('kiz')}>
+                  <Select<Kiz>
+                    value={kiz}
+                    style={{ maxWidth: 240 }}
+                    onChange={setKiz}
+                    options={kizOptions}
+                  />
+                </Form.Item>
+                <Button type="primary" htmlType="submit" loading={busy === 'description'}>
+                  {t('submit')}
+                </Button>
+              </Form>
+            </SectionCard>
+            <SectionCard title={t('displayFact')}>
+              <Form
+                layout="vertical"
+                aria-label={t('evidence')}
+                onFinish={() => {
+                  setBusy('display');
+                  void recordDisplayFact(
+                    context,
+                    listingId,
+                    displayState,
+                    displayedText,
+                    evidenceReference,
+                  ).then(report);
                 }}
               >
-                {['DISPLAYED', 'NOT_DISPLAYED', 'UNKNOWN'].map((state) => (
-                  <option key={state} value={state}>
-                    {state}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              {t('targetText', language)}{' '}
-              <input
-                value={displayedText}
-                onChange={(e) => {
-                  setDisplayedText(e.target.value);
-                }}
-              />
-            </label>
-            <label>
-              {t('evidence', language)}{' '}
-              <input
-                value={evidenceReference}
-                onChange={(e) => {
-                  setEvidenceReference(e.target.value);
-                }}
-              />
-            </label>
-            <button type="submit">{t('submit', language)}</button>
-          </form>
-        </>
-      )}
+                <Row gutter={16}>
+                  <Col xs={24} md={6}>
+                    <Form.Item label={t('displayStateLabel')}>
+                      <Select
+                        value={displayState}
+                        onChange={setDisplayState}
+                        options={codeOptions('displayState', [
+                          'DISPLAYED',
+                          'NOT_DISPLAYED',
+                          'UNKNOWN',
+                        ])}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={10}>
+                    <Form.Item label={t('displayedText')}>
+                      <Input
+                        lang="ru"
+                        value={displayedText}
+                        onChange={(e) => {
+                          setDisplayedText(e.target.value);
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item label={t('evidence')}>
+                      <Input
+                        value={evidenceReference}
+                        onChange={(e) => {
+                          setEvidenceReference(e.target.value);
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Button type="primary" htmlType="submit" loading={busy === 'display'}>
+                  {t('submit')}
+                </Button>
+              </Form>
+            </SectionCard>
+          </>
+        )}
+      </Stack>
     </section>
   );
 }
 
 function HealthLayers({ health }: { readonly health: ListingHealth }): React.JSX.Element {
-  const { language } = useLanguage();
   return (
     <div data-health-version={health.healthVersion}>
-      <h4>
-        {t('healthNecessary', language)}: <Code family="healthState" code={health.necessaryState} />
-      </h4>
-      <ul>
-        {health.necessaryConditions.map((condition) => (
-          <li key={condition.code}>
-            <Code family="healthCondition" code={condition.code} />:{' '}
-            <Code family="healthState" code={condition.state} /> ({condition.evidenceReference})
-          </li>
-        ))}
-      </ul>
-      <h4>{t('healthEligibility', language)}</h4>
-      <ul>
-        {Object.entries(health.eligibility).map(([purpose, state]) => (
-          <li key={purpose}>
-            {purpose}: <Code family="eligibility" code={state} />
-          </li>
-        ))}
-      </ul>
-      <h4>{t('healthOpportunities', language)}</h4>
-      {health.opportunities.length === 0 ? (
-        <p>{t('nothing', language)}</p>
-      ) : (
-        <ul>
-          {health.opportunities.map((opportunity) => (
-            <li key={opportunity.code}>
-              <Code family="opportunity" code={opportunity.code} /> ({opportunity.evidenceReference}
-              )
-            </li>
-          ))}
-        </ul>
-      )}
-      <p>
-        {t('sourceTime', language)}: <When value={health.sourceTime} /> ·{' '}
-        {t('acquisitionTime', language)}: <When value={health.acquisitionTime} /> ·{' '}
-        {t('computedAt', language)}: <When value={health.computedAt} />
-      </p>
+      <Stack>
+        <Details
+          items={[
+            {
+              key: 'necessary',
+              label: t('healthNecessary'),
+              children: <Code family="healthState" code={health.necessaryState} />,
+            },
+            {
+              key: 'eligibility',
+              label: t('healthEligibility'),
+              children: <Eligibility eligibility={health.eligibility} />,
+            },
+            {
+              key: 'version',
+              label: t('healthVersion'),
+              children: health.healthVersion,
+            },
+            {
+              key: 'affected',
+              label: t('affectedSetShort'),
+              children: (
+                <Space size={4}>
+                  <Code family="affectedSetState" code={health.affectedSetState} />
+                  <Typography.Text type="secondary">
+                    {health.affectedVariantCount} 个变体
+                  </Typography.Text>
+                </Space>
+              ),
+            },
+            { key: 'source', label: t('sourceTime'), children: <When value={health.sourceTime} /> },
+            {
+              key: 'acquired',
+              label: t('acquisitionTime'),
+              children: <When value={health.acquisitionTime} />,
+            },
+            {
+              key: 'computed',
+              label: t('computedAt'),
+              children: <When value={health.computedAt} />,
+            },
+          ]}
+        />
+        <div>
+          <SubTitle>{t('healthNecessary')}</SubTitle>
+          <Table
+            size="middle"
+            rowKey="code"
+            pagination={false}
+            dataSource={[...health.necessaryConditions]}
+            columns={[
+              {
+                key: 'code',
+                title: t('condition'),
+                render: (_, condition) => <Code family="healthCondition" code={condition.code} />,
+              },
+              {
+                key: 'state',
+                title: t('state'),
+                render: (_, condition) => <Code family="healthState" code={condition.state} />,
+              },
+              {
+                key: 'evidence',
+                title: t('evidence'),
+                render: (_, condition) => <IdText value={condition.evidenceReference} />,
+              },
+            ]}
+          />
+        </div>
+        <div>
+          <SubTitle>{t('healthOpportunities')}</SubTitle>
+          {health.opportunities.length === 0 ? (
+            <EmptyState description={t('noOpportunities')} />
+          ) : (
+            <Table
+              size="middle"
+              rowKey="code"
+              pagination={false}
+              dataSource={[...health.opportunities]}
+              columns={[
+                {
+                  key: 'code',
+                  title: t('opportunity'),
+                  render: (_, opportunity) => <Code family="opportunity" code={opportunity.code} />,
+                },
+                {
+                  key: 'evidence',
+                  title: t('evidence'),
+                  render: (_, opportunity) => <IdText value={opportunity.evidenceReference} />,
+                },
+              ]}
+            />
+          )}
+        </div>
+      </Stack>
     </div>
   );
 }
@@ -477,60 +624,105 @@ function Measurements({
 }: {
   readonly measurements: readonly ConversionMeasurement[];
 }): React.JSX.Element {
-  const { language } = useLanguage();
+  if (measurements.length === 0) {
+    return <EmptyState description={t('noMeasurements')} />;
+  }
+  const columns: TableColumnsType<ConversionMeasurement> = [
+    {
+      key: 'window',
+      title: t('window'),
+      render: (_, measurement) => (
+        <Space orientation="vertical" size={0}>
+          <span>
+            <When value={measurement.windowStart} /> — <When value={measurement.windowEnd} />
+          </span>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {t('retentionDays')} {measurement.retentionWindowDays} 天
+          </Typography.Text>
+        </Space>
+      ),
+    },
+    {
+      key: 'path',
+      title: t('evidencePath'),
+      render: (_, measurement) => <Code family="evidencePath" code={measurement.evidencePath} />,
+    },
+    {
+      key: 'visits',
+      title: t('visits'),
+      align: 'right',
+      render: (_, measurement) => measurement.visitCount ?? '—',
+    },
+    {
+      key: 'retained',
+      title: t('retained'),
+      align: 'right',
+      render: (_, measurement) => measurement.retainedPurchaseVisitCount ?? '—',
+    },
+    {
+      key: 'ratio',
+      title: t('ratio'),
+      render: (_, measurement) => (
+        <Space size={4}>
+          {measurement.ratioState === 'DEFINED' && (
+            <Typography.Text style={{ fontVariantNumeric: 'tabular-nums' }}>
+              {measurement.primaryRatio === undefined
+                ? '—'
+                : formatPercent(measurement.primaryRatio)}
+            </Typography.Text>
+          )}
+          <Code family="ratioState" code={measurement.ratioState} />
+        </Space>
+      ),
+    },
+    {
+      key: 'excluded',
+      title: t('excludedDays'),
+      render: (_, measurement) =>
+        measurement.excludedTransitionDays.length === 0
+          ? '—'
+          : measurement.excludedTransitionDays.join('、'),
+    },
+    {
+      key: 'qualification',
+      title: t('qualification'),
+      render: (_, measurement) => (
+        <Codes family="qualificationReason" codes={measurement.qualificationReasonCodes} />
+      ),
+    },
+    {
+      key: 'times',
+      title: t('sourceTime'),
+      render: (_, measurement) => (
+        <Space orientation="vertical" size={0}>
+          <When value={measurement.sourceTime} />
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {t('acquisitionTime')} <When value={measurement.acquisitionTime} />
+          </Typography.Text>
+        </Space>
+      ),
+    },
+  ];
   return (
     <div>
-      <h4>{t('measurements', language)}</h4>
-      {measurements.length === 0 ? (
-        <p>{t('nothing', language)}</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>{t('window', language)}</th>
-              <th>{t('evidencePath', language)}</th>
-              <th>{t('visits', language)}</th>
-              <th>{t('retained', language)}</th>
-              <th>{t('ratio', language)}</th>
-              <th>{t('excludedDays', language)}</th>
-              <th>{t('qualification', language)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {measurements.map((measurement) => (
-              <tr key={measurement.id} data-ratio-state={measurement.ratioState}>
-                <td>
-                  <When value={measurement.windowStart} /> → <When value={measurement.windowEnd} />{' '}
-                  ({measurement.retentionWindowDays})
-                  <div>
-                    {t('sourceTime', language)}: <When value={measurement.sourceTime} />
-                  </div>
-                  <div>
-                    {t('acquisitionTime', language)}: <When value={measurement.acquisitionTime} />
-                  </div>
-                </td>
-                <td>
-                  <Code family="evidencePath" code={measurement.evidencePath} />
-                </td>
-                <td>{measurement.visitCount ?? '—'}</td>
-                <td>{measurement.retainedPurchaseVisitCount ?? '—'}</td>
-                <td>
-                  {measurement.ratioState === 'DEFINED' ? (measurement.primaryRatio ?? '—') : null}{' '}
-                  <Code family="ratioState" code={measurement.ratioState} />
-                </td>
-                <td>{measurement.excludedTransitionDays.join(', ')}</td>
-                <td>
-                  {measurement.qualificationReasonCodes.map((code) => (
-                    <span key={code}>
-                      <Code family="qualificationReason" code={code} />{' '}
-                    </span>
-                  ))}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <Table<ConversionMeasurement>
+        size="middle"
+        rowKey="id"
+        columns={columns}
+        dataSource={[...measurements]}
+        pagination={false}
+        scroll={{ x: 'max-content' }}
+        onRow={(measurement) =>
+          ({ 'data-ratio-state': measurement.ratioState }) as React.HTMLAttributes<HTMLElement>
+        }
+      />
+      <TechnicalDetails label={t('measurementIds')}>
+        <Space orientation="vertical" size={2}>
+          {measurements.map((measurement) => (
+            <IdText key={measurement.id} value={measurement.id} />
+          ))}
+        </Space>
+      </TechnicalDetails>
     </div>
   );
 }

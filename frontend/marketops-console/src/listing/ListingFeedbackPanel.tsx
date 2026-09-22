@@ -1,3 +1,19 @@
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Collapse,
+  Form,
+  Input,
+  Row,
+  Select,
+  Space,
+  Table,
+  Tag,
+  Timeline,
+  Typography,
+} from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import {
@@ -7,9 +23,22 @@ import {
   fetchFeedbackOverview,
 } from '../api/listingConversion';
 import type { ListingFeedbackDetail, ListingFeedbackOverview } from '../api/listingConversion';
-import { ListingProblem, When } from './ListingCommon';
-import { useLanguage } from './i18n/language';
-import { t } from './i18n/ui';
+import { t } from '../i18n/zh/listing';
+import { EmptyState, SectionCard } from '../ui';
+import {
+  Code,
+  Details,
+  Hint,
+  IdText,
+  InstantPicker,
+  ListingProblem,
+  Stack,
+  SubTitle,
+  When,
+  codeOptions,
+} from './ListingCommon';
+
+const THEME_PATTERN = /^[A-Z][A-Z0-9_]{1,62}$/;
 
 export function ListingFeedbackPanel({
   context,
@@ -18,7 +47,6 @@ export function ListingFeedbackPanel({
   readonly context: ConsoleRequest;
   readonly listingId: string;
 }): React.JSX.Element {
-  const { language } = useLanguage();
   const [from, setFrom] = useState(''),
     [to, setTo] = useState('');
   const [overview, setOverview] = useState<ListingFeedbackOverview | undefined>();
@@ -45,14 +73,6 @@ export function ListingFeedbackPanel({
       generation.current += 1;
     };
   }, [context, listingId]);
-  const qualificationLabel = (value: string): string =>
-    value === 'CONFIRMED'
-      ? t('feedbackConfirmed', language)
-      : value === 'UNCERTAIN'
-        ? t('feedbackUncertain', language)
-        : value === 'CONFLICTED'
-          ? t('feedbackConflicted', language)
-          : value;
 
   async function loadOverview(): Promise<void> {
     const requestedGeneration = generation.current;
@@ -83,273 +103,374 @@ export function ListingFeedbackPanel({
     } else setFailure(result.failure);
   }
 
-  return (
-    <section aria-label={t('feedback', language)}>
-      <h4>{t('feedback', language)}</h4>
-      <p>{t('feedbackBoundary', language)}</p>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          setBusy(true);
-          setFailure(undefined);
-          setCaptured(undefined);
-          const requestedGeneration = generation.current;
-          void captureFeedbackSource(context, listingId, {
-            rawObservationId,
-            itemPointer,
-            identityPointer,
-            listingPointer,
-            textPointer,
+  const captureRequiredMissing =
+    rawObservationId.trim() === '' ||
+    identityPointer.trim() === '' ||
+    listingPointer.trim() === '' ||
+    textPointer.trim() === '';
+  const periodMissing = from === '' || to === '';
+  const themeInvalid = !THEME_PATTERN.test(theme);
+
+  const captureForm = (
+    <Form
+      layout="vertical"
+      disabled={busy}
+      onFinish={() => {
+        setBusy(true);
+        setFailure(undefined);
+        setCaptured(undefined);
+        const requestedGeneration = generation.current;
+        void captureFeedbackSource(context, listingId, {
+          rawObservationId,
+          itemPointer,
+          identityPointer,
+          listingPointer,
+          textPointer,
+        })
+          .then(async (result) => {
+            if (requestedGeneration !== generation.current) return;
+            if (result.ok) {
+              setCaptured(result.value);
+              await loadDetail(result.value);
+            } else setFailure(result.failure);
           })
-            .then(async (result) => {
-              if (requestedGeneration !== generation.current) return;
-              if (result.ok) {
-                setCaptured(result.value);
-                await loadDetail(result.value);
-              } else setFailure(result.failure);
-            })
-            .finally(() => {
-              setBusy(false);
-            });
-        }}
-      >
-        <fieldset disabled={busy}>
-          <legend>{t('feedbackCapture', language)}</legend>
-          <p>{t('feedbackCaptureHelp', language)}</p>
-          <label>
-            {t('feedbackRawObservation', language)}
-            <input
-              required
+          .finally(() => {
+            setBusy(false);
+          });
+      }}
+    >
+      <Hint>{t('feedbackCaptureHelp')}</Hint>
+      <Row gutter={16}>
+        <Col xs={24} md={12}>
+          <Form.Item label={t('feedbackRawObservation')} required>
+            <Input
               value={rawObservationId}
               onChange={(event) => {
                 setRawObservationId(event.target.value);
               }}
             />
-          </label>
-          <label>
-            {t('feedbackItemPointer', language)}
-            <input
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label={t('feedbackItemPointer')}>
+            <Input
               value={itemPointer}
               placeholder="/items/0"
               onChange={(event) => {
                 setItemPointer(event.target.value);
               }}
             />
-          </label>
-          <label>
-            {t('feedbackIdentityPointer', language)}
-            <input
-              required
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={8}>
+          <Form.Item label={t('feedbackIdentityPointer')} required>
+            <Input
               value={identityPointer}
               onChange={(event) => {
                 setIdentityPointer(event.target.value);
               }}
             />
-          </label>
-          <label>
-            {t('feedbackListingPointer', language)}
-            <input
-              required
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={8}>
+          <Form.Item label={t('feedbackListingPointer')} required>
+            <Input
               value={listingPointer}
               onChange={(event) => {
                 setListingPointer(event.target.value);
               }}
             />
-          </label>
-          <label>
-            {t('feedbackTextPointer', language)}
-            <input
-              required
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={8}>
+          <Form.Item label={t('feedbackTextPointer')} required>
+            <Input
               value={textPointer}
               onChange={(event) => {
                 setTextPointer(event.target.value);
               }}
             />
-          </label>
-          <button type="submit">{t('feedbackCapture', language)}</button>
-        </fieldset>
-      </form>
-      {captured === undefined ? null : (
-        <p role="status">
-          {t('feedbackCaptured', language)}: {captured}
-        </p>
-      )}
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          setBusy(true);
-          setDetail(undefined);
-          void loadOverview().finally(() => {
-            setBusy(false);
-          });
-        }}
-      >
-        <fieldset disabled={busy}>
-          <legend>{t('feedbackPeriod', language)}</legend>
-          <label>
-            {t('feedbackFrom', language)}
-            <input
-              type="datetime-local"
-              required
-              value={from}
-              onChange={(event) => {
-                setFrom(event.target.value);
-              }}
+          </Form.Item>
+        </Col>
+      </Row>
+      <Button type="primary" htmlType="submit" loading={busy} disabled={captureRequiredMissing}>
+        {t('feedbackCapture')}
+      </Button>
+    </Form>
+  );
+
+  return (
+    <section aria-label={t('feedback')}>
+      <SectionCard title={t('feedback')}>
+        <Stack>
+          <Hint>{t('feedbackBoundary')}</Hint>
+          {failure !== undefined && <ListingProblem failure={failure} />}
+          <Collapse
+            size="small"
+            items={[{ key: 'capture', label: t('feedbackCapture'), children: captureForm }]}
+          />
+          {captured === undefined ? null : (
+            <Alert
+              role="status"
+              type="success"
+              showIcon
+              title={t('feedbackCaptured')}
+              description={<IdText value={captured} />}
             />
-          </label>
-          <label>
-            {t('feedbackTo', language)}
-            <input
-              type="datetime-local"
-              required
-              value={to}
-              onChange={(event) => {
-                setTo(event.target.value);
-              }}
-            />
-          </label>
-          <button type="submit">{t('feedbackLoad', language)}</button>
-        </fieldset>
-      </form>
-      {overview !== undefined && (
-        <>
-          <p>
-            {t('feedbackSnapshot', language)}: <When value={overview.asOf} />
-          </p>
-          <ul>
-            {overview.themes.map((value) => (
-              <li key={`${value.themeCode}:${value.qualificationState}`}>
-                {value.themeCode} · {qualificationLabel(value.qualificationState)} ·{' '}
-                {value.mentionCount}
-              </li>
-            ))}
-          </ul>
-          {overview.items.length === 0 && <p>{t('nothing', language)}</p>}
-          <p>
-            {t('feedbackItemLimit', language)}: {overview.itemLimit}
-          </p>
-          <ul>
-            {overview.items.map((item) => (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    setBusy(true);
-                    void loadDetail(item.id).finally(() => {
-                      setBusy(false);
-                    });
-                  }}
-                >
-                  {item.id}
-                </button>
-                {' · '}
-                <When value={item.observedAt} />
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-      {detail !== undefined && (
-        <>
-          <h5>{t('feedbackOriginal', language)}</h5>
-          <p>
-            {t('feedbackRaw', language)}: <code>{detail.original.rawObservationId}</code>
-          </p>
-          <p>
-            {t('feedbackPointer', language)}: <code>{detail.original.originalPointer}</code>
-          </p>
-          <p>
-            {t('feedbackDigest', language)}: <code>{detail.original.originalDigest}</code>
-          </p>
-          <p>
-            {t('sourceTime', language)}: <When value={detail.original.observedAt} />
-          </p>
-          <p>
-            {t('acquisitionTime', language)}: <When value={detail.original.acquiredAt} />
-          </p>
-          <h5>{t('feedbackHistory', language)}</h5>
-          <ol aria-label={t('feedbackHistory', language)}>
-            {detail.classifications.map((label) => (
-              <li key={label.id}>
-                #{label.revision} · {label.themeCode} ·{' '}
-                {qualificationLabel(label.qualificationState)} · {label.reason}
-                {' · '}
-                {label.classifiedBy}
-                {' · '}
-                <When value={label.classifiedAt} />
-              </li>
-            ))}
-          </ol>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
+          )}
+          <Form
+            layout="vertical"
+            disabled={busy}
+            onFinish={() => {
               setBusy(true);
-              setFailure(undefined);
-              const itemId = detail.original.id;
-              const requestedGeneration = generation.current;
-              void classifyFeedback(context, listingId, itemId, {
-                themeCode: theme,
-                qualificationState: qualification,
-                classifierVersion: 'HUMAN_V1',
-                reason,
-              })
-                .then(async (result) => {
-                  if (requestedGeneration !== generation.current) return;
-                  if (result.ok) {
-                    await Promise.all([loadOverview(), loadDetail(itemId)]);
-                  } else setFailure(result.failure);
-                })
-                .finally(() => {
-                  setBusy(false);
-                });
+              setDetail(undefined);
+              void loadOverview().finally(() => {
+                setBusy(false);
+              });
             }}
           >
-            <fieldset disabled={busy}>
-              <legend>{t('feedbackCorrect', language)}</legend>
-              <label>
-                {t('feedbackTheme', language)}
-                <input
-                  required
-                  pattern="[A-Z][A-Z0-9_]{1,62}"
-                  value={theme}
-                  onChange={(event) => {
-                    setTheme(event.target.value);
-                  }}
+            <SubTitle>{t('feedbackPeriod')}</SubTitle>
+            <Row gutter={16} align="bottom">
+              <Col xs={24} md={9}>
+                <Form.Item label={t('feedbackFrom')} required>
+                  <InstantPicker value={from} onChange={setFrom} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={9}>
+                <Form.Item label={t('feedbackTo')} required>
+                  <InstantPicker value={to} onChange={setTo} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={6}>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" loading={busy} disabled={periodMissing}>
+                    {t('feedbackLoad')}
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+          {overview !== undefined && (
+            <>
+              <Typography.Text type="secondary">
+                {t('feedbackSnapshot')} <When value={overview.asOf} /> · {t('feedbackItemLimit')}：
+                {overview.itemLimit}
+              </Typography.Text>
+              {overview.themes.length > 0 && (
+                <Table
+                  size="middle"
+                  rowKey={(value) => `${value.themeCode}:${value.qualificationState}`}
+                  pagination={false}
+                  dataSource={[...overview.themes]}
+                  columns={[
+                    {
+                      key: 'theme',
+                      title: t('feedbackTheme'),
+                      render: (_, value) => <Tag>{value.themeCode}</Tag>,
+                    },
+                    {
+                      key: 'qualification',
+                      title: t('feedbackQualification'),
+                      render: (_, value) => (
+                        <Code family="feedbackQualification" code={value.qualificationState} />
+                      ),
+                    },
+                    {
+                      key: 'count',
+                      title: t('mentionCount'),
+                      align: 'right',
+                      dataIndex: 'mentionCount',
+                    },
+                  ]}
                 />
-              </label>
-              <label>
-                {t('feedbackQualification', language)}
-                <select
-                  value={qualification}
-                  onChange={(event) => {
-                    setQualification(event.target.value);
+              )}
+              {overview.items.length === 0 ? (
+                <EmptyState description={t('noFeedback')} />
+              ) : (
+                <Table
+                  size="middle"
+                  rowKey="id"
+                  pagination={false}
+                  dataSource={[...overview.items]}
+                  columns={[
+                    {
+                      key: 'observed',
+                      title: t('sourceTime'),
+                      render: (_, item) => (
+                        <Button
+                          type="link"
+                          style={{ padding: 0 }}
+                          disabled={busy}
+                          onClick={() => {
+                            setBusy(true);
+                            void loadDetail(item.id).finally(() => {
+                              setBusy(false);
+                            });
+                          }}
+                        >
+                          <When value={item.observedAt} />
+                        </Button>
+                      ),
+                    },
+                    {
+                      key: 'acquired',
+                      title: t('acquisitionTime'),
+                      render: (_, item) => <When value={item.acquiredAt} />,
+                    },
+                    {
+                      key: 'id',
+                      title: t('feedbackItemId'),
+                      render: (_, item) => <IdText value={item.id} />,
+                    },
+                  ]}
+                />
+              )}
+            </>
+          )}
+          {detail !== undefined && (
+            <Card size="small" type="inner" title={t('feedbackOriginal')}>
+              <Stack>
+                <Details
+                  items={[
+                    {
+                      key: 'observed',
+                      label: t('sourceTime'),
+                      children: <When value={detail.original.observedAt} />,
+                    },
+                    {
+                      key: 'acquired',
+                      label: t('acquisitionTime'),
+                      children: <When value={detail.original.acquiredAt} />,
+                    },
+                    {
+                      key: 'raw',
+                      label: t('feedbackRaw'),
+                      children: <IdText value={detail.original.rawObservationId} />,
+                    },
+                    {
+                      key: 'pointer',
+                      label: t('feedbackPointer'),
+                      children: <IdText value={detail.original.originalPointer} />,
+                    },
+                    {
+                      key: 'digest',
+                      label: t('feedbackDigest'),
+                      children: <IdText value={detail.original.originalDigest} />,
+                    },
+                  ]}
+                />
+                <div>
+                  <SubTitle>{t('feedbackHistory')}</SubTitle>
+                  {detail.classifications.length === 0 ? (
+                    <EmptyState description={t('noClassification')} />
+                  ) : (
+                    <div aria-label={t('feedbackHistory')}>
+                      <Timeline
+                        items={detail.classifications.map((label) => ({
+                          key: label.id,
+                          content: (
+                            <Space orientation="vertical" size={2}>
+                              <Space size={6} wrap>
+                                <Typography.Text>
+                                  {t('revisionShort')} {label.revision}
+                                </Typography.Text>
+                                <Tag>{label.themeCode}</Tag>
+                                <Code
+                                  family="feedbackQualification"
+                                  code={label.qualificationState}
+                                />
+                                <When value={label.classifiedAt} />
+                              </Space>
+                              <Typography.Text>{label.reason}</Typography.Text>
+                              <IdText label={t('classifiedBy')} value={label.classifiedBy} />
+                            </Space>
+                          ),
+                        }))}
+                      />
+                    </div>
+                  )}
+                </div>
+                <Form
+                  layout="vertical"
+                  disabled={busy}
+                  onFinish={() => {
+                    setBusy(true);
+                    setFailure(undefined);
+                    const itemId = detail.original.id;
+                    const requestedGeneration = generation.current;
+                    void classifyFeedback(context, listingId, itemId, {
+                      themeCode: theme,
+                      qualificationState: qualification,
+                      classifierVersion: 'HUMAN_V1',
+                      reason,
+                    })
+                      .then(async (result) => {
+                        if (requestedGeneration !== generation.current) return;
+                        if (result.ok) {
+                          await Promise.all([loadOverview(), loadDetail(itemId)]);
+                        } else setFailure(result.failure);
+                      })
+                      .finally(() => {
+                        setBusy(false);
+                      });
                   }}
                 >
-                  {['CONFIRMED', 'UNCERTAIN', 'CONFLICTED'].map((value) => (
-                    <option key={value} value={value}>
-                      {qualificationLabel(value)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                {t('feedbackReason', language)}
-                <textarea
-                  required
-                  maxLength={512}
-                  value={reason}
-                  onChange={(event) => {
-                    setReason(event.target.value);
-                  }}
-                />
-              </label>
-              <button type="submit">{t('feedbackCorrect', language)}</button>
-            </fieldset>
-          </form>
-        </>
-      )}
+                  <SubTitle>{t('feedbackCorrect')}</SubTitle>
+                  <Row gutter={16}>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label={t('feedbackTheme')}
+                        required
+                        {...(theme !== '' && themeInvalid
+                          ? { validateStatus: 'error' as const, help: t('feedbackThemeInvalid') }
+                          : { extra: t('feedbackThemeHelp') })}
+                      >
+                        <Input
+                          value={theme}
+                          onChange={(event) => {
+                            setTheme(event.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Form.Item label={t('feedbackQualification')}>
+                        <Select
+                          value={qualification}
+                          onChange={setQualification}
+                          options={codeOptions('feedbackQualification', [
+                            'CONFIRMED',
+                            'UNCERTAIN',
+                            'CONFLICTED',
+                          ])}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Form.Item label={t('feedbackReason')} required>
+                    <Input.TextArea
+                      maxLength={512}
+                      autoSize={{ minRows: 2, maxRows: 4 }}
+                      value={reason}
+                      onChange={(event) => {
+                        setReason(event.target.value);
+                      }}
+                    />
+                  </Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={busy}
+                    disabled={themeInvalid || reason.trim() === ''}
+                  >
+                    {t('feedbackCorrect')}
+                  </Button>
+                </Form>
+              </Stack>
+            </Card>
+          )}
+        </Stack>
+      </SectionCard>
     </section>
   );
 }

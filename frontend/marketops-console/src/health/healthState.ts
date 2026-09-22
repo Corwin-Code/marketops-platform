@@ -40,8 +40,8 @@ export interface HealthState {
 /** The state before the first answer has arrived. */
 export const INITIALISING: HealthState = {
   name: 'initialising',
-  summary: 'Asking the platform for its status.',
-  action: 'Wait for the first answer.',
+  summary: '正在查询平台状态。',
+  action: '请等待第一次查询结果。',
   usable: false,
 };
 
@@ -59,22 +59,22 @@ export function toHealthState(outcome: MetaStatusOutcome): HealthState {
       case 'unreachable':
         return {
           name: 'unreachable',
-          summary: 'The platform did not answer.',
-          action: 'Check that the backend is running and reachable on the configured origin.',
+          summary: '平台没有响应。',
+          action: '请检查后端服务是否已启动，以及配置的地址能否访问。',
           usable: false,
         };
       case 'failing':
         return {
           name: 'failing',
-          summary: `The platform answered with status ${String(outcome.failure.status)}.`,
-          action: 'Check the backend log for the correlated record.',
+          summary: `平台返回了错误状态（HTTP ${String(outcome.failure.status)}）。`,
+          action: '请在后端日志中查找对应的记录。',
           usable: false,
         };
       case 'malformed':
         return {
           name: 'malformed',
-          summary: 'The platform answered with something this console cannot read.',
-          action: 'Check that the console and the backend are from the same release.',
+          summary: '平台返回了控制台无法识别的内容。',
+          action: '请确认控制台与后端来自同一个发布版本。',
           usable: false,
         };
     }
@@ -85,8 +85,8 @@ export function toHealthState(outcome: MetaStatusOutcome): HealthState {
   if (status.database.status !== DATABASE_UP) {
     return {
       name: 'degraded',
-      summary: 'The platform is running but its database is not answering.',
-      action: 'Check the database container and the credentials the backend was started with.',
+      summary: '平台正在运行，但数据库没有响应。',
+      action: '请检查数据库容器以及后端启动时使用的数据库凭据。',
       usable: false,
       status,
     };
@@ -95,8 +95,8 @@ export function toHealthState(outcome: MetaStatusOutcome): HealthState {
   if (status.migration.currentVersion === UNKNOWN_VERSION) {
     return {
       name: 'pendingMigration',
-      summary: 'The platform is running but reports no applied schema version.',
-      action: 'Check that the migration ran and completed.',
+      summary: '平台正在运行，但没有报告已应用的数据结构版本。',
+      action: '请确认数据库迁移已执行并完成。',
       usable: false,
       status,
     };
@@ -104,12 +104,26 @@ export function toHealthState(outcome: MetaStatusOutcome): HealthState {
 
   return {
     name: 'ready',
-    summary: 'The platform is running and its database is answering.',
-    action: 'No action is needed.',
+    summary: '平台运行正常，数据库响应正常。',
+    action: '无需任何操作。',
     usable: true,
     status,
   };
 }
+
+/** How a state is coloured: a status dot and a result icon share one tone. */
+export type HealthTone = 'processing' | 'success' | 'warning' | 'error';
+
+/** The tone of each state; not-usable states are never shown as success. */
+export const HEALTH_TONES: Readonly<Record<HealthStateName, HealthTone>> = {
+  initialising: 'processing',
+  ready: 'success',
+  degraded: 'warning',
+  pendingMigration: 'warning',
+  unreachable: 'error',
+  failing: 'error',
+  malformed: 'error',
+};
 
 /** Every state name, in the order the shell documents them. */
 export const HEALTH_STATE_NAMES: readonly HealthStateName[] = [

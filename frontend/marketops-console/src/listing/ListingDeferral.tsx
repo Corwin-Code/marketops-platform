@@ -1,3 +1,4 @@
+import { Button, Form, Input, InputNumber, Space } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import {
@@ -5,9 +6,13 @@ import {
   type ListingDeferralTarget,
   type ListingTaskDeferral,
 } from '../api/listingConversion';
-import { ListingProblem, When } from './ListingCommon';
-import { useLanguage } from './i18n/language';
-import { t } from './i18n/ui';
+import { t } from '../i18n/zh/listing';
+import { Code, Details, Hint, IdText, ListingProblem, SubTitle, When } from './ListingCommon';
+
+interface DeferralValues {
+  readonly minutes?: number | null;
+  readonly reason?: string;
+}
 
 export function ListingDeferral({
   context,
@@ -18,112 +23,104 @@ export function ListingDeferral({
   readonly target: ListingDeferralTarget;
   readonly current: ListingTaskDeferral | undefined;
 }): React.JSX.Element {
-  const { language } = useLanguage();
   const epoch = useRef(0);
+  const [form] = Form.useForm<DeferralValues>();
   const key =
     target.kind === 'ACTION'
       ? `action:${target.actionId}`
       : `diagnostic:${target.listingId}:${target.taskId}`;
   const [value, setValue] = useState(current);
-  const [minutes, setMinutes] = useState('');
-  const [reason, setReason] = useState('');
   const [pending, setPending] = useState(false);
   const [failure, setFailure] = useState<ConsoleFailure>();
   useEffect(() => {
     epoch.current += 1;
     setValue(current);
-    setMinutes('');
-    setReason('');
+    form.resetFields();
     setPending(false);
     setFailure(undefined);
     return () => {
       epoch.current += 1;
     };
-  }, [context, key, current]);
-  const stateLabels = {
-    ACTIVE: 'deferralActive',
-    REVIEW_DUE: 'deferralReviewDue',
-    EXPIRED: 'deferralExpired',
-    INVALIDATED: 'deferralInvalidated',
-  } as const;
+  }, [context, key, current, form]);
   const waiting =
     value !== undefined &&
     (value.state === 'ACTIVE' ||
       value.state === 'REVIEW_DUE' ||
       value.reviewHealthId === undefined);
   return (
-    <section aria-label={t('deferralTitle', language)}>
-      <h5>{t('deferralTitle', language)}</h5>
-      <p>{t('deferralHelp', language)}</p>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      {value !== undefined && (
-        <dl>
-          <dt>{t('deferralState', language)}</dt>
-          <dd>{t(stateLabels[value.state], language)}</dd>
-          <dt>{t('deferralReason', language)}</dt>
-          <dd>{value.reason}</dd>
-          <dt>{t('deferralUntil', language)}</dt>
-          <dd>
-            <When value={value.expiresAt} />
-          </dd>
-          <dt>{t('deferralReview', language)}</dt>
-          <dd>{value.reviewHealthId ?? '—'}</dd>
-        </dl>
-      )}
-      <form
-        aria-label={t('deferralSubmit', language)}
-        onSubmit={(event) => {
-          event.preventDefault();
-          const ticket = ++epoch.current;
-          setPending(true);
-          setFailure(undefined);
-          void deferListingTask(context, target, Number(minutes), reason).then((result) => {
-            if (ticket !== epoch.current) return;
-            setPending(false);
-            if (result.ok) setValue(result.value);
-            else setFailure(result.failure);
-          });
-        }}
-      >
-        <label>
-          {t('deferralMinutes', language)}{' '}
-          <input
-            type="number"
-            min="1"
-            step="1"
-            required
-            value={minutes}
-            disabled={pending || waiting}
-            onChange={(event) => {
-              setMinutes(event.target.value);
-            }}
+    <section aria-label={t('deferralTitle')}>
+      <SubTitle>{t('deferralTitle')}</SubTitle>
+      <Hint>{t('deferralHelp')}</Hint>
+      <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+        {failure !== undefined && <ListingProblem failure={failure} />}
+        {value !== undefined && (
+          <Details
+            items={[
+              {
+                key: 'state',
+                label: t('deferralState'),
+                children: <Code family="deferralState" code={value.state} />,
+              },
+              { key: 'reason', label: t('deferralReason'), children: value.reason },
+              {
+                key: 'until',
+                label: t('deferralUntil'),
+                children: <When value={value.expiresAt} />,
+              },
+              {
+                key: 'review',
+                label: t('deferralReview'),
+                children: <IdText value={value.reviewHealthId} />,
+              },
+            ]}
           />
-        </label>
-        <label>
-          {t('deferralReason', language)}{' '}
-          <input
-            required
-            maxLength={512}
-            value={reason}
-            disabled={pending || waiting}
-            onChange={(event) => {
-              setReason(event.target.value);
-            }}
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={
-            pending ||
-            waiting ||
-            !Number.isInteger(Number(minutes)) ||
-            Number(minutes) < 1 ||
-            reason.trim() === ''
-          }
+        )}
+        <Form<DeferralValues>
+          form={form}
+          layout="vertical"
+          aria-label={t('deferralSubmit')}
+          disabled={pending || waiting}
+          onFinish={(values) => {
+            const ticket = ++epoch.current;
+            setPending(true);
+            setFailure(undefined);
+            void deferListingTask(
+              context,
+              target,
+              Number(values.minutes),
+              values.reason ?? '',
+            ).then((result) => {
+              if (ticket !== epoch.current) return;
+              setPending(false);
+              if (result.ok) setValue(result.value);
+              else setFailure(result.failure);
+            });
+          }}
         >
-          {t('deferralSubmit', language)}
-        </button>
-      </form>
+          <Space wrap align="start">
+            <Form.Item
+              name="minutes"
+              label={t('deferralMinutes')}
+              rules={[
+                { required: true, message: '请填写暂缓分钟数' },
+                { type: 'integer', min: 1, message: '分钟数须为不小于 1 的整数' },
+              ]}
+            >
+              <InputNumber min={1} step={1} precision={0} style={{ width: 160 }} />
+            </Form.Item>
+            <Form.Item
+              name="reason"
+              label={t('deferralReason')}
+              rules={[{ required: true, whitespace: true, message: '请填写暂缓理由' }]}
+            >
+              <Input maxLength={512} style={{ width: 360 }} />
+            </Form.Item>
+          </Space>
+          <Button type="primary" htmlType="submit" loading={pending}>
+            {t('deferralSubmit')}
+          </Button>
+        </Form>
+      </Space>
     </section>
   );
 }

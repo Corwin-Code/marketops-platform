@@ -1,233 +1,138 @@
-import { useMemo, useState } from 'react';
-import type { ConsoleRequest, Recommendation } from './api/console';
-import { CommandTimeline } from './commands/CommandTimeline';
-import { SubjectDiagnosisView } from './diagnosis/SubjectDiagnosisView';
-import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
-import { AvailabilityCases } from './availability/AvailabilityCases';
-import { AvailabilityQueue } from './availability/AvailabilityQueue';
-import { AvailabilityAuthorityPanel } from './availability/AvailabilityAuthorityPanel';
-import { AdvertisingQueue } from './advertising/AdvertisingQueue';
-import { AdvertisingCaseView } from './advertising/AdvertisingCaseView';
-import { AdvertisingOperations } from './advertising/AdvertisingOperations';
-import { AdvertisingOutcomeHistory } from './advertising/AdvertisingOutcomeHistory';
-import { AdvertisingBriefView } from './advertising/AdvertisingBriefView';
-import { PriorityQueue } from './queue/PriorityQueue';
-import { RecommendationReview } from './workflow/RecommendationReview';
-import { ListingConversionShell } from './listing/ListingConversionShell';
+import { lazy, useMemo } from 'react';
+import { Navigate, Route, Routes } from 'react-router';
+import type { ConsoleRequest } from './api/console';
+import type { ConsoleConfig } from './config';
+import { AppLayout } from './layout/AppLayout';
+import { ROUTES } from './layout/navigation';
+import { NotFoundPage } from './pages/NotFoundPage';
 import type { Session } from './session/session';
+
+// Each business area is its own chunk, loaded when one of its pages is opened.
+const pricing = () => import('./pages/pricing');
+const availability = () => import('./pages/availability');
+const advertising = () => import('./pages/advertising');
+const PricingQueuePage = lazy(async () => ({ default: (await pricing()).PricingQueuePage }));
+const SubjectPage = lazy(async () => ({ default: (await pricing()).SubjectPage }));
+const ReviewPage = lazy(async () => ({ default: (await pricing()).ReviewPage }));
+const CommandPage = lazy(async () => ({ default: (await pricing()).CommandPage }));
+const PricingExportPage = lazy(async () => ({ default: (await pricing()).PricingExportPage }));
+const AvailabilityRisksPage = lazy(async () => ({
+  default: (await availability()).AvailabilityRisksPage,
+}));
+const AvailabilityCasesPage = lazy(async () => ({
+  default: (await availability()).AvailabilityCasesPage,
+}));
+const AvailabilityAuthorityPage = lazy(async () => ({
+  default: (await availability()).AvailabilityAuthorityPage,
+}));
+const AdvertisingQueuePage = lazy(async () => ({
+  default: (await advertising()).AdvertisingQueuePage,
+}));
+const AdvertisingCasePage = lazy(async () => ({
+  default: (await advertising()).AdvertisingCasePage,
+}));
+const AdvertisingOperationsPage = lazy(async () => ({
+  default: (await advertising()).AdvertisingOperationsPage,
+}));
+const AdvertisingBriefPage = lazy(async () => ({
+  default: (await advertising()).AdvertisingBriefPage,
+}));
+const ListingPage = lazy(async () => ({ default: (await import('./pages/listing')).ListingPage }));
+const SystemStatusPage = lazy(async () => ({
+  default: (await import('./pages/system')).SystemStatusPage,
+}));
 
 /** What the shell needs in order to show a signed-in operator their work. */
 export interface ConsoleShellProps {
-  /** Origin every request is sent to. */
-  readonly apiBaseUrl: string;
+  /** Where requests go and which environment this is. */
+  readonly config: ConsoleConfig;
   /** The signed-in operator. */
   readonly session: Session;
   /** Store whose work is being shown. */
   readonly storeId: string;
   /** Request implementation, replaced in tests. */
-  readonly fetchImpl?: typeof fetch;
-  /** A proposal to review, when the operator has opened one. */
-  readonly initialRecommendation?: Recommendation;
+  readonly fetchImpl?: typeof fetch | undefined;
+  /** The instant the session clock was last read. */
+  readonly now: number;
   /** Called when the operator signs out. */
   readonly onSignOut: () => void;
 }
 
-/** Which part of the journey the operator is looking at. */
-type View =
-  | { readonly name: 'queue' }
-  | { readonly name: 'diagnosis'; readonly subjectId: string }
-  | { readonly name: 'review'; readonly recommendation: Recommendation }
-  | { readonly name: 'command'; readonly commandId: string }
-  | { readonly name: 'advertising-case'; readonly caseId: string }
-  | { readonly name: 'advertising-brief'; readonly briefKind: string }
-  | { readonly name: 'listing' };
-
 /**
- * The signed-in console: one journey, in the order the work happens.
+ * The signed-in console: every page, each at its own address, inside one frame.
  *
- * Work list, then the subject's evidence, then the proposal, then the command
- * that carries it out. Each step is reachable only from the one before it,
- * because the order is the point: this product exists so that a price change is
- * the end of a chain of evidence rather than something typed into a box.
+ * The pricing journey keeps its order — work list, the subject's evidence, the
+ * proposal, the command that carries it out — because a proposal is only
+ * opened from its diagnosis and a command only from a decision. The other
+ * areas are reachable directly from the menu.
  *
  * The request context is memoised on the token so a re-render does not restart
  * every child's fetch, and so a new token after re-authentication does.
  */
 export function ConsoleShell({
-  apiBaseUrl,
+  config,
   session,
   storeId,
   fetchImpl,
-  initialRecommendation,
+  now,
   onSignOut,
 }: ConsoleShellProps): React.JSX.Element {
   const context: ConsoleRequest = useMemo(
     () =>
       fetchImpl === undefined
-        ? { apiBaseUrl, accessToken: session.accessToken }
-        : { apiBaseUrl, accessToken: session.accessToken, fetchImpl },
-    [apiBaseUrl, session.accessToken, fetchImpl],
+        ? { apiBaseUrl: config.apiBaseUrl, accessToken: session.accessToken }
+        : { apiBaseUrl: config.apiBaseUrl, accessToken: session.accessToken, fetchImpl },
+    [config.apiBaseUrl, session.accessToken, fetchImpl],
   );
-  const [view, setView] = useState<View>(
-    initialRecommendation === undefined
-      ? { name: 'queue' }
-      : { name: 'review', recommendation: initialRecommendation },
-  );
+  const page = { context, storeId };
 
   return (
-    <main aria-labelledby="console-heading">
-      <h1 id="console-heading">MarketOps Russia</h1>
-      <nav aria-label="Session">
-        <p>Signed in{session.displayName === undefined ? '' : ` as ${session.displayName}`}.</p>
-        <button type="button" onClick={onSignOut}>
-          Sign out
-        </button>
-      </nav>
-
-      {view.name === 'queue' && (
-        <DiagnosticExportPanel key={storeId} context={context} storeId={storeId} />
-      )}
-
-      {view.name === 'queue' && (
-        <button
-          type="button"
-          onClick={() => {
-            setView({ name: 'listing' });
-          }}
-        >
-          Listing 转化与内容 / Конверсия и контент карточек
-        </button>
-      )}
-
-      {view.name === 'listing' && (
-        <ListingConversionShell
-          context={context}
-          storeId={storeId}
-          onBack={() => {
-            setView({ name: 'queue' });
-          }}
-        />
-      )}
-
-      {view.name === 'queue' && <AvailabilityQueue context={context} />}
-
-      {view.name === 'queue' && <AvailabilityCases context={context} />}
-
-      {view.name === 'queue' && <AvailabilityAuthorityPanel context={context} />}
-
-      {view.name === 'queue' && <AdvertisingOperations context={context} />}
-
-      {/*
-        The published reading, on the page where the work is picked up. Asked
-        for by kind and not by date: the period belongs to the owner's reporting
-        calendar, and a browser naming one from its own clock would be deciding
-        which cut of the facts a person is judged on.
-      */}
-      {view.name === 'queue' && (
-        <>
-          <AdvertisingBriefView context={context} briefKind="DAILY_ACTION_BRIEF" />
-          <button
-            type="button"
-            onClick={() => {
-              setView({ name: 'advertising-brief', briefKind: 'WEEKLY_EVIDENCE_REVIEW' });
-            }}
-          >
-            Open the weekly evidence review
-          </button>
-        </>
-      )}
-
-      {view.name === 'advertising-brief' && (
-        <>
-          <button
-            type="button"
-            onClick={() => {
-              setView({ name: 'queue' });
-            }}
-          >
-            Back to the queue
-          </button>
-          <AdvertisingBriefView key={view.briefKind} context={context} briefKind={view.briefKind} />
-        </>
-      )}
-
-      {view.name === 'queue' && (
-        <AdvertisingQueue
-          context={context}
-          onSelect={(caseId) => {
-            setView({ name: 'advertising-case', caseId });
-          }}
-        />
-      )}
-
-      {view.name === 'advertising-case' && (
-        <AdvertisingCaseView
-          key={view.caseId}
-          context={context}
-          caseId={view.caseId}
-          onBack={() => {
-            setView({ name: 'queue' });
-          }}
-        />
-      )}
-
-      {view.name === 'queue' && (
-        <PriorityQueue
-          context={context}
-          storeId={storeId}
-          onSelect={(subjectId) => {
-            setView({ name: 'diagnosis', subjectId });
-          }}
-        />
-      )}
-
-      {view.name === 'diagnosis' && (
-        <SubjectDiagnosisView
-          key={`${storeId}:${view.subjectId}`}
-          context={context}
-          subjectId={view.subjectId}
-          storeId={storeId}
-          onBack={() => {
-            setView({ name: 'queue' });
-          }}
-          onReview={(recommendation) => {
-            setView({ name: 'review', recommendation });
-          }}
-        />
-      )}
-
-      {view.name === 'review' && (
-        <>
-          <button
-            type="button"
-            onClick={() => {
-              setView({ name: 'diagnosis', subjectId: view.recommendation.subjectId });
-            }}
-          >
-            Back to diagnosis
-          </button>
-          <RecommendationReview
-            context={context}
-            recommendation={view.recommendation}
-            onDecided={(state, commandId) => {
-              setView(commandId === undefined ? { name: 'queue' } : { name: 'command', commandId });
-              void state;
-            }}
+    <Routes>
+      <Route
+        element={
+          <AppLayout
+            displayName={session.displayName}
+            storeId={storeId}
+            environment={config.environment}
+            expiresAt={session.expiresAt}
+            now={now}
+            onSignOut={onSignOut}
           />
-        </>
-      )}
-
-      {view.name === 'command' && (
-        <>
-          <CommandTimeline context={context} commandId={view.commandId} />
-          {/*
-            What the change achieved, beside what it did. Kept separate from the
-            timeline because provider acceptance, readback and outcome are three
-            different facts and the timeline only carries the first two.
-          */}
-          <AdvertisingOutcomeHistory context={context} commandId={view.commandId} />
-        </>
-      )}
-    </main>
+        }
+      >
+        <Route index element={<Navigate to={ROUTES.pricingQueue} replace />} />
+        <Route path={ROUTES.pricingQueue} element={<PricingQueuePage {...page} />} />
+        <Route path={ROUTES.subject} element={<SubjectPage {...page} />} />
+        <Route path={ROUTES.review} element={<ReviewPage {...page} />} />
+        <Route path={ROUTES.command} element={<CommandPage {...page} />} />
+        <Route path={ROUTES.pricingExport} element={<PricingExportPage {...page} />} />
+        <Route path={ROUTES.availabilityRisks} element={<AvailabilityRisksPage {...page} />} />
+        <Route path={ROUTES.availabilityCases} element={<AvailabilityCasesPage {...page} />} />
+        <Route
+          path={ROUTES.availabilityAuthority}
+          element={<AvailabilityAuthorityPage {...page} />}
+        />
+        <Route path={ROUTES.advertisingQueue} element={<AdvertisingQueuePage {...page} />} />
+        <Route path={ROUTES.advertisingCase} element={<AdvertisingCasePage {...page} />} />
+        <Route
+          path={ROUTES.advertisingOperations}
+          element={<AdvertisingOperationsPage {...page} />}
+        />
+        <Route
+          path={ROUTES.advertisingDaily}
+          element={<AdvertisingBriefPage key="daily" kind="daily" {...page} />}
+        />
+        <Route
+          path={ROUTES.advertisingWeekly}
+          element={<AdvertisingBriefPage key="weekly" kind="weekly" {...page} />}
+        />
+        <Route path={ROUTES.listing} element={<ListingPage {...page} />} />
+        <Route
+          path={ROUTES.systemStatus}
+          element={<SystemStatusPage config={config} fetchImpl={fetchImpl} />}
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }

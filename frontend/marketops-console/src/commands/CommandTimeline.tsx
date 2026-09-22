@@ -1,7 +1,34 @@
+import { Alert, Button, Descriptions, Flex, Space, Steps, Timeline, Typography } from 'antd';
+import type { DescriptionsProps, StepsProps, TimelineItemProps } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { fetchCommand, fetchGate } from '../api/console';
 import type { ConsoleFailure, ConsoleRequest, PriceCommand } from '../api/console';
-import { formatAmount } from '../state/confidence';
+import { actions, codeLabel } from '../i18n';
+import {
+  ATTEMPT_OUTCOME_COLORS,
+  ATTEMPT_OUTCOME_LABELS,
+  ATTEMPT_PURPOSE_LABELS,
+  COMMAND_FAILURE_LABELS,
+  COMMAND_STATE_COLORS,
+  COMMAND_STATE_DESCRIPTIONS,
+  COMMAND_STATE_LABELS,
+  FULFILLMENT_MODE_LABELS,
+  GATE_REASON_LABELS,
+  PLATFORM_LABELS,
+  READBACK_MATCH_COLORS,
+  READBACK_MATCH_LABELS,
+} from '../i18n/zh/pricing';
+import {
+  CodeTag,
+  DateTime,
+  EmptyState,
+  FailureAlert,
+  LoadingState,
+  Money,
+  SectionCard,
+  TechnicalDetails,
+} from '../ui';
 
 /** What the timeline needs in order to load itself. */
 export interface CommandTimelineProps {
@@ -18,6 +45,47 @@ const UNRESOLVED = new Set([
   'MANUAL_RESOLUTION',
   'COMPENSATION_FAILED',
 ]);
+
+/** Timeline dot colours for a tag colour. */
+const DOT_COLORS: Readonly<Record<string, string>> = {
+  success: 'green',
+  error: 'red',
+  warning: 'orange',
+  processing: 'blue',
+};
+
+/** Where a command sits on its lifecycle: queue, call, platform, readback, result. */
+function lifecycle(state: string): {
+  readonly current: number;
+  readonly status: NonNullable<StepsProps['status']>;
+} {
+  switch (state) {
+    case 'PENDING':
+      return { current: 0, status: 'process' };
+    case 'LEASED':
+    case 'EXECUTING':
+    case 'RETRY_WAIT':
+      return { current: 1, status: 'process' };
+    case 'PLATFORM_PENDING':
+      return { current: 2, status: 'process' };
+    case 'READBACK_PENDING':
+      return { current: 3, status: 'process' };
+    case 'UNKNOWN_REQUIRES_READBACK':
+    case 'READBACK_MISMATCH':
+      return { current: 3, status: 'error' };
+    case 'SUCCEEDED':
+    case 'COMPENSATED':
+      return { current: 4, status: 'finish' };
+    case 'COMPENSATION_PENDING':
+      return { current: 4, status: 'process' };
+    case 'MANUAL_RESOLUTION':
+    case 'FAILED_FINAL':
+    case 'COMPENSATION_FAILED':
+      return { current: 4, status: 'error' };
+    default:
+      return { current: 0, status: 'error' };
+  }
+}
 
 /**
  * What happened to a price change, in the order it happened.
@@ -60,166 +128,250 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
     };
   }, [context, commandId, refresh]);
 
+  const refreshButton = (
+    <Button
+      icon={<ReloadOutlined />}
+      aria-label="刷新指令"
+      onClick={() => {
+        setRefresh((value) => value + 1);
+      }}
+    >
+      {actions.refresh}
+    </Button>
+  );
+
   if (failure !== undefined) {
     return (
-      <section aria-label="Command timeline" data-state="error">
-        <h2>Price change</h2>
-        <p role="alert">The command could not be loaded ({failure.kind}).</p>
+      <section aria-label="调价指令" data-state="error">
+        <SectionCard title="调价指令" extra={refreshButton}>
+          <FailureAlert failure={failure} />
+        </SectionCard>
       </section>
     );
   }
   if (command === undefined) {
     return (
-      <section aria-label="Command timeline" data-state="loading">
-        <h2>Price change</h2>
-        <p role="status">Loading the command…</p>
+      <section aria-label="调价指令" data-state="loading">
+        <SectionCard title="调价指令">
+          <LoadingState rows={4} />
+        </SectionCard>
       </section>
     );
   }
 
   const unresolved = UNRESOLVED.has(command.state);
+  const stateColor = COMMAND_STATE_COLORS[command.state];
+  const steps = lifecycle(command.state);
+  const lastStepTitle =
+    steps.current === 4 ? codeLabel(COMMAND_STATE_LABELS, command.state) : '结果';
+
+  const details: DescriptionsProps['items'] = [
+    {
+      key: 'prior',
+      label: '调价前价格',
+      children: <Money value={command.priorPrice} currency={command.currencyCode} />,
+    },
+    {
+      key: 'target',
+      label: '目标价格',
+      children: <Money value={command.targetPrice} currency={command.currencyCode} strong />,
+    },
+    ...(command.fulfillmentModeCode === null
+      ? []
+      : [
+          {
+            key: 'mode',
+            label: '履约模式',
+            children: (
+              <CodeTag labels={FULFILLMENT_MODE_LABELS} code={command.fulfillmentModeCode} />
+            ),
+          },
+        ]),
+    { key: 'attempts', label: '已调用次数', children: String(command.attemptNo) },
+    ...(command.failureCode === null
+      ? []
+      : [
+          {
+            key: 'failure',
+            label: '失败原因',
+            children: (
+              <CodeTag
+                labels={COMMAND_FAILURE_LABELS}
+                code={command.failureCode}
+                colors={{ [command.failureCode]: 'error' }}
+              />
+            ),
+          },
+        ]),
+  ];
+
+  const attemptItems: TimelineItemProps[] = command.attempts.map((attempt) => ({
+    key: attempt.id,
+    color: DOT_COLORS[ATTEMPT_OUTCOME_COLORS[attempt.outcomeClass] ?? ''] ?? 'gray',
+    title: <DateTime value={attempt.startedAt} />,
+    content: (
+      <Flex vertical gap={4} data-purpose={attempt.purpose}>
+        <Flex gap={8} wrap align="center">
+          <Typography.Text strong>
+            第 {attempt.attemptNo} 次 · {codeLabel(ATTEMPT_PURPOSE_LABELS, attempt.purpose)}
+          </Typography.Text>
+          <CodeTag
+            labels={ATTEMPT_OUTCOME_LABELS}
+            code={attempt.outcomeClass}
+            colors={ATTEMPT_OUTCOME_COLORS}
+          />
+          {attempt.errorCode !== null && (
+            <CodeTag
+              labels={COMMAND_FAILURE_LABELS}
+              code={attempt.errorCode}
+              colors={{ [attempt.errorCode]: 'error' }}
+            />
+          )}
+        </Flex>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          {attempt.nativeStatus !== null && `平台状态码：${attempt.nativeStatus} · `}
+          完成时间：
+          {attempt.completedAt === null ? '尚未完成' : <DateTime value={attempt.completedAt} />}
+        </Typography.Text>
+      </Flex>
+    ),
+  }));
+
+  const readbackItems: TimelineItemProps[] = command.readbacks.map((readback) => ({
+    key: readback.id,
+    color: DOT_COLORS[READBACK_MATCH_COLORS[readback.matchState] ?? ''] ?? 'gray',
+    title: <DateTime value={readback.observedAt} />,
+    content: (
+      <Flex gap={8} wrap align="center" data-match={readback.matchState}>
+        <Money value={readback.observedPrice} currency={readback.currencyCode} strong />
+        <CodeTag
+          labels={READBACK_MATCH_LABELS}
+          code={readback.matchState}
+          colors={READBACK_MATCH_COLORS}
+        />
+      </Flex>
+    ),
+  }));
 
   return (
-    <section aria-label="Command timeline" data-command={command.id} data-state={command.state}>
-      <h2>Price change on {command.platformCode}</h2>
-      <button
-        type="button"
-        onClick={() => {
-          setRefresh((value) => value + 1);
-        }}
-      >
-        Refresh command
-      </button>
+    <section aria-label="调价指令" data-command={command.id} data-state={command.state}>
+      <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+        <SectionCard
+          title={
+            <Space size="small" wrap>
+              <span>调价指令 · {codeLabel(PLATFORM_LABELS, command.platformCode)}</span>
+              <CodeTag
+                labels={COMMAND_STATE_LABELS}
+                code={command.state}
+                colors={COMMAND_STATE_COLORS}
+              />
+            </Space>
+          }
+          extra={refreshButton}
+        >
+          <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+            <Steps
+              size="small"
+              current={steps.current}
+              status={steps.status}
+              items={[
+                { title: '等待执行' },
+                { title: '调用平台' },
+                { title: '平台处理' },
+                { title: '回读确认' },
+                { title: lastStepTitle },
+              ]}
+            />
+            <div data-testid="command-state" role="status">
+              <Alert
+                type={
+                  stateColor === 'success'
+                    ? 'success'
+                    : stateColor === 'error'
+                      ? 'error'
+                      : stateColor === 'warning'
+                        ? 'warning'
+                        : 'info'
+                }
+                showIcon
+                title={describeState(command.state)}
+              />
+            </div>
+            {unresolved && (
+              <div data-testid="command-unresolved" role="alert">
+                <Alert
+                  type="warning"
+                  showIcon
+                  title="此变更尚未确认"
+                  description="在回读确认之前，不要假定平台已是新价格。"
+                />
+              </div>
+            )}
+            <Descriptions bordered size="small" column={{ xs: 1, md: 2, xl: 3 }} items={details} />
+            {gate !== undefined && gate.length > 0 && (
+              <section aria-label="写入闸门" data-testid="gate-closed">
+                <Alert
+                  type="error"
+                  showIcon
+                  title="写入闸门关闭，指令当前不能发往平台"
+                  description={
+                    <Flex gap={6} wrap style={{ marginTop: 4 }}>
+                      {gate.map((reason) => (
+                        <span key={reason} data-reason={reason}>
+                          <CodeTag
+                            labels={GATE_REASON_LABELS}
+                            code={reason}
+                            colors={{ [reason]: 'error' }}
+                          />
+                        </span>
+                      ))}
+                    </Flex>
+                  }
+                />
+              </section>
+            )}
+            <TechnicalDetails
+              data={{ commandId: command.id, recommendationId: command.recommendationId }}
+            />
+          </Space>
+        </SectionCard>
 
-      <p role="status" data-testid="command-state">
-        {describeState(command.state)}
-      </p>
-      {unresolved && (
-        <p role="alert" data-testid="command-unresolved">
-          This change is not resolved. Do not assume the marketplace holds the new price until a
-          readback says so.
-        </p>
-      )}
-
-      <dl>
-        <dt>Price before</dt>
-        <dd>{formatAmount(command.priorPrice, command.currencyCode)}</dd>
-        <dt>Price intended</dt>
-        <dd>{formatAmount(command.targetPrice, command.currencyCode)}</dd>
-        {command.fulfillmentModeCode !== null && (
-          <>
-            <dt>Fulfillment mode</dt>
-            <dd>{command.fulfillmentModeCode}</dd>
-          </>
-        )}
-        <dt>Attempts made</dt>
-        <dd>{command.attemptNo}</dd>
-        {command.failureCode !== null && (
-          <>
-            <dt>Failure</dt>
-            <dd>{command.failureCode}</dd>
-          </>
-        )}
-      </dl>
-
-      {gate !== undefined && gate.length > 0 && (
-        <section aria-label="Write gate" data-testid="gate-closed">
-          <h3>Why this cannot leave the system right now</h3>
-          <ul>
-            {gate.map((reason) => (
-              <li key={reason} data-reason={reason}>
-                {reason}
-              </li>
-            ))}
-          </ul>
+        <section aria-label="平台调用记录">
+          <SectionCard title="平台调用记录">
+            {command.attempts.length === 0 ? (
+              <EmptyState description="尚未调用平台" />
+            ) : (
+              <Timeline items={attemptItems} />
+            )}
+          </SectionCard>
         </section>
-      )}
 
-      <section aria-label="Calls made">
-        <h3>Calls made</h3>
-        {command.attempts.length === 0 ? (
-          <p>No call has been made yet.</p>
-        ) : (
-          <ol>
-            {command.attempts.map((attempt) => (
-              <li key={attempt.id} data-purpose={attempt.purpose}>
-                <strong>{attempt.purpose}</strong> — {attempt.outcomeClass}
-                {attempt.nativeStatus !== null && <span> ({attempt.nativeStatus})</span>}
-                {attempt.errorCode !== null && <span> — {attempt.errorCode}</span>}
-                <time dateTime={attempt.startedAt}> at {attempt.startedAt}</time>
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
-
-      <section aria-label="What the marketplace holds">
-        <h3>What the marketplace holds</h3>
-        {command.readbacks.length === 0 ? (
-          <p data-testid="no-readback">
-            Nothing has been read back yet, so nothing here says what the marketplace holds.
-          </p>
-        ) : (
-          <ol>
-            {command.readbacks.map((readback) => (
-              <li key={readback.id} data-match={readback.matchState}>
-                {formatAmount(readback.observedPrice, readback.currencyCode)} —{' '}
-                {describeMatch(readback.matchState)}
-                <time dateTime={readback.observedAt}> at {readback.observedAt}</time>
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
+        <section aria-label="平台当前价格">
+          <SectionCard title="平台当前价格（回读）">
+            {command.readbacks.length === 0 ? (
+              <div data-testid="no-readback">
+                <EmptyState description="尚未回读，无法确认平台当前价格" />
+              </div>
+            ) : (
+              <Timeline items={readbackItems} />
+            )}
+          </SectionCard>
+        </section>
+      </Space>
     </section>
   );
 }
 
 /** Say what a command's state means, rather than showing the code alone. */
 export function describeState(state: string): string {
-  switch (state) {
-    case 'PENDING':
-      return 'Waiting for a worker. No call has been made.';
-    case 'LEASED':
-    case 'EXECUTING':
-      return 'A worker is making the call now.';
-    case 'PLATFORM_PENDING':
-      return 'The marketplace accepted the request and is still working on it.';
-    case 'READBACK_PENDING':
-      return 'The marketplace has answered; what it now holds is being read back.';
-    case 'SUCCEEDED':
-      return 'A readback observed the intended price. The change is confirmed.';
-    case 'RETRY_WAIT':
-      return 'A retriable condition occurred. The call will be tried again.';
-    case 'UNKNOWN_REQUIRES_READBACK':
-      return 'The result could not be classified. The change is neither confirmed nor ruled out.';
-    case 'READBACK_MISMATCH':
-      return 'A readback observed a different price from the one intended.';
-    case 'MANUAL_RESOLUTION':
-      return 'An operator has taken this out of automatic handling.';
-    case 'FAILED_FINAL':
-      return 'The change was not applied and will not be retried.';
-    case 'COMPENSATION_PENDING':
-      return 'Restoring the previous price was authorised and is being performed.';
-    case 'COMPENSATED':
-      return 'The previous price was restored and read back.';
-    case 'COMPENSATION_FAILED':
-      return 'The restore could not be completed. A person has to resolve this.';
-    default:
-      return `The command is in an unrecognised state (${state}).`;
-  }
+  return Object.hasOwn(COMMAND_STATE_DESCRIPTIONS, state)
+    ? (COMMAND_STATE_DESCRIPTIONS[state] ?? state)
+    : `指令处于未识别的状态（${state}）。`;
 }
 
 /** Say what a readback observed, rather than showing the code alone. */
 export function describeMatch(matchState: string): string {
-  switch (matchState) {
-    case 'MATCHES_TARGET':
-      return 'this is the price that was intended';
-    case 'MATCHES_PRIOR':
-      return 'this is the price from before the change';
-    case 'DIFFERENT':
-      return 'this is neither the intended nor the previous price';
-    default:
-      return 'the marketplace answer could not be read';
-  }
+  return Object.hasOwn(READBACK_MATCH_LABELS, matchState)
+    ? (READBACK_MATCH_LABELS[matchState] ?? matchState)
+    : '无法读取平台回复';
 }

@@ -1,37 +1,55 @@
+import { Typography } from 'antd';
 import type { ListingPurposeBasis } from '../api/listingConversion';
-import { When } from './ListingCommon';
-import { useLanguage } from './i18n/language';
-import { t } from './i18n/ui';
+import { t } from '../i18n/zh/listing';
+import { Details, SubTitle, When } from './ListingCommon';
+
+function Lines({ values }: { readonly values: readonly string[] }): React.JSX.Element {
+  return (
+    <ul style={{ margin: 0, paddingInlineStart: 18 }}>
+      {values.map((value, index) => (
+        <li key={index}>
+          <Typography.Text>{value}</Typography.Text>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function ListingPurposeBasisDetails({
   basis,
 }: {
   readonly basis: ListingPurposeBasis;
 }): React.JSX.Element {
-  const { language } = useLanguage();
   return (
-    <section aria-label={t('purposeBasis', language)}>
-      <h4>{t('purposeBasis', language)}</h4>
-      <dl>
-        <dt>{t('evidence', language)}</dt>
-        <dd>{basis.evidenceReference}</dd>
-        <dt>{t('purposeUseUntil', language)}</dt>
-        <dd>
-          <When value={basis.useUntil} />
-        </dd>
-      </dl>
-      <h5>{t('purposeUseConditions', language)}</h5>
-      <ul>
-        {basis.useConditions.map((value, index) => (
-          <li key={index}>{value}</li>
-        ))}
-      </ul>
-      <h5>{t('purposeEndConditions', language)}</h5>
-      <ul>
-        {basis.endConditions.map((value, index) => (
-          <li key={index}>{value}</li>
-        ))}
-      </ul>
+    <section aria-label={t('purposeBasis')}>
+      <SubTitle>{t('purposeBasis')}</SubTitle>
+      <Details
+        column={{ xs: 1, md: 2 }}
+        items={[
+          {
+            key: 'evidence',
+            label: t('purposeEvidence'),
+            children: <Typography.Text copyable>{basis.evidenceReference}</Typography.Text>,
+          },
+          {
+            key: 'until',
+            label: t('purposeUseUntil'),
+            children: <When value={basis.useUntil} />,
+          },
+          {
+            key: 'use',
+            label: t('purposeUseConditions'),
+            span: 'filled',
+            children: <Lines values={basis.useConditions} />,
+          },
+          {
+            key: 'end',
+            label: t('purposeEndConditions'),
+            span: 'filled',
+            children: <Lines values={basis.endConditions} />,
+          },
+        ]}
+      />
     </section>
   );
 }
