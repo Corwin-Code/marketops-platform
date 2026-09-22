@@ -72,6 +72,14 @@ interface Recent {
   readonly id: string;
 }
 
+/** What the success message says once an observation is saved. */
+const RECORDED_MESSAGE: Readonly<Record<Recorder, string>> = {
+  description: text.recordedDescription,
+  display: text.recordedDisplay,
+  nativeScope: text.recordedNativeScope,
+  promotion: text.recordedPromotion,
+};
+
 const RECENT_LABEL: Readonly<Record<Recorder, string>> = {
   description: text.recentDescription,
   display: text.recentDisplay,
@@ -135,7 +143,7 @@ export function ListingHealthDetail({
     (id: string): void => {
       setRecording(undefined);
       setRecent((current) => [{ key: Date.now(), kind, id }, ...current].slice(0, 5));
-      void message.success(RECENT_LABEL[kind]);
+      void message.success(RECORDED_MESSAGE[kind]);
       refresh();
     };
   const closeRecorder = (): void => {
