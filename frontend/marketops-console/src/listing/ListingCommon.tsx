@@ -406,6 +406,33 @@ export function InstantPicker({
   );
 }
 
+/**
+ * `InstantPicker` as a form control: `Form.Item` supplies the value and the
+ * change handler, and the value is the ISO instant or an empty string.
+ */
+export function InstantField({
+  value,
+  onChange,
+  disabled = false,
+  ariaLabel,
+}: {
+  readonly value?: string | undefined;
+  readonly onChange?: ((iso: string) => void) | undefined;
+  readonly disabled?: boolean;
+  readonly ariaLabel?: string;
+}): React.JSX.Element {
+  return (
+    <InstantPicker
+      value={value ?? ''}
+      disabled={disabled}
+      onChange={(iso) => {
+        onChange?.(iso);
+      }}
+      {...(ariaLabel === undefined ? {} : { ariaLabel })}
+    />
+  );
+}
+
 /** Rules message for a required field. */
 export function requiredRule(label: string): { required: true; message: string } {
   return { required: true, message: `请填写${label}` };
