@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
+import socket
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -34,6 +39,14 @@ from scripts.validate_production_readiness import (
     FRESH_CLONE_PROHIBITED_TOKENS,
     ISOLATED_BROWSER_CONTRACT_TOKENS,
     ISOLATED_BROWSER_ENTRY,
+    BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS,
+    BROWSER_BACKEND_ORIGIN_RESOLVER,
+    BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS,
+    BROWSER_SPEC_PROHIBITED_TOKENS,
+    LOCAL_CONFIG_CONTRACT_TOKENS,
+    LOCAL_CONFIG_ENTRY,
+    LOCAL_CONFIG_PROHIBITED_TOKENS,
+    LOOPBACK_PORT_PROBE,
     BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
@@ -235,6 +248,211 @@ class FreshCloneEntryContractTests(unittest.TestCase):
             v.startswith("repository path restriction")
             for v in self.contract_violations(ISOLATED_BROWSER_ENTRY, mutated)
         ))
+
+
+class BackendPortIsolationTests(unittest.TestCase):
+    """Backend stages answer only on a port nothing else held, and the browser reads that port."""
+
+    PLAYWRIGHT_CONFIG = "frontend/marketops-console/playwright.config.ts"
+    BROWSER_SPEC = "frontend/marketops-console/tests/browser/operating-console.spec.ts"
+
+    def setUp(self) -> None:
+        self.fresh_clone = (ROOT / FRESH_CLONE_ENTRY).read_text(encoding="utf-8")
+        self.isolated = (ROOT / ISOLATED_BROWSER_ENTRY).read_text(encoding="utf-8")
+        self.local_config = (ROOT / LOCAL_CONFIG_ENTRY).read_text(encoding="utf-8")
+        self.playwright = (ROOT / self.PLAYWRIGHT_CONFIG).read_text(encoding="utf-8")
+        self.spec = (ROOT / self.BROWSER_SPEC).read_text(encoding="utf-8")
+
+    def contract_violations(self, relative: str, text: str) -> list[str]:
+        """Run the repository contract check with one file replaced in memory."""
+        original = readiness.read_text
+
+        def patched(path: Path) -> str | None:
+            return text if path == ROOT / relative else original(path)
+
+        report = readiness.Report()
+        with mock.patch.object(readiness, "read_text", patched):
+            readiness.check_repository_contracts(report)
+        return [violation.detail for violation in report.violations if violation.path == relative]
+
+    def test_the_committed_files_meet_their_port_contracts(self) -> None:
+        self.assertEqual(
+            [],
+            contract_token_violations(
+                self.local_config,
+                required=LOCAL_CONFIG_CONTRACT_TOKENS,
+                prohibited=LOCAL_CONFIG_PROHIBITED_TOKENS,
+            ),
+        )
+        self.assertEqual(
+            [], contract_token_violations(self.playwright, required=BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS)
+        )
+        resolver = (ROOT / BROWSER_BACKEND_ORIGIN_RESOLVER).read_text(encoding="utf-8")
+        self.assertEqual(
+            [], contract_token_violations(resolver, required=BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS)
+        )
+        specs = sorted((ROOT / "frontend/marketops-console/tests/browser").glob("*.spec.ts"))
+        self.assertTrue(specs)
+        for spec in specs:
+            with self.subTest(spec=spec.name):
+                text = spec.read_text(encoding="utf-8")
+                self.assertEqual(
+                    [], contract_token_violations(text, prohibited=BROWSER_SPEC_PROHIBITED_TOKENS)
+                )
+        for relative, text in (
+            (LOCAL_CONFIG_ENTRY, self.local_config),
+            (self.PLAYWRIGHT_CONFIG, self.playwright),
+            (self.BROWSER_SPEC, self.spec),
+        ):
+            with self.subTest(relative=relative):
+                self.assertEqual([], self.contract_violations(relative, text))
+
+    def test_every_backend_entry_uses_the_same_loopback_probe(self) -> None:
+        for text in (self.fresh_clone, self.isolated, self.local_config):
+            self.assertEqual(1, text.count(LOOPBACK_PORT_PROBE))
+
+    def test_fresh_clone_backend_stages_back_on_the_default_port_are_rejected(self) -> None:
+        mutations = (
+            ("HTTP_PORT=9999", "HTTP_PORT=8080"),
+            ('SERVER_PORT="${HTTP_PORT}" bash scripts/verify_local_config.sh', "bash scripts/verify_local_config.sh"),
+            ('MARKETOPS_SOURCE_HEAD_SHA="${COMMIT}" SERVER_PORT="${HTTP_PORT}" \\', 'MARKETOPS_SOURCE_HEAD_SHA="${COMMIT}" \\'),
+        )
+        for old, new in mutations:
+            with self.subTest(old=old):
+                self.assertIn(old, self.fresh_clone)
+                violations = self.contract_violations(FRESH_CLONE_ENTRY, self.fresh_clone.replace(old, new))
+                self.assertTrue(any(v.startswith("required contract is absent") for v in violations))
+
+    def test_an_entry_without_its_port_refusal_is_rejected(self) -> None:
+        for relative, text in (
+            (FRESH_CLONE_ENTRY, self.fresh_clone),
+            (ISOLATED_BROWSER_ENTRY, self.isolated),
+            (LOCAL_CONFIG_ENTRY, self.local_config),
+        ):
+            with self.subTest(relative=relative):
+                mutated = text.replace(f"if ! {LOOPBACK_PORT_PROBE}", "if false")
+                self.assertNotEqual(text, mutated)
+                violations = self.contract_violations(relative, mutated)
+                self.assertTrue(any(v.startswith("required contract is absent") for v in violations))
+
+    def test_a_readiness_probe_fixed_on_the_default_port_is_rejected(self) -> None:
+        mutated = self.local_config.replace(
+            'READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"',
+            'READINESS_URL="http://127.0.0.1:8080/actuator/health/readiness"',
+        )
+        violations = self.contract_violations(LOCAL_CONFIG_ENTRY, mutated)
+        self.assertIn("prohibited contract is present: 127.0.0.1:8080", violations)
+        self.assertIn(
+            'required contract is absent: READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"',
+            violations,
+        )
+
+    def test_a_browser_suite_off_the_backend_port_is_rejected(self) -> None:
+        mutated = self.spec.replace(
+            "const API_ORIGIN = resolveBackendOrigin();", "const API_ORIGIN = 'http://127.0.0.1:8080';"
+        )
+        self.assertNotEqual(self.spec, mutated)
+        self.assertIn(
+            "prohibited contract is present: 127.0.0.1:8080",
+            self.contract_violations(self.BROWSER_SPEC, mutated),
+        )
+        mutated = self.playwright.replace("        VITE_MARKETOPS_API_BASE_URL: backendOrigin,\n", "")
+        self.assertNotEqual(self.playwright, mutated)
+        self.assertIn(
+            "required contract is absent: VITE_MARKETOPS_API_BASE_URL: backendOrigin",
+            self.contract_violations(self.PLAYWRIGHT_CONFIG, mutated),
+        )
+
+    def test_each_port_refusal_runs_before_anything_is_generated_or_started(self) -> None:
+        probe = f"if ! {LOOPBACK_PORT_PROBE}"
+        self.assertLess(self.fresh_clone.index(probe), self.fresh_clone.index("  make env-init\n"))
+        self.assertLess(self.isolated.index(probe), self.isolated.index("docker ps -aq"))
+        self.assertLess(self.isolated.index(probe), self.isolated.index("make env-init"))
+        self.assertLess(self.local_config.index(probe), self.local_config.index("./mvnw"))
+
+    # The two entries run for real below, with nothing behind them: a port the test
+    # holds must be refused before any configuration, container or backend exists.
+
+    def run_entry(self, relative: str, server_port: str, tree: Path) -> subprocess.CompletedProcess[str]:
+        target = tree / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / relative, target)
+        tools = tree / "tools"
+        tools.mkdir(exist_ok=True)
+        marker = tree / "started"
+        for tool in ("docker", "make", "npm"):
+            path = tools / tool
+            path.write_text(f'#!/bin/sh\necho "{tool} $*" >> "{marker}"\n', encoding="utf-8")
+            path.chmod(0o755)
+        environment = {
+            "PATH": f"{tools}{os.pathsep}{os.environ.get('PATH', '')}",
+            "HOME": str(tree),
+            "SERVER_PORT": server_port,
+        }
+        return subprocess.run(
+            ["bash", str(target)], cwd=tree, env=environment, capture_output=True, text=True, timeout=60
+        )
+
+    def local_config_tree(self, tree: Path) -> Path:
+        env_local = tree / ".env.local"
+        env_local.write_text("MARKETOPS_DB_PORT=5432\n", encoding="utf-8")
+        env_local.chmod(0o600)
+        backend = tree / "backend" / "marketops-server"
+        backend.mkdir(parents=True)
+        wrapper = backend / "mvnw"
+        wrapper.write_text(f'#!/bin/sh\necho "mvnw $*" >> "{tree / "started"}"\n', encoding="utf-8")
+        wrapper.chmod(0o755)
+        return tree
+
+    def assert_refused_before_anything_started(self, relative: str, port: str) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            tree = Path(directory)
+            if relative == LOCAL_CONFIG_ENTRY:
+                self.local_config_tree(tree)
+            result = self.run_entry(relative, port, tree)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn(f"127.0.0.1:{port} is in use or could not be checked", result.stderr)
+            self.assertFalse((tree / "started").exists())
+            self.assertFalse((tree / "frontend").exists())
+
+    def test_both_entries_refuse_a_port_another_process_holds(self) -> None:
+        for relative in (LOCAL_CONFIG_ENTRY, ISOLATED_BROWSER_ENTRY):
+            with self.subTest(relative=relative), socket.socket() as holder:
+                holder.bind(("127.0.0.1", 0))
+                holder.listen(1)
+                self.assert_refused_before_anything_started(relative, str(holder.getsockname()[1]))
+
+    def test_both_entries_refuse_a_port_whose_holder_no_longer_accepts(self) -> None:
+        # A holder with a full queue lets a connection attempt time out instead of
+        # refusing it; only an actively refused connection counts as a free port.
+        for relative in (LOCAL_CONFIG_ENTRY, ISOLATED_BROWSER_ENTRY):
+            with self.subTest(relative=relative), socket.socket() as holder:
+                holder.bind(("127.0.0.1", 0))
+                holder.listen(0)
+                port = holder.getsockname()[1]
+                queued = []
+                for _ in range(8):
+                    filler = socket.socket()
+                    filler.setblocking(False)
+                    filler.connect_ex(("127.0.0.1", port))
+                    queued.append(filler)
+                try:
+                    self.assert_refused_before_anything_started(relative, str(port))
+                finally:
+                    for filler in queued:
+                        filler.close()
+
+    def test_both_entries_refuse_a_value_that_is_not_a_port(self) -> None:
+        for relative in (LOCAL_CONFIG_ENTRY, ISOLATED_BROWSER_ENTRY):
+            for value in ("", "0", "65536", "80a"):
+                with self.subTest(relative=relative, value=value), tempfile.TemporaryDirectory() as directory:
+                    tree = Path(directory)
+                    if relative == LOCAL_CONFIG_ENTRY:
+                        self.local_config_tree(tree)
+                    result = self.run_entry(relative, value, tree)
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertIn("SERVER_PORT must be a TCP port number", result.stderr)
+                    self.assertFalse((tree / "started").exists())
 
 
 class RepositoryContractPatternTests(unittest.TestCase):

@@ -25,6 +25,21 @@ while IFS= read -r variable; do
   esac
 done < <(compgen -e)
 
+# The backend this suite starts binds SERVER_PORT (Spring Boot) or the configured
+# 8080, and the console build and browser routes read the same value through
+# tests/browser/backendOrigin.ts. The backend, fixture driver and console preview
+# ports must all refuse a connection now, so no process of another project answers
+# in their place; a port that accepts, stays silent or cannot be checked is refused.
+http_port=${SERVER_PORT-8080}
+[[ "$http_port" =~ ^[1-9][0-9]{0,4}$ ]] && [ "$http_port" -le 65535 ] \
+  || fail "SERVER_PORT must be a TCP port number"
+for port in "$http_port" 8082 4173; do
+  if ! python3 -c 'import errno, socket, sys; s = socket.socket(); s.settimeout(0.4); sys.exit(0 if s.connect_ex(("127.0.0.1", int(sys.argv[1]))) == errno.ECONNREFUSED else 1)' "$port"; then
+    fail "127.0.0.1:$port is in use or could not be checked; refusing to share it with another process"
+  fi
+done
+export SERVER_PORT="$http_port"
+
 project=${COMPOSE_PROJECT_NAME:-marketops-browser-$(python3 -c 'import secrets; print(secrets.token_hex(6))')}
 [[ "$project" =~ ^marketops-browser-[a-z0-9][a-z0-9-]*$ ]] \
   || fail "COMPOSE_PROJECT_NAME must name a dedicated marketops-browser-* project"

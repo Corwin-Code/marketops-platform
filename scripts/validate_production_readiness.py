@@ -722,9 +722,19 @@ BUILT_PREVIEW_COMMAND = (
     "npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort"
 )
 
+# The fresh-clone entry, the isolated business-browser entry and the root-configuration
+# check each start their backend only on a loopback port that actively refused a
+# connection when checked; a port that accepts, stays silent or cannot be checked is
+# refused. Other entries that start a backend are not bound by this.
+LOOPBACK_PORT_PROBE = (
+    "python3 -c 'import errno, socket, sys; s = socket.socket(); s.settimeout(0.4); "
+    "sys.exit(0 if s.connect_ex((\"127.0.0.1\", int(sys.argv[1]))) == errno.ECONNREFUSED else 1)'"
+)
+
 # The fresh-clone entry keeps every stack off the generated default database port
 # and reaches the browser suite only through the isolated entry, which generates,
-# starts, tests and removes its own non-default database.
+# starts, tests and removes its own non-default database. Its backend stages bind
+# a dedicated HTTP port instead of the developer default 8080.
 FRESH_CLONE_ENTRY = "scripts/fresh_clone_check.sh"
 ISOLATED_BROWSER_ENTRY = "scripts/validation/business_browser_isolated.sh"
 FRESH_CLONE_CONTRACT_TOKENS = (
@@ -751,6 +761,10 @@ FRESH_CLONE_CONTRACT_TOKENS = (
     "scripts/collect_supply_chain.py",
     "scripts/verify_local_config.sh",
     "down --volumes --remove-orphans",
+    "HTTP_PORT=9999",
+    f'for port in "${{HTTP_PORT}}" 8082 4173; do\n  if ! {LOOPBACK_PORT_PROBE} "${{port}}"; then\n    fail 5',
+    'SERVER_PORT="${HTTP_PORT}" bash scripts/verify_local_config.sh',
+    f'SERVER_PORT="${{HTTP_PORT}}" \\\n    bash {ISOLATED_BROWSER_ENTRY}',
 )
 FRESH_CLONE_PROHIBITED_TOKENS = ("npm run test:browser",)
 ISOLATED_BROWSER_CONTRACT_TOKENS = (
@@ -760,7 +774,32 @@ ISOLATED_BROWSER_CONTRACT_TOKENS = (
     '"${compose[@]}" port postgres 5432',
     "npm run test:browser",
     "down --volumes --remove-orphans",
+    "http_port=${SERVER_PORT-8080}",
+    f'for port in "$http_port" 8082 4173; do\n  if ! {LOOPBACK_PORT_PROBE} "$port"; then\n    fail',
+    'export SERVER_PORT="$http_port"',
 )
+# The root-configuration check reads readiness only from the port its own backend
+# binds, and only after nothing else answered there.
+LOCAL_CONFIG_ENTRY = "scripts/verify_local_config.sh"
+LOCAL_CONFIG_CONTRACT_TOKENS = (
+    'HTTP_PORT="${SERVER_PORT-8080}"',
+    'READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"',
+    f'if ! {LOOPBACK_PORT_PROBE} "${{HTTP_PORT}}"; then\n  fail 3',
+    'SERVER_PORT="${HTTP_PORT}" SPRING_CONFIG_IMPORT=',
+)
+LOCAL_CONFIG_PROHIBITED_TOKENS = ("127.0.0.1:8080",)
+# The browser suite, the console it builds and the backend it starts read one port.
+BROWSER_BACKEND_ORIGIN_RESOLVER = f"{FRONTEND}/tests/browser/backendOrigin.ts"
+BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS = (
+    "BACKEND_PORT_ENVIRONMENT_VARIABLE = 'SERVER_PORT'",
+    "DEFAULT_BACKEND_PORT = '8080'",
+    "must be a TCP port number",
+)
+BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS = (
+    "const backendOrigin = resolveBackendOrigin();",
+    "VITE_MARKETOPS_API_BASE_URL: backendOrigin",
+)
+BROWSER_SPEC_PROHIBITED_TOKENS = ("127.0.0.1:8080",)
 
 BACKLOG_HEADER = ("ID", "Title", "Status", "Dependencies", "Core source requirements")
 BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "IMPLEMENTING", "COMPLETED"}
@@ -1492,6 +1531,17 @@ def check_repository_contracts(report: Report) -> None:
     require_tokens(report, rule, fresh_clone, FRESH_CLONE_CONTRACT_TOKENS)
     reject_tokens(report, rule, fresh_clone, FRESH_CLONE_PROHIBITED_TOKENS)
     require_tokens(report, rule, ROOT / ISOLATED_BROWSER_ENTRY, ISOLATED_BROWSER_CONTRACT_TOKENS)
+    local_config = ROOT / LOCAL_CONFIG_ENTRY
+    require_tokens(report, rule, local_config, LOCAL_CONFIG_CONTRACT_TOKENS)
+    reject_tokens(report, rule, local_config, LOCAL_CONFIG_PROHIBITED_TOKENS)
+    require_tokens(
+        report, rule, ROOT / FRONTEND / "playwright.config.ts", BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS
+    )
+    require_tokens(
+        report, rule, ROOT / BROWSER_BACKEND_ORIGIN_RESOLVER, BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS
+    )
+    for spec in sorted((ROOT / FRONTEND / "tests" / "browser").glob("*.spec.ts")):
+        reject_tokens(report, rule, spec, BROWSER_SPEC_PROHIBITED_TOKENS)
 
 
 def declared_dependency_artifacts(pom_text: str) -> list[tuple[str, str]]:

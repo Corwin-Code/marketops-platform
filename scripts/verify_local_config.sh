@@ -10,7 +10,10 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_LOCAL="${REPO_ROOT}/.env.local"
 BACKEND_DIR="${REPO_ROOT}/backend/marketops-server"
-READINESS_URL="http://127.0.0.1:8080/actuator/health/readiness"
+# Spring Boot binds SERVER_PORT when it is set and the configured 8080 otherwise;
+# readiness is read from that same port.
+HTTP_PORT="${SERVER_PORT-8080}"
+READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"
 TIMEOUT_SECONDS=180
 
 log() { printf 'verify-local-config: %s\n' "$1"; }
@@ -30,9 +33,15 @@ log "root local configuration present with owner-only permissions"
 [ ! -e "${BACKEND_DIR}/.env.local" ] || fail 2 "a copy of the local file exists in the backend directory"
 log "no secret file copy beside the backend"
 
-# Step 3 — start the backend with the absolute import location.
+# Step 3 — start the backend with the absolute import location, on a port that
+# nothing else answered just before the start; readiness is read only from that port.
+[[ "${HTTP_PORT}" =~ ^[1-9][0-9]{0,4}$ ]] && [ "${HTTP_PORT}" -le 65535 ] \
+  || fail 3 "SERVER_PORT must be a TCP port number"
+if ! python3 -c 'import errno, socket, sys; s = socket.socket(); s.settimeout(0.4); sys.exit(0 if s.connect_ex(("127.0.0.1", int(sys.argv[1]))) == errno.ECONNREFUSED else 1)' "${HTTP_PORT}"; then
+  fail 3 "127.0.0.1:${HTTP_PORT} is in use or could not be checked; stop that process or choose another SERVER_PORT"
+fi
 cd "${BACKEND_DIR}"
-SPRING_CONFIG_IMPORT="file:${ENV_LOCAL}[.properties]" \
+SERVER_PORT="${HTTP_PORT}" SPRING_CONFIG_IMPORT="file:${ENV_LOCAL}[.properties]" \
   ./mvnw -B -ntp spring-boot:run -Dspring-boot.run.profiles=local \
   > /tmp/marketops-verify-local-config.log 2>&1 &
 backend_pid=$!
@@ -43,7 +52,7 @@ cleanup() {
   fi
 }
 trap cleanup EXIT
-log "backend started with an absolute configuration import"
+log "backend started with an absolute configuration import on 127.0.0.1:${HTTP_PORT}"
 
 # Step 4 — poll readiness.
 deadline=$(( $(date +%s) + TIMEOUT_SECONDS ))

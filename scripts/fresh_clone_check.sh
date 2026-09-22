@@ -111,6 +111,18 @@ for command in java node npm docker make python3; do
   command -v "${command}" >/dev/null 2>&1 || fail 5 "${command} is required"
 done
 
+# The backend stages bind this dedicated loopback port instead of the developer
+# default 8080, which a process of another project may hold. The backend, fixture
+# driver and console preview ports must all refuse a connection now, so nothing
+# outside this run can answer in its place; a port that accepts, stays silent or
+# cannot be checked is refused. Each stage checks its own ports again before it starts.
+HTTP_PORT=9999
+for port in "${HTTP_PORT}" 8082 4173; do
+  if ! python3 -c 'import errno, socket, sys; s = socket.socket(); s.settimeout(0.4); sys.exit(0 if s.connect_ex(("127.0.0.1", int(sys.argv[1]))) == errno.ECONNREFUSED else 1)' "${port}"; then
+    fail 5 "127.0.0.1:${port} is in use or could not be checked; stop that process before certification"
+  fi
+done
+
 # Both Compose projects are named for this run alone. A project that already owns
 # resources is refused, never adopted, recreated or removed.
 RUN_ID="${COMMIT:0:12}-$(python3 -c 'import secrets; print(secrets.token_hex(6))')"
@@ -190,7 +202,7 @@ log "both coverage gates reject deliberately unmet thresholds"
 (
   cd "${CLONE}"
   python3 scripts/collect_supply_chain.py
-  bash scripts/verify_local_config.sh
+  SERVER_PORT="${HTTP_PORT}" bash scripts/verify_local_config.sh
 )
 log "CycloneDX inventories and root-configuration verification pass"
 
@@ -215,7 +227,7 @@ COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}"
 STACK_STARTED=true
 (
   cd "${CLONE}"
-  COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}" MARKETOPS_SOURCE_HEAD_SHA="${COMMIT}" \
+  COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}" MARKETOPS_SOURCE_HEAD_SHA="${COMMIT}" SERVER_PORT="${HTTP_PORT}" \
     bash scripts/validation/business_browser_isolated.sh
 )
 STACK_STARTED=false
@@ -223,7 +235,7 @@ require_no_resources "${BROWSER_PROJECT}" 8 "Compose project ${BROWSER_PROJECT} 
 for generated in .env.local frontend/marketops-console/.env.local; do
   [ ! -e "${CLONE}/${generated}" ] || fail 8 "the isolated browser entry left ${generated} behind"
 done
-log "the real browser suite passed on its own loopback database, which was then removed"
+log "the real browser suite passed on its own loopback database and backend port; the database was then removed"
 
 if [ -n "$(git -C "${CLONE}" status --porcelain)" ]; then
   fail 10 "verification left tracked changes in the clone"

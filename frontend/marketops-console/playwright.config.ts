@@ -1,9 +1,11 @@
 import { defineConfig } from '@playwright/test';
 import { resolve } from 'node:path';
+import { resolveBackendOrigin } from './tests/browser/backendOrigin.ts';
 import { resolveBrowserSourceIdentity } from './tests/browser/sourceIdentity.ts';
 
 const repositoryRoot = resolve(process.cwd(), '../..');
 const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);
+const backendOrigin = resolveBackendOrigin();
 
 /** Browser verification starts the real local backend and Vite console. */
 export default defineConfig({
@@ -38,6 +40,8 @@ export default defineConfig({
       // evidence about one.
       env: {
         MARKETOPS_BUILD_COMMIT: sourceHead,
+        // The console calls the backend this suite starts, on the port that backend binds.
+        VITE_MARKETOPS_API_BASE_URL: backendOrigin,
         VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT: 'https://id.example.test/authorize',
         VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT: 'https://id.example.test/token',
         VITE_MARKETOPS_OIDC_CLIENT_ID: 'marketops-console',

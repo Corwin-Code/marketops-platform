@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import type { Browser, BrowserContext, Locator, Page, Response } from '@playwright/test';
+import { resolveBackendOrigin } from './backendOrigin.ts';
 
-const API_ORIGIN = 'http://127.0.0.1:8080';
+const API_ORIGIN = resolveBackendOrigin();
 const CONSOLE_ORIGIN = 'http://127.0.0.1:4173';
 const ACTION_PATH = '/api/v1/console/listing/actions';
 const BUILD_STORE_ID = '00000000-0000-0000-0000-0000000000d1';
