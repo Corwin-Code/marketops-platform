@@ -1,4 +1,4 @@
-import type { ConsoleOutcome, ConsoleRequest } from './console';
+import type { ConsoleFailure, ConsoleOutcome, ConsoleRequest } from './console';
 import { AI_REQUEST_TIMEOUT_MS, request } from './console';
 import { parseAiExplanation } from './console';
 import type { AiExplanation } from './console';
@@ -571,7 +571,26 @@ export interface HealthCondition {
   readonly evidenceReference: string;
 }
 
+/**
+ * What an operator calls a listing: our product name when every mapped variant
+ * agrees, the marketplace title otherwise, and the marketplace keys. Every
+ * member may be absent; the console falls back to the native key then.
+ */
+export interface ListingIdentity {
+  readonly platformCode: string | null;
+  readonly nativeListingKey: string | null;
+  readonly nativeProductKey: string | null;
+  /** The marketplace title, Russian data. */
+  readonly title: string | null;
+  /** Our product, when every mapped variant belongs to the same one. */
+  readonly productName: string | null;
+  /** Distinct products mapped; 0 means unmapped. */
+  readonly productCount: number;
+}
+
 export interface ListingHealth {
+  /** Absent until the backend supplies it. */
+  readonly identity?: ListingIdentity | undefined;
   readonly id: string;
   readonly storeId: string;
   readonly platformListingId: string;
@@ -616,6 +635,7 @@ export interface ListingDiagnosticResponsibility {
 }
 
 export interface ListingDetail {
+  readonly identity?: ListingIdentity | undefined;
   readonly listingId: string;
   readonly storeId: string;
   readonly platformCode: string;
@@ -789,6 +809,8 @@ export interface Allowance {
 }
 
 export interface LaunchAnswer {
+  /** The description command created by an API-path launch, when there is one. */
+  readonly commandId?: string | undefined;
   readonly launched: boolean;
   readonly launchId: string | undefined;
   readonly occupationIds: readonly string[];
@@ -1026,6 +1048,26 @@ function list<T>(
   return out;
 }
 
+/** Read a listing identity leniently: anything malformed is simply absent. */
+export function parseListingIdentity(body: unknown): ListingIdentity | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const optional = (value: unknown): string | null => text(value) ?? null;
+  return {
+    platformCode: optional(r.platformCode),
+    nativeListingKey: optional(r.nativeListingKey),
+    nativeProductKey: optional(r.nativeProductKey),
+    title: optional(r.title),
+    productName: optional(r.productName),
+    productCount: number(r.productCount) ?? 0,
+  };
+}
+
+function withListingIdentity(r: Row): { identity?: ListingIdentity } {
+  const identity = parseListingIdentity(r.identity);
+  return identity === undefined ? {} : { identity };
+}
+
 export function parseListingHealth(body: unknown): ListingHealth | undefined {
   const r = row(body);
   if (r === undefined) return undefined;
@@ -1086,6 +1128,7 @@ export function parseListingHealth(body: unknown): ListingHealth | undefined {
     sourceTime: text(r.sourceTime),
     acquisitionTime: text(r.acquisitionTime),
     computedAt,
+    ...withListingIdentity(r),
   };
 }
 
@@ -1181,6 +1224,7 @@ export function parseListingDetail(body: unknown): ListingDetail | undefined {
     health,
     measurements,
     diagnosticResponsibilities,
+    ...withListingIdentity(row(body) ?? {}),
   };
 }
 
@@ -1415,11 +1459,13 @@ export function parseLaunchAnswer(body: unknown): LaunchAnswer | undefined {
   const r = row(body);
   const launched = bool(r?.launched);
   if (r === undefined || launched === undefined) return undefined;
+  const commandId = text(r.commandId);
   return {
     launched,
     launchId: text(r.launchId),
     occupationIds: strings(r.occupationIds),
     insufficientAxes: strings(r.insufficientAxes),
+    ...(commandId === undefined ? {} : { commandId }),
   };
 }
 
@@ -2010,8 +2056,42 @@ export function fetchActions(
   context: ConsoleRequest,
   state?: string,
 ): Promise<ConsoleOutcome<readonly ListingAction[]>> {
-  const filter = state === undefined ? '' : `&state=${id(state)}`;
-  return request(context, `${ACTIONS}?limit=50${filter}`, (body) => list(body, parseListingAction));
+  return fetchActionsBy(context, state === undefined ? {} : { state });
+}
+
+/** Narrowing of the action list; the server's order is kept. */
+export interface ActionQuery {
+  readonly state?: string;
+  readonly listingId?: string;
+  readonly executionPath?: 'API' | 'MANUAL';
+  readonly limit?: number;
+}
+
+/**
+ * Actions filtered by state, listing and execution path. The rows are also
+ * narrowed here, because an older backend ignores parameters it does not know.
+ */
+export async function fetchActionsBy(
+  context: ConsoleRequest,
+  query: ActionQuery,
+): Promise<ConsoleOutcome<readonly ListingAction[]>> {
+  const params = new URLSearchParams({ limit: String(query.limit ?? 50) });
+  if (query.state !== undefined) params.set('state', query.state);
+  if (query.listingId !== undefined) params.set('listingId', query.listingId);
+  if (query.executionPath !== undefined) params.set('executionPath', query.executionPath);
+  const outcome = await request(context, `${ACTIONS}?${params.toString()}`, (body) =>
+    list(body, parseListingAction),
+  );
+  if (!outcome.ok) return outcome;
+  return {
+    ok: true,
+    value: outcome.value.filter(
+      (action) =>
+        (query.state === undefined || action.state === query.state) &&
+        (query.listingId === undefined || action.platformListingId === query.listingId) &&
+        (query.executionPath === undefined || action.executionPath === query.executionPath),
+    ),
+  };
 }
 
 export function fetchAction(
@@ -2854,12 +2934,13 @@ export function previewAllowance(
 export function launchAction(
   context: ConsoleRequest,
   actionId: string,
+  reason?: string,
 ): Promise<ConsoleOutcome<LaunchAnswer>> {
   return request(
     context,
     `${ACTIONS}/${id(actionId)}/launch`,
     parseLaunchAnswer,
-    post({ axes: {} }),
+    post({ axes: {}, ...(reason === undefined ? {} : { reason }) }),
   );
 }
 
@@ -3218,5 +3299,374 @@ export function acknowledgeListingDiagnostic(
     `${HEALTH}/listings/${id(listingId)}/responsibilities/${id(taskId)}/acknowledgement`,
     (): true => true,
     { method: 'POST' },
+  );
+}
+
+/**
+ * Whether a failure only says the endpoint does not exist on this backend yet.
+ * Such a failure is a signal to fall back, never an error to show.
+ */
+export function endpointUnavailable(failure: ConsoleFailure): boolean {
+  return failure.kind === 'refused' && (failure.status === 404 || failure.status === 405);
+}
+
+/** One page of the health queue. */
+export interface HealthQueueQuery {
+  readonly necessaryState?: string;
+  /** Free text matched against listing, product and SKU keys and names. */
+  readonly q?: string;
+  readonly offset?: number;
+  readonly limit?: number;
+}
+
+export interface ListingHealthPage {
+  readonly items: readonly ListingHealth[];
+  /** Matching rows in total; undefined when the backend did not count them. */
+  readonly total: number | undefined;
+  readonly offset: number;
+  readonly limit: number;
+}
+
+/** Read the page envelope, or a bare array from an older backend. */
+export function parseListingHealthPage(body: unknown): ListingHealthPage | undefined {
+  if (Array.isArray(body)) {
+    const items = list(body, parseListingHealth);
+    return items === undefined
+      ? undefined
+      : { items, total: undefined, offset: 0, limit: items.length };
+  }
+  const r = row(body);
+  const items = list(r?.items, parseListingHealth);
+  if (r === undefined || items === undefined) return undefined;
+  return {
+    items,
+    total: number(r.total),
+    offset: number(r.offset) ?? 0,
+    limit: number(r.limit) ?? items.length,
+  };
+}
+
+function matchesListingText(item: ListingHealth, q: string): boolean {
+  const needle = q.toLowerCase();
+  return [item.nativeListingKey, item.identity?.title, item.identity?.productName].some(
+    (value) => value?.toLowerCase().includes(needle) === true,
+  );
+}
+
+/**
+ * One page of the health queue, in the backend's order. When this backend has
+ * no page endpoint yet, the plain queue is read and narrowed here instead; the
+ * order is never changed.
+ */
+export async function fetchHealthQueuePage(
+  context: ConsoleRequest,
+  query: HealthQueueQuery,
+): Promise<ConsoleOutcome<ListingHealthPage>> {
+  const offset = query.offset ?? 0;
+  const limit = query.limit ?? 20;
+  const q = query.q?.trim() === '' ? undefined : query.q?.trim();
+  const params = new URLSearchParams({ offset: String(offset), limit: String(limit) });
+  if (query.necessaryState !== undefined) params.set('necessaryState', query.necessaryState);
+  if (q !== undefined) params.set('q', q);
+  const paged = await request(
+    context,
+    `${HEALTH}/queue/page?${params.toString()}`,
+    parseListingHealthPage,
+  );
+  if (paged.ok || !endpointUnavailable(paged.failure)) return paged;
+  const legacy = new URLSearchParams({ limit: '200' });
+  if (query.necessaryState !== undefined) legacy.set('necessaryState', query.necessaryState);
+  const all = await request(context, `${HEALTH}/queue?${legacy.toString()}`, (body) =>
+    list(body, parseListingHealth),
+  );
+  if (!all.ok) return all;
+  const narrowed =
+    q === undefined ? all.value : all.value.filter((item) => matchesListingText(item, q));
+  return {
+    ok: true,
+    value: {
+      items: narrowed.slice(offset, offset + limit),
+      total: all.value.length >= 200 ? undefined : narrowed.length,
+      offset,
+      limit,
+    },
+  };
+}
+
+export interface DescriptionObservationSummary {
+  readonly observationId: string;
+  readonly observedAt: string;
+  readonly acquiredAt: string;
+  readonly languageCode: string;
+  readonly kizMarkedDeclared: boolean | undefined;
+  readonly textDigest: string;
+  /** At most 160 characters of the observed text. */
+  readonly textPreview: string;
+  readonly sourceKind: string;
+  readonly recordedByUserId: string | undefined;
+}
+
+export interface DisplayObservationSummary {
+  readonly observationId: string;
+  readonly observedAt: string;
+  readonly acquiredAt: string;
+  readonly displayState: string;
+  readonly evidenceGrade: string;
+  readonly observerUserId: string | undefined;
+  readonly displayedTextDigest: string | undefined;
+  readonly evidenceReference: string;
+  readonly sourceKind: string;
+  readonly recordedByUserId: string | undefined;
+}
+
+export interface PromotionContextRecordSummary {
+  readonly engagementKind: string;
+  readonly nativePromotionKey: string;
+  readonly participationState: string;
+  readonly newTransactionsState: string;
+  readonly residualObligationState: string;
+}
+
+export interface PromotionObservationSummary {
+  readonly observationId: string;
+  readonly observedAt: string;
+  readonly acquiredAt: string;
+  readonly engagementKind: string;
+  readonly nativePromotionKey: string;
+  readonly participationState: string;
+  readonly contextCoverage: string;
+  readonly verificationExpiresAt: string | undefined;
+  readonly independentCurrent: boolean;
+  readonly evidenceReference: string;
+  readonly sourceKind: string;
+  readonly recordedByUserId: string | undefined;
+  readonly contextRecords: readonly PromotionContextRecordSummary[];
+}
+
+/** The recent observations of one listing, newest first. */
+export interface ListingObservations {
+  readonly description: readonly DescriptionObservationSummary[];
+  readonly display: readonly DisplayObservationSummary[];
+  readonly promotion: readonly PromotionObservationSummary[];
+}
+
+function required<K extends string>(r: Row, keys: readonly K[]): Record<K, string> | undefined {
+  const out = {} as Record<K, string>;
+  for (const key of keys) {
+    const value = text(r[key]);
+    if (value === undefined) return undefined;
+    out[key] = value;
+  }
+  return out;
+}
+
+function parseDescriptionObservation(body: unknown): DescriptionObservationSummary | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const base = required(r, [
+    'observationId',
+    'observedAt',
+    'acquiredAt',
+    'languageCode',
+    'textDigest',
+    'textPreview',
+    'sourceKind',
+  ] as const);
+  if (base === undefined) return undefined;
+  return {
+    ...base,
+    kizMarkedDeclared: bool(r.kizMarkedDeclared),
+    recordedByUserId: text(r.recordedByUserId),
+  };
+}
+
+function parseDisplayObservation(body: unknown): DisplayObservationSummary | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const base = required(r, [
+    'observationId',
+    'observedAt',
+    'acquiredAt',
+    'displayState',
+    'evidenceGrade',
+    'evidenceReference',
+    'sourceKind',
+  ] as const);
+  if (base === undefined) return undefined;
+  return {
+    ...base,
+    observerUserId: text(r.observerUserId),
+    displayedTextDigest: text(r.displayedTextDigest),
+    recordedByUserId: text(r.recordedByUserId),
+  };
+}
+
+function parsePromotionContextRecord(body: unknown): PromotionContextRecordSummary | undefined {
+  const r = row(body);
+  return r === undefined
+    ? undefined
+    : required(r, [
+        'engagementKind',
+        'nativePromotionKey',
+        'participationState',
+        'newTransactionsState',
+        'residualObligationState',
+      ] as const);
+}
+
+function parsePromotionObservation(body: unknown): PromotionObservationSummary | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const base = required(r, [
+    'observationId',
+    'observedAt',
+    'acquiredAt',
+    'engagementKind',
+    'nativePromotionKey',
+    'participationState',
+    'contextCoverage',
+    'evidenceReference',
+    'sourceKind',
+  ] as const);
+  const independentCurrent = bool(r.independentCurrent);
+  const contextRecords =
+    r.contextRecords === undefined || r.contextRecords === null
+      ? []
+      : list(r.contextRecords, parsePromotionContextRecord);
+  if (base === undefined || independentCurrent === undefined || contextRecords === undefined)
+    return undefined;
+  return {
+    ...base,
+    independentCurrent,
+    verificationExpiresAt: text(r.verificationExpiresAt),
+    recordedByUserId: text(r.recordedByUserId),
+    contextRecords,
+  };
+}
+
+export function parseListingObservations(body: unknown): ListingObservations | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const description = list(r.description ?? [], parseDescriptionObservation);
+  const display = list(r.display ?? [], parseDisplayObservation);
+  const promotion = list(r.promotion ?? [], parsePromotionObservation);
+  return description === undefined || display === undefined || promotion === undefined
+    ? undefined
+    : { description, display, promotion };
+}
+
+/** Recent observations of one listing, so a recorded observation is picked, not retyped. */
+export function fetchListingObservations(
+  context: ConsoleRequest,
+  listingId: string,
+  limit = 10,
+): Promise<ConsoleOutcome<ListingObservations>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/observations?limit=${String(limit)}`,
+    parseListingObservations,
+  );
+}
+
+export type ListingPersonRole = 'MANUAL_EXECUTOR' | 'PROMOTION_STEWARD';
+
+/** A colleague who may take a listing role. Staff names only, never contact details. */
+export interface ListingPerson {
+  readonly userId: string;
+  readonly displayName: string;
+  /** The signed-in operator. */
+  readonly self: boolean;
+}
+
+export function parseListingPerson(body: unknown): ListingPerson | undefined {
+  const r = row(body);
+  const userId = text(r?.userId);
+  const displayName = text(r?.displayName);
+  if (userId === undefined || displayName === undefined) return undefined;
+  return { userId, displayName, self: bool(r?.self) ?? false };
+}
+
+/** People who may execute one action, or steward one listing's promotions. */
+export function fetchListingPeople(
+  context: ConsoleRequest,
+  role: ListingPersonRole,
+  target: { readonly actionId: string } | { readonly listingId: string },
+): Promise<ConsoleOutcome<readonly ListingPerson[]>> {
+  const params = new URLSearchParams({ role });
+  if ('actionId' in target) params.set('actionId', target.actionId);
+  else params.set('listingId', target.listingId);
+  return request(context, `${MANUAL}/people?${params.toString()}`, (body) =>
+    list(body, parseListingPerson),
+  );
+}
+
+/** A completed description command whose prior text could be restored. */
+export interface RestorationSource {
+  readonly commandId: string;
+  readonly actionId: string;
+  readonly completedAt: string | undefined;
+  readonly priorText: string;
+  /** Whether it restores over the listing's current text. */
+  readonly appliesToCurrent: boolean;
+}
+
+function parseRestorationSource(body: unknown): RestorationSource | undefined {
+  const r = row(body);
+  if (r === undefined) return undefined;
+  const base = required(r, ['commandId', 'actionId', 'priorText'] as const);
+  const appliesToCurrent = bool(r.appliesToCurrent);
+  return base === undefined || appliesToCurrent === undefined
+    ? undefined
+    : { ...base, appliesToCurrent, completedAt: text(r.completedAt) };
+}
+
+export function fetchRestorationSources(
+  context: ConsoleRequest,
+  listingId: string,
+): Promise<ConsoleOutcome<readonly RestorationSource[]>> {
+  return request(context, `${ACTIONS}/restoration-sources?listingId=${id(listingId)}`, (body) =>
+    list(body, parseRestorationSource),
+  );
+}
+
+/** Close a candidate that will not be prepared, with the reason it is dropped. */
+export function dismissCandidate(
+  context: ConsoleRequest,
+  candidateId: string,
+  expectedVersion: number,
+  reason: string,
+): Promise<ConsoleOutcome<string>> {
+  return request(
+    context,
+    `${ACTIONS}/candidates/${id(candidateId)}/dismiss`,
+    parseIdentifier('state'),
+    post({ expectedVersion, reason }),
+  );
+}
+
+/** One earlier listing-assistance request, without its content. */
+export interface ListingAssistanceRecord {
+  readonly invocationId: string;
+  readonly windowCode: string;
+  readonly state: string;
+  readonly startedAt: string;
+  readonly completedAt: string | undefined;
+}
+
+export function fetchListingAssistanceHistory(
+  context: ConsoleRequest,
+  listingId: string,
+  limit = 10,
+): Promise<ConsoleOutcome<readonly ListingAssistanceRecord[]>> {
+  return request(
+    context,
+    `${HEALTH}/listings/${id(listingId)}/assistance?limit=${String(limit)}`,
+    (body) =>
+      list(body, (item) => {
+        const r = row(item);
+        if (r === undefined) return undefined;
+        const base = required(r, ['invocationId', 'windowCode', 'state', 'startedAt'] as const);
+        return base === undefined ? undefined : { ...base, completedAt: text(r.completedAt) };
+      }),
   );
 }

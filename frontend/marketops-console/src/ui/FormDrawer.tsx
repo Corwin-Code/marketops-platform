@@ -1,6 +1,6 @@
 import { Button, Drawer, Flex, Form, Steps } from 'antd';
 import type { FormInstance } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { ConsoleFailure } from '../api/console';
 import { actions } from '../i18n/zh/common';
@@ -40,6 +40,8 @@ export interface FormDrawerProps<V extends object> {
   readonly initialValues?: Partial<V>;
   readonly submitText?: ReactNode;
   readonly danger?: boolean;
+  /** Called on every opening, e.g. to load what the form picks from. */
+  readonly onOpen?: () => void;
   /** Return a failure to keep the drawer open and show it; `undefined` closes it. */
   readonly onSubmit: (values: V) => Promise<SubmitOutcome>;
 }
@@ -65,6 +67,7 @@ export function FormDrawer<V extends object>({
   initialValues,
   submitText,
   danger = false,
+  onOpen,
   onSubmit,
 }: FormDrawerProps<V>): React.JSX.Element {
   const [ownOpen, setOwnOpen] = useState(false);
@@ -76,6 +79,21 @@ export function FormDrawer<V extends object>({
   // A new form on every opening, so initial values apply afresh each time.
   const [generation, setGeneration] = useState(0);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+
+  // Every opening starts from a fresh form, the first step and no failure,
+  // whether the drawer is opened by its own button or by its owner.
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (open && !wasOpen.current) {
+      setGeneration((current) => current + 1);
+      setStep(0);
+      setFailure(undefined);
+      onOpenRef.current?.();
+    }
+    wasOpen.current = open;
+  }, [open]);
 
   const close = (): void => {
     setOwnOpen(false);
@@ -94,6 +112,7 @@ export function FormDrawer<V extends object>({
     try {
       await form.validateFields(
         current.fields.map((name) => (typeof name === 'object' ? [...name] : name)),
+        { recursive: true },
       );
       setStep(step + 1);
     } catch {
@@ -108,7 +127,16 @@ export function FormDrawer<V extends object>({
     let values: V;
     try {
       values = await form.validateFields();
-    } catch {
+    } catch (error) {
+      // A field that fails on a hidden step would otherwise look like a dead
+      // button: show the first step holding a failing field.
+      if (steps !== undefined) {
+        const failing = failingFieldNames(error);
+        const index = steps.findIndex((item) =>
+          item.fields.some((name) => failing.some((failed) => startsWith(failed, name))),
+        );
+        if (index >= 0) setStep(index);
+      }
       return;
     }
     submitting.current = true;
@@ -144,7 +172,6 @@ export function FormDrawer<V extends object>({
         <TriggerButton
           trigger={trigger}
           onClick={() => {
-            setGeneration((current) => current + 1);
             setOwnOpen(true);
           }}
         />
@@ -212,6 +239,7 @@ export function FormDrawer<V extends object>({
             key={generation}
             form={form}
             layout="vertical"
+            preserve={false}
             {...(initialValues === undefined ? {} : { initialValues })}
           >
             {body}
@@ -221,4 +249,26 @@ export function FormDrawer<V extends object>({
       </Drawer>
     </>
   );
+}
+
+/** The names of the fields a failed validation reported. */
+function failingFieldNames(error: unknown): readonly (readonly (string | number)[])[] {
+  if (typeof error !== 'object' || error === null || !('errorFields' in error)) {
+    return [];
+  }
+  const fields = (error as { errorFields?: unknown }).errorFields;
+  if (!Array.isArray(fields)) {
+    return [];
+  }
+  return fields
+    .map((field: unknown) =>
+      typeof field === 'object' && field !== null && 'name' in field ? field.name : undefined,
+    )
+    .filter((name): name is (string | number)[] => Array.isArray(name));
+}
+
+/** Whether a failing field path lies at or under a step's field name. */
+function startsWith(failed: readonly (string | number)[], name: FieldName): boolean {
+  const prefix = typeof name === 'object' ? name : [name];
+  return prefix.every((part, index) => failed[index] === part);
 }

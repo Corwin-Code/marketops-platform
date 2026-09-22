@@ -31,7 +31,7 @@ export { SectionCollapse } from './SectionCollapse';
 export type { SectionCollapseItem, SectionFlag } from './SectionCollapse';
 export { TriggerButton } from './TriggerButton';
 export type { TriggerProps } from './TriggerButton';
-export { usePageParam, useSearchParam } from './useSearchParam';
+export { usePageParam, useSearchParam, useSearchParamsPatch } from './useSearchParam';
 export { WriteConfirmModal } from './WriteConfirmModal';
 export type { WriteConfirmModalProps, WriteGuard } from './WriteConfirmModal';
 export { SubjectName, subjectSubtitle, subjectTitle } from './SubjectName';

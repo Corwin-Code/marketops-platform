@@ -1,8 +1,9 @@
-import { Alert, DatePicker, Descriptions, Flex, Space, Tag, Typography } from 'antd';
+import { Alert, DatePicker, Descriptions, Flex, Space, Tag, Tooltip, Typography } from 'antd';
 import type { DescriptionsProps, TagProps } from 'antd';
 import type { Dayjs } from 'dayjs';
 import type { ReactNode } from 'react';
 import type { ConsoleFailure } from '../api/console';
+import type { ListingIdentity } from '../api/listingConversion';
 import { storeLocalToIso, toStoreDayjs } from '../format';
 import { LISTING_CODES } from '../i18n/zh/listingCodes';
 import type { ListingCodeFamily } from '../i18n/zh/listingCodes';
@@ -180,6 +181,8 @@ const CODE_COLORS: Partial<Record<ListingCodeFamily, Readonly<Record<string, Tag
   participationState: { PARTICIPATING: MOVING, UNKNOWN: ATTENTION },
   nativeCoverage: { COMPLETE: GOOD, PARTIAL: ATTENTION, UNKNOWN: ATTENTION },
   meaningAnswer: { UNKNOWN: ATTENTION },
+  contextCoverage: { COMPLETE_ENUMERATION: GOOD, SINGLE_ACTIVITY_ONLY: ATTENTION },
+  factSourceKind: { MARKETPLACE_RAW: GOOD, INTERNAL_IMPORT: MOVING, MANUAL_ENTRY: ATTENTION },
 };
 
 /** A backend code, shown as a Chinese tag with the raw code on hover. */
@@ -406,4 +409,54 @@ export function InstantPicker({
 /** Rules message for a required field. */
 export function requiredRule(label: string): { required: true; message: string } {
   return { required: true, message: `请填写${label}` };
+}
+
+/**
+ * A listing as an operator knows it: our product name when every mapped variant
+ * agrees, the marketplace title otherwise, and the native key as the last
+ * resort. The platform and native key follow on a second line, with the
+ * Russian title there when a product name leads. The full identifier is one
+ * hover away, never the headline.
+ */
+export function ListingName({
+  identity,
+  nativeListingKey,
+  platformCode,
+  listingId,
+  strong = true,
+}: {
+  readonly identity?: ListingIdentity | undefined;
+  readonly nativeListingKey: string;
+  readonly platformCode?: string | null | undefined;
+  readonly listingId: string;
+  readonly strong?: boolean;
+}): React.JSX.Element {
+  const productName = identity?.productName ?? null;
+  const title = identity?.title ?? null;
+  const headline = productName ?? title ?? `Listing ${nativeListingKey}`;
+  const platform = identity?.platformCode ?? platformCode ?? null;
+  const count = identity?.productCount ?? 0;
+  return (
+    <Flex vertical gap={0} data-listing-id={listingId} style={{ minWidth: 0 }}>
+      <Tooltip title={`编号 ${listingId}`} mouseEnterDelay={0.5}>
+        <Typography.Text
+          strong={strong}
+          ellipsis
+          {...(productName === null && title !== null ? { lang: 'ru' } : {})}
+        >
+          {headline}
+        </Typography.Text>
+      </Tooltip>
+      <Typography.Text type="secondary" ellipsis style={{ fontSize: 12 }}>
+        {[platform, nativeListingKey].filter((part) => part !== null && part !== '').join(' · ')}
+        {count > 1 ? ` · ${String(count)} 个商品` : ''}
+        {productName !== null && title !== null && (
+          <>
+            {' · '}
+            <span lang="ru">{title}</span>
+          </>
+        )}
+      </Typography.Text>
+    </Flex>
+  );
 }

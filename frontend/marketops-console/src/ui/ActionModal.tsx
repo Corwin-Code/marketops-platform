@@ -13,7 +13,12 @@ export type SubmitOutcome = ConsoleFailure | undefined;
 
 /** A short, focused task in a dialog. */
 export interface ActionModalProps<V extends object> {
-  readonly trigger: TriggerProps;
+  /** A button that opens the dialog. Omit it and pass `open` to open it from elsewhere. */
+  readonly trigger?: TriggerProps;
+  /** Controlled opening, e.g. from a menu item or a row action. */
+  readonly open?: boolean;
+  /** Called when a controlled dialog asks to close. */
+  readonly onClose?: () => void;
   readonly title: ReactNode;
   /** One sentence saying what happens once confirmed. */
   readonly consequence?: ReactNode;
@@ -45,6 +50,8 @@ export interface ActionModalProps<V extends object> {
  */
 export function ActionModal<V extends object>({
   trigger,
+  open: controlledOpen,
+  onClose,
   title,
   consequence,
   summary,
@@ -57,7 +64,8 @@ export function ActionModal<V extends object>({
   onSubmit,
   onOpen,
 }: ActionModalProps<V>): React.JSX.Element {
-  const [open, setOpen] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
+  const open = controlledOpen ?? ownOpen;
   // The dialog's content mounts during its opening animation, so the fields
   // are registered only once it has opened. Validating earlier would find no
   // required field and enable confirmation over an empty form.
@@ -89,8 +97,21 @@ export function ActionModal<V extends object>({
     };
   }, [open, ready, values, form]);
 
+  // Each opening, by its own button or by its owner, starts a fresh form.
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (open && !wasOpen.current) {
+      setGeneration((current) => current + 1);
+      onOpenRef.current?.();
+    }
+    wasOpen.current = open;
+  }, [open]);
+
   const close = (): void => {
-    setOpen(false);
+    setOwnOpen(false);
+    onClose?.();
     setReady(false);
     setFailure(undefined);
     setSubmittable(false);
@@ -126,14 +147,14 @@ export function ActionModal<V extends object>({
 
   return (
     <>
-      <TriggerButton
-        trigger={trigger}
-        onClick={() => {
-          setGeneration((current) => current + 1);
-          setOpen(true);
-          onOpen?.();
-        }}
-      />
+      {trigger !== undefined && (
+        <TriggerButton
+          trigger={trigger}
+          onClick={() => {
+            setOwnOpen(true);
+          }}
+        />
+      )}
       <Modal
         open={open}
         title={title}

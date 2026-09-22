@@ -46,3 +46,30 @@ export function usePageParam(key = 'page'): readonly [number, (page: number) => 
   );
   return [page, set] as const;
 }
+
+/**
+ * Several address-bar values changed at once. Two separate setters called in
+ * one handler would each start from the same old address and the second would
+ * undo the first; a patch applies every key in one replacement.
+ */
+export function useSearchParamsPatch(): (
+  patch: Readonly<Record<string, string | undefined>>,
+) => void {
+  const [, setParams] = useSearchParams();
+  return useCallback(
+    (patch) => {
+      setParams(
+        (current) => {
+          const updated = new URLSearchParams(current);
+          for (const [key, value] of Object.entries(patch)) {
+            if (value === undefined || value === '') updated.delete(key);
+            else updated.set(key, value);
+          }
+          return updated;
+        },
+        { replace: true },
+      );
+    },
+    [setParams],
+  );
+}
