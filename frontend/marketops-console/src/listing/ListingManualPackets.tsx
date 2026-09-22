@@ -19,14 +19,11 @@ import { useEffect, useRef, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import type { ListingAction, ManualPacket } from '../api/listingConversion';
 import {
-  fetchAction,
   fetchActionPackets,
   fetchActionsBy,
-  fetchListingObservations,
   fetchMyPackets,
   issuePacket,
   reportPacket,
-  verifyPacket,
 } from '../api/listingConversion';
 import { dialog } from '../i18n/zh/common';
 import { t } from '../i18n/zh/listing';
@@ -34,7 +31,6 @@ import { packetText } from '../i18n/zh/listingManual';
 import {
   ActionModal,
   EmptyState,
-  FormDrawer,
   InfoTip,
   LoadingState,
   SectionCard,
@@ -44,7 +40,6 @@ import {
 } from '../ui';
 import {
   Code,
-  Hint,
   IdText,
   ListingProblem,
   RussianText,
@@ -59,16 +54,13 @@ import {
   InstantField,
   PersonField,
   PickOrType,
-  descriptionOptions,
-  displayOptions,
   idRules,
   isUuid,
   notInFutureRule,
-  optionalId,
-  promotionOptions,
   useRemote,
 } from './ListingManualPickers';
 import type { PickOption } from './ListingManualPickers';
+import { VerifyDrawer } from './ListingVerification';
 
 const TEXT_LIMIT = 512;
 
@@ -91,11 +83,6 @@ function actionOptions(actions: readonly ListingAction[]): PickOption[] {
     label: actionLabel(action),
     search: `${actionLabel(action)} ${action.id}`,
   }));
-}
-
-/** Who may not verify a packet independently: its executor and its reporters. */
-function executorsOf(packet: ManualPacket): ReadonlySet<string> {
-  return new Set([packet.executorUserId, ...packet.reports.map((report) => report.reporterUserId)]);
 }
 
 /** Reports and verifications of one packet, in the order recorded. */
@@ -347,200 +334,6 @@ function ReportModal({
         />
       </Form.Item>
     </ActionModal>
-  );
-}
-
-interface VerifyValues {
-  basis?: string;
-  managementObservationId?: string;
-  managementMatch?: string;
-  displayObservationId?: string;
-  displayState?: string;
-  promotionObservationId?: string;
-  note?: string;
-}
-
-/** Independent verification of one reported packet, by someone other than its executor. */
-function VerifyDrawer({
-  context,
-  packet,
-  open,
-  onClose,
-  onDone,
-}: {
-  readonly context: ConsoleRequest;
-  readonly packet: ManualPacket;
-  readonly open: boolean;
-  readonly onClose: () => void;
-  readonly onDone: () => void;
-}): React.JSX.Element {
-  const { message } = App.useApp();
-  const action = useRemote(open ? `action:${packet.actionId}` : undefined, () =>
-    fetchAction(context, packet.actionId),
-  );
-  const listingId = action.value?.platformListingId;
-  const observations = useRemote(
-    open && listingId !== undefined ? `observations:${listingId}` : undefined,
-    () => fetchListingObservations(context, listingId ?? '', 20),
-  );
-  const loading = action.loading || observations.loading;
-  const unavailable = action.failed || observations.failed;
-  const excluded = executorsOf(packet);
-  const promotion =
-    action.value === undefined || action.value.actionKind === 'LISTING_PROMOTION_ACTION';
-  const latest = packet.reports.at(-1);
-
-  return (
-    <FormDrawer<VerifyValues>
-      open={open}
-      onClose={onClose}
-      title={`${packetText.verifyTitle} · ${packet.nativeListingKey}`}
-      submitText={packetText.verifySubmit}
-      initialValues={{ basis: 'INDEPENDENT_HUMAN' }}
-      intro={
-        <Stack>
-          <Row gutter={16}>
-            <Col xs={24} md={14}>
-              <Typography.Text type="secondary">{packetText.verifyIntroTarget}</Typography.Text>
-              {packet.targetText === undefined ? (
-                <div>
-                  <Typography.Text type="secondary">{packetText.noTargetText}</Typography.Text>
-                </div>
-              ) : (
-                <RussianText value={packet.targetText} />
-              )}
-            </Col>
-            <Col xs={24} md={10}>
-              <Typography.Text type="secondary">{packetText.verifyIntroReport}</Typography.Text>
-              {latest === undefined ? (
-                <div>
-                  <Typography.Text type="secondary">{packetText.verifyNoReport}</Typography.Text>
-                </div>
-              ) : (
-                <Flex vertical gap={4} style={{ marginTop: 4 }}>
-                  <Code family="reportState" code={latest.reportState} />
-                  <Typography.Text>{latest.note}</Typography.Text>
-                </Flex>
-              )}
-            </Col>
-          </Row>
-          {loading && <Hint>{packetText.loadingObservations}</Hint>}
-          {action.failed && <Hint>{packetText.actionUnreadable}</Hint>}
-        </Stack>
-      }
-      onSubmit={async (values) => {
-        const managementObservationId = optionalId(values.managementObservationId);
-        const displayObservationId = optionalId(values.displayObservationId);
-        const promotionObservationId = promotion
-          ? optionalId(values.promotionObservationId)
-          : undefined;
-        const outcome = await verifyPacket(
-          context,
-          packet.id,
-          values.basis ?? '',
-          values.managementMatch ?? '',
-          values.displayState ?? '',
-          (values.note ?? '').trim(),
-          {
-            ...(managementObservationId === undefined ? {} : { managementObservationId }),
-            ...(displayObservationId === undefined ? {} : { displayObservationId }),
-            ...(promotionObservationId === undefined ? {} : { promotionObservationId }),
-          },
-        );
-        if (!outcome.ok) return outcome.failure;
-        void message.success(packetText.verified);
-        onDone();
-        return undefined;
-      }}
-    >
-      <Form.Item
-        name="basis"
-        label={packetText.verifyBasis}
-        rules={[{ required: true, message: `请选择${packetText.verifyBasis}` }]}
-      >
-        <Select
-          options={codeOptions('verificationBasis', ['INDEPENDENT_HUMAN', 'OFFICIAL_EVIDENCE'])}
-        />
-      </Form.Item>
-      <Form.Item
-        name="managementObservationId"
-        label={packetText.verifyDescription}
-        extra={packetText.verifyDescriptionHelp}
-        rules={idRules(packetText.verifyDescription, false)}
-      >
-        <PickOrType
-          options={descriptionOptions(
-            observations.value?.description ?? [],
-            action.value?.targetTextDigest,
-            excluded,
-          )}
-          loading={loading}
-          unavailable={unavailable}
-        />
-      </Form.Item>
-      <Form.Item
-        name="managementMatch"
-        label={packetText.verifyMatch}
-        rules={[{ required: true, message: `请选择${packetText.verifyMatch}` }]}
-      >
-        <Select
-          placeholder={t('undeclared')}
-          options={codeOptions('managementMatch', [
-            'MATCHED_TARGET',
-            'MATCHED_PRIOR',
-            'DIFFERENT',
-            'UNKNOWN',
-          ])}
-        />
-      </Form.Item>
-      <Form.Item
-        name="displayObservationId"
-        label={packetText.verifyDisplay}
-        rules={idRules(packetText.verifyDisplay, false)}
-      >
-        <PickOrType
-          options={displayOptions(observations.value?.display ?? [], excluded)}
-          loading={loading}
-          unavailable={unavailable}
-        />
-      </Form.Item>
-      <Form.Item
-        name="displayState"
-        label={packetText.verifyDisplayState}
-        rules={[{ required: true, message: `请选择${packetText.verifyDisplayState}` }]}
-      >
-        <Select
-          placeholder={t('undeclared')}
-          options={codeOptions('displayState', ['DISPLAYED', 'NOT_DISPLAYED', 'UNKNOWN'])}
-        />
-      </Form.Item>
-      {promotion && (
-        <Form.Item
-          name="promotionObservationId"
-          label={packetText.verifyPromotion}
-          extra={t('promotionVerificationExtent')}
-          rules={idRules(packetText.verifyPromotion, false)}
-        >
-          <PickOrType
-            options={promotionOptions(observations.value?.promotion ?? [], excluded)}
-            loading={loading}
-            unavailable={unavailable}
-          />
-        </Form.Item>
-      )}
-      <Form.Item
-        name="note"
-        label={packetText.verifyNote}
-        rules={[{ required: true, whitespace: true, message: dialog.reasonRequired }]}
-      >
-        <Input.TextArea
-          rows={3}
-          maxLength={TEXT_LIMIT}
-          showCount
-          placeholder={packetText.verifyNotePlaceholder}
-        />
-      </Form.Item>
-    </FormDrawer>
   );
 }
 

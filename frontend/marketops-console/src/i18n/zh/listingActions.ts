@@ -182,6 +182,10 @@ export const launchText = {
   title: '确认启动操作',
   loading: '正在读取额度与变更内容…',
   allowanceFailed: (reason: string): string => `无法读取额度：${reason}`,
+  allowanceUnpublished: '额度未发布或没有额度维度',
+  allowanceUnpublishedDetail:
+    '校准包未给出额度维度，或某个维度没有已发布的额度上限；须由 Owner 发布额度后才能启动。',
+  checkAllowanceUnpublished: '额度未发布或没有额度维度，不能按"不限"处理',
   confirmApi: '确认启动并创建写入指令',
   confirmManual: '确认启动（占用额度）',
   consequenceApi:

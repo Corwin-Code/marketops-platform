@@ -288,25 +288,63 @@ function recordedBy(
   return observation.recordedByUserId !== undefined && excluded.has(observation.recordedByUserId);
 }
 
-/** Description observations, marked when they carry the approved target text. */
+/** Why an observation cannot be chosen here, or nothing when it can. */
+export type EvidenceBlock<T> = (observation: T) => string | undefined;
+
+/** The reason a listed observation is not selectable, shown in its option. */
+function Blocked({ reason }: { readonly reason: string }): React.JSX.Element {
+  return (
+    <Tag color="error" style={{ marginInlineEnd: 0 }}>
+      {reason}
+    </Tag>
+  );
+}
+
+/** The approved target text digest and the text digest before the change. */
+export interface DescriptionDigests {
+  readonly target: string | undefined;
+  readonly prior: string | undefined;
+}
+
+/**
+ * Description observations, marked as matching the target, matching the prior
+ * text, or differing from both; an observation the caller blocks is disabled
+ * with its reason.
+ */
 export function descriptionOptions(
   observations: readonly DescriptionObservationSummary[],
-  targetDigest: string | undefined,
+  digests: DescriptionDigests,
   excluded: ReadonlySet<string>,
+  blocked?: EvidenceBlock<DescriptionObservationSummary>,
 ): PickOption[] {
   return observations.map((observation) => {
-    const matches = targetDigest !== undefined && observation.textDigest === targetDigest;
+    const target = digests.target !== undefined && observation.textDigest === digests.target;
+    const prior =
+      !target && digests.prior !== undefined && observation.textDigest === digests.prior;
+    const reason = blocked?.(observation);
     return {
       value: observation.observationId,
       search: `${observation.textPreview} ${observation.observationId}`,
+      ...(reason === undefined ? {} : { disabled: true }),
       label: (
         <Flex gap={6} align="center" wrap={false} style={{ minWidth: 0 }}>
           <When value={observation.observedAt} />
-          <Tag color={matches ? 'success' : 'default'} style={{ marginInlineEnd: 0 }}>
-            {matches ? pickerText.matchesTarget : pickerText.differsFromTarget}
+          <Tag
+            color={target ? 'success' : prior ? 'warning' : 'default'}
+            style={{ marginInlineEnd: 0 }}
+          >
+            {target
+              ? pickerText.matchesTarget
+              : prior
+                ? pickerText.matchesPrior
+                : pickerText.differsFromTarget}
           </Tag>
           <Code family="factSourceKind" code={observation.sourceKind} />
-          {recordedBy(observation, excluded) && <NotIndependent />}
+          {reason === undefined ? (
+            recordedBy(observation, excluded) && <NotIndependent />
+          ) : (
+            <Blocked reason={reason} />
+          )}
           <Typography.Text lang="ru" ellipsis style={{ fontSize: 12, minWidth: 0 }}>
             {observation.textPreview}
           </Typography.Text>
@@ -316,51 +354,72 @@ export function descriptionOptions(
   });
 }
 
-/** Buyer-side display observations. */
+/** Buyer-side display observations; an observation the caller blocks is disabled. */
 export function displayOptions(
   observations: readonly DisplayObservationSummary[],
   excluded: ReadonlySet<string>,
+  blocked?: EvidenceBlock<DisplayObservationSummary>,
 ): PickOption[] {
-  return observations.map((observation) => ({
-    value: observation.observationId,
-    search: `${observation.evidenceReference} ${observation.observationId}`,
-    label: (
-      <Flex gap={6} align="center" wrap={false} style={{ minWidth: 0 }}>
-        <When value={observation.observedAt} />
-        <Code family="displayState" code={observation.displayState} />
-        <Code family="factSourceKind" code={observation.sourceKind} />
-        {recordedBy(observation, excluded) && <NotIndependent />}
-        <Minor>{observation.evidenceReference}</Minor>
-      </Flex>
-    ),
-  }));
+  return observations.map((observation) => {
+    const reason = blocked?.(observation);
+    return {
+      value: observation.observationId,
+      search: `${observation.evidenceReference} ${observation.observationId}`,
+      ...(reason === undefined ? {} : { disabled: true }),
+      label: (
+        <Flex gap={6} align="center" wrap={false} style={{ minWidth: 0 }}>
+          <When value={observation.observedAt} />
+          <Code family="displayState" code={observation.displayState} />
+          <Code family="factSourceKind" code={observation.sourceKind} />
+          {reason === undefined ? (
+            recordedBy(observation, excluded) && <NotIndependent />
+          ) : (
+            <Blocked reason={reason} />
+          )}
+          <Minor>{observation.evidenceReference}</Minor>
+        </Flex>
+      ),
+    };
+  });
 }
 
-/** Promotion observations, with an optional verdict per observation. */
+/**
+ * Promotion observations, with an optional verdict per observation; an
+ * observation the caller blocks is disabled with its reason.
+ */
 export function promotionOptions(
   observations: readonly PromotionObservationSummary[],
   excluded: ReadonlySet<string>,
   verdict?: (observation: PromotionObservationSummary) => ReactNode,
+  blocked?: EvidenceBlock<PromotionObservationSummary>,
 ): PickOption[] {
-  return observations.map((observation) => ({
-    value: observation.observationId,
-    search: `${observation.nativePromotionKey} ${observation.evidenceReference} ${observation.observationId}`,
-    label: (
-      <Flex gap={6} align="center" wrap={false} style={{ minWidth: 0 }}>
-        <When value={observation.observedAt} />
-        <Code family="contextCoverage" code={observation.contextCoverage} />
-        <Tag
-          color={observation.independentCurrent ? 'success' : 'default'}
-          style={{ marginInlineEnd: 0 }}
-        >
-          {observation.independentCurrent ? pickerText.current : pickerText.notCurrent}
-        </Tag>
-        {recordedBy(observation, excluded) && <NotIndependent />}
-        {verdict?.(observation)}
-        <Minor>{observation.nativePromotionKey}</Minor>
-      </Flex>
-    ),
-  }));
+  return observations.map((observation) => {
+    const reason = blocked?.(observation);
+    return {
+      value: observation.observationId,
+      search: `${observation.nativePromotionKey} ${observation.evidenceReference} ${observation.observationId}`,
+      ...(reason === undefined ? {} : { disabled: true }),
+      label: (
+        <Flex gap={6} align="center" wrap={false} style={{ minWidth: 0 }}>
+          <When value={observation.observedAt} />
+          <Code family="contextCoverage" code={observation.contextCoverage} />
+          <Tag
+            color={observation.independentCurrent ? 'success' : 'default'}
+            style={{ marginInlineEnd: 0 }}
+          >
+            {observation.independentCurrent ? pickerText.current : pickerText.notCurrent}
+          </Tag>
+          {reason === undefined ? (
+            recordedBy(observation, excluded) && <NotIndependent />
+          ) : (
+            <Blocked reason={reason} />
+          )}
+          {verdict?.(observation)}
+          <Minor>{observation.nativePromotionKey}</Minor>
+        </Flex>
+      ),
+    };
+  });
 }
 
 /**
