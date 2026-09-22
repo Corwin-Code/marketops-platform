@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BrowserRouter, MemoryRouter, useLocation, useNavigate } from 'react-router';
 import { ConsoleShell } from './ConsoleShell';
-import { HealthShell } from './health/HealthShell';
 import { resolveConfig, resolveOperatingConfig } from './config';
-import type { ConsoleConfig, ConsoleConfigKey, ConsoleEnvironment } from './config';
+import type { ConsoleConfig, ConsoleEnvironment } from './config';
+import { signInFailures } from './i18n/zh/shell';
+import { ConfigurationError } from './layout/ConfigurationError';
+import { SignedOutScreen } from './layout/SignedOutScreen';
 import { completeSignIn } from './session/oidc';
 import type { OidcSettings, SignInOutcome } from './session/oidc';
-import { SignIn } from './session/SignIn';
 import { isUsable } from './session/session';
 import type { Session } from './session/session';
 
 /** Path the identity provider returns the operator to. */
 export const CALLBACK_PATH = '/signed-in';
+
+/** How often the session's expiry is re-checked while signed in. */
+export const SESSION_CHECK_INTERVAL_MS = 30_000;
 
 /** Inputs that make configuration and requests observable in component tests. */
 export interface AppProps {
@@ -18,7 +23,7 @@ export interface AppProps {
   readonly env?: ConsoleEnvironment;
   /** Request implementation passed to the shells. */
   readonly fetchImpl?: typeof fetch;
-  /** Current location, replaced in tests. */
+  /** Current location, replaced in tests (an in-memory router is used then). */
   readonly location?: { readonly pathname: string; readonly search: string };
   /** A session already in hand, used only by tests. */
   readonly initialSession?: Session;
@@ -30,7 +35,7 @@ export interface AppProps {
  * Three states, in the order a visitor meets them. Missing required settings
  * means the console cannot start at all. No session means the platform-state
  * panel and a way to sign in — never any operating data. A session means the
- * operating console.
+ * operating console, with every page at its own address.
  *
  * Nothing about a store, a listing or a price is rendered before a session
  * exists. A console that showed even the shape of that data to somebody who has
@@ -43,16 +48,45 @@ export function App({
   initialSession,
 }: AppProps = {}): React.JSX.Element {
   const resolution = resolveConfig(env);
+  if (!resolution.ok) {
+    return <ConfigurationError missingKeys={resolution.missingKeys} />;
+  }
+  const root = (
+    <ConsoleRoot
+      env={env}
+      config={resolution.value}
+      fetchImpl={fetchImpl}
+      initialSession={initialSession}
+    />
+  );
+  return location === undefined ? (
+    <BrowserRouter>{root}</BrowserRouter>
+  ) : (
+    <MemoryRouter initialEntries={[`${location.pathname}${location.search}`]}>{root}</MemoryRouter>
+  );
+}
+
+/** The session and the sign-in round trip, inside the router. */
+function ConsoleRoot({
+  env,
+  config,
+  fetchImpl,
+  initialSession,
+}: {
+  readonly env: ConsoleEnvironment;
+  readonly config: ConsoleConfig;
+  readonly fetchImpl: typeof fetch | undefined;
+  readonly initialSession: Session | undefined;
+}): React.JSX.Element {
   // Resolved once per environment so the settings below keep a stable
   // identity across renders.
   const operating = useMemo(() => resolveOperatingConfig(env), [env]);
-  const here = location ?? {
-    pathname: window.location.pathname,
-    search: window.location.search,
-  };
+  const here = useLocation();
+  const navigate = useNavigate();
 
   const [session, setSession] = useState<Session | undefined>(initialSession);
   const [problem, setProblem] = useState<string | undefined>(undefined);
+  const [now, setNow] = useState(() => Date.now());
 
   const redirectUri =
     typeof window === 'undefined' ? CALLBACK_PATH : `${window.location.origin}${CALLBACK_PATH}`;
@@ -111,6 +145,9 @@ export function App({
       if (outcome.ok) {
         setSession(outcome.session);
         setProblem(undefined);
+        setNow(Date.now());
+        // The spent code leaves the address bar and the history entry.
+        void navigate('/', { replace: true });
       } else {
         setProblem(describeSignInFailure(outcome.failure.kind));
       }
@@ -118,73 +155,59 @@ export function App({
     return () => {
       active = false;
     };
-  }, [returningFromProvider, settings, session, here.search, fetchImpl]);
+  }, [returningFromProvider, settings, session, here.search, fetchImpl, navigate]);
 
-  if (!resolution.ok) {
-    return <ConfigurationError missingKeys={resolution.missingKeys} />;
-  }
+  // Expiry is a fact about the token: the clock is re-read on an interval so
+  // an idle console signs itself out instead of waiting for a refused request.
+  useEffect(() => {
+    if (session === undefined) {
+      return;
+    }
+    setNow(Date.now());
+    const timer = setInterval(() => {
+      setNow(Date.now());
+    }, SESSION_CHECK_INTERVAL_MS);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [session]);
 
-  if (isUsable(session, Date.now()) && operating !== undefined) {
+  useEffect(() => {
+    if (session !== undefined && !isUsable(session, now)) {
+      setSession(undefined);
+    }
+  }, [session, now]);
+
+  if (isUsable(session, now) && operating !== undefined) {
     return (
       <ConsoleShell
-        apiBaseUrl={resolution.value.apiBaseUrl}
+        config={config}
         session={session}
         storeId={operating.storeId}
-        {...(fetchImpl === undefined ? {} : { fetchImpl })}
+        fetchImpl={fetchImpl}
+        now={now}
         onSignOut={() => {
           setSession(undefined);
+          setProblem(undefined);
+          void navigate('/', { replace: true });
         }}
       />
     );
   }
 
   return (
-    <SignedOut
-      config={resolution.value}
-      {...(fetchImpl === undefined ? {} : { fetchImpl })}
-      {...(settings === undefined ? {} : { settings })}
-      {...(problem === undefined ? {} : { problem })}
+    <SignedOutScreen
+      config={config}
+      fetchImpl={fetchImpl}
+      settings={settings}
+      problem={problem}
+      completing={
+        returningFromProvider &&
+        settings !== undefined &&
+        problem === undefined &&
+        session === undefined
+      }
     />
-  );
-}
-
-/**
- * What an unauthenticated visitor sees.
- *
- * The platform-state panel is deliberately available without a session: it says
- * only what the platform is and whether it is up, which is what an operator
- * needs before they can tell a sign-in problem from an outage.
- */
-function SignedOut({
-  config,
-  fetchImpl,
-  settings,
-  problem,
-}: {
-  readonly config: ConsoleConfig;
-  readonly fetchImpl?: typeof fetch;
-  readonly settings?: OidcSettings;
-  readonly problem?: string;
-}): React.JSX.Element {
-  const entry =
-    settings === undefined ? (
-      <section aria-label="Operating console" data-state="not-configured">
-        <h2>Operating console</h2>
-        <p>
-          This deployment has no identity provider configured, so the operating console cannot sign
-          anybody in here. The platform state below is still reported.
-        </p>
-      </section>
-    ) : (
-      <SignIn settings={settings} {...(problem === undefined ? {} : { problem })} />
-    );
-
-  return fetchImpl === undefined ? (
-    <HealthShell config={config}>{entry}</HealthShell>
-  ) : (
-    <HealthShell config={config} fetchImpl={fetchImpl}>
-      {entry}
-    </HealthShell>
   );
 }
 
@@ -192,35 +215,12 @@ function SignedOut({
 export function describeSignInFailure(kind: string): string {
   switch (kind) {
     case 'denied':
-      return 'The identity provider refused the sign-in. Nothing was changed.';
+      return signInFailures.denied;
     case 'state-mismatch':
-      return 'That sign-in did not start in this tab. Start again from this page.';
+      return signInFailures.stateMismatch;
     case 'exchange-failed':
-      return 'The identity provider did not complete the sign-in. Try again.';
+      return signInFailures.exchangeFailed;
     default:
-      return 'The identity provider answered with something this console cannot read.';
+      return signInFailures.unreadable;
   }
-}
-
-/** Names missing settings without rendering or logging any configured value. */
-function ConfigurationError({
-  missingKeys,
-}: {
-  readonly missingKeys: readonly ConsoleConfigKey[];
-}): React.JSX.Element {
-  return (
-    <main aria-labelledby="console-heading">
-      <h1 id="console-heading">MarketOps Russia</h1>
-      <section aria-label="Configuration error" data-state="configuration-error">
-        <h2>Configuration error</h2>
-        <p role="alert">The console cannot start until these settings are provided:</p>
-        <ul>
-          {missingKeys.map((key) => (
-            <li key={key}>{key}</li>
-          ))}
-        </ul>
-        <p>Generate the local environment file, then restart the console.</p>
-      </section>
-    </main>
-  );
 }
