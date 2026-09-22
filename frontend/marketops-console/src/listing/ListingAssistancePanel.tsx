@@ -1,15 +1,22 @@
 import { RobotOutlined } from '@ant-design/icons';
-import { Alert, Button, Col, Form, Input, Row, Select, Space, Tag } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import type { AiExplanation, ConsoleFailure, ConsoleRequest } from '../api/console';
-import { fetchListingAssistance, requestListingAssistance } from '../api/listingConversion';
-import type { ListingAssistancePurpose } from '../api/listingConversion';
+import { Alert, Button, Flex, Select, Space, Tag, Typography } from 'antd';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { AiExplanation, ConsoleFailure, ConsoleOutcome, ConsoleRequest } from '../api/console';
+import {
+  endpointUnavailable,
+  fetchListingAssistance,
+  fetchListingAssistanceHistory,
+  requestListingAssistance,
+} from '../api/listingConversion';
+import type { ListingAssistancePurpose, ListingAssistanceRecord } from '../api/listingConversion';
 import { AiClaimGroups } from '../diagnosis/AiExplanationPanel';
+import { formatStoreTime } from '../format';
 import { codeLabel } from '../i18n/labels';
 import { t } from '../i18n/zh/listing';
+import { assistanceText as text } from '../i18n/zh/listingHealth';
 import { AI_FAILURE_LABELS } from '../i18n/zh/pricing';
-import { LoadingState, SectionCard, TechnicalDetails } from '../ui';
-import { Code, Hint, IdText, ListingProblem, Stack, codeOptions } from './ListingCommon';
+import { InlineInputPopover, LoadingState, SectionCard, TechnicalDetails } from '../ui';
+import { Code, Hint, IdText, ListingProblem, Stack, codeOptions, codeText } from './ListingCommon';
 
 const PURPOSES = [
   'HYPOTHESIS_COMPARISON',
@@ -20,6 +27,20 @@ const PURPOSES = [
 
 type AssistanceWindow = 'D7' | 'D14' | 'D30';
 
+/** Earlier requests of this listing, or why they cannot be listed. */
+type History =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'loaded'; readonly records: readonly ListingAssistanceRecord[] }
+  | { readonly kind: 'unavailable' }
+  | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
+
+/**
+ * On-demand AI material for one listing, always marked as reference only.
+ *
+ * The boundary stays on screen, the request button names what it produces, and
+ * nothing the model says is copied into any field: an operator reads it and
+ * prepares actions by hand.
+ */
 export function ListingAssistancePanel({
   context,
   listingId,
@@ -29,37 +50,60 @@ export function ListingAssistancePanel({
 }): React.JSX.Element {
   const [purpose, setPurpose] = useState<ListingAssistancePurpose>('HYPOTHESIS_COMPARISON');
   const [window, setWindow] = useState<AssistanceWindow>('D14');
-  const [invocationId, setInvocationId] = useState('');
+  const [selected, setSelected] = useState<string | undefined>();
   const [output, setOutput] = useState<AiExplanation | undefined>();
   const [failure, setFailure] = useState<ConsoleFailure | undefined>();
   const [pending, setPending] = useState(false);
+  const [history, setHistory] = useState<History>({ kind: 'loading' });
   const generation = useRef(0);
+
+  const loadHistory = useCallback(async (): Promise<void> => {
+    const result = await fetchListingAssistanceHistory(context, listingId);
+    if (result.ok) setHistory({ kind: 'loaded', records: result.value });
+    else if (endpointUnavailable(result.failure)) setHistory({ kind: 'unavailable' });
+    else setHistory({ kind: 'failed', failure: result.failure });
+  }, [context, listingId]);
+
   useEffect(() => {
     generation.current += 1;
     setOutput(undefined);
     setFailure(undefined);
     setPending(false);
-    setInvocationId('');
+    setSelected(undefined);
+    setHistory({ kind: 'loading' });
+    void loadHistory();
     return () => {
       generation.current += 1;
     };
-  }, [context, listingId]);
-  async function load(history: boolean): Promise<void> {
-    const requestedGeneration = ++generation.current;
+  }, [loadHistory]);
+
+  /** Show one answer, or why it could not be read. */
+  async function show(load: () => Promise<ConsoleOutcome<AiExplanation>>): Promise<void> {
+    const requested = ++generation.current;
     setPending(true);
     setFailure(undefined);
     setOutput(undefined);
-    const result = history
-      ? await fetchListingAssistance(context, listingId, invocationId)
-      : await requestListingAssistance(context, listingId, window, purpose);
-    if (requestedGeneration !== generation.current) return;
+    const result = await load();
+    if (requested !== generation.current) return;
     setPending(false);
     if (result.ok && result.value.subjectId === listingId) {
       setOutput(result.value);
-      setInvocationId(result.value.invocationId);
-    } else
+      setSelected(result.value.invocationId);
+    } else {
       setFailure(result.ok ? { kind: 'malformed', detail: 'subject mismatch' } : result.failure);
+    }
   }
+
+  const request = (): void => {
+    void show(() => requestListingAssistance(context, listingId, window, purpose)).then(() => {
+      void loadHistory();
+    });
+  };
+  const read = (invocationId: string): Promise<void> =>
+    show(() => fetchListingAssistance(context, listingId, invocationId));
+
+  const records = history.kind === 'loaded' ? history.records : [];
+
   return (
     <section aria-label={t('assistance')}>
       <SectionCard
@@ -72,67 +116,78 @@ export function ListingAssistancePanel({
         }
       >
         <Stack>
-          <Hint>{t('assistanceBoundary')}</Hint>
-          <Form layout="vertical" disabled={pending} component={false}>
-            <Row gutter={16} align="bottom">
-              <Col xs={24} md={9}>
-                <Form.Item label={t('assistancePurpose')}>
-                  <Select<ListingAssistancePurpose>
-                    value={purpose}
-                    onChange={setPurpose}
-                    options={codeOptions('assistancePurpose', PURPOSES).map((option) => ({
-                      ...option,
-                      value: option.value as ListingAssistancePurpose,
-                    }))}
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={7}>
-                <Form.Item label={t('assistanceWindow')}>
-                  <Select<AssistanceWindow>
-                    value={window}
-                    onChange={setWindow}
-                    options={codeOptions('assistanceWindow', ['D7', 'D14', 'D30']).map(
-                      (option) => ({ ...option, value: option.value as AssistanceWindow }),
-                    )}
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={8}>
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    icon={<RobotOutlined />}
-                    loading={pending}
-                    onClick={() => {
-                      void load(false);
-                    }}
-                  >
-                    {t('assistanceRequest')}
-                  </Button>
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-          <Form
-            layout="inline"
-            disabled={pending}
-            onFinish={() => {
-              void load(true);
-            }}
-          >
-            <Form.Item label={t('assistanceInvocation')} required>
-              <Input
-                required
-                style={{ width: 340 }}
-                value={invocationId}
-                onChange={(event) => {
-                  setInvocationId(event.target.value);
+          <Alert type="info" showIcon title={t('assistanceBoundary')} />
+          <Flex gap={8} wrap align="center">
+            <Typography.Text type="secondary">{t('assistancePurpose')}</Typography.Text>
+            <Select<ListingAssistancePurpose>
+              aria-label={t('assistancePurpose')}
+              style={{ minWidth: 180 }}
+              value={purpose}
+              disabled={pending}
+              onChange={setPurpose}
+              options={codeOptions('assistancePurpose', PURPOSES).map((option) => ({
+                ...option,
+                value: option.value as ListingAssistancePurpose,
+              }))}
+            />
+            <Typography.Text type="secondary">{t('assistanceWindow')}</Typography.Text>
+            <Select<AssistanceWindow>
+              aria-label={t('assistanceWindow')}
+              style={{ minWidth: 120 }}
+              value={window}
+              disabled={pending}
+              onChange={setWindow}
+              options={codeOptions('assistanceWindow', ['D7', 'D14', 'D30']).map((option) => ({
+                ...option,
+                value: option.value as AssistanceWindow,
+              }))}
+            />
+            <Button icon={<RobotOutlined />} loading={pending} onClick={request}>
+              {text.request}
+            </Button>
+          </Flex>
+          <Flex gap={8} wrap align="center">
+            <Typography.Text type="secondary">{text.history}</Typography.Text>
+            {history.kind !== 'unavailable' && (
+              <Select<string>
+                aria-label={text.history}
+                style={{ minWidth: 320 }}
+                placeholder={text.historyPlaceholder}
+                loading={history.kind === 'loading'}
+                disabled={pending}
+                value={selected ?? null}
+                notFoundContent={text.historyEmpty}
+                onChange={(invocationId) => {
+                  void read(invocationId);
                 }}
+                options={records.map((record) => ({
+                  value: record.invocationId,
+                  label: text.historyOption(
+                    codeText('assistanceWindow', record.windowCode),
+                    codeText('aiInvocationState', record.state),
+                    formatStoreTime(record.startedAt),
+                  ),
+                }))}
               />
-            </Form.Item>
-            <Button htmlType="submit">{t('assistanceRead')}</Button>
-          </Form>
+            )}
+            {history.kind === 'unavailable' && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {text.historyUnavailable}
+              </Typography.Text>
+            )}
+            <InlineInputPopover
+              trigger={{ label: text.manual, type: 'link', disabled: pending }}
+              title={text.manualTitle}
+              placeholder={text.manualPlaceholder}
+              maxLength={64}
+              okText={t('assistanceRead')}
+              onSubmit={async (invocationId) => {
+                await read(invocationId);
+                return undefined;
+              }}
+            />
+          </Flex>
+          {history.kind === 'failed' && <ListingProblem failure={history.failure} />}
           {pending && (
             <div role="status">
               <LoadingState />

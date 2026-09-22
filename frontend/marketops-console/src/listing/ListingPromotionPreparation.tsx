@@ -1,475 +1,548 @@
-import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Collapse, Form, Input, InputNumber, Row, Select, Space } from 'antd';
-import { useEffect, useState } from 'react';
+import { MinusCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { App, Button, Col, Flex, Form, Input, Row, Select, Space, Typography } from 'antd';
+import type { FormListFieldData } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import {
   fetchCandidateSimulations,
   prepareAction,
   simulatePromotionCandidate,
+  type Candidate,
   type ListingPurposeBasis,
   type PromotionSimulation,
-  type PromotionTerms,
 } from '../api/listingConversion';
 import { formatStoreTime } from '../format';
+import { promotionPreparationText as text } from '../i18n/zh/listingActions';
 import { t } from '../i18n/zh/listing';
-import { Hint, InstantPicker, ListingProblem, codeOptions } from './ListingCommon';
-import { PromotionTermsForm } from './ListingPromotionTermsForm';
+import { FormDrawer, SectionCollapse, TriggerButton } from '../ui';
+import type { FormDrawerStep, SubmitOutcome } from '../ui';
+import { DecimalField, InstantField, isInstant } from './ListingActionFields';
+import { Code, Hint, ListingProblem, codeOptions } from './ListingCommon';
+import {
+  PromotionTermsFields,
+  promotionTermsFieldNames,
+  promotionTermsInitialValues,
+  readPromotionTerms,
+} from './ListingPromotionTermsForm';
+import type { PromotionTermsFieldValues } from './ListingPromotionTermsForm';
 
 type PromotionPurpose = 'PROMOTION' | 'BOUNDED_EXPLORATION';
 
-interface ScenarioRow {
-  name: string;
-  value: string;
+interface PromotionPreparationValues {
+  readonly declaration?: PromotionTermsFieldValues;
+  readonly purpose?: PromotionPurpose;
+  readonly basisEvidence?: string;
+  readonly useUntil?: string;
+  readonly useCondition?: string;
+  readonly endCondition?: string;
+  readonly simulationId?: string;
 }
 
-/** A decimal typed as text: never converted to a JavaScript number. */
-function DecimalInput({
-  value,
-  onChange,
-  ariaLabel,
+const PREFIX = 'declaration';
+
+/**
+ * Preparing a promotion action from one open candidate, in three steps: the
+ * exact terms, the purpose with its basis, and a qualified simulation of the
+ * same purpose and terms. The action always runs by hand.
+ */
+export function PromotionPreparationDrawer({
+  context,
+  candidate,
+  onClose,
+  onPrepared,
 }: {
-  readonly value: string;
-  readonly onChange: (next: string) => void;
-  readonly ariaLabel?: string;
+  readonly context: ConsoleRequest;
+  readonly candidate: Candidate;
+  readonly onClose: () => void;
+  readonly onPrepared: (actionId: string) => void;
 }): React.JSX.Element {
+  const kind = candidate.candidateKind;
+  const steps: readonly FormDrawerStep[] = [
+    {
+      key: 'terms',
+      title: text.stepTerms,
+      fields: promotionTermsFieldNames(PREFIX),
+      content: (
+        <>
+          <Hint>{t('promotionDeclarationHelp')}</Hint>
+          <PromotionTermsFields prefix={PREFIX} />
+        </>
+      ),
+    },
+    {
+      key: 'purpose',
+      title: text.stepPurpose,
+      fields: ['purpose', 'basisEvidence', 'useUntil', 'useCondition', 'endCondition'],
+      content: <PurposeFields />,
+    },
+    {
+      key: 'simulation',
+      title: text.stepSimulation,
+      fields: ['simulationId'],
+      content: <SimulationStep context={context} candidateId={candidate.id} kind={kind} />,
+    },
+  ];
+
+  const submit = async (values: PromotionPreparationValues): Promise<SubmitOutcome> => {
+    const purpose = values.purpose ?? 'PROMOTION';
+    // Every check readPromotionTerms makes is a rule of the first step, so the
+    // declaration is defined here; the backend refuses an incomplete one anyway.
+    const terms = readPromotionTerms(values.declaration, kind);
+    const basis: ListingPurposeBasis | undefined =
+      purpose === 'BOUNDED_EXPLORATION'
+        ? {
+            evidenceReference: values.basisEvidence ?? '',
+            useConditions: [values.useCondition ?? ''],
+            endConditions: [values.endCondition ?? ''],
+            useUntil: values.useUntil,
+          }
+        : undefined;
+    const outcome = await prepareAction(
+      context,
+      candidate.id,
+      'MANUAL',
+      '',
+      undefined,
+      undefined,
+      terms,
+      purpose,
+      basis,
+      values.simulationId,
+    );
+    if (!outcome.ok) return outcome.failure;
+    onPrepared(outcome.value.id);
+    return undefined;
+  };
+
   return (
-    <InputNumber<string>
-      stringMode
-      style={{ width: '100%' }}
-      value={value === '' ? null : value}
-      {...(ariaLabel === undefined ? {} : { 'aria-label': ariaLabel })}
-      onChange={(next) => {
-        onChange(next ?? '');
-      }}
+    <FormDrawer<PromotionPreparationValues>
+      open
+      onClose={onClose}
+      title={
+        <Space size={8} wrap>
+          <span>{text.title}</span>
+          <Code family="candidateKind" code={kind} />
+          <Typography.Text type="secondary" style={{ fontWeight: 'normal' }}>
+            {candidate.comparisonRoundKey}
+          </Typography.Text>
+        </Space>
+      }
+      initialValues={{ [PREFIX]: promotionTermsInitialValues(false), purpose: 'PROMOTION' }}
+      steps={steps}
+      submitText={text.submit}
+      onSubmit={submit}
     />
   );
 }
 
-export function PromotionPreparationForm({
+/** The purpose, and the basis a bounded exploration needs. */
+function PurposeFields(): React.JSX.Element {
+  const form = Form.useFormInstance<PromotionPreparationValues>();
+  const purpose = Form.useWatch('purpose', form);
+  return (
+    <>
+      <Form.Item
+        name="purpose"
+        label={t('actionPurpose')}
+        rules={[{ required: true, message: text.purposeRequired }]}
+      >
+        <Select<PromotionPurpose>
+          style={{ maxWidth: 320 }}
+          options={codeOptions('actionPurpose', ['PROMOTION', 'BOUNDED_EXPLORATION']).map(
+            (option) => ({ ...option, value: option.value as PromotionPurpose }),
+          )}
+        />
+      </Form.Item>
+      {purpose === 'BOUNDED_EXPLORATION' && (
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="basisEvidence"
+              label={t('purposeEvidence')}
+              rules={[{ required: true, whitespace: true, message: text.basisEvidenceRequired }]}
+            >
+              <Input maxLength={512} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="useUntil"
+              label={t('purposeUseUntil')}
+              rules={[{ required: true, message: text.useUntilRequired }]}
+            >
+              <InstantField ariaLabel={t('purposeUseUntil')} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="useCondition"
+              label={t('purposeUseCondition')}
+              rules={[{ required: true, whitespace: true, message: text.useConditionRequired }]}
+            >
+              <Input.TextArea maxLength={512} autoSize={{ minRows: 2, maxRows: 4 }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="endCondition"
+              label={t('purposeEndCondition')}
+              rules={[{ required: true, whitespace: true, message: text.endConditionRequired }]}
+            >
+              <Input.TextArea maxLength={512} autoSize={{ minRows: 2, maxRows: 4 }} />
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
+    </>
+  );
+}
+
+interface SimulationValues {
+  readonly listPrice?: string;
+  readonly discount?: string;
+  readonly unitCost?: string;
+  readonly referenceProfit?: string;
+  readonly platformFee?: string;
+  readonly fixedFee?: string;
+  readonly returnLoss?: string;
+  readonly advertising?: string;
+  readonly variableTax?: string;
+  readonly currency?: string;
+  readonly scenarios?: readonly { readonly name?: string; readonly value?: string }[];
+  readonly periodStart?: string;
+  readonly periodEnd?: string;
+  readonly assumptions?: string;
+  readonly sourceReference?: string;
+}
+
+const DECIMAL_FIELDS = [
+  ['listPrice', 'simulationListPrice'],
+  ['discount', 'simulationDiscount'],
+  ['unitCost', 'simulationUnitCost'],
+  ['referenceProfit', 'simulationReferenceProfit'],
+  ['platformFee', 'simulationPlatformFee'],
+  ['fixedFee', 'simulationFixedFee'],
+  ['returnLoss', 'simulationReturnLoss'],
+  ['advertising', 'simulationAdvertising'],
+  ['variableTax', 'simulationVariableTax'],
+] as const;
+
+/**
+ * Choosing a qualified simulation of this purpose and these terms. The list is
+ * read when the drawer opens; changing the purpose or the terms clears the
+ * choice, because a simulation is bound to both.
+ */
+function SimulationStep({
   context,
   candidateId,
   kind,
-  onPrepared,
 }: {
   readonly context: ConsoleRequest;
   readonly candidateId: string;
   readonly kind: string;
-  readonly onPrepared: (id: string) => void;
 }): React.JSX.Element {
-  const [purpose, setPurpose] = useState<PromotionPurpose>('PROMOTION');
-  const [basisEvidence, setBasisEvidence] = useState('');
-  const [useCondition, setUseCondition] = useState('');
-  const [endCondition, setEndCondition] = useState('');
-  const [useUntil, setUseUntil] = useState('');
-  const [simulationId, setSimulationId] = useState<string>();
-  const useUntilValue = new Date(useUntil);
-  const purposeBasis: ListingPurposeBasis | undefined =
-    purpose === 'BOUNDED_EXPLORATION' &&
-    basisEvidence.trim() !== '' &&
-    useCondition.trim() !== '' &&
-    endCondition.trim() !== '' &&
-    Number.isFinite(useUntilValue.valueOf())
-      ? {
-          evidenceReference: basisEvidence,
-          useConditions: [useCondition],
-          endConditions: [endCondition],
-          useUntil: useUntilValue.toISOString(),
-        }
-      : undefined;
-  return (
-    <PromotionTermsForm
-      label={candidateId}
-      kind={kind}
-      onSaved={onPrepared}
-      preparation={(draft) => (
-        <>
-          <Card size="small" type="inner" title={t('actionPurpose')}>
-            <Form.Item label={t('actionPurpose')}>
-              <Select<PromotionPurpose>
-                value={purpose}
-                style={{ maxWidth: 320 }}
-                options={codeOptions('actionPurpose', ['PROMOTION', 'BOUNDED_EXPLORATION']).map(
-                  (option) => ({ ...option, value: option.value as PromotionPurpose }),
-                )}
-                onChange={(next) => {
-                  setPurpose(next);
-                  setSimulationId(undefined);
-                }}
-              />
-            </Form.Item>
-            {purpose === 'BOUNDED_EXPLORATION' && (
-              <Row gutter={16}>
-                <Col xs={24} md={12}>
-                  <Form.Item label={t('purposeEvidence')} required>
-                    <Input
-                      maxLength={512}
-                      value={basisEvidence}
-                      onChange={(event) => {
-                        setBasisEvidence(event.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item label={t('purposeUseUntil')} required>
-                    <InstantPicker value={useUntil} onChange={setUseUntil} />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item label={t('purposeUseCondition')} required>
-                    <Input.TextArea
-                      maxLength={512}
-                      autoSize={{ minRows: 2, maxRows: 4 }}
-                      value={useCondition}
-                      onChange={(event) => {
-                        setUseCondition(event.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item label={t('purposeEndCondition')} required>
-                    <Input.TextArea
-                      maxLength={512}
-                      autoSize={{ minRows: 2, maxRows: 4 }}
-                      value={endCondition}
-                      onChange={(event) => {
-                        setEndCondition(event.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            )}
-          </Card>
-          <PromotionSimulationSelection
-            context={context}
-            candidateId={candidateId}
-            purpose={purpose}
-            declaration={draft}
-            selected={simulationId}
-            onSelected={setSimulationId}
-          />
-        </>
-      )}
-      onSave={async (terms) => {
-        if (
-          simulationId === undefined ||
-          (purpose === 'BOUNDED_EXPLORATION' && purposeBasis === undefined)
-        )
-          return {
-            ok: false as const,
-            failure: {
-              kind: 'refused' as const,
-              status: 400,
-              detail: t('promotionSimulationRequired'),
-            },
-          };
-        const outcome = await prepareAction(
-          context,
-          candidateId,
-          'MANUAL',
-          '',
-          undefined,
-          undefined,
-          terms,
-          purpose,
-          purposeBasis,
-          simulationId,
-        );
-        return outcome.ok ? { ok: true, value: outcome.value.id } : outcome;
-      }}
-    />
-  );
-}
-
-function PromotionSimulationSelection({
-  context,
-  candidateId,
-  purpose,
-  declaration,
-  selected,
-  onSelected,
-}: {
-  readonly context: ConsoleRequest;
-  readonly candidateId: string;
-  readonly purpose: PromotionPurpose;
-  readonly declaration: PromotionTerms | undefined;
-  readonly selected: string | undefined;
-  readonly onSelected: (id: string | undefined) => void;
-}): React.JSX.Element {
-  const [simulations, setSimulations] = useState<readonly PromotionSimulation[]>([]);
-  const [failure, setFailure] = useState<ConsoleFailure>();
-  const [busy, setBusy] = useState(false);
-  const [listPrice, setListPrice] = useState('');
-  const [discount, setDiscount] = useState('');
-  const [unitCost, setUnitCost] = useState('');
-  const [currency, setCurrency] = useState('RUB');
-  const [referenceProfit, setReferenceProfit] = useState('');
-  const [scenarios, setScenarios] = useState<ScenarioRow[]>([{ name: '', value: '' }]);
-  const [periodStart, setPeriodStart] = useState('');
-  const [periodEnd, setPeriodEnd] = useState('');
-  const [assumptions, setAssumptions] = useState('');
-  const [sourceReference, setSourceReference] = useState('');
-  const [platformFee, setPlatformFee] = useState('');
-  const [fixedFee, setFixedFee] = useState('');
-  const [returnLoss, setReturnLoss] = useState('');
-  const [advertising, setAdvertising] = useState('');
-  const [variableTax, setVariableTax] = useState('');
+  const { message } = App.useApp();
+  const form = Form.useFormInstance<PromotionPreparationValues>();
+  const purpose = Form.useWatch('purpose', form) ?? 'PROMOTION';
+  const declarationValues = Form.useWatch(PREFIX, form);
+  const declaration = readPromotionTerms(declarationValues, kind);
   const declarationIdentity = JSON.stringify(declaration);
-  const qualified = simulations.filter(
+  const [simulations, setSimulations] = useState<readonly PromotionSimulation[] | undefined>(
+    undefined,
+  );
+  const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const [creating, setCreating] = useState(false);
+  const [simulationForm] = Form.useForm<SimulationValues>();
+  const epoch = useRef(0);
+
+  const load = async (): Promise<void> => {
+    const ticket = ++epoch.current;
+    setSimulations(undefined);
+    const outcome = await fetchCandidateSimulations(context, candidateId);
+    if (ticket !== epoch.current) return;
+    if (outcome.ok) {
+      setSimulations(outcome.value);
+      setFailure(undefined);
+    } else {
+      setSimulations([]);
+      setFailure(outcome.failure);
+    }
+  };
+
+  useEffect(() => {
+    void load();
+    return () => {
+      epoch.current += 1;
+    };
+    // Read once per opening: the drawer mounts this step when it opens.
+  }, [context, candidateId]);
+
+  // A simulation is bound to its purpose and exact terms: a change clears the choice.
+  useEffect(() => {
+    form.setFieldValue('simulationId', undefined);
+  }, [purpose, declarationIdentity, form]);
+
+  const qualified = (simulations ?? []).filter(
     (value) =>
       value.purposeCode === purpose &&
       value.qualificationState === 'QUALIFIED_CONDITIONAL_ECONOMICS',
   );
-  async function load(): Promise<void> {
-    const result = await fetchCandidateSimulations(context, candidateId);
-    if (result.ok) {
-      setSimulations(result.value);
-      setFailure(undefined);
-    } else {
-      setSimulations([]);
-      setFailure(result.failure);
-    }
-  }
-  useEffect(() => {
-    onSelected(undefined);
-    setSimulations([]);
-  }, [purpose, declarationIdentity, onSelected]);
 
-  const create = (): void => {
-    const start = new Date(periodStart),
-      end = new Date(periodEnd);
-    if (
-      declaration === undefined ||
-      !Number.isFinite(start.valueOf()) ||
-      !Number.isFinite(end.valueOf()) ||
-      scenarios.some((scenario) => scenario.name.trim() === '' || scenario.value.trim() === '')
-    ) {
-      setFailure({
-        kind: 'refused',
-        status: 400,
-        detail: t('promotionSimulationRequired'),
-      });
+  const create = async (): Promise<void> => {
+    if (declaration === undefined) return;
+    let values: SimulationValues;
+    try {
+      values = await simulationForm.validateFields();
+    } catch {
       return;
     }
-    setBusy(true);
+    const currency = (values.currency ?? 'RUB').toUpperCase();
+    const money = (amount: string | undefined) =>
+      amount === undefined || amount === '' ? null : { amount, currencyCode: currency };
+    const optional = (amount: string | undefined): string | null =>
+      amount === undefined || amount === '' ? null : amount;
+    setCreating(true);
     setFailure(undefined);
-    const money = (amount: string) => (amount === '' ? null : { amount, currencyCode: currency });
-    void simulatePromotionCandidate(
-      context,
-      candidateId,
-      {
-        listPrice,
-        sellerDiscountRate: discount === '' ? null : discount,
-        discountAlreadyInNetRevenue: false,
-        unitCost: unitCost === '' ? null : unitCost,
-        stepFees: platformFee === '' ? [] : [{ priceFloor: '0', feePerUnit: platformFee }],
-        feesKnown: platformFee !== '',
-        scenarios: scenarios.map((scenario) => ({
-          code: scenario.name,
-          quantity: scenario.value,
-          necessary: true,
-          conservative: true,
-        })),
-        referenceProfitLine: referenceProfit === '' ? null : referenceProfit,
-        currencyCode: currency,
-        expenses: {
-          fixedPromotionFee: money(fixedFee),
-          returnLossPerUnit: money(returnLoss),
-          advertisingPerUnit: money(advertising),
-          variableTaxPerUnit: money(variableTax),
+    try {
+      const result = await simulatePromotionCandidate(
+        context,
+        candidateId,
+        {
+          listPrice: values.listPrice ?? '',
+          sellerDiscountRate: optional(values.discount),
+          discountAlreadyInNetRevenue: false,
+          unitCost: optional(values.unitCost),
+          stepFees:
+            optional(values.platformFee) === null
+              ? []
+              : [{ priceFloor: '0', feePerUnit: values.platformFee ?? '' }],
+          feesKnown: optional(values.platformFee) !== null,
+          scenarios: (values.scenarios ?? []).map((scenario) => ({
+            code: scenario.name ?? '',
+            quantity: scenario.value ?? '',
+            necessary: true,
+            conservative: true,
+          })),
+          referenceProfitLine: optional(values.referenceProfit),
+          currencyCode: currency,
+          expenses: {
+            fixedPromotionFee: money(values.fixedFee),
+            returnLossPerUnit: money(values.returnLoss),
+            advertisingPerUnit: money(values.advertising),
+            variableTaxPerUnit: money(values.variableTax),
+          },
+          context: {
+            periodStart: values.periodStart ?? '',
+            periodEnd: values.periodEnd ?? '',
+            sourceReferences: { USER_REFERENCE: values.sourceReference ?? '' },
+            assumptions: values.assumptions ?? '',
+            commercialDeclaration: declaration,
+          },
         },
-        context: {
-          periodStart: start.toISOString(),
-          periodEnd: end.toISOString(),
-          sourceReferences: { USER_REFERENCE: sourceReference },
-          assumptions,
-          commercialDeclaration: declaration,
-        },
-      },
-      purpose,
-    )
-      .then(async (result) => {
-        if (!result.ok) {
-          setFailure(result.failure);
-          return;
-        }
-        await load();
-        if (
-          result.value.purposeCode === purpose &&
-          result.value.qualificationState === 'QUALIFIED_CONDITIONAL_ECONOMICS'
-        )
-          onSelected(result.value.id);
-      })
-      .finally(() => {
-        setBusy(false);
-      });
+        purpose,
+      );
+      if (!result.ok) {
+        setFailure(result.failure);
+        return;
+      }
+      void message.success(text.created);
+      await load();
+      if (
+        result.value.purposeCode === purpose &&
+        result.value.qualificationState === 'QUALIFIED_CONDITIONAL_ECONOMICS'
+      ) {
+        form.setFieldValue('simulationId', result.value.id);
+      }
+    } finally {
+      setCreating(false);
+    }
   };
 
-  const decimalFields: readonly [string, string, (next: string) => void][] = [
-    [t('simulationListPrice'), listPrice, setListPrice],
-    [t('simulationDiscount'), discount, setDiscount],
-    [t('simulationUnitCost'), unitCost, setUnitCost],
-    [t('simulationReferenceProfit'), referenceProfit, setReferenceProfit],
-    [t('simulationPlatformFee'), platformFee, setPlatformFee],
-    [t('simulationFixedFee'), fixedFee, setFixedFee],
-    [t('simulationReturnLoss'), returnLoss, setReturnLoss],
-    [t('simulationAdvertising'), advertising, setAdvertising],
-    [t('simulationVariableTax'), variableTax, setVariableTax],
-  ];
-
   const createForm = (
-    <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+    <Form<SimulationValues>
+      form={simulationForm}
+      component={false}
+      layout="vertical"
+      initialValues={{ currency: 'RUB', scenarios: [{ name: '', value: '' }] }}
+    >
       <Row gutter={16}>
-        {decimalFields.map(([label, value, setter]) => (
-          <Col key={label} xs={24} md={8}>
-            <Form.Item label={label}>
-              <DecimalInput value={value} onChange={setter} ariaLabel={label} />
+        {DECIMAL_FIELDS.map(([name, label]) => (
+          <Col key={name} xs={24} md={8}>
+            <Form.Item
+              name={name}
+              label={t(label)}
+              rules={
+                name === 'listPrice' ? [{ required: true, message: text.listPriceRequired }] : []
+              }
+            >
+              <DecimalField ariaLabel={t(label)} />
             </Form.Item>
           </Col>
         ))}
         <Col xs={24} md={8}>
-          <Form.Item label={t('simulationCurrency')}>
-            <Input
-              maxLength={3}
-              value={currency}
-              onChange={(event) => {
-                setCurrency(event.target.value.toUpperCase());
-              }}
-            />
+          <Form.Item
+            name="currency"
+            label={t('simulationCurrency')}
+            rules={[{ required: true, pattern: /^[A-Za-z]{3}$/, message: text.currencyRequired }]}
+          >
+            <Input maxLength={3} />
           </Form.Item>
         </Col>
       </Row>
-      {scenarios.map((scenario, index) => (
-        <Row key={index} gutter={16}>
-          <Col xs={24} md={12}>
-            <Form.Item label={`${t('simulationScenarioCode')} ${String(index + 1)}`}>
-              <Input
-                value={scenario.name}
-                onChange={(event) => {
-                  setScenarios(
-                    scenarios.map((value, row) =>
-                      row === index ? { ...value, name: event.target.value } : value,
-                    ),
-                  );
-                }}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12}>
-            <Form.Item label={`${t('simulationQuantity')} ${String(index + 1)}`}>
-              <DecimalInput
-                value={scenario.value}
-                onChange={(next) => {
-                  setScenarios(
-                    scenarios.map((value, row) =>
-                      row === index ? { ...value, value: next } : value,
-                    ),
-                  );
-                }}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-      ))}
-      <Button
-        type="dashed"
-        icon={<PlusOutlined />}
-        disabled={scenarios.length >= 64}
-        onClick={() => {
-          setScenarios([...scenarios, { name: '', value: '' }]);
-        }}
-      >
-        {t('simulationAddScenario')}
-      </Button>
+      <Form.List name="scenarios">
+        {(fields: FormListFieldData[], { add, remove }) => (
+          <>
+            {fields.map((field, index) => (
+              <Row key={field.key} gutter={8} align="top">
+                <Col xs={24} md={11}>
+                  <Form.Item
+                    name={[field.name, 'name']}
+                    label={`${t('simulationScenarioCode')} ${String(index + 1)}`}
+                    rules={[
+                      { required: true, whitespace: true, message: text.scenarioCodeRequired },
+                    ]}
+                  >
+                    <Input maxLength={64} />
+                  </Form.Item>
+                </Col>
+                <Col xs={22} md={12}>
+                  <Form.Item
+                    name={[field.name, 'value']}
+                    label={`${t('simulationQuantity')} ${String(index + 1)}`}
+                    rules={[{ required: true, message: text.scenarioQuantityRequired }]}
+                  >
+                    <DecimalField />
+                  </Form.Item>
+                </Col>
+                <Col xs={2} md={1} style={{ paddingTop: 34 }}>
+                  {fields.length > 1 && (
+                    <MinusCircleOutlined
+                      aria-label={t('removeRow')}
+                      onClick={() => {
+                        remove(field.name);
+                      }}
+                    />
+                  )}
+                </Col>
+              </Row>
+            ))}
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              disabled={fields.length >= 64}
+              style={{ marginBottom: 16 }}
+              onClick={() => {
+                add({ name: '', value: '' });
+              }}
+            >
+              {t('simulationAddScenario')}
+            </Button>
+          </>
+        )}
+      </Form.List>
       <Row gutter={16}>
         <Col xs={24} md={12}>
-          <Form.Item label={t('simulationPeriodStart')}>
-            <InstantPicker value={periodStart} onChange={setPeriodStart} />
+          <Form.Item
+            name="periodStart"
+            label={t('simulationPeriodStart')}
+            rules={[{ required: true, message: text.periodRequired }]}
+          >
+            <InstantField ariaLabel={t('simulationPeriodStart')} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label={t('simulationPeriodEnd')}>
-            <InstantPicker value={periodEnd} onChange={setPeriodEnd} />
+          <Form.Item
+            name="periodEnd"
+            label={t('simulationPeriodEnd')}
+            dependencies={['periodStart']}
+            rules={[
+              { required: true, message: text.periodRequired },
+              ({ getFieldValue }) => ({
+                validator: (_, value: string | undefined) => {
+                  const start = getFieldValue('periodStart') as string | undefined;
+                  return isInstant(start) &&
+                    isInstant(value) &&
+                    new Date(value).valueOf() <= new Date(start).valueOf()
+                    ? Promise.reject(new Error(text.periodOrder))
+                    : Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <InstantField ariaLabel={t('simulationPeriodEnd')} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label={t('simulationAssumptions')}>
-            <Input.TextArea
-              maxLength={512}
-              autoSize={{ minRows: 2, maxRows: 4 }}
-              value={assumptions}
-              onChange={(event) => {
-                setAssumptions(event.target.value);
-              }}
-            />
+          <Form.Item name="assumptions" label={t('simulationAssumptions')}>
+            <Input.TextArea maxLength={512} autoSize={{ minRows: 2, maxRows: 4 }} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label={t('evidence')}>
-            <Input
-              maxLength={512}
-              value={sourceReference}
-              onChange={(event) => {
-                setSourceReference(event.target.value);
-              }}
-            />
+          <Form.Item name="sourceReference" label={t('evidence')}>
+            <Input maxLength={512} />
           </Form.Item>
         </Col>
       </Row>
-      <Button
-        loading={busy}
-        disabled={declaration === undefined}
-        {...(declaration === undefined ? { title: t('simulationNeedsTerms') } : {})}
-        onClick={create}
-      >
-        {t('promotionSimulationCreate')}
-      </Button>
-    </Space>
+      <TriggerButton
+        trigger={{
+          label: text.createButton,
+          disabled: declaration === undefined,
+          disabledReason: text.needsTerms,
+          reasonPlacement: 'inline',
+        }}
+        loading={creating}
+        onClick={() => {
+          void create();
+        }}
+      />
+    </Form>
   );
 
   return (
-    <Card size="small" type="inner" title={t('promotionSimulation')}>
+    <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
       <Hint>{t('promotionSimulationBoundary')}</Hint>
-      <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-        {failure === undefined ? null : <ListingProblem failure={failure} />}
-        <Space wrap align="end">
-          <Form.Item label={t('promotionSimulationSelect')} required style={{ marginBottom: 0 }}>
-            <Select
-              style={{ minWidth: 320 }}
-              placeholder={t('undeclared')}
-              allowClear
-              value={selected}
-              onChange={(next: string | undefined) => {
-                onSelected(next === undefined || next === '' ? undefined : next);
-              }}
-              notFoundContent={t('promotionSimulationNone')}
-              options={qualified.map((value) => ({
-                value: value.id,
-                label: `${formatStoreTime(value.computedAt)} · ${value.id.slice(0, 8)}`,
-              }))}
-            />
-          </Form.Item>
-          <Button
-            icon={<ReloadOutlined />}
-            loading={busy}
-            onClick={() => {
-              setBusy(true);
-              void load().finally(() => {
-                setBusy(false);
-              });
-            }}
-          >
-            {t('promotionSimulationLoad')}
-          </Button>
-        </Space>
-        {qualified.length === 0 ? <Hint>{t('promotionSimulationNone')}</Hint> : null}
-        <Collapse
-          size="small"
-          items={[{ key: 'create', label: t('promotionSimulationCreate'), children: createForm }]}
+      {failure !== undefined && <ListingProblem failure={failure} />}
+      <Flex gap={8} align="flex-end" wrap>
+        <Form.Item
+          name="simulationId"
+          label={t('promotionSimulationSelect')}
+          rules={[{ required: true, message: text.simulationRequired }]}
+          style={{ marginBottom: 0, minWidth: 320, flex: 1 }}
+        >
+          <Select
+            allowClear
+            placeholder={simulations === undefined ? text.simulationsLoading : t('undeclared')}
+            loading={simulations === undefined}
+            notFoundContent={t('promotionSimulationNone')}
+            options={qualified.map((value) => ({
+              value: value.id,
+              label: text.simulationOption(formatStoreTime(value.computedAt), value.id.slice(0, 8)),
+            }))}
+          />
+        </Form.Item>
+        <Button
+          icon={<ReloadOutlined />}
+          aria-label={text.simulationRefresh}
+          loading={simulations === undefined}
+          onClick={() => {
+            void load();
+          }}
         />
-      </Space>
-    </Card>
+      </Flex>
+      {simulations !== undefined && qualified.length === 0 && (
+        <Typography.Text type="secondary">{t('promotionSimulationNone')}</Typography.Text>
+      )}
+      <SectionCollapse
+        size="small"
+        items={[
+          {
+            key: 'create',
+            title: text.createSection,
+            summary: text.createSummary,
+            children: createForm,
+          },
+        ]}
+      />
+    </Space>
   );
 }

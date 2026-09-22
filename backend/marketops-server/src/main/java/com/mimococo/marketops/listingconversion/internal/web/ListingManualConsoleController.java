@@ -52,6 +52,29 @@ class ListingManualConsoleController {
         this.audit = audit;
     }
 
+    // ------------------------------------------------------------------ people
+
+    /**
+     * Colleagues who may execute one action ({@code role=MANUAL_EXECUTOR&actionId=}) or steward one
+     * listing's promotions ({@code role=PROMOTION_STEWARD&listingId=}), by display name only.
+     */
+    @Transactional
+    @GetMapping(value = "/people", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<ManualPathService.PersonOption> people(AuthenticatedActor actor, @RequestParam String role,
+                                                @RequestParam(required = false) UUID actionId,
+                                                @RequestParam(required = false) UUID listingId) {
+        ManualPathService.PersonRole parsed;
+        try {
+            parsed = ManualPathService.PersonRole.valueOf(role.strip());
+        } catch (IllegalArgumentException invalid) {
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        }
+        List<ManualPathService.PersonOption> result = manual.people(actor, parsed, actionId, listingId);
+        auditRead(actor, "lc-manual-people", actionId != null ? actionId : listingId, parsed == ManualPathService.PersonRole.MANUAL_EXECUTOR ? "people-executor" : "people-steward");
+        return result;
+    }
+
     // ------------------------------------------------------------------ packets
 
     @Transactional

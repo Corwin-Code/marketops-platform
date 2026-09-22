@@ -1,6 +1,6 @@
-import { Button, Form, Input, InputNumber, Space, Typography } from 'antd';
-import { useState } from 'react';
-import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import { App, AutoComplete, Form, Input, InputNumber, Popover, Space, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import type { ConsoleRequest } from '../api/console';
 import {
   holdListingTaskForDependency,
   type ListingDependencyHoldTarget,
@@ -8,8 +8,9 @@ import {
 } from '../api/listingConversion';
 import { LISTING_CODES } from '../i18n/zh/listingCodes';
 import { t } from '../i18n/zh/listing';
-import { TechnicalDetails } from '../ui';
-import { Code, Details, Hint, IdText, ListingProblem, SubTitle, When } from './ListingCommon';
+import { responsibilityText as text } from '../i18n/zh/listingHealth';
+import { ActionModal } from '../ui';
+import { Code, Details, IdText, When } from './ListingCommon';
 
 interface HoldValues {
   readonly dependencyTaskId?: string;
@@ -17,131 +18,164 @@ interface HoldValues {
   readonly evidence?: string;
 }
 
-/** The end reason in Chinese when the console knows it; otherwise raw, folded away. */
-function EndReason({ reason }: { readonly reason: string }): React.JSX.Element {
-  const labels: Readonly<Record<string, string>> = LISTING_CODES.dependencyHoldEndReason;
-  if (Object.hasOwn(labels, reason)) {
-    return <Typography.Text>{labels[reason]}</Typography.Text>;
-  }
-  return (
-    <TechnicalDetails label={t('unrecognizedReason')}>
-      <Typography.Text>{reason}</Typography.Text>
-    </TechnicalDetails>
-  );
+/** A task the hold may depend on, offered in the picker. */
+export interface DependencyTaskOption {
+  readonly value: string;
+  readonly label: string;
 }
 
-/** A finite pause bound to another existing Task and its evidence. */
-export function ListingDependencyHold({
-  context,
-  target,
-  current,
-}: {
-  readonly context: ConsoleRequest;
-  readonly target: ListingDependencyHoldTarget;
-  readonly current?: ListingTaskDependencyHold | undefined;
-}): React.JSX.Element {
-  const [form] = Form.useForm<HoldValues>();
-  const [answer, setAnswer] = useState<ListingTaskDependencyHold | undefined>(current);
-  const [failure, setFailure] = useState<ConsoleFailure>();
-  const [busy, setBusy] = useState(false);
-  const shown = answer ?? current;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** The end reason in Chinese when the console knows it; otherwise the raw text. */
+function endReasonText(reason: string): string {
+  const labels: Readonly<Record<string, string>> = LISTING_CODES.dependencyHoldEndReason;
+  return Object.hasOwn(labels, reason)
+    ? (labels[reason] ?? reason)
+    : `${t('unrecognizedReason')}：${reason}`;
+}
+
+/** The hold's state as a tag, with its dependency and evidence one hover away. */
+function HoldState({ value }: { readonly value: ListingTaskDependencyHold }): React.JSX.Element {
   return (
-    <section aria-label={t('dependencyHoldTitle')}>
-      <SubTitle>{t('dependencyHoldTitle')}</SubTitle>
-      <Hint>{t('dependencyHoldHelp')}</Hint>
-      <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-        {failure !== undefined && <ListingProblem failure={failure} />}
-        {shown !== undefined && (
+    <Popover
+      title={t('dependencyHoldTitle')}
+      trigger={['hover', 'click']}
+      content={
+        <div style={{ maxWidth: 420 }}>
           <Details
+            column={1}
             items={[
-              {
-                key: 'state',
-                label: t('dependencyHoldState'),
-                children: <Code family="dependencyHoldState" code={shown.state} />,
-              },
               {
                 key: 'until',
                 label: t('dependencyHoldUntil'),
-                children: <When value={shown.expiresAt} />,
+                children: <When value={value.expiresAt} />,
               },
               {
                 key: 'task',
                 label: t('dependencyTask'),
-                children: <IdText value={shown.dependencyTaskId} />,
+                children: <IdText value={value.dependencyTaskId} />,
               },
               {
                 key: 'evidence',
                 label: t('evidence'),
-                children: <Typography.Text copyable>{shown.evidenceReference}</Typography.Text>,
+                children: <Typography.Text copyable>{value.evidenceReference}</Typography.Text>,
               },
-              ...(shown.endReason === undefined
+              ...(value.endReason === undefined
                 ? []
                 : [
                     {
                       key: 'end',
                       label: t('dependencyHoldEnd'),
-                      children: <EndReason reason={shown.endReason} />,
+                      children: endReasonText(value.endReason),
                     },
                   ]),
             ]}
           />
-        )}
-        {shown?.state !== 'ACTIVE' && (
-          <Form<HoldValues>
-            form={form}
-            layout="vertical"
-            disabled={busy}
-            onFinish={(values) => {
-              setBusy(true);
-              setFailure(undefined);
-              void holdListingTaskForDependency(
-                context,
-                target,
-                values.dependencyTaskId ?? '',
-                Number(values.minutes),
-                values.evidence ?? '',
-              )
-                .then((result) => {
-                  if (result.ok) setAnswer(result.value);
-                  else setFailure(result.failure);
-                })
-                .finally(() => {
-                  setBusy(false);
-                });
-            }}
-          >
-            <Space wrap align="start">
-              <Form.Item
-                name="dependencyTaskId"
-                label={t('dependencyTask')}
-                rules={[{ required: true, message: '请填写依赖的原任务编号' }]}
-              >
-                <Input style={{ width: 320 }} />
-              </Form.Item>
-              <Form.Item
-                name="minutes"
-                label={t('dependencyHoldMinutes')}
-                rules={[
-                  { required: true, message: '请填写暂停分钟数' },
-                  { type: 'integer', min: 1, message: '分钟数须为不小于 1 的整数' },
-                ]}
-              >
-                <InputNumber min={1} step={1} precision={0} style={{ width: 160 }} />
-              </Form.Item>
-            </Space>
-            <Form.Item
-              name="evidence"
-              label={t('dependencyHoldEvidence')}
-              rules={[{ required: true, message: '请填写依赖证据引用' }]}
-            >
-              <Input.TextArea maxLength={512} autoSize={{ minRows: 2, maxRows: 4 }} />
-            </Form.Item>
-            <Button type="primary" htmlType="submit" loading={busy}>
-              {t('dependencyHoldSubmit')}
-            </Button>
-          </Form>
-        )}
-      </Space>
-    </section>
+        </div>
+      }
+    >
+      <span aria-label={text.stateDetails} tabIndex={0} style={{ cursor: 'help' }}>
+        <Code family="dependencyHoldState" code={value.state} />
+      </span>
+    </Popover>
+  );
+}
+
+/**
+ * A finite pause bound to another existing Task and its evidence: the current
+ * hold's state, and a dialog to record a new one while none is active.
+ */
+export function ListingDependencyHold({
+  context,
+  target,
+  current,
+  taskOptions,
+  onChanged,
+}: {
+  readonly context: ConsoleRequest;
+  readonly target: ListingDependencyHoldTarget;
+  readonly current?: ListingTaskDependencyHold | undefined;
+  /** Tasks to pick the dependency from; a task number can always be pasted instead. */
+  readonly taskOptions?: readonly DependencyTaskOption[];
+  /** Called after a hold is recorded, e.g. to reload the clock. */
+  readonly onChanged?: () => void;
+}): React.JSX.Element {
+  const { message } = App.useApp();
+  const [value, setValue] = useState(current);
+  useEffect(() => {
+    setValue(current);
+  }, [current]);
+  const active = value?.state === 'ACTIVE';
+  return (
+    <Space size={4} wrap aria-label={t('dependencyHoldTitle')} data-state={value?.state ?? 'none'}>
+      {value !== undefined && <HoldState value={value} />}
+      <ActionModal<HoldValues>
+        trigger={{
+          label: text.hold,
+          size: 'small',
+          disabled: active,
+          ...(active ? { disabledReason: text.holdActive } : {}),
+        }}
+        title={text.holdTitle}
+        consequence={text.holdConsequence}
+        okText={t('dependencyHoldSubmit')}
+        onSubmit={async (values) => {
+          const result = await holdListingTaskForDependency(
+            context,
+            target,
+            (values.dependencyTaskId ?? '').trim(),
+            Number(values.minutes),
+            (values.evidence ?? '').trim(),
+          );
+          if (!result.ok) return result.failure;
+          setValue(result.value);
+          void message.success(text.held);
+          onChanged?.();
+          return undefined;
+        }}
+      >
+        <Form.Item
+          name="dependencyTaskId"
+          label={t('dependencyTask')}
+          rules={[
+            { required: true, whitespace: true, message: text.holdTaskRequired },
+            { pattern: UUID, message: text.holdTaskInvalid },
+          ]}
+        >
+          <AutoComplete
+            allowClear
+            placeholder={text.holdTaskPlaceholder}
+            options={(taskOptions ?? []).map((option) => ({
+              value: option.value,
+              label: (
+                <Space orientation="vertical" size={0}>
+                  <Typography.Text>{option.label}</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {option.value}
+                  </Typography.Text>
+                </Space>
+              ),
+            }))}
+          />
+        </Form.Item>
+        <Form.Item
+          name="minutes"
+          label={t('dependencyHoldMinutes')}
+          rules={[
+            { required: true, message: text.minutesRequired },
+            { type: 'integer', min: 1, message: text.minutesInvalid },
+          ]}
+        >
+          <InputNumber min={1} step={1} precision={0} style={{ width: 200 }} />
+        </Form.Item>
+        <Form.Item
+          name="evidence"
+          label={t('dependencyHoldEvidence')}
+          rules={[{ required: true, whitespace: true, message: text.holdEvidenceRequired }]}
+        >
+          <Input.TextArea maxLength={512} autoSize={{ minRows: 2, maxRows: 4 }} />
+        </Form.Item>
+      </ActionModal>
+    </Space>
   );
 }

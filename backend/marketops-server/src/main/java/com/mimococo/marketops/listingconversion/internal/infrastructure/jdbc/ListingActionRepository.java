@@ -326,15 +326,53 @@ public class ListingActionRepository {
     }
 
     public List<ActionRow> actions(UUID organizationId, List<UUID> storeIds, String state, int limit) {
+        return actions(organizationId, storeIds, state, null, null, limit);
+    }
+
+    /** Actions of the permitted stores, optionally narrowed to a state, one listing and one execution path. */
+    public List<ActionRow> actions(UUID organizationId, List<UUID> storeIds, String state, UUID listingId,
+                                   String executionPath, int limit) {
         if (storeIds.isEmpty()) {
             return List.of();
         }
         return jdbc.sql(ACTION_SELECT + """
                  WHERE a.organization_id = :org AND a.store_id IN (:stores) AND (:state IS NULL OR a.state = :state)
+                   AND (CAST(:listing AS uuid) IS NULL OR a.platform_listing_id = :listing)
+                   AND (:path IS NULL OR a.execution_path = :path)
                  ORDER BY a.updated_at DESC LIMIT :limit
                 """).param("org", organizationId).param("stores", storeIds)
                 .param("state", new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.VARCHAR, state))
+                .param("listing", new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.OTHER, listingId))
+                .param("path", new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.VARCHAR, executionPath))
                 .param("limit", limit).query(ListingActionRepository::mapAction).list();
+    }
+
+    /** A completed description command whose prior text could be restored, as listed for a picker. */
+    public record RestorationCandidate(UUID commandId, UUID actionId, Instant completedAt, String priorText,
+                                       String appliedTextDigest) { }
+
+    /**
+     * The restorable description commands of one listing, newest first: the predicate of
+     * {@link #restorationSource} without the command identifier.
+     */
+    public List<RestorationCandidate> restorationSources(UUID organizationId, UUID listingId, int limit) {
+        return jdbc.sql("""
+                SELECT c.id,c.action_id,c.terminal_at,c.prior_text,c.target_text_digest FROM ops.lc_description_command c
+                  JOIN ops.lc_action a ON a.id=c.action_id
+                 WHERE c.organization_id=:org AND c.platform_listing_id=:listing
+                   AND c.state='READBACK_MATCHED' AND c.prior_text IS NOT NULL AND c.prior_text<>''
+                   AND a.state IN ('VERIFIED','CONTAINED','CLOSED')
+                   AND EXISTS (SELECT 1 FROM ops.lc_execution_receipt r WHERE r.command_id=c.id
+                       AND r.execution_state='MANAGEMENT_VERIFIED')
+                 ORDER BY c.terminal_at DESC NULLS LAST, c.id
+                 LIMIT :limit
+                """).param("org",organizationId).param("listing",listingId).param("limit",limit)
+                .query((rs,n)->{
+                    Timestamp terminal=rs.getTimestamp("terminal_at");
+                    return new RestorationCandidate(rs.getObject("id",UUID.class),rs.getObject("action_id",UUID.class),
+                            terminal==null?null:terminal.toInstant(),rs.getString("prior_text"),
+                            rs.getString("target_text_digest"));
+                }).list();
     }
 
     public boolean moveAction(UUID id, String to, long expectedVersion, Instant now) {

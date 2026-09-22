@@ -523,6 +523,15 @@ export const LISTING_CODES = {
     PROTECTION: '保护',
     EVALUATION: '评估',
   },
+  contextCoverage: {
+    SINGLE_ACTIVITY_ONLY: '单一活动',
+    COMPLETE_ENUMERATION: '完整枚举',
+  },
+  factSourceKind: {
+    MARKETPLACE_RAW: '平台原始数据',
+    INTERNAL_IMPORT: '内部导入',
+    MANUAL_ENTRY: '人工录入',
+  },
   dependencyHoldEndReason: {
     'dependency Task completed with its recorded result': '依赖任务已按记录结果完成',
     'dependency Task was cancelled; dependency qualification must be reviewed':

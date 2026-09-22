@@ -1,5 +1,5 @@
-import { Alert, Button, Card, Checkbox, Col, Form, Input, Row, Select, Space, Table } from 'antd';
-import { useRef, useState } from 'react';
+import { Alert, Card, Checkbox, Col, Form, Input, Row, Select, Space, Table } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import type { ConsoleFailure, ConsoleOutcome, ConsoleRequest } from '../api/console';
 import {
   fetchPromotionTerms,
@@ -9,6 +9,7 @@ import {
   type PromotionTermsView,
 } from '../api/listingConversion';
 import { t } from '../i18n/zh/listing';
+import { LoadingState } from '../ui';
 import {
   Details,
   Hint,
@@ -23,7 +24,7 @@ import {
 import { PromotionTermsForm } from './ListingPromotionTermsForm';
 
 export { PromotionTermsForm } from './ListingPromotionTermsForm';
-export { PromotionPreparationForm } from './ListingPromotionPreparation';
+export { PromotionPreparationDrawer } from './ListingPromotionPreparation';
 
 const PROMOTION_AXIS_CODES = [
   'CONCURRENT_LISTINGS',
@@ -395,6 +396,10 @@ export function PromotionObservationForm({
   );
 }
 
+/**
+ * The exact terms bound to one promotion action, read as soon as it is shown.
+ * Only a caller entitled to every affected product's terms sees them in full.
+ */
 export function PromotionDeclaration({
   context,
   actionId,
@@ -416,34 +421,31 @@ export function PromotionDeclaration({
       : undefined;
   const [failure, setFailure] = useState<ConsoleFailure>();
   const terms = answer?.terms;
+  useEffect(() => {
+    // Clear old disclosed terms before requesting the current authorization projection.
+    setResponse(undefined);
+    const sequence = ++requestSequence.current;
+    setFailure(undefined);
+    setLoading(true);
+    void fetchPromotionTerms(context, actionId).then((outcome) => {
+      if (sequence !== requestSequence.current) return;
+      setLoading(false);
+      if (outcome.ok) setResponse({ context, value: outcome.value });
+      else setFailure(outcome.failure);
+    });
+    return () => {
+      requestSequence.current += 1;
+    };
+  }, [context, actionId]);
   return (
-    <section aria-label={t('promotionDeclaration')}>
+    <section aria-label={t('promotionDeclaration')} data-state={loading ? 'loading' : 'loaded'}>
       <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-        <Space wrap>
-          {digest === undefined ? (
-            <Alert type="warning" showIcon title={t('promotionTermsMissing')} />
-          ) : (
-            <IdText label={t('promotionDeclarationIdentity')} value={digest} />
-          )}
-          <Button
-            loading={loading}
-            onClick={() => {
-              // Clear old disclosed terms before requesting the current authorization projection.
-              setResponse(undefined);
-              const sequence = ++requestSequence.current;
-              setFailure(undefined);
-              setLoading(true);
-              void fetchPromotionTerms(context, actionId).then((outcome) => {
-                if (sequence !== requestSequence.current) return;
-                setLoading(false);
-                if (outcome.ok) setResponse({ context, value: outcome.value });
-                else setFailure(outcome.failure);
-              });
-            }}
-          >
-            {t('promotionReadTerms')}
-          </Button>
-        </Space>
+        {digest === undefined ? (
+          <Alert type="warning" showIcon title={t('promotionTermsMissing')} />
+        ) : (
+          <IdText label={t('promotionDeclarationIdentity')} value={digest} />
+        )}
+        {loading && <LoadingState rows={3} />}
         {failure !== undefined && <ListingProblem failure={failure} />}
         {answer !== undefined && !answer.fullDisclosure && (
           <Alert type="info" showIcon title={t('promotionTermsRestricted')} />

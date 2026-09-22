@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -58,4 +59,26 @@ public interface ListingIdentityDirectory {
      */
     Map<UUID, SubjectIdentity> identities(UUID organizationId,
                                           Collection<UUID> platformListingVariantIds);
+
+    /**
+     * Display identity for many whole listings of one organization, in one read.
+     *
+     * <p>Resolved through the mappings in force now. Listings outside the
+     * organization, or unknown, are omitted. For presentation only — never a
+     * basis for a rule, a cost or a write.
+     */
+    Map<UUID, ListingIdentity> listingIdentities(UUID organizationId,
+                                                 Collection<UUID> platformListingIds);
+
+    /**
+     * The listings of the given stores whose marketplace or catalogue names
+     * contain a text, case-insensitively.
+     *
+     * <p>Matches the listing keys and title, the variant keys, and the mapped
+     * product and variant names and codes. Capped at {@code limit}. A search
+     * helper only, never a scope decision: callers still authorise every
+     * listing they show.
+     */
+    Set<UUID> listingsMatching(UUID organizationId, Collection<UUID> storeIds,
+                               String text, int limit);
 }

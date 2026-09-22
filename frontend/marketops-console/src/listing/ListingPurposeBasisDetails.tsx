@@ -15,14 +15,20 @@ function Lines({ values }: { readonly values: readonly string[] }): React.JSX.El
   );
 }
 
+/**
+ * The evidence a purpose rests on and the conditions for using it. Pass
+ * `heading={false}` where the surrounding section already names it.
+ */
 export function ListingPurposeBasisDetails({
   basis,
+  heading = true,
 }: {
   readonly basis: ListingPurposeBasis;
+  readonly heading?: boolean;
 }): React.JSX.Element {
   return (
     <section aria-label={t('purposeBasis')}>
-      <SubTitle>{t('purposeBasis')}</SubTitle>
+      {heading && <SubTitle>{t('purposeBasis')}</SubTitle>}
       <Details
         column={{ xs: 1, md: 2 }}
         items={[

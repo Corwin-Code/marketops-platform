@@ -52,6 +52,17 @@ public class ListingAssistanceService {
                 .orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
+    /**
+     * Earlier assistance requests of one listing, newest first, without their content. Guarded like the
+     * first steps of {@link #read}; opening one record still checks its original scope there.
+     */
+    @Transactional(readOnly=true)
+    public java.util.List<AiCopilot.ListingInvocationRecord> history(AuthenticatedActor actor,UUID listingId,int limit) {
+        requireDisclosure(actor,listingId);
+        scopes.require(actor,listingId,ActionScopeCode.EVIDENCE_VIEW);
+        return copilot.listingInvocations(actor.organizationId(),listingId,limit);
+    }
+
     private record Disclosure(UUID storeId,AffectedSetResolution.Resolution members) { }
     private Disclosure requireDisclosure(AuthenticatedActor actor,UUID listingId) {
         var listing=scopes.require(actor,listingId,ActionScopeCode.LISTING_CONVERSION_VIEW);

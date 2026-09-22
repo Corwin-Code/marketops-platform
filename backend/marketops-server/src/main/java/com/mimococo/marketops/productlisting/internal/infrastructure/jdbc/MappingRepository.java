@@ -1,5 +1,6 @@
 package com.mimococo.marketops.productlisting.internal.infrastructure.jdbc;
 
+import com.mimococo.marketops.productlisting.ListingIdentity;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.productlisting.SubjectIdentity;
 import com.mimococo.marketops.productlisting.internal.domain.CandidateState;
@@ -16,9 +17,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -449,6 +452,125 @@ public class MappingRepository {
                                 rows.getString("size_label"))))
                 .list();
         return Map.copyOf(resolved);
+    }
+
+    /**
+     * Display identity for many whole listings of one organization at an instant.
+     *
+     * <p>One query for the whole batch. The catalogue side joins through the
+     * active mappings in force at the instant only. {@code product_count} counts
+     * distinct mapped products, and the product name is returned only when that
+     * count is exactly one.
+     */
+    public Map<UUID, ListingIdentity> listingIdentities(UUID organizationId,
+                                                        Collection<UUID> platformListingIds,
+                                                        Instant at) {
+        if (platformListingIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<UUID, ListingIdentity> resolved = new HashMap<>();
+        jdbc.sql("""
+                        SELECT listing.id AS listing_id,
+                               listing.platform_code,
+                               listing.native_listing_key,
+                               listing.native_product_key,
+                               listing.title,
+                               count(DISTINCT product.id) AS product_count,
+                               CASE WHEN count(DISTINCT product.id) = 1
+                                    THEN min(product.display_name) END AS product_name
+                          FROM core.platform_listing AS listing
+                          LEFT JOIN core.platform_listing_variant AS variant
+                            ON variant.platform_listing_id = listing.id
+                           AND variant.organization_id = listing.organization_id
+                          LEFT JOIN core.listing_mapping AS mapping
+                            ON mapping.platform_listing_variant_id = variant.id
+                           AND mapping.organization_id = listing.organization_id
+                           AND mapping.status = 'ACTIVE'
+                           AND mapping.effective_from <= :at
+                           AND (mapping.effective_to IS NULL OR mapping.effective_to > :at)
+                          LEFT JOIN core.product_variant AS product_variant
+                            ON product_variant.id = mapping.product_variant_id
+                           AND product_variant.organization_id = listing.organization_id
+                          LEFT JOIN core.product AS product
+                            ON product.id = product_variant.product_id
+                           AND product.organization_id = listing.organization_id
+                         WHERE listing.organization_id = :organizationId
+                           AND listing.id = ANY (:listingIds)
+                         GROUP BY listing.id, listing.platform_code, listing.native_listing_key,
+                                  listing.native_product_key, listing.title
+                        """)
+                .param("organizationId", organizationId)
+                .param("listingIds", platformListingIds.toArray(UUID[]::new))
+                .param("at", Timestamp.from(at))
+                .query((rows, rowNumber) -> resolved.put(
+                        rows.getObject("listing_id", UUID.class),
+                        new ListingIdentity(
+                                rows.getString("platform_code"),
+                                rows.getString("native_listing_key"),
+                                rows.getString("native_product_key"),
+                                rows.getString("title"),
+                                rows.getString("product_name"),
+                                rows.getInt("product_count"))))
+                .list();
+        return Map.copyOf(resolved);
+    }
+
+    /**
+     * Listings of some stores whose marketplace or mapped catalogue names
+     * contain a text, case-insensitively, capped at a limit.
+     *
+     * <p>The text is matched literally: {@code %}, {@code _} and the escape
+     * character are escaped before it becomes a pattern.
+     */
+    public Set<UUID> listingsMatching(UUID organizationId,
+                                      Collection<UUID> storeIds,
+                                      String text,
+                                      int limit,
+                                      Instant at) {
+        if (storeIds.isEmpty() || text.isEmpty()) {
+            return Set.of();
+        }
+        String pattern = "%" + text.replace("\\", "\\\\").replace("%", "\\%")
+                .replace("_", "\\_") + "%";
+        return new LinkedHashSet<>(jdbc.sql("""
+                        SELECT DISTINCT listing.id
+                          FROM core.platform_listing AS listing
+                          LEFT JOIN core.platform_listing_variant AS variant
+                            ON variant.platform_listing_id = listing.id
+                           AND variant.organization_id = listing.organization_id
+                          LEFT JOIN core.listing_mapping AS mapping
+                            ON mapping.platform_listing_variant_id = variant.id
+                           AND mapping.organization_id = listing.organization_id
+                           AND mapping.status = 'ACTIVE'
+                           AND mapping.effective_from <= :at
+                           AND (mapping.effective_to IS NULL OR mapping.effective_to > :at)
+                          LEFT JOIN core.product_variant AS product_variant
+                            ON product_variant.id = mapping.product_variant_id
+                           AND product_variant.organization_id = listing.organization_id
+                          LEFT JOIN core.product AS product
+                            ON product.id = product_variant.product_id
+                           AND product.organization_id = listing.organization_id
+                         WHERE listing.organization_id = :organizationId
+                           AND listing.store_id = ANY (:storeIds)
+                           AND (listing.native_listing_key ILIKE :pattern ESCAPE '\\'
+                                OR listing.native_product_key ILIKE :pattern ESCAPE '\\'
+                                OR listing.title ILIKE :pattern ESCAPE '\\'
+                                OR variant.native_sku_key ILIKE :pattern ESCAPE '\\'
+                                OR variant.native_variant_key ILIKE :pattern ESCAPE '\\'
+                                OR product.display_name ILIKE :pattern ESCAPE '\\'
+                                OR product.code ILIKE :pattern ESCAPE '\\'
+                                OR product_variant.sku_code ILIKE :pattern ESCAPE '\\'
+                                OR product_variant.display_name ILIKE :pattern ESCAPE '\\')
+                         ORDER BY listing.id
+                         LIMIT :pageLimit
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeIds", storeIds.toArray(UUID[]::new))
+                .param("pattern", pattern)
+                .param("at", Timestamp.from(at))
+                .param("pageLimit", limit)
+                .query(UUID.class)
+                .list());
     }
 
     /** The organization's open conflict queue, newest detection first. */
