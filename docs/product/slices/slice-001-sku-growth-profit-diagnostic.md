@@ -102,6 +102,6 @@ Minimum    = 单位成本 + Required Profit/单位 + Safety Buffer/单位 + 费�
 **未实现 / 未验证**
 
 - 未接入真实 Ozon / Wildberries：能力行均为 `UNVERIFIED`，仅合成适配器与 fixtures，无真实调用或改价。
-- 未接入真实 LLM 供应商。
+- LLM 已接入阿里云百炼 `qwen3.8-max`（本地登记方式见 `docs/development.md`）。
 - 真实 OIDC / MFA、Yandex 部署与恢复、告警、试点范围未完成；生产写入关闭。
 - 范围外：库存 / 广告 / 促销 / 内容 / 订单生产写入、财税、多租户、AI 自主执行。

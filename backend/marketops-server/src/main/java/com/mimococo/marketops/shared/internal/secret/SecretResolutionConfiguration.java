@@ -1,6 +1,7 @@
 package com.mimococo.marketops.shared.internal.secret;
 
 import com.mimococo.marketops.shared.port.SecretResolverPort;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,15 @@ public class SecretResolutionConfiguration {
 
     /** Resolution of opaque secret references for every outbound adapter. */
     @Bean
-    public SecretResolverPort secretResolverPort(SecretMountProperties properties) {
-        return new MountedSecretResolver(properties.getMountDirectory());
+    public SecretResolverPort secretResolverPort(SecretMountProperties properties,
+                                                 @Value("${marketops.environment:}") String environment) {
+        // The workstation read path gives up descriptor-relative opens; a
+        // serving environment asking for it is a misconfiguration, not a choice.
+        if (properties.isWorkstationFallback() && !"local".equals(environment)) {
+            throw new IllegalStateException(
+                    "marketops.secrets.workstation-fallback is allowed only in the local environment");
+        }
+        return new MountedSecretResolver(properties.getMountDirectory(),
+                properties.isWorkstationFallback());
     }
 }

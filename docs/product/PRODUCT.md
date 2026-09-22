@@ -57,7 +57,8 @@
 - 后端：Java/Spring Boot 模块化单体（`analyticsdecision`、`operatingfacts`、`operationsworkflow`、`availabilityrisk`、`advertisingefficiency`、`listingconversion`、`marketplaceintegration`、`aicopilot`、`identityaccess` 等），PostgreSQL + Flyway。
 - 前端：React + TypeScript 控制台，含诊断、优先级队列、建议审阅、命令时间线、可用性、广告、Listing 页面与 OIDC 登录；未使用 UI 组件库。
 - Slice 001–004 的代码均已在 main（004 经 PR #35 合入）。
-- 未接入真实 Ozon/WB API 与真实 LLM：调用规格由登记数据驱动，目前无已核验规格，只用合成数据和脚本化响应；生产写入全部关闭。
+- 未接入真实 Ozon/WB API：调用规格由登记数据驱动，目前无已核验规格，只用合成数据和脚本化响应；生产写入全部关闭。
+- LLM 已接入阿里云百炼 `qwen3.8-max`（本地经 `make ai-provider` 登记，见 `docs/development.md`）；AI 仍只做解释与建议。
 - 下一步：接入 Qwen；分阶段接入 Ozon 真实读取 API（WB 后置）；用 Ant Design 按基础组件 → 独立区块 → 全局布局重构 UI；结合真实场景完善 001–004 并发布 1.0。
 
 ## 待决问题

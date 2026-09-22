@@ -39,6 +39,12 @@ import type { ConfidenceState, ValueState } from '../state/confidence';
 /** How long the console waits before treating the backend as unreachable. */
 export const REQUEST_TIMEOUT_MS = 10_000;
 
+/**
+ * How long a model-backed request may take: the backend's 60-second model
+ * transport bound plus the time to record the outcome.
+ */
+export const AI_REQUEST_TIMEOUT_MS = 70_000;
+
 /** Header carrying the correlation identifier in both directions. */
 export const CORRELATION_HEADER = 'X-Correlation-ID';
 
@@ -1777,7 +1783,7 @@ export function requestExplanation(
     `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}?storeId=${encodeURIComponent(storeId)}&window=D30`,
     parseAiExplanation,
     { method: 'POST' },
-    70_000,
+    AI_REQUEST_TIMEOUT_MS,
   );
 }
 

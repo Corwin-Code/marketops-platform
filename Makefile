@@ -12,11 +12,14 @@ COMPOSE_PROJECT_NAME ?= marketops-local
 
 COMPOSE := docker compose --project-name "$(COMPOSE_PROJECT_NAME)" --env-file "$(ENV_LOCAL)" -f "$(COMPOSE_FILE)"
 MVNW := ./mvnw -B -ntp
+API ?= http://127.0.0.1:8080
+AI_KEY_FILE ?= $(HOME)/.marketops-platform/dashscope_api_key.txt
 
 .DEFAULT_GOAL := help
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
-        up down reset backend-run backend-build frontend-install frontend-dev frontend-build
+        up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
+        ai-provider
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -70,3 +73,7 @@ frontend-dev: require-repo-root ## Start the frontend development server
 
 frontend-build: require-repo-root ## Type-check and build the frontend
 	@cd "$(FRONTEND_DIR)" && npm run build
+
+ai-provider: require-repo-root ## Install the model key and register the Qwen provider (backend running)
+	@python3 scripts/register_ai_provider.py --api "$(API)" \
+	  $(if $(wildcard $(AI_KEY_FILE)),--install-key "$(AI_KEY_FILE)") $(if $(REACTIVATE),--reactivate)

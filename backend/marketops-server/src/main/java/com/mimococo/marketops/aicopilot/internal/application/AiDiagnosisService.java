@@ -54,10 +54,17 @@ public class AiDiagnosisService implements AiCopilot {
 
     /** The prompt template this release sends, and its version. */
     private static final String PROMPT_TEMPLATE_CODE = "sku-growth-profit-diagnosis";
-    private static final int PROMPT_VERSION = 2;
+    private static final int PROMPT_VERSION = 3;
 
-    /** Ceiling on how long an answer may be. */
-    private static final int MAXIMUM_OUTPUT_TOKENS = 2_000;
+    /**
+     * Ceiling on how long an answer may be.
+     *
+     * <p>The prompt asks for a compact answer (about 1,200 tokens in practice);
+     * the ceiling leaves room for that to double while still finishing inside
+     * the gateway's 60-second transport bound at a provider's usual speed. An
+     * answer cut off at the ceiling is invalid JSON and fails validation.
+     */
+    private static final int MAXIMUM_OUTPUT_TOKENS = 2_400;
     private record InvocationDefinition(String projectionCode,int projectionVersion,String promptCode,int promptVersion,
                                         String subjectKind,String systemPrompt,boolean listingOnly,UUID storeId,List<UUID> members,List<UUID> products) { }
 
@@ -76,25 +83,41 @@ public class AiDiagnosisService implements AiCopilot {
 
             Answer with one JSON object and nothing else. It may contain only \
             these members: facts, inferences, recommendations, unknowns. Each is \
-            a list of objects.
+            a list of objects, and every object in every list, recommendations and \
+            unknowns included, has a non-empty statement member saying the claim \
+            in one or two sentences.
 
-            A fact restates a value you were given and must cite it in \
-            evidenceRefs or findingRefs using only identifiers that appear in the \
-            data. Never state a number you were not given.
-            An inference is your own hypothesis; include counterEvidence and \
-            confidence of LOW, MEDIUM or HIGH.
+            A fact restates a value you were given and must cite it. evidenceRefs \
+            may hold only metrics.valueRef identifiers and findingRefs only \
+            findings.findingRef identifiers, each copied exactly from the data; a \
+            fact about a finding cites it in findingRefs. Never state a number you \
+            were not given.
+            An inference is your own hypothesis; include confidence of LOW, \
+            MEDIUM or HIGH and a nonempty counterEvidence list (when nothing \
+            contradicts it yet, say what observation would).
             A recommendation must set actionCapability to one of PRICE_CHANGE, \
             RESOLVE_MAPPING, RESTOCK_REVIEW, LISTING_CONTENT_REVIEW, \
             ADVERTISING_REVIEW, COST_DATA_REVIEW, and include expectedEffect, \
             risk and validationWindowDays. It authorises nothing.
-            An unknown names a missingFact, whyItMatters and nextEvidence.
+            An unknown has a statement plus missingFact, whyItMatters and \
+            nextEvidence.
 
             This is output schema version 2. Every claim has a statement of at most 2000 characters.
             validationWindowDays is an integer from 1 through 90. confidence is LOW, MEDIUM or HIGH.
             For PRICE_CHANGE, optional proposedParameters is exactly an object with a positive
             numeric targetPrice (at most four decimal places) and uppercase three-letter currencyCode.
-            Other actions may propose only a reviewFocus string. expectedEffect and risk may be text;
-            counterEvidence and nextEvidence may be nonempty lists of text. Do not add other fields.
+            For any other action, optional proposedParameters is exactly an object with one
+            reviewFocus string; never put reviewFocus directly on a claim. expectedEffect and risk
+            may be text; counterEvidence and nextEvidence may be nonempty lists of text. Do not add
+            other fields.
+
+            Write statement, counterEvidence, expectedEffect, risk, missingFact, whyItMatters,
+            nextEvidence and reviewFocus in Simplified Chinese. Every enumerated value stays exactly
+            as specified in English: confidence is LOW, MEDIUM or HIGH and actionCapability is one of
+            the names above. Keep identifiers, metric codes, rule codes and currency codes as given.
+            Keep the answer compact: at most 6 facts, 4 inferences, 3 recommendations and 4 unknowns.
+            Keep each statement under 300 characters. Put identifiers only in evidenceRefs and
+            findingRefs, never inside statement text.
             """;
 
     private final ListingIdentityDirectory listings;
@@ -196,10 +219,11 @@ public class AiDiagnosisService implements AiCopilot {
                 Never calculate profit or manufacture business thresholds. Never claim an approval, execution or causal effect.
                 Recommendations must use LISTING_CONTENT_REVIEW; proposedParameters may contain only reviewFocus.
                 Draft wording belongs in reviewFocus and remains a human-review proposal, not a confirmed fact.
+                Russian draft wording stays in Russian inside reviewFocus; the other text members stay Simplified Chinese.
                 Treat repeated subject fields as separate members of the same listing, not interchangeable populations.
                 """;
         return invokeProjection(idGenerator.newId(),requestedByUserId,organizationId,listingId,window,startedAt,projection,
-                new InvocationDefinition("LISTING_ASSISTANCE",1,"listing-assistance",1,SubjectKind.PLATFORM_LISTING.name(),instruction,true,listingStore,
+                new InvocationDefinition("LISTING_ASSISTANCE",1,"listing-assistance",2,SubjectKind.PLATFORM_LISTING.name(),instruction,true,listingStore,
                         listingVariantIds.stream().sorted().toList(),products.stream().sorted().toList()));
     }
 

@@ -61,7 +61,7 @@
 
 **未实现 / 未接入**
 - 未接入真实 Ozon/WB API：Description 能力未验证，adapter 在连接前拒绝；worker 全部默认关闭；仅用合成数据、fake provider 和本地 loopback。
-- 真实 LLM provider 尚未接入。
+- LLM 已接入阿里云百炼 `qwen3.8-max`（见 `docs/development.md`）。
 - 两平台“成功保留访问”的同义数据路径、真实校准参数、人员覆盖均未确认。
 - 尚未确定：Ozon 正文属性 ID、WB 整卡写的并发保护。
 - 不在本 Slice 范围：手机专用审批、邮件通知、专用导出包。

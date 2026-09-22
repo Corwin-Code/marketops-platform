@@ -30,4 +30,21 @@ public final class SecretMountProperties {
     public void setMountDirectory(Path mountDirectory) {
         this.mountDirectory = mountDirectory;
     }
+
+    /**
+     * Whether a workstation without descriptor-relative directory access
+     * (macOS) may read the mount by path instead. Only the local environment
+     * may turn this on; any other environment refuses to start with it.
+     */
+    private boolean workstationFallback;
+
+    /** Whether the workstation read path is allowed. */
+    public boolean isWorkstationFallback() {
+        return workstationFallback;
+    }
+
+    /** Bind the workstation read path switch. */
+    public void setWorkstationFallback(boolean workstationFallback) {
+        this.workstationFallback = workstationFallback;
+    }
 }

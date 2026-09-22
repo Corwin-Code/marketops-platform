@@ -69,6 +69,6 @@
 
 **未实现 / 不做**
 
-- 真实 Ozon/WB 广告 API 未接入，Provider 写路径结构上不可达（`UNVERIFIED`），生产写关闭；仅合成/fixture 数据。真实 LLM 未接入。
+- 真实 Ozon/WB 广告 API 未接入，Provider 写路径结构上不可达（`UNVERIFIED`），生产写关闭；仅合成/fixture 数据。LLM 已接入 `qwen3.8-max`（见 `docs/development.md`）。
 - 不做：Budget 变更、Campaign 暂停/恢复、策略切换、结构/关键词/创意写入、自动组合预算、常备自动出价、最优出价预测、因果增量结论、爬虫。
 - 待定：Outcome Policy 阈值、SLO profile、同对象再入规则，源码无默认值。

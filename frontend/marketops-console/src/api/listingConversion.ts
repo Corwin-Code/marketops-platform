@@ -1,5 +1,5 @@
 import type { ConsoleOutcome, ConsoleRequest } from './console';
-import { request } from './console';
+import { AI_REQUEST_TIMEOUT_MS, request } from './console';
 import { parseAiExplanation } from './console';
 import type { AiExplanation } from './console';
 
@@ -16,6 +16,7 @@ export function requestListingAssistance(
     `${HEALTH}/listings/${id(listingId)}/assistance`,
     parseAiExplanation,
     post({ window, purpose }),
+    AI_REQUEST_TIMEOUT_MS,
   );
 }
 export function fetchListingAssistance(
