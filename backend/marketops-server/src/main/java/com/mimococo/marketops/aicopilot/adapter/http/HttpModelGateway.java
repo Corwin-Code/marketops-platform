@@ -7,6 +7,7 @@ import com.mimococo.marketops.aicopilot.port.ModelResponse;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.URI;
 import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.nio.charset.StandardCharsets;
@@ -14,9 +15,11 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.jackson.core.JacksonException;
@@ -44,6 +47,13 @@ import tools.jackson.databind.ObjectMapper;
 public final class HttpModelGateway implements ModelGatewayPort {
 
     private static final Logger log = LoggerFactory.getLogger(HttpModelGateway.class);
+
+    /** A provider error code worth logging: an identifier, never prose. */
+    private static final Pattern PROVIDER_ERROR_CODE =
+            Pattern.compile("^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$");
+
+    /** A placeholder in a recorded request template. */
+    private static final Pattern PLACEHOLDER = Pattern.compile("\\{([A-Za-z][A-Za-z0-9_]*)}");
 
     private final OutboundHttp httpClient;
     private final AiRepository repository;
@@ -93,6 +103,14 @@ public final class HttpModelGateway implements ModelGatewayPort {
         }
         String authorization;
         try {
+            // A control character cannot travel in a header. Refused here, it is
+            // named for what it is rather than surfacing later as a transport
+            // policy refusal nobody could trace back to the credential file.
+            for (char character : secret.get()) {
+                if (Character.isISOControl(character)) {
+                    return refuse("CREDENTIAL_MALFORMED", startedAt);
+                }
+            }
             authorization = spec.authValueTemplate()
                     .replace("{value}", new String(secret.get()));
         } finally {
@@ -105,13 +123,20 @@ public final class HttpModelGateway implements ModelGatewayPort {
             long latency = Duration.between(startedAt, clock.instant()).toMillis();
             if (!response.complete()) return ModelResponse.failed(response.failureCode(), latency);
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                return refuseWithStatus(response.statusCode(), latency);
+                return refuseWithStatus(response.statusCode(), response.body(), latency);
             }
             return extractAnswer(response.body(), spec.responsePointer(), latency);
         } catch (IllegalArgumentException invalidDestination) {
             return refuse("DESTINATION_POLICY_REFUSED", startedAt);
+        } catch (InterruptedIOException deadline) {
+            return refuse("RESPONSE_DEADLINE_EXCEEDED", startedAt);
         } catch (IOException transportFailure) {
-            return refuse("TRANSPORT_FAILED", startedAt);
+            // At its deadline the transport closes the connection, which surfaces
+            // as an ordinary socket error. A failure that arrives only once the
+            // whole allowance is spent is a slow provider, not a broken link.
+            long elapsed = Duration.between(startedAt, clock.instant()).toMillis();
+            return refuse(elapsed >= spec.requestTimeoutMillis()
+                    ? "RESPONSE_DEADLINE_EXCEEDED" : "TRANSPORT_FAILED", startedAt);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
             return refuse("INTERRUPTED", startedAt);
@@ -124,24 +149,25 @@ public final class HttpModelGateway implements ModelGatewayPort {
      * <p>Substituted values are escaped for a JSON string literal, because the
      * prompt carries operating data and a value containing a quotation mark
      * would otherwise change the shape of the document being sent.
+     *
+     * <p>The template is rendered in one pass, so a substituted value that
+     * happens to contain a placeholder's text stays text.
      */
     private static String renderRequest(String template, ModelRequest request) {
         Map<String, String> values = Map.of(
-                "model", request.modelCode(),
-                "systemPrompt", request.systemPrompt(),
-                "userPrompt", request.userPrompt(),
+                "model", jsonEscape(request.modelCode()),
+                "systemPrompt", jsonEscape(request.systemPrompt()),
+                "userPrompt", jsonEscape(request.userPrompt()),
                 "maxOutputTokens", Integer.toString(request.maximumOutputTokens()));
-        var placeholders = java.util.regex.Pattern.compile("\\{([A-Za-z][A-Za-z0-9_]*)}").matcher(template);
+        var placeholders = PLACEHOLDER.matcher(template);
+        StringBuilder rendered = new StringBuilder(template.length() + request.userPrompt().length());
         while (placeholders.find()) {
-            if (!values.containsKey(placeholders.group(1))) throw new IllegalArgumentException("unknown model placeholder");
+            String value = values.get(placeholders.group(1));
+            if (value == null) throw new IllegalArgumentException("unknown model placeholder");
+            placeholders.appendReplacement(rendered, java.util.regex.Matcher.quoteReplacement(value));
         }
-        String rendered = template;
-        for (Map.Entry<String, String> value : values.entrySet()) {
-            rendered = rendered.replace("{" + value.getKey() + "}",
-                    "maxOutputTokens".equals(value.getKey())
-                            ? value.getValue() : jsonEscape(value.getValue()));
-        }
-        return rendered;
+        placeholders.appendTail(rendered);
+        return rendered.toString();
     }
 
     private ModelResponse extractAnswer(byte[] body, String pointer, long latencyMillis) {
@@ -170,14 +196,49 @@ public final class HttpModelGateway implements ModelGatewayPort {
         return ModelResponse.failed(failureCode, latency);
     }
 
-    private ModelResponse refuseWithStatus(int status, long latencyMillis) {
-        log.atWarn()
+    /**
+     * Name a provider's refusal by what an operator can do about it.
+     *
+     * <p>The classes are HTTP's own, so they hold for any provider: a rejected
+     * credential is fixed in the secret store, throttling by waiting, a rejected
+     * request by reading the provider's code, and an unavailable service by
+     * nobody here. The provider's own error code is logged when it has a plain
+     * shape; its message is not, because a message can echo the prompt.
+     */
+    private ModelResponse refuseWithStatus(int status, byte[] body, long latencyMillis) {
+        String failureCode = switch (status) {
+            case 401, 403 -> "PROVIDER_AUTH_REJECTED";
+            case 429 -> "PROVIDER_THROTTLED";
+            default -> status >= 500 ? "PROVIDER_UNAVAILABLE"
+                    : status >= 400 ? "PROVIDER_REQUEST_REJECTED" : "PROVIDER_REFUSED";
+        };
+        var event = log.atWarn()
                 .addKeyValue("event", "ai_gateway_call_refused")
-                .addKeyValue("failureCode", "PROVIDER_REFUSED")
-                .addKeyValue("statusClass", (status / 100) + "xx")
-                .addKeyValue("correlationId", CorrelationId.current())
-                .log("A model provider refused the call");
-        return ModelResponse.failed("PROVIDER_REFUSED", latencyMillis);
+                .addKeyValue("failureCode", failureCode)
+                .addKeyValue("statusCode", status)
+                .addKeyValue("correlationId", CorrelationId.current());
+        providerErrorCode(body).ifPresent(code -> event.addKeyValue("providerErrorCode", code));
+        event.log("A model provider refused the call");
+        return ModelResponse.failed(failureCode, latencyMillis);
+    }
+
+    /** The provider's own error code, when the refusal carries one with a plain shape. */
+    private Optional<String> providerErrorCode(byte[] body) {
+        try {
+            JsonNode document = com.mimococo.marketops.shared.JsonValues.read(objectMapper, body);
+            if (document == null) {
+                return Optional.empty();
+            }
+            for (String pointer : List.of("/error/code", "/code")) {
+                JsonNode code = document.at(pointer);
+                if (code.isString() && PROVIDER_ERROR_CODE.matcher(code.asString()).matches()) {
+                    return Optional.of(code.asString());
+                }
+            }
+        } catch (JacksonException | IllegalArgumentException unreadable) {
+            // An unreadable refusal is logged without the provider's code.
+        }
+        return Optional.empty();
     }
 
     private static String jsonEscape(String value) {

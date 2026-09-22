@@ -158,7 +158,7 @@ export const AI_STATE_LABELS: CodeLabels = {
   PARTIAL_OUTPUT_REJECTED: '部分输出未通过校验',
   PROVIDER_FAILED: '模型服务失败',
   PROVIDER_OUTCOME_UNKNOWN: '模型服务结果未知',
-  REFUSED: '模型拒绝回答',
+  REFUSED: '未调用模型',
 };
 
 export const AI_STATE_COLORS: Colors = {
@@ -170,13 +170,6 @@ export const AI_STATE_COLORS: Colors = {
   PROVIDER_FAILED: 'error',
   PROVIDER_OUTCOME_UNKNOWN: 'warning',
   REFUSED: 'error',
-};
-
-/** Why an AI explanation is unavailable. */
-export const AI_FAILURE_LABELS: CodeLabels = {
-  ...AI_STATE_LABELS,
-  NOTHING_TO_EXPLAIN: '没有可解释的内容',
-  PROVIDER_REFUSED: '模型服务拒绝请求',
 };
 
 /** Why a model claim was rejected by output validation. */
@@ -192,6 +185,34 @@ export const AI_REJECTION_LABELS: CodeLabels = {
   INSTRUCTION_LIKE_CONTENT: '包含类似指令的内容',
   SECRET_LIKE_CONTENT: '包含疑似密钥的内容',
   LISTING_ASSISTANCE_ACTION_OUT_OF_SCOPE: '超出商品辅助的操作范围',
+};
+
+/** Why an AI explanation is unavailable: before, during or after the model call. */
+export const AI_FAILURE_LABELS: CodeLabels = {
+  ...AI_STATE_LABELS,
+  ...AI_REJECTION_LABELS,
+  NOTHING_TO_EXPLAIN: '没有可解释的内容',
+  NO_ELIGIBLE_PROVIDER: '尚未配置可用的模型服务',
+  LISTING_INPUT_EXCEEDS_GATEWAY_BOUND: '输入内容超出上限',
+  PROVIDER_NOT_ELIGIBLE: '模型服务未核验或已停用',
+  CREDENTIAL_UNRESOLVABLE: '找不到模型服务的密钥',
+  CREDENTIAL_MALFORMED: '模型服务密钥格式不正确',
+  DESTINATION_POLICY_REFUSED: '出站策略拒绝了调用（白名单、域名解析或请求模板）',
+  TRANSPORT_FAILED: '与模型服务的连接或传输失败',
+  INTERRUPTED: '调用被中断',
+  PROVIDER_CALL_FAILED: '调用模型服务时出错',
+  PROVIDER_AUTH_REJECTED: '模型服务拒绝了密钥',
+  PROVIDER_THROTTLED: '模型服务限流，请稍后再试',
+  PROVIDER_REQUEST_REJECTED: '模型服务拒绝了请求内容',
+  PROVIDER_UNAVAILABLE: '模型服务暂时不可用',
+  PROVIDER_REFUSED: '模型服务拒绝请求',
+  RESPONSE_DEADLINE_EXCEEDED: '模型服务响应超时',
+  RESPONSE_INCOMPLETE: '模型返回不完整',
+  RESPONSE_LIMIT_EXCEEDED: '模型返回超出大小上限',
+  RESPONSE_NOT_READABLE: '模型返回无法解析',
+  ANSWER_NOT_AT_RECORDED_POINTER: '模型返回中找不到答案',
+  NO_CLAIM_PRODUCED: '模型没有给出任何结论',
+  WORKER_INTERRUPTED_OR_DEADLINE_EXPIRED: '调用超时或中断，结果未知',
 };
 
 /** Colours of the four claim kinds. */

@@ -97,7 +97,7 @@ Recommendation → 确定性 Guardrail → Impact Preview → Approval / 有界 
   - 模型自行计算的结果标为 `AI_DERIVED_EXPLORATORY`，不能驱动高风险执行。
 - **不掌握授权**：AI 不持有审批、幂等键、Outbox、Credential 或 Kill Switch，它的建议仍要经过确定性 Gate 和 Approval。
 - **审计**：调用写入 `ops.ai_invocation` / `ai_output_claim` / `ai_claim_evidence`。provider 可以停用，停用后退回确定性路径。
-- **现状**：`HttpModelGateway` 由 `ops.ai_provider` 中的记录驱动，但不预置任何 provider。**真实 LLM 尚未接入。**
+- **现状**：`HttpModelGateway` 由 `ops.ai_provider` 中的记录驱动，不在迁移里预置 provider。已接入阿里云百炼 OpenAI 兼容接口（`qwen3.8-max`，关闭深度思考、JSON 模式），由 `make ai-provider` 经维护接口登记；key 通过 `secret-ref://ai/dashscope-api-key` 从 Secret 目录解析，出站域名受 `marketops.outbound.destinations` 白名单约束。本地步骤见 `docs/development.md`。
 
 ## 平台适配器
 

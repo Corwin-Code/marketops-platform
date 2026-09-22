@@ -5,7 +5,9 @@ import type { AiExplanation, ConsoleFailure, ConsoleRequest } from '../api/conso
 import { fetchListingAssistance, requestListingAssistance } from '../api/listingConversion';
 import type { ListingAssistancePurpose } from '../api/listingConversion';
 import { AiClaimGroups } from '../diagnosis/AiExplanationPanel';
+import { codeLabel } from '../i18n/labels';
 import { t } from '../i18n/zh/listing';
+import { AI_FAILURE_LABELS } from '../i18n/zh/pricing';
 import { LoadingState, SectionCard, TechnicalDetails } from '../ui';
 import { Code, Hint, IdText, ListingProblem, Stack, codeOptions } from './ListingCommon';
 
@@ -152,7 +154,13 @@ export function ListingAssistancePanel({
                 {output.state === 'PARTIAL_OUTPUT_REJECTED' ? (
                   <Alert role="alert" type="warning" showIcon title={t('assistancePartial')} />
                 ) : output.degraded ? (
-                  <Alert role="alert" type="error" showIcon title={t('assistanceUnavailable')} />
+                  <Alert
+                    role="alert"
+                    type="error"
+                    showIcon
+                    title={t('assistanceUnavailable')}
+                    description={codeLabel(AI_FAILURE_LABELS, output.failureCode ?? output.state)}
+                  />
                 ) : output.state !== 'SUCCEEDED' ? (
                   <Alert role="status" type="info" showIcon title={t('assistancePending')} />
                 ) : (

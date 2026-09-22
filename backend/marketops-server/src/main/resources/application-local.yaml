@@ -13,6 +13,28 @@ marketops:
   web:
     cors:
       allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
+  # Secrets are read from a directory outside the repository. The model key
+  # lives at <mount>/ai/dashscope-api-key; `make ai-provider` installs it.
+  secrets:
+    mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY:${user.home}/.marketops-platform/secrets}
+    # macOS has no descriptor-relative directory walk; the workstation reads the
+    # mount by path instead, and only from owner-only directories.
+    workstation-fallback: true
+  # The one model provider the workstation may reach: Alibaba Cloud Model
+  # Studio's OpenAI-compatible chat endpoint. The host is the operator's own
+  # workspace domain (MARKETOPS_AI_DASHSCOPE_HOST in .env.local); the shared
+  # Beijing domain is the fallback. The provider and its model still have to be
+  # registered before anything is called (`make ai-provider`).
+  outbound:
+    destinations:
+      - key: ai:dashscope
+        host: ${MARKETOPS_AI_DASHSCOPE_HOST:dashscope.aliyuncs.com}
+        path-prefix: /compatible-mode/v1/chat/completions
+        methods: [POST]
+        headers: [content-type, accept, authorization]
+        max-request-bytes: 262144
+        max-response-bytes: 131072
+        timeout-millis: 60000
 
 logging:
   pattern:

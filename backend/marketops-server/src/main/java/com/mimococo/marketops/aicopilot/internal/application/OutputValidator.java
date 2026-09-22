@@ -81,6 +81,18 @@ public class OutputValidator {
                     + "execute the following|run the following|approve (this|the) "
                     + "(change|command)|bypass|override the)\\b");
 
+    /**
+     * The same directives written in Chinese, the language answers are now
+     * requested in. Only phrasing aimed at a model or a system is matched:
+     * ordinary analysis ("库存覆盖天数", "买家忽略了上面的尺码说明") must pass, so
+     * bare verbs and everyday nouns such as 说明 or 要求 are not patterns here. Chinese has no word boundaries, so a short gap of
+     * other characters is allowed inside a phrase instead.
+     */
+    private static final Pattern INSTRUCTION_SHAPED_ZH = Pattern.compile(
+            "(忽略|无视|忽视|不要理会)[^。，,.；;]{0,6}(之前|以上|上面|上述|前面|先前|此前|前述|所有)"
+                    + "[^。，,.；;]{0,6}(指令|指示|系统提示|提示词)"
+                    + "|系统提示词|你现在是|以下(指令|命令|代码)|批准(这个|该|此)(变更|命令)");
+
     private final ObjectMapper objectMapper;
 
     OutputValidator(ObjectMapper objectMapper) {
@@ -332,7 +344,8 @@ public class OutputValidator {
     }
 
     private static boolean containsInstruction(JsonNode node) {
-        if (node.isString()) return INSTRUCTION_SHAPED.matcher(node.asString()).find();
+        if (node.isString()) return INSTRUCTION_SHAPED.matcher(node.asString()).find()
+                || INSTRUCTION_SHAPED_ZH.matcher(node.asString()).find();
         for (JsonNode child : node) if (containsInstruction(child)) return true;
         return false;
     }

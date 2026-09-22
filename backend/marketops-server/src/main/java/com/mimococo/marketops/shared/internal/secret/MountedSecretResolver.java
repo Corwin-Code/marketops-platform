@@ -14,6 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.SecureDirectoryStream;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,10 +51,21 @@ public final class MountedSecretResolver implements SecretResolverPort {
     private static final int MAXIMUM_VALUE_BYTES = 16 * 1024;
 
     private final Path mountDirectory;
+    private final boolean workstationFallback;
 
     public MountedSecretResolver(Path mountDirectory) {
+        this(mountDirectory, false);
+    }
+
+    /**
+     * @param mountDirectory where the secret manager delivers values, or {@code null}
+     * @param workstationFallback whether a platform without descriptor-relative
+     *        directory access may read by path; see {@link #readByPath}
+     */
+    public MountedSecretResolver(Path mountDirectory, boolean workstationFallback) {
         this.mountDirectory = mountDirectory == null
                 ? null : mountDirectory.toAbsolutePath().normalize();
+        this.workstationFallback = workstationFallback;
     }
 
     @Override
@@ -66,14 +80,71 @@ public final class MountedSecretResolver implements SecretResolverPort {
         // Walk from the filesystem root using directory descriptors. A lexical
         // startsWith check and a final NOFOLLOW are insufficient: any parent,
         // including the configured mount, could otherwise redirect the read.
-        try (var root = Files.newDirectoryStream(resolved.getRoot())) {
-            if (!(root instanceof SecureDirectoryStream<Path> directory)) {
-                return refuse("secret_mount_unsupported");
+        try {
+            try (var root = Files.newDirectoryStream(resolved.getRoot())) {
+                if (root instanceof SecureDirectoryStream<Path> directory) {
+                    return readRelative(directory, resolved.getRoot().relativize(resolved));
+                }
             }
-            return readRelative(directory, resolved.getRoot().relativize(resolved));
+            return workstationFallback ? readByPath(resolved) : refuse("secret_mount_unsupported");
         } catch (IOException | SecurityException | UnsupportedOperationException unreadable) {
             return refuse("secret_value_unreadable");
         }
+    }
+
+    /**
+     * Read a value on a platform with no descriptor-relative directory access
+     * (macOS). Only the local environment can enable this.
+     *
+     * <p>Without descriptor-relative opens a parent directory could be swapped
+     * between the check and the read, so the walk accepts only directories that
+     * nobody but their owner can change: the mount must be its own canonical
+     * path, every directory from the mount down must be a real directory that
+     * neither group nor others can write, and the value must be a regular file
+     * that is not a link and is still the same file after it was opened.
+     */
+    private Optional<char[]> readByPath(Path resolved) throws IOException {
+        if (!mountDirectory.toRealPath().equals(mountDirectory)) {
+            return refuse("secret_mount_not_canonical");
+        }
+        Path relative = mountDirectory.relativize(resolved);
+        Path directory = mountDirectory;
+        if (!ownerOnlyDirectory(directory)) {
+            return refuse("secret_mount_not_private");
+        }
+        for (int index = 0; index < relative.getNameCount() - 1; index++) {
+            directory = directory.resolve(relative.getName(index));
+            if (!ownerOnlyDirectory(directory)) {
+                return refuse("secret_mount_not_private");
+            }
+        }
+        Path file = directory.resolve(relative.getFileName());
+        BasicFileAttributes before = Files.readAttributes(file, BasicFileAttributes.class,
+                LinkOption.NOFOLLOW_LINKS);
+        if (!before.isRegularFile()) {
+            return refuse("secret_reference_not_regular");
+        }
+        if (before.size() > MAXIMUM_VALUE_BYTES) {
+            return refuse("secret_value_oversized");
+        }
+        try (var channel = Files.newByteChannel(file,
+                Set.of(StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS))) {
+            BasicFileAttributes after = Files.readAttributes(file, BasicFileAttributes.class,
+                    LinkOption.NOFOLLOW_LINKS);
+            if (before.fileKey() == null || !before.fileKey().equals(after.fileKey())) {
+                return refuse("secret_reference_changed");
+            }
+            return readValue(channel);
+        }
+    }
+
+    private static boolean ownerOnlyDirectory(Path directory) throws IOException {
+        PosixFileAttributes attributes = Files.readAttributes(directory,
+                PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        Set<PosixFilePermission> permissions = attributes.permissions();
+        return attributes.isDirectory()
+                && !permissions.contains(PosixFilePermission.GROUP_WRITE)
+                && !permissions.contains(PosixFilePermission.OTHERS_WRITE);
     }
 
     private static Optional<char[]> readRelative(SecureDirectoryStream<Path> directory,
@@ -124,9 +195,20 @@ public final class MountedSecretResolver implements SecretResolverPort {
             if (decoded.isEmpty() || decoded.chars().allMatch(Character::isWhitespace)) {
                 return refuse("secret_value_empty");
             }
-            // No String copy and no strip(): whitespace may be part of a secret.
-            char[] value = new char[decoded.remaining()];
-            decoded.get(value);
+            // One trailing line terminator is how `echo`, editors and most secret
+            // tooling end a file, and it is never part of a credential; left in,
+            // it would make every header built from the value invalid. Only that
+            // one is dropped. No String copy and no strip(): any other whitespace
+            // may be part of a secret.
+            int length = decoded.remaining();
+            if (decoded.get(decoded.position() + length - 1) == '\n') {
+                length--;
+                if (length > 0 && decoded.get(decoded.position() + length - 1) == '\r') {
+                    length--;
+                }
+            }
+            char[] value = new char[length];
+            decoded.get(value, 0, length);
             return Optional.of(value);
         } finally {
             Arrays.fill(raw, (byte) 0);
@@ -148,6 +230,7 @@ public final class MountedSecretResolver implements SecretResolverPort {
     public String toString() {
         // The mount path can name a platform detail, so the representation says
         // only whether a mount is configured.
-        return "MountedSecretResolver[configured=" + Objects.nonNull(mountDirectory) + "]";
+        return "MountedSecretResolver[configured=" + Objects.nonNull(mountDirectory)
+                + ",workstationFallback=" + workstationFallback + "]";
     }
 }

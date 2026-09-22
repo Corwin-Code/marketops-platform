@@ -47,8 +47,15 @@ export interface SubjectDiagnosisProps {
 const CODE_LIST = /^[A-Z][A-Z0-9_]*(?:,[A-Z][A-Z0-9_]*)*$/;
 
 /** One recorded detail value: codes become tags, decimals are grouped, text stays as sent. */
-function DetailValue({ value }: { readonly value: string }): React.JSX.Element {
-  if (CODE_LIST.test(value)) {
+function DetailValue({
+  name,
+  value,
+}: {
+  readonly name: string;
+  readonly value: string;
+}): React.JSX.Element {
+  // A currency is an ISO code, not a diagnosis code: shown as written.
+  if (CODE_LIST.test(value) && name !== 'currencyCode') {
     return (
       <Space size={[4, 4]} wrap>
         {value.split(',').map((code) => (
@@ -190,7 +197,7 @@ export function SubjectDiagnosisView({
                 <Typography.Text type="secondary">
                   {codeLabel(FINDING_DETAIL_LABELS, name)}：
                 </Typography.Text>
-                <DetailValue value={value} />
+                <DetailValue name={name} value={value} />
               </Flex>
             ))}
           </Flex>
