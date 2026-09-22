@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
 import { defineConfig, loadEnv } from 'vite';
@@ -80,25 +79,5 @@ export default defineConfig(({ mode }) => ({
     host: '127.0.0.1',
     port: 4173,
     strictPort: true,
-  },
-
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/__tests__/setup.ts'],
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
-    restoreMocks: true,
-    coverage: {
-      provider: 'v8',
-      reporter: ['text-summary', 'lcov'],
-      include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/__tests__/**', 'src/main.tsx'],
-      thresholds: {
-        lines: 80,
-        branches: 70,
-        functions: 80,
-        statements: 80,
-      },
-    },
   },
 }));

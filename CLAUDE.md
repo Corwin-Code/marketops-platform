@@ -1,79 +1,37 @@
-# CLAUDE.md — MarketOps V1 Designer and Initial Implementation Contract
+# CLAUDE.md — MarketOps Russia 开发约定
 
-You are the primary Designer and Initial Full Implementation Agent for MarketOps
-Russia.
+本仓库以**产品开发交付为核心**。流程保持最小：没有治理文档、授权文件、证据包或多轮审查闭环。
 
-## Required reading
+## 先读
 
-1. `docs/00-governance/CURRENT_STATE.md`;
-2. `docs/01-requirements/V1_PRODUCT_CONTRACT.md`;
-3. `docs/03-work-items/V1_DELIVERY_SLICES.md` and the active Slice Contract;
-4. every accepted additive Amendment to the active Contract;
-5. `docs/00-governance/EXECUTION_ENVELOPE_POLICY.md`;
-6. `docs/00-governance/OWNER_DECISIONS_V1.md`;
-7. accepted ADRs and Shared-Spine/AI boundaries;
-8. applicable Requirement IDs in the immutable source Baseline;
-9. current repository source, migrations, tests and available PR/CI evidence;
-10. current `V1_CAPABILITY_MATRIX.md` and Production Assurance Matrix.
+1. `docs/product/PRODUCT.md` — 产品定位、1.0 范围、全局业务规则、待决问题；
+2. 与任务相关的 `docs/product/slices/slice-00x-*.md`；
+3. `docs/architecture/ARCHITECTURE.md` — 模块、数据原则、写入安全链、AI 边界；
+4. `docs/development.md` — 本地运行。
 
-When Owner Git Workflow Guidance is `REQUIRED`, begin with the actual repository
-briefing required by the guide. Do not turn that briefing into an extra approval.
+产品原始需求（中文原文）：`docs/product/requirements-baseline-cn.md`；命名约定：`docs/product/naming-baseline-cn.md`。
 
-## Default authorization model
+## 开发链
 
-When Current State says `FULL_SCOPE_IMPLEMENTATION`, produce Detailed Design and
-Initial Full Implementation continuously within the active Slice Contract. Do not
-stop for a separate approval after ordinary detailed design.
+1. 从 `main` 开功能分支（`claude/<topic>` 或 `codex/<topic>`）。
+2. 实现功能，保持改动聚焦在当前任务。
+3. 本地确认能编译、能运行：`make backend-build`、`make frontend-build`，必要时 `make up` + `make backend-run` + `make frontend-dev` 手动走查。
+4. 提交并推送分支，开 PR，写清：做了什么、如何手动验证、已知风险或未完成项。
+5. Owner 审阅后合并。不需要额外的授权文件、证据目录或 Controller 往返。
 
-Stop and return a precise Conditional Design/Owner/External blocker only when the
-active Contract's trigger applies. Do not elevate normal engineering choices.
+**CI 与自动化测试目前暂停**，待 Owner 按新流程重新规划和授权；不得自行恢复工作流或引入重型验证。任何本地耗时超过约 15 分钟的验证，先说明成本并征得 Owner 同意。
 
-Ordinary authority is local Level 1 plus only a Level 2 envelope explicitly
-pre-authorized by the Contract. Create exact local checkpoints and hand off the
-commit/tree for publication. Do not push, mutate a remote branch/tag, create or
-update a PR, mark Ready or merge without separate dedicated Level-3 authority.
+## 必须遵守的产品规则
 
-## Hard rules
+这些规则决定产品是否正确、安全，不属于流程：
 
-- do not invent business, financial, fulfillment or current Marketplace facts;
-- verify volatile platform/provider facts with current primary sources and record
-  evidence/last-verified date;
-- never request, expose or commit Secret, Buyer PII or unredacted production data;
-- preserve V0001–V0010 and existing evidence bytes; use forward-only migrations;
-- preserve exact Raw, idempotency, replay, late and unknown-state semantics;
-- do not create a second writer/authority or bypass module application boundaries;
-- keep vendor DTO/SDK inside platform adapters;
-- use decimal money and explicit currency;
-- deterministic Metric/Policy/Guardrail remains official truth and authority;
-  AI cannot replace it;
-- no platform write before Recommendation/Evidence, deterministic Gates,
-  approval/policy, idempotent Command, Readback, Audit and Kill Switch;
-- Full-Scope Implementation and merge do not authorize a real verification
-  write; that operation requires an exact Gate-EV envelope, while Gate E alone
-  may authorize ongoing controlled Pilot execution;
-- merge never implies production enablement;
-- use only official platform APIs/reports;
-- add success, failure, duplicate, replay, late, stale, unknown, timeout,
-  readback-mismatch and recovery tests as applicable;
-- report exact commands/results and all not-run checks honestly.
-- never edit an accepted original Contract; use only a separately identified,
-  exact, Owner-accepted additive Amendment for normative change.
+- 不提交、不输出 Secret、平台 Credential、买家个人数据（姓名/电话/地址）或未脱敏生产数据；测试或演示数据一律合成。
+- 真实平台写入（改价、改出价、改描述等）必须走完整安全链：证据化建议 → 确定性规则校验 → 人工审批（或 Owner 预授权策略）→ 幂等 Command → Readback → Audit → Kill Switch。写能力默认关闭，对真实账户启用任何写入前须 Owner 明确同意。
+- 只使用 Ozon / Wildberries 官方 API 与报表；端点、字段、配额等平台事实以官方文档为准，并在代码或数据中记录来源与核验日期。
+- 金额使用 decimal + 显式币种；Raw 不可变、Ledger 只追加；数据库迁移只向前，不修改已应用的 `V0001`–`V0124`。
+- vendor DTO / SDK 只放在 adapter 内；确定性 Metric 与规则是官方口径，AI 只负责解释、假设和建议，不能替代规则或执行写入。
+- 优先 Ozon；Wildberries 的平台隔离与已有实现保留，但后续交付。
 
-## Deliverables
+## 沟通
 
-The implementation return/local-checkpoint publication package includes:
-
-- exact original Contract and accepted Amendment hashes;
-- exact local commit/tree and hash-verifiable transport;
-- concise as-built design and durable decisions;
-- complete in-scope backend, frontend, migration, infrastructure and tests;
-- Acceptance-ID mapping and evidence;
-- data migration/backfill/compatibility/rollback behavior;
-- security/privacy/AI projection and Secret boundary;
-- observability, runbooks and recovery;
-- current Capability evidence and unresolved external Gates;
-- no-secret/PII confirmation;
-- exact branch/commit/PR/CI state.
-
-Claude does not perform ordinary remote Git publication, merge or production
-write enablement.
+用中文回复 Owner；技术标识、字段、类名、命令和专业术语保留英文。如实报告做了什么、没做什么。

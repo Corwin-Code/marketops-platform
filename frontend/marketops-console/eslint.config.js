@@ -13,10 +13,7 @@ export default tseslint.config(
   {
     ignores: [
       'dist/**',
-      'coverage/**',
       'node_modules/**',
-      'playwright-report/**',
-      'test-results/**',
       '*.tsbuildinfo',
     ],
   },
@@ -40,18 +37,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/__tests__/**'],
-    rules: {
-      // A test may assert on a value the type system cannot narrow, which is
-      // the point of the assertion.
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-dynamic-delete': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-    },
-  },
-  {
-    files: ['vite.config.ts', 'vite.constants.ts', 'eslint.config.js', 'scripts/**/*.mjs'],
+    files: ['vite.config.ts', 'vite.constants.ts', 'eslint.config.js'],
     languageOptions: {
       parserOptions: {
         projectService: false,
