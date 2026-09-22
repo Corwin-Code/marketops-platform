@@ -9,7 +9,13 @@ import type {
   ExposureAllowance,
 } from '../api/listingAllowances';
 import { fetchAllowances, publishAllowance, retireAllowance } from '../api/listingAllowances';
-import { formatDecimal, formatMoney, formatPercent } from '../format';
+import {
+  formatDecimal,
+  formatMoney,
+  formatPercent,
+  formatStoreTime,
+  STORE_TIMEZONE_LABEL,
+} from '../format';
 import { dialog } from '../i18n/zh/common';
 import { allowanceText as text } from '../i18n/zh/listingAllowances';
 import {
@@ -87,6 +93,22 @@ function amount(value: string | null | undefined, unit: string): string {
 /** A form rule's answer: resolved when there is no problem, rejected with it otherwise. */
 function settle(problem: string | undefined): Promise<void> {
   return problem === undefined ? Promise.resolve() : Promise.reject(new Error(problem));
+}
+
+/** An accepted reserve as the launch check reads it (mirrors ops.lc_allowance_projection), or undefined. */
+function acceptedReserve(value: string | null): bigint | undefined {
+  return value !== null && value.length <= 19 && /^\d+(\.\d{1,4})?$/.test(value)
+    ? scaled(value)
+    : undefined;
+}
+
+// ------------------------------------------------------------------ time
+
+/** Milliseconds since the epoch, or undefined when absent or unreadable. */
+function epoch(iso: string | null | undefined): number | undefined {
+  if (iso === null || iso === undefined || iso.trim() === '') return undefined;
+  const value = Date.parse(iso);
+  return Number.isNaN(value) ? undefined : value;
 }
 
 // ------------------------------------------------------------------ scope
@@ -273,6 +295,35 @@ function AxisSection({
   const history = allowances.filter(
     (row) => row.lifecycle === 'ENDED' || row.lifecycle === 'RETIRED',
   );
+
+  /**
+   * What retiring a row does (mirrors ops.retire_lc_exposure_allowance): a current
+   * row ends now; a scheduled row is cancelled, and the live row of its scope that
+   * ends exactly where it starts takes over its range.
+   */
+  const retireConsequence = (row: ExposureAllowance): string => {
+    if (row.lifecycle !== 'SCHEDULED') return text.retireConsequence;
+    const starts = epoch(row.effectiveFrom);
+    const restored =
+      starts === undefined
+        ? undefined
+        : live.find(
+            (other) =>
+              other.id !== row.id &&
+              other.scopeKind === row.scopeKind &&
+              other.platformCode === row.platformCode &&
+              other.storeId === row.storeId &&
+              other.effectiveTo !== null &&
+              epoch(other.effectiveTo) === starts,
+          );
+    if (restored === undefined) return text.retireScheduledConsequence;
+    return text.retireScheduledRestores(
+      restored.version,
+      row.effectiveTo === null
+        ? undefined
+        : `${formatStoreTime(row.effectiveTo)}（${STORE_TIMEZONE_LABEL}）`,
+    );
+  };
   const scopeColumn: TableColumnsType<ExposureAllowance>[number] = {
     key: 'scope',
     title: text.columnScope,
@@ -435,7 +486,7 @@ function AxisSection({
             disabledReason: text.retireDisabled,
           }}
           title={text.retireTitle}
-          consequence={text.retireConsequence}
+          consequence={retireConsequence(row)}
           summary={
             <Typography.Text type="secondary">
               {codeText('allowanceAxis', row.axisCode)} · {scopeName(row)} ·{' '}
@@ -633,6 +684,7 @@ function PublishFields({
   const axisCode = Form.useWatch('axisCode', form);
   const limitValue = Form.useWatch('limitValue', form);
   const reserveValue = Form.useWatch('reserveValue', form);
+  const effectiveFrom = Form.useWatch('effectiveFrom', form);
 
   const publishableStores = overview.stores.filter((store) => store.canPublish);
   const unit = unitFor(overview, axisCode, scopeKind, storeId, platformCode);
@@ -791,12 +843,21 @@ function PublishFields({
         unit={unit}
         limitValue={limitValue}
         reserveValue={reserveValue}
+        effectiveFrom={effectiveFrom}
       />
     </>
   );
 }
 
-/** What the new version replaces, the headroom it leaves, and any reserve below an accepted policy. */
+/**
+ * What publishing does to the live versions of the chosen scope and axis, the
+ * headroom the new one leaves, and any accepted reserve it falls short of.
+ *
+ * Mirrors ops.publish_lc_exposure_allowance: the new version starts at the chosen
+ * time, or now when none (or an earlier one) is chosen. A live version starting at
+ * or after that instant is retired; the one in force at that instant ends there and
+ * stays in force until then, even a scheduled one that has not started yet.
+ */
 function PublishPreview({
   overview,
   scopeKind,
@@ -806,6 +867,7 @@ function PublishPreview({
   unit,
   limitValue,
   reserveValue,
+  effectiveFrom,
 }: {
   readonly overview: AllowanceOverview;
   readonly scopeKind: ScopeKind | undefined;
@@ -815,39 +877,90 @@ function PublishPreview({
   readonly unit: string | undefined;
   readonly limitValue: string | undefined;
   readonly reserveValue: string | undefined;
+  readonly effectiveFrom: string | undefined;
 }): React.JSX.Element | null {
   if (scopeKind === undefined || axisCode === undefined) return null;
   if (scopeKind === 'STORE' && storeId === undefined) return null;
   if (scopeKind === 'PLATFORM' && platformCode === undefined) return null;
 
-  const sameRows = overview.allowances.filter(
-    (row) => row.axisCode === axisCode && sameScope(row, scopeKind, storeId, platformCode),
+  const live = overview.allowances.filter(
+    (row) =>
+      row.axisCode === axisCode &&
+      sameScope(row, scopeKind, storeId, platformCode) &&
+      (row.lifecycle === 'CURRENT' || row.lifecycle === 'SCHEDULED'),
   );
-  const current = sameRows.find((row) => row.lifecycle === 'CURRENT');
-  const scheduled = sameRows.some((row) => row.lifecycle === 'SCHEDULED');
+  const current = live.find((row) => row.lifecycle === 'CURRENT');
 
+  const asOf = epoch(overview.asOf) ?? Date.now();
+  const chosen = epoch(effectiveFrom);
+  const later = chosen !== undefined && chosen > asOf;
+  const starts = chosen !== undefined && later ? chosen : asOf;
+  const at = formatStoreTime(effectiveFrom);
+  const replaced = live.filter((row) => (epoch(row.effectiveFrom) ?? asOf) >= starts);
+  const inForce = live.find((row) => {
+    const from = epoch(row.effectiveFrom) ?? asOf;
+    const to = epoch(row.effectiveTo);
+    return from < starts && (to === undefined || to > starts);
+  });
+  let handover: string | undefined;
+  if (inForce?.lifecycle === 'SCHEDULED') {
+    handover = text.previewScheduledKept(
+      inForce.version,
+      formatStoreTime(inForce.effectiveFrom),
+      at,
+    );
+  } else if (inForce !== undefined) {
+    handover = later
+      ? text.previewEndsAt(inForce.version, at)
+      : text.previewEndsNow(inForce.version);
+  }
+
+  // Occupancy belongs to the scope, not to a row: the new version inherits it.
+  const occupancy = overview.scopeOccupancy.find(
+    (entry) =>
+      entry.axisCode === axisCode &&
+      entry.scopeKind === scopeKind &&
+      (scopeKind !== 'STORE' || entry.storeId === storeId) &&
+      (scopeKind !== 'PLATFORM' || entry.platformCode === platformCode),
+  );
   const limit = scaled(limitValue);
   const reserve = scaled(reserveValue);
-  const occupied = scaled(current?.occupiedValue ?? '0') ?? 0n;
+  const occupied =
+    occupancy !== undefined && occupancy.unitCode === unit
+      ? scaled(occupancy.occupiedValue)
+      : undefined;
   const headroom =
-    limit !== undefined && reserve !== undefined ? limit - reserve - occupied : undefined;
+    limit !== undefined && reserve !== undefined && occupied !== undefined
+      ? limit - reserve - occupied
+      : undefined;
+  let headroomLine: string | undefined;
+  if (limit !== undefined && reserve !== undefined && unit !== undefined) {
+    headroomLine =
+      headroom === undefined || occupied === undefined
+        ? text.previewOccupancyUnknown
+        : text.previewHeadroom(amount(unscaled(headroom), unit), amount(unscaled(occupied), unit));
+  }
 
   const storePlatform =
     scopeKind === 'STORE'
       ? (overview.stores.find((store) => store.storeId === storeId)?.platformCode ?? null)
       : null;
+  const governing = overview.reservePolicies.filter(
+    (policy) =>
+      policy.axisCode === axisCode &&
+      governs(policy, scopeKind, storeId, platformCode, storePlatform),
+  );
+  const unreadable = governing.filter(
+    (policy) => acceptedReserve(policy.reserveValue) === undefined,
+  );
   const below =
     reserve === undefined
       ? []
-      : overview.reservePolicies.filter((policy) => {
-          const accepted = scaled(policy.reserveValue);
-          return (
-            policy.axisCode === axisCode &&
-            accepted !== undefined &&
-            reserve < accepted &&
-            governs(policy, scopeKind, storeId, platformCode, storePlatform)
-          );
+      : governing.filter((policy) => {
+          const accepted = acceptedReserve(policy.reserveValue);
+          return accepted !== undefined && reserve < accepted;
         });
+  const purpose = (code: string): string => text.purposeLabels[code] ?? code;
 
   return (
     <Flex vertical gap={8}>
@@ -860,11 +973,21 @@ function PublishPreview({
             <span>
               {current === undefined ? text.previewNone : text.previewCurrent(current.version)}
             </span>
-            {scheduled && <span>{text.previewScheduled}</span>}
-            {headroom !== undefined && unit !== undefined && (
-              <span>{text.previewHeadroom(amount(unscaled(headroom), unit))}</span>
-            )}
+            <span>{later ? text.previewStartsAt(at) : text.previewStartsNow}</span>
+            {handover !== undefined && <span>{handover}</span>}
+            {replaced.map((row) => (
+              <span key={row.id}>
+                {text.previewReplaced(row.version, formatStoreTime(row.effectiveFrom))}
+              </span>
+            ))}
+            {headroomLine !== undefined && <span>{headroomLine}</span>}
+            {occupancy?.unresolved === true && <span>{text.previewOccupancyUnresolved}</span>}
             {headroom !== undefined && headroom <= 0n && <span>{text.previewNegative}</span>}
+            {(later || replaced.length > 0) && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {text.previewTimesIn(STORE_TIMEZONE_LABEL)}
+              </Typography.Text>
+            )}
           </Flex>
         }
       />
@@ -878,9 +1001,23 @@ function PublishPreview({
               .map((policy) =>
                 text.reserveWarningItem(
                   policy.packageCode,
-                  text.purposeLabels[policy.purposeCode] ?? policy.purposeCode,
+                  purpose(policy.purposeCode),
                   amount(policy.reserveValue, unit ?? 'COUNT'),
                 ),
+              )
+              .join('、'),
+          )}
+        />
+      )}
+      {unreadable.length > 0 && (
+        <Alert
+          type="warning"
+          showIcon
+          title={text.reserveUnresolvedTitle}
+          description={text.reserveUnresolved(
+            unreadable
+              .map((policy) =>
+                text.reserveUnresolvedItem(policy.packageCode, purpose(policy.purposeCode)),
               )
               .join('、'),
           )}

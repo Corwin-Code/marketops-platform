@@ -57,18 +57,40 @@ export const allowanceText = {
   previewTitle: '发布后',
   previewCurrent: (version: number) => `当前生效的是第 ${String(version)} 版`,
   previewNone: '该范围、该维度目前没有生效中的额度',
-  previewScheduled: '已排期但尚未生效的版本会被新版本取代并停用',
-  previewHeadroom: (headroom: string) => `按当前占用，发布后可用额度为 ${headroom}`,
-  previewNegative: '发布后可用额度为负数，新的启动会在该维度被阻止，直到有占用释放',
+  previewStartsNow: '新版本在发布时立即生效',
+  previewStartsAt: (at: string) => `新版本将于 ${at} 起生效`,
+  previewEndsNow: (version: number) => `第 ${String(version)} 版在新版本发布时结束`,
+  previewEndsAt: (version: number, at: string) =>
+    `第 ${String(version)} 版将于 ${at} 结束，由新版本接替`,
+  previewScheduledKept: (version: number, from: string, until: string) =>
+    `已排期的第 ${String(version)} 版不会停用：它仍会在 ${from} 至 ${until} 生效，之后由新版本接替。如果不希望它生效，请先停用它`,
+  previewReplaced: (version: number, from: string) =>
+    `已排期的第 ${String(version)} 版（原定 ${from} 起生效）会被新版本取代并停用`,
+  previewTimesIn: (zone: string) => `以上时间均为${zone}`,
+  previewHeadroom: (headroom: string, occupied: string) =>
+    `该范围当前已占用 ${occupied}（新版本同样计入），按当前占用，发布后可用额度为 ${headroom}`,
+  previewOccupancyUnknown:
+    '无法预览该范围当前的占用：范围内已有的占用都会计入新版本，发布后以列表中的可用额度为准',
+  previewOccupancyUnresolved:
+    '该范围部分占用无法完全确认，启动检查会把该维度判为"缺少合格依据"，与本次发布的数值无关',
+  previewNegative: '发布后可用额度为零或负数，新的启动会在该维度被阻止，直到有占用释放',
   reserveWarningTitle: '处置余量低于已接受的校准要求',
   reserveWarning: (packages: string) =>
     `以下校准包要求该维度的处置余量更高：${packages}。受其约束的启动会因"处置余量低于已接受要求"被阻止。`,
   reserveWarningItem: (code: string, purpose: string, reserve: string) =>
     `${code}（${purpose}，要求至少 ${reserve}）`,
+  reserveUnresolvedTitle: '校准包的处置余量无法确认',
+  reserveUnresolved: (packages: string) =>
+    `以下校准包对该维度的处置余量缺失或无法解析：${packages}。受其约束的启动会因"处置余量未明确"被阻止，与本次发布的数值无关；需要替换校准包。`,
+  reserveUnresolvedItem: (code: string, purpose: string) => `${code}（${purpose}）`,
   retire: '停用',
   retireTitle: '停用这一版额度',
   retireConsequence:
     '停用后，这个范围内新的启动在该维度上将找不到有效额度而被阻止（除非另一个范围的额度适用）；已经占用的额度不受影响，也不会释放。',
+  retireScheduledRestores: (version: number, until: string | undefined) =>
+    `这一版尚未生效，停用即取消这次排期，它不会生效。第 ${String(version)} 版原本在它生效时结束，停用后改为${until === undefined ? '长期生效' : `生效至 ${until}`}，当前的启动检查不变；已经占用的额度不受影响。`,
+  retireScheduledConsequence:
+    '这一版尚未生效，停用即取消这次排期，它不会生效。没有在它生效时结束的版本，其他版本的生效时间不变；到它原定的生效时间，如果该范围没有其他有效额度，新的启动会在该维度被阻止。已经占用的额度不受影响。',
   retireReason: '停用理由',
   retireDisabled: '只有 Owner 可以停用额度',
   retired: '额度已停用',

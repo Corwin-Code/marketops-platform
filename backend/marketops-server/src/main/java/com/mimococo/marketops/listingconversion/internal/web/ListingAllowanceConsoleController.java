@@ -8,6 +8,7 @@ import com.mimococo.marketops.shared.ConsoleApi;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.MediaType;
@@ -52,8 +53,12 @@ class ListingAllowanceConsoleController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, Object> retire(AuthenticatedActor actor, @PathVariable UUID allowanceId,
                                @Valid @RequestBody RetireRequest request) {
-        allowances.retire(actor, allowanceId, request.reason());
-        return Map.of("allowanceId", allowanceId, "state", "RETIRED");
+        Map<String, Object> answer = new LinkedHashMap<>();
+        answer.put("allowanceId", allowanceId);
+        answer.put("state", "RETIRED");
+        allowances.retire(actor, allowanceId, request.reason())
+                .ifPresent(restored -> answer.put("restoredAllowanceId", restored));
+        return answer;
     }
 
     record PublishRequest(@NotBlank String scopeKind, String platformCode, UUID storeId, @NotBlank String axisCode,

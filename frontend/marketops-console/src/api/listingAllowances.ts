@@ -21,7 +21,11 @@ export interface AllowanceStore {
   readonly canPublish: boolean;
 }
 
-/** The disposal reserve one current calibration package accepts for one axis. */
+/**
+ * The disposal reserve one current calibration package accepts for one axis.
+ * `reserveValue` is null when the package stores no value for the axis; a launch
+ * the package governs is then refused as unresolved.
+ */
 export interface AllowanceReservePolicy {
   readonly packageId: string;
   readonly packageCode: string;
@@ -32,7 +36,23 @@ export interface AllowanceReservePolicy {
   readonly storeId: string | null;
   readonly storePlatformCode: string | null;
   readonly axisCode: string;
-  readonly reserveValue: string;
+  readonly reserveValue: string | null;
+}
+
+/**
+ * What one scope the caller may publish to has occupied now on one axis,
+ * whichever allowance row the occupations were taken under. A new version of that
+ * scope and axis inherits it.
+ */
+export interface AllowanceScopeOccupancy {
+  readonly scopeKind: string;
+  readonly platformCode: string | null;
+  readonly storeId: string | null;
+  readonly axisCode: string;
+  readonly unitCode: string;
+  readonly occupiedValue: string;
+  readonly unresolved: boolean;
+  readonly liveOccupations: number;
 }
 
 /** Where an allowance version stands at the time of reading. */
@@ -76,6 +96,7 @@ export interface AllowanceOverview {
   readonly stores: readonly AllowanceStore[];
   readonly platforms: readonly string[];
   readonly reservePolicies: readonly AllowanceReservePolicy[];
+  readonly scopeOccupancy: readonly AllowanceScopeOccupancy[];
   readonly allowances: readonly ExposureAllowance[];
 }
 
@@ -173,14 +194,12 @@ function parseReservePolicy(body: unknown): AllowanceReservePolicy | undefined {
   const packageCode = text(r?.packageCode);
   const axisCode = text(r?.axisCode);
   const scopeKind = text(r?.scopeKind);
-  const reserveValue = text(r?.reserveValue);
   if (
     r === undefined ||
     packageId === undefined ||
     packageCode === undefined ||
     axisCode === undefined ||
-    scopeKind === undefined ||
-    reserveValue === undefined
+    scopeKind === undefined
   ) {
     return undefined;
   }
@@ -194,7 +213,34 @@ function parseReservePolicy(body: unknown): AllowanceReservePolicy | undefined {
     storeId: optionalText(r.storeId),
     storePlatformCode: optionalText(r.storePlatformCode),
     axisCode,
-    reserveValue,
+    reserveValue: decimal(r.reserveValue) ?? null,
+  };
+}
+
+function parseScopeOccupancy(body: unknown): AllowanceScopeOccupancy | undefined {
+  const r = row(body);
+  const scopeKind = text(r?.scopeKind);
+  const axisCode = text(r?.axisCode);
+  const unitCode = text(r?.unitCode);
+  const occupiedValue = decimal(r?.occupiedValue);
+  if (
+    r === undefined ||
+    scopeKind === undefined ||
+    axisCode === undefined ||
+    unitCode === undefined ||
+    occupiedValue === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    scopeKind,
+    platformCode: optionalText(r.platformCode),
+    storeId: optionalText(r.storeId),
+    axisCode,
+    unitCode,
+    occupiedValue,
+    unresolved: r.unresolved === true,
+    liveOccupations: integer(r.liveOccupations) ?? 0,
   };
 }
 
@@ -262,11 +308,14 @@ function parseOverview(body: unknown): AllowanceOverview | undefined {
   if (r === undefined || asOf === undefined) return undefined;
   const stores = list(r.stores, parseStore);
   const reservePolicies = list(r.reservePolicies, parseReservePolicy);
+  // Absent means the preview cannot know the occupancy, not that the page is broken.
+  const scopeOccupancy = list(r.scopeOccupancy ?? [], parseScopeOccupancy);
   const allowances = list(r.allowances, parseAllowance);
   const platforms = list(r.platforms, text);
   if (
     stores === undefined ||
     reservePolicies === undefined ||
+    scopeOccupancy === undefined ||
     allowances === undefined ||
     platforms === undefined
   ) {
@@ -278,6 +327,7 @@ function parseOverview(body: unknown): AllowanceOverview | undefined {
     stores,
     platforms,
     reservePolicies,
+    scopeOccupancy,
     allowances,
   };
 }

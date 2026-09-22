@@ -16,17 +16,20 @@ import java.util.UUID;
  *        organization and platform scopes
  * @param stores stores the caller may see, for choosing a store scope
  * @param platforms platforms a platform scope may name
- * @param reservePolicies the disposal reserve each current calibration package accepts per axis
+ * @param reservePolicies the disposal reserve each current calibration package whose scope the caller
+ *        may see accepts per axis
+ * @param scopeOccupancy what each scope the caller may publish to has occupied now, per axis
  * @param allowances every allowance row visible to the caller, newest version first per scope and axis
  */
 public record AllowanceMaintenanceView(Instant asOf, boolean canPublishOrganization, List<StoreOption> stores,
                                        List<String> platforms, List<ReservePolicy> reservePolicies,
-                                       List<Allowance> allowances) {
+                                       List<ScopeOccupancy> scopeOccupancy, List<Allowance> allowances) {
 
     public AllowanceMaintenanceView {
         stores = List.copyOf(stores);
         platforms = List.copyOf(platforms);
         reservePolicies = List.copyOf(reservePolicies);
+        scopeOccupancy = List.copyOf(scopeOccupancy);
         allowances = List.copyOf(allowances);
     }
 
@@ -38,10 +41,25 @@ public record AllowanceMaintenanceView(Instant asOf, boolean canPublishOrganizat
     /**
      * The ALLOWANCE_RESERVE one current calibration package accepts for one axis.
      * A launch governed by that package is refused when the allowance keeps less.
+     *
+     * @param reserveValue the value as the package stores it; null when it stores a JSON null, and a
+     *        launch the package governs then sees RESERVE_UNRESOLVED
      */
     public record ReservePolicy(UUID packageId, String packageCode, int packageVersion, String purposeCode,
                                 String scopeKind, String platformCode, UUID storeId, String storePlatformCode,
                                 String axisCode, String reserveValue) {
+    }
+
+    /**
+     * What one scope has occupied now on one axis, counted the way the launch check
+     * counts it whichever allowance row the occupations were taken under. A new
+     * version of that scope and axis inherits it, so its headroom can be previewed
+     * even when no row exists yet.
+     *
+     * @param unitCode the unit publishing would derive for the scope and axis
+     */
+    public record ScopeOccupancy(String scopeKind, String platformCode, UUID storeId, String axisCode,
+                                 String unitCode, String occupiedValue, boolean unresolved, int liveOccupations) {
     }
 
     /**

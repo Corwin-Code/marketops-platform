@@ -16,6 +16,7 @@ import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.Allowan
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.PublishResult;
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.ReservePolicy;
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.ReserveWarning;
+import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.ScopeOccupancy;
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.StoreOption;
 import com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc.AllowanceRepository;
 import com.mimococo.marketops.shared.ErrorCode;
@@ -28,11 +29,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -110,9 +113,11 @@ public class ListingAllowanceService {
         boolean organizationOwner = holds(actor, ActionScopeCode.LISTING_CALIBRATION_ACCEPT, ResourceScope.organization(org));
         Instant now = allowances.databaseNow();
 
+        List<StoreOption> organizationStores = allowances.stores(org);
+        List<String> platforms = allowances.platforms();
         Map<UUID, Boolean> storeOwner = new LinkedHashMap<>();
         List<StoreOption> stores = new ArrayList<>();
-        for (StoreOption store : allowances.stores(org)) {
+        for (StoreOption store : organizationStores) {
             if (!organizationVisible && !visibleStores.contains(store.storeId())) {
                 continue;
             }
@@ -131,10 +136,31 @@ public class ListingAllowanceService {
             boolean manage = store ? storeOwner.getOrDefault(row.storeId(), false) : organizationOwner;
             rows.add(withManage(row, manage));
         }
-        List<ReservePolicy> policies = allowances.reservePolicies(org, now);
+        // The same visibility as the rows: a package scoped to a store the caller may not
+        // see, or to the organization or a platform without an organization grant, stays out.
+        List<ReservePolicy> policies = new ArrayList<>();
+        for (ReservePolicy policy : allowances.reservePolicies(org, now)) {
+            if ("STORE".equals(policy.scopeKind()) ? storeOwner.containsKey(policy.storeId()) : organizationVisible) {
+                policies.add(policy);
+            }
+        }
+        // Occupancy of every scope the caller may publish to, whether or not a row exists
+        // there yet: a new version inherits whatever the scope already holds.
+        List<ScopeOccupancy> occupancy = new ArrayList<>();
+        if (organizationOwner) {
+            occupancy.addAll(scopeOccupancy(org, "ORGANIZATION", null, null, organizationStores, now));
+            for (String platform : platforms) {
+                occupancy.addAll(scopeOccupancy(org, "PLATFORM", platform, null, organizationStores, now));
+            }
+        }
+        for (StoreOption store : stores) {
+            if (store.canPublish()) {
+                occupancy.addAll(scopeOccupancy(org, "STORE", null, store.storeId(), organizationStores, now));
+            }
+        }
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.LISTING_CONVERSION, actor.userId().toString(),
                 AuditAction.READ, "lc-exposure-allowance", org, null, Map.of(), "allowances", null));
-        return new AllowanceMaintenanceView(now, organizationOwner, stores, allowances.platforms(), policies, rows);
+        return new AllowanceMaintenanceView(now, organizationOwner, stores, platforms, policies, occupancy, rows);
     }
 
     // ------------------------------------------------------------------ publish
@@ -213,8 +239,12 @@ public class ListingAllowanceService {
 
     // ------------------------------------------------------------------ retire
 
+    /**
+     * Retire a current or scheduled version. Returns the version whose end the
+     * database restored because the retired one was scheduled and had ended it early.
+     */
     @Transactional
-    public void retire(AuthenticatedActor actor, UUID allowanceId, String reason) {
+    public Optional<UUID> retire(AuthenticatedActor actor, UUID allowanceId, String reason) {
         AllowanceRepository.AllowanceScope target = allowances.scope(allowanceId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         if (!actor.organizationId().equals(target.organizationId())) {
@@ -225,10 +255,26 @@ public class ListingAllowanceService {
         authorization.require(actor, ActionScopeCode.LISTING_CALIBRATION_ACCEPT, scope);
         requireStepUp(actor);
         String text = MetadataFieldPolicy.requireText("reason", reason);
-        allowances.retire(allowanceId, proof("LISTING_ALLOWANCE_RETIRE", allowanceId), text);
+        String answer = allowances.retire(allowanceId, proof("LISTING_ALLOWANCE_RETIRE", allowanceId), text);
+        JsonNode node = json.readTree(answer);
+        JsonNode restoredId = node.path("restoredAllowanceId");
+        UUID restored = restoredId.isNull() || restoredId.isMissingNode() ? null : UUID.fromString(restoredId.asText());
+
+        Map<String, FieldChange> changes = new LinkedHashMap<>();
+        changes.put("status", new FieldChange("ACTIVE", "RETIRED"));
+        if (restored != null) {
+            changes.put("restoredAllowanceId", new FieldChange(null, restored.toString()));
+        }
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.LISTING_CONVERSION, actor.userId().toString(),
-                AuditAction.POLICY_CHANGE, "lc-exposure-allowance", allowanceId, null,
-                Map.of("status", new FieldChange("ACTIVE", "RETIRED")), text, null));
+                AuditAction.POLICY_CHANGE, "lc-exposure-allowance", allowanceId, null, changes, text, null));
+        if (restored != null) {
+            audit.recordChange(new MetadataAuditChange(AuditSourceDomain.LISTING_CONVERSION,
+                    actor.userId().toString(), AuditAction.POLICY_CHANGE, "lc-exposure-allowance", restored, null,
+                    Map.of("effectiveTo", new FieldChange(instantText(node.path("restoredEffectiveToBefore")),
+                            instantText(node.path("restoredEffectiveTo")))),
+                    text, null));
+        }
+        return Optional.ofNullable(restored);
     }
 
     // ------------------------------------------------------------------ helpers
@@ -261,6 +307,52 @@ public class ListingAllowanceService {
             }
         }
         return warnings;
+    }
+
+    /** Occupancy per axis of one scope, for the axes whose unit publishing could derive there. */
+    private List<ScopeOccupancy> scopeOccupancy(UUID org, String scopeKind, String platform, UUID store,
+                                                List<StoreOption> organizationStores, Instant now) {
+        List<ScopeOccupancy> out = new ArrayList<>();
+        for (String axis : AXES) {
+            String unit = unitFor(axis, scopeKind, platform, store, organizationStores);
+            if (unit != null) {
+                out.add(allowances.scopeOccupancy(org, scopeKind, platform, store, axis, unit, now));
+            }
+        }
+        return out;
+    }
+
+    /**
+     * The unit ops.publish_lc_exposure_allowance derives for an axis and scope, or
+     * null where it would refuse: REVENUE_EXPOSURE needs exactly one currency among
+     * the scope's non-retired stores and none without one.
+     */
+    static String unitFor(String axis, String scopeKind, String platform, UUID store,
+                          List<StoreOption> organizationStores) {
+        if ("CONCURRENT_LISTINGS".equals(axis) || "AFFECTED_VARIANTS".equals(axis)) {
+            return "COUNT";
+        }
+        if ("CATEGORY_SHARE".equals(axis)) {
+            return "RATIO";
+        }
+        Set<String> currencies = new HashSet<>();
+        boolean unpriced = false;
+        for (StoreOption option : organizationStores) {
+            boolean inScope = switch (scopeKind) {
+                case "ORGANIZATION" -> true;
+                case "PLATFORM" -> Objects.equals(platform, option.platformCode());
+                default -> Objects.equals(store, option.storeId());
+            };
+            if (!inScope) {
+                continue;
+            }
+            if (option.currencyCode() == null) {
+                unpriced = true;
+            } else {
+                currencies.add(option.currencyCode());
+            }
+        }
+        return !unpriced && currencies.size() == 1 ? currencies.iterator().next() : null;
     }
 
     /** Whether a package at its scope governs any listing the allowance scope covers. */
@@ -329,6 +421,12 @@ public class ListingAllowanceService {
 
     private static boolean whole(BigDecimal value) {
         return value.stripTrailingZeros().scale() <= 0;
+    }
+
+    /** A database timestamp from a JSON answer as an ISO instant, or null. */
+    private static String instantText(JsonNode value) {
+        return value.isNull() || value.isMissingNode() ? null
+                : OffsetDateTime.parse(value.asText()).toInstant().toString();
     }
 
     private static List<UUID> uuids(JsonNode array) {

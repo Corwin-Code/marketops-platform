@@ -10,7 +10,9 @@
 --
 -- A read helper, ops.lc_allowance_occupancy, counts what an allowance row has
 -- occupied now with exactly the rules ops.lc_allowance_projection uses, so the
--- maintenance page and the launch check can never disagree about headroom.
+-- maintenance page and the launch check can never disagree about headroom. It is
+-- ops.lc_scope_occupancy applied to the row's scope and axis; the publish preview
+-- calls that directly for a scope that has no current row yet.
 
 SET LOCAL client_encoding = 'UTF8';
 SET LOCAL standard_conforming_strings = on;
@@ -71,30 +73,31 @@ END $$;
 
 -- ---------------------------------------------------------------- occupancy (read)
 
--- What one allowance row has occupied now. The two branches are the occupied-value
--- parts of ops.lc_allowance_projection, unchanged except that the organization comes
--- from the allowance instead of from an action. Keep them in step with that function.
-CREATE FUNCTION ops.lc_allowance_occupancy(p_allowance uuid, p_at timestamp with time zone) RETURNS jsonb
+-- What one scope has occupied now on one axis, whichever allowance row the occupations
+-- were taken under: the launch check counts every live occupation and engagement in
+-- the scope, so a new version inherits them. The two branches are the occupied-value
+-- parts of ops.lc_allowance_projection, unchanged except that the organization, scope
+-- and unit come from parameters instead of from an action and an allowance row. Keep
+-- them in step with that function. p_unit matters for REVENUE_EXPOSURE only.
+CREATE FUNCTION ops.lc_scope_occupancy(p_org uuid, p_scope_kind text, p_platform text, p_store uuid, p_axis text, p_unit text, p_at timestamp with time zone) RETURNS jsonb
     LANGUAGE plpgsql STABLE
     SET search_path TO 'pg_catalog', 'ops', 'core', 'pg_temp'
     SET "TimeZone" TO 'UTC'
     AS $_$
 DECLARE
- allowance ops.lc_exposure_allowance%ROWTYPE; engagement ops.lc_promotion_engagement%ROWTYPE;
+ engagement ops.lc_promotion_engagement%ROWTYPE;
  axis text; members uuid[]; unresolved boolean:=false; occupied numeric:=0; snapshot jsonb; member jsonb;
  demand jsonb; live integer;
 BEGIN
- SELECT * INTO allowance FROM ops.lc_exposure_allowance WHERE id=p_allowance;
- IF NOT FOUND THEN RAISE EXCEPTION 'allowance does not exist' USING ERRCODE='MO036'; END IF;
- axis:=allowance.axis_code;
+ axis:=p_axis;
  IF axis IN ('CONCURRENT_LISTINGS','AFFECTED_VARIANTS') THEN
    WITH outstanding AS (
      SELECT a.platform_listing_id,a.affected_set_id FROM ops.lc_exposure_occupation o
      JOIN ops.lc_action a ON a.id=o.action_id JOIN core.platform_listing l ON l.id=a.platform_listing_id
-     WHERE o.organization_id=allowance.organization_id AND o.axis_code=axis AND o.state<>'RELEASED'
-       AND (allowance.scope_kind='ORGANIZATION'
-         OR (allowance.scope_kind='PLATFORM' AND allowance.platform_code=l.platform_code)
-         OR (allowance.scope_kind='STORE' AND allowance.store_ref_id=a.store_id)))
+     WHERE o.organization_id=p_org AND o.axis_code=axis AND o.state<>'RELEASED'
+       AND (p_scope_kind='ORGANIZATION'
+         OR (p_scope_kind='PLATFORM' AND p_platform=l.platform_code)
+         OR (p_scope_kind='STORE' AND p_store=a.store_id)))
    SELECT CASE WHEN axis='CONCURRENT_LISTINGS' THEN
       (SELECT array_agg(DISTINCT platform_listing_id) FROM outstanding)
     ELSE (SELECT array_agg(DISTINCT value) FROM outstanding o JOIN core.lc_affected_set s ON s.id=o.affected_set_id,
@@ -105,12 +108,12 @@ BEGIN
     INTO members,unresolved;
    FOR engagement IN SELECT e.* FROM ops.lc_promotion_engagement e JOIN core.platform_listing l
       ON l.id=e.platform_listing_id AND l.organization_id=e.organization_id
-     WHERE e.organization_id=allowance.organization_id AND e.state IN ('ACTIVE','EXITING')
+     WHERE e.organization_id=p_org AND e.state IN ('ACTIVE','EXITING')
        AND NOT EXISTS(SELECT 1 FROM ops.lc_exposure_occupation o
          WHERE o.action_id=e.action_id AND o.axis_code=axis AND o.state<>'RELEASED')
-       AND (allowance.scope_kind='ORGANIZATION'
-         OR (allowance.scope_kind='PLATFORM' AND allowance.platform_code=l.platform_code)
-         OR (allowance.scope_kind='STORE' AND allowance.store_ref_id=e.store_id)) LOOP
+       AND (p_scope_kind='ORGANIZATION'
+         OR (p_scope_kind='PLATFORM' AND p_platform=l.platform_code)
+         OR (p_scope_kind='STORE' AND p_store=e.store_id)) LOOP
      IF axis='CONCURRENT_LISTINGS' THEN members:=array_append(coalesce(members,'{}'),engagement.platform_listing_id);
      ELSE
        snapshot:=core.lc_listing_identity_snapshot(engagement.platform_listing_id,p_at);
@@ -130,22 +133,22 @@ BEGIN
      INTO occupied,unresolved
    FROM ops.lc_exposure_occupation o JOIN ops.lc_action occupied_action ON occupied_action.id=o.action_id
    JOIN core.platform_listing l ON l.id=occupied_action.platform_listing_id
-   WHERE o.organization_id=allowance.organization_id AND o.axis_code=axis AND o.state<>'RELEASED'
-     AND (allowance.scope_kind='ORGANIZATION'
-       OR (allowance.scope_kind='PLATFORM' AND allowance.platform_code=l.platform_code)
-       OR (allowance.scope_kind='STORE' AND allowance.store_ref_id=occupied_action.store_id));
+   WHERE o.organization_id=p_org AND o.axis_code=axis AND o.state<>'RELEASED'
+     AND (p_scope_kind='ORGANIZATION'
+       OR (p_scope_kind='PLATFORM' AND p_platform=l.platform_code)
+       OR (p_scope_kind='STORE' AND p_store=occupied_action.store_id));
    FOR engagement IN SELECT e.* FROM ops.lc_promotion_engagement e JOIN core.platform_listing l
       ON l.id=e.platform_listing_id AND l.organization_id=e.organization_id
-     WHERE e.organization_id=allowance.organization_id
+     WHERE e.organization_id=p_org
        AND ((axis='REVENUE_EXPOSURE' AND e.state<>'CLEARED')
          OR (axis='CATEGORY_SHARE' AND e.state IN ('ACTIVE','EXITING')))
        AND NOT EXISTS(SELECT 1 FROM ops.lc_exposure_occupation o
          WHERE o.action_id=e.action_id AND o.axis_code=axis AND o.state<>'RELEASED')
-       AND (allowance.scope_kind='ORGANIZATION'
-         OR (allowance.scope_kind='PLATFORM' AND allowance.platform_code=l.platform_code)
-         OR (allowance.scope_kind='STORE' AND allowance.store_ref_id=e.store_id)) LOOP
+       AND (p_scope_kind='ORGANIZATION'
+         OR (p_scope_kind='PLATFORM' AND p_platform=l.platform_code)
+         OR (p_scope_kind='STORE' AND p_store=e.store_id)) LOOP
      demand:=engagement.axis_demands->axis;
-     IF jsonb_typeof(demand) IS DISTINCT FROM 'object' OR demand->>'unitCode' IS DISTINCT FROM allowance.unit_code
+     IF jsonb_typeof(demand) IS DISTINCT FROM 'object' OR demand->>'unitCode' IS DISTINCT FROM p_unit
         OR coalesce(demand->>'value','') !~ '^[0-9]+([.][0-9]{1,4})?$' THEN unresolved:=true;
      ELSE occupied:=occupied+(demand->>'value')::numeric; END IF;
    END LOOP;
@@ -153,13 +156,32 @@ BEGIN
  -- How many live occupation rows fall inside this scope, for the operator's orientation only.
  SELECT count(*) INTO live FROM ops.lc_exposure_occupation o JOIN ops.lc_action a ON a.id=o.action_id
    JOIN core.platform_listing l ON l.id=a.platform_listing_id
-  WHERE o.organization_id=allowance.organization_id AND o.axis_code=axis AND o.state<>'RELEASED'
-    AND (allowance.scope_kind='ORGANIZATION'
-      OR (allowance.scope_kind='PLATFORM' AND allowance.platform_code=l.platform_code)
-      OR (allowance.scope_kind='STORE' AND allowance.store_ref_id=a.store_id));
- RETURN jsonb_build_object('allowanceId',allowance.id,'axisCode',axis,'occupiedValue',occupied,
-   'unresolved',coalesce(unresolved,false),'headroom',allowance.limit_value-allowance.reserve_value-occupied,
-   'liveOccupations',live,'evaluatedAt',p_at);
+  WHERE o.organization_id=p_org AND o.axis_code=axis AND o.state<>'RELEASED'
+    AND (p_scope_kind='ORGANIZATION'
+      OR (p_scope_kind='PLATFORM' AND p_platform=l.platform_code)
+      OR (p_scope_kind='STORE' AND p_store=a.store_id));
+ RETURN jsonb_build_object('scopeKind',p_scope_kind,'platformCode',p_platform,'storeId',p_store,'axisCode',axis,
+   'unitCode',p_unit,'occupiedValue',occupied,'unresolved',coalesce(unresolved,false),'liveOccupations',live,
+   'evaluatedAt',p_at);
+END $_$;
+
+-- What one allowance row has occupied now: the occupancy of its scope and axis, and
+-- the headroom its limit and reserve leave.
+CREATE FUNCTION ops.lc_allowance_occupancy(p_allowance uuid, p_at timestamp with time zone) RETURNS jsonb
+    LANGUAGE plpgsql STABLE
+    SET search_path TO 'pg_catalog', 'ops', 'core', 'pg_temp'
+    SET "TimeZone" TO 'UTC'
+    AS $_$
+DECLARE allowance ops.lc_exposure_allowance%ROWTYPE; occupancy jsonb;
+BEGIN
+ SELECT * INTO allowance FROM ops.lc_exposure_allowance WHERE id=p_allowance;
+ IF NOT FOUND THEN RAISE EXCEPTION 'allowance does not exist' USING ERRCODE='MO036'; END IF;
+ occupancy:=ops.lc_scope_occupancy(allowance.organization_id,allowance.scope_kind,allowance.platform_code,
+   allowance.store_ref_id,allowance.axis_code,allowance.unit_code,p_at);
+ RETURN jsonb_build_object('allowanceId',allowance.id,'axisCode',allowance.axis_code,
+   'occupiedValue',occupancy->'occupiedValue','unresolved',occupancy->'unresolved',
+   'headroom',allowance.limit_value-allowance.reserve_value-(occupancy->>'occupiedValue')::numeric,
+   'liveOccupations',occupancy->'liveOccupations','evaluatedAt',p_at);
 END $_$;
 
 -- ---------------------------------------------------------------- publish
@@ -281,14 +303,23 @@ END $$;
 
 -- ---------------------------------------------------------------- retire
 
--- Retire one active allowance with a reason. From that instant launches in its
--- scope see ALLOWANCE_MISSING on its axis (unless another scope row applies);
--- live occupations are untouched and stay counted by whatever row replaces it.
-CREATE FUNCTION ops.retire_lc_exposure_allowance(p_id uuid, p_proof text, p_reason text) RETURNS void
+-- Retire one active allowance with a reason.
+--
+-- A current row ends now: from that instant launches in its scope see
+-- ALLOWANCE_MISSING on its axis (unless another scope row applies). A scheduled row
+-- is cancelled before it starts, and the active row of its scope and axis that ends
+-- exactly where it starts (the one publish ended there for it) takes over its range,
+-- so the version before it continues instead of leaving a gap. That row is found by
+-- adjacency, not by supersedes_allowance_id: after an earlier cancellation handed a
+-- range back, the row ending there is no longer the one the cancelled row superseded.
+-- The no-overlap exclusion allows at most one such row.
+-- Live occupations are untouched and stay counted by whatever row replaces it.
+CREATE FUNCTION ops.retire_lc_exposure_allowance(p_id uuid, p_proof text, p_reason text) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'pg_catalog', 'pg_temp'
     AS $$
 DECLARE g iam.ad_invocation_grant%ROWTYPE; a ops.lc_exposure_allowance%ROWTYPE; now_at timestamptz;
+ restored uuid;
 BEGIN
  g:=ops.consume_ad_control_invocation(p_proof,'LISTING_ALLOWANCE_RETIRE',p_id,p_id);
  IF p_reason IS NULL OR length(btrim(p_reason)) NOT BETWEEN 1 AND 512 THEN
@@ -312,6 +343,17 @@ BEGIN
    retire_reason=btrim(p_reason),
    effective_to=CASE WHEN a.effective_from<now_at THEN now_at ELSE a.effective_to END
   WHERE id=p_id;
+ -- Only once the cancelled row has left the ACTIVE set can its predecessor take the
+ -- range back without tripping lc_exposure_allowance_no_overlap.
+ IF a.effective_from>=now_at THEN
+  UPDATE ops.lc_exposure_allowance p SET effective_to=a.effective_to
+   WHERE p.organization_id=a.organization_id AND p.scope_key=a.scope_key AND p.axis_code=a.axis_code
+     AND p.status='ACTIVE' AND p.effective_to=a.effective_from
+  RETURNING p.id INTO restored;
+ END IF;
+ RETURN jsonb_build_object('allowanceId',p_id,'retiredAt',now_at,'restoredAllowanceId',restored,
+   'restoredEffectiveToBefore',CASE WHEN restored IS NOT NULL THEN a.effective_from END,
+   'restoredEffectiveTo',CASE WHEN restored IS NOT NULL THEN a.effective_to END);
 END $$;
 
 -- ---------------------------------------------------------------- catalogue and privileges
@@ -322,6 +364,9 @@ UPDATE platform.control_route_inventory
 
 COMMENT ON FUNCTION ops.publish_lc_exposure_allowance(uuid, text, text, text, uuid, text, numeric, numeric, timestamp with time zone, text, text)
     IS 'Owner publishes a new launch allowance version; the only writer of ops.lc_exposure_allowance with ops.retire_lc_exposure_allowance.';
+
+REVOKE ALL ON FUNCTION ops.lc_scope_occupancy(p_org uuid, p_scope_kind text, p_platform text, p_store uuid, p_axis text, p_unit text, p_at timestamp with time zone) FROM PUBLIC;
+GRANT ALL ON FUNCTION ops.lc_scope_occupancy(p_org uuid, p_scope_kind text, p_platform text, p_store uuid, p_axis text, p_unit text, p_at timestamp with time zone) TO marketops_app;
 
 REVOKE ALL ON FUNCTION ops.lc_allowance_occupancy(p_allowance uuid, p_at timestamp with time zone) FROM PUBLIC;
 GRANT ALL ON FUNCTION ops.lc_allowance_occupancy(p_allowance uuid, p_at timestamp with time zone) TO marketops_app;

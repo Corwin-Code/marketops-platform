@@ -2,6 +2,7 @@ package com.mimococo.marketops.listingconversion.internal.infrastructure.jdbc;
 
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.Allowance;
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.ReservePolicy;
+import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.ScopeOccupancy;
 import com.mimococo.marketops.listingconversion.AllowanceMaintenanceView.StoreOption;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -108,6 +109,26 @@ public class AllowanceRepository {
                 .list();
     }
 
+    /**
+     * What one scope has occupied now on one axis, whichever allowance row the
+     * occupations were taken under: the count {@code ops.lc_allowance_occupancy}
+     * gives any row of that scope and axis.
+     */
+    public ScopeOccupancy scopeOccupancy(UUID organizationId, String scopeKind, String platformCode, UUID storeId,
+                                         String axisCode, String unitCode, Instant now) {
+        return jdbc.sql("""
+                SELECT x.occupancy->>'occupiedValue' AS occupied, (x.occupancy->>'unresolved')::boolean AS unresolved,
+                       (x.occupancy->>'liveOccupations')::integer AS live_occupations
+                FROM (SELECT ops.lc_scope_occupancy(:org, :scope, CAST(:platform AS text), CAST(:store AS uuid), :axis,
+                                                    CAST(:unit AS text), :now) AS occupancy) x
+                """).param("org", organizationId).param("scope", scopeKind).param("platform", platformCode)
+                .param("store", storeId).param("axis", axisCode).param("unit", unitCode)
+                .param("now", Timestamp.from(now))
+                .query((rs, n) -> new ScopeOccupancy(scopeKind, platformCode, storeId, axisCode, unitCode,
+                        plain(rs.getString("occupied")), rs.getBoolean("unresolved"), rs.getInt("live_occupations")))
+                .single();
+    }
+
     public Optional<AllowanceScope> scope(UUID allowanceId) {
         return jdbc.sql("SELECT id, organization_id, scope_kind, store_ref_id FROM ops.lc_exposure_allowance WHERE id = :id")
                 .param("id", allowanceId)
@@ -131,10 +152,11 @@ public class AllowanceRepository {
                 .query(String.class).single();
     }
 
-    public void retire(UUID id, String proof, String reason) {
-        jdbc.sql("SELECT ops.retire_lc_exposure_allowance(:id, :proof, :reason)")
+    /** Retire through the database function; returns its JSON answer as text. */
+    public String retire(UUID id, String proof, String reason) {
+        return jdbc.sql("SELECT ops.retire_lc_exposure_allowance(:id, :proof, :reason)::text")
                 .param("id", id).param("proof", proof).param("reason", reason)
-                .query(Object.class).optional();
+                .query(String.class).single();
     }
 
     private static Allowance allowance(ResultSet rs, Instant now) throws SQLException {
