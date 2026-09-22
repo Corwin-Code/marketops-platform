@@ -46,6 +46,7 @@ export const allowanceText = {
   reserveHelp: '为纠错、处置类动作预留，普通启动不能使用；必须小于上限。',
   effectiveFrom: '生效时间',
   effectiveFromHelp: '留空表示发布后立即生效；只能选当前或以后的时间。',
+  effectiveFromPast: '生效时间早于当前时间，发布会被拒绝；请留空（立即生效）或选择当前或以后的时间',
   evidence: '依据',
   evidencePlaceholder: '例如：2026-09 季度运营会议纪要、测算表链接或编号',
   reason: '发布理由',
@@ -59,6 +60,8 @@ export const allowanceText = {
   previewNone: '该范围、该维度目前没有生效中的额度',
   previewStartsNow: '新版本在发布时立即生效',
   previewStartsAt: (at: string) => `新版本将于 ${at} 起生效`,
+  previewStartsPast: (at: string) =>
+    `所选生效时间 ${at} 早于当前时间超过 5 分钟，发布会被拒绝，现有版本不会有任何变化；请留空表示立即生效，或改选当前或以后的时间`,
   previewEndsNow: (version: number) => `第 ${String(version)} 版在新版本发布时结束`,
   previewEndsAt: (version: number, at: string) =>
     `第 ${String(version)} 版将于 ${at} 结束，由新版本接替`,

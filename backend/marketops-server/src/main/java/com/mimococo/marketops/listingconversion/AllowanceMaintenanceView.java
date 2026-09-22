@@ -16,8 +16,9 @@ import java.util.UUID;
  *        organization and platform scopes
  * @param stores stores the caller may see, for choosing a store scope
  * @param platforms platforms a platform scope may name
- * @param reservePolicies the disposal reserve each current calibration package whose scope the caller
- *        may see accepts per axis
+ * @param reservePolicies the disposal reserve each current calibration package that governs a store
+ *        the caller may see accepts per axis: every organization package, a platform package on the
+ *        platform of a visible store, a store package of a visible store
  * @param scopeOccupancy what each scope the caller may publish to has occupied now, per axis
  * @param allowances every allowance row visible to the caller, newest version first per scope and axis
  */

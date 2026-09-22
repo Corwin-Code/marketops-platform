@@ -111,6 +111,20 @@ function epoch(iso: string | null | undefined): number | undefined {
   return Number.isNaN(value) ? undefined : value;
 }
 
+/**
+ * How far before now a chosen start still counts as "now": ListingAllowanceService
+ * (CLOCK_TOLERANCE) and ops.publish_lc_exposure_allowance both allow 5 minutes of
+ * clock difference and refuse anything earlier.
+ */
+const CLOCK_TOLERANCE_MS = 5 * 60 * 1000;
+
+/** Whether a chosen start lies so far before the overview's clock that publishing is refused. */
+function startsInPast(overview: AllowanceOverview, iso: string | undefined): boolean {
+  const chosen = epoch(iso);
+  const asOf = epoch(overview.asOf) ?? Date.now();
+  return chosen !== undefined && chosen < asOf - CLOCK_TOLERANCE_MS;
+}
+
 // ------------------------------------------------------------------ scope
 
 function scopeName(allowance: ExposureAllowance): string {
@@ -817,7 +831,17 @@ function PublishFields({
           <Input inputMode="decimal" {...(countAxis ? { placeholder: '1' } : {})} />
         </Form.Item>
       </Flex>
-      <Form.Item name="effectiveFrom" label={text.effectiveFrom} extra={text.effectiveFromHelp}>
+      <Form.Item
+        name="effectiveFrom"
+        label={text.effectiveFrom}
+        extra={text.effectiveFromHelp}
+        rules={[
+          {
+            validator: (_: unknown, value: string | undefined): Promise<void> =>
+              settle(startsInPast(overview, value) ? text.effectiveFromPast : undefined),
+          },
+        ]}
+      >
         <InstantField ariaLabel={text.effectiveFrom} />
       </Form.Item>
       <Form.Item
@@ -854,9 +878,10 @@ function PublishFields({
  * headroom the new one leaves, and any accepted reserve it falls short of.
  *
  * Mirrors ops.publish_lc_exposure_allowance: the new version starts at the chosen
- * time, or now when none (or an earlier one) is chosen. A live version starting at
- * or after that instant is retired; the one in force at that instant ends there and
- * stays in force until then, even a scheduled one that has not started yet.
+ * time, or now when none (or an earlier one within the clock tolerance) is chosen.
+ * A live version starting at or after that instant is retired; the one in force at
+ * that instant ends there and stays in force until then, even a scheduled one that
+ * has not started yet. A start further in the past is refused and changes nothing.
  */
 function PublishPreview({
   overview,
@@ -893,15 +918,22 @@ function PublishPreview({
 
   const asOf = epoch(overview.asOf) ?? Date.now();
   const chosen = epoch(effectiveFrom);
+  // Refused by the backend: nothing is published, ended or retired.
+  const past = startsInPast(overview, effectiveFrom);
   const later = chosen !== undefined && chosen > asOf;
   const starts = chosen !== undefined && later ? chosen : asOf;
   const at = formatStoreTime(effectiveFrom);
-  const replaced = live.filter((row) => (epoch(row.effectiveFrom) ?? asOf) >= starts);
-  const inForce = live.find((row) => {
-    const from = epoch(row.effectiveFrom) ?? asOf;
-    const to = epoch(row.effectiveTo);
-    return from < starts && (to === undefined || to > starts);
-  });
+  const replaced = past ? [] : live.filter((row) => (epoch(row.effectiveFrom) ?? asOf) >= starts);
+  const inForce = past
+    ? undefined
+    : live.find((row) => {
+        const from = epoch(row.effectiveFrom) ?? asOf;
+        const to = epoch(row.effectiveTo);
+        return from < starts && (to === undefined || to > starts);
+      });
+  let startLine: string = text.previewStartsNow;
+  if (past) startLine = text.previewStartsPast(at);
+  else if (later) startLine = text.previewStartsAt(at);
   let handover: string | undefined;
   if (inForce?.lifecycle === 'SCHEDULED') {
     handover = text.previewScheduledKept(
@@ -965,7 +997,7 @@ function PublishPreview({
   return (
     <Flex vertical gap={8}>
       <Alert
-        type={headroom !== undefined && headroom <= 0n ? 'warning' : 'info'}
+        type={past ? 'error' : headroom !== undefined && headroom <= 0n ? 'warning' : 'info'}
         showIcon
         title={text.previewTitle}
         description={
@@ -973,7 +1005,7 @@ function PublishPreview({
             <span>
               {current === undefined ? text.previewNone : text.previewCurrent(current.version)}
             </span>
-            <span>{later ? text.previewStartsAt(at) : text.previewStartsNow}</span>
+            <span>{startLine}</span>
             {handover !== undefined && <span>{handover}</span>}
             {replaced.map((row) => (
               <span key={row.id}>
@@ -983,7 +1015,7 @@ function PublishPreview({
             {headroomLine !== undefined && <span>{headroomLine}</span>}
             {occupancy?.unresolved === true && <span>{text.previewOccupancyUnresolved}</span>}
             {headroom !== undefined && headroom <= 0n && <span>{text.previewNegative}</span>}
-            {(later || replaced.length > 0) && (
+            {(later || past || replaced.length > 0) && (
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                 {text.previewTimesIn(STORE_TIMEZONE_LABEL)}
               </Typography.Text>

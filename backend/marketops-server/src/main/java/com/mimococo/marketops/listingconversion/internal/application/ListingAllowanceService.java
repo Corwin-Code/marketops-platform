@@ -136,11 +136,25 @@ public class ListingAllowanceService {
             boolean manage = store ? storeOwner.getOrDefault(row.storeId(), false) : organizationOwner;
             rows.add(withManage(row, manage));
         }
-        // The same visibility as the rows: a package scoped to a store the caller may not
-        // see, or to the organization or a platform without an organization grant, stays out.
+        // The packages that govern a store the caller may see: every organization package,
+        // a platform package on the platform of a visible store, and a store package of a
+        // visible store. With an organization grant that is every package. The preview
+        // needs their reserves to warn before publishing to the caller's own stores, and
+        // publish() warns against the same packages afterwards.
+        Set<String> visiblePlatforms = new HashSet<>();
+        for (StoreOption store : stores) {
+            if (store.platformCode() != null) {
+                visiblePlatforms.add(store.platformCode());
+            }
+        }
         List<ReservePolicy> policies = new ArrayList<>();
         for (ReservePolicy policy : allowances.reservePolicies(org, now)) {
-            if ("STORE".equals(policy.scopeKind()) ? storeOwner.containsKey(policy.storeId()) : organizationVisible) {
+            boolean governsVisibleStore = switch (policy.scopeKind()) {
+                case "ORGANIZATION" -> true;
+                case "PLATFORM" -> organizationVisible || visiblePlatforms.contains(policy.platformCode());
+                default -> storeOwner.containsKey(policy.storeId());
+            };
+            if (governsVisibleStore) {
                 policies.add(policy);
             }
         }
