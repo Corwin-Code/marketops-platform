@@ -199,6 +199,16 @@ export const LISTING_CODES = {
     EXPIRED: '已过期',
     WITHDRAWN: '已撤回',
   },
+  operationQualification: {
+    WITHIN_PACKET_AUTHORITY: '执行包授权内',
+    LAWFUL_LATE_REPORT: '合法迟报',
+    UNAUTHORISED_DEVIATION: '越权偏离',
+    HISTORICAL_UNQUALIFIED: '历史记录（未定资格）',
+  },
+  deviationReason: {
+    OPERATION_BEFORE_PACKET_AUTHORITY: '操作早于执行包授权',
+    OPERATION_AFTER_PACKET_AUTHORITY: '操作晚于执行包授权',
+  },
   reportState: {
     APPLIED: '已应用',
     NOT_APPLIED: '未应用',

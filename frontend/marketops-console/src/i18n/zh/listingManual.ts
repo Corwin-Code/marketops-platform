@@ -128,8 +128,7 @@ export const verifyText = {
   attest: '我已亲自核对上述证据，且不是本包执行人',
   attestRequired: '请确认已亲自核对证据，且不是本包执行人',
   previewVerified: '提交后：执行包与操作将变为已核实',
-  previewVerifiedCaveat:
-    '越权偏离、迟报是否合法、紧急停止范围由后端最终判定；如不满足，仍只记录证据。',
+  previewVerifiedCaveat: '最终结果以后端判定为准；如不满足，仍只记录证据。',
   previewEvidenceOnly: '提交后：仅记录证据，操作保持已启动，原因：',
   reasonNoManagement: '未选择管理端正文观察',
   reasonMatch: (label: string): string => `管理端结论为「${label}」，不是「与目标一致」`,
@@ -143,6 +142,9 @@ export const verifyText = {
   reasonNoPromotion: '未选择促销参与观察',
   reasonPromotionMatch: (label: string): string => `促销参与结论为「${label}」，不是「与目标一致」`,
   reasonNoTarget: '操作没有目标文本',
+  reasonDeviation: (label: string): string => `执行包有越权偏离的报告（${label}），偏离会被保留`,
+  reasonReportQualification: (label: string): string =>
+    `已应用的执行报告资格为「${label}」，不是授权内或合法迟报`,
 } as const;
 
 /** The promotion engagement card. */

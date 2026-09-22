@@ -918,6 +918,12 @@ export interface ManualPacket {
     readonly reporterUserId: string;
     readonly reportState: string;
     readonly note: string;
+    /** When the reporter says the change was made; the evidence floor follows it. */
+    readonly operationTime?: string;
+    readonly reportedAt?: string;
+    /** WITHIN_PACKET_AUTHORITY, LAWFUL_LATE_REPORT, UNAUTHORISED_DEVIATION or HISTORICAL_UNQUALIFIED. */
+    readonly operationQualification?: string;
+    readonly deviationReason?: string;
   }[];
   readonly verifications: readonly {
     readonly id: string;
@@ -1696,13 +1702,26 @@ export function parseManualPacket(body: unknown): ManualPacket | undefined {
     const reportId = text(c?.id),
       reporterUserId = text(c?.reporterUserId),
       reportState = text(c?.reportState),
-      note = text(c?.note);
+      note = text(c?.note),
+      operationTime = text(c?.operationTime),
+      reportedAt = text(c?.reportedAt),
+      operationQualification = text(c?.operationQualification),
+      deviationReason = text(c?.deviationReason);
     return reportId === undefined ||
       reporterUserId === undefined ||
       reportState === undefined ||
       note === undefined
       ? undefined
-      : { id: reportId, reporterUserId, reportState, note };
+      : {
+          id: reportId,
+          reporterUserId,
+          reportState,
+          note,
+          ...(operationTime === undefined ? {} : { operationTime }),
+          ...(reportedAt === undefined ? {} : { reportedAt }),
+          ...(operationQualification === undefined ? {} : { operationQualification }),
+          ...(deviationReason === undefined ? {} : { deviationReason }),
+        };
   });
   const verifications = list(r.verifications, (item) => {
     const c = row(item);

@@ -60,6 +60,11 @@ const MARKETPLACE = 'MARKETPLACE_RAW';
 const MANUAL_ENTRY = 'MANUAL_ENTRY';
 const UNKNOWN = 'UNKNOWN';
 const MATCHED_TARGET = 'MATCHED_TARGET';
+/** Report qualifications the database accepts for a qualified verification. */
+const QUALIFYING_REPORTS: ReadonlySet<string> = new Set([
+  'WITHIN_PACKET_AUTHORITY',
+  'LAWFUL_LATE_REPORT',
+]);
 
 type Match = 'MATCHED_TARGET' | 'MATCHED_PRIOR' | 'DIFFERENT' | 'UNKNOWN';
 
@@ -81,15 +86,9 @@ function executorsOf(packet: ManualPacket): ReadonlySet<string> {
   return new Set([packet.executorUserId, ...packet.reports.map((report) => report.reporterUserId)]);
 }
 
-/**
- * The operation time a report states, when the packet read carries it. The
- * console's packet read keeps only the report state and note today, so this
- * is read defensively and the packet's issue time stays the floor otherwise.
- */
-function reportedOperationTime(report: object): string | undefined {
-  return 'operationTime' in report && typeof report.operationTime === 'string'
-    ? report.operationTime
-    : undefined;
+/** The operation time a report states; older reads may not carry it. */
+function reportedOperationTime(report: ManualPacket['reports'][number]): string | undefined {
+  return report.operationTime;
 }
 
 /** Milliseconds of an instant, or nothing when it cannot be read. */
@@ -452,12 +451,37 @@ function evidenceOnlyReasons({
     reasons.push(verifyText.reasonActionState(codeText('actionState', action.state)));
   }
   if (contained) reasons.push(verifyText.reasonContained);
+  const deviation = packet.reports.find(
+    (report) => report.operationQualification === 'UNAUTHORISED_DEVIATION',
+  );
+  if (deviation !== undefined) {
+    reasons.push(
+      verifyText.reasonDeviation(
+        deviation.deviationReason === undefined
+          ? codeText('operationQualification', 'UNAUTHORISED_DEVIATION')
+          : codeText('deviationReason', deviation.deviationReason),
+      ),
+    );
+  }
   const reports = latestReports(packet, promotion);
   const latest = reports.at(-1);
+  const applied = reports.filter((report) => report.reportState === 'APPLIED');
   if (latest === undefined) {
     reasons.push(verifyText.reasonNoReport);
-  } else if (!reports.some((report) => report.reportState === 'APPLIED')) {
+  } else if (applied.length === 0) {
     reasons.push(verifyText.reasonReport(codeText('reportState', latest.reportState)));
+  } else if (
+    deviation === undefined &&
+    applied.every(
+      (report) =>
+        report.operationQualification !== undefined &&
+        !QUALIFYING_REPORTS.has(report.operationQualification),
+    )
+  ) {
+    const qualification = applied[0]?.operationQualification ?? '';
+    reasons.push(
+      verifyText.reasonReportQualification(codeText('operationQualification', qualification)),
+    );
   }
   if (!evidence) {
     reasons.push(promotion ? verifyText.reasonNoPromotion : verifyText.reasonNoManagement);
