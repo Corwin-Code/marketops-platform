@@ -25,6 +25,8 @@ export const calibrationText = {
   draftDisabled: '你没有起草校准包的授权',
   currentTitle: '各用途当前生效',
   currentNone: '当前没有生效中的校准包，依赖该用途的动作会被判为校准未解析。',
+  currentUnknown:
+    '你只能看到被授权范围内的校准包；组织级或平台级的校准包可能已经生效，但不在这里显示。',
   currentMore: (count: number) => `另有 ${String(count)} 个范围`,
   filterPurpose: '用途',
   filterStage: '阶段',
@@ -207,6 +209,8 @@ export const calibrationText = {
   versionHelp: '同一编码的版本号在组织内唯一；默认取已有最高版本加一。',
   versionInvalid: '版本号须为正整数',
   versionTaken: '该编码的这个版本号已经存在',
+  versionTakenElsewhere:
+    '该编码的这个版本号在组织内已被占用（可能位于你无权查看的范围），请改用更大的版本号',
   effectiveFrom: '生效时间',
   effectiveFromHelp: '莫斯科时间。启用时必须已到这个时间；默认 5 分钟前。',
   effectiveTo: '失效时间（可选）',

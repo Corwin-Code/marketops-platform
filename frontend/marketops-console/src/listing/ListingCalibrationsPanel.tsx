@@ -296,6 +296,10 @@ function CurrentByPurpose({
   readonly overview: CalibrationOverview;
   readonly onOpen: (id: string) => void;
 }): React.JSX.Element {
+  // Only someone who may see organization- and platform-scope packages can say a
+  // purpose resolves to nothing; a store-only grant sees its own scope alone.
+  const rights = overview.organizationRights;
+  const wide = rights.prepare || rights.validate || rights.accept;
   return (
     <Flex vertical gap={8}>
       <Typography.Title level={5} style={{ margin: 0 }}>
@@ -313,17 +317,23 @@ function CurrentByPurpose({
                 title={codeText('actionPurpose', purpose)}
                 style={{ height: '100%' }}
                 data-purpose={purpose}
-                data-state={active.length === 0 ? 'unresolved' : 'resolved'}
+                data-state={active.length > 0 ? 'resolved' : wide ? 'unresolved' : 'unknown'}
               >
                 {active.length === 0 ? (
-                  <Flex vertical gap={4}>
-                    <span>
-                      <Code family="evidenceState" code="CALIBRATION_UNRESOLVED" />
-                    </span>
+                  wide ? (
+                    <Flex vertical gap={4}>
+                      <span>
+                        <Code family="evidenceState" code="CALIBRATION_UNRESOLVED" />
+                      </span>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                        {text.currentNone}
+                      </Typography.Text>
+                    </Flex>
+                  ) : (
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {text.currentNone}
+                      {text.currentUnknown}
                     </Typography.Text>
-                  </Flex>
+                  )
                 ) : (
                   <Flex vertical gap={4}>
                     {active.map((item) => (

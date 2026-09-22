@@ -363,10 +363,19 @@ export function CalibrationDraftDrawer({
       initialValues={initialValues}
       steps={steps}
       submitText={text.submit}
-      onSubmit={async (values): Promise<SubmitOutcome> => {
+      onSubmit={async (values, form): Promise<SubmitOutcome> => {
         const draft = buildDraft(values, overview, catalogue);
         const outcome = await prepareCalibration(context, draft);
-        if (!outcome.ok) return outcome.failure;
+        if (!outcome.ok) {
+          // The code and version are unique across the whole organization, but
+          // the list only carries the scopes this person may see, so the taken
+          // version can be one the form could not check.
+          const failure = outcome.failure;
+          if (failure.kind === 'refused' && failure.code === 'VERSION_CONFLICT') {
+            form.setFields([{ name: 'version', errors: [text.versionTakenElsewhere] }]);
+          }
+          return failure;
+        }
         void message.success(text.created(draft.code, draft.version));
         onCreated(outcome.value);
         return undefined;
@@ -418,16 +427,18 @@ function initialDraft(
         ? { scopeKind: 'ORGANIZATION' }
         : { scopeKind: 'STORE' };
   const code = EXAMPLE_PACKAGE.code[purpose];
+  const version = nextVersion(overview, code);
   return {
     purposeCode: purpose,
     ...scope,
     code,
-    version: nextVersion(overview, code),
+    version,
     effectiveFrom,
     evidenceReference: EXAMPLE_PACKAGE.evidenceReference,
     rationale: EXAMPLE_PACKAGE.rationale[purpose],
     impact: EXAMPLE_PACKAGE.impact,
-    differences: EXAMPLE_PACKAGE.differences,
+    // 「首个版本」 only holds for version 1; a later version has a predecessor to describe.
+    differences: version === 1 ? EXAMPLE_PACKAGE.differences : '',
     values: exampleValues(requiredOf(catalogue, purpose), purpose),
   };
 }
@@ -453,7 +464,13 @@ function BasicsStep({
   // A new code starts at the next free version; the example code follows the purpose.
   useEffect(() => {
     if (code !== undefined && CODE.test(code)) {
-      form.setFieldValue('version', nextVersion(overview, code));
+      const version = nextVersion(overview, code);
+      form.setFieldValue('version', version);
+      // The example wording claims there is no predecessor; from version 2 on
+      // there is one, and the alert on this very step names it.
+      if (version > 1 && form.getFieldValue('differences') === EXAMPLE_PACKAGE.differences) {
+        form.setFieldValue('differences', '');
+      }
     }
   }, [code, form, overview]);
   const lastPurpose = useRef<CalibrationPurpose | undefined>(undefined);
@@ -730,7 +747,10 @@ function ValuesStep({
   const form = Form.useFormInstance<DraftValues>();
   const purpose = Form.useWatch('purposeCode', form);
   const seeded = useRef(initialPurpose);
-  const categories = draftCategories(catalogue, purpose, extras);
+  const categories = useMemo(
+    () => draftCategories(catalogue, purpose, extras),
+    [catalogue, purpose, extras],
+  );
   const required = requiredOf(catalogue, purpose);
 
   // A new purpose brings its own examples; anything already edited is kept.
@@ -748,6 +768,16 @@ function ValuesStep({
     }
     form.setFieldValue('values', next);
   }, [purpose, form, catalogue, extras]);
+
+  // A removed category has to leave the draft, not only the screen: an
+  // unmounted field keeps its initial value in the form store, and the draft is
+  // built from that whole map. This runs after the editor's own unmount.
+  useEffect(() => {
+    const current = (form.getFieldValue('values') ?? {}) as ValueFieldMap;
+    const kept = Object.entries(current).filter(([code]) => categories.includes(code));
+    if (kept.length === Object.keys(current).length) return;
+    form.setFieldValue('values', Object.fromEntries(kept));
+  }, [categories, form]);
 
   if (purpose === undefined) {
     return <Typography.Text type="secondary">{text.purposeHelp}</Typography.Text>;

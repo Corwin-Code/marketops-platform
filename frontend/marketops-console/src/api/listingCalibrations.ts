@@ -102,7 +102,10 @@ export interface CalibrationPackage {
   readonly effectiveTo: string | null;
   readonly replacesPackageId: string | null;
   readonly replacedByPackageId: string | null;
+  /** Highest version of this code in the organization, where code and version are unique. */
   readonly latestVersionOfCode: number;
+  /** Highest version of this code in this package's own scope, where supersession happens. */
+  readonly latestVersionInScope: number;
   readonly superseded: boolean;
   readonly expired: boolean;
   readonly drafted: CalibrationActor | null;
@@ -390,6 +393,7 @@ function parsePackage(body: unknown): CalibrationPackage | undefined {
     replacesPackageId: optionalText(r.replacesPackageId),
     replacedByPackageId: optionalText(r.replacedByPackageId),
     latestVersionOfCode: integer(r.latestVersionOfCode) ?? version,
+    latestVersionInScope: integer(r.latestVersionInScope) ?? version,
     superseded: r.superseded === true,
     expired: r.expired === true,
     drafted,

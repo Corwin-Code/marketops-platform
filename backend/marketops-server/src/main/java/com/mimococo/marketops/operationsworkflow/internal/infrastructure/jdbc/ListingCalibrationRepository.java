@@ -48,6 +48,10 @@ public class ListingCalibrationRepository {
      *
      * @param combinationFailures raw answer of {@code ops.lc_calibration_combination_failures}
      *        (missing categories included, not deduplicated), or null when not evaluated
+     * @param latestVersionOfCode the highest version of this code in the organization, which is
+     *        where the code and version are unique
+     * @param latestVersionInScope the highest version of this code in this package's own scope,
+     *        which is where one package supersedes another
      * @param activeOverlapIds other active packages of the same scope key and purpose whose
      *        effective period overlaps this one, as activation looks them up
      */
@@ -58,7 +62,7 @@ public class ListingCalibrationRepository {
                              String differences, Step drafted, Step validated, Step accepted, Step activated,
                              Step retired, String currentDigest, List<String> requiredCategories,
                              List<String> missingCategories, List<String> combinationFailures,
-                             int latestVersionOfCode, List<UUID> activeOverlapIds) {
+                             int latestVersionOfCode, int latestVersionInScope, List<UUID> activeOverlapIds) {
     }
 
     private final JdbcClient jdbc;
@@ -102,6 +106,10 @@ public class ListingCalibrationRepository {
                        (SELECT max(n.package_version) FROM core.lc_calibration_package n
                          WHERE n.organization_id = p.organization_id AND n.package_code = p.package_code)
                          AS latest_version,
+                       (SELECT max(n.package_version) FROM core.lc_calibration_package n
+                         WHERE n.organization_id = p.organization_id AND n.package_code = p.package_code
+                           AND n.scope_key = p.scope_key)
+                         AS latest_version_in_scope,
                        (SELECT r.package_id FROM ops.lc_calibration_governance r
                           JOIN core.lc_calibration_package rp ON rp.id = r.package_id
                          WHERE r.replaces_package_id = p.id AND rp.status <> 'DRAFT'
@@ -222,6 +230,7 @@ public class ListingCalibrationRepository {
     private static PackageRow packageRow(ResultSet rs) throws SQLException {
         Array combination = rs.getArray("combination");
         Object latest = rs.getObject("latest_version");
+        Object latestInScope = rs.getObject("latest_version_in_scope");
         List<UUID> overlaps = new ArrayList<>();
         for (String id : texts(rs.getArray("active_overlaps"))) {
             overlaps.add(UUID.fromString(id));
@@ -243,7 +252,9 @@ public class ListingCalibrationRepository {
                 step(rs, "retired_by", "retired_name", "retired_at", "retirement_reference", "retirement_digest"),
                 rs.getString("current_digest"), texts(rs.getArray("required")), texts(rs.getArray("missing")),
                 combination == null ? null : texts(combination),
-                latest == null ? rs.getInt("package_version") : ((Number) latest).intValue(), overlaps);
+                latest == null ? rs.getInt("package_version") : ((Number) latest).intValue(),
+                latestInScope == null ? rs.getInt("package_version") : ((Number) latestInScope).intValue(),
+                overlaps);
     }
 
     /** A recorded step, or null when the step has not been taken. */

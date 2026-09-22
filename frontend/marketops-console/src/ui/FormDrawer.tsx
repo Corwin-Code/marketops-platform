@@ -42,8 +42,13 @@ export interface FormDrawerProps<V extends object> {
   readonly danger?: boolean;
   /** Called on every opening, e.g. to load what the form picks from. */
   readonly onOpen?: () => void;
-  /** Return a failure to keep the drawer open and show it; `undefined` closes it. */
-  readonly onSubmit: (values: V) => Promise<SubmitOutcome>;
+  /**
+   * Return a failure to keep the drawer open and show it; `undefined` closes it.
+   *
+   * The form instance is passed so a refusal the backend explains by a code can
+   * be put on the field it belongs to; the drawer then shows that field's step.
+   */
+  readonly onSubmit: (values: V, form: FormInstance<V>) => Promise<SubmitOutcome>;
 }
 
 /**
@@ -120,6 +125,15 @@ export function FormDrawer<V extends object>({
     }
   };
 
+  /** Show the first step that holds one of these failing fields. */
+  const showStepOf = (fields: readonly { readonly name: readonly (string | number)[] }[]): void => {
+    if (steps === undefined || fields.length === 0) return;
+    const index = steps.findIndex((item) =>
+      item.fields.some((name) => fields.some((field) => startsWith(field.name, name))),
+    );
+    if (index >= 0) setStep(index);
+  };
+
   const submit = async (): Promise<void> => {
     if (submitting.current) {
       return;
@@ -130,24 +144,21 @@ export function FormDrawer<V extends object>({
     } catch (error) {
       // A field that fails on a hidden step would otherwise look like a dead
       // button: show the first step holding a failing field.
-      if (steps !== undefined) {
-        const failing = failingFieldNames(error);
-        const index = steps.findIndex((item) =>
-          item.fields.some((name) => failing.some((failed) => startsWith(failed, name))),
-        );
-        if (index >= 0) setStep(index);
-      }
+      showStepOf(failingFieldNames(error).map((name) => ({ name })));
       return;
     }
     submitting.current = true;
     setBusy(true);
     setFailure(undefined);
     try {
-      const outcome = await onSubmit(values);
+      const outcome = await onSubmit(values, form);
       if (outcome === undefined) {
         close();
       } else {
         setFailure(outcome);
+        // Same reason as above: an error the submission put on a field of a
+        // hidden step would otherwise never be read.
+        showStepOf(form.getFieldsError().filter((field) => field.errors.length > 0));
       }
     } finally {
       submitting.current = false;

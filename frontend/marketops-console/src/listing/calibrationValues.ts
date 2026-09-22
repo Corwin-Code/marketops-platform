@@ -400,10 +400,30 @@ export function exampleValues(
   return out;
 }
 
+/** The same document with every object's keys in one fixed order. */
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (isRecord(value)) {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonical(value[key])]),
+    );
+  }
+  return value;
+}
+
+/**
+ * A JSON document as one comparable string.
+ *
+ * Keys are sorted because a stored value comes back through `jsonb`, which
+ * orders object keys its own way: comparing the serialized text as typed would
+ * make an untouched example look edited.
+ */
 function normalizedJson(textValue: string | undefined): string | undefined {
   if (textValue === undefined || textValue.trim() === '') return undefined;
   try {
-    return JSON.stringify(JSON.parse(textValue));
+    return JSON.stringify(canonical(JSON.parse(textValue)));
   } catch {
     return textValue;
   }
@@ -1276,11 +1296,17 @@ export function combinationFindings(values: ValueFieldMap, purpose: CalibrationP
   const profit = values.NON_WORSENING_PROFIT_BOUND;
   const returns = values.NON_WORSENING_RETURN_BOUND;
   if (profit !== undefined && returns !== undefined) {
-    if (profit.windowDays !== returns.windowDays) warning(rule.boundsWindows);
     const profitDocumentValue = (profit.json?.trim() ?? '') === '' ? undefined : documentOf(profit);
     const comparisons =
       isRecord(profitDocumentValue) &&
       profitDocumentValue.currentAccountingComparisons !== undefined;
+    if (profit.windowDays !== returns.windowDays) {
+      // With an accounting reference the database refuses the draft outright
+      // (CURRENT_ACCOUNTING_REFERENCE_BOUNDS_INVALID); without one it only
+      // leaves the consumer without a comparable window.
+      if (comparisons) error(rule.boundsWindows);
+      else warning(rule.boundsWindows);
+    }
     const nodes = asArray(documentOf(values.FORMAL_NODES)) ?? [];
     const protection = nodes.some(
       (node) => isRecord(node) && node.protectionComparison !== undefined,

@@ -73,12 +73,16 @@ public record ListingCalibrationView(Instant asOf, Viewer viewer, ScopeRights or
      * One package in the list.
      *
      * @param stage DRAFTED, VALIDATED, ACCEPTED, ACTIVE, ENDED or RETIRED at {@code asOf}
-     * @param latestVersionOfCode the highest version of this package code in the organization
-     * @param superseded a draft for which a later version of the same code exists
+     * @param latestVersionOfCode the highest version of this package code in the organization,
+     *        which is where the code and version are unique
+     * @param latestVersionInScope the highest version of this package code in this package's own
+     *        scope, which is where one package supersedes another
+     * @param superseded a draft for which a later version of the same code exists in the same
+     *        scope; a package of another scope replaces nothing here
      * @param expired a draft whose effective period has already ended
      * @param missingCategories categories the purpose requires that the package lacks
      * @param combinationFailures failures of the category combination, without the missing
-     *        categories; evaluated for drafts only, null otherwise
+     *        categories; evaluated for drafts and for a single-package read, null otherwise
      * @param digestIntact whether the package still has the digest it was drafted with
      * @param activeOverlapIds active packages of the same scope and purpose whose period overlaps
      * @param rights the caller's rights on the package's scope
@@ -88,6 +92,7 @@ public record ListingCalibrationView(Instant asOf, Viewer viewer, ScopeRights or
                                  String platformCode, UUID storeId, String storeName, String storePlatformCode,
                                  String status, String stage, Instant effectiveFrom, Instant effectiveTo,
                                  UUID replacesPackageId, UUID replacedByPackageId, int latestVersionOfCode,
+                                 int latestVersionInScope,
                                  boolean superseded, boolean expired, Actor drafted, Actor validated,
                                  Actor accepted, Actor activated, Actor retired, List<String> missingCategories,
                                  List<String> combinationFailures, boolean digestIntact, List<UUID> activeOverlapIds,

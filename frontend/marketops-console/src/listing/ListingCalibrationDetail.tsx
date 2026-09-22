@@ -29,7 +29,7 @@ import {
   fetchCalibrationDetail,
   validateCalibration,
 } from '../api/listingCalibrations';
-import { formatDecimal, formatPercent } from '../format';
+import { formatDecimal, formatPercent, formatStoreTime, STORE_TIMEZONE_LABEL } from '../format';
 import {
   calibrationCategoryHelp,
   calibrationGroups,
@@ -97,7 +97,11 @@ export function blockerText(step: CalibrationNextStep, item: CalibrationPackage)
     .map((blocker) => {
       if (blocker === 'NOT_GRANTED') return text.stepNotGranted[step.step] ?? blocker;
       if (blocker === 'NOT_YET_EFFECTIVE') {
-        return text.notYetEffective(new Date(item.effectiveFrom).toLocaleString('zh-CN'));
+        // Store time with its zone named, as every other instant on the page:
+        // the browser's own zone here would read five hours off in Beijing.
+        return text.notYetEffective(
+          `${formatStoreTime(item.effectiveFrom)}（${STORE_TIMEZONE_LABEL}）`,
+        );
       }
       return codeText('calibrationBlocker', blocker);
     })
@@ -442,6 +446,8 @@ function Integrity({
 }): React.JSX.Element {
   const summary = detail.summary;
   const draft = summary.status === 'DRAFT';
+  // The detail read evaluates the combination for every package, not only drafts.
+  const evaluated = summary.combinationFailures !== null;
   const failures = summary.combinationFailures ?? [];
   const blocks: ReactNode[] = [];
   if (summary.missingCategories.length > 0) {
@@ -493,7 +499,7 @@ function Integrity({
         key="superseded"
         type="warning"
         showIcon
-        title={text.supersededNote(summary.latestVersionOfCode)}
+        title={text.supersededNote(summary.latestVersionInScope)}
       />,
     );
   }
@@ -528,14 +534,14 @@ function Integrity({
   }
   if (
     blocks.length === 0 ||
-    (draft && summary.missingCategories.length === 0 && failures.length === 0)
+    (evaluated && summary.missingCategories.length === 0 && failures.length === 0)
   ) {
     blocks.unshift(
       <Alert
         key="ok"
-        type={draft ? 'success' : 'info'}
+        type={evaluated ? 'success' : 'info'}
         showIcon
-        title={draft ? text.integrityOk : text.integrityNotEvaluated}
+        title={evaluated ? text.integrityOk : text.integrityNotEvaluated}
       />,
     );
   }
