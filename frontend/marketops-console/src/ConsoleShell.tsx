@@ -13,6 +13,7 @@ import { AdvertisingOutcomeHistory } from './advertising/AdvertisingOutcomeHisto
 import { AdvertisingBriefView } from './advertising/AdvertisingBriefView';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
+import { ListingConversionShell } from './listing/ListingConversionShell';
 import type { Session } from './session/session';
 
 /** What the shell needs in order to show a signed-in operator their work. */
@@ -38,7 +39,8 @@ type View =
   | { readonly name: 'review'; readonly recommendation: Recommendation }
   | { readonly name: 'command'; readonly commandId: string }
   | { readonly name: 'advertising-case'; readonly caseId: string }
-  | { readonly name: 'advertising-brief'; readonly briefKind: string };
+  | { readonly name: 'advertising-brief'; readonly briefKind: string }
+  | { readonly name: 'listing' };
 
 /**
  * The signed-in console: one journey, in the order the work happens.
@@ -84,6 +86,27 @@ export function ConsoleShell({
 
       {view.name === 'queue' && (
         <DiagnosticExportPanel key={storeId} context={context} storeId={storeId} />
+      )}
+
+      {view.name === 'queue' && (
+        <button
+          type="button"
+          onClick={() => {
+            setView({ name: 'listing' });
+          }}
+        >
+          Listing 转化与内容 / Конверсия и контент карточек
+        </button>
+      )}
+
+      {view.name === 'listing' && (
+        <ListingConversionShell
+          context={context}
+          storeId={storeId}
+          onBack={() => {
+            setView({ name: 'queue' });
+          }}
+        />
       )}
 
       {view.name === 'queue' && <AvailabilityQueue context={context} />}

@@ -23,6 +23,7 @@ public enum MetricCode {
     RETAINED_UNITS(MetricDomain.SALES),
     RETAINED_NET_SALES(MetricDomain.SALES),
     SETTLED_NET_SALES(MetricDomain.SALES),
+    SETTLED_UNITS(MetricDomain.SALES),
     RETURN_UNITS(MetricDomain.RETURNS),
     RETURN_RATE(MetricDomain.RETURNS),
     PLATFORM_AVAILABLE_UNITS(MetricDomain.INVENTORY),

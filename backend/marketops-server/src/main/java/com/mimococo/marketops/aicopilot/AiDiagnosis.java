@@ -52,4 +52,30 @@ public record AiDiagnosis(
     public List<AiClaim> rejectedClaims() {
         return claims.stream().filter(claim -> !claim.accepted()).toList();
     }
+
+    /** Exact decimal payloads are text on the Console wire, including rejected model suggestions. */
+    public AiDiagnosis consoleView() {
+        var wireClaims=claims.stream().map(claim->{
+            var payload=new java.util.LinkedHashMap<String,Object>();
+            claim.payload().forEach((key,value)->payload.put(key,consoleValue(value)));
+            return new AiClaim(claim.claimId(),claim.kind(),claim.ordinal(),claim.statement(),claim.confidenceLabel(),
+                    claim.metricValueRefs(),claim.findingRefs(),payload,claim.accepted(),claim.rejectionCode());
+        }).toList();
+        return new AiDiagnosis(invocationId,subjectId,outputSchemaVersion,state,failureCode,degraded,providerCode,modelCode,
+                wireClaims,startedAt,completedAt);
+    }
+
+    private static Object consoleValue(Object value) {
+        if (value instanceof java.math.BigDecimal decimal) return decimal.toPlainString();
+        if (value instanceof java.math.BigInteger integer) return integer.toString();
+        if (value instanceof Double || value instanceof Float) return value.toString();
+        if (value instanceof Long number && (number>9_007_199_254_740_991L || number< -9_007_199_254_740_991L)) return number.toString();
+        if (value instanceof java.util.Map<?,?> map) {
+            var result=new java.util.LinkedHashMap<String,Object>();
+            map.forEach((key,item)->result.put((String)key,consoleValue(item)));
+            return result;
+        }
+        if (value instanceof List<?> list) return list.stream().map(AiDiagnosis::consoleValue).toList();
+        return value;
+    }
 }

@@ -5,7 +5,7 @@ document_type: active_delivery_plan
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 source_contract: docs/01-requirements/V1_PRODUCT_CONTRACT.md
-active_slice: SLICE-V1-003
+active_slice: SLICE-V1-004
 old_phase_zero_backlog: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
 effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION
 ```
@@ -49,11 +49,39 @@ See `docs/02-architecture/V1_SHARED_SPINE.md`.
 | ---: | --- | --- | --- | --- |
 | 1 | `SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop` | Cross-domain SKU diagnosis, evidence-linked AI recommendation, task/approval and dual-platform guarded price execution | `PRICE_CHANGE` on Ozon and WB | CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN |
 | 2 | `SLICE-V1-002 — Stockout & Availability Risk with Accountable Response` | Trusted channel and company availability risk, grouped queue, deterministic priority, cause-routed accountable Case with two-stage action and outcome verification, governed Accepted Exception and targeted plus hourly recalculation | none; this Slice has no controlled-write target | ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED_RELEASE_DEFERRED |
-| 3 | `SLICE-V1-003 — Advertising & Traffic Efficiency` | Campaign/target efficiency tied to inventory, deterministic ad-linked conversion and dual-axis Advertising Contribution Profit, with deterministic lanes, non-compensating priority, accountable Task, governed Manual Shadow on both platforms, and one bounded per-command approved bid change | `AD_BID_CHANGE` on Ozon and WB | CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION |
-| 4 | `SLICE-V1-004 — Promotion & Listing Conversion` | Listing Health, content/promotion diagnosis, experiments and governed content/promotion workflow | selected promotion/listing command | PLANNED |
+| 3 | `SLICE-V1-003 — Advertising & Traffic Efficiency` | Campaign/target efficiency tied to inventory, deterministic ad-linked conversion and dual-axis Advertising Contribution Profit, with deterministic lanes, non-compensating priority, accountable Task, governed Manual Shadow on both platforms, and one bounded per-command approved bid change | `AD_BID_CHANGE` on Ozon and WB | CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS |
+| 4 | `SLICE-V1-004 — Promotion & Listing Conversion` | Listing Health as three layers without a score, evidence-qualified conversion measurement, content and simple promotion candidates, independent review, deterministic guardrail and calibration, exposure allowance and launch, Manual and API execution paths, Outcome evaluation, containment and recovery | `LISTING_DESCRIPTION_CHANGE` (exact Russian Description only) on Ozon and WB; promotion actions Manual-path only | CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION_LEVEL_1_LOCAL |
 | 5 | `SLICE-V1-005 — Order, Fulfillment & Return Control` | Ozon/WB FBO/FBS order state, SLA, return/QC and exception control | selected low-risk order action | PLANNED |
 | 6 | `SLICE-V1-006 — Finance & Contribution Profit Reconciliation` | Operational/Settled Contribution Profit, late adjustments, reconciliation and close workflow | none required by default | PLANNED |
 | 7 | `SLICE-V1-007 — Cross-domain Command Center & V1 Gate` | Integrated daily command center, policy management, cross-domain prioritization and V1 readiness | expand only capabilities that independently pass | PLANNED |
+
+### SLICE-V1-004 controlled-write narrowing, with its original provenance
+
+The row above records the accepted Contract, which names one exact controlled
+write where this roadmap originally left the choice open. The original text is
+preserved here so the change is visible rather than silent:
+
+```text
+SLICE-V1-004 — Promotion & Listing Conversion
+Listing Health, content/promotion diagnosis, experiments and governed
+content/promotion workflow
+new controlled-write target: selected promotion/listing command
+```
+
+The accepted Contract selects `LISTING_DESCRIPTION_CHANGE` and only
+`LISTING_DESCRIPTION_CHANGE`: the exact Russian Description text of one
+listing, never a whole-card import, never any other attribute, price, stock,
+title, image or promotion field. Official promotion participation and seller
+direct discount are handled as Manual-path actions recorded, exited and
+released in this product and applied in the platform's own console; they never
+gain a Provider API path here. "Experiments" are the governed evaluation plan
+with formal nodes and transition-day exclusion, not an A/B tool. The
+Provider write path stays structurally unreachable behind the verified
+registry, the kill switches, the Pilot allowlist and the Owner-published gate
+authority with `production_write_enabled` false. Level 1 authority covers
+local design, implementation, tests, canonical documents and a local Git
+checkpoint only; publication, merge, Level 2 environments, Gate EV, Gate E and
+Pilot are separate authorities.
 
 ### SLICE-V1-003 controlled-write narrowing, with its original provenance
 
@@ -197,3 +225,23 @@ the final containing Head pending. See [the current handoff](../07-phase-evidenc
 This updates delivery progress only; no later Slice, extra write Capability,
 Ready/merge or production enablement is authorized. All 24 release obligations
 remain deferred and production-blocking.
+
+## SLICE-V1-004 engineering closure checkpoint
+
+The accepted-scope row above is preserved; its status token records the accepted
+Contract and the Level 1 authority granted at acceptance time. Controller Final
+Closure Verification R2 FINAL (`SLICE-V1-004-FINAL-CLOSURE-F71D4C8C-R2-FINAL`,
+PASS at Level 1 engineering scope, 27/27 frozen findings closed) and the Human
+Owner's formal closure of 2026-09-16 close SLICE-V1-004 engineering at exact Head
+`f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10`, tree
+`b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47` (implementation Head
+`d65c9185adc89955d6bab3b20ac7bd9f639b5335`). The Slice state is
+`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`; the 69 acceptance rows
+stay 54 engineering / 12 external evidence pending / 3 not applicable at Level 1;
+`F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02`, `E-04` and every prior release
+obligation remain open. See the
+[Closure Snapshot](../07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md)
+and the [Owner receipt](../08-handoffs/OWNER-SLICE-V1-004-FORMAL-CLOSURE-RECEIPT-F71D4C8C-R2.md).
+This records delivery progress only; no later Slice, extra write Capability,
+remote publication, Ready/merge, Gate EV, Gate E, Pilot or production
+enablement is authorized by it.

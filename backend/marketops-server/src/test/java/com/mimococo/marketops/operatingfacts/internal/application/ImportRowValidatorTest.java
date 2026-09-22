@@ -50,6 +50,40 @@ class ImportRowValidatorTest {
     }
 
     @Test
+    void fixedFeeRequiresAnExactActivityAndFiniteValidityInsteadOfStoreFallback() {
+        when(references.storeIdByCode(any(),any())).thenReturn(Optional.of(UUID.randomUUID()));
+        var row=new LinkedHashMap<>(Map.of("inputCode","PROMOTION_FIXED_FEE","scopeKind","PROMOTION",
+                "scopeCode","fixture-store","valueKind","AMOUNT","amountValue","600","currencyCode","RUB",
+                "effectiveFrom","2026-08-01T00:00:00Z","effectiveTo","2026-08-08T00:00:00Z",
+                "promotionKind","OFFICIAL_PROMOTION_PARTICIPATION","nativePromotionKey","activity-1"));
+        assertThat(validate(IntakeDataset.FINANCE_INPUT,row).accepted()).isTrue();
+        for(String field:java.util.List.of("nativePromotionKey","promotionKind","effectiveTo")) {
+            var missing=new LinkedHashMap<>(row);missing.remove(field);
+            assertThat(validate(IntakeDataset.FINANCE_INPUT,missing).accepted()).as(field).isFalse();
+        }
+        row.put("scopeKind","STORE");
+        assertThat(validate(IntakeDataset.FINANCE_INPUT,row).accepted()).isFalse();
+    }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"PROMOTION_BUYER_PAYMENT_PER_UNIT","PROMOTION_SELLER_REVENUE_PER_UNIT","PROMOTION_PLATFORM_COMPENSATION_PER_UNIT"})
+    void revenueInputNeedsItsExactOwnedListingAndTerms(String code) {
+        when(references.storeIdByCode(any(),any())).thenReturn(Optional.of(UUID.randomUUID()));
+        when(references.promotionListingBelongsToStore(any(),any(),any())).thenReturn(true);
+        var row=new LinkedHashMap<>(Map.of("inputCode",code,"scopeKind","PROMOTION","scopeCode","fixture-store",
+                "valueKind","AMOUNT","amountValue","100","currencyCode","RUB","effectiveFrom","2026-08-01",
+                "effectiveTo","2026-08-08","promotionKind","OFFICIAL_PROMOTION_PARTICIPATION","nativePromotionKey","activity-1"));
+        row.put("promotionListingId",UUID.randomUUID().toString());
+        row.put("promotionTermsDigest",com.mimococo.marketops.shared.Digest.ofText("fixture-promotion-terms"));
+        assertThat(validate(IntakeDataset.FINANCE_INPUT,row).accepted()).isTrue();
+        when(references.promotionListingBelongsToStore(any(),any(),any())).thenReturn(false);
+        assertThat(validate(IntakeDataset.FINANCE_INPUT,row).accepted()).isFalse();
+        when(references.promotionListingBelongsToStore(any(),any(),any())).thenReturn(true);
+        row.remove("promotionTermsDigest");
+        assertThat(validate(IntakeDataset.FINANCE_INPUT,row).accepted()).isFalse();
+    }
+
+    @Test
     void valuesHaveTheSameCanonicalTypesForPreviewAndApplication() {
         var row = cost(); row.put("currencyCode", "rub"); row.put("costKind", "landed");
         var accepted = validate(IntakeDataset.PURCHASE_COST, row);

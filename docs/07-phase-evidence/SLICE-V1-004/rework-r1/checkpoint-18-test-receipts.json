@@ -1,0 +1,136 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "ead8737802be1fb4a21ed2a7099907803923b79e",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/ListingActionView.java": "9d42abbf78d5d72fe8c1ffaa5fd58fd29aac0d7dafa513a888fce013229703bb",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/PromotionTerms.java": "17cd56e12a06d32000af4d161a16e9935f2960e50cda50a01a1832646bbd68bd",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/PromotionTermsView.java": "bf2c5305757895017ac70fb659699dfcfba7ff5cc484b36b9b91696ef1bb0709",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java": "086863f56ea6b39100e0f0745992b570a01a49ff4d7cfb39c19871f0496b225d",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ManualPathService.java": "99df56210f9bea02e8e6fbb0659b0019f290d43f59d48a28e7bf010a928adfea",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingActionRepository.java": "5b23a0a9dcc49f045c4b88f760bbb325582797ee228e7cd86105fc24e7611662",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingActionConsoleController.java": "96187c22e8d372f4b3bb657e8d03b4c44a49efabd5a09a343aeaab484e14f5ca",
+    "backend/marketops-server/src/main/resources/db/migration/V0099__freeze_promotion_declarations_before_review.sql": "9d870efe9e7a45b68ec9b6f2b6be23273e0940ada99c15ebde3b0a3092321ac1",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "a468e277a27f5152eb47b25e4fbf32d59bd51fe0751b05721f5c1afbb71cec39",
+    "frontend/marketops-console/src/__tests__/ListingConversionForms.test.tsx": "73a47f74265976e0cc3a4e1efdb5c39fff4b614ed91b6ed6143e004b92cddf01",
+    "frontend/marketops-console/src/api/listingConversion.ts": "feddcee1b5e05f4521dc0e548efb1fc61503cd3056c9b7733cc1a9830f134b7f",
+    "frontend/marketops-console/src/listing/ListingActionsPanel.tsx": "f84aee65ae35c7e35767cd094e3c02f90d626167e25622d72132e846d37717ce",
+    "frontend/marketops-console/src/listing/ListingPromotionTerms.tsx": "cb76a6e01953f6a4c8b3165a4cbad7cad6ba4ac2ddf290030d8ee74a1f3fa53b",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "058703edc7bd34ce6018257b84f4a96dca2d0befd18d83793b6a80baaa5084ba"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 42,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-authorization-final.log",
+      "raw_log_sha256": "b1058895f853ab2f162627a843230d4a068ae13bb00a2561927336c5ddeadf8b",
+      "summary_path": "promotion-declaration-authorization-final-summary.txt",
+      "summary_sha256": "e10b6bec9459f32374b86c71ff52bc8d4140b69a141844c65294dbbf32addb94"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingActionLaunchIT,CalibrationSnapshotTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 102,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-launch-architecture.log",
+      "raw_log_sha256": "9852f285778382fa6c9b53e692dc6239a333bf34e6e5845f32a1849e5b9146d5",
+      "summary_path": "promotion-declaration-launch-architecture-summary.txt",
+      "summary_sha256": "6608293ffd4b10377668237a4c2df9421b991008357977de6120a799bc5453f4"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-upgrade.log",
+      "raw_log_sha256": "6dc3b5a330b26fbef01b9d8013e987a00aef51c2528192c9d9e933dc68af740a",
+      "summary_path": "promotion-declaration-upgrade-summary.txt",
+      "summary_sha256": "5a1897d8d5c384265f2c9ad77de2a637cf46993e9d7a4e5835d1ffb8f82d1d85"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT#promotionDeclarationIsFrozenBeforeReviewAndBoundToManualEntry'",
+      "working_directory": "backend/marketops-server",
+      "tests": 2,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-exact-reference.log",
+      "raw_log_sha256": "a7dc5b3f2fa66cd3aa877d34212430fd9cd0af43b14c5dab8230b744b125d4e4",
+      "summary_path": "promotion-declaration-exact-reference-summary.txt",
+      "summary_sha256": "4c44085d996ead20f9389c5aad50a624056096f8c9a7f6b975a0e033d0ae3913"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 27,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-frontend-targeted.log",
+      "raw_log_sha256": "95edbb8155e5db857836313641139d3dbb804d480fd2c6ff96a035bc91efdfcb",
+      "summary_path": "promotion-declaration-frontend-targeted-summary.txt",
+      "summary_sha256": "39b23627a63c95195296f74797c8006d0eb67d99c351a3c367a95ff02344f77e"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-frontend-lint-final.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "promotion-declaration-frontend-lint-final-summary.txt",
+      "summary_sha256": "82b0abb1739cb2f94d79378826f1f874c7cdae66e6ab8ff906b6812db102849f"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-frontend-build.log",
+      "raw_log_sha256": "98c5860dbd7bc632e8e2363af09f262c512735da100cb9fd835169430c0accc0",
+      "summary_path": "promotion-declaration-frontend-build-summary.txt",
+      "summary_sha256": "961147b59b754ab6b84dce51c0401cbea1f29e99a30c036cc4308e566b0ea5cb"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingManualVerificationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 8,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-manual-regression.log",
+      "raw_log_sha256": "f4fb820621d00f61ffdd7df4b212eaaf964ccb04938691d79842a71fc32a16be",
+      "summary_path": "promotion-declaration-manual-regression-summary.txt",
+      "summary_sha256": "3f7946a52ac338f5fdfa541836977f4418c9f023f7485d173ea3973e884b8d8b"
+    }
+  ],
+  "limitations": [
+    "0/27 findings CLOSED; exact terms identity does not qualify economics, native participation, exit, adoption or release.",
+    "42 authorization tests preceded the isolated exact-reference preservation correction; the final two promotion cases and the eight related manual-verification tests pass after that correction.",
+    "The 27 frontend tests preceded behavior-preserving ESLint shorthand/duplicate-conditional cleanup; lint and build ran after cleanup.",
+    "Upgrade test preserves V0090 historical orphan launch through current migrations; it is not full baseline parity or historical promotion qualification.",
+    "Only isolated local synthetic databases and fictional loopback infrastructure; no real provider, Gate EV/E, shared migration or remote publication."
+  ],
+  "diagnosed_runs": [
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-connected-probe.log",
+      "raw_log_sha256": "f22390ff118c6609cabd92cce07ba9f99cbb7ed3ef416a36e13ae4f45469b553",
+      "diagnosis": "Fixture round key used uppercase enum, violating existing requireCode before preparation."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-connected-corrected.log",
+      "raw_log_sha256": "ec75b6c70e4f64f0a6b0da35258ae528ca2be8434f662a4aa1a86b398c4cce5d",
+      "diagnosis": "Editing failed due to wrong working directory; obsolete source was inadvertently rerun. Not new evidence."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-connected-v2.log",
+      "raw_log_sha256": "69a55163679b95abdc3a912f9b3e1efe435164936c33c2ed11ef4b2d7f02c138",
+      "diagnosis": "Changed entry correctly rejected with MO092 mapped to HTTP 403; fixture expected 409."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-connected-v3.log",
+      "raw_log_sha256": "388bcf19185babc5ed642a4db7b3726acdd64f8fd1f0f2f222fe8e0e02a7e0d2",
+      "diagnosis": "Two connected cases pass before adding product-specific disclosure/revocation assertions."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/promotion-declaration-frontend-lint.log",
+      "raw_log_sha256": "2317abf8197e72ecd4459d64ce8792b0c559f1ca65a6d973252a2bc1ee90197d",
+      "diagnosis": "Local coding style and duplicated true description conditional; fixed without behavior expansion."
+    }
+  ]
+}

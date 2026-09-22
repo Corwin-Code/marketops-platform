@@ -141,6 +141,84 @@ class BoundedOutboundHttpTest {
         } finally { client.close(); server.stop(0); }
     }
 
+    @Test
+    void waitSignalsSurviveTheFilterAndOutOfBoundsLinesAreNamedButNeverKept() throws Exception {
+        var response = rawExchange(List.of(
+                "Item-Retry-After: 2",
+                "X-Ratelimit-Retry: 120",
+                "Retry-After: 1",
+                "retry-after: " + "9".repeat(BoundedOutboundHttp.RESPONSE_HEADER_VALUE_LIMIT + 1),
+                "Set-Cookie: session=synthetic-secret",
+                "X-Unlisted: " + "x".repeat(2000)));
+        assertThat(response.headers()).containsEntry("item-retry-after", List.of("2"))
+                .containsEntry("x-ratelimit-retry", List.of("120"))
+                .containsEntry("retry-after", List.of("1"))
+                .doesNotContainKeys("set-cookie", "x-unlisted");
+        assertThat(response.withheldHeaders()).containsExactly(Map.entry("retry-after", 1));
+    }
+
+    @Test
+    void controlCharactersInAWaitValueAreWithheldAndCounted() throws Exception {
+        var response = rawExchange(List.of("X-Ratelimit-Retry: 120\u0001", "x-ratelimit-retry: 60"));
+        assertThat(response.headers()).containsEntry("x-ratelimit-retry", List.of("60"));
+        assertThat(response.withheldHeaders()).containsExactly(Map.entry("x-ratelimit-retry", 1));
+    }
+
+    @Test
+    void anAbsentWaitSignalIsNeitherKeptNorWithheld() throws Exception {
+        var response = rawExchange(List.of("Content-Type: application/json"));
+        assertThat(response.headers()).doesNotContainKeys("retry-after", "item-retry-after", "x-ratelimit-retry");
+        assertThat(response.withheldHeaders()).isEmpty();
+    }
+
+    @Test
+    void theParserLimitsStillFailTheExchangeRatherThanKeepingAnything() {
+        // The 8192-byte line and 64-field limits are not relaxed to keep a wait signal.
+        assertThatThrownBy(() -> rawExchange(List.of("Retry-After: " + "9".repeat(8200))))
+                .isInstanceOf(java.io.IOException.class);
+        var fields = new java.util.ArrayList<String>();
+        for (int field = 0; field < 64; field++) {
+            fields.add("X-Filler-" + field + ": 1");
+        }
+        fields.add("Retry-After: 3600");
+        assertThatThrownBy(() -> rawExchange(fields)).isInstanceOf(java.io.IOException.class);
+    }
+
+    /** Writes exact header bytes over a loopback socket through the production exchange path. */
+    private static OutboundHttp.Response rawExchange(List<String> headerLines) throws Exception {
+        try (var server = new java.net.ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
+            var responder = Thread.ofVirtual().start(() -> {
+                try (var socket = server.accept()) {
+                    var in = socket.getInputStream();
+                    var head = new java.io.ByteArrayOutputStream();
+                    while (!head.toString(StandardCharsets.ISO_8859_1).endsWith("\r\n\r\n")) {
+                        int next = in.read();
+                        if (next < 0) return;
+                        head.write(next);
+                    }
+                    var out = new StringBuilder("HTTP/1.1 429 Too Many Requests\r\n");
+                    headerLines.forEach(line -> out.append(line).append("\r\n"));
+                    out.append("Content-Length: 2\r\nConnection: close\r\n\r\n{}");
+                    socket.getOutputStream().write(out.toString().getBytes(StandardCharsets.ISO_8859_1));
+                } catch (java.io.IOException ignored) {
+                    // The client assertion reports any transport failure.
+                }
+            });
+            var client = new BoundedOutboundHttp(new OutboundDestinationProperties(List.of()), java.time.Clock.systemUTC());
+            try {
+                var plan = new BoundedOutboundHttp.Prepared(
+                        destination("http://fixture.example:" + server.getLocalPort() + "/wait", 128, 2000),
+                        new InetAddress[]{InetAddress.getLoopbackAddress()}, Set.of("accept"), Instant.now().plusSeconds(5));
+                var response = client.exchange(plan, Map.of("Accept", "application/json"));
+                assertThat(response.statusCode()).isEqualTo(429);
+                return response;
+            } finally {
+                client.close();
+                responder.join(java.time.Duration.ofSeconds(5));
+            }
+        }
+    }
+
     private static OutboundHttp.Destination destination(String uri, int responseLimit, int timeout) {
         return new OutboundHttp.Destination("fixture", URI.create(uri), "GET", Set.of("Accept"), new byte[0], timeout, responseLimit);
     }

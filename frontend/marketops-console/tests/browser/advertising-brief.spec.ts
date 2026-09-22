@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { resolveBackendOrigin } from './backendOrigin.ts';
 
 /**
  * The published brief in a real browser.
@@ -11,7 +12,7 @@ import type { Page } from '@playwright/test';
  * about any marketplace, advertising platform, or figure in it.
  */
 
-const API_ORIGIN = 'http://127.0.0.1:8080';
+const API_ORIGIN = resolveBackendOrigin();
 const BRIEFS = `${API_ORIGIN}/api/v1/console/advertising/briefs`;
 const PERIOD = '2026-09-04';
 

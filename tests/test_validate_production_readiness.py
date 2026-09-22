@@ -1,8 +1,16 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
+import socket
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
+
+import scripts.validate_production_readiness as readiness
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
@@ -26,6 +34,19 @@ from scripts.validate_production_readiness import (
     ACTION_REFERENCE,
     ARCHITECTURE_RULE_TOKENS,
     BUILT_PREVIEW_COMMAND,
+    FRESH_CLONE_CONTRACT_TOKENS,
+    FRESH_CLONE_ENTRY,
+    FRESH_CLONE_PROHIBITED_TOKENS,
+    ISOLATED_BROWSER_CONTRACT_TOKENS,
+    ISOLATED_BROWSER_ENTRY,
+    BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS,
+    BROWSER_BACKEND_ORIGIN_RESOLVER,
+    BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS,
+    BROWSER_SPEC_PROHIBITED_TOKENS,
+    LOCAL_CONFIG_CONTRACT_TOKENS,
+    LOCAL_CONFIG_ENTRY,
+    LOCAL_CONFIG_PROHIBITED_TOKENS,
+    LOOPBACK_PORT_PROBE,
     BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
@@ -114,6 +135,324 @@ class DeferredEvidenceRegisterTests(unittest.TestCase):
         mutated["entries"].pop()
         errors = deferred_evidence_register_violations(mutated)
         self.assertTrue(any("exactly cover Amendment-002" in error for error in errors))
+
+
+class FreshCloneEntryContractTests(unittest.TestCase):
+    """Full mode keeps every stack off the default port and runs the browser only in isolation."""
+
+    def setUp(self) -> None:
+        self.fresh_clone = (ROOT / FRESH_CLONE_ENTRY).read_text(encoding="utf-8")
+        self.isolated = (ROOT / ISOLATED_BROWSER_ENTRY).read_text(encoding="utf-8")
+
+    def fresh_clone_violations(self, text: str) -> list[str]:
+        return contract_token_violations(
+            text,
+            required=FRESH_CLONE_CONTRACT_TOKENS,
+            prohibited=FRESH_CLONE_PROHIBITED_TOKENS,
+        )
+
+    def test_the_committed_entries_meet_their_contracts(self) -> None:
+        self.assertEqual([], self.fresh_clone_violations(self.fresh_clone))
+        self.assertEqual(
+            [],
+            contract_token_violations(self.isolated, required=ISOLATED_BROWSER_CONTRACT_TOKENS),
+        )
+        self.assertEqual([], matching_lines(self.isolated, PATH_RESTRICTION))
+
+    def test_a_browser_run_on_the_generated_default_database_is_rejected(self) -> None:
+        delegation = f"bash {ISOLATED_BROWSER_ENTRY}"
+        mutated = self.fresh_clone.replace(delegation, "npm run test:browser")
+        violations = self.fresh_clone_violations(mutated)
+        self.assertIn(f"required contract is absent: {delegation}", violations)
+        self.assertIn("prohibited contract is present: npm run test:browser", violations)
+
+    def test_a_configuration_stack_left_on_the_default_port_is_rejected(self) -> None:
+        start = self.fresh_clone.index('python3 - "${CLONE}/.env.local" "${DB_PORT}"')
+        end = self.fresh_clone.index("\nPY\n", start) + len("\nPY\n")
+        mutated = self.fresh_clone[:start] + self.fresh_clone[end:]
+        mutated = mutated.replace("compose port postgres 5432", "true")
+        violations = self.fresh_clone_violations(mutated)
+        self.assertIn(
+            'required contract is absent: lines[hits[0]] != "MARKETOPS_DB_PORT=5432\\n"', violations
+        )
+        self.assertIn("required contract is absent: compose port postgres 5432", violations)
+
+    def test_an_isolated_entry_without_the_browser_suite_or_port_check_is_rejected(self) -> None:
+        mutated = self.isolated.replace("npm run test:browser", "true")
+        self.assertEqual(
+            ["required contract is absent: npm run test:browser"],
+            contract_token_violations(mutated, required=ISOLATED_BROWSER_CONTRACT_TOKENS),
+        )
+        mutated = self.isolated.replace('"${compose[@]}" port postgres 5432', "echo")
+        self.assertEqual(
+            ['required contract is absent: "${compose[@]}" port postgres 5432'],
+            contract_token_violations(mutated, required=ISOLATED_BROWSER_CONTRACT_TOKENS),
+        )
+
+    def test_the_configuration_stack_is_removed_before_the_isolated_entry_runs(self) -> None:
+        teardown = self.fresh_clone.index("\ncompose down --volumes --remove-orphans\n")
+        removal = self.fresh_clone.index('rm -f -- "${CLONE}/.env.local"')
+        delegation = self.fresh_clone.index(f"bash {ISOLATED_BROWSER_ENTRY}")
+        self.assertLess(teardown, removal)
+        self.assertLess(removal, delegation)
+
+    def test_both_entries_refuse_the_same_inherited_database_sources(self) -> None:
+        def refused(text: str) -> str:
+            return next(line.strip() for line in text.splitlines() if "MARKETOPS_DB_*|" in line)
+
+        self.assertEqual(refused(self.isolated), refused(self.fresh_clone))
+
+    def contract_violations(self, relative: str, text: str) -> list[str]:
+        """Run the repository contract check with one entry replaced in memory."""
+        original = readiness.read_text
+
+        def patched(path: Path) -> str | None:
+            return text if path == ROOT / relative else original(path)
+
+        report = readiness.Report()
+        with mock.patch.object(readiness, "read_text", patched):
+            readiness.check_repository_contracts(report)
+        return [violation.detail for violation in report.violations if violation.path == relative]
+
+    def test_the_repository_check_enforces_both_entries(self) -> None:
+        self.assertEqual([], self.contract_violations(FRESH_CLONE_ENTRY, self.fresh_clone))
+        self.assertEqual([], self.contract_violations(ISOLATED_BROWSER_ENTRY, self.isolated))
+        mutated = self.fresh_clone.replace(f"bash {ISOLATED_BROWSER_ENTRY}", "npm run test:browser")
+        self.assertIn(
+            "prohibited contract is present: npm run test:browser",
+            self.contract_violations(FRESH_CLONE_ENTRY, mutated),
+        )
+        mutated = self.isolated.replace("npm run test:browser", "true")
+        self.assertIn(
+            "required contract is absent: npm run test:browser",
+            self.contract_violations(ISOLATED_BROWSER_ENTRY, mutated),
+        )
+
+    def test_the_browser_stage_backstop_and_teardown_are_bound(self) -> None:
+        mutations = (
+            'COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}"\nSTACK_STARTED=true\n',
+            "compose down --volumes --remove-orphans\nSTACK_STARTED=false\n",
+            'require_no_resources "${project}" 6',
+            '  docker ps -aq --filter "${label}" || return 1\n',
+        )
+        for removed in mutations:
+            with self.subTest(removed=removed):
+                self.assertIn(removed, self.fresh_clone)
+                violations = self.contract_violations(FRESH_CLONE_ENTRY, self.fresh_clone.replace(removed, ""))
+                self.assertTrue(any(v.startswith("required contract is absent") for v in violations))
+
+    def test_path_avoidance_wording_in_the_isolated_entry_is_rejected(self) -> None:
+        mutated = self.isolated + "\n# move the clone to a path without spaces\n"
+        self.assertTrue(matching_lines(mutated, PATH_RESTRICTION))
+        self.assertTrue(any(
+            v.startswith("repository path restriction")
+            for v in self.contract_violations(ISOLATED_BROWSER_ENTRY, mutated)
+        ))
+
+
+class BackendPortIsolationTests(unittest.TestCase):
+    """Backend stages answer only on a port nothing else held, and the browser reads that port."""
+
+    PLAYWRIGHT_CONFIG = "frontend/marketops-console/playwright.config.ts"
+    BROWSER_SPEC = "frontend/marketops-console/tests/browser/operating-console.spec.ts"
+
+    def setUp(self) -> None:
+        self.fresh_clone = (ROOT / FRESH_CLONE_ENTRY).read_text(encoding="utf-8")
+        self.isolated = (ROOT / ISOLATED_BROWSER_ENTRY).read_text(encoding="utf-8")
+        self.local_config = (ROOT / LOCAL_CONFIG_ENTRY).read_text(encoding="utf-8")
+        self.playwright = (ROOT / self.PLAYWRIGHT_CONFIG).read_text(encoding="utf-8")
+        self.spec = (ROOT / self.BROWSER_SPEC).read_text(encoding="utf-8")
+
+    def contract_violations(self, relative: str, text: str) -> list[str]:
+        """Run the repository contract check with one file replaced in memory."""
+        original = readiness.read_text
+
+        def patched(path: Path) -> str | None:
+            return text if path == ROOT / relative else original(path)
+
+        report = readiness.Report()
+        with mock.patch.object(readiness, "read_text", patched):
+            readiness.check_repository_contracts(report)
+        return [violation.detail for violation in report.violations if violation.path == relative]
+
+    def test_the_committed_files_meet_their_port_contracts(self) -> None:
+        self.assertEqual(
+            [],
+            contract_token_violations(
+                self.local_config,
+                required=LOCAL_CONFIG_CONTRACT_TOKENS,
+                prohibited=LOCAL_CONFIG_PROHIBITED_TOKENS,
+            ),
+        )
+        self.assertEqual(
+            [], contract_token_violations(self.playwright, required=BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS)
+        )
+        resolver = (ROOT / BROWSER_BACKEND_ORIGIN_RESOLVER).read_text(encoding="utf-8")
+        self.assertEqual(
+            [], contract_token_violations(resolver, required=BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS)
+        )
+        specs = sorted((ROOT / "frontend/marketops-console/tests/browser").glob("*.spec.ts"))
+        self.assertTrue(specs)
+        for spec in specs:
+            with self.subTest(spec=spec.name):
+                text = spec.read_text(encoding="utf-8")
+                self.assertEqual(
+                    [], contract_token_violations(text, prohibited=BROWSER_SPEC_PROHIBITED_TOKENS)
+                )
+        for relative, text in (
+            (LOCAL_CONFIG_ENTRY, self.local_config),
+            (self.PLAYWRIGHT_CONFIG, self.playwright),
+            (self.BROWSER_SPEC, self.spec),
+        ):
+            with self.subTest(relative=relative):
+                self.assertEqual([], self.contract_violations(relative, text))
+
+    def test_every_backend_entry_uses_the_same_loopback_probe(self) -> None:
+        for text in (self.fresh_clone, self.isolated, self.local_config):
+            self.assertEqual(1, text.count(LOOPBACK_PORT_PROBE))
+
+    def test_fresh_clone_backend_stages_back_on_the_default_port_are_rejected(self) -> None:
+        mutations = (
+            ("HTTP_PORT=9999", "HTTP_PORT=8080"),
+            ('SERVER_PORT="${HTTP_PORT}" bash scripts/verify_local_config.sh', "bash scripts/verify_local_config.sh"),
+            ('MARKETOPS_SOURCE_HEAD_SHA="${COMMIT}" SERVER_PORT="${HTTP_PORT}" \\', 'MARKETOPS_SOURCE_HEAD_SHA="${COMMIT}" \\'),
+        )
+        for old, new in mutations:
+            with self.subTest(old=old):
+                self.assertIn(old, self.fresh_clone)
+                violations = self.contract_violations(FRESH_CLONE_ENTRY, self.fresh_clone.replace(old, new))
+                self.assertTrue(any(v.startswith("required contract is absent") for v in violations))
+
+    def test_an_entry_without_its_port_refusal_is_rejected(self) -> None:
+        for relative, text in (
+            (FRESH_CLONE_ENTRY, self.fresh_clone),
+            (ISOLATED_BROWSER_ENTRY, self.isolated),
+            (LOCAL_CONFIG_ENTRY, self.local_config),
+        ):
+            with self.subTest(relative=relative):
+                mutated = text.replace(f"if ! {LOOPBACK_PORT_PROBE}", "if false")
+                self.assertNotEqual(text, mutated)
+                violations = self.contract_violations(relative, mutated)
+                self.assertTrue(any(v.startswith("required contract is absent") for v in violations))
+
+    def test_a_readiness_probe_fixed_on_the_default_port_is_rejected(self) -> None:
+        mutated = self.local_config.replace(
+            'READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"',
+            'READINESS_URL="http://127.0.0.1:8080/actuator/health/readiness"',
+        )
+        violations = self.contract_violations(LOCAL_CONFIG_ENTRY, mutated)
+        self.assertIn("prohibited contract is present: 127.0.0.1:8080", violations)
+        self.assertIn(
+            'required contract is absent: READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"',
+            violations,
+        )
+
+    def test_a_browser_suite_off_the_backend_port_is_rejected(self) -> None:
+        mutated = self.spec.replace(
+            "const API_ORIGIN = resolveBackendOrigin();", "const API_ORIGIN = 'http://127.0.0.1:8080';"
+        )
+        self.assertNotEqual(self.spec, mutated)
+        self.assertIn(
+            "prohibited contract is present: 127.0.0.1:8080",
+            self.contract_violations(self.BROWSER_SPEC, mutated),
+        )
+        mutated = self.playwright.replace("        VITE_MARKETOPS_API_BASE_URL: backendOrigin,\n", "")
+        self.assertNotEqual(self.playwright, mutated)
+        self.assertIn(
+            "required contract is absent: VITE_MARKETOPS_API_BASE_URL: backendOrigin",
+            self.contract_violations(self.PLAYWRIGHT_CONFIG, mutated),
+        )
+
+    def test_each_port_refusal_runs_before_anything_is_generated_or_started(self) -> None:
+        probe = f"if ! {LOOPBACK_PORT_PROBE}"
+        self.assertLess(self.fresh_clone.index(probe), self.fresh_clone.index("  make env-init\n"))
+        self.assertLess(self.isolated.index(probe), self.isolated.index("docker ps -aq"))
+        self.assertLess(self.isolated.index(probe), self.isolated.index("make env-init"))
+        self.assertLess(self.local_config.index(probe), self.local_config.index("./mvnw"))
+
+    # The two entries run for real below, with nothing behind them: a port the test
+    # holds must be refused before any configuration, container or backend exists.
+
+    def run_entry(self, relative: str, server_port: str, tree: Path) -> subprocess.CompletedProcess[str]:
+        target = tree / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / relative, target)
+        tools = tree / "tools"
+        tools.mkdir(exist_ok=True)
+        marker = tree / "started"
+        for tool in ("docker", "make", "npm"):
+            path = tools / tool
+            path.write_text(f'#!/bin/sh\necho "{tool} $*" >> "{marker}"\n', encoding="utf-8")
+            path.chmod(0o755)
+        environment = {
+            "PATH": f"{tools}{os.pathsep}{os.environ.get('PATH', '')}",
+            "HOME": str(tree),
+            "SERVER_PORT": server_port,
+        }
+        return subprocess.run(
+            ["bash", str(target)], cwd=tree, env=environment, capture_output=True, text=True, timeout=60
+        )
+
+    def local_config_tree(self, tree: Path) -> Path:
+        env_local = tree / ".env.local"
+        env_local.write_text("MARKETOPS_DB_PORT=5432\n", encoding="utf-8")
+        env_local.chmod(0o600)
+        backend = tree / "backend" / "marketops-server"
+        backend.mkdir(parents=True)
+        wrapper = backend / "mvnw"
+        wrapper.write_text(f'#!/bin/sh\necho "mvnw $*" >> "{tree / "started"}"\n', encoding="utf-8")
+        wrapper.chmod(0o755)
+        return tree
+
+    def assert_refused_before_anything_started(self, relative: str, port: str) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            tree = Path(directory)
+            if relative == LOCAL_CONFIG_ENTRY:
+                self.local_config_tree(tree)
+            result = self.run_entry(relative, port, tree)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn(f"127.0.0.1:{port} is in use or could not be checked", result.stderr)
+            self.assertFalse((tree / "started").exists())
+            self.assertFalse((tree / "frontend").exists())
+
+    def test_both_entries_refuse_a_port_another_process_holds(self) -> None:
+        for relative in (LOCAL_CONFIG_ENTRY, ISOLATED_BROWSER_ENTRY):
+            with self.subTest(relative=relative), socket.socket() as holder:
+                holder.bind(("127.0.0.1", 0))
+                holder.listen(1)
+                self.assert_refused_before_anything_started(relative, str(holder.getsockname()[1]))
+
+    def test_both_entries_refuse_a_port_whose_holder_no_longer_accepts(self) -> None:
+        # A holder with a full queue lets a connection attempt time out instead of
+        # refusing it; only an actively refused connection counts as a free port.
+        for relative in (LOCAL_CONFIG_ENTRY, ISOLATED_BROWSER_ENTRY):
+            with self.subTest(relative=relative), socket.socket() as holder:
+                holder.bind(("127.0.0.1", 0))
+                holder.listen(0)
+                port = holder.getsockname()[1]
+                queued = []
+                for _ in range(8):
+                    filler = socket.socket()
+                    filler.setblocking(False)
+                    filler.connect_ex(("127.0.0.1", port))
+                    queued.append(filler)
+                try:
+                    self.assert_refused_before_anything_started(relative, str(port))
+                finally:
+                    for filler in queued:
+                        filler.close()
+
+    def test_both_entries_refuse_a_value_that_is_not_a_port(self) -> None:
+        for relative in (LOCAL_CONFIG_ENTRY, ISOLATED_BROWSER_ENTRY):
+            for value in ("", "0", "65536", "80a"):
+                with self.subTest(relative=relative, value=value), tempfile.TemporaryDirectory() as directory:
+                    tree = Path(directory)
+                    if relative == LOCAL_CONFIG_ENTRY:
+                        self.local_config_tree(tree)
+                    result = self.run_entry(relative, value, tree)
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertIn("SERVER_PORT must be a TCP port number", result.stderr)
+                    self.assertFalse((tree / "started").exists())
 
 
 class RepositoryContractPatternTests(unittest.TestCase):
@@ -631,6 +970,57 @@ class MigrationContractTests(unittest.TestCase):
                 "V0071__align_frozen_outcome_company_profile_scope.sql",
                 "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
                 "V0073__require_complete_independent_manual_observation.sql",
+                "V0074__widen_shared_spine_for_listing_conversion.sql",
+                "V0075__create_listing_conversion_facts_and_health.sql",
+                "V0076__create_listing_calibration_and_exposure_allowance.sql",
+                "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
+                "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
+                "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
+                "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+                "V0081__record_listing_measurement_coverage_and_lineage.sql",
+                "V0082__govern_listing_calibration_acceptance_and_activation.sql",
+                "V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+                "V0084__persist_provider_description_retry_timing.sql",
+                "V0085__scope_listing_description_feature_flags.sql",
+                "V0086__preserve_frozen_listing_evaluation_semantics.sql",
+                "V0087__bind_listing_measurement_lineage_identity.sql",
+                "V0088__bind_listing_review_and_approval_to_frozen_plan.sql",
+                "V0089__retain_listing_node_evaluation_qualification.sql",
+                "V0090__bind_manual_listing_verification_to_exact_observations.sql",
+                "V0091__create_listing_command_atomically_with_its_launch.sql",
+                "V0092__bind_description_response_to_frozen_native_identity.sql",
+                "V0093__govern_description_protocol_configuration.sql",
+                "V0094__bind_description_requests_to_exact_verified_schema.sql",
+                "V0095__retain_exact_description_task_query_evidence.sql",
+                "V0096__project_qualified_description_execution_results.sql",
+                "V0097__bind_exact_restoration_to_a_new_approved_action.sql",
+                "V0098__accumulate_listing_allowance_across_configuration_versions.sql",
+                "V0099__freeze_promotion_declarations_before_review.sql",
+                "V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+                "V0101__retain_conditional_promotion_simulation_basis.sql",
+                "V0102__bind_listing_scope_to_native_enumeration_evidence.sql",
+                "V0103__recheck_exact_listing_calibration_dependencies.sql",
+                "V0104__validate_calibration_combinations_for_their_declared_purpose.sql",
+                "V0105__fence_listing_recalculation_result_publication.sql",
+                "V0106__retain_canonical_listing_materiality_exposure.sql",
+                "V0107__bind_listing_classification_to_structured_meaning_review.sql",
+                "V0108__freeze_listing_task_responsibility_clocks.sql",
+                "V0109__activate_listing_diagnostic_responsibility.sql",
+                "V0110__bind_finite_listing_task_deferral_to_reassessment.sql",
+                "V0111__bind_declared_listing_action_purpose.sql",
+                "V0112__freeze_listing_purpose_use_basis_before_review.sql",
+                "V0113__bind_current_listing_business_protection.sql",
+                "V0114__retain_listing_feedback_identity_and_label_revisions.sql",
+                "V0115__declare_bounded_listing_ai_projection.sql",
+                "V0116__publish_existing_settled_sales_quantity_as_canonical_metric.sql",
+                "V0117__latch_listing_protection_failures_until_independent_release.sql",
+                "V0118__bind_launch_plan_to_declared_listing_purpose.sql",
+                "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+                "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+                "V0121__complete_listing_operations_queue_and_review.sql",
+                "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+                "V0123__bind_qualified_promotion_simulation_to_action.sql",
+                "V0124__bridge_equivalent_summary_method_inputs.sql",
             ),
             APPROVED_MIGRATIONS,
         )
@@ -703,6 +1093,9 @@ class MigrationContractTests(unittest.TestCase):
         for removed in ("'caseId'", "'candidateId'", "'APPROVED',", "'ADVERTISING_REVIEW','AD_BID_CHANGE'"):
             with self.subTest(removed=removed):
                 self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
+
+    def test_manual_execution_index_replacement_keeps_its_issue_guard(self) -> None:
+        root = Path(__file__).resolve().parents[1]
         path = root / "backend/marketops-server/src/main/resources/db/migration/V0073__require_complete_independent_manual_observation.sql"
         text = path.read_text(encoding="utf-8")
         line = "DROP INDEX ops.ad_manual_execution_packet_live_uq;"
@@ -713,6 +1106,33 @@ class MigrationContractTests(unittest.TestCase):
                         "'MANUAL_EXECUTION_UNCERTAIN'", "pg_advisory_xact_lock", "other.id<>NEW.id"):
             with self.subTest(removed=removed):
                 self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
+
+    def test_listing_restoration_index_replacement_preserves_both_live_authorities(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        path = root / (
+            "backend/marketops-server/src/main/resources/db/migration/"
+            "V0097__bind_exact_restoration_to_a_new_approved_action.sql"
+        )
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX ops.recommendation_live_uq;"
+
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(
+            approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line)
+        )
+        self.assertFalse(
+            approved_index_replacement(path, text, "DROP INDEX ops.unrelated_index;")
+        )
+        for removed in (
+            "CREATE UNIQUE INDEX recommendation_live_uq",
+            "CREATE UNIQUE INDEX lc_restoration_live_proposal_uq",
+            "AND NOT (action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId')",
+            "WHERE action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId'",
+        ):
+            with self.subTest(removed=removed):
+                self.assertFalse(
+                    approved_index_replacement(path, text.replace(removed, "", 1), line)
+                )
 
 
 class CommentExtractionTests(unittest.TestCase):

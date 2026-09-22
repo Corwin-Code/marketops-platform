@@ -1,0 +1,25 @@
+# generated local configuration of the run, observed 2026-09-22T03:21:23Z
+# values were held in the observer's memory only; none is written here
+# evidence files scanned (plain text, before compression): 205
+
+generation 1: .env.local mode 0o600 first seen 2026-09-22T03:14:26Z
+  MARKETOPS_POSTGRES_SUPERUSER_PASSWORD: generated secret, length 32, occurrences in evidence 0
+  MARKETOPS_DB_MIGRATION_PASSWORD: generated secret, length 32, occurrences in evidence 0
+  MARKETOPS_DB_APP_PASSWORD: generated secret, length 32, occurrences in evidence 0
+  MARKETOPS_DB_PORT: non-secret setting, length 4
+generation 2: frontend/marketops-console/.env.local mode 0o600 first seen 2026-09-22T03:14:26Z
+  VITE_MARKETOPS_API_BASE_URL: non-secret setting, length 21
+  VITE_MARKETOPS_ENVIRONMENT: non-secret setting, length 5
+  VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT: non-secret setting, length 0
+  VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT: generated secret, length 0, occurrences in evidence 0
+  VITE_MARKETOPS_OIDC_CLIENT_ID: non-secret setting, length 0
+  VITE_MARKETOPS_OIDC_AUDIENCE: non-secret setting, length 0
+  VITE_MARKETOPS_STORE_ID: non-secret setting, length 0
+generation 3: .env.local mode 0o600 first seen 2026-09-22T03:14:28Z
+  MARKETOPS_POSTGRES_SUPERUSER_PASSWORD: generated secret, length 32, occurrences in evidence 0
+  MARKETOPS_DB_MIGRATION_PASSWORD: generated secret, length 32, occurrences in evidence 0
+  MARKETOPS_DB_APP_PASSWORD: generated secret, length 32, occurrences in evidence 0
+  MARKETOPS_DB_PORT: non-secret setting, length 5
+
+secret values held: 6
+total occurrences of generated secret values in evidence: 0

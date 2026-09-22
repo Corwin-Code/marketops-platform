@@ -10,6 +10,7 @@ import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.KillSwitchRepository;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ListingDescriptionCommandRepository;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PriceCommandRepository;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.ErrorCode;
@@ -51,8 +52,12 @@ public class KillSwitchService {
     /** The flag every price write is gated on. */
     static final String PRICE_WRITE_FLAG = "price-change-write";
 
+    /** The description write's own switch. Absent is off, at every scope. */
+    static final String LISTING_DESCRIPTION_WRITE_FLAG = "listing-description-write";
+
     private final KillSwitchRepository switches;
     private final PriceCommandRepository commands;
+    private final ListingDescriptionCommandRepository descriptionCommands;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
@@ -60,12 +65,14 @@ public class KillSwitchService {
 
     KillSwitchService(KillSwitchRepository switches,
                       PriceCommandRepository commands,
+                      ListingDescriptionCommandRepository descriptionCommands,
                       BusinessAuthorization authorization,
                       MetadataAuditRecorder auditRecorder,
                       IdGenerator idGenerator,
                       Clock clock) {
         this.switches = switches;
         this.commands = commands;
+        this.descriptionCommands = descriptionCommands;
         this.authorization = authorization;
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
@@ -96,6 +103,30 @@ public class KillSwitchService {
     }
 
     /** Every switch movement of one organization, newest first. */
+    /** Disable the description write at one scope. Disabling never needs step-up. */
+    @Transactional
+    public UUID disableListingDescriptionWrite(AuthenticatedActor actor, String scopeKind,
+                                               String scopeReference, UUID storeId, String reason) {
+        return move(actor, LISTING_DESCRIPTION_WRITE_FLAG, "LISTING_DESCRIPTION_CHANGE",
+                scopeKind, scopeReference, storeId, reason, false);
+    }
+
+    /** Re-enable the description write at one scope, with step-up. */
+    @Transactional
+    public UUID enableListingDescriptionWrite(AuthenticatedActor actor, String scopeKind,
+                                              String scopeReference, UUID storeId, String reason) {
+        if (!actor.stepUpSatisfiedAt(clock.instant())) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+        return move(actor, LISTING_DESCRIPTION_WRITE_FLAG, "LISTING_DESCRIPTION_CHANGE",
+                scopeKind, scopeReference, storeId, reason, true);
+    }
+
+    @Transactional(readOnly = true)
+    public List<KillSwitchRepository.FlagRow> listingDescriptionFlags() {
+        return switches.flags(LISTING_DESCRIPTION_WRITE_FLAG);
+    }
+
     @Transactional(readOnly = true)
     public List<KillSwitchRepository.SwitchEventRow> history(UUID organizationId, int limit) {
         return switches.history(organizationId, limit);
@@ -109,6 +140,12 @@ public class KillSwitchService {
 
     private UUID move(AuthenticatedActor actor, String scopeKind, String scopeReference,
                       UUID storeId, String reason, boolean enable) {
+        return move(actor, PRICE_WRITE_FLAG, "PRICE_CHANGE", scopeKind, scopeReference, storeId,
+                reason, enable);
+    }
+
+    private UUID move(AuthenticatedActor actor, String flagCode, String actionKind, String scopeKind,
+                      String scopeReference, UUID storeId, String reason, boolean enable) {
         authorization.require(actor, ActionScopeCode.KILL_SWITCH_OPERATE,
                 storeId == null
                         ? ResourceScope.organization(actor.organizationId())
@@ -116,26 +153,29 @@ public class KillSwitchService {
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
         Instant now = clock.instant();
 
-        int inFlight = commands.inFlightCount(actor.organizationId(), storeId);
-        switches.setFlagState(PRICE_WRITE_FLAG, scopeKind, scopeReference,
+        int inFlight = "PRICE_CHANGE".equals(actionKind)
+                ? commands.inFlightCount(actor.organizationId(), storeId)
+                : descriptionCommands.inFlightCount(actor.organizationId(), storeId);
+        switches.setFlagState(flagCode, scopeKind, scopeReference,
                 enable ? "ENABLED" : "DISABLED", now);
 
         UUID eventId = idGenerator.newId();
-        switches.recordEvent(eventId, actor.organizationId(), "PRICE_CHANGE", scopeKind,
+        switches.recordEvent(eventId, actor.organizationId(), actionKind, scopeKind,
                 scopeReference, enable ? "ENABLE" : "DISABLE", actor.userId(), validReason,
                 inFlight, now, CorrelationId.current());
 
         log.atWarn()
-                .addKeyValue("event", "price_write_switch_moved")
+                .addKeyValue("event", "PRICE_CHANGE".equals(actionKind)
+                        ? "price_write_switch_moved" : "listing_description_write_switch_moved")
                 .addKeyValue("action", enable ? "ENABLE" : "DISABLE")
                 .addKeyValue("scopeKind", scopeKind)
                 .addKeyValue("inFlightCommandCount", inFlight)
                 .addKeyValue("correlationId", CorrelationId.current())
-                .log("A price write capability switch was moved");
+                .log("A write capability switch was moved");
 
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.MARKETPLACE_INTEGRATION, actor.userId().toString(),
-                AuditAction.KILL_SWITCH, ENTITY_TYPE, eventId, PRICE_WRITE_FLAG,
+                AuditAction.KILL_SWITCH, ENTITY_TYPE, eventId, flagCode,
                 Map.of(
                         "scopeKind", new FieldChange(null, scopeKind),
                         "state", new FieldChange(enable ? "DISABLED" : "ENABLED",

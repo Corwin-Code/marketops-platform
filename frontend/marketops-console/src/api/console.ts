@@ -992,7 +992,7 @@ export interface ConsoleRequest {
  * an internal host or an identifier the operator has no scope for, so only the
  * classification and the status travel outward.
  */
-async function request<T>(
+export async function request<T>(
   context: ConsoleRequest,
   path: string,
   parse: (body: unknown) => T | undefined,

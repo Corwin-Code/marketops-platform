@@ -1,0 +1,81 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "7c37507b567dbc6165e3d4f037c98edc86e7278c",
+  "input_identity": "Dirty working-tree progress; final exact-Head verification still required. Schema/containment precede the final V0085 gate repair; relevant gate/launch/timing suites were rerun after it.",
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test -Dtest=DescriptionRetryHeadersTest,RetryAfterUnitsTest,ListingDescriptionCommandWorkerTest,*ArchitectureTest,AdBidWriteDispatchTest,PriceWriteClassificationTest,PlatformHttpAdaptersTest",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/identity-retry-gate-unit.log",
+      "raw_log_sha256": "035344c5368467263b52eb0649e9622a6493ee8401b2cbeaf768433abba3105c",
+      "summary_path": "identity-retry-gate-unit-summary.txt",
+      "summary_sha256": "cb6a6a97e22873d6cd80b378145e6897164634ed79cf604ed049b2bf2703f503",
+      "observed_log_mtime_utc": "2026-09-10T07:45:34.712611+00:00",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingConversionSchemaIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/ListingConversionSchemaIT-single-process.log",
+      "raw_log_sha256": "7e8f3e2bc953274e5552995e7c668346d3b429407eb2acca649c16734ad24544",
+      "summary_path": "ListingConversionSchemaIT-single-process-summary.txt",
+      "summary_sha256": "92a0002543870e0a20dd315d4138dc6f0924dcd2a959922276ba66c2320af9c6",
+      "observed_log_mtime_utc": "2026-09-10T07:41:28.259634+00:00",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingContainmentIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/ListingContainmentIT-single-process.log",
+      "raw_log_sha256": "e2596e711b85bdc6054836bf71b322a80dfe581d40303d024c23c3ad87ab2674",
+      "summary_path": "ListingContainmentIT-single-process-summary.txt",
+      "summary_sha256": "d7f45e65b53d441da2dc8471e664d77aa482c047be0fd6ba9619272fd5f15c81",
+      "observed_log_mtime_utc": "2026-09-10T07:41:46.291288+00:00",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingDescriptionWriteGateIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/ListingDescriptionWriteGateIT-final-checkpoint.log",
+      "raw_log_sha256": "9560318cf3698de467607b36b5fc7a2c521b3c03a1eb53f3b4dccc004f93534c",
+      "summary_path": "ListingDescriptionWriteGateIT-final-checkpoint-summary.txt",
+      "summary_sha256": "904841a1edd0429b016624848c67501f392c20911291dde7802788a3cb88e9df",
+      "observed_log_mtime_utc": "2026-09-10T07:45:54.611865+00:00",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingActionLaunchIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/ListingActionLaunchIT-final-checkpoint.log",
+      "raw_log_sha256": "c5874a848529f98a680af64266651db76813af15c6c57b06cf900f5910dbc009",
+      "summary_path": "ListingActionLaunchIT-final-checkpoint-summary.txt",
+      "summary_sha256": "ecf1f7bfc1adbc907d4ad06c1410be473f6023170c61d3775c6ab84fd16d1c70",
+      "observed_log_mtime_utc": "2026-09-10T07:46:14.056086+00:00",
+      "result": "PASS_TARGETED_ONLY"
+    },
+    {
+      "command": "./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingDescriptionRetryTimingIT",
+      "working_directory": "backend/marketops-server",
+      "raw_log_local_path": "build/slice4-rework/ListingDescriptionRetryTimingIT-final-checkpoint.log",
+      "raw_log_sha256": "ee87ef5cc1f25f37a13845706f273e08cb45b4a3335c4e1845dd99531b0efb80",
+      "summary_path": "ListingDescriptionRetryTimingIT-final-checkpoint-summary.txt",
+      "summary_sha256": "d1e452d089494dd51f687fdc7478e084f1bd09ab54ca4146241b8a9beace1417",
+      "observed_log_mtime_utc": "2026-09-10T07:46:33.251282+00:00",
+      "result": "PASS_TARGETED_ONLY"
+    }
+  ],
+  "new_migrations": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+      "sha256": "50677228b1f3ffa66fee76535d6cf9382cf91464c9e713631720871a2663e07e"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0084__persist_provider_description_retry_timing.sql",
+      "sha256": "e21a1e098dcbe353e69ec34f09b2310bd55322037d7ed3f08bc27da781b865ef"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0085__scope_listing_description_feature_flags.sql",
+      "sha256": "26e682d71d6dcda59e67663dba4e68cbe86fe73faf014b642e4bf5fb789968c8"
+    }
+  ]
+}

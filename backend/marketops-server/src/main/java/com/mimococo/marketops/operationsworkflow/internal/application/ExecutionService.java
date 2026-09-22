@@ -12,6 +12,9 @@ import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.marketplaceintegration.AdBidCommandRequest;
 import com.mimococo.marketops.marketplaceintegration.AdBidCommandView;
 import com.mimococo.marketops.marketplaceintegration.AdBidCommandGateway;
+import com.mimococo.marketops.marketplaceintegration.ListingDescriptionCommandGateway;
+import com.mimococo.marketops.marketplaceintegration.ListingDescriptionCommandRequest;
+import com.mimococo.marketops.marketplaceintegration.ListingDescriptionCommandView;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandGateway;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandRequest;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandView;
@@ -22,6 +25,8 @@ import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionScope;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
+import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
+import com.mimococo.marketops.operationsworkflow.ListingDecisionScope;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.ApprovalRepository;
@@ -70,6 +75,8 @@ public class ExecutionService {
     private final PriceCommandGateway commands;
     private final AdBidCommandGateway adCommands;
     private final AdvertisingDecisionAuthority adDecisions;
+    private final ListingDescriptionCommandGateway descriptionCommands;
+    private final ListingActionDecisionAuthority listingDecisions;
     private final ListingIdentityDirectory listings;
     private final OperatingFactQuery facts;
     private final BusinessAuthorization authorization;
@@ -85,6 +92,8 @@ public class ExecutionService {
                      PriceCommandGateway commands,
                      AdBidCommandGateway adCommands,
                      AdvertisingDecisionAuthority adDecisions,
+                     ListingDescriptionCommandGateway descriptionCommands,
+                     ListingActionDecisionAuthority listingDecisions,
                      ListingIdentityDirectory listings,
                      OperatingFactQuery facts,
                      BusinessAuthorization authorization,
@@ -96,6 +105,8 @@ public class ExecutionService {
         this.commands = commands;
         this.adCommands = adCommands;
         this.adDecisions = adDecisions;
+        this.descriptionCommands = descriptionCommands;
+        this.listingDecisions = listingDecisions;
         this.listings = listings;
         this.facts = facts;
         this.authorization = authorization;
@@ -116,6 +127,9 @@ public class ExecutionService {
         RecommendationView proposal = recommendations.require(recommendationId);
         if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
             return createAdBidCommand(actor, proposal, expectedVersion);
+        }
+        if (proposal.actionKind() == ActionKind.LISTING_DESCRIPTION_CHANGE) {
+            return createListingDescriptionCommand(actor, proposal, expectedVersion);
         }
         if (proposal.actionKind() != ActionKind.PRICE_CHANGE) {
             // Every other action is work a person performs. There is no command
@@ -295,6 +309,65 @@ public class ExecutionService {
      * @param verdict the execution verdict it rests on, or {@code null} when the
      *                command already existed
      */
+    /**
+     * Create the description command for a launched listing action.
+     *
+     * <p>Authority first, version second, approval third, then the execution
+     * guardrail naming the calibration package, then the one function that
+     * makes the command specific. The function refuses unless the action is
+     * launched on the API path with an applicable binding; approval alone never
+     * reaches here, because launch, not approval, is what an allowance holds.
+     */
+    private Created createListingDescriptionCommand(AuthenticatedActor actor, RecommendationView proposal,
+                                                    long expectedVersion) {
+        authorization.require(actor, ActionScopeCode.LISTING_ACTION_LAUNCH,
+                ResourceScope.store(proposal.storeId()));
+        if (proposal.version() != expectedVersion) {
+            throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+        }
+        if (!proposal.state().authorized()) {
+            throw OperationRejectedException.of(ErrorCode.APPROVAL_REQUIRED);
+        }
+        Optional<ListingDescriptionCommandView> existing =
+                descriptionCommands.forRecommendation(proposal.id());
+        if (existing.isPresent()) {
+            return new Created(existing.get().id(), null);
+        }
+        Instant now = clock.instant();
+        ApprovalRepository.DecisionRow decision = approvals
+                .standingAuthorization(proposal.id())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.APPROVAL_REQUIRED));
+        if (!decision.scopeExpiresAt().isAfter(now)) {
+            throw OperationRejectedException.of(ErrorCode.RECOMMENDATION_STALE);
+        }
+        ListingDecisionScope scope = listingDecisions.decisionScope(proposal.id())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        if (!"API".equals(scope.executionPath())) {
+            throw OperationRejectedException.of(ErrorCode.EXECUTION_PATH_MISMATCH);
+        }
+        if (!"LAUNCHED".equals(scope.actionState())) {
+            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
+        GuardrailVerdict verdict = guardrails.evaluate(proposal, null, GuardrailPurpose.EXECUTION);
+        if (!verdict.passed()) {
+            throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
+        }
+        UUID commandId = descriptionCommands.submit(new ListingDescriptionCommandRequest(
+                scope.actionId(), scope.actionVersion(), actor.userId()));
+        recommendations.transition(actor.userId().toString(), proposal.id(),
+                RecommendationState.COMMAND_CREATED, null, expectedVersion);
+        listingDecisions.recordCommandCreated(proposal.id(), commandId);
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.OPERATIONS_WORKFLOW, actor.userId().toString(),
+                AuditAction.COMMAND_TRANSITION, ENTITY_TYPE, proposal.id(), null,
+                Map.of(
+                        "commandId", new FieldChange(null, commandId.toString()),
+                        "state", new FieldChange(proposal.state().name(), "COMMAND_CREATED"),
+                        "guardrailEvaluationId", new FieldChange(null, verdict.evaluationId().toString())),
+                null, null));
+        return new Created(commandId, verdict);
+    }
+
     public record Created(UUID commandId, GuardrailVerdict verdict) {
     }
 }

@@ -34,11 +34,6 @@ import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass, field
 from pathlib import Path
 
-if __package__:
-    from .validation.finalize_slice3_rework_assessment import validated_current_phase
-else:
-    from validation.finalize_slice3_rework_assessment import validated_current_phase
-
 ROOT = Path(__file__).resolve().parents[1]
 
 BACKEND = "backend/marketops-server"
@@ -179,6 +174,57 @@ APPROVED_MIGRATIONS = (
     "V0071__align_frozen_outcome_company_profile_scope.sql",
     "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
     "V0073__require_complete_independent_manual_observation.sql",
+    "V0074__widen_shared_spine_for_listing_conversion.sql",
+    "V0075__create_listing_conversion_facts_and_health.sql",
+    "V0076__create_listing_calibration_and_exposure_allowance.sql",
+    "V0077__create_listing_actions_launch_manual_path_and_containment.sql",
+    "V0078__create_listing_description_command_outbox_readback_and_gate.sql",
+    "V0079__create_listing_evaluation_outcome_late_association_and_recalculation.sql",
+    "V0080__scope_listing_evaluation_and_financial_disclosure.sql",
+    "V0081__record_listing_measurement_coverage_and_lineage.sql",
+    "V0082__govern_listing_calibration_acceptance_and_activation.sql",
+    "V0083__bind_listing_affected_sets_to_mapping_versions.sql",
+    "V0084__persist_provider_description_retry_timing.sql",
+    "V0085__scope_listing_description_feature_flags.sql",
+    "V0086__preserve_frozen_listing_evaluation_semantics.sql",
+    "V0087__bind_listing_measurement_lineage_identity.sql",
+    "V0088__bind_listing_review_and_approval_to_frozen_plan.sql",
+    "V0089__retain_listing_node_evaluation_qualification.sql",
+    "V0090__bind_manual_listing_verification_to_exact_observations.sql",
+    "V0091__create_listing_command_atomically_with_its_launch.sql",
+    "V0092__bind_description_response_to_frozen_native_identity.sql",
+    "V0093__govern_description_protocol_configuration.sql",
+    "V0094__bind_description_requests_to_exact_verified_schema.sql",
+    "V0095__retain_exact_description_task_query_evidence.sql",
+    "V0096__project_qualified_description_execution_results.sql",
+    "V0097__bind_exact_restoration_to_a_new_approved_action.sql",
+    "V0098__accumulate_listing_allowance_across_configuration_versions.sql",
+    "V0099__freeze_promotion_declarations_before_review.sql",
+    "V0100__bind_manual_promotion_participation_to_independent_observations.sql",
+    "V0101__retain_conditional_promotion_simulation_basis.sql",
+    "V0102__bind_listing_scope_to_native_enumeration_evidence.sql",
+    "V0103__recheck_exact_listing_calibration_dependencies.sql",
+    "V0104__validate_calibration_combinations_for_their_declared_purpose.sql",
+    "V0105__fence_listing_recalculation_result_publication.sql",
+    "V0106__retain_canonical_listing_materiality_exposure.sql",
+    "V0107__bind_listing_classification_to_structured_meaning_review.sql",
+    "V0108__freeze_listing_task_responsibility_clocks.sql",
+    "V0109__activate_listing_diagnostic_responsibility.sql",
+    "V0110__bind_finite_listing_task_deferral_to_reassessment.sql",
+    "V0111__bind_declared_listing_action_purpose.sql",
+    "V0112__freeze_listing_purpose_use_basis_before_review.sql",
+    "V0113__bind_current_listing_business_protection.sql",
+    "V0114__retain_listing_feedback_identity_and_label_revisions.sql",
+    "V0115__declare_bounded_listing_ai_projection.sql",
+    "V0116__publish_existing_settled_sales_quantity_as_canonical_metric.sql",
+    "V0117__latch_listing_protection_failures_until_independent_release.sql",
+    "V0118__bind_launch_plan_to_declared_listing_purpose.sql",
+    "V0119__scope_existing_finance_inputs_to_exact_promotion.sql",
+    "V0120__close_promotion_operation_and_exposure_lifecycle.sql",
+    "V0121__complete_listing_operations_queue_and_review.sql",
+    "V0122__bind_formal_listing_outcome_to_frozen_comparison.sql",
+    "V0123__bind_qualified_promotion_simulation_to_action.sql",
+    "V0124__bridge_equivalent_summary_method_inputs.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -226,10 +272,10 @@ def approved_index_replacement(path: Path, text: str, line: str) -> bool:
 
     The old active-grant uniqueness key predates Product scope. Keeping it would
     collapse every Product grant for one user/action into one row. This narrow
-    exception requires the exact V0034 file, exact old index, and the complete
-    replacement key; it does not permit a table/row/schema drop or arbitrary
-    index retirement. R1 also distinguishes an accountable Advertising Case
-    from its finite inert choices while preserving every non-advertising key.
+    exception requires the exact migration file, exact old index, and the
+    complete replacement keys; it does not permit a table/row/schema drop or
+    arbitrary index retirement. Later replacements preserve the independent
+    advertising, manual-execution and listing-restoration authorities.
     """
     if path.name == "V0073__require_complete_independent_manual_observation.sql":
         # Permit only the exact index and issue-time guard together. The shared
@@ -260,6 +306,23 @@ def approved_index_replacement(path: Path, text: str, line: str) -> bool:
         # exception cannot admit an omitted replacement or a broader predicate.
         return (line.strip().upper() == "DROP INDEX OPS.RECOMMENDATION_LIVE_UQ;"
                 and re.sub(r"\s+", "", expected) in re.sub(r"\s+", "", text))
+    if path.name == "V0097__bind_exact_restoration_to_a_new_approved_action.sql":
+        expected = """
+        DROP INDEX ops.recommendation_live_uq;
+        CREATE UNIQUE INDEX recommendation_live_uq ON ops.recommendation(subject_kind,subject_id,action_kind)
+         WHERE action_kind NOT IN ('ADVERTISING_REVIEW','AD_BID_CHANGE')
+           AND NOT (action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId')
+           AND state IN ('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                         'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        CREATE UNIQUE INDEX lc_restoration_live_proposal_uq ON ops.recommendation(subject_kind,subject_id,action_kind)
+         WHERE action_kind='LISTING_DESCRIPTION_CHANGE' AND proposed_parameters ? 'restoresCommandId'
+           AND state IN ('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                         'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        """
+        return (
+            line.strip().upper() == "DROP INDEX OPS.RECOMMENDATION_LIVE_UQ;"
+            and re.sub(r"\s+", "", expected) in re.sub(r"\s+", "", text)
+        )
     return (
         path.name == "V0034__close_availability_deep_review_findings.sql"
         and line.strip().upper() == "DROP INDEX IAM.USER_SCOPE_GRANT_ACTIVE_UQ;"
@@ -463,17 +526,17 @@ LOCAL_LOGGING_TOKENS = (
 
 COMPLETION_STATE_TOKENS = (
     "lifecycle_state: EXECUTING_V1",
-    "active_delivery_slice: SLICE-V1-003",
+    "active_delivery_slice: SLICE-V1-004",
     "active_slice_contract: docs/03-work-items/"
-    "SLICE-V1-003-advertising-traffic-efficiency.md",
+    "SLICE-V1-004-promotion-listing-conversion.md",
     "active_slice_contract_sha256: "
-    "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
-    "active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a",
+    "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
+    "active_slice_contract_git_blob_sha1: 8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9",
     "active_slice_acceptance_evidence_sha256: "
-    "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
+    "5aa9b84b5c889e3c8dcb82f7d436c6a71a3eb2810d3a7d18855052391df87dcb",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "authorization: FULL_SCOPE_IMPLEMENTATION",
+    "authorization: CLOSED",
     "slice_v1_002_contract_sha256: "
     "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
     "slice_v1_002_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e",
@@ -592,17 +655,41 @@ COMPLETION_STATE_TOKENS = (
     "wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
     "pilot: NOT_AUTHORIZED",
     "release_v1_001: RESERVED_NOT_ACTIVATED",
+    "ozon_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "wildberries_listing_description_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "slice_v1_003_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PASS_MERGED",
+    "slice_v1_003_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
+    "slice_v1_003_engineering_closure_claim: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_controller_verdict: PASS_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_003_actual_squash_commit: 0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd",
+    "slice_v1_003_actual_squash_tree: 9d65c590b4c6a5e08ea2692d5d8f7a3b9645f400",
+    "candidate_state_scope: SLICE_V1_004_FORMALLY_CLOSED_ENGINEERING_ON_DRAFT_PR_35_UNMERGED_BOUNDED_RESIDUAL_SUPPLEMENT_HANDED_BACK_CONTROLLER_MERGE_HOLD",
+    "slice_v1_004_implementation_state: LEVEL_1_ENGINEERING_FORMALLY_CLOSED",
+    "slice_v1_004_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_004_owner_formal_closure: HUMAN_OWNER_EXPLICITLY_CONFIRMED",
+    "slice_v1_004_formally_closed_head: f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "slice_v1_004_formally_closed_tree: b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "slice_v1_004_publication_or_next_slice_authority: NONE_CREATED_BY_FORMAL_CLOSURE",
+    "slice_v1_003_owner_formal_closure: HUMAN_OWNER_ACCEPTED_FOR_EXACT_HEAD",
+    "slice_v1_004_execution_authority: OWNER_BOUNDED_S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_B1_B2_B3_ONLY_ENGINEERING_CLOSURE_PRESERVED",
+    "slice_v1_004_remote_write_authority: S4_PR35_45474B60_RESIDUAL_SUPPLEMENT_01_NON_REWRITING_PUSH_TO_NAMED_BRANCH_AND_DRAFT_PR_35_UPDATE_ONLY",
+    "slice_v1_004_gate_ev_authority: NONE",
+    "slice_v1_004_gate_e_authority: NONE",
+    "active_gate: NONE_SLICE_V1_004_ENGINEERING_CLOSED",
+    "next_authorized_actor: CONTROLLER",
+    "slice_v1_004_pr35_supplement_executor: CLAUDE_OPUS_5",
+    "slice_v1_004_pr35_supplement_owner_statement_sha256: bba44e6cfbea97548605de392b725c3bad2c9047b25e61be1ac242afe394f641",
+    "slice_v1_004_pr35_supplement_start_head: 45474b6039edd46842e1e5f84391dca4264ddc1d",
+    "slice_v1_004_pr35_supplement_start_tree: 3b6faa1d58fadbfad374a63a2502b606c06df6f5",
+    "slice_v1_004_pr35_supplement_pr_state: DRAFT_UNMERGED_REQUIRED",
 )
 
 
 def completion_state_violations(text: str) -> list[str]:
-    """Keep fixed authority and the evidence-admitted phase exact and unique."""
+    """Keep fixed authority and the recorded Slice states exact and unique."""
     expected = dict(token.split(": ", 1) for token in COMPLETION_STATE_TOKENS)
-    violations = []
-    try:
-        expected.update(validated_current_phase())
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
-        violations.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
+    violations: list[str] = []
     metadata = re.search(r"(?ms)^```yaml\s*\n(.*?)^```", text)
     if metadata is None:
         return violations + ["CURRENT_STATE requires its fenced YAML metadata"]
@@ -634,6 +721,85 @@ POLLING_CONTRACT_TOKENS = (
 BUILT_PREVIEW_COMMAND = (
     "npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort"
 )
+
+# The fresh-clone entry, the isolated business-browser entry and the root-configuration
+# check each start their backend only on a loopback port that actively refused a
+# connection when checked; a port that accepts, stays silent or cannot be checked is
+# refused. Other entries that start a backend are not bound by this.
+LOOPBACK_PORT_PROBE = (
+    "python3 -c 'import errno, socket, sys; s = socket.socket(); s.settimeout(0.4); "
+    "sys.exit(0 if s.connect_ex((\"127.0.0.1\", int(sys.argv[1]))) == errno.ECONNREFUSED else 1)'"
+)
+
+# The fresh-clone entry keeps every stack off the generated default database port
+# and reaches the browser suite only through the isolated entry, which generates,
+# starts, tests and removes its own non-default database. Its backend stages bind
+# a dedicated HTTP port instead of the developer default 8080.
+FRESH_CLONE_ENTRY = "scripts/fresh_clone_check.sh"
+ISOLATED_BROWSER_ENTRY = "scripts/validation/business_browser_isolated.sh"
+FRESH_CLONE_CONTRACT_TOKENS = (
+    "MarketOps clone's verification",
+    "make env-init",
+    "./mvnw -B -ntp verify",
+    "npm ci",
+    "npm ls --all",
+    "npm run lint",
+    "npm run format:check",
+    "npm run typecheck",
+    "npm run test:ci",
+    "npm run build",
+    "npm run verify:bundle",
+    "scripts/verify_coverage_thresholds.sh all",
+    'docker ps -aq --filter "${label}" || return 1',
+    'require_no_resources "${project}" 6',
+    'lines[hits[0]] != "MARKETOPS_DB_PORT=5432\\n"',
+    "compose port postgres 5432",
+    'compose down --volumes --remove-orphans\nSTACK_STARTED=false\nrequire_no_resources "${COMPOSE_PROJECT_NAME}" 7',
+    'COMPOSE_PROJECT_NAME="${BROWSER_PROJECT}"\nSTACK_STARTED=true',
+    f"bash {ISOLATED_BROWSER_ENTRY}",
+    'require_no_resources "${BROWSER_PROJECT}" 8',
+    "scripts/collect_supply_chain.py",
+    "scripts/verify_local_config.sh",
+    "down --volumes --remove-orphans",
+    "HTTP_PORT=9999",
+    f'for port in "${{HTTP_PORT}}" 8082 4173; do\n  if ! {LOOPBACK_PORT_PROBE} "${{port}}"; then\n    fail 5',
+    'SERVER_PORT="${HTTP_PORT}" bash scripts/verify_local_config.sh',
+    f'SERVER_PORT="${{HTTP_PORT}}" \\\n    bash {ISOLATED_BROWSER_ENTRY}',
+)
+FRESH_CLONE_PROHIBITED_TOKENS = ("npm run test:browser",)
+ISOLATED_BROWSER_CONTRACT_TOKENS = (
+    "make env-init",
+    'lines[hits[0]] != "MARKETOPS_DB_PORT=5432\\n"',
+    'make COMPOSE_PROJECT_NAME="$project" up',
+    '"${compose[@]}" port postgres 5432',
+    "npm run test:browser",
+    "down --volumes --remove-orphans",
+    "http_port=${SERVER_PORT-8080}",
+    f'for port in "$http_port" 8082 4173; do\n  if ! {LOOPBACK_PORT_PROBE} "$port"; then\n    fail',
+    'export SERVER_PORT="$http_port"',
+)
+# The root-configuration check reads readiness only from the port its own backend
+# binds, and only after nothing else answered there.
+LOCAL_CONFIG_ENTRY = "scripts/verify_local_config.sh"
+LOCAL_CONFIG_CONTRACT_TOKENS = (
+    'HTTP_PORT="${SERVER_PORT-8080}"',
+    'READINESS_URL="http://127.0.0.1:${HTTP_PORT}/actuator/health/readiness"',
+    f'if ! {LOOPBACK_PORT_PROBE} "${{HTTP_PORT}}"; then\n  fail 3',
+    'SERVER_PORT="${HTTP_PORT}" SPRING_CONFIG_IMPORT=',
+)
+LOCAL_CONFIG_PROHIBITED_TOKENS = ("127.0.0.1:8080",)
+# The browser suite, the console it builds and the backend it starts read one port.
+BROWSER_BACKEND_ORIGIN_RESOLVER = f"{FRONTEND}/tests/browser/backendOrigin.ts"
+BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS = (
+    "BACKEND_PORT_ENVIRONMENT_VARIABLE = 'SERVER_PORT'",
+    "DEFAULT_BACKEND_PORT = '8080'",
+    "must be a TCP port number",
+)
+BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS = (
+    "const backendOrigin = resolveBackendOrigin();",
+    "VITE_MARKETOPS_API_BASE_URL: backendOrigin",
+)
+BROWSER_SPEC_PROHIBITED_TOKENS = ("127.0.0.1:8080",)
 
 BACKLOG_HEADER = ("ID", "Title", "Status", "Dependencies", "Core source requirements")
 BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "IMPLEMENTING", "COMPLETED"}
@@ -921,7 +1087,7 @@ def check_repository_contracts(report: Report) -> None:
         if not (ROOT / relative).is_file():
             report.add(rule, relative, 0, "required foundation artefact is absent")
 
-    for relative in ("Makefile", "scripts/dev_doctor.py", "scripts/fresh_clone_check.sh"):
+    for relative in ("Makefile", "scripts/dev_doctor.py", FRESH_CLONE_ENTRY, ISOLATED_BROWSER_ENTRY):
         path = ROOT / relative
         text = read_text(path) or ""
         for number, line in matching_lines(text, PATH_RESTRICTION):
@@ -1361,29 +1527,21 @@ def check_repository_contracts(report: Report) -> None:
         ROOT / "scripts/collect_supply_chain.py",
         ("frontend-sbom.json", 'sbom.get("bomFormat") != "CycloneDX"'),
     )
+    fresh_clone = ROOT / FRESH_CLONE_ENTRY
+    require_tokens(report, rule, fresh_clone, FRESH_CLONE_CONTRACT_TOKENS)
+    reject_tokens(report, rule, fresh_clone, FRESH_CLONE_PROHIBITED_TOKENS)
+    require_tokens(report, rule, ROOT / ISOLATED_BROWSER_ENTRY, ISOLATED_BROWSER_CONTRACT_TOKENS)
+    local_config = ROOT / LOCAL_CONFIG_ENTRY
+    require_tokens(report, rule, local_config, LOCAL_CONFIG_CONTRACT_TOKENS)
+    reject_tokens(report, rule, local_config, LOCAL_CONFIG_PROHIBITED_TOKENS)
     require_tokens(
-        report,
-        rule,
-        ROOT / "scripts/fresh_clone_check.sh",
-        (
-            "MarketOps clone's verification",
-            "make env-init",
-            "./mvnw -B -ntp verify",
-            "npm ci",
-            "npm ls --all",
-            "npm run lint",
-            "npm run format:check",
-            "npm run typecheck",
-            "npm run test:ci",
-            "npm run build",
-            "npm run verify:bundle",
-            "scripts/verify_coverage_thresholds.sh all",
-            "npm run test:browser",
-            "scripts/collect_supply_chain.py",
-            "scripts/verify_local_config.sh",
-            "down --volumes --remove-orphans",
-        ),
+        report, rule, ROOT / FRONTEND / "playwright.config.ts", BROWSER_BACKEND_ORIGIN_CONFIG_TOKENS
     )
+    require_tokens(
+        report, rule, ROOT / BROWSER_BACKEND_ORIGIN_RESOLVER, BROWSER_BACKEND_ORIGIN_RESOLVER_TOKENS
+    )
+    for spec in sorted((ROOT / FRONTEND / "tests" / "browser").glob("*.spec.ts")):
+        reject_tokens(report, rule, spec, BROWSER_SPEC_PROHIBITED_TOKENS)
 
 
 def declared_dependency_artifacts(pom_text: str) -> list[tuple[str, str]]:

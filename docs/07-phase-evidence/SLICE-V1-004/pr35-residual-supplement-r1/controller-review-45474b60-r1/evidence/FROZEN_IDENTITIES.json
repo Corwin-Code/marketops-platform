@@ -1,0 +1,20 @@
+[
+  {
+    "name": "01_CONTRACT.md",
+    "sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983",
+    "git_blob_sha1": "8e89dec6b67e1e4d1e9f5ea05f17cedbd1985ea9",
+    "readback_head": "45474b6039edd46842e1e5f84391dca4264ddc1d"
+  },
+  {
+    "name": "02_ACCEPTANCE_AND_TRACEABILITY.md",
+    "sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d",
+    "git_blob_sha1": "4d9e93c17e26deee5d2222c8fc51d61d619aa9c8",
+    "readback_head": "45474b6039edd46842e1e5f84391dca4264ddc1d"
+  },
+  {
+    "name": "original_frozen_set.json",
+    "sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
+    "git_blob_sha1": "34325a577a785521b2c8d01cba4c323cd8fd1ac6",
+    "readback_head": "45474b6039edd46842e1e5f84391dca4264ddc1d"
+  }
+]

@@ -1,0 +1,7 @@
+fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx
+Working directory: frontend/marketops-console
+ Test Files  3 passed (3)
+      Tests  30 passed (30)
+   Duration  2.84s (transform 657ms, setup 728ms, import 771ms, tests 2.01s, environment 2.84s)
+Exit status: 0
+Local synthetic verification only; no final closure.

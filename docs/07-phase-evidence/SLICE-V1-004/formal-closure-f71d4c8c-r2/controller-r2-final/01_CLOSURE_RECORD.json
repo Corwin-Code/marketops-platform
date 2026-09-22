@@ -1,0 +1,819 @@
+{
+  "schema": "marketops.controller.final-closure-record.v1",
+  "record_id": "SLICE-V1-004-FINAL-CLOSURE-F71D4C8C-R2-FINAL",
+  "prepared_at_utc": "2026-09-16T10:01:42.816596+00:00",
+  "review_type": "CONTINUATION_OF_R2_AFTER_EXISTING_EVIDENCE_TRANSFER_NOT_NEW_DEEP_REVIEW",
+  "verdict": "PASS",
+  "verdict_scope": "LEVEL_1_ENGINEERING_ONLY",
+  "engineering_state": "CONTROLLER_FINAL_GATE_PASS_OWNER_FORMAL_CLOSURE_PENDING",
+  "repository": "Corwin-Code/marketops-platform",
+  "final_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+  "final_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+  "implementation_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+  "implementation_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74",
+  "sole_parent_of_final": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+  "sole_parent_of_implementation": "39d55e303eae5e046d0be2fd66ac2256f0c95e78",
+  "contract": {
+    "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md",
+    "sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983"
+  },
+  "annex": {
+    "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md",
+    "normative_sections": "§1–2 and §4",
+    "sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d"
+  },
+  "frozen_finding_set_sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843",
+  "predecessor_records": {
+    "ec0_25_closures": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+    "39d55e30_R1": "e7a7fb99bb4d91a765c3fd5d2b93f0647091917e201a9a8374883c9991f3fd53",
+    "R2_evidence_stop": "5f333890eff387f06f8202d292b2ea5538f9acae3154d874b28c633998f1b7eb"
+  },
+  "supersession": {
+    "supersedes_only": "R2 evidence-transfer block and pending dispositions of original 003/027 at the same exact Head",
+    "prior_source_and_test_review": "RETAINED_NOT_RESTARTED",
+    "historical_records": "IMMUTABLE_NOT_OVERWRITTEN"
+  },
+  "blocker_class": null,
+  "previous_evidence_blocker": "RESOLVED",
+  "remaining_findings": [],
+  "frozen_findings_total": 27,
+  "prior_controller_closures_preserved": 25,
+  "controller_closed_this_completion": 2,
+  "controller_closed_at_level_1": 27,
+  "new_frozen_findings": 0,
+  "findings": [
+    {
+      "id": "S4-DR-R1-001",
+      "severity": "BLOCKER",
+      "title": "Outcome写入口遗漏业务授权与对象边界，读权限检查不能覆盖写入口",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "§3",
+        "C08.1",
+        "C10.1",
+        "NFR-AC3"
+      ],
+      "original_acceptance_ids": [
+        "C08-AC1",
+        "C09-AC3",
+        "C10-AC1",
+        "NFR-AC3"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-002",
+      "severity": "MAJOR",
+      "title": "最小授权投影未落实到模拟明细与已发人工包的当前访问",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C08.1",
+        "C09.4",
+        "C12.5",
+        "§3"
+      ],
+      "original_acceptance_ids": [
+        "C08-AC1",
+        "C09-AC3",
+        "NFR-AC3",
+        "API-T26"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-003",
+      "severity": "MAJOR",
+      "title": "两条主指标证据路径被错误耦合，真实零购买与完整官方汇总不能独立成立",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C02.1",
+        "C02.2",
+        "C02.4",
+        "§17"
+      ],
+      "original_acceptance_ids": [
+        "C02-AC1",
+        "C02-AC2",
+        "API-T01",
+        "API-T02"
+      ],
+      "closed_in_this_completion": true,
+      "origin": "R2_FINAL_AFTER_RAW_EVIDENCE_RECEIVED",
+      "closed_at_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+      "basis": "Prior exact-source and test review plus now-verified original indexed run payloads, transitive regression and current evidence reconciliation.",
+      "closure_results": [
+        "Independent official summary reaches fixed-source formal comparison without fabricated visit identities.",
+        "Source-wise feasible-subset predicate rejects both former Controller counterexamples; original numbers remain retained; source/total qualification is independent.",
+        "Signed-HTTP/isolated-DB tests demonstrate primary MET with invalid critical group UNDETERMINED; valid source comparison observedDifference remains 0.634.",
+        "Qualified late SUMMARY input yields one LATE_FACT revision through RecalculationService, observedDifference 0.49, same frozen reference/plan and preserved old result, with idempotent queue replay."
+      ],
+      "raw_tests": [
+        "infeasibleCriticalGroupComplementCannotBorrowQualifiedProtectionThroughTheFormalOutcome",
+        "infeasibleCriticalGroupComplementKeepsTheProvenSourceStrataWhileLawfulComplementsQualify",
+        "qualifiedSummaryLateFactRevisesTheFormalOutcomeThroughRecalculationOnce"
+      ]
+    },
+    {
+      "id": "S4-DR-R1-004",
+      "severity": "MAJOR",
+      "title": "版本覆盖和迟到销售修订未进入实际主指标计算，固定流量结构仍未实现",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C02.4",
+        "C02.5",
+        "C02.6",
+        "C08.2",
+        "C08.4"
+      ],
+      "original_acceptance_ids": [
+        "C02-AC1",
+        "C02-AC3",
+        "C08-AC2",
+        "API-T03",
+        "API-T04",
+        "API-T06"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-005",
+      "severity": "BLOCKER",
+      "title": "正式Outcome以请求数字和绝对转化率生产通过，未消费合格改善及保护证据",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C02.4",
+        "C03.1",
+        "C03.2",
+        "C10.1",
+        "§3"
+      ],
+      "original_acceptance_ids": [
+        "C03-AC1",
+        "C03-AC2",
+        "C10-AC1",
+        "C10-AC2",
+        "API-T23"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-006",
+      "severity": "MAJOR",
+      "title": "评价计划的节点、冻结政策和独立效果不足停止规则没有约束实际判定",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C03.5",
+        "C08.4",
+        "C10.2",
+        "C10.3"
+      ],
+      "original_acceptance_ids": [
+        "C03-AC3",
+        "C10-AC2",
+        "C10-AC3"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-007",
+      "severity": "BLOCKER",
+      "title": "启动Gate用结构性Listing Health代替利润、退货、供给与用途保障",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C02.3",
+        "C03.1",
+        "C03.2",
+        "C03.3",
+        "C03.4",
+        "C04.3"
+      ],
+      "original_acceptance_ids": [
+        "C01-AC3",
+        "C03-AC1",
+        "C03-AC2",
+        "C04-AC1",
+        "C11-AC1",
+        "API-T23"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-008",
+      "severity": "BLOCKER",
+      "title": "普通/重大分类用字符差额和发起人暴露数字替代内容含义与真实经营暴露",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.2",
+        "C07.1",
+        "C08.5"
+      ],
+      "original_acceptance_ids": [
+        "C04-AC1",
+        "C08-AC1",
+        "C07-AC1"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-009",
+      "severity": "MAJOR",
+      "title": "正文误用512字符元数据校验并strip，合法长文被拒绝且准确文本被改写",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.1",
+        "C04.3",
+        "C04.5",
+        "C12.5",
+        "§17"
+      ],
+      "original_acceptance_ids": [
+        "C04-AC1",
+        "C12-AC3",
+        "NFR-AC5",
+        "API-T14"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-010",
+      "severity": "MAJOR",
+      "title": "完整影响集合由“已观察且已映射”推断，映射变化未进入冻结摘要",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C01.3",
+        "C04.3",
+        "C05.4"
+      ],
+      "original_acceptance_ids": [
+        "C01-AC2",
+        "C04-AC1",
+        "C12-AC2",
+        "API-T12"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-011",
+      "severity": "MAJOR",
+      "title": "Owner校准包仅有只读表与约束，缺少受治理接受/激活路径及按用途的依赖延续",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C08.2",
+        "C08.3",
+        "C08.4",
+        "C08.5",
+        "C12.5"
+      ],
+      "original_acceptance_ids": [
+        "C08-AC1",
+        "C08-AC3",
+        "C12-AC3"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-012",
+      "severity": "BLOCKER",
+      "title": "累计额度未绑定完整轴集合和准确需求，换版本可能把现存承担从余额中清零",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C05.1",
+        "C05.2",
+        "C07.1",
+        "C08.3"
+      ],
+      "original_acceptance_ids": [
+        "C05-AC1",
+        "C05-AC2",
+        "API-T17"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-013",
+      "severity": "BLOCKER",
+      "title": "占用释放只验证有一条观察/旧值匹配，不能证明已经停止或不可能应用",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.6",
+        "C05.2",
+        "C07.2",
+        "§3"
+      ],
+      "original_acceptance_ids": [
+        "C05-AC2",
+        "C07-AC2",
+        "API-T16",
+        "API-T18"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-014",
+      "severity": "BLOCKER",
+      "title": "促销准确条款在启动后才自由录入，退出与存量纳管没有消费准确商业授权和完整承担",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C07.1",
+        "C07.2",
+        "C07.4",
+        "C07.5",
+        "C05.2"
+      ],
+      "original_acceptance_ids": [
+        "C07-AC1",
+        "C07-AC2",
+        "C07-AC3",
+        "API-T19",
+        "API-T20"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-015",
+      "severity": "MAJOR",
+      "title": "促销模拟未表达完整有限经济条件，阶梯费用选错且保守场景标志不生效",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C03.4",
+        "C03.5",
+        "C07.3",
+        "C07.5",
+        "§3"
+      ],
+      "original_acceptance_ids": [
+        "C07-AC1",
+        "C03-AC3",
+        "API-T20",
+        "API-T21"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-016",
+      "severity": "MAJOR",
+      "title": "人工核验未绑定顾客侧展示证据与实际操作边界，报告/事实资格仍可混用",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.3",
+        "C04.4",
+        "C04.5",
+        "C07.2"
+      ],
+      "original_acceptance_ids": [
+        "C04-AC2",
+        "C07-AC2",
+        "API-T09",
+        "API-T15"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-017",
+      "severity": "MAJOR",
+      "title": "运行期偏离与跨域处理缺少权威证据闭环，任意核验ID可成为关闭依据",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C11.2",
+        "C11.3",
+        "C04.7",
+        "C08.4"
+      ],
+      "original_acceptance_ids": [
+        "C11-AC2",
+        "C11-AC3",
+        "C09-AC3"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-018",
+      "severity": "MAJOR",
+      "title": "限域隔离的依赖传播与重新启用未消费当前原因和调用权威",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C03.3",
+        "C05.3",
+        "C05.4",
+        "§3"
+      ],
+      "original_acceptance_ids": [
+        "C05-AC3",
+        "C11-AC2",
+        "NFR-AC3"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-019",
+      "severity": "MAJOR",
+      "title": "一次明确启动没有接通Description Command，命令结果也未闭合业务动作",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C01.1",
+        "C04.4",
+        "C04.5",
+        "C12.3",
+        "C12.5"
+      ],
+      "original_acceptance_ids": [
+        "C01-AC1",
+        "C04-AC1",
+        "C04-AC2",
+        "C12-AC3",
+        "API-T08"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-020",
+      "severity": "BLOCKER",
+      "title": "精确恢复复用原命令和原批准，COMMAND_RESOLVE被扩成新的业务恢复授权",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.3",
+        "C04.6",
+        "C04.7",
+        "C05.2"
+      ],
+      "original_acceptance_ids": [
+        "C04-AC3",
+        "NFR-AC3",
+        "API-T10",
+        "API-T12"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-021",
+      "severity": "MAJOR",
+      "title": "请求guard没有绑定准确原生目标和正文节点，跨平台硬编码又拒绝合法Schema",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C01.3",
+        "C04.1",
+        "C04.3",
+        "C04.5",
+        "§17"
+      ],
+      "original_acceptance_ids": [
+        "C04-AC1",
+        "API-T07",
+        "API-T12",
+        "API-T13",
+        "API-T14"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-022",
+      "severity": "MAJOR",
+      "title": "等待头和异步结果的完整协议语义未落实，可能提前重试或误认终局",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.5",
+        "C04.6",
+        "§17"
+      ],
+      "original_acceptance_ids": [
+        "C04-AC2",
+        "API-T05",
+        "API-T08",
+        "API-T11",
+        "API-T15",
+        "API-T18"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-023",
+      "severity": "MAJOR",
+      "title": "5/15/60重算只有标签和健康重算，队列领取缺少成功占有证明与崩溃恢复",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C08.2",
+        "C08.4",
+        "C03.3",
+        "§3"
+      ],
+      "original_acceptance_ids": [
+        "C08-AC2",
+        "NFR-AC1",
+        "NFR-AC6",
+        "API-T03",
+        "API-T04"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-024",
+      "severity": "MAJOR",
+      "title": "责任时钟与风险/机会激活只有孤立helper，实际Task仍按固定期限和手动候选建立",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C01.4",
+        "C06.1",
+        "C06.2",
+        "C06.3",
+        "C11.2"
+      ],
+      "original_acceptance_ids": [
+        "C06-AC1",
+        "C06-AC2",
+        "C11-AC2"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-025",
+      "severity": "MAJOR",
+      "title": "必需的按需AI、原文主题纠正、日周复盘与经验复用未形成实际业务路径",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C09.1",
+        "C09.2",
+        "C09.3",
+        "C11.1"
+      ],
+      "original_acceptance_ids": [
+        "C09-AC1",
+        "C09-AC2",
+        "C11-AC1",
+        "API-T24"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-026",
+      "severity": "MAJOR",
+      "title": "双语桌面页面有状态和按钮，但准确审批材料与多项必达用户旅程缺少可用入口",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "C04.2",
+        "C04.3",
+        "C07",
+        "C08.5",
+        "C09.1",
+        "C11.2",
+        "C12.3",
+        "C12.5"
+      ],
+      "original_acceptance_ids": [
+        "C06-AC3",
+        "C09-AC3",
+        "C12-AC2",
+        "C12-AC3",
+        "NFR-AC5"
+      ],
+      "closed_in_this_completion": false,
+      "origin": "INHERITED_EC0_CONTROLLER_CLOSURE",
+      "original_closure_head": "ec0e73b9b9451f63f0cef385aed623d63521596a",
+      "original_closure_record_sha256": "b4b064124f1e6dfec7f25591957b503ba029b04e3e5824b8b30ad5509d9acb4c",
+      "basis": "Preserve prior exact Controller closure; bounded/transitive non-regression reviewed through R2. No claim of a fresh full-suite execution."
+    },
+    {
+      "id": "S4-DR-R1-027",
+      "severity": "MAJOR",
+      "title": "验收状态把局部helper/编译/表形状提升为完整LOCAL_VERIFIED，关键运行证据仍缺",
+      "disposition": "CLOSED_AT_LEVEL_1",
+      "original_contract_clauses": [
+        "§8",
+        "§9",
+        "§10",
+        "NFR-AC1",
+        "NFR-AC2",
+        "NFR-AC3",
+        "NFR-AC5",
+        "NFR-AC6"
+      ],
+      "original_acceptance_ids": [
+        "NFR-AC1",
+        "NFR-AC2",
+        "NFR-AC3",
+        "NFR-AC4",
+        "NFR-AC5",
+        "NFR-AC6",
+        "API-T22",
+        "API-T27"
+      ],
+      "closed_in_this_completion": true,
+      "origin": "R2_FINAL_AFTER_RAW_EVIDENCE_RECEIVED",
+      "closed_at_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+      "basis": "Prior exact-source and test review plus now-verified original indexed run payloads, transitive regression and current evidence reconciliation.",
+      "closure_results": [
+        "31/31 previous indexed payloads and 28/28 new indexed payloads received and hash-matched.",
+        "Current report testcase counts and actual selected methods match; all authoritative XML counts show zero failures/errors/skips.",
+        "Current vs inherited source identities and historical full-suite/browser attribution remain separate.",
+        "Canonical checkpoint correctly refrained from self-issuing Controller closure; the present Controller record now supplies the new closure authority."
+      ]
+    }
+  ],
+  "received_evidence": {
+    "transport_filename": "SLICE-V1-004-Final-Closure-Continuation-39d55e30-R1-evidence.zip",
+    "transport_sha256": "a2b81c768a758ad7419b797e1e588592de29c67b0b5e1af39f22a09709d43930",
+    "zip_members": 70,
+    "zip_file_members": 62,
+    "zip_directory_members": 8,
+    "old_index_sha256": "afd03d57daf4f0f68051762286026b6c67a00d1b2dc103bee5f592ae7735e59d",
+    "old_indexed_payloads": 31,
+    "old_payload_hashes_matching": 31,
+    "new_index_sha256": "b463c8a3b39957c8296af507c7588a278bedf94e709a9bda3b8340e8a12974d6",
+    "new_indexed_payloads": 28,
+    "new_payload_hashes_matching": 28,
+    "missing_or_mismatched_payloads": 0,
+    "standalone_log_same_bytes": true,
+    "authoritative_current_log_sha256": "7df138e640aae0b79ec6d4418081be1a40e8f9c0a4520c3f8fb1ad97536e8c35"
+  },
+  "accepted_runtime_evidence": {
+    "current_unit_cases": 24,
+    "current_integration_cases": 13,
+    "current_xml_files": 6,
+    "current_failures": 0,
+    "current_errors": 0,
+    "current_skips": 0,
+    "current_rerun_or_flaky_xml_events": 0,
+    "current_authorization_it_cases": 12,
+    "current_recalculation_it_cases": 1,
+    "current_architecture_tests_from_raw_log": 76,
+    "architecture_xml_provided": false,
+    "prior_targeted_summary": {
+      "unit": 21,
+      "integration": 9,
+      "source": "6ccaa6c070cb5a786a91d447b474b44926f8837c"
+    },
+    "inherited_migration_schema": {
+      "unit_from_log": 3,
+      "integration_from_xml": 21,
+      "migrations_through": "V0124"
+    },
+    "inherited_frontend": {
+      "tests": 26,
+      "typecheck": "EXIT_0_REPORTED_SUPPORTED_BY_RAW_OUTPUT",
+      "prettier": "FINAL_PASS_INITIAL_FAILURE_PRESERVED"
+    },
+    "historical_full_backend_frontend_browser": "RETAINED_AT_ORIGINAL_SOURCE_NOT_RERUN_AT_CURRENT_HEAD",
+    "controller_reexecuted_product_suites_this_turn": false,
+    "meaning": "Controller independently parsed, re-counted and cross-checked supplied original run evidence; these are not Controller-launched application suite runs."
+  },
+  "source_inheritance": {
+    "current_backend_manifest_entries": 1323,
+    "current_backend_changed_entries": 3,
+    "current_frontend_manifest_entries": 126,
+    "current_frontend_changed_entries": 0,
+    "inherited_migration_files_equal": 124,
+    "cross_stage_exception": {
+      "path": "backend/marketops-server/mvnw.cmd",
+      "git_blob": "8366e217043bbc6236f863fea070c1da3ffa1f61",
+      "lf_sha256": "7ba5a79e1082c47e648fe3ca7bb23b967b6307093d778a0202540683e77ac3ea",
+      "crlf_sha256": "8c720db91d96ba5f67afa4083726b20eb4be399d86bb859e09eb67436bb230f5",
+      "note": "Old manifest hashes CRLF representation, newer committed-blob manifest hashes LF; exact GitHub blob unchanged at 6ccaa6c and f71d4c8c. No original input changed. Selected commands execute ./mvnw, not mvnw.cmd."
+    },
+    "final_commit_change_scope": "DOCS_ONLY_13_FILES_RETAINED_FROM_PRIOR_EXACT_TREE_REVIEW"
+  },
+  "acceptance_projection": {
+    "total": 69,
+    "level_1_engineering_evidence_accepted_by_cumulative_controller_review": 54,
+    "external_evidence_pending": 12,
+    "not_applicable_at_level_1": 3,
+    "canonical_input_count_labels": "54 ENGINEERING_VERIFIED_CONTROLLER_PENDING / 12 EXTERNAL_EVIDENCE_PENDING / 3 NOT_APPLICABLE_AT_LEVEL_1 at frozen Head",
+    "canonical_repository_written_this_turn": false,
+    "all_69_production_pass": false
+  },
+  "external_obligations_open": [
+    "F-M01",
+    "F-M02",
+    "F-S01",
+    "F-W01",
+    "F-W02",
+    "E-04"
+  ],
+  "prior_slice_003_release_obligations": "24 PREVIOUS RELEASE OBLIGATIONS PRESERVED; PRIOR ENGINEERING CLOSURE NOT REOPENED",
+  "authority": {
+    "owner_formal_closure": "PENDING_NOT_ISSUED_BY_CONTROLLER",
+    "repository_mutation": false,
+    "local_product_changes": false,
+    "push": false,
+    "pr": false,
+    "merge": false,
+    "level_2": false,
+    "deployment": false,
+    "production_migration": false,
+    "real_provider_account_calls": false,
+    "gate_ev": false,
+    "gate_e": false,
+    "production_write_enabled": false,
+    "production_write_status_meaning": "Authorization/default-off boundary retained, not a live production environment inspection."
+  },
+  "next_action": {
+    "actor": "HUMAN_OWNER",
+    "kind": "FORMAL_LEVEL_1_ENGINEERING_CLOSURE_FOR_EXACT_CONTRACT_AND_SOURCE",
+    "third_engineering_review_required": false,
+    "further_product_rework_requested": false,
+    "further_evidence_upload_requested": false,
+    "full_suite_rerun_requested": false,
+    "then": "Under existing applicable local documentation authority record this verdict and Owner closure, synchronize canonical status/Closure Snapshot. Remote or production actions require their own exact authorization."
+  },
+  "limits": [
+    "No current complete application-suite, browser, load or disaster-recovery run was performed by Controller.",
+    "Synthetic profile, accounting, historical-plan and supersedes fixture setup is not real platform/account qualification.",
+    "Architecture count is supported by raw log, not a new independent XML per-case recount.",
+    "Source manifests are run evidence supported by exact-source review and Git identity, not an attested proof of arbitrary binaries on an unseen workstation.",
+    "Hash equality and CRC establish identity and integrity, not platform correctness or future production behavior."
+  ]
+}

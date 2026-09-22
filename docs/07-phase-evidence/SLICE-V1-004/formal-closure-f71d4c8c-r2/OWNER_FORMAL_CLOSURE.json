@@ -1,0 +1,118 @@
+{
+  "schema": "marketops.owner.formal-closure-record.v1",
+  "record_id": "OWNER-SLICE-V1-004-FORMAL-CLOSURE-F71D4C8C-R2",
+  "recorded_at_utc": "2026-09-16T10:18:02.621002+00:00",
+  "event_date": "2026-09-16",
+  "event_timestamp_basis": "Exact chat timestamp unavailable; recorded_at_utc is bookkeeping time, not a claimed signature time.",
+  "slice": "SLICE-V1-004",
+  "product_version": "V1",
+  "repository": "Corwin-Code/marketops-platform",
+  "owner_formal_closure": "COMPLETE_EXPLICIT_HUMAN_OWNER_DECLARATION",
+  "engineering_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+  "closure_scope": "LEVEL_1_ENGINEERING_ONLY",
+  "declaration": {
+    "path": "docs/08-handoffs/OWNER-SLICE-V1-004-FORMAL-CLOSURE-STATEMENT-F71D4C8C-R2.txt",
+    "sha256": "940fb24047a862ffadc88d37d8acbcc8f3728f2f6408696eb18ee3f17e55c9a8",
+    "source": "Latest explicit Human Owner declaration in this conversation",
+    "serialization": "Visible message body, including @GitHub, UTF-8 with LF and one final newline; not provider-signed chat payload."
+  },
+  "controller_final_gate": {
+    "record_id": "SLICE-V1-004-FINAL-CLOSURE-F71D4C8C-R2-FINAL",
+    "path": "docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json",
+    "sha256": "3c4841ec5d2f32c01d4b8fda126a266da9a4d0ef422ff569be3973540c0751b0",
+    "verdict": "PASS",
+    "scope": "LEVEL_1_ENGINEERING_ONLY",
+    "unchanged_copy": true
+  },
+  "closed_source": {
+    "final_head": "f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10",
+    "final_tree": "b8a9e7d0450d24f2b58b95d6b370daf9cd5e5e47",
+    "implementation_head": "d65c9185adc89955d6bab3b20ac7bd9f639b5335",
+    "implementation_tree": "e01e510d5b8bce57f7556d3e5d6996a01f8d2d74"
+  },
+  "frozen_inputs": {
+    "contract": {
+      "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion.md",
+      "sha256": "5a1761ad614426ad3cba9594f481e293b584d69e96c6d893cf502a5062cfc983"
+    },
+    "annex": {
+      "path": "docs/03-work-items/SLICE-V1-004-promotion-listing-conversion-acceptance.md",
+      "normative_sections": "§1–2 and §4",
+      "sha256": "c77089fc78183d6289ed0023d4d0dbee915f61e8d917a7f49ba8564b0dc2a48d"
+    },
+    "frozen_finding_set": {
+      "path": "docs/07-phase-evidence/SLICE-V1-004/rework-r1/01_FROZEN_FINDING_SET.json",
+      "sha256": "204f9f6f914ec415694f5a1693f86d2a08e6d92283fdbf9d8dfa4755da7a8843"
+    }
+  },
+  "decisions": {
+    "accepted_count": 85,
+    "q085_selection": "B",
+    "three_scope_supersessions": [
+      "DELTA-01",
+      "DELTA-02",
+      "DELTA-03"
+    ],
+    "changed": false,
+    "new_amendments": []
+  },
+  "findings": {
+    "original": 27,
+    "controller_closed": 27,
+    "previous_ec0_closed": 25,
+    "r2_closed": [
+      "S4-DR-R1-003",
+      "S4-DR-R1-027"
+    ],
+    "open": [],
+    "new": 0
+  },
+  "acceptance_layers": {
+    "total": 69,
+    "level_1_engineering_evidence_accepted": 54,
+    "external_evidence_pending": 12,
+    "not_applicable_at_level_1": 3,
+    "all_69_production_pass": false
+  },
+  "migrations": {
+    "preserved_through": "V0124",
+    "complement_fix_added_or_changed_migrations": false,
+    "deployment_or_application_to_production_authorized": false
+  },
+  "external_obligations_open": [
+    "F-M01",
+    "F-M02",
+    "F-S01",
+    "F-W01",
+    "F-W02",
+    "E-04"
+  ],
+  "prior_release_obligations": "All prior obligations retained. In particular S3-REL-001 through S3-REL-024 are unchanged; no prior engineering closure is reopened.",
+  "document_authority": {
+    "local_document_recording_and_canonical_sync": "EXPLICITLY_CONFIRMED_BY_OWNER",
+    "third_engineering_review_required": false,
+    "new_contract_acceptance_required": false,
+    "further_product_rework_requested": false,
+    "snapshot_exact_bytes_accepted_in_advance": false,
+    "snapshot_basis": "Non-expansive record of this declaration and the unchanged Controller PASS, not a new product decision."
+  },
+  "permissions_granted_by_this_declaration": {
+    "push": false,
+    "pr": false,
+    "merge": false,
+    "deployment": false,
+    "production_migration": false,
+    "level_2": false,
+    "real_provider_account_calls": false,
+    "gate_ev": false,
+    "gate_e": false,
+    "pilot": false,
+    "production_write": false
+  },
+  "next_action": {
+    "kind": "LOCAL_DOCUMENTATION_SYNC_ONLY",
+    "new_slice_design_or_implementation_authorized": false,
+    "remote_publication_requires_separate_exact_authority": true
+  },
+  "execution_receipt_scope": "This file records the Owner event. A separate sync run receipt must record actual writes in the executing local repository."
+}

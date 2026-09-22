@@ -1,0 +1,241 @@
+## 当前正式关闭状态
+
+**CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS — Level 1工程；Owner Formal Closure已完成。**
+
+Closed Head：`f71d4c8c2bdf5dc6497d7951d1cd5b12b0122f10`。原27项Finding均已由Controller关闭；69项保持54工程／12外部待补／3Level 1不适用，不宣称全部生产通过。
+
+Owner记录：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/OWNER_FORMAL_CLOSURE.json`；Snapshot：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/CLOSURE_SNAPSHOT.md`；Controller FINAL：`docs/07-phase-evidence/SLICE-V1-004/formal-closure-f71d4c8c-r2/controller-r2-final/01_CLOSURE_RECORD.json`。
+
+没有新的Review、返工、全套重跑或再次接受要求；仅完成已有授权下的本地文档落位。本状态不提供push/PR/merge、部署、生产迁移、Level 2、真实Provider/账户、Gate EV/E、Pilot或生产写权限。
+
+## 关闭后CI与证据一致性修正（PR #35，2026-09-18）
+
+**Owner有界授权下的CI／证据一致性修正；正式关闭作为历史事实保留，不被替换。**
+
+PR #35在`57c5efc4`上的首次CI：12项必需检查8过4败——`backend-build`、`backend-integration`（V0124后8处迁移期望过期）、`frontend-lint`（`ListingConversion.test.tsx:473`）、`frontend-test`（fixture拒绝5432而CI生成5432）；另有非必需的`CodeQL`结果检查失败（2条测试SQL拼接high告警）。Controller裁定`SLICE-V1-004-PR35-REMOTE-DELIVERY-ARBITRATION-57C5EFC4-R1`：传输接受、CI不合格、需一次有界修正。Owner签发05 A–F授权并点名Opus 5为执行者：`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-BOUNDED-CORRECTION-AUTHORIZATION-EVIDENCE.md`。
+
+修正提交：`48298206794a81b0640b4a14363198465dbd86c0`。证据与说明：`docs/07-phase-evidence/SLICE-V1-004/pr35-ci-evidence-correction-r1/README.md`。
+
+| ID | 关闭后覆盖状态（不改下表／原表分层） |
+| --- | --- |
+| `NFR-AC3` | PR安全告警处置：2条high所在的测试SQL已改为参数化查询，告警是否关闭以发布Head的新扫描为准；7条warning逐条以源码、分析身份（CodeQL 2.27.0，SARIF已取得）和负向回归处置，未dismiss；结果见PR #35 |
+| `NFR-AC4` | 当前迁移升级回归：8处V0124期望按fixture推导修正，未改SQL迁移；修正提交的本地完整后端`clean verify`见证据目录；发布Head CI见PR #35 |
+| `NFR-AC5` | CI浏览器与前端：隔离的非5432 loopback入口；修正提交本地业务流26/26、广告浏览器12/12；发布Head CI见PR #35 |
+| `NFR-AC6` | 本地工具链lint证据以append-only erratum更正（`HISTORICAL_LINT_ERRATUM.md`）；Level 1环境结果不适用的原分层不变 |
+
+以上是内部CI与证据缺陷，不归入12项外部待补。54／12／3、27/27历史关闭、`F-M01`／`F-M02`／`F-S01`／`F-W01`／`F-W02`／`E-04`及全部前序发布义务不变。发布候选的CI结果不写回仓库，见PR #35正文与外部交接；PR保持Draft／Unmerged，Ready／merge另需准确授权。上一段"没有新的Review、返工、全套重跑"描述的是正式关闭时的状态。
+
+## PR #35残余补充（2026-09-19）
+
+**Owner有界补充授权下的残余修复；正式关闭与上一节修正均作为历史事实保留。**
+
+Controller审查`SLICE-V1-004-PR35-CORRECTION-REVIEW-45474B60-R1`接受上一节修正与`45474b60`的12项必需检查，同时判定共享传输丢弃原生等待头（`PR35-NOTE-KEYPATH-01`）阻断Ready/merge，并登记`CRCF-PR35-04`。Owner签发补充范围`S4-PR35-45474B60-RESIDUAL-SUPPLEMENT-01`并点名`CLAUDE_OPUS_5`：`docs/08-handoffs/OWNER-SLICE-V1-004-PR35-RESIDUAL-SUPPLEMENT-AUTHORIZATION-EVIDENCE.md`。
+
+实施提交：`3bcc38fafa2760fe59c2144fe54887e212044d30`。证据与说明：`docs/07-phase-evidence/SLICE-V1-004/pr35-residual-supplement-r1/README.md`。
+
+| 范围 | 补充后状态（不改下表／原表分层） |
+| --- | --- |
+| B1 等待信号 | 原生`Item-Retry-After`／`X-Ratelimit-Retry`经生产`BoundedOutboundHttp`保留；越界值以withheld事实传递并持久为UNKNOWN；真实传输→adapter→PostgreSQL→worker联测11项，修复前代码上6项缺陷场景失败、5项对照通过 |
+| B2 fresh-clone入口 | full模式不再使用默认5432；配置栈与浏览器栈均为本次运行独有的Compose项目与loopback端口，浏览器仅经`business_browser_isolated.sh` |
+| B3 状态与校验器 | `CURRENT_STATE`有界当前任务层绑定Owner原文、Controller记录与补充范围；`authorization: CLOSED`与DR-0004 `CODEX`委托不变 |
+| S4-DR-R1-022／027 | 关闭记录不改写；其等待链证据的当前可复用性按Controller裁定限定，见`HISTORICAL_CLOSURE_QUALIFICATION.md` |
+
+以上是内部控制链缺陷与验证入口缺陷，不归入12项外部待补。54／12／3、27/27历史关闭、`F-M01`／`F-M02`／`F-S01`／`F-W01`／`F-W02`／`E-04`及全部前序发布义务不变，不新增第028项。发布候选的CI结果不写回仓库，见PR #35正文与外部交接；PR保持Draft／Unmerged，等待Controller有限残余验证，Ready／merge另需准确授权。
+
+## 当前69项分层
+
+| ID | 当前状态 | 外部义务／证据边界 |
+| --- | --- | --- |
+| `C01-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C01-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02 |
+| `C01-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C02-AC1` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02 |
+| `C02-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02 |
+| `C02-AC3` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02, F-S01 |
+| `C03-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C03-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C03-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C04-AC1` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02, E-04 |
+| `C04-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02, E-04 |
+| `C04-AC3` | `EXTERNAL_EVIDENCE_PENDING` | F-W01, F-W02, E-04 |
+| `C05-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C05-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C05-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C06-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C06-AC2` | `EXTERNAL_EVIDENCE_PENDING` | E-04 |
+| `C06-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C07-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C07-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C07-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C08-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C08-AC2` | `EXTERNAL_EVIDENCE_PENDING` | E-04 |
+| `C08-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C09-AC1` | `EXTERNAL_EVIDENCE_PENDING` | E-04 |
+| `C09-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C09-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C10-AC1` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02, F-S01 |
+| `C10-AC2` | `EXTERNAL_EVIDENCE_PENDING` | F-M01, F-M02, F-S01 |
+| `C10-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C11-AC1` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C11-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C11-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C12-AC1` | `NOT_APPLICABLE_AT_LEVEL_1` | 原权限／环境边界不变 |
+| `C12-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `C12-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC1` | `NOT_APPLICABLE_AT_LEVEL_1` | 原权限／环境边界不变 |
+| `NFR-AC2` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC3` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC4` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC5` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `NFR-AC6` | `NOT_APPLICABLE_AT_LEVEL_1` | 原权限／环境边界不变 |
+| `API-T01` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T02` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T03` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T04` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T05` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T06` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T07` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T08` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T09` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T10` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T11` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T12` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T13` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T14` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T15` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T16` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T17` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T18` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T19` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T20` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T21` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T22` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T23` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T24` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T25` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T26` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+| `API-T27` | `ENGINEERING_EVIDENCE_ACCEPTED_AT_LEVEL_1` | 仅Level 1工程证据 |
+
+---
+
+<details>
+<summary>f71d4c8c历史验收原文；其中pending标签为当时作者状态</summary>
+
+# SLICE-V1-004 — Level 1 local rework acceptance status
+
+Status: **25 CONTROLLER-CLOSED AT ec0; 003/027 FINAL CLOSURE CONTINUATION COMPLETE — FINAL CLOSURE VERIFICATION R2 PENDING**.
+
+The R1 review rejected the sufficiency of the Maker checkpoint at Head `f91d107c53a0cf3964ae43c0e8353e0c244a2b59`, Tree `b04fc98b9a3e156cc66e00fe878569306972c638`. The Controller record bound to Head `ec0e73b9b9451f63f0cef385aed623d63521596a`, Tree `c6f28fe4fb084d9b1fd6e3fdfdd744edf59fc8b2`, closed 25 frozen findings and retained 003 plus 027. Their targeted implementation is verified at Head `6ccaa6c070cb5a786a91d447b474b44926f8837c`, Tree `1da0d52ffdb6d658cddfa9c6699b0c0818dbf9d3`; both were reported `REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION`. Final Closure Verification R1 at Head `39d55e303eae5e046d0be2fd66ac2256f0c95e78`, Tree `06ea3278543960368a6b891a990c167af874a901` (`CHANGES_REQUIRED`) found one residual inside 003: the new critical-group predicate omitted complement feasibility. That residual and the 027 evidence delivery are repaired at Head `d65c9185adc89955d6bab3b20ac7bd9f639b5335`, Tree `e01e510d5b8bce57f7556d3e5d6996a01f8d2d74`, sole parent `39d55e30…`; both findings remain `REWORK_COMPLETE_PENDING_INDEPENDENT_FINAL_CLOSURE_VERIFICATION`. This checkpoint claims no new Controller closure.
+
+The original Maker report is preserved byte-for-byte at [historical-maker/acceptance-status.md](rework-r1/historical-maker/acceptance-status.md). Current machine-readable status is [S4-AC-STATUS.json](S4-AC-STATUS.json), per-finding evidence is [finding-progress.json](rework-r1/finding-progress.json), historical terminal receipts remain in [FINAL_LEVEL1_LOCAL_VERIFICATION.json](rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json), the ec0 continuation evidence is [TARGETED_FINAL_CLOSURE_CHECKPOINT.json](rework-r1/TARGETED_FINAL_CLOSURE_CHECKPOINT.json), and the current continuation evidence is [FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json](rework-r1/FINAL_CLOSURE_CONTINUATION_39D55E30_R1.json).
+
+Production writes remain disabled. No real Provider/account call, remote publication, Level 2, Gate EV or Gate E action occurred. `F-M01`, `F-M02`, `F-S01`, `F-W01`, `F-W02` and `E-04` remain at their existing later gates.
+
+## Current status counts
+
+| Status | Count | Meaning |
+| --- | ---: | --- |
+| `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | 54 | Applicable local engineering evidence passed; Controller verification has not occurred. |
+| `EXTERNAL_EVIDENCE_PENDING` | 12 | The local fail-closed boundary passed; named real-world evidence remains at its later gate. |
+| `NOT_APPLICABLE_AT_LEVEL_1` | 3 | The criterion outcome requires authority or an environment outside Level 1 and is not claimed as executed. |
+| Controller-closed frozen findings | 25 | Closed by the bound Controller record at ec0; not by this checkpoint. |
+| Targeted residual rework complete | 2 | 003 and 027 await independent Final Closure Verification; neither is self-closed. |
+
+## Functional acceptance groups
+
+| Group | Current status | Bounded behavior / evidence boundary | Terminal evidence |
+| --- | --- | --- | --- |
+| `C01-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Candidate → action → recommendation/task → binding → launch → evaluation is one traceable chain; the candidate carries evidence references, the action carries the frozen affected-set digest and author; an outcome with unmet target but complete evaluation is an honest NOT_MET result, never a success | Final Level 1 local receipt; Controller verification pending |
+| `C01-AC2` | `EXTERNAL_EVIDENCE_PENDING` | The affected set is frozen from every OBSERVED variant of the listing (core.lc_listing_affected_set_digest); an INCOMPLETE or CONFLICTED set fails Listing Health and blocks preparation; the digest is bound into review, approval binding, launch packet and command | Local fail-closed engineering receipt plus named external obligation: F-W01, F-W02 |
+| `C01-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Content and promotion candidates exist side by side; a candidate never becomes an action without a person, and an action never launches without review, approval, binding, plan, health PASS and allowance | Final Level 1 local receipt; Controller verification pending |
+| `C02-AC1` | `EXTERNAL_EVIDENCE_PENDING` | The ratio is retained-purchase visits over distinct visits; 100 visits with 10 retained sales from 10 or from 1 visit give 0.10 and 0.01; sales quantity never substitutes for visits | Local fail-closed engineering receipt plus named external obligation: F-M01, F-M02 |
+| `C02-AC2` | `EXTERNAL_EVIDENCE_PENDING` | DETAIL and OFFICIAL_SUMMARY paths share the definition; a summary now retains and validates exact method version plus source/group inputs and reaches the formal Metric/Outcome only when qualified; unqualified totals remain visible without borrowing formal status | Targeted local checkpoint and Final Closure continuation plus named external obligation: F-M01, F-M02 |
+| `C02-AC3` | `EXTERNAL_EVIDENCE_PENDING` | Exact advertising/organic strata and optional critical-group strata are separately qualified; a missing group leaves only that protection UNDETERMINED and no auxiliary result replaces the primary; a group that is not a feasible subset of its source stratum (n ≤ N, k ≤ K, K − k ≤ N − n) is refused and retained without touching the source strata or the independent total | Targeted local checkpoint and Final Closure continuation plus named external obligation: F-M01, F-M02, F-S01 |
+| `C03-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Five protections are compared independently; one FAIL fails the vector whatever the others say; one gap leaves it UNDETERMINED | Final Level 1 local receipt; Controller verification pending |
+| `C03-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Supply coverage is a separate protection input with its own bound and direction; an unknown value is UNDETERMINED, never a pass | Final Level 1 local receipt; Controller verification pending |
+| `C03-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Occupations are released per basis with evidence; the promotion simulator applies the discount once and keeps the cross-period window from calibration | Final Level 1 local receipt; Controller verification pending |
+| `C04-AC1` | `EXTERNAL_EVIDENCE_PENDING` | LISTING_DESCRIPTION_CHANGE is the only write-capable listing action; binding gaps (digest moved, text moved, calibration not current, authorization expired) refuse launch and command creation; approval never creates a command; the guard refuses any body that is not one description attribute | Local fail-closed engineering receipt plus named external obligation: F-W01, F-W02, E-04 |
+| `C04-AC2` | `EXTERNAL_EVIDENCE_PENDING` | Manual report, API acceptance, management match, display state and Outcome are separate records; UNKNOWN has no edge to EXECUTING and a retry needs database proof; the description worker mirrors the ad bid outbox | Local fail-closed engineering receipt plus named external obligation: F-W01, F-W02, E-04 |
+| `C04-AC3` | `EXTERNAL_EVIDENCE_PENDING` | Compensation restores the exact captured prior text and nothing else; an empty or missing prior is RESTORE_UNSUPPORTED; a third-party value routes to investigation | Local fail-closed engineering receipt plus named external obligation: F-W01, F-W02, E-04 |
+| `C05-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Launch acquires every axis of the owner-published allowance under a per-allowance lock; two launches racing for one slot are serialised and exactly one wins; the loser is APPROVED_NOT_LAUNCHABLE | Final Level 1 local receipt; Controller verification pending |
+| `C05-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | An occupation is released only with STOP_EVIDENCE, OBLIGATION_CLEARED or NOT_APPLIED_PROVEN and evidence, never by time; a technical retry of the same command occupies nothing new | Final Level 1 local receipt; Controller verification pending |
+| `C05-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Containment scopes are LISTING/STORE/PLATFORM/ORGANIZATION/BATCH; isolation follows proven dependencies; re-enabling needs two people; a shortfall leaves the approval intact as APPROVED_NOT_LAUNCHABLE | Final Level 1 local receipt; Controller verification pending |
+| `C06-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Health queue is ordered by necessary-condition state; responsibility clocks start at first raise and only a qualified hold pauses the action clock | Final Level 1 local receipt; Controller verification pending |
+| `C06-AC2` | `EXTERNAL_EVIDENCE_PENDING` | Clocks and holds are computed; staffed coverage comes from the calibration RESPONSIBILITY_COVERAGE value and no 24x7 coverage is assumed, but no coverage calendar UI exists in this Slice | Local fail-closed engineering receipt plus named external obligation: E-04 |
+| `C06-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | The Console shows health, actions, allowance, launch answers, packets, containments and the recalculation queue in Chinese and Russian with the same facts; no new e-mail or private channel | Final Level 1 local receipt; Controller verification pending |
+| `C07-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Simulation keeps assumptions, inverse and results apart; the discount is applied once; missing inputs are UNDETERMINED and named | Final Level 1 local receipt; Controller verification pending |
+| `C07-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Exit needs a pre-approved reason and a one-use proof; release is two steps (new transactions stopped, obligations cleared) | Final Level 1 local receipt; Controller verification pending |
+| `C07-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | An adopted engagement (action_id null) counts once and grants no new authorization | Final Level 1 local receipt; Controller verification pending |
+| `C08-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | One authority: the guardrail verdict names the calibration package, the approval binds to the database authority snapshot, the Console reads the same views the API serves | Final Level 1 local receipt; Controller verification pending |
+| `C08-AC2` | `EXTERNAL_EVIDENCE_PENDING` | Source time and acquisition time are separate on every fact and health row; recalculation classes carry 5/15/60 minute targets | Local fail-closed engineering receipt plus named external obligation: E-04 |
+| `C08-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | A calibration package activates only complete; an activated package keeps its identity; resolution is RESOLVED, CALIBRATION_UNRESOLVED or CALIBRATION_CONFLICTED; bindings name the package version and go INAPPLICABLE when it is not current | Final Level 1 local receipt; Controller verification pending |
+| `C09-AC1` | `EXTERNAL_EVIDENCE_PENDING` | Fact intake records provenance and evidence per observation; bounded listing-specific on-demand assistance reuses the existing AI Gateway through an allowlisted, scope-bound projection and cannot approve or execute. | Local fail-closed engineering receipt plus named external obligation: E-04 |
+| `C09-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Feedback themes are recorded per period with mention counts and never become facts or root causes | Final Level 1 local receipt; Controller verification pending |
+| `C09-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Every read is authorized by store scope and audited; the full Russian text is reviewable in the Console; no download pack is added (DELTA-03 not required) | Final Level 1 local receipt; Controller verification pending |
+| `C10-AC1` | `EXTERNAL_EVIDENCE_PENDING` | A node is MET only by its conservative bound after maturity; qualified equivalent summary evidence can now feed the same frozen comparison, while an undetermined group protection never reads as a pass | Targeted local checkpoint and Final Closure continuation plus named external obligation: F-M01, F-M02, F-S01 |
+| `C10-AC2` | `EXTERNAL_EVIDENCE_PENDING` | Formal nodes and the stop rule remain frozen at launch; the Outcome consumes exact qualified comparison inputs rather than accepting or rejecting evidence by a DETAIL/SUMMARY label | Targeted local checkpoint and Final Closure continuation plus named external obligation: F-M01, F-M02, F-S01 |
+| `C10-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | The stop rule triggers only on an unmet target at a stop node after maturity; ending an evaluation reverses no external action | Final Level 1 local receipt; Controller verification pending |
+| `C11-AC1` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Three layers, no score: unknown stays UNKNOWN, opportunities are named, a health PASS is not an execution licence (launch still needs approval, binding and allowance) | Final Level 1 local receipt; Controller verification pending |
+| `C11-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Collaboration links and isolation dependencies are recorded with proof references; cross-domain task handover uses the existing work task journal | Final Level 1 local receipt; Controller verification pending |
+| `C11-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Late association is LAWFUL_LATE_REPORT, UNAUTHORISED_DEVIATION or UNRESOLVED_CHANGE with its own lifecycle; an unauthorised change keeps the gap | Final Level 1 local receipt; Controller verification pending |
+| `C12-AC1` | `NOT_APPLICABLE_AT_LEVEL_1` | Pilot allowlist entries and the gate authority are owner-published rows with no Java writer; the gate closes on ENTITY_NOT_ALLOWLISTED and PRODUCTION_WRITE_DISABLED independently of every other condition | Pilot/Gate-EV execution is outside authorized Level 1; its local fail-closed control is verified without claiming a Pilot. |
+| `C12-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Batch membership is append-only with sequence numbers; a member action keeps its own state and binding | Final Level 1 local receipt; Controller verification pending |
+| `C12-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Chinese and Russian desktop Console with a completeness test over every backend code family; permissions and amounts do not change with language | Final Level 1 local receipt; Controller verification pending |
+
+## Inherited non-functional groups
+
+| Group | Current status | Bounded behavior / evidence boundary | Terminal evidence |
+| --- | --- | --- | --- |
+| `NFR-AC1` | `NOT_APPLICABLE_AT_LEVEL_1` | Local worker lease/restart controls and the browser database-outage recovery journey passed; production availability, PITR and Raw-custody acceptance remain outside Level 1. | Production availability, PITR and Raw-custody acceptance require an environment outside authorized Level 1; local outage/restart behavior is separately verified. |
+| `NFR-AC2` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Bounded pagination and the declared representative local performance profile passed, including RepresentativePerformanceIT over 616,000 rows; no production workload extrapolation is made. | Final Level 1 local receipt; Controller verification pending |
+| `NFR-AC3` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Store-scope authorization on every endpoint, step-up on launch/release/resolution, author/executor independence enforced in the database, application role cannot write commands, launches, occupations or containments, no secret material in fixtures | Final Level 1 local receipt; Controller verification pending |
+| `NFR-AC4` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | V0001–V0079 are byte-preserved; V0080–V0124 are 45 forward-only migrations; targeted clean install, historical upgrade, rollback, checksum, schema and privilege coverage passed for V0124. | Historical terminal receipt plus targeted checkpoint; Controller verification pending |
+| `NFR-AC5` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | UTF-8 Russian text, language switching, keyboard-operable forms and the browser journey passed through the recorded full-run plus deterministic two-test closure. | Final Level 1 local receipt; Controller verification pending |
+| `NFR-AC6` | `NOT_APPLICABLE_AT_LEVEL_1` | Local correlation identifiers, immutable audit paths, structured logs and runbooks passed applicable checks; production deployment and operating-environment observability acceptance remain outside Level 1. | Production deployment and operating-environment observability acceptance are outside authorized Level 1; local correlation/audit behavior is separately verified. |
+
+## Official-API scenarios from Contract §17
+
+| Scenario | Current status | Bounded behavior / evidence boundary | Terminal evidence |
+| --- | --- | --- | --- |
+| `API-T01` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | visits and purchases are separate facts with source channel and sellability; no ratio is emitted without visits | Final Level 1 local receipt; Controller verification pending |
+| `API-T02` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | the summary path keeps the label text, retains exact method/source/group inputs, fails closed without a current PROVEN profile and reaches formal consumers only with equivalent evidence | Targeted local checkpoint and Final Closure continuation; Controller verification pending |
+| `API-T03` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | revisions are append-only (ops.lc_outcome_revision); a first snapshot never claims later corrections | Final Level 1 local receipt; Controller verification pending |
+| `API-T04` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | source, acquisition and processing times are distinct columns; recalculation targets are internal | Final Level 1 local receipt; Controller verification pending |
+| `API-T05` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | raw responses are custodied by digest under lc-description-response; task UUIDs prove nothing about semantics | Final Level 1 local receipt; Controller verification pending |
+| `API-T06` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | purchase links reference a visit key and a sales fact; an order is never renamed a visit | Final Level 1 local receipt; Controller verification pending |
+| `API-T07` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | non-target fields, a second attribute and an unverified attribute key are refused; no attribute identity is guessed | Final Level 1 local receipt; Controller verification pending |
+| `API-T08` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | per-command state; acceptance with a task waits for status, never success | Final Level 1 local receipt; Controller verification pending |
+| `API-T09` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | management match and display state are separate columns on the verification | Final Level 1 local receipt; Controller verification pending |
+| `API-T10` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | exact non-empty prior only; empty prior is RESTORE_UNSUPPORTED; a later lawful text blocks restore (PRIOR_TEXT_MOVED) | Final Level 1 local receipt; Controller verification pending |
+| `API-T11` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Ozon minutes and Wildberries seconds converted and capped; retry budget is separate from allowance | Final Level 1 local receipt; Controller verification pending |
+| `API-T12` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | a moved current text refuses command creation and closes the gate; a local lock claims nothing about external edits | Final Level 1 local receipt; Controller verification pending |
+| `API-T13` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | a missing or forged marking declaration is refused by the guard and an undeclared action by the gate | Final Level 1 local receipt; Controller verification pending |
+| `API-T14` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | length bounds come only from the calibration DESCRIPTION_LENGTH_RULE; out of bounds is a precise refusal, never truncation | Final Level 1 local receipt; Controller verification pending |
+| `API-T15` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | an empty answer is UNKNOWN_REQUIRES_READBACK, never success and never proof of non-application | Final Level 1 local receipt; Controller verification pending |
+| `API-T16` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | occupations are released on evidence, not on a timer | Final Level 1 local receipt; Controller verification pending |
+| `API-T17` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | the allowance is the one cumulative authority; nothing external starts before it is acquired | Final Level 1 local receipt; Controller verification pending |
+| `API-T18` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | no automatic retry; UNKNOWN stays until a readback; retry only with database proof | Final Level 1 local receipt; Controller verification pending |
+| `API-T19` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | no promotion API write path exists; exit needs authorization | Final Level 1 local receipt; Controller verification pending |
+| `API-T20` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | the discount is applied once; unknown fees are UNDETERMINED | Final Level 1 local receipt; Controller verification pending |
+| `API-T21` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | decimal money with explicit currency throughout; no zero-cost default | Final Level 1 local receipt; Controller verification pending |
+| `API-T22` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | capability rows carry verification state and evidence date; no real version difference has been registered | Final Level 1 local receipt; Controller verification pending |
+| `API-T23` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | supply coverage is UNDETERMINED without evidence, never zero risk | Final Level 1 local receipt; Controller verification pending |
+| `API-T24` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | Feedback themes are de-duplicated per period and theme; bounded listing-specific on-demand assistance uses an allowlisted evidence projection and cannot approve or execute. | Final Level 1 local receipt; Controller verification pending |
+| `API-T25` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | no secret material in fixtures, code or documents; a 200 answer is never a permission proof (capability_subject_status is a registry fact) | Final Level 1 local receipt; Controller verification pending |
+| `API-T26` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | fact intake and Console reads are separately authorized (INTERNAL_FACT_INTAKE vs LISTING_CONVERSION_VIEW) | Final Level 1 local receipt; Controller verification pending |
+| `API-T27` | `ENGINEERING_VERIFIED_CONTROLLER_PENDING` | documentary evidence only raises the capability row; production_write_enabled stays false; engineering completion and real coverage are separate facts | Final Level 1 local receipt; Controller verification pending |
+
+## Browser evidence interpretation
+
+The historical complete browser run passed 24 of 26 tests. Direct logs proved the two failures were limited to a missing Compose project environment value and a synthetic complete-enumeration interval that did not cover the governed promotion period. Only those exact two tests were then run together at the historical verified source and passed 2/2. Across that bounded sequence, all 26 unique scenarios have a passing receipt. Browser tests were not rerun at `6ccaa6c…` or `d65c9185…`; this page does not claim one all-green full invocation or a new-Head browser pass.
+
+## Claim boundary
+
+- `ENGINEERING_VERIFIED_CONTROLLER_PENDING` is a local acceptance-row result, not a Controller verdict; separately, the bound Controller record already closed 25 frozen findings at ec0.
+- `EXTERNAL_EVIDENCE_PENDING` does not weaken the fail-closed engineering controls or create production capability.
+- Real capability, account, Provider, production workload and release evidence remain separate from local engineering evidence.
+- No status on this page authorizes a platform write, deployment, Pilot, Gate EV or Gate E.
+- This checkpoint represents no additional finding as Controller-closed; 003 and 027 require independent Final Closure Verification R2.
+- The continuation was executed by Claude under the Owner's 2026-09-16 chat redirection because Codex had no remaining token budget; it carries no authority beyond the existing Level 1 envelope.
+
+</details>

@@ -247,6 +247,28 @@ public class AiRepository {
                 .optional();
     }
 
+    public boolean isListingInvocation(UUID id,UUID organizationId,UUID listingId) {
+        return jdbc.sql("""
+                SELECT EXISTS(SELECT 1 FROM ops.ai_invocation WHERE id=:id AND organization_id=:org
+                  AND subject_kind='PLATFORM_LISTING' AND subject_id=:listing AND projection_code='LISTING_ASSISTANCE')
+                """).param("id",id).param("org",organizationId).param("listing",listingId).query(Boolean.class).single();
+    }
+
+    public void bindListingScope(UUID invocationId,UUID storeId,List<UUID> members,List<UUID> products) {
+        jdbc.sql("INSERT INTO ops.ai_listing_invocation_scope(invocation_id,store_id,listing_variant_ids,product_variant_ids) VALUES(:id,:store,:members,:products)")
+                .param("id",invocationId).param("store",storeId).param("members",members.toArray(UUID[]::new)).param("products",products.toArray(UUID[]::new)).update();
+    }
+
+    public Optional<com.mimococo.marketops.aicopilot.AiCopilot.ListingInvocationScope> listingInvocationScope(UUID id,UUID organizationId,UUID listingId) {
+        return jdbc.sql("""
+                SELECT s.store_id,s.product_variant_ids FROM ops.ai_listing_invocation_scope s JOIN ops.ai_invocation i ON i.id=s.invocation_id
+                WHERE i.id=:id AND i.organization_id=:org AND i.subject_id=:listing AND i.subject_kind='PLATFORM_LISTING'
+                    AND i.projection_code='LISTING_ASSISTANCE'
+                """).param("id",id).param("org",organizationId).param("listing",listingId).query((rs,n)->
+                    new com.mimococo.marketops.aicopilot.AiCopilot.ListingInvocationScope(rs.getObject("store_id",UUID.class),
+                        java.util.Arrays.asList((UUID[])rs.getArray("product_variant_ids").getArray()))).optional();
+    }
+
     /** The claims of one invocation, in the order the model produced them. */
     public List<AiClaim> claimsOf(UUID invocationId) {
         List<AiClaim> claims = new ArrayList<>();

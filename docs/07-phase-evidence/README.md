@@ -88,3 +88,68 @@ The acceptance status is deliberately evidence-bound. A criterion is verified
 only where a named, currently passing test asserts it: 99 are
 `EXECUTABLY_VERIFIED`, while `S2-AC-100` remains reserved exclusively for
 independent Controller Final Closure.
+
+## SLICE-V1-003 post-merge readback and formal closure record
+
+SLICE-V1-003 is closed for engineering with 24 deferred release obligations.
+Its closure entry points are:
+
+- [`POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md`](SLICE-V1-003/post-merge-readback-20260907/POST-MERGE-ACCEPTANCE-AND-CLOSURE-SNAPSHOT.md)
+  and [`VERDICT.json`](SLICE-V1-003/post-merge-readback-20260907/VERDICT.json)
+  — the Controller readback of protected SQUASH `0f26d0ed` (tree `9d65c590`,
+  sole parent `08ad7da7`, merged `2026-09-07T03:09:19Z`) over accepted head
+  `ecb33851`, pinned by [`SHA256SUMS`](SLICE-V1-003/post-merge-readback-20260907/SHA256SUMS);
+- [`OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md`](../08-handoffs/OWNER-SLICE-V1-003-FORMAL-CLOSURE-RECEIPT-ECB3385-R1.md)
+  — the Human Owner formal closure for that exact head.
+
+The `rework-r1` assessment artefacts are historical and pinned by exact bytes;
+they are no longer re-derived from live source. `S3-REL-001..024` stay
+production-blocking and `production_write_enabled` remains `false`.
+
+## SLICE-V1-004 evidence records
+
+SLICE-V1-004 is the active Slice. The Human Owner accepted the exact Contract
+and bound annex and granted Contract §15 Level 1 local implementation authority
+only.
+
+### Historical Maker Level 1 checkpoint
+
+The original Maker record for reviewed Head
+`f91d107c53a0cf3964ae43c0e8353e0c244a2b59` is preserved only as historical
+input under `rework-r1/historical-maker/`. Its entry points are:
+
+- [`controller-handoff.md`](SLICE-V1-004/rework-r1/historical-maker/controller-handoff.md);
+- [`acceptance-status.md`](SLICE-V1-004/rework-r1/historical-maker/acceptance-status.md);
+- [`V1_PRODUCTION_ASSURANCE_MATRIX.md`](SLICE-V1-004/rework-r1/historical-maker/V1_PRODUCTION_ASSURANCE_MATRIX.md);
+- [`manifest.json`](SLICE-V1-004/rework-r1/historical-maker/manifest.json), which
+  binds those preserved bytes to the reviewed Head.
+
+Those files retain the Maker's then-current claims for review provenance. They
+are not the current canonical status or Controller entry points.
+
+### Current R1 canonical entry points
+
+- [`controller-handoff.md`](SLICE-V1-004/controller-handoff.md) — the terminal
+  local engineering handoff for independent Controller verification;
+- [`acceptance-status.md`](SLICE-V1-004/acceptance-status.md) and
+  [`S4-AC-STATUS.json`](SLICE-V1-004/S4-AC-STATUS.json) — current
+  evidence-grounded criterion status;
+- [`executable-evidence.md`](SLICE-V1-004/executable-evidence.md) — the canonical
+  command/result summary bound to the verified implementation source;
+- [`finding-progress.json`](SLICE-V1-004/rework-r1/finding-progress.json) and
+  [`rework-r1/executable-evidence.md`](SLICE-V1-004/rework-r1/executable-evidence.md)
+  — all 27 Frozen IDs, correction/evidence/limits mapping and exact rework receipt;
+- [`FINAL_LEVEL1_LOCAL_VERIFICATION.json`](SLICE-V1-004/rework-r1/FINAL_LEVEL1_LOCAL_VERIFICATION.json)
+  — machine-readable terminal commands, counts, hashes and authority boundary;
+- [`MIGRATION-INVENTORY.json`](SLICE-V1-004/MIGRATION-INVENTORY.json) — the
+  reviewed predecessor chain and forward migration inventory;
+- [`API_CROSSCHECK.md`](SLICE-V1-004/rework-r1/API_CROSSCHECK.md) — official
+  snapshot interpretation without live Provider qualification.
+
+The current engineering disposition is
+`ENGINEERING_VERIFIED_CONTROLLER_PENDING`, bound to implementation Head
+`16eda4bf7e5f561b60d10c19a9a157bd62d21d6e`, Tree
+`98b9ff7d692eb869fb1f7bf704980259426e09f1`. All 27 findings have terminal local
+engineering evidence; none is represented as Controller-closed. S4-REL, every
+external evidence obligation, default-OFF writes and the prohibitions on remote
+publication, Level 2, real Provider/account use, Gate-EV and Gate-E are unchanged.

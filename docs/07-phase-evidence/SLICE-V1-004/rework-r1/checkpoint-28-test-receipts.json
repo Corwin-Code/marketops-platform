@@ -1,0 +1,76 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "dcbcf5a3c6b32e1af5ac1ae12de6df573d373896",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionDecisionService.java": "d4ba158c96f6d4b483df130e2e9ddae71fb6c395e997805f1961758589da9537",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java": "a952fb7bb14389a65468f8644e4962ed0c5b3642c0046748cd874128a4210337",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingExposureService.java": "06b4a18f1f004d3099e5daea9a42e09b2d8ad7e79fa87b05b925dd2b93faeeaf",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingActionRepository.java": "bbe67cdcc53353091ed0c7986f91998d6622f76604f3877814883a4d17ee5b13",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingActionDecisionAuthority.java": "a01be1c1cd97116aa85334d5d2cb60c868cbb281bbe49043a0c0dc6abe6cbe25",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ListingDecisionScope.java": "4f0392a05c355b4ff65ba702c0f313c13d6b220fad4566b39130c77e4e807c85",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java": "b29b6289d5c41dc8915cf5b798563e2e593654d78d55d14b1b5c6067bff0fc03",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "86bfb56d939271463736a1748af37957136383c3e2404636c295c593d5aba655",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingGuardrailTest.java": "3d8ff6cd5f8373ef0302bb629556e40c71f220e33e5236de673c43579be5da52"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT,ListingGuardrailTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 79,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/current-materiality-auth-isolated.log",
+      "raw_log_sha256": "46185c390268923b7d0ef48b9b4eed5650250bd935f229bb5a4ec215ad73dee5",
+      "summary_path": "current-materiality-auth-isolated-summary.txt",
+      "summary_sha256": "9813ea7d8adae47286f09df5150767e45fc466ae62973d62e7e3103281f10a01"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=ListingActionLaunchIT,CanonicalScopeMetricServiceTest,MaterialityClassifierTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 113,
+      "result": "PASS_AFFECTED_SCOPE_ONLY",
+      "raw_log_local_path": "build/slice4-rework/current-materiality-launch-architecture.log",
+      "raw_log_sha256": "feed618c6925154880c8367baa70b0455d10ee30fe30f2eb22b2cd08ba62ac5f",
+      "summary_path": "current-materiality-launch-architecture-summary.txt",
+      "summary_sha256": "6709f75ace33ff941409343498a4120794adcbc39e49d454239f1a4dd8b22417"
+    }
+  ],
+  "diagnostics": [
+    {
+      "raw_log_local_path": "build/slice4-rework/current-materiality-auth.log",
+      "raw_log_sha256": "a7a67ec98d5139042aaf853265e677329bf9a222602d169504bdfaf8503f413e",
+      "resolution": "New JDBC Instant parameter was not converted to Timestamp; 26 failures/errors shared this input-binding defect. Fixed according to repository convention."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/current-materiality-auth-timefix.log",
+      "raw_log_sha256": "2a03f0af0588c955a28f1d5f5edfea7a7fa5ac1bd42e1af50e1fa549934e3dc1",
+      "resolution": "Database MO032 correctly refused application-added authority-snapshot fields. Kept the exact database snapshot invariant and moved supplemental recheck evidence to existing Guardrail detail, bound into input_digest. A separate nativeScopeNeedsCompleteEnumerationAndUnchangedRefreshPreservesTheDependency failure at line 285 had COMPLETE expected/INCOMPLETE actual; its cause remains unconfirmed. Added diagnostic resolution output. Subsequent targeted and two full runs passed that native-scope case; this does not explain the earlier failure."
+    },
+    {
+      "raw_log_local_path": "build/slice4-rework/current-materiality-auth-regression.log",
+      "raw_log_sha256": "7f6b71de56cc2c9f611dda5277f2d5a3ef9491dd22e1ebb051d9e1d3bfbcd7ea",
+      "resolution": "79 cases: 75 passed, 4 failed only at the final localhost request-list assertion. Prior test requests remained in a shared loopback fixture. Compare the exact before/after request list rather than demand a globally empty history; no-new-request control preserved. Same ordered full suite then passed."
+    }
+  ],
+  "targeted_diagnostic_verification": {
+    "command": "./mvnw -B -ntp test '-Dtest=ListingReworkAuthorizationIT#changedOrUnknownExposureCannotConsumeAnOrdinaryReviewAtApproval+launchRechecksCurrentExposureThroughTheSharedExecutionGuardrail+nativeScopeNeedsCompleteEnumerationAndUnchangedRefreshPreservesTheDependency,ListingGuardrailTest'",
+    "tests": 14,
+    "result": "PASS_BEFORE_FINAL_REQUEST_HISTORY_FIX",
+    "raw_log_local_path": "build/slice4-rework/current-materiality-targeted-proof.log",
+    "raw_log_sha256": "5669f918ab6187f8bd1fbea8eda0308c13973e5b548a2dda14e8bcdbf740632c"
+  },
+  "scope": {
+    "implemented": "One existing Metric exposure projection reused for preparation, review and the shared Guardrail. Cheap permission scope stays separate from current rechecked scope. Current unknown/changed axes block normal approval and execution; same-axis current evidence can proceed. Supplemental identifiers/digest/time/state retained in existing detail and input digest, leaving database authority_snapshot untouched.",
+    "not_changed": [
+      "Database schema/migrations",
+      "Frontend",
+      "Providers, roles, scheduler, production enablement"
+    ],
+    "remaining": [
+      "Atomic current-Metric dependency fencing and invalidation/consumer lifecycle",
+      "One unconfirmed earlier native-scope COMPLETE/INCOMPLETE failure, retained for deterministic investigation",
+      "Full scoped history, remaining frozen roots and final-head verification"
+    ]
+  },
+  "verification_discipline": "Sequential finite Maven batches; downstream batch stopped on each failure. Targeted diagnostic before full regression. Only source/failure changes justified repeated runs. Final 192 affected backend cases passed; no frontend, migration or upgrade repeat for this Java-only change. All handles terminal."
+}

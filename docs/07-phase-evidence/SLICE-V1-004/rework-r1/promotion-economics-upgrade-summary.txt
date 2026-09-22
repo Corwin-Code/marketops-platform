@@ -1,0 +1,5 @@
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.304 s -- in com.mimococo.marketops.ListingAtomicLaunchUpgradeIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  16.551 s
+[INFO] Finished at: 2026-09-13T04:38:51+08:00

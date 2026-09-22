@@ -76,6 +76,11 @@ public interface OperatingFactQuery {
     /** The purchase cost in force for one internal variant at an instant. */
     Optional<CostSnapshot> unitCost(UUID productVariantId, Instant asOf);
 
+    /** All non-cancelled purchase-cost intervals intersecting the period and known at asOf.
+     * The consumer must establish continuous, unambiguous coverage; an empty list is not zero cost. */
+    java.util.List<CostPeriodSnapshot> purchaseCosts(UUID organizationId, UUID productVariantId,
+            Instant periodStart, Instant periodEnd, Instant asOf);
+
     /**
      * The finance input in force at an instant, resolved most specific first.
      *
@@ -88,6 +93,15 @@ public interface OperatingFactQuery {
                                                 UUID storeId,
                                                 UUID productVariantId,
                                                 Instant asOf);
+
+    /** Exact activity-wide seller fixed commitment, covering the full requested period and known at asOf.
+     * No organization/store fallback and no multiplication by units or native members. */
+    Optional<FinanceInputSnapshot> promotionFixedFee(UUID organizationId,UUID storeId,String promotionKind,
+            String nativePromotionKey,Instant periodStart,Instant periodEnd,Instant asOf);
+
+    /** Separate conditional buyer payment, seller revenue and platform compensation for exact Listing terms. */
+    java.util.Map<String,FinanceInputSnapshot> promotionRevenueInputs(UUID organizationId,UUID storeId,UUID listingId,
+            String promotionKind,String nativePromotionKey,String termsDigest,Instant periodStart,Instant periodEnd,Instant asOf);
 
     /** What the company itself holds of one internal variant. */
     InternalStockSnapshot internalStock(UUID productVariantId, Instant asOf);

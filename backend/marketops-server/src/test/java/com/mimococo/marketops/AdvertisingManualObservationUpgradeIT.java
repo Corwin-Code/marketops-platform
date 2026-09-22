@@ -54,7 +54,8 @@ class AdvertisingManualObservationUpgradeIT {
                     .param("id",proof).query(String.class).single();
             var originalChecksums=seed.sql("SELECT installed_rank,version,script,checksum,installed_on,success FROM public.flyway_schema_history ORDER BY installed_rank")
                     .query().listOfRows();
-            assertThat(Flyway.configure().dataSource(migration).locations("classpath:db/migration").cleanDisabled(true).load()
+            assertThat(Flyway.configure().dataSource(migration).locations("classpath:db/migration")
+                    .target("0073").cleanDisabled(true).load()
                     .migrate().migrationsExecuted).isEqualTo(1);
             var application=JdbcClient.create(new DriverManagerDataSource(database.getJdbcUrl(),TestDatabase.applicationRole(),TestDatabase.applicationPassword()));
             assertThat(application.sql("SELECT ops.ad_manual_observation_is_qualified(:id)").param("id",proof).query(Boolean.class).single()).isFalse();

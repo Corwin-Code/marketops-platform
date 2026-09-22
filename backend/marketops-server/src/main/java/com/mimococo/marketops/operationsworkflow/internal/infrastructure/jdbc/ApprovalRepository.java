@@ -31,6 +31,11 @@ public class ApprovalRepository {
         this.jdbc = jdbc;
     }
 
+    /** Listing review/plan chronology is retained by PostgreSQL, so its decision uses the same clock. */
+    public Instant databaseNow() {
+        return jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
+    }
+
     /** Record a decision. */
     public void insert(UUID id, UUID organizationId, UUID recommendationId, String decision,
                        UUID decidedByUserId, UUID policyAuthorizationId,

@@ -1,0 +1,20 @@
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.284 s -- in com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.021 s -- in com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.531 s -- in com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.084 s -- in com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.SupplyEvidenceChronologyTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest
+[INFO] Tests run: 118, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  15.988 s
+[INFO] Finished at: 2026-09-13T08:32:40+08:00

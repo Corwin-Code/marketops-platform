@@ -38,14 +38,34 @@ public interface OutboundHttp {
         @Override public String toString() { return "OutboundDestination[redacted]"; }
     }
 
-    /** Incomplete bytes are an exact prefix and can never establish a successful observation. */
+    /**
+     * Incomplete bytes are an exact prefix and can never establish a successful observation.
+     *
+     * <p>{@code withheldHeaders} counts, per retained header name, the field lines whose value
+     * arrived outside the transport bounds. Only that fact is kept, never the value, so a
+     * consumer can tell a header that was absent from one that was present but not retainable.
+     */
     record Response(int statusCode, byte[] body, Map<String, List<String>> headers,
-                    boolean complete, String failureCode) {
+                    boolean complete, String failureCode, Map<String, Integer> withheldHeaders) {
+        public Response(int statusCode, byte[] body, Map<String, List<String>> headers,
+                        boolean complete, String failureCode) {
+            this(statusCode, body, headers, complete, failureCode, Map.of());
+        }
+
         public Response {
             body = body.clone();
             Map<String, List<String>> copy = new java.util.LinkedHashMap<>();
-            headers.forEach((key, value) -> copy.put(key.toLowerCase(java.util.Locale.ROOT), List.copyOf(value)));
+            headers.forEach((key, value) -> copy.merge(key.toLowerCase(java.util.Locale.ROOT), List.copyOf(value),
+                    (left, right) -> java.util.stream.Stream.concat(left.stream(), right.stream()).toList()));
             headers = Map.copyOf(copy);
+            Map<String, Integer> withheld = new java.util.LinkedHashMap<>();
+            java.util.Objects.requireNonNull(withheldHeaders, "withheldHeaders").forEach((key, count) -> {
+                if (key == null || key.isBlank() || count == null || count < 1) {
+                    throw new IllegalArgumentException("a withheld header is a named, positive count");
+                }
+                withheld.merge(key.toLowerCase(java.util.Locale.ROOT), count, Integer::sum);
+            });
+            withheldHeaders = Map.copyOf(withheld);
         }
         @Override public byte[] body() { return body.clone(); }
         public Optional<String> firstHeader(String name) {

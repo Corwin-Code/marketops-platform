@@ -42,9 +42,12 @@ public class BoundedOutboundHttp implements OutboundHttp {
     private static final Set<String> FORBIDDEN_HEADERS = Set.of("host", "connection", "content-length",
             "transfer-encoding", "proxy-authorization", "proxy-connection", "cookie", "set-cookie",
             "forwarded", "upgrade", "te", "trailer", "expect", "accept-encoding");
+    // Provider wait signals include the platforms' native names (Ozon minutes, Wildberries seconds).
     private static final Set<String> RESPONSE_HEADERS = Set.of("content-type", "content-encoding", "date",
-            "etag", "x-version-id", "retry-after", "x-request-id", "x-correlation-id",
+            "etag", "x-version-id", "retry-after", "item-retry-after", "x-ratelimit-retry",
+            "x-request-id", "x-correlation-id",
             "x-ratelimit-remaining", "x-ratelimit-reset", "x-ratelimit-limit");
+    static final int RESPONSE_HEADER_VALUE_LIMIT = 1024;
     private final OutboundDestinationProperties properties;
     private final DnsLookup lookup;
     private final java.time.Clock clock;
@@ -175,11 +178,19 @@ public class BoundedOutboundHttp implements OutboundHttp {
                 .disableContentCompression().disableAuthCaching().build();
              var response = client.executeOpen(null, request, null)) {
             Map<String, List<String>> safeHeaders = new LinkedHashMap<>();
+            Map<String, Integer> withheld = new LinkedHashMap<>();
             for (var header : response.getHeaders()) {
                 String name = header.getName().toLowerCase(Locale.ROOT);
-                if (RESPONSE_HEADERS.contains(name) && header.getValue().length() <= 1024
-                        && header.getValue().chars().noneMatch(Character::isISOControl)) {
-                    safeHeaders.computeIfAbsent(name, key -> new java.util.ArrayList<>()).add(header.getValue());
+                if (!RESPONSE_HEADERS.contains(name)) {
+                    continue;
+                }
+                String value = header.getValue();
+                if (value != null && value.length() <= RESPONSE_HEADER_VALUE_LIMIT
+                        && value.chars().noneMatch(Character::isISOControl)) {
+                    safeHeaders.computeIfAbsent(name, key -> new java.util.ArrayList<>()).add(value);
+                } else {
+                    // The value is never retained; only the fact that a bounded name arrived.
+                    withheld.merge(name, 1, Integer::sum);
                 }
             }
             ByteArrayOutputStream body = new ByteArrayOutputStream();
@@ -198,7 +209,7 @@ public class BoundedOutboundHttp implements OutboundHttp {
                 } catch (IOException interruptedBody) { complete = false; failure = "RESPONSE_INCOMPLETE"; }
             }
             if (expired.get()) { complete = false; failure = "RESPONSE_DEADLINE_EXCEEDED"; }
-            return new Response(response.getCode(), body.toByteArray(), safeHeaders, complete, failure);
+            return new Response(response.getCode(), body.toByteArray(), safeHeaders, complete, failure, withheld);
         } finally { timer.cancel(false); manager.close(); }
     }
 

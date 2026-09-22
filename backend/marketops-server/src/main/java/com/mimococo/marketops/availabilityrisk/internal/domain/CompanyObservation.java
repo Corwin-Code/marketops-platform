@@ -100,7 +100,7 @@ public record CompanyObservation(
 
         /** Whether the holding is recent enough to be current supply. */
         public boolean freshAt(Instant asOf, long freshnessMaxMinutes) {
-            return observedAt != null
+            return freshnessMaxMinutes > 0 && observedAt != null && !observedAt.isAfter(asOf)
                     && !observedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
         }
 
@@ -135,7 +135,7 @@ public record CompanyObservation(
 
         /** Whether the holding is recent enough to be current supply. */
         public boolean freshAt(Instant asOf, long freshnessMaxMinutes) {
-            return observedAt != null
+            return freshnessMaxMinutes > 0 && observedAt != null && !observedAt.isAfter(asOf)
                     && !observedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
         }
     }

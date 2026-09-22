@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
+import { resolveBackendOrigin } from './backendOrigin.ts';
 
 /**
  * The operating console in a real browser.
@@ -17,7 +18,7 @@ import { createHash } from 'node:crypto';
  * model provider or any other external system, and it is not offered as such.
  */
 
-const API_ORIGIN = 'http://127.0.0.1:8080';
+const API_ORIGIN = resolveBackendOrigin();
 
 /** Answer one console path with a prepared body, in the browser. */
 async function route(page: Page, path: string, body: unknown): Promise<void> {

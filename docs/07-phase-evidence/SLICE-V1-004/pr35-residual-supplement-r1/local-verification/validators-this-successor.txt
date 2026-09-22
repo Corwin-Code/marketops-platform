@@ -1,0 +1,16 @@
+# run on the working tree of the documentation successor (parent 3bcc38fafa2760fe59c2144fe54887e212044d30), 2026-09-18T23:50:47Z
+$ python3 scripts/validate_governance.py
+Governance validation passed.
+exit=0
+$ python3 scripts/validate_production_readiness.py
+Production readiness validation over 53670 files.
+TC-GLOBAL-001 Compromise Retirement Check: PASS
+TC-GLOBAL-002 Functional JavaDoc Rewrite Check: PASS
+TC-GLOBAL-003 Production Naming Check: PASS
+TC-GLOBAL-004 Deferred Evidence Boundary Check: PASS
+Production readiness validation passed.
+exit=0
+$ python3 -m unittest discover -s tests -p test_*.py
+Ran 440 tests in 9.119s
+OK
+exit=0

@@ -29,7 +29,7 @@ public class RegistryVerificationService {
     @Transactional
     public UUID configure(AuthenticatedActor actor,UUID account,UUID capability,String kind,UUID id,long version,Map<String,Object> definition) {
         require(actor,account,true);
-        validate(definition,0);
+        validate(definition,0,8,"OPERATION".equals(kind));
         return repository.configure(account,capability,actor.userId(),kind,id,version,definition,CorrelationId.current());
     }
 
@@ -75,7 +75,11 @@ public class RegistryVerificationService {
     }
 
     private static void validate(Object value,int depth) {
-        if (depth>8) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        validate(value,depth,8,false);
+    }
+
+    private static void validate(Object value,int depth,int depthLimit,boolean descriptionShape) {
+        if (depth>depthLimit) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         if (value instanceof String text) {
             if (text.length()>4096) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
             SecretMaterialGuard.requireNonSecret("registryDefinition",text);
@@ -84,13 +88,17 @@ public class RegistryVerificationService {
             if (map.size()>32) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
             map.forEach((key,entry) -> {
                 if (!(key instanceof String)) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
-                if (depth==0 && java.util.Set.of("officialSourceSha256","accountEvidenceSha256").contains(key)) {
+                if (descriptionShape && depth==0 && depthLimit==8 && "description_request_guard".equals(key)) {
+                    // A closed native shape includes nested arrays and scalar binding nodes.
+                    // HTTP/SQL byte limits and collection/string limits still apply.
+                    validate(entry,0,32,false);
+                } else if (depth==0 && java.util.Set.of("officialSourceSha256","accountEvidenceSha256").contains(key)) {
                     if (!(entry instanceof String hash) || !hash.matches("[0-9a-f]{64}")) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
-                } else validate(entry,depth+1);
+                } else validate(entry,depth+1,depthLimit,false);
             });
         } else if (value instanceof List<?> list) {
             if (list.size()>32) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
-            list.forEach(entry -> validate(entry,depth+1));
+            list.forEach(entry -> validate(entry,depth+1,depthLimit,false));
         } else if (value!=null && !(value instanceof Number) && !(value instanceof Boolean)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }

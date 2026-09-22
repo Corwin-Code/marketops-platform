@@ -1,0 +1,91 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "5e49a96ac9ae5a89e2484d0a117b5c29e760a305",
+  "java_home": "/Users/chzhengx/.sdkman/candidates/java/21.0.10-zulu/zulu-21.jdk/Contents/Home",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java": "4d8bad63537f1d68ad49792283097ce2443a0bcd93897417cde0f08c845fb101",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/SimulationView.java": "238642a826e180d91692823de79e3c3915f645aa2618b24e118a8dd1f8a7a33b",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationService.java": "ecd7fd0bbaa8a427c2a6a78abb4d47b0019321885bfae03f38d31e7774af9ea7",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingDisclosureService.java": "d6dc7e3209fe0d122dcea2365ea484a820e70b39db2ba597e562772f92f47add",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/domain/PromotionSimulator.java": "7f5c833accc757bd5c80a3c31f3933ea876ae69e839c729221c2e60d7887fa02",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/EvaluationRepository.java": "7a6a2b9a4b30cf2cb1a6da0942f5245c31abf2cfe185bbc29651616bf45274b0",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingActionConsoleController.java": "cd6d0a2552b54568008eb7b3f5543a309dcecc21ec40f6cb5a1c553ee0736bb6",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingAtomicLaunchUpgradeIT.java": "23a3ee408abb4a60ec9161d4a97bd02a56b0e1190f7f289d16f723fd5a9cd8b3",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "1a5735606d00ee6e01b06a2691f1ed8302fe44093ce9e164f7f8c60d001e60d4",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/listingconversion/internal/domain/PromotionSimulatorTest.java": "ef0c2dc793b71f67aab98aa0db93f742b362ca0036c67ff42a29ffe87fb04930",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/ContributionProfitCalculation.java": "103793247f1fc8f120261d9a0be2c0828348c54167367b2b40c58ed5232a9c6f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/SimulationAssumptions.java": "ebfc410032e7c1e8f877f9c0d1362f0af1e1d9cb87c11c1efed92a036c1c5796",
+    "backend/marketops-server/src/main/resources/db/migration/V0101__retain_conditional_promotion_simulation_basis.sql": "a799471e0d5f52660d25405392273690cf02e8db8c97626164258b3745ccd47e"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingReworkAuthorizationIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 44,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-economics-authorization.log",
+      "raw_log_sha256": "3e5eb4d33430417144c82e7791fe4fb0363d56416ce76f3cf81072c900b822ca",
+      "summary_path": "promotion-economics-authorization-summary.txt",
+      "summary_sha256": "50329b7860ff05e04ca0792e947a01f6cf9017439b7fa170acec1dbc597f1b52"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=PromotionSimulatorTest,MetricEngineTest,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 100,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-economics-domain-architecture-final.log",
+      "raw_log_sha256": "208916a1c3295b6c7f2ee5c0edce2e0fd0b9f1d75b869d43626c70a108262401",
+      "summary_path": "promotion-economics-domain-architecture-final-summary.txt",
+      "summary_sha256": "428b8ad3a36d31017f5e2ab934be8c3f89e17dc3c38decd4ba1cf94e66dac6c4"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-economics-upgrade.log",
+      "raw_log_sha256": "df4655d5a6ce8f68b996ab0e296ac1410b4226405acb3fb20a1e0d6351c063b1",
+      "summary_path": "promotion-economics-upgrade-summary.txt",
+      "summary_sha256": "72651159aad815b30f6c0dc7cc78075037eda2d60e5118379108e9fd9341cf75"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingConversionSchemaIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 9,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/promotion-economics-schema.log",
+      "raw_log_sha256": "865d378ff852c1ed29b033a18f2081395a21d3adb2d6ed0a731fd895a54e8e27",
+      "summary_path": "promotion-economics-schema-summary.txt",
+      "summary_sha256": "7775209e875ea4046cbf6d3c6542ce8cee991f1e4c4deb304a8efd403e552838"
+    }
+  ],
+  "report_xml_sha256": {
+    "build/slice4-rework/promotion-economics-reports/TEST-com.mimococo.marketops.ListingAtomicLaunchUpgradeIT.xml": "1da9637afae45671bec057fa792b1e2385599ac71b41ca4c60c07c280f93d724",
+    "build/slice4-rework/promotion-economics-reports/TEST-com.mimococo.marketops.ListingReworkAuthorizationIT.xml": "753ac5155709b5c593870d4c3c925c927d919d4eb69d576334730c44a8efb79c",
+    "build/slice4-rework/promotion-economics-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest.xml": "1596644b083b0947d7e9ce83ddaf9fba5b8603b70b2f6a4bdc4d55f936940079",
+    "build/slice4-rework/promotion-economics-reports/TEST-com.mimococo.marketops.database.ListingConversionSchemaIT.xml": "45a5826f21a047fae3e8b8cc79549dcc5e02c230075d28e9fdac37dab4432071",
+    "build/slice4-rework/promotion-economics-reports/TEST-com.mimococo.marketops.listingconversion.internal.domain.PromotionSimulatorTest.xml": "c6a81255881b75f4c876309f8c2e989125aa924f6c45f65771f94e45d88b8cfa"
+  },
+  "diagnostics": [
+    {
+      "log": "build/slice4-rework/promotion-economics-domain-architecture.log",
+      "sha256": "6314e183b54462dc4aead11d4771179cac3f873b49d5dc1fc60849ec2b0e3fc3",
+      "tests": 99,
+      "result": "PASS_INTERMEDIATE_OVERLAPPING",
+      "note": "An immediately preceding edit script used the wrong working directory and did not execute. This run tested the already written model, not the unexecuted SQL hash and validation edits; final corrected source has a separate 100-test run."
+    },
+    {
+      "log": "build/slice4-rework/promotion-economics-connected.log",
+      "sha256": "c0f28419cd2379f6e2daec1d86db17d4db1310b96c8b98663ea38bec88f922ef",
+      "tests": 1,
+      "result": "PASS_CONNECTED_PROBE_OVERLAPPING_FULL_44"
+    }
+  ],
+  "limitations": [
+    "No root is CLOSED. Source qualification, accepted scenario Policy, full commercial payer/timing/coexistence representation and approval/launch consumption remain open for root 015.",
+    "Conditional comparisons are unqualified, not demand admission. No permanent-disable closure claim.",
+    "The 44-test class covers signed Console and isolated PostgreSQL. The 1-test upgrade retains both an old orphan launch and an old lossy simulation from V0090 through V0101; it is not full-schema upgrade parity.",
+    "No frontend source changed and no browser/runtime UI evidence is claimed for simulation.",
+    "No real Provider/account calls, Level 2, remote publication, shared/production migration, Gate EV/E or business effects."
+  ]
+}

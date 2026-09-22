@@ -1,0 +1,180 @@
+{
+  "status": "PARTIAL_LOCAL_PROGRESS_NOT_FINAL_HEAD_CLOSURE",
+  "source_checkpoint_before_changes": "0bd21e9c0d1039b9e4ef38f929741cc14fa8d23b",
+  "final_changed_files_sha256": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/ListingActionView.java": "af3f609fe132c2774b673946548adcc113d63b59e65abbd911eb1fd695c954bd",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationService.java": "503d1a5d9c168b6b381766ffab46a29195cd253501115deb436e5e63495ef5d9",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionDecisionService.java": "23015172e09cd16a6867be3322a040d443ab9063daf5e1a0aaaa0f5c159ba519",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/application/ListingActionService.java": "077058077af1725006ee4913030d5a00e02dac1efbb2e17981b5d50e1bdb8c12",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/infrastructure/jdbc/ListingActionRepository.java": "ff32103bc75cec03cc5454a05d2450a02ae400d5634325765b06e0ed2c8a0bf0",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/listingconversion/internal/web/ListingActionConsoleController.java": "cb970040b8b8f4053aefe9d87be3f44dac0eb240f0088a51ac2e268d40f88b13",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/CredentialDirectory.java": "f577d5238603880b4cd5d1ab094ca8eded3df8c660f8c3f3593e7eb4201c9258",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/ListingDescriptionCommandWorker.java": "b3c8fe9fc396f89ccd665e55ea630b2eb66dfff609dfdb8dc042ef5266f3fcd3",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/ListingDescriptionResolutionService.java": "554c5befe57e2f65540480fa715068dc5299e5dfd35655089e5a8c169eeba36f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CredentialLookupRepository.java": "e53a2b08d8c09808a9952f7438521a0d2ce8099646fcfe50e6dbb6fbf87ce160",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/ListingDescriptionCommandRepository.java": "8a498483f40d3efffe494dd157a6b52df78cbf66b993cd26cfc0c559a8fb5e6f",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PlatformCallSpecRepository.java": "ba38a2bf4368c5849215d1f0f82531ebecefd4953cbc48978fa0200c7cbfc51a",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ApprovalService.java": "461492358f7fae22933520cb9ed4aaeacfc7a96bb2fc60f2ed086b80284cd064",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingActionIntakeService.java": "3219166cbee00d4f0dfd250a83c6d462667c7986bf7e08bb631ca8db5c96c3f7",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ListingActionLaunchService.java": "81b31994f17be008dcf57f437e91dfe282e25519225a0e459a4d406c5de0b1d4",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/ApprovalRepository.java": "abde40bb15d6514fdd27b885403b521477939b23356a42ce4190766c6542f16c",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/RecommendationRepository.java": "057ad5115b7e8e5aa2620ebca13efa1b881fdc3f570b4fe43c7c00b73541b44d",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java": "dd3f4415661d893a55b1d19807632efbde6ae3b52ca27f16b6c8824a7bc94810",
+    "backend/marketops-server/src/main/resources/db/migration/V0097__bind_exact_restoration_to_a_new_approved_action.sql": "d20cd5f8c0b42dc1519d3ae354a6d55ff8061c8221785e660d50f5565d3df273",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingConversionFixture.java": "421a9607cd3d36863a05de99c6cb01e86048012ef6b5d4c3a10115a4b635bffb",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingDescriptionLoopback.java": "34dd39da1f7874b688903c123c6ba561d3722faf04566202634f26c440cb5f8a",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ListingReworkAuthorizationIT.java": "a1bffd3a9de6f16e4c4e1a7d8eeb077dce259e7743b9b76ed5af79ddcefa787b",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/listingconversion/internal/application/EvaluationPlanFreezeTest.java": "1d31b44a3734012618717afc66f0e8628947ea8adbd54b1255a67b3d47c6867e",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/ListingDescriptionCommandWorkerTest.java": "26f7d5a88f6a672eeee2b7f078d0f553ab1d385219d9c11a6c433c075fe4ba12",
+    "frontend/marketops-console/src/__tests__/ListingConversionForms.test.tsx": "257e4dfaa64a03a88366ef991bdab3d317dbfc013ff1c713971c8c889679eaae",
+    "frontend/marketops-console/src/api/listingConversion.ts": "83ca024a1561acc610a0ade3aba163f3b1444901ecd2fcd2e77a5bb9aa7ff095",
+    "frontend/marketops-console/src/listing/ListingActionsPanel.tsx": "ba8fc24fcdaf907d0f83ad7ddc34196b08306d7d9f77cfe6e398dcc27ff70132",
+    "frontend/marketops-console/src/listing/i18n/ui.ts": "2134a0219752cd7770a1d880935d08e98289084f9b2d4e97814cdab9e3895d60"
+  },
+  "runs": [
+    {
+      "command": "./mvnw -q -Dtest=ListingReworkAuthorizationIT test",
+      "working_directory": "backend/marketops-server",
+      "tests": 39,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-authorization-regression.log",
+      "raw_log_sha256": "53b84e9099963a83ce89ac02295fdf591db09999c577fbd697fc7bb83ff67a49",
+      "summary_path": "restoration-authorization-regression-summary.txt",
+      "summary_sha256": "fdcd0ed1a63f5472add0454c7981c2961272728ca7184f697630bf90d923fcd9"
+    },
+    {
+      "command": "./mvnw -B -ntp test '-Dtest=EvaluationPlanFreezeTest,ListingGuardrailTest,ListingDescriptionCommandWorkerTest,DescriptionExactRequestTest,DescriptionChangeGuardTest,*Approval*Test,*ArchitectureTest'",
+      "working_directory": "backend/marketops-server",
+      "tests": 132,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-unit-architecture.log",
+      "raw_log_sha256": "33e087803ddb1e41c6afdeb3ac2af858d16be7c6884086a865ccfd2d63b4a7da",
+      "summary_path": "restoration-unit-architecture-summary.txt",
+      "summary_sha256": "4d6e1b95131641b87cd21765a9877a5b14186d2a9b70a0f1f51d3e990a72c40d"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingDescriptionResponseIdentityIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 21,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-response-identity-regression.log",
+      "raw_log_sha256": "0c8c3a45cb8c2419ee347b3332c6aee368d64ec72c473a94cac832c9279a7195",
+      "summary_path": "restoration-response-identity-regression-summary.txt",
+      "summary_sha256": "785249839970971bd312a24948e82e1c22bf92acaca263c1f64f89ef66480eb0"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingDescriptionRetryTimingIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 7,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-retry-timing-regression.log",
+      "raw_log_sha256": "a7efa791d3620c5dba54fa011d9756c9ee13ef21a7fd4c82a9c462550658a561",
+      "summary_path": "restoration-retry-timing-regression-summary.txt",
+      "summary_sha256": "a13cef1d9473fea98354a3e46b91de68b5a44229d3ba82ef7fb8608ff952e543"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingDescriptionWriteGateIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 8,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-write-gate-regression.log",
+      "raw_log_sha256": "b23038976ed7abc2072786be21c94ca54578f97a778fd915bff03c78ee384ac2",
+      "summary_path": "restoration-write-gate-regression-summary.txt",
+      "summary_sha256": "9964e012839e14f49ead6deba3ab66775c9fc10b7fed9764d68bbff7592983fb"
+    },
+    {
+      "command": "./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT",
+      "working_directory": "backend/marketops-server",
+      "tests": 1,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-upgrade-regression.log",
+      "raw_log_sha256": "1fbc88db1b06c5229b827d7b705f991183fce51468b43cd5beee1a356a908c15",
+      "summary_path": "restoration-upgrade-regression-summary.txt",
+      "summary_sha256": "34cf2107ffcc1ca1b940e87fed92f385ceda1b7fc94c975b3fe370dc2f875389"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversionForms.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversion.test.tsx",
+      "working_directory": "frontend/marketops-console",
+      "tests": 22,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-frontend-targeted-final.log",
+      "raw_log_sha256": "13dafc0a401f1208aedd2231d3b741e01a7da6662dad02682a1afecc4a6d4c5d",
+      "summary_path": "restoration-frontend-targeted-final-summary.txt",
+      "summary_sha256": "1e801ef61f4f732b796b82a6030d93d11b2f8c6a02731c889da03fc0a4fe56dc"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run typecheck",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-frontend-typecheck-final.log",
+      "raw_log_sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "summary_path": "restoration-frontend-typecheck-final-summary.txt",
+      "summary_sha256": "7c241f8c148fbb4053dc823837cc95fc0dda6da5882035e5cb18bfa0098eadfe"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run lint",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-frontend-lint-second.log",
+      "raw_log_sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "summary_path": "restoration-frontend-lint-second-summary.txt",
+      "summary_sha256": "24f9dee2c2e658e7364deac202799853865cfaa7f4bf5a2a6f9cfaa028cd3820"
+    },
+    {
+      "command": "fnm exec --using 24.19.0 npm run build",
+      "working_directory": "frontend/marketops-console",
+      "tests": null,
+      "result": "PASS_TARGETED_ONLY",
+      "raw_log_local_path": "build/slice4-rework/restoration-frontend-build.log",
+      "raw_log_sha256": "6f42dd3df30e717adbef5f26b867bd5a0c5b587dda0d1ad6db3d84b7dfcc2cba",
+      "summary_path": "restoration-frontend-build-summary.txt",
+      "summary_sha256": "06a5b7d4dc46cd7e1a179e56081ab94f08dbc4072891eeeb3acc71faad7308fc"
+    }
+  ],
+  "controlled_probes": [
+    {
+      "path": "build/slice4-rework/preparation-clock-controlled-red.log",
+      "sha256": "bd1b951f45bca92a96a7bc9b2de87efa5c7bee7517a3ef96c77c7b4ce7a7eaea",
+      "result": "EXPECTED_RED",
+      "notes": "Unchanged chronology guard rejects future application-stamped plan under controlled +60 second Action/Evaluation clocks."
+    },
+    {
+      "path": "build/slice4-rework/preparation-clock-controlled-green.log",
+      "sha256": "2bd639cd457abbb0535503e00cee9fea10385f3f96be9b7184911d10fd9c5955",
+      "result": "PASS",
+      "notes": "Same controlled skew passes using database chronology; included later in the 39-test regression."
+    },
+    {
+      "path": "build/slice4-rework/restoration-seven-scenarios-second.log",
+      "sha256": "fb7e1d5288d362b2cfcece2180b599ef52a2909acb43a32a4bb5d23b321ea795",
+      "result": "PASS",
+      "notes": "Seven sync/async/loss/version/expiry scenarios; included later in the 39-test regression. Counts overlap."
+    }
+  ],
+  "observed_corrections": [
+    "A new exact restoration uses normal preparation, independent review, current approval, execution guardrail, allowance, atomic launch and the sole Worker/adapter/Raw/readback path.",
+    "Legacy COMMAND_RESOLVE compensation is refused. Restoration writes its own approved target with own idempotency and current-fence preflight/conditional version. Qualified RESTORE completion verifies only its new action.",
+    "39 signed MockMvc/PostgreSQL tests include real loopback HTTP restoration sync, async two queries, recreated-worker recovery after loss, later text, missing version, old approval expiry with new approval, expired new approval, actual HTTP 412 conflict, no approval/wrong source/empty target refusal, immutable approval identity, and an actual completed source with missing captured prior.",
+    "Original residual occupation remains; synthetic positive restoration budgets for both obligations. No release/Outcome success is inferred from management restoration.",
+    "Normal atomic launch now performs existing EXECUTION Guardrail calculation; earlier preseeded PASS had hidden the missing consumer.",
+    "Preparation/plan/review/listing approval/binding chronology now uses database time without weakening V0088. Authentication clocks and non-listing approval timing are unchanged.",
+    "Retry proof now binds the actual operation, qualified not-applied raw/task and fresh current-fence readback; an async task is not resubmitted solely because an old value remains."
+  ],
+  "diagnosed_failures": [
+    "Initial restoration preparation collided with the original broad live-recommendation index; exact source-only exception is now guarded by unique indexes and listing-row-locked validation. Original responsibility is preserved.",
+    "Fixture corrections: registry version header is lowercase etag; positive fixture budgets for both original and restoration occupations; async attestation includes its added STATUS endpoint; scenario teardown defers only its fictional organization to prevent cross-scenario polling.",
+    "New gate initially lacked EXECUTE on its pure bounded schema validator; read-only permission added without table-write authority.",
+    "Normal launch initially lacked an EXECUTION evaluation; fixed at the existing launch owner, not by seeding PASS.",
+    "Five restoration cases encountered the known mixed-clock freeze refusal. Restorations were not repeatedly retried; a separate controlled red/green probe demonstrated and repaired chronology.",
+    "Frontend exact optional property type and two lint findings corrected. Final 22 tests/typecheck/lint/build pass."
+  ],
+  "limitations": [
+    "All 27 roots remain unclosed for Controller purposes. This is local progress, not production enablement or final Head verification.",
+    "Synthetic PG17/fake account metadata and own localhost transport only; no real Provider/credential/account call, remote Git action, shared migration or Gate-EV/E.",
+    "MockMvc uses real signature/authorization but is not browser/network ingress. Recreated Worker is not a full process/database restart. In-memory Raw object storage is not persistent DR evidence.",
+    "Fresh 97 migrations and V0090 orphan preservation are exercised; full baseline upgrade/schema parity, persistent DR, browser journeys, complete business Outcome/allowance/promotion/health/purpose/clock-consumer work and all final checks remain pending.",
+    "Existing ordinary APPLY gate still has its legacy attribute-template precheck; RESTORE uses exact qualified request guard. Other frozen same-class work remains tracked, not silently declared closed."
+  ]
+}

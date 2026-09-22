@@ -1,0 +1,14 @@
+commit e0ee75e2511e855df6a09cdf7d45170bae2fe534 tree cd262ca8f5c4a58e675941dd7079369c9d6db29d branch codex/slice-v1-004-root-cause-rework-r1
+status-lines 0
+os macOS 26.6.2 25G83 arm64
+host cpus 8 memory-bytes 17179869184
+openjdk version "21.0.10" 2026-01-20 LTS
+node v24.19.0 npm 11.17.0
+docker server 29.7.2 client 29.7.2
+docker vm cpus 4 memory-bytes 6210576384 os Docker Desktop
+bash on PATH: /opt/homebrew/bin/bash GNU bash, version 5.3.9(1)-release (aarch64-apple-darwin25.1.0)
+/bin/bash: GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)
+python3 3.9.6 git 2.54.0 make GNU Make 3.81
+TMPDIR /var/folders/v2/54f80c956pn6m061kzszc6800000gn/T/
+JAVA_TOOL_OPTIONS unset by this runner (the tool sandbox sets it; this run is outside the sandbox)
+proxy variables present: HTTPS_PROXY HTTP_PROXY NO_PROXY (values not recorded; the host's local proxy on 127.0.0.1:15732)

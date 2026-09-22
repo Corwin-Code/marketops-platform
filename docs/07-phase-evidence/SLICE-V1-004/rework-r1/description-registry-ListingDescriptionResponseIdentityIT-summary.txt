@@ -1,0 +1,4 @@
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.92 s -- in com.mimococo.marketops.ListingDescriptionResponseIdentityIT
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  25.952 s

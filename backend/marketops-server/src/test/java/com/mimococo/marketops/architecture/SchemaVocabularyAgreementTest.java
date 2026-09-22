@@ -11,6 +11,7 @@ import com.mimococo.marketops.advertisingefficiency.CandidateBasis;
 import com.mimococo.marketops.advertisingefficiency.ProtectionTier;
 import com.mimococo.marketops.advertisingefficiency.SaleStage;
 import com.mimococo.marketops.marketplaceintegration.AdBidCommandState;
+import com.mimococo.marketops.marketplaceintegration.ListingDescriptionCommandState;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -133,6 +134,13 @@ class SchemaVocabularyAgreementTest {
     }
 
     @Test
+    @DisplayName("TC-VOCAB-006 the description command state enum is the schema's state vocabulary")
+    void descriptionCommandStateAgrees() {
+        assertThat(allowedValuesInConstraint("lc_description_command_state_ck"))
+                .containsExactlyInAnyOrderElementsOf(namesOf(ListingDescriptionCommandState.values()));
+    }
+
+    @Test
     @DisplayName("TC-VOCAB-004 the evidence-state enum is the schema's evidence vocabulary")
     void evidenceStateAgrees() {
         assertThat(allowedValuesInConstraint("ad_case_evidence_state_ck"))
@@ -152,6 +160,7 @@ class SchemaVocabularyAgreementTest {
         Set<String> unknown = new LinkedHashSet<>();
         for (Path root : List.of(
                 Path.of("src/main/java/com/mimococo/marketops/advertisingefficiency"),
+                Path.of("src/main/java/com/mimococo/marketops/listingconversion"),
                 Path.of("src/main/java/com/mimococo/marketops/marketplaceintegration"),
                 Path.of("src/main/java/com/mimococo/marketops/operationsworkflow"))) {
             try (Stream<Path> walk = Files.walk(root)) {

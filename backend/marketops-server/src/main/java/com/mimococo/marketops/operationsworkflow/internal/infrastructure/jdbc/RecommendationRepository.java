@@ -300,6 +300,17 @@ public class RecommendationRepository {
     }
 
     /** Every live proposal for one subject and action, for duplicate detection. */
+    /** Only the resolved source of this exact new restoration is exempt from an older live proposal. */
+    public Optional<UUID> restorationSourceRecommendation(UUID organizationId,UUID listingId,UUID commandId) {
+        return jdbc.sql("""
+                SELECT c.recommendation_id FROM ops.lc_description_command c JOIN ops.lc_action a ON a.id=c.action_id
+                 WHERE c.id=:id AND c.organization_id=:org AND c.platform_listing_id=:listing
+                   AND c.state='READBACK_MATCHED' AND a.state IN ('VERIFIED','CONTAINED','CLOSED')
+                   AND c.prior_text IS NOT NULL AND c.prior_text<>''
+                   AND EXISTS (SELECT 1 FROM ops.lc_execution_receipt r WHERE r.command_id=c.id AND r.execution_state='MANAGEMENT_VERIFIED')
+                """).param("id",commandId).param("org",organizationId).param("listing",listingId).query(UUID.class).optional();
+    }
+
     public List<UUID> liveFor(SubjectKind subjectKind, UUID subjectId, ActionKind actionKind) {
         List<UUID> found = new ArrayList<>(jdbc.sql("""
                         SELECT id FROM ops.recommendation

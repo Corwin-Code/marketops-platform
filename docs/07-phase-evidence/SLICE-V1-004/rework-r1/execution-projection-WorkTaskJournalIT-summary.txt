@@ -1,0 +1,8 @@
+COMMAND: ./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=WorkTaskJournalIT
+WORKING_DIRECTORY: backend/marketops-server
+RESULT: PASS_TARGETED_ONLY
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.62 s -- in com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  22.319 s
+[INFO] Finished at: 2026-09-10T21:30:56+08:00

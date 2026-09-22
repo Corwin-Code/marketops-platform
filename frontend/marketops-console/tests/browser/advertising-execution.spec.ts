@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { resolveBackendOrigin } from './backendOrigin.ts';
 
 /**
  * The advertising execution surfaces in a real browser.
@@ -18,7 +19,7 @@ import type { Page } from '@playwright/test';
  * real one, and it is not offered as such.
  */
 
-const API_ORIGIN = 'http://127.0.0.1:8080';
+const API_ORIGIN = resolveBackendOrigin();
 
 /** The store this deployment's console is configured to work in. */
 const STORE_ID = '00000000-0000-0000-0000-0000000000d1';

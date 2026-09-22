@@ -62,6 +62,20 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
         this.delegate = delegate;
     }
 
+    @Override
+    public java.util.Optional<com.mimococo.marketops.operatingfacts.FinanceInputSnapshot> promotionFixedFee(
+            UUID organizationId,UUID storeId,String promotionKind,String nativePromotionKey,
+            java.time.Instant periodStart,java.time.Instant periodEnd,java.time.Instant asOf) {
+        return delegate.promotionFixedFee(organizationId,storeId,promotionKind,nativePromotionKey,periodStart,periodEnd,asOf);
+    }
+
+    @Override
+    public java.util.Map<String,com.mimococo.marketops.operatingfacts.FinanceInputSnapshot> promotionRevenueInputs(
+            UUID organizationId,UUID storeId,UUID listingId,String promotionKind,String nativePromotionKey,String termsDigest,
+            java.time.Instant periodStart,java.time.Instant periodEnd,java.time.Instant asOf) {
+        return delegate.promotionRevenueInputs(organizationId,storeId,listingId,promotionKind,nativePromotionKey,termsDigest,periodStart,periodEnd,asOf);
+    }
+
     private record SalesKey(UUID listingVariantId, SaleStage stage, Integer retentionWindowDays,
                             FactWindow window) {
     }
@@ -144,6 +158,12 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
     @Override
     public Optional<CostSnapshot> unitCost(UUID productVariantId, Instant asOf) {
         return delegate.unitCost(productVariantId, asOf);
+    }
+
+    @Override
+    public java.util.List<com.mimococo.marketops.operatingfacts.CostPeriodSnapshot> purchaseCosts(
+            UUID organizationId, UUID productVariantId, Instant periodStart, Instant periodEnd, Instant asOf) {
+        return delegate.purchaseCosts(organizationId,productVariantId,periodStart,periodEnd,asOf);
     }
 
     @Override

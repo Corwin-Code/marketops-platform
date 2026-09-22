@@ -132,5 +132,28 @@ public enum GuardrailReason {
     NO_CHANGE_PROPOSED,
 
     /** No approval-lease policy is in force for this direction. */
-    APPROVAL_LEASE_POLICY_ABSENT
+    APPROVAL_LEASE_POLICY_ABSENT,
+
+    // The listing conversion reasons. A description change and a promotion
+    // action refuse for their own things, each with a runbook of its own.
+
+    CALIBRATION_UNRESOLVED,
+
+    AFFECTED_SET_INCOMPLETE,
+
+    CURRENT_TEXT_MOVED,
+
+    LISTING_HEALTH_NECESSARY_FAILED,
+
+    SCOPE_CONTAINED,
+
+    REVIEW_MISSING,
+
+    TEXT_LENGTH_OUT_OF_BOUNDS,
+
+    KIZ_MARKED_UNDECLARED,
+
+    MATERIALITY_UNRESOLVED,
+
+    LISTING_ACTION_BLOCKED
 }

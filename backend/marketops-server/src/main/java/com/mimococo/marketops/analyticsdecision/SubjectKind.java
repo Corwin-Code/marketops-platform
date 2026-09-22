@@ -17,5 +17,8 @@ public enum SubjectKind {
     PRODUCT_VARIANT,
     PLATFORM_LISTING_VARIANT,
     STORE,
-    AD_NATIVE_OBJECT
+    AD_NATIVE_OBJECT,
+
+    /** A platform listing: its native listing key and every variant it carries. */
+    PLATFORM_LISTING
 }

@@ -190,7 +190,46 @@ public enum ErrorCode {
     OBJECT_STORAGE_VERIFICATION_FAILED("Stored content failed read-back verification."),
 
     /** A fact was offered without the source evidence it must be derived from. */
-    RAW_EVIDENCE_MISSING("The fact carries no source evidence.");
+    RAW_EVIDENCE_MISSING("The fact carries no source evidence."),
+
+    /** No active calibration package resolves for the scope and purpose. */
+    CALIBRATION_UNRESOLVED("No calibration package resolves for this scope."),
+
+    /** Two calibration packages resolve at the same precedence. */
+    CALIBRATION_CONFLICTED("The calibration packages for this scope conflict."),
+
+    /** The complete affected set of the listing could not be resolved. */
+    AFFECTED_SET_INCOMPLETE("The complete affected set of the listing is not resolved."),
+
+    /** The frozen binding of an approved action no longer applies. */
+    BINDING_INAPPLICABLE("The approved binding no longer applies to the current facts."),
+
+    /** A review or verification must come from a person other than the author or executor. */
+    INDEPENDENCE_REQUIRED("This step requires a person other than the author or executor."),
+
+    /** The cumulative exposure allowance cannot absorb the launch on every axis. */
+    ALLOWANCE_INSUFFICIENT("The exposure allowance is insufficient on at least one axis."),
+
+    /** An active containment covers the scope. */
+    SCOPE_CONTAINED("The scope is contained and nothing may be launched or sent."),
+
+    /** Listing Health necessary conditions are not passed. */
+    LISTING_HEALTH_BLOCKS_LAUNCH("Listing Health necessary conditions block the launch."),
+
+    /** The execution path of the action does not permit the requested step. */
+    EXECUTION_PATH_MISMATCH("The requested step does not belong to the action's execution path."),
+
+    /** A precise restore is not possible because no complete prior text was captured. */
+    RESTORE_UNSUPPORTED("A precise restore is not supported for this command."),
+
+    /** The evidence path does not qualify for the standardised measurement. */
+    EVIDENCE_PATH_UNQUALIFIED("The evidence path does not qualify for this measurement."),
+
+    /** The materiality of the action could not be classified. */
+    MATERIALITY_UNRESOLVED("The materiality of the action could not be classified."),
+
+    /** The promotion exit reason is not one of the pre-approved reasons. */
+    EXIT_REASON_NOT_APPROVED("The exit reason is not pre-approved.");
 
     private final String safeMessage;
 

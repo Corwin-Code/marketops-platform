@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { resolveBackendOrigin } from './backendOrigin.ts';
+
+const API_ORIGIN = resolveBackendOrigin();
 
 /** Console responses are real; one request is aborted to exercise outage and recovery. */
 test('TC-BROWSER-013 authenticated evidence, approval, command and readback journey', async ({
@@ -36,7 +39,7 @@ test('TC-BROWSER-013 authenticated evidence, approval, command and readback jour
       body: JSON.stringify({ access_token: fixture.accessToken, expires_in: 600 }),
     });
   });
-  const queuePath = `http://127.0.0.1:8080/api/v1/console/diagnosis/stores/${fixture.storeId}/queue*`;
+  const queuePath = `${API_ORIGIN}/api/v1/console/diagnosis/stores/${fixture.storeId}/queue*`;
   await page.route(queuePath, (target) => target.abort('failed'));
   await page.goto('/');
   await page.getByRole('button', { name: 'Continue to sign in' }).click();
@@ -97,7 +100,7 @@ test('TC-BROWSER-013 authenticated evidence, approval, command and readback jour
   expect(
     (
       await page.request.get(
-        'http://127.0.0.1:8080/api/v1/console/workflow/stores/00000000-0000-0000-0000-000000000099/recommendations',
+        `${API_ORIGIN}/api/v1/console/workflow/stores/00000000-0000-0000-0000-000000000099/recommendations`,
         {
           headers: { Authorization: `Bearer ${fixture.accessToken}` },
         },

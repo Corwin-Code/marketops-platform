@@ -59,12 +59,18 @@ public class ImportRowValidator {
             if (raw == null || raw.isBlank()) {
                 continue;
             }
-            // A pasted credential must not reach persistence, a log or an audit
-            // record, so the guard runs before the value is converted or stored.
-            SecretMaterialGuard.requireNonSecret(column.getValue(), raw);
             Optional<IntakeDataset.Field> field = dataset.field(column.getValue());
             if (field.isEmpty()) {
+                SecretMaterialGuard.requireNonSecret(column.getValue(), raw);
                 continue;
+            }
+            // A pasted credential must not reach persistence, a log or an audit
+            // record. The one exception is the exact SHA-256 promotion-terms
+            // digest: it is structured binding data and necessarily has the
+            // same encoded shape as the guard's conservative secret heuristic.
+            if (!("promotionTermsDigest".equals(field.get().name())
+                    && raw.matches("[0-9a-f]{64}"))) {
+                SecretMaterialGuard.requireNonSecret(column.getValue(), raw);
             }
             Object converted = convert(raw, field.get().kind());
             if (converted == null) {
@@ -154,8 +160,9 @@ public class ImportRowValidator {
     private Outcome validateFinanceInput(UUID organizationId, Map<String, Object> values) {
         if (!enumValue(values, "inputCode", "VARIABLE_TAX_RATE", "PAYMENT_PROCESSING_RATE",
                 "RETURN_HANDLING_UNIT_COST", "INBOUND_LOGISTICS_UNIT_COST",
-                "REQUIRED_PROFIT_PER_UNIT", "SAFETY_BUFFER_PER_UNIT")
-                || !enumValue(values, "scopeKind", "ORGANIZATION", "STORE", "PRODUCT_VARIANT")
+                "REQUIRED_PROFIT_PER_UNIT", "SAFETY_BUFFER_PER_UNIT", "PROMOTION_FIXED_FEE", "PROMOTION_BUYER_PAYMENT_PER_UNIT",
+                "PROMOTION_SELLER_REVENUE_PER_UNIT", "PROMOTION_PLATFORM_COMPENSATION_PER_UNIT")
+                || !enumValue(values, "scopeKind", "ORGANIZATION", "STORE", "PRODUCT_VARIANT", "PROMOTION")
                 || !enumValue(values, "valueKind", "RATE", "AMOUNT")) {
             return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "inputCode/scopeKind/valueKind");
         }
@@ -186,6 +193,33 @@ public class ImportRowValidator {
         }
 
         String scopeKind = values.get("scopeKind").toString().toUpperCase(Locale.ROOT);
+        boolean promotion="PROMOTION".equals(scopeKind);
+        String inputCode=values.get("inputCode").toString().toUpperCase(Locale.ROOT);
+        boolean revenue=java.util.Set.of("PROMOTION_BUYER_PAYMENT_PER_UNIT","PROMOTION_SELLER_REVENUE_PER_UNIT",
+                "PROMOTION_PLATFORM_COMPENSATION_PER_UNIT").contains(inputCode);
+        if (promotion != (revenue || "PROMOTION_FIXED_FEE".equals(inputCode)))
+            return Outcome.rejected(values,INCONSISTENT_VALUE_KIND,"inputCode/scopeKind");
+        if (promotion) {
+            if (!enumValue(values,"promotionKind","OFFICIAL_PROMOTION_PARTICIPATION","SELLER_DIRECT_DISCOUNT")
+                    || !(values.get("nativePromotionKey") instanceof String key) || key.isBlank() || key.length()>128
+                    || !(values.get("effectiveTo") instanceof java.time.Instant until)
+                    || !(values.get("effectiveFrom") instanceof java.time.Instant from) || !from.isBefore(until))
+                return Outcome.rejected(values,VALUE_OUT_OF_RANGE,"promotionKind/nativePromotionKey/effectiveTo");
+        } else if (values.containsKey("promotionKind") || values.containsKey("nativePromotionKey") || values.containsKey("effectiveTo"))
+            return Outcome.rejected(values,INCONSISTENT_VALUE_KIND,"promotion scope fields");
+        UUID promotionListing=null;
+        if (revenue) {
+            try {
+                String identity=String.valueOf(values.get("promotionListingId"));
+                promotionListing=UUID.fromString(identity);
+                if (!promotionListing.toString().equals(identity)
+                        || !(values.get("promotionTermsDigest") instanceof String digest) || !digest.matches("[0-9a-f]{64}"))
+                    return Outcome.rejected(values,VALUE_OUT_OF_RANGE,"promotionListingId/promotionTermsDigest");
+            } catch (IllegalArgumentException invalidIdentity) {
+                return Outcome.rejected(values,VALUE_OUT_OF_RANGE,"promotionListingId");
+            }
+        } else if (values.containsKey("promotionListingId") || values.containsKey("promotionTermsDigest"))
+            return Outcome.rejected(values,INCONSISTENT_VALUE_KIND,"promotion revenue scope");
         if ("ORGANIZATION".equals(scopeKind) && values.containsKey("scopeCode")) {
             return Outcome.rejected(values, INCONSISTENT_VALUE_KIND, "scopeCode");
         }
@@ -194,12 +228,14 @@ public class ImportRowValidator {
             if (scopeCode == null) {
                 return Outcome.rejected(values, MISSING_REQUIRED_FIELD, "scopeCode");
             }
-            Optional<UUID> scopeId = "STORE".equals(scopeKind)
+            Optional<UUID> scopeId = ("STORE".equals(scopeKind) || promotion)
                     ? references.storeIdByCode(organizationId, scopeCode.toString())
                     : references.productVariantIdBySku(organizationId, scopeCode.toString());
             if (scopeId.isEmpty()) {
                 return Outcome.rejected(values, REFERENCE_NOT_FOUND, "scopeCode");
             }
+            if (revenue && !references.promotionListingBelongsToStore(organizationId,scopeId.get(),promotionListing))
+                return Outcome.rejected(values,REFERENCE_NOT_FOUND,"promotionListingId");
             return Outcome.accepted(values, scopeId.get().toString());
         }
         return Outcome.accepted(values, organizationId.toString());
