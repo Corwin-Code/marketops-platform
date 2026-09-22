@@ -35,6 +35,7 @@ export function SubjectRecommendations({
   storeId,
   subjectId,
   refreshKey = 0,
+  fallbackCurrency = null,
   onReview,
 }: {
   readonly context: ConsoleRequest;
@@ -42,6 +43,11 @@ export function SubjectRecommendations({
   readonly subjectId: string;
   /** Changing it reloads the list, e.g. after a decision. */
   readonly refreshKey?: number;
+  /**
+   * The store's currency as the diagnosis states it. A price proposal carries
+   * only the target amount, so the list borrows the currency its numbers are in.
+   */
+  readonly fallbackCurrency?: string | null;
   readonly onReview: (recommendation: Recommendation) => void;
 }): React.JSX.Element {
   const [items, setItems] = useState<readonly Recommendation[]>();
@@ -79,7 +85,7 @@ export function SubjectRecommendations({
       render: (_, item) => (
         <Money
           value={item.proposedParameters.targetPrice}
-          currency={item.proposedParameters.currencyCode ?? null}
+          currency={item.proposedParameters.currencyCode ?? fallbackCurrency}
           strong
         />
       ),

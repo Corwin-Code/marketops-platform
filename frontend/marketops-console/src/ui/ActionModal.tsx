@@ -58,6 +58,10 @@ export function ActionModal<V extends object>({
   onOpen,
 }: ActionModalProps<V>): React.JSX.Element {
   const [open, setOpen] = useState(false);
+  // The dialog's content mounts during its opening animation, so the fields
+  // are registered only once it has opened. Validating earlier would find no
+  // required field and enable confirmation over an empty form.
+  const [ready, setReady] = useState(false);
   const [form] = Form.useForm<V>();
   const values: unknown = Form.useWatch([], form);
   const [submittable, setSubmittable] = useState(false);
@@ -65,7 +69,7 @@ export function ActionModal<V extends object>({
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
   useEffect(() => {
-    if (!open) {
+    if (!open || !ready) {
       return;
     }
     let live = true;
@@ -80,10 +84,11 @@ export function ActionModal<V extends object>({
     return () => {
       live = false;
     };
-  }, [open, values, form]);
+  }, [open, ready, values, form]);
 
   const close = (): void => {
     setOpen(false);
+    setReady(false);
     setFailure(undefined);
     setSubmittable(false);
   };
@@ -129,6 +134,9 @@ export function ActionModal<V extends object>({
         cancelText={actions.cancel}
         okButtonProps={{ danger, disabled: !submittable || blockedReason !== undefined }}
         confirmLoading={busy}
+        afterOpenChange={(visible) => {
+          setReady(visible);
+        }}
         destroyOnHidden
         mask={{ closable: false }}
         {...(width === undefined ? {} : { width })}

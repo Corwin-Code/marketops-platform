@@ -457,6 +457,10 @@ export function SubjectDiagnosisView({
           storeId={storeId}
           subjectId={subjectId}
           refreshKey={refreshKey}
+          fallbackCurrency={
+            Object.values(diagnosis.metrics).find((metric) => metric.currencyCode !== null)
+              ?.currencyCode ?? null
+          }
           onReview={(recommendation) => {
             setReviewId(recommendation.id);
           }}
