@@ -1,14 +1,35 @@
-import { Badge, Button, Flex, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { Badge, Button, Card, Flex, Popover, Space, Table, Tag, Typography } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { fetchPriorityQueue } from '../api/console';
-import type { ConsoleFailure, ConsoleRequest, PrioritySubject } from '../api/console';
+import { Link, useNavigate } from 'react-router';
+import { fetchCommandsNeedingAttention, fetchPriorityQueue } from '../api/console';
+import type { ConsoleFailure, ConsoleRequest, PriceCommand, PrioritySubject } from '../api/console';
+import { CommandSubject, commandSubjectName } from '../commands/CommandSubject';
 import { formatDecimal } from '../format';
-import { actions } from '../i18n';
-import { RULE_LABELS } from '../i18n/zh/pricing';
-import { CodeTag, EmptyState, FailureAlert, LoadingState, Money, SectionCard } from '../ui';
+import { actions, codeLabel } from '../i18n';
+import {
+  COMMAND_FAILURE_LABELS,
+  COMMAND_STATE_COLORS,
+  COMMAND_STATE_LABELS,
+  PLATFORM_LABELS,
+  RULE_LABELS,
+} from '../i18n/zh/pricing';
+import { attentionColumns, queueText } from '../i18n/zh/pricingFollowUp';
+import { commandPath } from '../layout/navigation';
+import {
+  CodeTag,
+  EmptyState,
+  FailureAlert,
+  InfoTip,
+  LoadingState,
+  Money,
+  SubjectName,
+  subjectTitle,
+  usePageParam,
+  useSearchParam,
+} from '../ui';
 
 /** What the queue needs in order to load itself. */
 export interface PriorityQueueProps {
@@ -19,6 +40,16 @@ export interface PriorityQueueProps {
   /** Called when the operator picks a subject to look at. */
   readonly onSelect: (subjectId: string) => void;
 }
+
+/** A list read that has not answered, answered, or failed. */
+type Loaded<T> =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'loaded'; readonly value: T }
+  | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
+
+const TAB_SUBJECTS = 'subjects';
+const TAB_COMMANDS = 'commands';
+const PAGE_SIZE = 20;
 
 /** A count that draws the eye only when it is not zero. */
 function CountBadge({
@@ -35,6 +66,80 @@ function CountBadge({
   );
 }
 
+/** A column heading with its once-only explanation beside it. */
+function HeadingWithTip({
+  label,
+  tip,
+}: {
+  readonly label: string;
+  readonly tip: string;
+}): React.JSX.Element {
+  return (
+    <span style={{ whiteSpace: 'nowrap' }}>
+      {label}
+      <InfoTip title={tip} />
+    </span>
+  );
+}
+
+/** Keyboard activation for a clickable row, so it is not a mouse-only control. */
+function rowActivation(label: string, activate: () => void): React.HTMLAttributes<HTMLElement> {
+  return {
+    onClick: activate,
+    onKeyDown: (event) => {
+      if (event.key === 'Enter' && event.target === event.currentTarget) {
+        activate();
+      }
+    },
+    tabIndex: 0,
+    'aria-label': label,
+    style: { cursor: 'pointer' },
+  };
+}
+
+/**
+ * Whether platform writes are blocked, with the blocking rules one hover away.
+ *
+ * The rules sit in a popover rather than in the row: a row that grows by one
+ * tag per rule pushes the rest of the work list off the screen. Clicks on the
+ * tag stay on the tag, so reading the rules does not open the subject.
+ */
+function WriteState({ subject }: { readonly subject: PrioritySubject }): React.JSX.Element {
+  const codes = subject.blockingRuleCodes;
+  if (codes.length === 0) {
+    return <Tag color="success">{queueText.writable}</Tag>;
+  }
+  return (
+    <Popover
+      title={queueText.blockingRulesTitle}
+      trigger={['hover', 'click']}
+      content={
+        <Space size={[4, 4]} wrap style={{ maxWidth: 320 }}>
+          {codes.map((code) => (
+            <span key={code} data-rule={code}>
+              <CodeTag labels={RULE_LABELS} code={code} />
+            </span>
+          ))}
+        </Space>
+      }
+    >
+      <Tag
+        color="error"
+        tabIndex={0}
+        style={{ cursor: 'help' }}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+        onKeyDown={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        {queueText.blocked(codes.length)}
+      </Tag>
+    </Popover>
+  );
+}
+
 /**
  * What to look at first.
  *
@@ -45,28 +150,47 @@ function CountBadge({
  * A subject whose findings block a platform write says so in the row. An
  * operator who opens a subject expecting to change its price and only then
  * learns that nothing can be changed has spent their attention for nothing.
+ *
+ * Beside the subjects sit the price commands that need a person: a change whose
+ * result is unknown is today's work as much as a subject is.
  */
 export function PriorityQueue({
   context,
   storeId,
   onSelect,
 }: PriorityQueueProps): React.JSX.Element {
-  const [subjects, setSubjects] = useState<readonly PrioritySubject[] | undefined>(undefined);
-  const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const navigate = useNavigate();
+  const [subjects, setSubjects] = useState<Loaded<readonly PrioritySubject[]>>({
+    kind: 'loading',
+  });
+  const [commands, setCommands] = useState<Loaded<readonly PriceCommand[]>>({
+    kind: 'loading',
+  });
   const [reload, setReload] = useState(0);
+  const [page, setPage] = usePageParam();
+  const [tabParam, setTab] = useSearchParam('tab');
+  const tab = tabParam === TAB_COMMANDS ? TAB_COMMANDS : TAB_SUBJECTS;
 
   useEffect(() => {
     let active = true;
     void fetchPriorityQueue(context, storeId).then((outcome) => {
-      if (!active) {
-        return;
+      if (active) {
+        setSubjects(
+          outcome.ok
+            ? { kind: 'loaded', value: outcome.value }
+            : { kind: 'failed', failure: outcome.failure },
+        );
       }
-      if (outcome.ok) {
-        setSubjects(outcome.value);
-        setFailure(undefined);
-      } else {
-        setSubjects(undefined);
-        setFailure(outcome.failure);
+    });
+    // Loaded with the queue rather than when its tab opens, so the tab can
+    // show how many commands are waiting before anyone clicks it.
+    void fetchCommandsNeedingAttention(context, storeId).then((outcome) => {
+      if (active) {
+        setCommands(
+          outcome.ok
+            ? { kind: 'loaded', value: outcome.value }
+            : { kind: 'failed', failure: outcome.failure },
+        );
       }
     });
     return () => {
@@ -77,8 +201,10 @@ export function PriorityQueue({
   const refresh = (
     <Button
       icon={<ReloadOutlined />}
-      aria-label="刷新今日工作"
+      aria-label={queueText.refreshLabel}
       onClick={() => {
+        setSubjects({ kind: 'loading' });
+        setCommands({ kind: 'loading' });
         setReload((value) => value + 1);
       }}
     >
@@ -86,38 +212,16 @@ export function PriorityQueue({
     </Button>
   );
 
-  const columns: TableColumnsType<PrioritySubject> = [
+  const subjectColumns: TableColumnsType<PrioritySubject> = [
     {
-      title: '商品（SKU）',
+      title: queueText.subjectColumn,
       key: 'subject',
       render: (_, subject) => (
-        <Flex vertical gap={0}>
-          <Button
-            type="link"
-            style={{ padding: 0, height: 'auto' }}
-            aria-label={`查看商品 ${subject.subjectId} 的诊断`}
-            onClick={() => {
-              onSelect(subject.subjectId);
-            }}
-          >
-            查看诊断
-          </Button>
-          <Typography.Text
-            type="secondary"
-            style={{ fontSize: 12 }}
-            copyable={{ text: subject.subjectId }}
-          >
-            {subject.subjectId.slice(0, 8)}
-          </Typography.Text>
-        </Flex>
+        <SubjectName identity={subject.identity} subjectId={subject.subjectId} />
       ),
     },
     {
-      title: (
-        <Tooltip title="由后端确定性计算，列表按此排序">
-          <span>优先级</span>
-        </Tooltip>
-      ),
+      title: <HeadingWithTip label={queueText.priorityColumn} tip={queueText.priorityHelp} />,
       key: 'priority',
       render: (_, subject) => (
         <Typography.Text strong style={{ fontVariantNumeric: 'tabular-nums' }}>
@@ -126,35 +230,31 @@ export function PriorityQueue({
       ),
     },
     {
-      title: '严重',
+      title: queueText.criticalColumn,
       key: 'critical',
       align: 'center',
       render: (_, subject) => <CountBadge value={subject.criticalFindingCount} color="red" />,
     },
     {
-      title: '警告',
+      title: queueText.warningColumn,
       key: 'warning',
       align: 'center',
       render: (_, subject) => <CountBadge value={subject.warningFindingCount} color="gold" />,
     },
     {
-      title: (
-        <Tooltip title="因数据不足等原因无法得出结论的规则数">
-          <span>无法判断</span>
-        </Tooltip>
-      ),
+      title: <HeadingWithTip label={queueText.declinedColumn} tip={queueText.declinedHelp} />,
       key: 'declined',
       align: 'center',
       render: (_, subject) => <CountBadge value={subject.declinedRuleCount} color="orange" />,
     },
     {
-      title: '净销售额',
+      title: queueText.netSalesColumn,
       key: 'netSales',
       align: 'right',
       render: (_, subject) => <Money value={subject.netSales} currency={subject.currencyCode} />,
     },
     {
-      title: '贡献利润',
+      title: queueText.profitColumn,
       key: 'profit',
       align: 'right',
       render: (_, subject) => (
@@ -162,62 +262,197 @@ export function PriorityQueue({
       ),
     },
     {
-      title: '平台写入',
+      title: <HeadingWithTip label={queueText.writeColumn} tip={queueText.writeHelp} />,
       key: 'write',
       onCell: (subject) =>
         ({
           'data-write-blocked': subject.blockingRuleCodes.length > 0,
         }) as React.TdHTMLAttributes<HTMLTableCellElement>,
-      render: (_, subject): ReactNode =>
-        subject.blockingRuleCodes.length > 0 ? (
-          <Space size={[4, 4]} wrap>
-            <Tag color="error">已阻断</Tag>
-            {subject.blockingRuleCodes.map((code) => (
-              <CodeTag key={code} labels={RULE_LABELS} code={code} />
-            ))}
-          </Space>
-        ) : (
-          <Tag color="success">可调价</Tag>
-        ),
+      render: (_, subject): ReactNode => <WriteState subject={subject} />,
     },
   ];
 
-  let body: ReactNode;
+  const commandColumns: TableColumnsType<PriceCommand> = [
+    {
+      title: attentionColumns.subject,
+      key: 'subject',
+      render: (_, command) => <CommandSubject command={command} />,
+    },
+    {
+      title: attentionColumns.platform,
+      key: 'platform',
+      render: (_, command) => codeLabel(PLATFORM_LABELS, command.platformCode),
+    },
+    {
+      title: attentionColumns.price,
+      key: 'price',
+      render: (_, command) => (
+        <Flex gap={6} align="center" wrap={false}>
+          <Money value={command.priorPrice} currency={command.currencyCode} />
+          <Typography.Text type="secondary">→</Typography.Text>
+          <Money value={command.targetPrice} currency={command.currencyCode} strong />
+        </Flex>
+      ),
+    },
+    {
+      title: attentionColumns.state,
+      key: 'state',
+      render: (_, command) => (
+        <CodeTag labels={COMMAND_STATE_LABELS} code={command.state} colors={COMMAND_STATE_COLORS} />
+      ),
+    },
+    {
+      title: attentionColumns.failure,
+      key: 'failure',
+      render: (_, command) => (
+        <CodeTag
+          labels={COMMAND_FAILURE_LABELS}
+          code={command.failureCode}
+          {...(command.failureCode === null ? {} : { colors: { [command.failureCode]: 'error' } })}
+        />
+      ),
+    },
+    {
+      title: attentionColumns.open,
+      key: 'open',
+      render: (_, command) => (
+        <Link
+          to={commandPath(command.id)}
+          aria-label={attentionColumns.openLabel(commandSubjectName(command))}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          {attentionColumns.openLink}
+        </Link>
+      ),
+    },
+  ];
+
+  let subjectsBody: ReactNode;
   let state: string;
-  if (failure !== undefined) {
-    state = 'error';
-    body = <FailureAlert failure={failure} />;
-  } else if (subjects === undefined) {
-    state = 'loading';
-    body = <LoadingState rows={5} />;
-  } else if (subjects.length === 0) {
-    state = 'empty';
-    body = <EmptyState description="当前店铺暂无需要处理的商品" />;
-  } else {
-    state = 'loaded';
-    body = (
-      <Table<PrioritySubject>
-        size="middle"
-        rowKey="subjectId"
-        columns={columns}
-        dataSource={[...subjects]}
-        pagination={{ pageSize: 20, hideOnSinglePage: true, showSizeChanger: false }}
-        scroll={{ x: 'max-content' }}
-        onRow={(subject) =>
-          ({ 'data-subject': subject.subjectId }) as React.HTMLAttributes<HTMLElement>
-        }
-      />
-    );
+  switch (subjects.kind) {
+    case 'failed':
+      state = 'error';
+      subjectsBody = <FailureAlert failure={subjects.failure} />;
+      break;
+    case 'loading':
+      state = 'loading';
+      subjectsBody = <LoadingState rows={5} />;
+      break;
+    case 'loaded':
+      if (subjects.value.length === 0) {
+        state = 'empty';
+        subjectsBody = <EmptyState description={queueText.emptySubjects} />;
+      } else {
+        state = 'loaded';
+        subjectsBody = (
+          <Table<PrioritySubject>
+            size="middle"
+            rowKey="subjectId"
+            columns={subjectColumns}
+            dataSource={[...subjects.value]}
+            pagination={{
+              current: page,
+              pageSize: PAGE_SIZE,
+              hideOnSinglePage: true,
+              showSizeChanger: false,
+              onChange: (next) => {
+                setPage(next);
+              },
+            }}
+            scroll={{ x: 'max-content' }}
+            onRow={(subject) =>
+              ({
+                'data-subject': subject.subjectId,
+                ...rowActivation(
+                  queueText.openSubject(subjectTitle(subject.identity, subject.subjectId)),
+                  () => {
+                    onSelect(subject.subjectId);
+                  },
+                ),
+              }) as React.HTMLAttributes<HTMLElement>
+            }
+          />
+        );
+      }
+      break;
   }
 
+  let commandsBody: ReactNode;
+  switch (commands.kind) {
+    case 'failed':
+      commandsBody = (
+        <section aria-label={queueText.commandsFailed} data-state="error">
+          <FailureAlert failure={commands.failure} />
+        </section>
+      );
+      break;
+    case 'loading':
+      commandsBody = <LoadingState rows={3} />;
+      break;
+    case 'loaded':
+      commandsBody =
+        commands.value.length === 0 ? (
+          <EmptyState description={queueText.emptyCommands} />
+        ) : (
+          <Table<PriceCommand>
+            size="middle"
+            rowKey="id"
+            columns={commandColumns}
+            dataSource={[...commands.value]}
+            pagination={{ pageSize: PAGE_SIZE, hideOnSinglePage: true, showSizeChanger: false }}
+            scroll={{ x: 'max-content' }}
+            onRow={(command) =>
+              ({
+                'data-command': command.id,
+                ...rowActivation(attentionColumns.openLabel(commandSubjectName(command)), () => {
+                  void navigate(commandPath(command.id));
+                }),
+              }) as React.HTMLAttributes<HTMLElement>
+            }
+          />
+        );
+      break;
+  }
+
+  const attentionCount = commands.kind === 'loaded' ? commands.value.length : 0;
+
   return (
-    <section aria-label="今日工作" data-state={state}>
-      <SectionCard title="待处理商品" extra={refresh} state={state}>
-        <Typography.Paragraph type="secondary" style={{ marginTop: 0 }}>
-          按处理优先级排列的商品；标记为已阻断的商品当前不能调价。
-        </Typography.Paragraph>
-        {body}
-      </SectionCard>
+    <section aria-label={queueText.regionLabel} data-state={state} data-tab={tab}>
+      <Card
+        style={{ marginBottom: 16 }}
+        activeTabKey={tab}
+        onTabChange={(key) => {
+          setTab(key === TAB_SUBJECTS ? undefined : key);
+        }}
+        tabBarExtraContent={refresh}
+        tabList={[
+          { key: TAB_SUBJECTS, label: queueText.subjectsTab },
+          {
+            key: TAB_COMMANDS,
+            label: (
+              <Space size={6}>
+                <span>{queueText.commandsTab}</span>
+                <Badge
+                  count={attentionCount}
+                  overflowCount={99}
+                  {...(commands.kind === 'failed' ? { status: 'warning' as const } : {})}
+                />
+              </Space>
+            ),
+          },
+        ]}
+      >
+        {tab === TAB_SUBJECTS ? (
+          subjectsBody
+        ) : (
+          <Flex vertical gap={12} data-state={commands.kind}>
+            <Typography.Text type="secondary">{queueText.commandsHelp}</Typography.Text>
+            {commandsBody}
+          </Flex>
+        )}
+      </Card>
     </section>
   );
 }
