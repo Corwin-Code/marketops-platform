@@ -362,6 +362,16 @@ export function DecisionCard({
               <Flex vertical gap={8}>
                 <Typography.Text type="danger">{decisionText.approvalUnavailable}</Typography.Text>
                 <ListingProblem failure={material.failure} />
+                <div>
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      setMaterialRequest((n) => n + 1);
+                    }}
+                  >
+                    {decisionText.approvalRetry}
+                  </Button>
+                </div>
               </Flex>
             )}
             {material.kind === 'ok' && (

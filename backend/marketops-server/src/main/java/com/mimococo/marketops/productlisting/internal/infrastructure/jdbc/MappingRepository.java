@@ -561,6 +561,7 @@ public class MappingRepository {
                                 OR product.code ILIKE :pattern ESCAPE '\\'
                                 OR product_variant.sku_code ILIKE :pattern ESCAPE '\\'
                                 OR product_variant.display_name ILIKE :pattern ESCAPE '\\')
+                         ORDER BY listing.id
                          LIMIT :pageLimit
                         """)
                 .param("organizationId", organizationId)

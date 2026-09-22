@@ -204,10 +204,14 @@ export function FormDrawer<V extends object>({
             )}
             {last ? (
               <Button
+                key="submit"
                 type="primary"
                 danger={danger}
                 loading={busy}
-                onClick={() => {
+                onClick={(event) => {
+                  // The second click of a double click on 下一步 lands here once
+                  // the last step shows; only a deliberate click submits.
+                  if (event.detail > 1) return;
                   void submit();
                 }}
               >
@@ -215,6 +219,7 @@ export function FormDrawer<V extends object>({
               </Button>
             ) : (
               <Button
+                key="next"
                 type="primary"
                 onClick={() => {
                   void next();

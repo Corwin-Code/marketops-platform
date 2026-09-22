@@ -165,17 +165,23 @@ public class ListingHealthService {
     public QueuePage page(UUID organizationId, List<UUID> storeIds, String necessaryState, String keyword,
                           int limit, int offset) {
         if (storeIds.isEmpty()) {
-            return new QueuePage(List.of(), 0L, offset, limit);
+            return new QueuePage(List.of(), 0L, offset, limit, false);
         }
         UUID[] matches = null;
+        boolean truncated = false;
         if (keyword != null) {
-            matches = listingIdentities.listingsMatching(organizationId, storeIds, keyword, KEYWORD_MATCH_LIMIT)
-                    .toArray(UUID[]::new);
+            // One more than the cap is asked for, so a keyword that matches too
+            // many listings is reported as such instead of silently undercounted.
+            // The match is ordered by identifier, so every page uses the same set.
+            UUID[] found = listingIdentities.listingsMatching(organizationId, storeIds, keyword,
+                    KEYWORD_MATCH_LIMIT + 1).toArray(UUID[]::new);
+            truncated = found.length > KEYWORD_MATCH_LIMIT;
+            matches = truncated ? java.util.Arrays.copyOf(found, KEYWORD_MATCH_LIMIT) : found;
         }
         List<ListingHealthView> items = health.queuePage(organizationId, storeIds, necessaryState, matches,
                 limit, offset);
         long total = health.queueCount(organizationId, storeIds, necessaryState, matches);
-        return new QueuePage(items, total, offset, limit);
+        return new QueuePage(items, total, offset, limit, truncated);
     }
 
     /**
@@ -194,8 +200,13 @@ public class ListingHealthService {
                                       List<ListingFactRepository.PromotionObservationSummary> promotion) {
     }
 
-    /** One page of the health queue: items in the backend's ranking, and the filtered total. */
-    public record QueuePage(List<ListingHealthView> items, long total, int offset, int limit) {
+    /**
+     * One page of the health queue: items in the backend's ranking, and the filtered total.
+     * {@code truncated} means the keyword matched more listings than are searched, so the
+     * items and the total cover only part of them.
+     */
+    public record QueuePage(List<ListingHealthView> items, long total, int offset, int limit,
+                            boolean truncated) {
         public QueuePage {
             items = List.copyOf(items);
         }

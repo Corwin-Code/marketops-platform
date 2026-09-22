@@ -569,9 +569,14 @@ export function ListingManualPackets({
   const [acting, setActing] = useState<Acting | undefined>(undefined);
 
   const actions = useRemote(`manual-actions:${String(generation)}`, () =>
-    fetchActionsBy(context, { executionPath: 'MANUAL' }),
+    fetchActionsBy(context, { executionPath: 'MANUAL', limit: 200 }),
   );
-  const launched = (actions.value ?? []).filter((action) => action.state === 'LAUNCHED');
+  // Only launched manual actions can receive a packet; the server filters
+  // them, so an older launched action is not lost behind newer ones.
+  const launchedActions = useRemote(`manual-launched:${String(generation)}`, () =>
+    fetchActionsBy(context, { executionPath: 'MANUAL', state: 'LAUNCHED', limit: 200 }),
+  );
+  const launched = launchedActions.value ?? [];
 
   const loadKey = byAction
     ? selectedAction === undefined
@@ -643,20 +648,24 @@ export function ListingManualPackets({
       key: 'actions',
       title: packetText.actionsColumn,
       render: (_, packet) => {
+        const report = (label: string): React.JSX.Element => (
+          <Button
+            size="small"
+            onClick={() => {
+              setActing({ kind: 'report', packet, open: true });
+            }}
+          >
+            {label}
+          </Button>
+        );
         if (packet.state === 'ISSUED') {
-          return (
-            <Button
-              size="small"
-              onClick={() => {
-                setActing({ kind: 'report', packet, open: true });
-              }}
-            >
-              {t('report')}
-            </Button>
-          );
+          return report(t('report'));
         }
         if (packet.state === 'REPORTED') {
-          return (
+          // The executor may add a later report, for example after a partial
+          // one; verification must come from someone else. "My packets" are
+          // the ones I execute, so verifying is not offered there.
+          return byAction ? (
             <Button
               size="small"
               onClick={() => {
@@ -665,6 +674,13 @@ export function ListingManualPackets({
             >
               {t('verify')}
             </Button>
+          ) : (
+            <Flex vertical gap={2} align="flex-start">
+              {report(packetText.followUpReport)}
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {packetText.verifyByOthers}
+              </Typography.Text>
+            </Flex>
           );
         }
         return <Typography.Text type="secondary">—</Typography.Text>;
@@ -718,14 +734,23 @@ export function ListingManualPackets({
                   }}
                 />
                 <InfoTip title={packetText.actionFilterHelp} />
+                <IdLookup
+                  label={packetText.actionFilterManual}
+                  title={packetText.actionFilterManualTitle}
+                  fieldLabel={t('actionIdInput')}
+                  initial={selectedAction}
+                  onOpenId={(value) => {
+                    patch({ [VIEW_KEY]: 'action', [ACTION_KEY]: value });
+                  }}
+                />
               </Flex>
             ))}
           <IssuePacket
             context={context}
             launched={{
               options: actionOptions(launched),
-              loading: actions.loading,
-              failed: actions.failed,
+              loading: launchedActions.loading,
+              failed: launchedActions.failed,
             }}
             preselected={
               selectedAction !== undefined && launched.some((a) => a.id === selectedAction)

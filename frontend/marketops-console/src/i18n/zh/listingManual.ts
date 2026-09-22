@@ -27,6 +27,8 @@ export const pickerText = {
 
 /** The execution packet card. */
 export const packetText = {
+  followUpReport: '补充报告',
+  verifyByOthers: '需由执行人以外的人核实',
   viewMine: '我的',
   viewByAction: '按操作',
   actionFilter: '选择人工执行的操作',

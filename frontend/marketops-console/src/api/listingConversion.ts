@@ -3325,6 +3325,8 @@ export interface ListingHealthPage {
   readonly total: number | undefined;
   readonly offset: number;
   readonly limit: number;
+  /** The keyword matched more listings than are searched; items and total are partial. */
+  readonly truncated?: boolean | undefined;
 }
 
 /** Read the page envelope, or a bare array from an older backend. */
@@ -3343,6 +3345,7 @@ export function parseListingHealthPage(body: unknown): ListingHealthPage | undef
     total: number(r.total),
     offset: number(r.offset) ?? 0,
     limit: number(r.limit) ?? items.length,
+    ...(bool(r.truncated) === true ? { truncated: true } : {}),
   };
 }
 

@@ -164,6 +164,7 @@ class ListingHealthConsoleController {
         result.put("total", page.total());
         result.put("offset", page.offset());
         result.put("limit", page.limit());
+        result.put("truncated", page.truncated());
         auditRead(actor, "lc-health-queue", actor.organizationId(), "queue-page");
         return result;
     }

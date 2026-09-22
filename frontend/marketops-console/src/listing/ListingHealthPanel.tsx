@@ -1,5 +1,5 @@
 import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Flex, Input, Segmented, Space, Table } from 'antd';
+import { Alert, Button, Flex, Input, Segmented, Space, Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
@@ -152,6 +152,14 @@ export function ListingHealthPanel({
   ];
 
   const loaded = queue.kind === 'loaded' ? queue.page : undefined;
+  // A page past the end (a shorter queue, an old link) goes back to the last
+  // page instead of showing an empty queue with no pager.
+  useEffect(() => {
+    const total = loaded?.total ?? 0;
+    if (loaded?.items.length === 0 && page > 1 && total > 0) {
+      setPage(Math.max(1, Math.ceil(total / PAGE_SIZE)));
+    }
+  }, [loaded, page, setPage]);
   // Without a count, one more page is offered while this one came back full.
   const total =
     loaded === undefined
@@ -218,9 +226,21 @@ export function ListingHealthPanel({
         }
       >
         {queue.kind === 'failed' && <ListingProblem failure={queue.failure} />}
+        {loaded?.truncated === true && (
+          <Alert
+            type="warning"
+            showIcon
+            title={text.searchTruncated}
+            style={{ marginBottom: 12 }}
+          />
+        )}
         {queue.kind === 'loading' && <LoadingState />}
-        {loaded?.items.length === 0 && (
-          <EmptyState description={query === undefined ? t('noHealthRows') : text.noMatch} />
+        {loaded?.items.length === 0 && page > 1 && (loaded.total ?? 0) > 0 ? (
+          <LoadingState />
+        ) : (
+          loaded?.items.length === 0 && (
+            <EmptyState description={query === undefined ? t('noHealthRows') : text.noMatch} />
+          )
         )}
         {loaded !== undefined && loaded.items.length > 0 && (
           <Table<ListingHealth>

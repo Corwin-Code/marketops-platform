@@ -206,7 +206,7 @@ export function PromotionTermsFields({
           <Form.Item
             name={nameOf(prefix, 'nativeKey')}
             label={t('promotionNativeKey')}
-            rules={[{ required: true, message: '请填写平台促销标识' }]}
+            rules={[{ required: true, whitespace: true, message: '请填写平台促销标识' }]}
           >
             <Input maxLength={128} />
           </Form.Item>
@@ -224,7 +224,7 @@ export function PromotionTermsFields({
           <Form.Item
             name={nameOf(prefix, 'source')}
             label={t(observation ? 'promotionDeclarationSource' : 'evidence')}
-            rules={[{ required: true, message: '请填写条款来源引用' }]}
+            rules={[{ required: true, whitespace: true, message: '请填写条款来源引用' }]}
           >
             <Input maxLength={512} />
           </Form.Item>

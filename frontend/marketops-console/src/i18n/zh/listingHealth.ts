@@ -17,6 +17,7 @@ export const healthQueueText = {
   totalUnknown: '共计未统计',
   total: (n: number): string => `共 ${String(n)} 个 Listing`,
   noMatch: '没有匹配的 Listing',
+  searchTruncated: '匹配的 Listing 过多，结果与总数不完整，请缩小关键词',
 } as const;
 
 /** One listing's detail. */

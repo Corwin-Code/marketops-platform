@@ -150,8 +150,10 @@ export function LaunchConfirm({
     detail.kind === 'ok' ? (detail.value.health?.necessaryState ?? 'UNKNOWN') : undefined;
   const healthPassed = correction || necessaryState === 'PASS';
 
+  // What will change must be on screen before the write can be authorised:
+  // the text or promotion read counts as much as the allowance and health.
   const blockedReason =
-    allowance.kind === 'loading' || detail.kind === 'loading'
+    allowance.kind === 'loading' || detail.kind === 'loading' || basis.kind === 'loading'
       ? launchText.loading
       : allowance.kind === 'failed'
         ? launchText.allowanceFailed(failureMessage(allowance.failure))
@@ -228,9 +230,11 @@ export function LaunchConfirm({
                     <Flex vertical gap={2}>
                       <Typography.Text>
                         {launchText.impactPromotionKey}：
-                        {basis.kind === 'ok' && basis.value.promotionTerms !== undefined
-                          ? basis.value.promotionTerms.nativePromotionKey
-                          : launchText.impactPromotionKeyUnknown}
+                        {basis.kind === 'loading'
+                          ? launchText.impactLoading
+                          : basis.kind === 'ok' && basis.value.promotionTerms !== undefined
+                            ? basis.value.promotionTerms.nativePromotionKey
+                            : launchText.impactPromotionKeyUnknown}
                       </Typography.Text>
                       <IdText
                         label={launchText.impactTermsDigest}
