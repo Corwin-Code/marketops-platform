@@ -55,7 +55,7 @@
 
 ## 已实现 / 未实现
 **已实现（代码中存在）**
-- 后端：`listingconversion` 模块（约 95 个类，如 `ListingHealthService`、`MaterialityClassifier`、`PromotionSimulator`、`EvaluationService`、`ManualPathService`）；`operationsworkflow` 的 `ListingActionIntake`/`ListingActionLaunch`；`marketplaceintegration` 的 `ListingDescriptionCommandWorker` 与写 Gate；迁移 V0074–V0124。
+- 后端：`listingconversion` 模块（约 95 个类，如 `ListingHealthService`、`MaterialityClassifier`、`PromotionSimulator`、`EvaluationService`、`ManualPathService`）；`operationsworkflow` 的 `ListingActionIntake`/`ListingActionLaunch`；`marketplaceintegration` 的 `ListingDescriptionCommandWorker` 与写 Gate。
 - 前端 `src/listing/`：Health、Actions、Meaning Review、Promotion Terms、Manual、Governance、Assistance、Feedback、Operations Review、责任时钟面板。
 - API：`/api/v1/console/listing/*`、`/api/v1/console/listing-description-commands`。
 

@@ -16,6 +16,8 @@ server:
   address: 0.0.0.0
 
 spring:
+  # Production migrations were run by a separate one-shot tool, removed together
+  # with the Yandex deployment code; decide how to migrate when deploying.
   flyway:
     enabled: false
     password: ""
