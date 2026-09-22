@@ -4,7 +4,7 @@ import { HealthShell } from './health/HealthShell';
 import { resolveConfig, resolveOperatingConfig } from './config';
 import type { ConsoleConfig, ConsoleConfigKey, ConsoleEnvironment } from './config';
 import { completeSignIn } from './session/oidc';
-import type { OidcSettings } from './session/oidc';
+import type { OidcSettings, SignInOutcome } from './session/oidc';
 import { SignIn } from './session/SignIn';
 import { isUsable } from './session/session';
 import type { Session } from './session/session';
@@ -78,24 +78,36 @@ export function App({
   const returningFromProvider = here.pathname === CALLBACK_PATH;
 
   // A second guard for the same reason, against a re-render this component
-  // cannot see coming: the code in this URL is redeemed at most once.
-  const redeemed = useRef<string | undefined>(undefined);
+  // cannot see coming: the code in this URL is redeemed at most once. The
+  // redemption is kept, not just marked, because React may run this effect,
+  // clean it up and run it again for the same URL (StrictMode does so in
+  // development); the later run must still receive the one exchange's result.
+  // Its result is applied once, so signing out on this URL does not reuse it.
+  const redemption = useRef<
+    { search: string; outcome: Promise<SignInOutcome>; applied: boolean } | undefined
+  >(undefined);
 
   useEffect(() => {
-    if (
-      !returningFromProvider ||
-      settings === undefined ||
-      session !== undefined ||
-      redeemed.current === here.search
-    ) {
+    if (!returningFromProvider || settings === undefined || session !== undefined) {
       return;
     }
-    redeemed.current = here.search;
+    if (redemption.current?.search !== here.search) {
+      redemption.current = {
+        search: here.search,
+        outcome: completeSignIn(settings, new URLSearchParams(here.search), fetchImpl),
+        applied: false,
+      };
+    }
+    const current = redemption.current;
+    if (current.applied) {
+      return;
+    }
     let active = true;
-    void completeSignIn(settings, new URLSearchParams(here.search), fetchImpl).then((outcome) => {
-      if (!active) {
+    void current.outcome.then((outcome) => {
+      if (!active || current.applied) {
         return;
       }
+      current.applied = true;
       if (outcome.ok) {
         setSession(outcome.session);
         setProblem(undefined);
