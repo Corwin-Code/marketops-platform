@@ -115,7 +115,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <!-- The one-shot migration CLI is a second main, not the server entrypoint. -->
           <mainClass>com.mimococo.marketops.MarketOpsServerApplication</mainClass>
         </configuration>
         <executions>

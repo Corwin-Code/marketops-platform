@@ -48,7 +48,7 @@
 ## 数据与平台接口
 
 - 模块 `availabilityrisk` 只通过已发布接口读取：`OrganizationDirectory`、`ListingIdentityDirectory`、`OperatingFactQuery`/`EvidenceQuery`、`MetricQuery`（利润）、`BusinessAuthorization`；Case 与例外由 `operationsworkflow` 负责，审计写入 `MetadataAuditRecorder`。
-- 主要数据：版本化策略（生效期不重叠）、在途证明、风险投影（卡/子风险）、重算队列与 fact-feed cursor、对账记录、SLO 观测、Case、例外；迁移 V0030–V0035。
+- 主要数据：版本化策略（生效期不重叠）、在途证明、风险投影（卡/子风险）、重算队列与 fact-feed cursor、对账记录、SLO 观测、Case、例外。
 - Console API（`/api/v1/console/availability`）：`GET /queue`、`GET /cards/{productVariantId}`、`GET|POST /cases…`（action、escalation、exceptions、journal）、`POST /exceptions/{id}/decision`；另有 `/inbound`（证明、修改、取消、复核）和 `/policies`（发布/停用）。权限：`AVAILABILITY_VIEW`、`AVAILABILITY_TASK_ACT`、`AVAILABILITY_EXCEPTION_REQUEST`、`AVAILABILITY_EXCEPTION_APPROVE`（需要近期重新认证）、`INBOUND_ATTEST`、`SUPPLY_POLICY_MANAGE`。没有可直接宣布成功的接口。
 - 平台：需要 Ozon/Wildberries 的库存、可售状态、销售和退货读取（FBO/FBS 区分）；目前未接入真实 API，仅用 synthetic/fixture 数据；WB 不假定与 Ozon 对称。
 

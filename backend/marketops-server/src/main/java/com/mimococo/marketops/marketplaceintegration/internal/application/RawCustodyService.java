@@ -47,7 +47,7 @@ public class RawCustodyService implements RawCustody {
     /**
      * The locator shape the custody schema accepts, byte for byte.
      *
-     * <p>Matches the V0010 check constraint and validates every generated locator.
+     * <p>Matches the raw custody check constraint and validates every generated locator.
      * Each segment is capped at 63 characters, so the 64-character hexadecimal
      * SHA-256 is split across two segments. Invalid adapter locators are refused
      * before any metadata row is written.

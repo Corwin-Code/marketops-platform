@@ -110,7 +110,7 @@ Recommendation → 确定性 Guardrail → Impact Preview → Approval / 有界 
 
 ## 数据库与迁移
 
-- **迁移**：Flyway `V0001`–`V0124`，只能前向。已应用的迁移不能修改或重编号；Flyway 设置 `clean-disabled`、`validate-on-migrate`。
+- **迁移**：Flyway 基线 `V0001__baseline_schema.sql`（2026-09-22 由原 `V0001`–`V0124` 合并而成，结构、权限与种子数据等价），此后只能前向新增 `V0002` 起的迁移，已合入的迁移不能修改或重编号；Flyway 设置 `clean-disabled`、`validate-on-migrate`。生产环境的迁移执行方式（原 Yandex 托管迁移工具已移除）待实际部署时设计。
 - **8 个 schema**：
 
   | schema | 内容 |

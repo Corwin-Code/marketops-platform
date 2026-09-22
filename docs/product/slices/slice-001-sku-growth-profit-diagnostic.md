@@ -95,7 +95,7 @@ Minimum    = 单位成本 + Required Profit/单位 + Safety Buffer/单位 + 费�
 
 **已实现**
 
-- 后端上述模块，迁移 V0011–V0029：身份授权、映射、事实、导入、指标、诊断、AI 声明、审批、Guardrail、价格命令、注册表、导出、经济性 profile。
+- 后端上述模块及对应数据表：身份授权、映射、事实、导入、指标、诊断、AI 声明、审批、Guardrail、价格命令、注册表、导出、经济性 profile。
 - 前端 `marketops-console`：OIDC + PKCE 登录（token 仅存内存）、`PriorityQueue`、`SubjectDiagnosisView`、`MetricEvidencePanel`、`AiExplanationPanel`、`RecommendationReview`、`CommandTimeline`、`DiagnosticExportPanel`；过期 / 未知 / 不一致不显示为成功。
 - S3 兼容与本地文件对象存储。
 
