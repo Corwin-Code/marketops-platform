@@ -15,6 +15,8 @@
  * a spending decision.
  */
 
+import type { TagColor } from '../ui/CodeTag';
+
 /** The advertising evidence states the API can send. */
 export const EVIDENCE_STATES = [
   'MASKED',
@@ -55,94 +57,104 @@ export interface EvidencePresentation {
 const PRESENTATIONS: Record<EvidenceState, EvidencePresentation> = {
   MASKED: {
     tone: 'blocked',
-    label: 'Masked',
-    explanation: 'Your current role and complete affected-set scope do not disclose this evidence.',
+    label: '已遮蔽',
+    explanation: '你当前的角色和授权范围无法查看完整影响范围的证据。',
     writeGrade: false,
   },
   UNVERIFIED: {
     tone: 'blocked',
-    label: 'Unverified',
-    explanation: 'Synthetic or unverified platform semantics cannot authorize a production write.',
+    label: '未验证',
+    explanation: '合成或未验证的平台语义不能授权生产写入。',
     writeGrade: false,
   },
   CANONICAL_CONFIRMED: {
     tone: 'confirmed',
-    label: 'Confirmed',
-    explanation: 'The marketplace reported it and the reporting window has closed.',
+    label: '已确认',
+    explanation: '平台已报告，且报告周期已结束。',
     writeGrade: true,
   },
   OPERATIONAL: {
     tone: 'operational',
-    label: 'Operational',
-    explanation: 'Recorded and usable, but the figure can still be restated.',
+    label: '运营数据',
+    explanation: '已记录可用，但数值仍可能被重述。',
     writeGrade: true,
   },
   PROVISIONAL_OR_ESTIMATED: {
     tone: 'estimated',
-    label: 'Estimated',
-    explanation: 'Derived rather than reported. Not enough to change a real bid.',
+    label: '估算',
+    explanation: '推算而非平台报告，不足以修改真实出价。',
     writeGrade: false,
   },
   STALE: {
     tone: 'stale',
-    label: 'Stale',
-    explanation: 'Older than the freshness this decision requires.',
+    label: '已过期',
+    explanation: '数据早于该决策要求的时效。',
     writeGrade: false,
   },
   INCOMPLETE: {
     tone: 'unknown',
-    label: 'Incomplete',
-    explanation: 'Part of the window is missing, so the total is not the total.',
+    label: '不完整',
+    explanation: '部分时段缺失，合计并非真实合计。',
     writeGrade: false,
   },
   CONFLICTED: {
     tone: 'unknown',
-    label: 'Conflicted',
-    explanation: 'Two sources disagree. Neither is being preferred here.',
+    label: '有冲突',
+    explanation: '两个来源不一致，此处不偏向任何一方。',
     writeGrade: false,
   },
   UNKNOWN: {
     tone: 'unknown',
-    label: 'Unknown',
-    explanation: 'Nothing established this either way.',
+    label: '未知',
+    explanation: '没有任何证据能确定这一点。',
     writeGrade: false,
   },
   NOT_AVAILABLE: {
     tone: 'unknown',
-    label: 'Not available',
-    explanation: 'No value exists. This is not a zero.',
+    label: '无数值',
+    explanation: '没有数值，这不等于零。',
     writeGrade: false,
   },
   DATA_BLOCKED: {
     tone: 'blocked',
-    label: 'Data blocked',
-    explanation: 'A required input is missing, so nothing downstream was computed.',
+    label: '数据受阻',
+    explanation: '缺少必需的输入，下游没有计算。',
     writeGrade: false,
   },
   POLICY_BLOCKED: {
     tone: 'blocked',
-    label: 'Policy blocked',
-    explanation: 'A policy this decision needs has not been published.',
+    label: '策略受阻',
+    explanation: '该决策需要的策略尚未发布。',
     writeGrade: false,
   },
   PROFILE_UNRESOLVED: {
     tone: 'blocked',
-    label: 'Profile unresolved',
-    explanation: "This platform's advertising semantics are not recorded.",
+    label: '语义未确定',
+    explanation: '尚未记录该平台的广告语义。',
     writeGrade: false,
   },
   BUNDLE_UNRESOLVED: {
     tone: 'blocked',
-    label: 'Bundle unresolved',
-    explanation: 'No complete active policy bundle covers this decision.',
+    label: '策略包未确定',
+    explanation: '没有完整生效的策略包覆盖该决策。',
     writeGrade: false,
   },
 };
 
 /** How a value state must be shown, or `undefined` for a state we do not know. */
 export function presentEvidence(state: string): EvidencePresentation | undefined {
-  return PRESENTATIONS[state as EvidenceState];
+  return Object.hasOwn(PRESENTATIONS, state) ? PRESENTATIONS[state as EvidenceState] : undefined;
 }
+
+/** Tag colour for each evidence tone. */
+export const EVIDENCE_TONE_COLORS: Readonly<Record<EvidencePresentation['tone'], TagColor>> = {
+  confirmed: 'success',
+  operational: 'processing',
+  estimated: 'warning',
+  stale: 'warning',
+  unknown: 'default',
+  blocked: 'error',
+};
 
 /** The three value states a measure can be in, separately from its evidence. */
 export const VALUE_STATES = ['AVAILABLE', 'NOT_AVAILABLE', 'UNDEFINED', 'MASKED'] as const;
@@ -152,33 +164,43 @@ export type ValueState = (typeof VALUE_STATES)[number];
 
 /** How an absent or undefined measure must read. */
 const VALUE_LABELS: Record<ValueState, string> = {
-  AVAILABLE: 'not available',
-  MASKED: 'masked',
-  // Deliberately different words. "Not available" means nobody could compute
-  // it; "undefined" means the arithmetic has no answer, as profit per
-  // advertising rouble does not when nothing was spent. Rendering both as a
-  // dash would tell an operator the same thing about two different situations.
-  NOT_AVAILABLE: 'not available',
-  UNDEFINED: 'undefined',
+  AVAILABLE: '无数值',
+  MASKED: '已遮蔽',
+  // Deliberately different words. "无法计算" means nobody could compute it;
+  // "无意义" means the arithmetic has no answer, as profit per advertising
+  // rouble does not when nothing was spent. Rendering both as a dash would tell
+  // an operator the same thing about two different situations.
+  NOT_AVAILABLE: '无法计算',
+  UNDEFINED: '无意义',
 };
 
 /**
- * A measure as it must read, given its state.
+ * What a measure reads as when there is no number to show, or `undefined` when
+ * there is one.
  *
  * Never a zero for an absent value, and never an empty cell. An operator
  * scanning a column has to be able to tell "nothing was spent" from "nobody
  * knows what was spent" at a glance, because one of those is a finding and the
  * other is a gap in the evidence.
  */
-export function presentMeasure(
-  state: string,
-  value: number | undefined,
-  format: (value: number) => string,
-): string {
-  if (state === 'AVAILABLE' && value !== undefined && Number.isFinite(value)) {
-    return format(value);
+export function absentMeasure(state: string, value: string | undefined): string | undefined {
+  if (state === 'AVAILABLE' && value !== undefined) {
+    return undefined;
   }
   return Object.hasOwn(VALUE_LABELS, state)
     ? VALUE_LABELS[state as ValueState]
-    : `unresolved (${state || 'UNKNOWN'})`;
+    : `未确定（${state || 'UNKNOWN'}）`;
+}
+
+/**
+ * A measure as it must read, given its state. The value stays an exact decimal
+ * string all the way to the formatter.
+ */
+export function presentMeasure(
+  state: string,
+  value: string | undefined,
+  format: (value: string) => string,
+): string {
+  const absent = absentMeasure(state, value);
+  return absent ?? format(value ?? '');
 }

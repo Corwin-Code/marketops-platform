@@ -7,20 +7,22 @@
  * inventing the very thing the state exists to report.
  */
 
+import { isDecimal } from '../format';
+
 /** One factor that contributed to a case's rank. */
 export interface AdvertisingRankFactor {
   readonly code: string;
-  readonly value: number | undefined;
-  readonly weight: number | undefined;
-  readonly contribution: number | undefined;
+  readonly value: string | undefined;
+  readonly weight: string | undefined;
+  readonly contribution: string | undefined;
   readonly absenceReason: string | undefined;
 }
 
 export interface AdvertisingWorkflowCandidate {
   readonly id: string;
   readonly ordinal: number;
-  readonly currentBidAmount: number | undefined;
-  readonly targetBidAmount: number | undefined;
+  readonly currentBidAmount: string | undefined;
+  readonly targetBidAmount: string | undefined;
   readonly currency: string | undefined;
   readonly unit: string | undefined;
   readonly basis: string;
@@ -85,8 +87,8 @@ export function parseAdvertisingWorkflow(body: unknown): AdvertisingWorkflow | u
       state,
       version,
       ordinal,
-      currentBidAmount: decimal(row.currentBidAmount),
-      targetBidAmount: decimal(row.targetBidAmount),
+      currentBidAmount: decimalText(row.currentBidAmount),
+      targetBidAmount: decimalText(row.targetBidAmount),
       currency: text(row.currency),
       unit: text(row.unit),
       basis: text(row.basis) ?? 'UNRESOLVED',
@@ -134,18 +136,18 @@ export interface AdvertisingCase {
   readonly confidenceState: string;
   readonly blockerCodes: readonly string[];
   readonly contributionProfitState: string;
-  readonly contributionProfitAmount: number | undefined;
+  readonly contributionProfitAmount: string | undefined;
   readonly profitPerAdRubState: string;
-  readonly profitPerAdRubValue: number | undefined;
+  readonly profitPerAdRubValue: string | undefined;
   readonly profitCurrencyCode: string | undefined;
   readonly officialSpendState: string;
-  readonly officialSpendAmount: number | undefined;
+  readonly officialSpendAmount: string | undefined;
   readonly eligibleTrafficState: string;
   readonly eligibleTrafficCount: number | undefined;
   readonly maxCpcState: string;
-  readonly maxCpcAmount: number | undefined;
+  readonly maxCpcAmount: string | undefined;
   readonly currentBidState: string;
-  readonly currentBidAmount: number | undefined;
+  readonly currentBidAmount: string | undefined;
   readonly rankScore: number | undefined;
   readonly storeTimezone: string | undefined;
   readonly disclosureState: string;
@@ -177,6 +179,25 @@ function decimal(value: unknown): number | undefined {
   return undefined;
 }
 
+/**
+ * An exact decimal as text, or `undefined` when the value is not one.
+ *
+ * Money and ratios stay strings from here to the screen, so a figure is never
+ * rounded through a binary float on its way to being read. A JSON number (the
+ * backend serialises BigDecimal as one) is written out in plain digits.
+ */
+function decimalText(value: unknown): string | undefined {
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return undefined;
+    const plain = value.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: 20 });
+    return isDecimal(plain) ? plain : undefined;
+  }
+  if (typeof value === 'string' && isDecimal(value)) {
+    return value.trim();
+  }
+  return undefined;
+}
+
 /** One rank factor, or `undefined` when the body cannot be read as one. */
 export function parseAdvertisingRankFactor(body: unknown): AdvertisingRankFactor | undefined {
   if (typeof body !== 'object' || body === null) {
@@ -189,9 +210,9 @@ export function parseAdvertisingRankFactor(body: unknown): AdvertisingRankFactor
   }
   return {
     code,
-    value: decimal(record.value),
-    weight: decimal(record.weight),
-    contribution: decimal(record.contribution),
+    value: decimalText(record.value),
+    weight: decimalText(record.weight),
+    contribution: decimalText(record.contribution),
     absenceReason: text(record.displayNote),
   };
 }
@@ -251,18 +272,18 @@ export function parseAdvertisingCase(body: unknown): AdvertisingCase | undefined
       ? record.blockerCodes.filter((item): item is string => typeof item === 'string')
       : [],
     contributionProfitState: text(record.contributionProfitState) ?? 'UNKNOWN',
-    contributionProfitAmount: decimal(record.contributionProfitAmount),
+    contributionProfitAmount: decimalText(record.contributionProfitAmount),
     profitPerAdRubState: text(record.profitPerAdRubState) ?? 'UNKNOWN',
-    profitPerAdRubValue: decimal(record.profitPerAdRubValue),
+    profitPerAdRubValue: decimalText(record.profitPerAdRubValue),
     profitCurrencyCode: text(record.profitCurrencyCode),
     officialSpendState: text(record.officialSpendState) ?? 'UNKNOWN',
-    officialSpendAmount: decimal(record.officialSpendAmount),
+    officialSpendAmount: decimalText(record.officialSpendAmount),
     eligibleTrafficState: text(record.eligibleTrafficState) ?? 'UNKNOWN',
     eligibleTrafficCount: decimal(record.eligibleTrafficCount),
     maxCpcState: text(record.maxCpcState) ?? 'UNKNOWN',
-    maxCpcAmount: decimal(record.maxCpcAmount),
+    maxCpcAmount: decimalText(record.maxCpcAmount),
     currentBidState: text(record.currentBidState) ?? 'UNKNOWN',
-    currentBidAmount: decimal(record.currentBidAmount),
+    currentBidAmount: decimalText(record.currentBidAmount),
     rankScore: decimal(record.rankScore),
     storeTimezone: text(record.storeTimezone),
     disclosureState: text(record.disclosureState) ?? 'UNRESOLVED',
@@ -329,15 +350,15 @@ export const ADVERTISING_EXPOSURE_AXES = [
 ] as const;
 export type AdvertisingExposureAxisCode = (typeof ADVERTISING_EXPOSURE_AXES)[number];
 export interface AdvertisingExposureAxis {
-  readonly usage: number | undefined;
-  readonly limit: number | undefined;
-  readonly available: number | undefined;
-  readonly reserved: number | undefined;
+  readonly usage: string | undefined;
+  readonly limit: string | undefined;
+  readonly available: string | undefined;
+  readonly reserved: string | undefined;
   readonly state: string;
   readonly unit: string | undefined;
   readonly windowHours: number | undefined;
-  readonly companySales: number | undefined;
-  readonly affectedSales: number | undefined;
+  readonly companySales: string | undefined;
+  readonly affectedSales: string | undefined;
   readonly aggregationBasis: string | undefined;
   readonly conservativeBoundaryReportCount: number | undefined;
 }
@@ -397,11 +418,11 @@ export interface AdvertisingOutcome {
   readonly windowStartsAt: string;
   readonly windowEndsAt: string;
   readonly baselineMetricState: string;
-  readonly baselineMetricValue: number | undefined;
+  readonly baselineMetricValue: string | undefined;
   readonly observedMetricState: string;
-  readonly observedMetricValue: number | undefined;
+  readonly observedMetricValue: string | undefined;
   readonly observedTrafficCount: number | undefined;
-  readonly settledCoverageRatio: number | undefined;
+  readonly settledCoverageRatio: string | undefined;
   readonly verdict: string;
   readonly guardState: string | undefined;
   readonly inferenceScope: 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY' | 'UNKNOWN';
@@ -510,10 +531,10 @@ export function parseAdvertisingExposure(body: unknown): AdvertisingExposure | u
       const state = text(axis.state);
       if (state === undefined || !['AVAILABLE', 'EXCEEDED', 'UNKNOWN'].includes(state))
         return undefined;
-      const usage = number(axis.usage),
-        limit = number(axis.limit);
-      const available = number(axis.available),
-        reserved = number(axis.reserved);
+      const usage = decimalText(axis.usage),
+        limit = decimalText(axis.limit);
+      const available = decimalText(axis.available),
+        reserved = decimalText(axis.reserved);
       const measured =
         code === 'reservedRecoveryHeadroom'
           ? available !== undefined && reserved !== undefined
@@ -526,8 +547,8 @@ export function parseAdvertisingExposure(body: unknown): AdvertisingExposure | u
         state: measured ? state : 'UNKNOWN',
         unit: text(axis.unit),
         windowHours: number(axis.windowHours),
-        companySales: number(axis.companySales),
-        affectedSales: number(axis.affectedSales),
+        companySales: decimalText(axis.companySales),
+        affectedSales: decimalText(axis.affectedSales),
         aggregationBasis: text(axis.aggregationBasis),
         conservativeBoundaryReportCount: number(axis.conservativeBoundaryReportCount),
       };
@@ -631,11 +652,11 @@ export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | und
     windowStartsAt: text(record.windowStartsAt) ?? '',
     windowEndsAt: text(record.windowEndsAt) ?? '',
     baselineMetricState,
-    baselineMetricValue: decimal(record.baselineMetricValue),
+    baselineMetricValue: decimalText(record.baselineMetricValue),
     observedMetricState,
-    observedMetricValue: decimal(record.observedMetricValue),
+    observedMetricValue: decimalText(record.observedMetricValue),
     observedTrafficCount: decimal(record.observedTrafficCount),
-    settledCoverageRatio: decimal(record.settledCoverageRatio),
+    settledCoverageRatio: decimalText(record.settledCoverageRatio),
     verdict,
     guardState: text(record.guardState),
     inferenceScope:
@@ -911,7 +932,7 @@ export interface AdvertisingBriefItem {
   readonly lane: string | undefined;
   readonly causeCode: string | undefined;
   readonly valueState: string;
-  readonly numericValue: number | undefined;
+  readonly numericValue: string | undefined;
   readonly currencyCode: string | undefined;
   readonly evidenceState: string | undefined;
   readonly blockerCodes: readonly string[];
@@ -936,7 +957,7 @@ export function parseAdvertisingBriefItem(body: unknown): AdvertisingBriefItem |
     lane: text(record.lane),
     causeCode: text(record.causeCode),
     valueState,
-    numericValue: decimal(record.numericValue),
+    numericValue: decimalText(record.numericValue),
     currencyCode: text(record.currencyCode),
     evidenceState: text(record.evidenceState),
     blockerCodes: strings(record.blockerCodes),
