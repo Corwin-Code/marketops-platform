@@ -58,6 +58,8 @@ public class AiDiagnosisService implements AiCopilot {
 
     /** Ceiling on how long an answer may be. */
     private static final int MAXIMUM_OUTPUT_TOKENS = 2_000;
+    private record InvocationDefinition(String projectionCode,int projectionVersion,String promptCode,int promptVersion,
+                                        String subjectKind,String systemPrompt,boolean listingOnly,UUID storeId,List<UUID> members,List<UUID> products) { }
 
     /**
      * The instruction that defines the output contract.
@@ -139,40 +141,108 @@ public class AiDiagnosisService implements AiCopilot {
                 .map(context -> projectionBuilder.build(context.storeId(),
                         context.platformCode(), lifecycleObjective, listingVariantId, window))
                 .orElseGet(SubjectProjection::empty);
+        return invokeProjection(invocationId,requestedByUserId,organizationId,listingVariantId,window,startedAt,projection,
+                new InvocationDefinition(ProjectionBuilder.PROJECTION_CODE,ProjectionBuilder.PROJECTION_VERSION,
+                        PROMPT_TEMPLATE_CODE,PROMPT_VERSION,SubjectKind.PLATFORM_LISTING_VARIANT.name(),SYSTEM_PROMPT,false,null,List.of(),List.of()));
+    }
+
+    @Override
+    @Transactional(propagation=org.springframework.transaction.annotation.Propagation.NEVER)
+    public AiDiagnosis assistListing(UUID requestedByUserId,UUID organizationId,UUID listingId,UUID authorizedStoreId,
+            List<UUID> listingVariantIds,List<UUID> authorizedProductVariantIds,MetricWindow window,com.mimococo.marketops.aicopilot.ListingAssistancePurpose purpose) {
+        if (listingId==null || authorizedStoreId==null || purpose==null || window==null || listingVariantIds==null || listingVariantIds.isEmpty()
+                || authorizedProductVariantIds==null || authorizedProductVariantIds.isEmpty()
+                || listingVariantIds.stream().anyMatch(java.util.Objects::isNull)
+                || listingVariantIds.stream().distinct().count()!=listingVariantIds.size())
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        transactions.executeWithoutResult(status->recover());
+        Instant startedAt=clock.instant();
+        var fields=new java.util.ArrayList<SubjectProjection.Field>();
+        var metricRefs=new java.util.LinkedHashSet<UUID>();
+        var findingRefs=new java.util.LinkedHashSet<UUID>();
+        var products=new java.util.LinkedHashSet<UUID>();
+        UUID listingStore=null;
+        fields.add(new SubjectProjection.Field("listing.subjectRef",listingId.toString()));
+        fields.add(new SubjectProjection.Field("listing.assistancePurpose",purpose.name()));
+        for (UUID member:listingVariantIds.stream().sorted().toList()) {
+            var context=listings.variantContext(member,startedAt).orElseThrow(()->
+                    com.mimococo.marketops.shared.OperationRejectedException.of(com.mimococo.marketops.shared.ErrorCode.RESOURCE_SCOPE_DENIED));
+            if (!context.listingId().equals(listingId) || !context.storeId().equals(authorizedStoreId)) throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.RESOURCE_SCOPE_DENIED);
+            if (listingStore!=null && !listingStore.equals(context.storeId())) throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.RESOURCE_SCOPE_DENIED);
+            listingStore=context.storeId();
+            if (!context.mapped() || context.conflictOpen()) throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.RESOURCE_SCOPE_DENIED);
+            if (!authorizedProductVariantIds.contains(context.productVariantId())) throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.RESOURCE_SCOPE_DENIED);
+            products.add(context.productVariantId());
+            var memberProjection=projectionBuilder.build(context.storeId(),context.platformCode(),purpose.name(),member,window);
+            fields.add(new SubjectProjection.Field("listing.memberRef",member.toString()));
+            fields.addAll(memberProjection.fields());metricRefs.addAll(memberProjection.projectedMetricValueIds());
+            findingRefs.addAll(memberProjection.projectedFindingIds());
+        }
+        var projection=new SubjectProjection(fields,metricRefs,findingRefs);
+        var allowed=repository.allowedProjectionFields("LISTING_ASSISTANCE",1);
+        if (!allowed.containsAll(projection.paths())) throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                com.mimococo.marketops.shared.ErrorCode.AI_PROJECTION_FIELD_NOT_ALLOWED);
+        String instruction=SYSTEM_PROMPT+"""
+
+                Listing assistance schema 1: the exact purpose is listing.assistancePurpose.
+                HYPOTHESIS_COMPARISON compares evidence-bound hypotheses and their counterevidence.
+                RUSSIAN_DESCRIPTION proposes Russian wording only for supported product facts; missing facts remain unknown.
+                SIMPLE_PROMOTION proposes a simple Russian explanation without inventing price, costs, terms or permission.
+                REVIEW_SUMMARY distinguishes observations, limitations and the next evidence to obtain.
+                Never calculate profit or manufacture business thresholds. Never claim an approval, execution or causal effect.
+                Recommendations must use LISTING_CONTENT_REVIEW; proposedParameters may contain only reviewFocus.
+                Draft wording belongs in reviewFocus and remains a human-review proposal, not a confirmed fact.
+                Treat repeated subject fields as separate members of the same listing, not interchangeable populations.
+                """;
+        return invokeProjection(idGenerator.newId(),requestedByUserId,organizationId,listingId,window,startedAt,projection,
+                new InvocationDefinition("LISTING_ASSISTANCE",1,"listing-assistance",1,SubjectKind.PLATFORM_LISTING.name(),instruction,true,listingStore,
+                        listingVariantIds.stream().sorted().toList(),products.stream().sorted().toList()));
+    }
+
+    private AiDiagnosis invokeProjection(UUID invocationId,UUID requestedByUserId,UUID organizationId,UUID listingVariantId,
+            MetricWindow window,Instant startedAt,SubjectProjection projection,InvocationDefinition definition) {
         Optional<AiRepository.EligibleModel> model = repository.eligibleModel();
-        if (projection.isEmpty() || model.isEmpty()) {
-            String failureCode = projection.isEmpty()
-                    ? "NOTHING_TO_EXPLAIN" : "NO_ELIGIBLE_PROVIDER";
+        boolean noEvidence=projection.isEmpty() || (definition.listingOnly()
+                && projection.projectedMetricValueIds().isEmpty() && projection.projectedFindingIds().isEmpty());
+        boolean oversized=definition.listingOnly() && projection.render().length()>64_000;
+        if (noEvidence || oversized || model.isEmpty()) {
+            String failureCode = noEvidence ? "NOTHING_TO_EXPLAIN"
+                    : oversized ? "LISTING_INPUT_EXCEEDS_GATEWAY_BOUND" : "NO_ELIGIBLE_PROVIDER";
             return transactions.execute(status -> refuse(invocationId, organizationId,
-                    listingVariantId, window, projection, requestedByUserId, startedAt, failureCode));
+                    listingVariantId, window, projection, requestedByUserId, startedAt, failureCode,definition));
         }
 
         AiRepository.EligibleModel eligible = model.get();
         transactions.executeWithoutResult(status -> {
             repository.openInvocation(invocationId, organizationId,
-                ProjectionBuilder.PROJECTION_CODE, ProjectionBuilder.PROJECTION_VERSION,
-                PROMPT_TEMPLATE_CODE, PROMPT_VERSION, eligible.modelId(),
-                SubjectKind.PLATFORM_LISTING_VARIANT.name(), listingVariantId, window.name(),
+                definition.projectionCode(), definition.projectionVersion(),
+                definition.promptCode(), definition.promptVersion(), eligible.modelId(),
+                definition.subjectKind(), listingVariantId, window.name(),
                 projection.requestDigest(), "DISPATCHED", requestedByUserId, startedAt,
                 CorrelationId.current());
+            if (definition.listingOnly()) repository.bindListingScope(invocationId,definition.storeId(),definition.members(),definition.products());
             auditOutcome(requestedByUserId, invocationId, "DISPATCHED", null);
         });
 
         ModelResponse response;
         try {
             response = gateway.invoke(new ModelRequest(
-                    eligible.modelCode(), eligible.secretReference(), SYSTEM_PROMPT,
+                    eligible.modelCode(), eligible.secretReference(), definition.systemPrompt(),
                     "BEGIN SUBJECT DATA\n" + projection.render(), MAXIMUM_OUTPUT_TOKENS));
         } catch (RuntimeException failure) {
             response = new ModelResponse(ModelResponse.Outcome.FAILED, "", "PROVIDER_CALL_FAILED", 0);
         }
         ModelResponse completed = response;
         return transactions.execute(status -> complete(invocationId, requestedByUserId,
-                eligible, projection, completed));
+                eligible, projection, completed,definition.listingOnly()));
     }
 
     private AiDiagnosis complete(UUID invocationId, UUID requestedByUserId,
-            AiRepository.EligibleModel eligible, SubjectProjection projection, ModelResponse response) {
+            AiRepository.EligibleModel eligible, SubjectProjection projection, ModelResponse response,boolean listingOnly) {
         Instant completedAt = clock.instant();
         recover();
         if (!"DISPATCHED".equals(read(invocationId).state())) return read(invocationId);
@@ -190,6 +260,10 @@ public class AiDiagnosisService implements AiCopilot {
 
         List<OutputValidator.ValidatedClaim> claims =
                 validator.validate(response.body(), projection);
+        if (listingOnly) claims=claims.stream().map(claim->claim.kind()==com.mimococo.marketops.aicopilot.AiClaimKind.RECOMMENDATION
+                && !"LISTING_CONTENT_REVIEW".equals(claim.payload().get("actionCapability"))
+                ? new OutputValidator.ValidatedClaim(claim.kind(),claim.ordinal(),claim.statement(),claim.metricValueRefs(),
+                    claim.findingRefs(),claim.payload(),false,"LISTING_ASSISTANCE_ACTION_OUT_OF_SCOPE") : claim).toList();
         storeClaims(invocationId, claims);
         boolean anyAccepted = claims.stream().anyMatch(OutputValidator.ValidatedClaim::accepted);
         boolean anyRejected = claims.stream().anyMatch(claim -> !claim.accepted());
@@ -225,6 +299,20 @@ public class AiDiagnosisService implements AiCopilot {
         return repository.findInvocation(invocationId).map(this::assemble);
     }
 
+    @Override
+    @Transactional
+    public Optional<AiDiagnosis> listingInvocation(UUID invocationId,UUID organizationId,UUID listingId) {
+        if (!repository.isListingInvocation(invocationId,organizationId,listingId)) return Optional.empty();
+        recover();
+        return repository.findInvocation(invocationId).map(this::assemble);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public Optional<AiCopilot.ListingInvocationScope> listingInvocationScope(UUID invocationId,UUID organizationId,UUID listingId) {
+        return repository.listingInvocationScope(invocationId,organizationId,listingId);
+    }
+
     /**
      * Record an invocation that never reached a provider.
      *
@@ -239,13 +327,14 @@ public class AiDiagnosisService implements AiCopilot {
                                SubjectProjection projection,
                                UUID requestedByUserId,
                                Instant startedAt,
-                               String failureCode) {
+                               String failureCode,InvocationDefinition definition) {
         repository.openInvocation(invocationId, organizationId,
-                ProjectionBuilder.PROJECTION_CODE, ProjectionBuilder.PROJECTION_VERSION,
-                PROMPT_TEMPLATE_CODE, PROMPT_VERSION, null,
-                SubjectKind.PLATFORM_LISTING_VARIANT.name(), listingVariantId, window.name(),
+                definition.projectionCode(), definition.projectionVersion(),
+                definition.promptCode(), definition.promptVersion(), null,
+                definition.subjectKind(), listingVariantId, window.name(),
                 projection.requestDigest(), "PREPARED", requestedByUserId, startedAt,
                 CorrelationId.current());
+        if (definition.listingOnly()) repository.bindListingScope(invocationId,definition.storeId(),definition.members(),definition.products());
         repository.closeInvocation(invocationId, "REFUSED", failureCode, true, null,
                 clock.instant());
         auditOutcome(requestedByUserId, invocationId, "REFUSED", failureCode);

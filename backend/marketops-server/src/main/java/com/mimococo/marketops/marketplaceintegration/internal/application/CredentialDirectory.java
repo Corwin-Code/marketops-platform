@@ -32,4 +32,13 @@ public class CredentialDirectory {
     public Optional<UUID> writeCredential(UUID storeId, UUID capabilityId) {
         return credentials.writeCredential(storeId, capabilityId, clock.instant());
     }
+
+    /** The one attribute the verified description apply operation names, or empty. */
+    @Transactional(readOnly = true)
+    public Optional<String> descriptionAttributeKey(UUID capabilityId) {
+        return credentials.descriptionAttributeKey(capabilityId);
+    }
+    public Optional<String> restorationAttributeKey(UUID capabilityId) {
+        return credentials.restorationAttributeKey(capabilityId);
+    }
 }

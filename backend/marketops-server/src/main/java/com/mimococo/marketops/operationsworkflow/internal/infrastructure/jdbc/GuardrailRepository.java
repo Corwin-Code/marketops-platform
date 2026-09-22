@@ -115,14 +115,34 @@ public class GuardrailRepository {
                        GuardrailPurpose purpose, boolean passed,
                        List<GuardrailReason> reasons, Map<String, String> detail,
                        String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
+        insert(id, organizationId, recommendationId, policyId, policyVersion, adDecisionBundleId,
+                adBundleVersion, null, null, purpose, passed, reasons, detail, inputDigest,
+                authoritySnapshot, evaluatedAt, correlationId);
+    }
+
+    /**
+     * Record one verdict naming whichever of the three authorities let it pass.
+     *
+     * <p>A price verdict names a commercial policy, an advertising one a decision
+     * policy bundle and a listing one a calibration package. The schema admits
+     * exactly one of the three on a PASS.
+     */
+    public void insert(UUID id, UUID organizationId, UUID recommendationId, UUID policyId,
+                       Integer policyVersion, UUID adDecisionBundleId, Integer adBundleVersion,
+                       UUID lcCalibrationPackageId, Integer lcCalibrationVersion,
+                       GuardrailPurpose purpose, boolean passed,
+                       List<GuardrailReason> reasons, Map<String, String> detail,
+                       String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
         jdbc.sql("""
                         INSERT INTO ops.guardrail_evaluation (
                             id, organization_id, recommendation_id, policy_id, policy_version,
                             ad_decision_bundle_id, ad_bundle_version,
+                            lc_calibration_package_id, lc_calibration_version,
                             purpose, outcome, reason_codes, detail, input_digest, evaluated_at,
                             correlation_id, authority_snapshot)
                         VALUES (:id, :organizationId, :recommendationId, :policyId,
                             :policyVersion, :adDecisionBundleId, :adBundleVersion,
+                            :lcCalibrationPackageId, :lcCalibrationVersion,
                             :purpose, :outcome, :reasonCodes,
                             CAST(:detail AS jsonb), :inputDigest, :evaluatedAt,
                             :correlationId, CAST(:authoritySnapshot AS jsonb))
@@ -130,6 +150,8 @@ public class GuardrailRepository {
                 .param("id", id)
                 .param("adDecisionBundleId", adDecisionBundleId)
                 .param("adBundleVersion", adBundleVersion)
+                .param("lcCalibrationPackageId", lcCalibrationPackageId)
+                .param("lcCalibrationVersion", lcCalibrationVersion)
                 .param("organizationId", organizationId)
                 .param("recommendationId", recommendationId)
                 .param("policyId", policyId)

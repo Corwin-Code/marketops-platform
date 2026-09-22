@@ -46,7 +46,7 @@ public class RawEvidenceService implements RawEvidenceQuery {
                 .observationsAfter(jobId, afterIngestionTime, afterObservationId,
                         Math.clamp(limit, 1, 500))
                 .stream()
-                .map(stored -> view(stored, jobId))
+                .map(RawEvidenceService::view)
                 .toList();
     }
 
@@ -54,7 +54,7 @@ public class RawEvidenceService implements RawEvidenceQuery {
     @Transactional(readOnly = true)
     public Optional<RawObservationView> observation(UUID observationId) {
         return evidence.findObservation(observationId)
-                .map(stored -> view(stored, null));
+                .map(RawEvidenceService::view);
     }
 
     @Override
@@ -79,10 +79,9 @@ public class RawEvidenceService implements RawEvidenceQuery {
         return body;
     }
 
-    private static RawObservationView view(RawEvidenceRepository.StoredObservation stored,
-                                           UUID jobId) {
+    private static RawObservationView view(RawEvidenceRepository.StoredObservation stored) {
         return new RawObservationView(
-                stored.id(), jobId, stored.runId(), stored.unitKind(), stored.sourceUnitKey(),
+                stored.id(), stored.jobId(), stored.runId(), stored.unitKind(), stored.sourceUnitKey(),
                 stored.sourceTime(), stored.nativeStatus(), stored.outcomeClass(),
                 stored.ingestionTime(), stored.sha256(), stored.byteLength());
     }

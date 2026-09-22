@@ -16,6 +16,9 @@ import com.mimococo.marketops.operationsworkflow.AdBidImpactPreview;
 import com.mimococo.marketops.operationsworkflow.AdvertisingBidProjection;
 import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.ImpactPreview;
+import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
+import com.mimococo.marketops.operationsworkflow.ListingDecisionScope;
+import com.mimococo.marketops.operationsworkflow.ListingImpactPreview;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailInput;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailOutcome;
@@ -60,13 +63,16 @@ public class GuardrailService {
     private final AdvertisingDecisionAuthority advertising;
     private final IdGenerator idGenerator;
     private final AdvertisingImpactEvidenceService impactEvidence;
+    private final ListingActionDecisionAuthority listingDecisions;
+    private final java.time.Clock clock;
 
     GuardrailService(MetricQuery metrics,
                      DiagnosisQuery diagnosis,
                      GuardrailRepository evaluations,
                      PriceChangeHistory changeHistory,
                      AdvertisingDecisionAuthority advertising,
-                     IdGenerator idGenerator,AdvertisingImpactEvidenceService impactEvidence) {
+                     IdGenerator idGenerator,AdvertisingImpactEvidenceService impactEvidence,
+                     ListingActionDecisionAuthority listingDecisions, java.time.Clock clock) {
         this.metrics = metrics;
         this.diagnosis = diagnosis;
         this.evaluations = evaluations;
@@ -74,6 +80,8 @@ public class GuardrailService {
         this.advertising = advertising;
         this.idGenerator = idGenerator;
         this.impactEvidence=impactEvidence;
+        this.listingDecisions = listingDecisions;
+        this.clock = clock;
     }
 
     /**
@@ -89,7 +97,156 @@ public class GuardrailService {
         if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
             return previewAdBidChange(proposal, purpose).verdict();
         }
+        if (proposal.actionKind().listingAction()) {
+            return previewListingAction(proposal, purpose).verdict();
+        }
         return preview(proposal, authorizationBound, purpose).verdict();
+    }
+
+    /**
+     * Evaluate one listing action and record the verdict.
+     *
+     * <p>The listing module's deterministic refusals are carried through in its
+     * own vocabulary and the workflow adds its own: an elapsed proposal, facts
+     * that moved since review, a missing attestation, an unresolved calibration.
+     * A PASS names the calibration package that authorised it and nothing else.
+     */
+    @Transactional
+    public ListingImpactPreview previewListingAction(RecommendationView proposal,
+                                                     GuardrailPurpose purpose) {
+        ListingDecisionScope scope = listingDecisions.recheckedDecisionScope(proposal.id()).orElse(null);
+        // The listing authority captures one database time after any enclosing launch locks.
+        // Reuse it for expiry and for the persisted guardrail chronology so application-clock
+        // skew cannot create evidence dated after the transaction that must consume it.
+        Instant now = scope == null ? clock.instant()
+                : Instant.parse(scope.protectionRecheck().get("assessedAt"));
+        List<String> unresolved = new ArrayList<>(listingDecisions.unresolvedReasons(proposal.id()));
+        boolean currentEconomicProtectionRequired=scope!=null && !"DESCRIPTION_CORRECTION".equals(scope.purposeCode());
+        if (currentEconomicProtectionRequired && !"PASS".equals(scope.protectionRecheck().get("supplyVerdict"))) {
+            String supplyReasons=scope.protectionRecheck().get("supplyReasonCodes");
+            if (supplyReasons==null || supplyReasons.isBlank()) unresolved.add("SUPPLY_PROTECTION_UNQUALIFIED");
+            else unresolved.addAll(List.of(supplyReasons.split(",")));
+        }
+        if (currentEconomicProtectionRequired && !"CANONICAL_INPUT_AVAILABLE".equals(scope.protectionRecheck().get("financialInputState"))) {
+            String financialReasons=scope.protectionRecheck().get("financialInputReasonCodes");
+            if (financialReasons==null || financialReasons.isBlank()) unresolved.add("CURRENT_FINANCIAL_INPUT_UNQUALIFIED");
+            else unresolved.addAll(List.of(financialReasons.split(",")));
+        }
+        if (currentEconomicProtectionRequired && !"PASS".equals(scope.protectionRecheck().get("unitProfitFloorVerdict")))
+            unresolved.add("FAIL".equals(scope.protectionRecheck().get("unitProfitFloorVerdict"))
+                    ?"UNIT_PROFIT_FLOOR_FAILED":"UNIT_PROFIT_FLOOR_UNQUALIFIED");
+        if (currentEconomicProtectionRequired) for (String dimension:List.of("Profit","Return")) {
+            String verdict=scope.protectionRecheck().get("current"+dimension+"Verdict");
+            if (!"PASS".equals(verdict)) unresolved.add("CURRENT_"+dimension.toUpperCase(java.util.Locale.ROOT)
+                    +("FAIL".equals(verdict)?"_PROTECTION_FAILED":"_PROTECTION_UNQUALIFIED"));
+        }
+        if (scope!=null && scope.actionKind()==ActionKind.LISTING_PROMOTION_ACTION
+                && !"QUALIFIED_CURRENT".equals(scope.protectionRecheck().get("selectedSimulationInputState")))
+            unresolved.add("QUALIFIED_PROMOTION_ECONOMICS_REQUIRED");
+        List<GuardrailReason> reasons = listingReasons(proposal, scope, unresolved, now, purpose);
+        boolean passed = reasons.isEmpty();
+        UUID evaluationId = idGenerator.newId();
+        List<String> components = new ArrayList<>();
+        components.add(proposal.id().toString());
+        components.add(purpose.name());
+        components.add(now.toString());
+        String authority = scope == null ? listingDecisions.authorityDocument(proposal.id()) : scope.authorityDocument();
+        if (authority == null || authority.isBlank()) {
+            authority = "{}";
+        }
+        components.add(authority);
+        if (scope!=null) scope.materialityRecheck().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .forEach(entry->{components.add(entry.getKey());components.add(entry.getValue());});
+        if (scope!=null) scope.protectionRecheck().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .forEach(entry->{components.add(entry.getKey());components.add(entry.getValue());});
+        if (scope!=null) {
+            components.add(String.valueOf(scope.purposeCode()));
+            components.add(String.valueOf(scope.purposeBasisDigest()));
+            components.add(String.valueOf(scope.purposeUseUntil()));
+        }
+        components.addAll(unresolved);
+        String inputDigest = Digest.ofComponents(components);
+        evaluations.insert(evaluationId, proposal.organizationId(), proposal.id(), null, null, null, null,
+                passed ? scope.calibrationPackageId() : null,
+                passed ? scope.calibrationVersion() : null,
+                purpose, passed, reasons, listingDetail(scope, unresolved), inputDigest,
+                authority, now, CorrelationId.current());
+        GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, passed, reasons,
+                null, null, listingDetail(scope, unresolved), inputDigest);
+        return new ListingImpactPreview(proposal.id(), scope, unresolved, verdict);
+    }
+
+    private static List<GuardrailReason> listingReasons(RecommendationView proposal,
+                                                        ListingDecisionScope scope,
+                                                        List<String> unresolved, Instant now,
+                                                        GuardrailPurpose purpose) {
+        List<GuardrailReason> reasons = new ArrayList<>();
+        if (!proposal.validUntil().isAfter(now)) {
+            reasons.add(GuardrailReason.RECOMMENDATION_EXPIRED);
+        }
+        if (scope == null) {
+            reasons.add(GuardrailReason.LISTING_ACTION_BLOCKED);
+            return List.copyOf(reasons);
+        }
+        if (!scope.materialityResolved()) {
+            reasons.add(GuardrailReason.MATERIALITY_UNRESOLVED);
+        }
+        if (purpose != GuardrailPurpose.IMPACT_PREVIEW && !scope.reviewAttested()) {
+            reasons.add(GuardrailReason.REVIEW_MISSING);
+        }
+        for (String reason : unresolved) {
+            switch (reason) {
+                case "CALIBRATION_UNRESOLVED", "CALIBRATION_CONFLICTED" ->
+                        reasons.add(GuardrailReason.CALIBRATION_UNRESOLVED);
+                case "AFFECTED_SET_INCOMPLETE", "AFFECTED_SET_DIGEST_CHANGED" ->
+                        reasons.add(GuardrailReason.AFFECTED_SET_INCOMPLETE);
+                case "CURRENT_TEXT_MOVED" -> reasons.add(GuardrailReason.CURRENT_TEXT_MOVED);
+                case "LISTING_HEALTH_NECESSARY_FAILED", "LISTING_HEALTH_UNKNOWN" ->
+                        reasons.add(GuardrailReason.LISTING_HEALTH_NECESSARY_FAILED);
+                case "SCOPE_CONTAINED" -> reasons.add(GuardrailReason.SCOPE_CONTAINED);
+                case "TEXT_LENGTH_OUT_OF_BOUNDS" -> reasons.add(GuardrailReason.TEXT_LENGTH_OUT_OF_BOUNDS);
+                case "KIZ_MARKED_UNDECLARED" -> reasons.add(GuardrailReason.KIZ_MARKED_UNDECLARED);
+                case "MATERIALITY_UNRESOLVED" -> reasons.add(GuardrailReason.MATERIALITY_UNRESOLVED);
+                case "ENTITY_VERSION_CHANGED" -> reasons.add(GuardrailReason.ENTITY_VERSION_CHANGED);
+                case "REVIEW_MISSING" -> {
+                    if (purpose != GuardrailPurpose.IMPACT_PREVIEW) {
+                        reasons.add(GuardrailReason.REVIEW_MISSING);
+                    }
+                }
+                default -> reasons.add(GuardrailReason.LISTING_ACTION_BLOCKED);
+            }
+        }
+        return List.copyOf(new java.util.LinkedHashSet<>(reasons));
+    }
+
+    private static Map<String, String> listingDetail(ListingDecisionScope scope, List<String> unresolved) {
+        if (scope == null) {
+            return Map.of("scope", "UNAVAILABLE");
+        }
+        Map<String, String> detail = new java.util.LinkedHashMap<>();
+        detail.put("actionId", scope.actionId().toString());
+        detail.put("actionVersion",Long.toString(scope.actionVersion()));
+        detail.put("actionKind", scope.actionKind().name());
+        detail.put("executionPath", scope.executionPath());
+        detail.put("actionState", scope.actionState());
+        if (scope.purposeCode()!=null) detail.put("purposeCode",scope.purposeCode());
+        if (scope.purposeBasisDigest()!=null) detail.put("purposeBasisDigest",scope.purposeBasisDigest());
+        if (scope.purposeUseUntil()!=null) detail.put("purposeUseUntil",scope.purposeUseUntil().toString());
+        detail.put("materialityRoute", scope.materialityRoute());
+        detail.put("contentAxisMaterial", Boolean.toString(scope.contentAxisMaterial()));
+        detail.put("exposureAxisMaterial", Boolean.toString(scope.exposureAxisMaterial()));
+        detail.put("affectedSetDigest", scope.affectedSetDigest());
+        detail.put("targetTextDigest", String.valueOf(scope.targetTextDigest()));
+        detail.put("calibrationPackageId", String.valueOf(scope.calibrationPackageId()));
+        detail.put("calibrationVersion", String.valueOf(scope.calibrationVersion()));
+        scope.calibrationRecheck().forEach((key,value)->detail.put("calibrationRecheck."+key,value));
+        scope.materialityRecheck().forEach((key,value)->detail.put("materialityRecheck."+key,value));
+        scope.protectionRecheck().forEach((key,value)->detail.put("protectionRecheck."+key,value));
+        detail.put("reviewAttested", Boolean.toString(scope.reviewAttested()));
+        if (!unresolved.isEmpty()) {
+            detail.put("listingBlockers", String.join(",", unresolved));
+        }
+        return Map.copyOf(detail);
     }
 
     /**

@@ -66,7 +66,12 @@ public class ConsoleProblemAdvice {
             Map.entry(ErrorCode.OUTCOME_POLICY_CONFLICTED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.APPROVAL_REQUIRED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.COMPENSATION_UNSAFE, HttpStatus.CONFLICT),
-            Map.entry(ErrorCode.READBACK_REQUIRED, HttpStatus.CONFLICT));
+            Map.entry(ErrorCode.READBACK_REQUIRED, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.BINDING_INAPPLICABLE, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.ALLOWANCE_INSUFFICIENT, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.SCOPE_CONTAINED, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.INDEPENDENCE_REQUIRED, HttpStatus.FORBIDDEN),
+            Map.entry(ErrorCode.RESTORE_UNSUPPORTED, HttpStatus.CONFLICT));
 
     /**
      * The status a business refusal that is not in the table above is answered
@@ -117,8 +122,10 @@ public class ConsoleProblemAdvice {
         }
         ErrorCode code = switch (state) {
             case "23505", "23P01", "MO061", "MO063", "MO065" -> ErrorCode.VERSION_CONFLICT;
-            case "23503", "23514", "22007", "22008", "22003", "22P02", "MO036", "MO039" -> ErrorCode.VALIDATION_FAILED;
-            case "MO060", "MO064" -> ErrorCode.RESOURCE_SCOPE_DENIED;
+            case "23503", "23514", "22007", "22008", "22003", "22P02", "MO036", "MO039", "MO093" -> ErrorCode.VALIDATION_FAILED;
+            case "MO060", "MO064", "MO092" -> ErrorCode.RESOURCE_SCOPE_DENIED;
+            case "MO091" -> ErrorCode.INVALID_STATE_TRANSITION;
+            case "MO094" -> ErrorCode.RESTORE_UNSUPPORTED;
             case "MO062" -> ErrorCode.IMPORT_VALIDATION_FAILED;
             case "MO080" -> ErrorCode.EXPORT_QUEUE_FULL;
             case "MO084" -> ErrorCode.EXPORT_UNAVAILABLE;

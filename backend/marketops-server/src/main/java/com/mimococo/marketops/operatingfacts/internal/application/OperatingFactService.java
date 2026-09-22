@@ -273,6 +273,13 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public java.util.List<com.mimococo.marketops.operatingfacts.CostPeriodSnapshot> purchaseCosts(
+            UUID organizationId, UUID productVariantId, Instant periodStart, Instant periodEnd, Instant asOf) {
+        return facts.purchaseCosts(organizationId,productVariantId,periodStart,periodEnd,asOf);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<FinanceInputSnapshot> financeInput(UUID organizationId,
                                                        String inputCode,
                                                        UUID storeId,
@@ -283,6 +290,25 @@ public class OperatingFactService implements OperatingFactQuery {
                         row.id(), row.inputCode(), row.rateValue(),
                         money(row.amountValue(), row.currencyCode()),
                         row.effectiveFrom(), row.provenanceId()));
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public Optional<FinanceInputSnapshot> promotionFixedFee(UUID organizationId,UUID storeId,String promotionKind,
+            String nativePromotionKey,Instant periodStart,Instant periodEnd,Instant asOf) {
+        return facts.promotionFixedFee(organizationId,storeId,promotionKind,nativePromotionKey,periodStart,periodEnd,asOf)
+                .map(row->new FinanceInputSnapshot(row.id(),row.inputCode(),null,money(row.amountValue(),row.currencyCode()),
+                        row.effectiveFrom(),row.provenanceId()));
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public java.util.Map<String,FinanceInputSnapshot> promotionRevenueInputs(UUID organizationId,UUID storeId,UUID listingId,
+            String promotionKind,String nativePromotionKey,String termsDigest,Instant periodStart,Instant periodEnd,Instant asOf) {
+        return facts.promotionRevenueInputs(organizationId,storeId,listingId,promotionKind,nativePromotionKey,termsDigest,periodStart,periodEnd,asOf)
+                .stream().map(row->new FinanceInputSnapshot(row.id(),row.inputCode(),null,money(row.amountValue(),row.currencyCode()),
+                        row.effectiveFrom(),row.provenanceId()))
+                .collect(java.util.stream.Collectors.toUnmodifiableMap(FinanceInputSnapshot::inputCode,java.util.function.Function.identity()));
     }
 
     @Override

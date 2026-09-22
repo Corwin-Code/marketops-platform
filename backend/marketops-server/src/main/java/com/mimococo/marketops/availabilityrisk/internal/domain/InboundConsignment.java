@@ -101,7 +101,8 @@ public record InboundConsignment(
             // Whatever happened, this is no longer evidence of future supply.
             return false;
         }
-        return !lastVerifiedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
+        return freshnessMaxMinutes > 0 && !lastVerifiedAt.isAfter(asOf)
+                && !lastVerifiedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
     }
 
     /**

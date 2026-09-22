@@ -27,6 +27,11 @@ public class WorkTaskRepository {
         this.jdbc = jdbc;
     }
 
+    /** System-recorded Task events and their database-time consumers share one chronology. */
+    public Instant databaseNow() {
+        return jdbc.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant();
+    }
+
     /** Raise a task from a proposal. */
     public void insert(UUID id, UUID organizationId, UUID recommendationId, String title,
                        Instant dueAt, Instant now) {
@@ -121,7 +126,20 @@ public class WorkTaskRepository {
                            AND state NOT IN ('DONE', 'CANCELLED')
                            AND (CAST(:assigneeUserId AS uuid) IS NULL
                                 OR assignee_user_id = :assigneeUserId)
-                         ORDER BY due_at NULLS LAST, created_at
+                         ORDER BY
+                           CASE
+                             WHEN EXISTS(SELECT 1 FROM ops.lc_task_dependency_hold hold
+                               WHERE hold.task_id=task.id AND hold.state='ACTIVE'
+                                 AND hold.expires_at>clock_timestamp()) THEN 3
+                             WHEN EXISTS(SELECT 1 FROM ops.lc_task_responsibility responsibility
+                               WHERE responsibility.task_id=task.id
+                                 AND responsibility.responsibility_lane='NECESSARY_RISK') THEN 0
+                             WHEN EXISTS(SELECT 1 FROM ops.lc_task_responsibility responsibility
+                               WHERE responsibility.task_id=task.id
+                                 AND responsibility.responsibility_lane='QUALIFIED_OPPORTUNITY') THEN 2
+                             ELSE 1
+                           END,
+                           due_at NULLS LAST,created_at,id
                          LIMIT :limit
                         """)
                 .param("organizationId", organizationId)
@@ -145,7 +163,7 @@ public class WorkTaskRepository {
     private static final String SELECT_TASK = """
             SELECT id, organization_id, recommendation_id, title, state, assignee_user_id,
                    due_at, closed_at, closure_reason, created_at, version
-              FROM ops.work_task
+              FROM ops.work_task task
             """;
 
     private static WorkTaskView map(ResultSet rows, int rowNumber) throws SQLException {

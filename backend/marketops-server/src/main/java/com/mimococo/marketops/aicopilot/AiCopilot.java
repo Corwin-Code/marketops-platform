@@ -33,4 +33,14 @@ public interface AiCopilot {
 
     /** One recorded invocation and its claims. */
     Optional<AiDiagnosis> invocation(UUID invocationId);
+
+    /** Listing membership and current disclosure permission are supplied by the listing authority. */
+    AiDiagnosis assistListing(UUID requestedByUserId, UUID organizationId, UUID listingId, UUID authorizedStoreId,
+                              java.util.List<UUID> listingVariantIds, java.util.List<UUID> authorizedProductVariantIds, MetricWindow window,
+                              ListingAssistancePurpose purpose);
+    Optional<AiDiagnosis> listingInvocation(UUID invocationId,UUID organizationId,UUID listingId);
+    record ListingInvocationScope(UUID storeId,java.util.List<UUID> productVariantIds) {
+        public ListingInvocationScope { productVariantIds=java.util.List.copyOf(productVariantIds); }
+    }
+    Optional<ListingInvocationScope> listingInvocationScope(UUID invocationId,UUID organizationId,UUID listingId);
 }

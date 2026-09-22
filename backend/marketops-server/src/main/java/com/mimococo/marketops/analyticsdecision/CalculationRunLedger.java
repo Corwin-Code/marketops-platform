@@ -59,7 +59,16 @@ public interface CalculationRunLedger {
             int valueCount,
             boolean succeeded,
             String failureCode,
-            Instant completedAt) {
+            Instant completedAt,
+            UUID requestedByUserId) {
+
+        /** Compatibility entry point for autonomous calculation runs. */
+        public CompletedRun(UUID organizationId, UUID storeId, String triggerKind, MetricWindow window,
+                            Instant periodStart, Instant periodEnd, String definitionSetDigest,
+                            int subjectCount, int valueCount, boolean succeeded, String failureCode, Instant completedAt) {
+            this(organizationId, storeId, triggerKind, window, periodStart, periodEnd, definitionSetDigest,
+                    subjectCount, valueCount, succeeded, failureCode, completedAt, null);
+        }
 
         public CompletedRun {
             java.util.Objects.requireNonNull(organizationId, "organizationId");
@@ -69,6 +78,9 @@ public interface CalculationRunLedger {
             java.util.Objects.requireNonNull(periodEnd, "periodEnd");
             java.util.Objects.requireNonNull(definitionSetDigest, "definitionSetDigest");
             java.util.Objects.requireNonNull(completedAt, "completedAt");
+            if ("MANUAL".equals(triggerKind) && requestedByUserId == null) {
+                throw new IllegalArgumentException("a manual calculation requires its actual requesting user");
+            }
             if (succeeded != (failureCode == null)) {
                 throw new IllegalArgumentException(
                         "a run that failed says why, and one that succeeded has nothing to say");
