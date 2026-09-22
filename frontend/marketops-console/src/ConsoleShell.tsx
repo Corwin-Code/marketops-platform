@@ -38,6 +38,9 @@ const AdvertisingBriefPage = lazy(async () => ({
   default: (await advertising()).AdvertisingBriefPage,
 }));
 const ListingPage = lazy(async () => ({ default: (await import('./pages/listing')).ListingPage }));
+const ListingAllowancesPage = lazy(async () => ({
+  default: (await import('./pages/listingAllowances')).ListingAllowancesPage,
+}));
 const SystemStatusPage = lazy(async () => ({
   default: (await import('./pages/system')).SystemStatusPage,
 }));
@@ -128,6 +131,7 @@ export function ConsoleShell({
           element={<AdvertisingBriefPage key="weekly" kind="weekly" {...page} />}
         />
         <Route path={ROUTES.listing} element={<ListingPage {...page} />} />
+        <Route path={ROUTES.listingAllowances} element={<ListingAllowancesPage {...page} />} />
         <Route
           path={ROUTES.systemStatus}
           element={<SystemStatusPage config={config} fetchImpl={fetchImpl} />}

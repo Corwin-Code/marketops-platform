@@ -26,6 +26,7 @@ export const ROUTES = {
   advertisingDaily: '/advertising/briefs/daily',
   advertisingWeekly: '/advertising/briefs/weekly',
   listing: '/listing',
+  listingAllowances: '/listing/allowances',
   systemStatus: '/system/status',
 } as const;
 
@@ -94,7 +95,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     key: 'listing',
     label: areas.listing,
     icon: <ShopOutlined />,
-    items: [{ path: ROUTES.listing, label: pages.listing }],
+    items: [
+      { path: ROUTES.listing, label: pages.listing },
+      { path: ROUTES.listingAllowances, label: pages.listingAllowances },
+    ],
   },
   {
     key: 'system',
