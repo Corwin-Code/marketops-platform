@@ -1,6 +1,0 @@
-Command: ./mvnw -B -ntp test -Dtest=ListingDescriptionRetryTimingIT
-Working directory: backend/marketops-server
-Result: PASS (exit 0)
-Tests: 7
-Raw local log SHA-256: a7efa791d3620c5dba54fa011d9756c9ee13ef21a7fd4c82a9c462550658a561
-Scope: targeted local synthetic verification; not final Slice closure.

@@ -1,6 +1,0 @@
-[INFO] Running com.mimococo.marketops.ListingDescriptionResponseIdentityIT
-[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.13 s -- in com.mimococo.marketops.ListingDescriptionResponseIdentityIT
-[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-[INFO] Total time:  29.789 s
-[INFO] Finished at: 2026-09-10T21:09:02+08:00

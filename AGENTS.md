@@ -1,67 +1,9 @@
-# AGENTS.md — Codex Full Production Rework / Fix / Verify Contract
+# AGENTS.md
 
-This file applies to Codex or another independent rework/verification agent.
+所有编码 agent（Codex、Claude 等）遵循 [`CLAUDE.md`](CLAUDE.md) 中的开发链与产品规则，要点如下：
 
-## Role
-
-Codex receives the active Slice Contract, actual implementation PR and Controller
-findings. It may make all coherent **in-scope** changes required to close findings
-and produce a production-grade, verifiable result. It is not limited to cosmetic
-or one-line repair when a broader in-scope refactor is necessary.
-
-Codex may not change the product outcome, fixed Owner Decision, hard invariant,
-external provider or production enablement. Such a need is returned as a precise
-blocker/Decision Request.
-
-## Required reading
-
-1. `docs/00-governance/CURRENT_STATE.md`;
-2. immutable active V1 Product/Slice Contracts, every accepted additive
-   Amendment and Owner Decisions;
-3. the single Frozen Finding Set and SHA-256 bound to the exact reviewed PR Head;
-4. relevant ADRs, source Baseline requirements and Assurance Matrix;
-5. actual diff, migrations, tests, CI and external evidence;
-6. `OWNER_GIT_WORKFLOW_GUIDE.md` when guidance is required.
-
-## Rules
-
-- inspect real repository/PR/CI state before mutation;
-- never push directly to `main`;
-- never self-approve;
-- never edit an accepted original Contract; normative change requires a separate
-  exact Owner-accepted additive Amendment;
-- do not silently expand scope or weaken a control/test to pass CI;
-- preserve V0001–V0010 and historical evidence;
-- never use or expose Credentials, Buyer PII or unredacted production data;
-- preserve exact Raw, official facts, idempotency, unknown states, deterministic
-  Metric/Policy and controlled-write invariants;
-- never treat implementation, merge or Gate EV as production enablement; any real
-  verification write requires the exact Human Owner-approved Gate-EV envelope;
-- run the complete relevant verification, not only the failing test;
-- update code, tests, docs, traceability and runbooks coherently;
-- report exact commands/results and remaining limitations.
-
-Codex receives `Original Contract + Accepted Amendments + Frozen Finding Set`
-once and performs one continuous root-cause rework/fix/verify cycle, including
-same-class scan, transitive impact, test hardening, regression/runtime evidence
-and canonical-doc synchronization. It does not accept drip-fed ordinary findings
-based on evidence already available to formal Deep Review.
-
-Remote Git publication is separate Level-3 transport authority. When named as
-publisher, Codex verifies and preserves the exact local commit/tree and must not
-reconstruct or improve it during transport. If exact transport cannot be proven,
-it stops and requests a hash-verifiable shared worktree, Git bundle or patch
-series.
-
-## Git execution delegation
-
-D-17 may authorize Codex to mechanically mark Ready and merge only after:
-
-- a separate independent Controller `APPROVE_FOR_HUMAN_MERGE` verdict on the exact
-  current Head;
-- all repository/project Gates pass;
-- conversations are resolved and branch is current;
-- separate Human Owner authorization exists.
-
-D-17 does not permit self-approval, direct push, bypass, credential provisioning,
-provider/business decisions or production enablement.
+- 以产品开发交付为核心；从 `main` 开分支 → 实现 → 本地编译运行确认 → PR → Owner 合并。
+- CI 与自动化测试暂停中，待 Owner 重新授权；不要自行恢复或新增重型验证。
+- 不提交 Secret、Credential、买家个人数据；真实平台写入必须走完整安全链并经 Owner 明确同意。
+- 只用 Ozon / Wildberries 官方 API；金额用 decimal + 币种；迁移只向前；vendor DTO 留在 adapter；AI 不替代确定性规则。
+- 产品与架构说明见 `docs/product/` 与 `docs/architecture/`。

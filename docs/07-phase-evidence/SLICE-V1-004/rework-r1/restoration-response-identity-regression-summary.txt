@@ -1,6 +1,0 @@
-Command: ./mvnw -B -ntp test -Dtest=ListingDescriptionResponseIdentityIT
-Working directory: backend/marketops-server
-Result: PASS (exit 0)
-Tests: 21
-Raw local log SHA-256: 0c8c3a45cb8c2419ee347b3332c6aee368d64ec72c473a94cac832c9279a7195
-Scope: targeted local synthetic verification; not final Slice closure.

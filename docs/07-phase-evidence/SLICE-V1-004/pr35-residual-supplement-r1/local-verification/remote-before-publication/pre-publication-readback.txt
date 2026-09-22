@@ -1,7 +1,0 @@
-2026-09-18T22:20:50Z
-$ git ls-remote origin refs/heads/main refs/heads/codex/slice-v1-004-root-cause-rework-r1
-45474b6039edd46842e1e5f84391dca4264ddc1d	refs/heads/codex/slice-v1-004-root-cause-rework-r1
-0f26d0ed387fd0e20c2137b11760ae0bb0f3e5bd	refs/heads/main
-$ git rev-parse HEAD HEAD^{tree}
-45474b6039edd46842e1e5f84391dca4264ddc1d
-3b6faa1d58fadbfad374a63a2502b606c06df6f5

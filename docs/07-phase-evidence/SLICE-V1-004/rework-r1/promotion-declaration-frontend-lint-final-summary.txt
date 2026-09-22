@@ -1,5 +1,0 @@
-fnm exec --using 24.19.0 npm run lint
-Working directory: frontend/marketops-console
-> eslint . --max-warnings 0
-Exit status: 0
-Local synthetic verification only; no provider qualification or final closure.

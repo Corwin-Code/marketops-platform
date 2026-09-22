@@ -1,4 +1,4 @@
-# MarketOps Russia — developer entry points.
+# MarketOps Russia — local development entry points.
 #
 # Commands use repository-relative paths, so the shell never has to reinterpret
 # an absolute clone path that contains whitespace or punctuation.
@@ -16,16 +16,14 @@ MVNW := ./mvnw -B -ntp
 .DEFAULT_GOAL := help
 
 .PHONY: help require-repo-root require-env-local doctor env-init bootstrap \
-        up down reset backend-run backend-test backend-arch backend-verify backend-check backend-integration \
-        frontend-install frontend-dev frontend-check frontend-browser verify-local-config \
-        governance supply-chain fresh-clone verify
+        up down reset backend-run backend-build frontend-install frontend-dev frontend-build
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
-	  | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-22s %s\n", $$1, $$2}'
+	  | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
 
 require-repo-root:
-	@test -f bootstrap-manifest.json \
+	@test -f "$(BACKEND_DIR)/pom.xml" \
 	  || { echo 'FATAL: run make from the repository root.' >&2; exit 1; }
 
 require-env-local: require-repo-root
@@ -65,23 +63,8 @@ backend-run: require-env-local ## Run the backend against the local database
 	  SPRING_CONFIG_IMPORT='file:../../.env.local[.properties]' \
 	  $(MVNW) spring-boot:run -Dspring-boot.run.profiles=local
 
-backend-browser-run: require-env-local ## Run the test-classpath fixture against an empty local database
-	@cd "$(BACKEND_DIR)" && \
-	  SPRING_CONFIG_IMPORT='file:../../.env.local[.properties]' \
-	  MARKETOPS_BROWSER_FIXTURE=ISOLATED_SYNTHETIC_DATABASE \
-	  $(MVNW) spring-boot:test-run@browser-fixture
-
-backend-test: backend-verify ## Run all backend tests and the combined coverage gate (requires Docker)
-
-backend-check: backend-verify ## Verify the backend with the required combined coverage thresholds
-
-backend-integration: backend-verify ## Verify real PostgreSQL integration with all backend checks
-
-backend-arch: require-repo-root ## Run only the architecture boundary tests
-	@cd "$(BACKEND_DIR)" && $(MVNW) -Dtest='*ArchitectureTest' test
-
-backend-verify: require-repo-root ## Run the full backend verification including integration tests
-	@cd "$(BACKEND_DIR)" && $(MVNW) clean verify
+backend-build: require-repo-root ## Compile and package the backend
+	@cd "$(BACKEND_DIR)" && $(MVNW) package
 
 frontend-install: require-repo-root ## Install frontend dependencies from the lockfile
 	@cd "$(FRONTEND_DIR)" && npm ci
@@ -89,26 +72,5 @@ frontend-install: require-repo-root ## Install frontend dependencies from the lo
 frontend-dev: require-repo-root ## Start the frontend development server
 	@cd "$(FRONTEND_DIR)" && npm run dev
 
-frontend-check: require-repo-root ## Run the full frontend verification
-	@cd "$(FRONTEND_DIR)" && npm run lint && npm run format:check \
-	  && npm run typecheck && npm run test:ci && npm run build && npm run verify:bundle
-
-frontend-browser: require-env-local ## Exercise the rendered console against the local backend
-	@cd "$(FRONTEND_DIR)" && npm run test:browser
-
-verify-local-config: require-env-local ## Prove the backend reads the root local configuration
-	@bash scripts/verify_local_config.sh
-
-governance: require-repo-root ## Run the governance and production readiness validators
-	@python3 scripts/validate_governance.py
-	@python3 scripts/validate_production_readiness.py
-	@python3 -m unittest discover -s tests -p 'test_*.py'
-
-supply-chain: require-repo-root ## Collect the dependency and licence inventory of both trees
-	@python3 scripts/collect_supply_chain.py
-
-fresh-clone: require-repo-root ## Verify a clone of HEAD with no local state carried over
-	@bash scripts/fresh_clone_check.sh
-
-verify: governance backend-verify frontend-check ## Run every local verification
-	@echo 'All local verification steps completed.'
+frontend-build: require-repo-root ## Type-check and build the frontend
+	@cd "$(FRONTEND_DIR)" && npm run build

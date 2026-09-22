@@ -1,9 +1,0 @@
-./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT
-Working directory: backend/marketops-server
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.267 s -- in com.mimococo.marketops.ListingAtomicLaunchUpgradeIT
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-[INFO] Total time:  17.405 s
-[INFO] Finished at: 2026-09-13T04:09:51+08:00
-Exit status: 0
-Local synthetic verification only; no final closure.

@@ -1,9 +1,0 @@
-COMMAND: fnm exec --using 24.19.0 npm run build
-WORKING_DIRECTORY: frontend/marketops-console
-RESULT: PASS_TARGETED_ONLY
-> marketops-console@0.1.0 build
-> tsc --noEmit && vite build
-vite v8.2.1 building client environment for production...
-dist/index.html                  1.32 kB
-dist/assets/index-Bc9s5zED.js  432.10 kB
-✓ built in 116ms

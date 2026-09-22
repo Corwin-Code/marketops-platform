@@ -1,3 +1,0 @@
-{"job": "backend-build", "counts": {"passed": 2644}, "families": {"unit": {"passed": 1588}, "integration": {"passed": 1056}}, "capacity": [{"kind": "advertising-capacity", "p95": 9775, "max": 150657, "sweep": 26269}, {"kind": "advertising-mixed-capacity", "p95": 153569, "max": 185855, "sweep": 42014}]}
-{"job": "backend-integration", "counts": {"passed": 1056}, "families": {"integration": {"passed": 1056}}, "capacity": [{"kind": "advertising-capacity", "p95": 15914, "max": 169740, "sweep": 43746}, {"kind": "advertising-mixed-capacity", "p95": 189142, "max": 222715, "sweep": 69717}]}
-{"sourceComparisonSets": 4, "filesPerSet": [1055, 1055, 1055, 1055], "archiveMembers": 2641, "testedMerge": "f9a1d73f324323d13ea72db3890090c9b9d85450"}

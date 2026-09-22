@@ -1,4 +1,0 @@
-> marketops-console@0.1.0 test
-> vitest run src/__tests__/ListingConversion.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversionForms.test.tsx
- Test Files  3 passed (3)
-      Tests  32 passed (32)

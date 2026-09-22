@@ -8,6 +8,6 @@ Security issues, leaked credentials or personal-data incidents must not be filed
 
 - Production credentials are prohibited in Git, chat, logs and frontend bundles.
 - Read, Finance, Inventory Write, Price Write and Ads Write credentials must remain separable.
-- Platform write capabilities stay disabled until their independent Controlled Write Capability Gate is passed.
+- Platform write capabilities stay disabled until the Owner explicitly enables them for a real account.
 - Test data must be synthetic or formally redacted.
 - Audit, Raw evidence and Ledger records are append-only by design; repair uses new correction or adjustment records rather than silent overwrite.

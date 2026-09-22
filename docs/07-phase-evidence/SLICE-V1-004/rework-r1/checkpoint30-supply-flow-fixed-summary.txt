@@ -1,5 +1,0 @@
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.73 s -- in com.mimococo.marketops.AvailabilityRiskFlowIT
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-[INFO] Total time:  23.049 s
-[INFO] Finished at: 2026-09-13T08:35:21+08:00

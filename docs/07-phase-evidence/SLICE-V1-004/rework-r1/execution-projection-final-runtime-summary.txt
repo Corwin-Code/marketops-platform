@@ -1,8 +1,0 @@
-COMMAND: ./mvnw -B -ntp test-compile failsafe:integration-test failsafe:verify -Dit.test=ListingDescriptionResponseIdentityIT
-WORKING_DIRECTORY: backend/marketops-server
-RESULT: PASS_TARGETED_ONLY
-[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 27.64 s -- in com.mimococo.marketops.ListingDescriptionResponseIdentityIT
-[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-[INFO] Total time:  39.026 s
-[INFO] Finished at: 2026-09-10T21:29:52+08:00

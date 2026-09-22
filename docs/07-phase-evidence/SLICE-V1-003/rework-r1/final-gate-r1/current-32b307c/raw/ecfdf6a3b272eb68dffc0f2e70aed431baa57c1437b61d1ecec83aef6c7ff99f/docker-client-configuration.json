@@ -1,7 +1,0 @@
-{
-  "configSha256": "042bab2aad8ab69bf7226ceb4a443f004311772de877d384db420c4da223f9bd",
-  "configContainsAuthOrCredentialHelpers": false,
-  "composePluginPath": "/Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose",
-  "composePluginSha256": "ac24c9061e7a7ed97c5446463a0963b5dd6bda30dc6b54f55427ff4c8a09fb0c",
-  "endpointKind": "LOCAL_UNIX_SOCKET"
-}

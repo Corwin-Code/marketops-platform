@@ -1,6 +1,0 @@
-Command: fnm exec --using 24.19.0 npm test -- src/__tests__/ListingConversionForms.test.tsx src/__tests__/ListingConversionApi.test.ts src/__tests__/ListingConversion.test.tsx
-Working directory: frontend/marketops-console
-Result: PASS (exit 0)
-Tests: 22
-Raw local log SHA-256: 13dafc0a401f1208aedd2231d3b741e01a7da6662dad02682a1afecc4a6d4c5d
-Scope: targeted local synthetic verification; not final Slice closure.

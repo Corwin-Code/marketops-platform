@@ -1,6 +1,0 @@
-Command: ./mvnw -B -ntp test -Dtest=ListingAtomicLaunchUpgradeIT
-Working directory: backend/marketops-server
-Result: PASS (exit 0)
-Tests: 1
-Raw local log SHA-256: 1fbc88db1b06c5229b827d7b705f991183fce51468b43cd5beee1a356a908c15
-Scope: targeted local synthetic verification; not final Slice closure.

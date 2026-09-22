@@ -6,7 +6,7 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
-    "types": ["node", "vite/client", "vitest/globals", "@testing-library/jest-dom"],
+    "types": ["node", "vite/client"],
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -27,11 +27,7 @@
   },
   "include": [
     "src",
-    "tests",
-    "playwright.config.ts",
-    "playwright.advertising.config.ts",
     "vite.config.ts",
-    "vite.constants.ts",
-    "scripts"
+    "vite.constants.ts"
   ]
 }

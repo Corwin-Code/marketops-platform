@@ -1,4 +1,0 @@
-ERROR: possible secret pattern in docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/4e91bec2cca35c67a0640e24b6245348aa52322250034e959d551900f6124ab7/typescript.sarif-r2.json: (?i)(?:password|passwd|secret|token|api[_-]?key)\s*[:=]\s*[\"'][^\"']{12,}[\"']
-ERROR: possible secret pattern in docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c/typescript.sarif.json: (?i)(?:password|passwd|secret|token|api[_-]?key)\s*[:=]\s*[\"'][^\"']{12,}[\"']
-ERROR: possible secret pattern in docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/d06b750f8c566556a27818580f68f362fc143ab72da1d68a9e44676f8658c0ff/typescript.sarif.json: (?i)(?:password|passwd|secret|token|api[_-]?key)\s*[:=]\s*[\"'][^\"']{12,}[\"']
-Governance validation failed with 3 error(s).

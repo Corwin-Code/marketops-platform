@@ -1,6 +1,0 @@
-{
-  "host": "127.0.0.1",
-  "port": 64732,
-  "ownedComposeProject": "slice3-fg-legacy-slice3-final-browser-work-7tia4q",
-  "selection": "ephemeral free-port preflight; Compose must bind successfully"
-}

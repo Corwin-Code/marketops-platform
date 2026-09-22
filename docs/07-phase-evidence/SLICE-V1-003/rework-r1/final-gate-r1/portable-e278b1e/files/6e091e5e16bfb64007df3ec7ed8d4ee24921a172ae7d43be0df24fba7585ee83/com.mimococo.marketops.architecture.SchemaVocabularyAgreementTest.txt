@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.263 s -- in com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest

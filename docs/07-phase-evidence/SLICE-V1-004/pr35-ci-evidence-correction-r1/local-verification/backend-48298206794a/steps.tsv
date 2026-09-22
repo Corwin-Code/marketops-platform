@@ -1,6 +1,0 @@
-job	step	exit	started	finished	workdir
-backend-build	03-resources	0	2026-09-18T09:17:19Z	2026-09-18T09:17:20Z	.
-backend-build	04-clean-verify	0	2026-09-18T09:17:20Z	2026-09-18T10:13:12Z	backend/marketops-server
-backend-build	05-coverage-rejection-proof	0	2026-09-18T10:13:12Z	2026-09-18T10:13:16Z	.
-backend-build	06-migration-artifact	0	2026-09-18T10:13:16Z	2026-09-18T10:13:28Z	.
-backend-build	07-supply-chain-present	0	2026-09-18T10:13:28Z	2026-09-18T10:13:28Z	backend/marketops-server

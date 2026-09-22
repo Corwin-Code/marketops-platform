@@ -1,4 +1,0 @@
-disable_checkpoint = true
-provider_installation {
-  direct {}
-}

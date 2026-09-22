@@ -1,5 +1,0 @@
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.350 s -- in com.mimococo.marketops.ListingDescriptionWriteGateIT
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-[INFO] Total time:  19.392 s
-[INFO] Finished at: 2026-09-10T16:42:34+08:00

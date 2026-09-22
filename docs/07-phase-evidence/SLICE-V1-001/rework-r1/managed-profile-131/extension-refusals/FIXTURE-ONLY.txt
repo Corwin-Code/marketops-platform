@@ -1,1 +1,0 @@
-Local PG17/18 emulation with synthetic repository/provider identities. Not a Yandex staging run or release approval.

@@ -1,2 +1,0 @@
-c431ddd77a45cdc8c769912afe102bbcc18b683bb9f74b19c5ed996bf3d356ba  docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w6/legacy-browser-r2/legacy-isolation-adapter.ts
-c431ddd77a45cdc8c769912afe102bbcc18b683bb9f74b19c5ed996bf3d356ba  frontend/marketops-console/playwright.legacy-isolated.config.ts
