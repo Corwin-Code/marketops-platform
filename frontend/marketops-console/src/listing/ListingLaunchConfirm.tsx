@@ -53,9 +53,14 @@ function isUnpublishedGap(gap: string): boolean {
 }
 
 /**
- * The projection gap for an action whose calibration basis is no longer
- * current (or no package resolves now): the allowance policy cannot be taken
- * from it, and publishing an allowance does not change that.
+ * The projection gap for an action whose calibration recheck is neither
+ * CURRENT nor UNCHANGED_DEPENDENCIES: either no package resolves for the
+ * listing now (none active, or a conflict; a package must be activated or
+ * resolved first), or the action's basis changed (its bound package cannot be
+ * resolved, or is no longer the current one and its dependencies are unproven
+ * or changed; re-prepare on the current package and approve again). The
+ * allowance read does not say which, so the text names both; publishing an
+ * allowance changes neither.
  */
 const CALIBRATION_STALE_GAP = 'ALLOWANCE_POLICY_UNRESOLVED';
 
@@ -165,8 +170,9 @@ export function LaunchConfirm({
     allowanceValue !== undefined &&
     allowanceValue.axes.length > 0 &&
     allowanceValue.axes.every((axis) => axis.sufficient);
-  // A stale calibration basis leaves the policy, and so the axes, unresolved;
-  // it is stated as itself, because publishing an allowance cannot clear it.
+  // No current package, or a changed calibration basis, leaves the policy and
+  // so the axes unresolved; it is stated as itself (both causes, since the
+  // read does not say which), because publishing an allowance cannot clear it.
   const calibrationStale = allowanceValue?.gaps.includes(CALIBRATION_STALE_GAP) === true;
   // No axis is not "unlimited": it means the Owner has not published an
   // allowance (or its axes), so launch stays refused with that stated plainly
