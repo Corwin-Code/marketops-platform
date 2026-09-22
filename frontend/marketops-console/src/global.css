@@ -1,0 +1,11 @@
+/* The page frame only; everything inside is styled by Ant Design tokens. */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f5f5f5;
+}

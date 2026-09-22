@@ -42,12 +42,30 @@ export const REQUEST_TIMEOUT_MS = 10_000;
 /** Header carrying the correlation identifier in both directions. */
 export const CORRELATION_HEADER = 'X-Correlation-ID';
 
+/**
+ * What the backend said about a refusal, when it said anything readable.
+ *
+ * Only the stable error code and the correlation identifier are kept: the code
+ * is what the console translates, and the identifier is what support needs to
+ * find the server log. The free-text detail is deliberately never read.
+ */
+export interface ProblemReference {
+  /** Stable backend error code, e.g. `VERSION_CONFLICT`. */
+  readonly code?: string;
+  /** Identifier that correlates this refusal with the server log. */
+  readonly correlationId?: string;
+}
+
 /** Why a console request did not produce an answer. */
 export type ConsoleFailure =
-  | { readonly kind: 'unauthenticated' }
-  | { readonly kind: 'step-up-required' }
-  | { readonly kind: 'forbidden' }
-  | { readonly kind: 'refused'; readonly status: number; readonly detail: string }
+  | ({ readonly kind: 'unauthenticated' } & ProblemReference)
+  | ({ readonly kind: 'step-up-required' } & ProblemReference)
+  | ({ readonly kind: 'forbidden' } & ProblemReference)
+  | ({
+      readonly kind: 'refused';
+      readonly status: number;
+      readonly detail: string;
+    } & ProblemReference)
   | { readonly kind: 'unreachable'; readonly detail: string }
   | { readonly kind: 'malformed'; readonly detail: string };
 
@@ -1015,16 +1033,23 @@ export async function request<T>(
     });
 
     if (response.status === 401) {
-      return { ok: false, failure: { kind: 'unauthenticated' } };
+      const problem = await readProblem(response);
+      return { ok: false, failure: { kind: 'unauthenticated', ...problem.reference } };
     }
     if (response.status === 403) {
-      const detail = await classifyForbidden(response);
-      return { ok: false, failure: detail };
+      const problem = await readProblem(response);
+      return { ok: false, failure: classifyForbidden(problem) };
     }
     if (!response.ok) {
+      const problem = await readProblem(response);
       return {
         ok: false,
-        failure: { kind: 'refused', status: response.status, detail: response.statusText },
+        failure: {
+          kind: 'refused',
+          status: response.status,
+          detail: response.statusText,
+          ...problem.reference,
+        },
       };
     }
     if (response.status === 204) {
@@ -1052,27 +1077,56 @@ export async function request<T>(
   }
 }
 
+/** The fields of a problem body the console is allowed to use. */
+interface ReadProblem {
+  /** The problem type, used only to recognise a step-up requirement. */
+  readonly type?: string;
+  /** The code and correlation identifier, ready to spread into a failure. */
+  readonly reference: ProblemReference;
+}
+
+const ERROR_CODE_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+
+/**
+ * Read the safe fields of a refusal's problem body.
+ *
+ * A refusal without a readable body is still a refusal, so any failure to read
+ * yields an empty result rather than a different outcome. The detail text is
+ * never kept, so nothing the server phrased for its log can reach the screen.
+ */
+async function readProblem(response: Response): Promise<ReadProblem> {
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    return { reference: {} };
+  }
+  if (typeof body !== 'object' || body === null) {
+    return { reference: {} };
+  }
+  const record = body as Record<string, unknown>;
+  const { type, title, correlationId } = record;
+  return {
+    ...(typeof type === 'string' ? { type } : {}),
+    reference: {
+      ...(typeof title === 'string' && ERROR_CODE_PATTERN.test(title) ? { code: title } : {}),
+      ...(typeof correlationId === 'string' && correlationId !== '' ? { correlationId } : {}),
+    },
+  };
+}
+
 /**
  * Tell a step-up requirement apart from a missing grant.
  *
  * Both arrive as a refusal, and the difference decides what the operator does
  * next: one is solved by re-authenticating, the other by being granted an
- * action they do not hold. The backend names which in the problem type, so only
- * that field is read and nothing else from the body is kept.
+ * action they do not hold. The backend names which in the problem type.
  */
-async function classifyForbidden(response: Response): Promise<ConsoleFailure> {
-  try {
-    const body: unknown = await response.json();
-    if (typeof body === 'object' && body !== null) {
-      const type = (body as Record<string, unknown>).type;
-      if (typeof type === 'string' && type.includes('step-up-required')) {
-        return { kind: 'step-up-required' };
-      }
-    }
-  } catch {
-    // A refusal without a readable body is still a refusal.
+function classifyForbidden(problem: ReadProblem): ConsoleFailure {
+  if (problem.type?.includes('step-up-required') === true) {
+    return { kind: 'step-up-required', ...problem.reference };
   }
-  return { kind: 'forbidden' };
+  return { kind: 'forbidden', ...problem.reference };
 }
 
 /**
