@@ -1,5 +1,19 @@
-import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
-import { AdvertisingCommandTimeline } from './AdvertisingCommandTimeline';
+import {
+  App,
+  Button,
+  Card,
+  Descriptions,
+  Divider,
+  Drawer,
+  Flex,
+  Form,
+  Input,
+  Space,
+  Steps,
+  Typography,
+} from 'antd';
+import type { DescriptionsProps, StepsProps } from 'antd';
+import { FileSearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import {
   actOnAdvertisingCandidate,
@@ -16,37 +30,114 @@ import type {
   AdvertisingWorkflow as Workflow,
   AdvertisingWorkflowCandidate,
 } from '../api/advertising';
-import { AdvertisingProblem } from './AdvertisingQueue';
+import { actions as commonActions } from '../i18n';
+import {
+  ACTION_CLOCK_COLORS,
+  ACTION_CLOCK_LABELS,
+  BID_UNIT_LABELS,
+  CANDIDATE_BASIS_LABELS,
+  CANDIDATE_STATE_COLORS,
+  CANDIDATE_STATE_LABELS,
+  CANDIDATE_STEPS,
+  COVERAGE_COLORS,
+  COVERAGE_LABELS,
+  DISPOSITION_COLORS,
+  DISPOSITION_LABELS,
+  ROLE_LABELS,
+  TASK_STATE_COLORS,
+  TASK_STATE_LABELS,
+  TIMELINESS_COLORS,
+  TIMELINESS_LABELS,
+} from '../i18n/zh/advertising';
+import { CodeTag } from '../ui/CodeTag';
+import { ConfirmButton } from '../ui/ConfirmButton';
+import { EmptyState } from '../ui/EmptyState';
+import { FailureAlert } from '../ui/FailureAlert';
+import { LoadingState } from '../ui/LoadingState';
+import { Money } from '../ui/Money';
+import { AdvertisingCommandTimeline } from './AdvertisingCommandTimeline';
+import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
 import { AdvertisingResponsibilityControls } from './AdvertisingResponsibilityControls';
 import { AdvertisingTimestamp } from './AdvertisingTimestamp';
+import { AbsentValue, IdText, ReasonTags } from './shared';
 
-const LABELS: Record<AdvertisingCandidateAction, string> = {
-  SELECT_CANDIDATE: 'Select exact candidate',
-  REJECT_CANDIDATE: 'Reject candidate',
-  ENDORSE: 'Record operational endorsement',
-  APPROVE: 'Approve exact change',
-  CREATE_COMMAND: 'Create approved command',
+/** Button text and confirmation for each candidate action. */
+const ACTION_TEXT: Record<
+  AdvertisingCandidateAction,
+  { readonly label: string; readonly confirm: string; readonly description: string }
+> = {
+  SELECT_CANDIDATE: {
+    label: '选定该候选',
+    confirm: '确认选定这个精确候选？',
+    description: '选定后进入背书与审批流程。',
+  },
+  REJECT_CANDIDATE: {
+    label: '驳回候选',
+    confirm: '确认驳回该候选？',
+    description: '驳回后该候选不能再被选定。',
+  },
+  ENDORSE: {
+    label: '运营背书',
+    confirm: '确认为该候选做运营背书？',
+    description: '背书会重新校验当前授权与范围。',
+  },
+  APPROVE: {
+    label: '批准精确变更',
+    confirm: '确认批准这项精确出价变更？',
+    description: '批准会重新校验当前授权与范围，批准本身不会写入平台。',
+  },
+  CREATE_COMMAND: {
+    label: '创建已批准的指令',
+    confirm: '确认为已批准的变更创建出价指令？',
+    description: '指令创建后将经过写入闸门、回读和审计；会重新校验当前授权。',
+  },
 };
 
 function candidateActions(
   candidate: AdvertisingWorkflowCandidate,
   allowed: readonly string[],
 ): AdvertisingCandidateAction[] {
-  const actions: AdvertisingCandidateAction[] = [];
+  const result: AdvertisingCandidateAction[] = [];
   if (candidate.makerUserId === undefined && candidate.state === 'DRAFT')
-    actions.push('SELECT_CANDIDATE');
-  if (candidate.state === 'DRAFT') actions.push('REJECT_CANDIDATE');
+    result.push('SELECT_CANDIDATE');
+  if (candidate.state === 'DRAFT') result.push('REJECT_CANDIDATE');
   if (
     candidate.state === 'VALIDATED' &&
     candidate.makerUserId !== undefined &&
     candidate.endorserUserId === undefined
   )
-    actions.push('ENDORSE');
+    result.push('ENDORSE');
   if (candidate.state === 'READY_FOR_REVIEW' && candidate.endorserUserId !== undefined)
-    actions.push('APPROVE');
+    result.push('APPROVE');
   if (candidate.state === 'APPROVED' && candidate.commandId === undefined)
-    actions.push('CREATE_COMMAND');
-  return actions.filter((action) => allowed.includes(action));
+    result.push('CREATE_COMMAND');
+  return result.filter((action) => allowed.includes(action));
+}
+
+const EXECUTION_STATES = new Set([
+  'COMMAND_CREATED',
+  'EXECUTION_TRACKING',
+  'OUTCOME_OBSERVATION',
+  'CLOSED',
+]);
+const STOPPED_STATES = new Set(['REJECTED', 'EXPIRED', 'CANCELLED']);
+
+/** Where a candidate stands in its lifecycle, for display only. */
+function candidateStep(candidate: AdvertisingWorkflowCandidate): {
+  readonly current: number;
+  readonly status: NonNullable<StepsProps['status']>;
+} {
+  let current = 0;
+  if (candidate.commandId !== undefined || EXECUTION_STATES.has(candidate.state)) current = 4;
+  else if (candidate.state === 'APPROVED' || candidate.state === 'POLICY_AUTHORIZED') current = 3;
+  else if (candidate.state === 'READY_FOR_REVIEW') current = 2;
+  else if (candidate.state === 'VALIDATED') current = 1;
+  const status = STOPPED_STATES.has(candidate.state)
+    ? 'error'
+    : candidate.state === 'CLOSED'
+      ? 'finish'
+      : 'process';
+  return { current, status };
 }
 
 const KNOWN_STAFFED_COVERAGE = new Set([
@@ -65,13 +156,7 @@ function responseInstant(value: unknown): string | undefined {
 }
 
 /** Display the server snapshot; never derive a staffed deadline from browser time. */
-function AdvertisingResponseTiming({
-  slo,
-  timezone,
-}: {
-  readonly slo: Workflow['slo'];
-  readonly timezone: string | undefined;
-}): React.JSX.Element {
+function AdvertisingResponseTiming({ slo }: { readonly slo: Workflow['slo'] }): React.JSX.Element {
   const current = Array.isArray(slo) ? undefined : slo;
   const coverage = current?.coverageState;
   const knownCoverage = typeof coverage === 'string' && KNOWN_STAFFED_COVERAGE.has(coverage);
@@ -83,7 +168,7 @@ function AdvertisingResponseTiming({
     breached === true
       ? 'BREACHED'
       : breached === false && knownCoverage && due !== undefined
-        ? 'NOT_BREACHED as of this response'
+        ? 'NOT_BREACHED'
         : 'UNRESOLVED';
   const completion = (
     value: string | undefined,
@@ -91,19 +176,18 @@ function AdvertisingResponseTiming({
     due: string | undefined,
   ): React.JSX.Element =>
     value !== undefined ? (
-      <>
-        recorded at <AdvertisingTimestamp value={value} timezone={timezone} />
-      </>
+      <Space size={4}>
+        <Typography.Text>已记录于</Typography.Text>
+        <AdvertisingTimestamp value={value} />
+      </Space>
+    ) : raw === null && knownCoverage && due !== undefined ? (
+      <Typography.Text type="warning">截至本次响应尚未记录</Typography.Text>
     ) : (
-      <>
-        {raw === null && knownCoverage && due !== undefined
-          ? 'not recorded as of this response'
-          : 'UNRESOLVED'}
-      </>
+      <AbsentValue label="未确定" />
     );
   let actionClock = 'UNRESOLVED';
-  if (actedAt !== undefined) actionClock = 'stage completed';
-  else if (current?.actionPaused === true) actionClock = 'paused';
+  if (actedAt !== undefined) actionClock = 'STAGE_COMPLETED';
+  else if (current?.actionPaused === true) actionClock = 'PAUSED';
   else if (
     knownCoverage &&
     actionDue !== undefined &&
@@ -111,37 +195,98 @@ function AdvertisingResponseTiming({
     current.actionPaused === false &&
     current.firstAttributableActionAt === null
   ) {
-    if (coverage === 'IN_COVERAGE') actionClock = 'active';
+    if (coverage === 'IN_COVERAGE') actionClock = 'ACTIVE';
     else if (coverage === 'OUT_OF_COVERAGE' || coverage === 'OUT_OF_COVERAGE_ACTIVE_HARM')
-      actionClock = 'awaiting staffed coverage';
+      actionClock = 'AWAITING_COVERAGE';
   }
   const age = current?.wallClockExposureAgeSeconds;
 
+  const items: DescriptionsProps['items'] = [
+    {
+      key: 'ack',
+      label: <span aria-label="确认完成情况">确认完成</span>,
+      children: completion(acknowledgedAt, current?.acknowledgedAt, ackDue),
+    },
+    {
+      key: 'act',
+      label: <span aria-label="处理阶段完成情况">处理阶段完成</span>,
+      children: completion(actedAt, current?.firstAttributableActionAt, actionDue),
+    },
+    {
+      key: 'ackTimeliness',
+      label: <span aria-label="确认时效">确认时效</span>,
+      children: (
+        <CodeTag
+          labels={TIMELINESS_LABELS}
+          code={timeliness(current?.acknowledgementBreached, ackDue)}
+          colors={TIMELINESS_COLORS}
+        />
+      ),
+    },
+    {
+      key: 'actTimeliness',
+      label: <span aria-label="处理时效">处理时效</span>,
+      children: (
+        <CodeTag
+          labels={TIMELINESS_LABELS}
+          code={timeliness(current?.actionBreached, actionDue)}
+          colors={TIMELINESS_COLORS}
+        />
+      ),
+    },
+    {
+      key: 'clock',
+      label: <span aria-label="处理计时状态">处理计时</span>,
+      children: (
+        <CodeTag labels={ACTION_CLOCK_LABELS} code={actionClock} colors={ACTION_CLOCK_COLORS} />
+      ),
+    },
+    {
+      key: 'age',
+      label: '暴露时长',
+      children:
+        typeof age === 'number' && Number.isSafeInteger(age) && age >= 0 ? (
+          `${String(age)} 秒`
+        ) : (
+          <AbsentValue label="未确定" />
+        ),
+    },
+  ];
+
   return (
-    <div role="group" aria-label="Advertising response timing">
-      <p aria-label="Acknowledgement completion">
-        Acknowledgement completion: {completion(acknowledgedAt, current?.acknowledgedAt, ackDue)}
-      </p>
-      <p aria-label="Action-stage completion">
-        Action-stage completion:{' '}
-        {completion(actedAt, current?.firstAttributableActionAt, actionDue)}
-      </p>
-      <p aria-label="Acknowledgement timeliness">
-        Acknowledgement timeliness: {timeliness(current?.acknowledgementBreached, ackDue)}
-      </p>
-      <p aria-label="Action timeliness">
-        Action timeliness: {timeliness(current?.actionBreached, actionDue)}
-      </p>
-      <p aria-label="Action clock state">Action clock: {actionClock}</p>
+    <div role="group" aria-label="广告响应时效">
+      <Descriptions bordered size="small" column={{ xs: 1, md: 2, xl: 3 }} items={items} />
       {current?.actionPaused === true && (
-        <p>Current action pause is reported; exposure age continues.</p>
+        <Typography.Paragraph type="secondary" style={{ marginTop: 8, marginBottom: 0 }}>
+          当前处理计时已暂停，暴露时长仍在累计。
+        </Typography.Paragraph>
       )}
-      <p>
-        Exposure age{' '}
-        {typeof age === 'number' && Number.isSafeInteger(age) && age >= 0 ? age : 'UNRESOLVED'}{' '}
-        seconds
-      </p>
     </div>
+  );
+}
+
+/** A candidate's exact native bid change. */
+function BidChange({
+  candidate,
+}: {
+  readonly candidate: AdvertisingWorkflowCandidate;
+}): React.JSX.Element {
+  return (
+    <Space size={6} wrap>
+      <Typography.Text type="secondary">平台出价</Typography.Text>
+      {candidate.currentBidAmount === undefined ? (
+        <AbsentValue label="未确定" />
+      ) : (
+        <Money value={candidate.currentBidAmount} currency={candidate.currency ?? null} />
+      )}
+      <Typography.Text type="secondary">→</Typography.Text>
+      {candidate.targetBidAmount === undefined ? (
+        <AbsentValue label="未确定" />
+      ) : (
+        <Money value={candidate.targetBidAmount} currency={candidate.currency ?? null} strong />
+      )}
+      <CodeTag labels={BID_UNIT_LABELS} code={candidate.unit ?? 'UNRESOLVED'} />
+    </Space>
   );
 }
 
@@ -155,12 +300,12 @@ export function AdvertisingWorkflow({
   readonly caseId: string;
   readonly timezone: string | undefined;
 }): React.JSX.Element {
+  const { message } = App.useApp();
   const [workflow, setWorkflow] = useState<Workflow>();
   const [failure, setFailure] = useState<ConsoleFailure>();
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
-  const [notice, setNotice] = useState<string>();
   const [preview, setPreview] = useState<AdvertisingDecisionPreview>();
 
   useEffect(() => {
@@ -185,7 +330,6 @@ export function AdvertisingWorkflow({
     action: AdvertisingCandidateAction,
   ): Promise<void> {
     setBusy(true);
-    setNotice(undefined);
     setPreview(undefined);
     const result = await actOnAdvertisingCandidate(
       context,
@@ -198,7 +342,7 @@ export function AdvertisingWorkflow({
     );
     setBusy(false);
     if (result.ok) {
-      setNotice(`${LABELS[action]} recorded. Current authority reloaded.`);
+      void message.success(`「${ACTION_TEXT[action].label}」已记录，已重新加载当前授权`);
       setReason('');
       setRevision((value) => value + 1);
     } else {
@@ -225,155 +369,288 @@ export function AdvertisingWorkflow({
         ? workflow.slo[key]
         : undefined;
 
+  const reload = (): void => {
+    setRevision((value) => value + 1);
+  };
+
+  const canReview =
+    workflow?.allowedActions.some((action) => action === 'ENDORSE' || action === 'APPROVE') ===
+    true;
+
   return (
-    <section
-      aria-label="Advertising workflow"
-      data-state={workflow === undefined ? 'loading' : 'loaded'}
-    >
-      <h3>Action and responsibility</h3>
-      {failure !== undefined && <AdvertisingProblem failure={failure} />}
-      {notice !== undefined && <p role="status">{notice}</p>}
-      {workflow === undefined ? (
-        <p>Workflow authority is unavailable until the service answers.</p>
-      ) : (
-        <>
-          <p>
-            Disposition {workflow.operatingDisposition} · Task {workflow.taskId ?? 'unresolved'} ·{' '}
-            {workflow.taskState} · accountable role {workflow.accountableRole}
-          </p>
-          <dl>
-            <dt>First raised</dt>
-            <dd>
-              <AdvertisingTimestamp value={workflow.firstRaisedAt} timezone={timezone} />
-            </dd>
-            <dt>Acknowledge by</dt>
-            <dd>
-              <AdvertisingTimestamp
-                value={liveTime('acknowledgementDueAt', workflow.acknowledgementDueAt)}
-                timezone={timezone}
-              />
-            </dd>
-            <dt>Act by</dt>
-            <dd>
-              <AdvertisingTimestamp
-                value={liveTime('actionDueAt', workflow.actionDueAt)}
-                timezone={timezone}
-              />
-            </dd>
-            <dt>Escalate by</dt>
-            <dd>
-              <AdvertisingTimestamp
-                value={liveTime('escalationDueAt', workflow.escalationDueAt)}
-                timezone={timezone}
-              />
-            </dd>
-            <dt>Staffing coverage</dt>
-            <dd>{liveTime('coverageState', workflow.coverageState) ?? 'UNRESOLVED'}</dd>
-            <dt>Next staffed response</dt>
-            <dd>
-              <AdvertisingTimestamp
-                value={liveTime('nextStaffedResponseAt', workflow.nextStaffedResponseAt)}
-                timezone={timezone}
-              />
-            </dd>
-          </dl>
-          <AdvertisingResponseTiming slo={workflow.slo} timezone={timezone} />
-          <AdvertisingResponsibilityControls
-            context={context}
-            workflow={workflow}
-            timezone={timezone}
-            reload={() => {
-              setRevision((value) => value + 1);
-            }}
-          />
-          {workflow.allowedActions.length > 0 && (
-            <label>
-              Reason for this decision
-              <textarea
-                value={reason}
-                maxLength={2000}
-                onChange={(event) => {
-                  setReason(event.target.value);
-                }}
-              />
-            </label>
-          )}
-          {workflow.candidates.length === 0 ? (
-            <p>
-              No finite candidate is established. Missing evidence cannot become a target entered by
-              hand.
-            </p>
+    <section aria-label="广告工作流" data-state={workflow === undefined ? 'loading' : 'loaded'}>
+      <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+        <Flex justify="space-between" align="center" wrap gap={8}>
+          <Typography.Title level={5} style={{ margin: 0 }}>
+            处理与责任
+          </Typography.Title>
+          <Button icon={<ReloadOutlined />} onClick={reload}>
+            {commonActions.refresh}
+          </Button>
+        </Flex>
+        {failure !== undefined && <FailureAlert failure={failure} />}
+        {workflow === undefined ? (
+          failure === undefined ? (
+            <LoadingState rows={4} />
           ) : (
-            <ul>
-              {workflow.candidates.map((candidate) => (
-                <li key={candidate.id} data-candidate-id={candidate.id}>
-                  <h4>
-                    Candidate {candidate.ordinal}: {candidate.basis}
-                  </h4>
-                  <p>
-                    Exact native bid {candidate.currentBidAmount ?? 'unresolved'} →{' '}
-                    {candidate.targetBidAmount ?? 'unresolved'} {candidate.currency ?? ''} (
-                    {candidate.unit ?? 'unit unresolved'})
-                  </p>
-                  <p>
-                    {candidate.state} · revision {candidate.version}
-                  </p>
-                  {candidate.commandId !== undefined && (
-                    <AdvertisingCommandTimeline
-                      context={context}
-                      commandId={candidate.commandId}
+            <Typography.Text type="secondary">服务响应前无法获取工作流授权。</Typography.Text>
+          )
+        ) : (
+          <>
+            <Descriptions
+              bordered
+              size="small"
+              column={{ xs: 1, md: 2, xl: 3 }}
+              items={[
+                {
+                  key: 'disposition',
+                  label: '处置状态',
+                  children: (
+                    <CodeTag
+                      labels={DISPOSITION_LABELS}
+                      code={workflow.operatingDisposition}
+                      colors={DISPOSITION_COLORS}
+                    />
+                  ),
+                },
+                {
+                  key: 'task',
+                  label: '任务',
+                  children: (
+                    <Space size={4} wrap>
+                      <CodeTag
+                        labels={TASK_STATE_LABELS}
+                        code={workflow.taskState}
+                        colors={TASK_STATE_COLORS}
+                      />
+                      {workflow.taskId === undefined ? (
+                        <AbsentValue label="任务未确定" />
+                      ) : (
+                        <IdText value={workflow.taskId} />
+                      )}
+                    </Space>
+                  ),
+                },
+                {
+                  key: 'role',
+                  label: '负责角色',
+                  children: <CodeTag labels={ROLE_LABELS} code={workflow.accountableRole} />,
+                },
+                {
+                  key: 'raised',
+                  label: '首次提出',
+                  children: (
+                    <AdvertisingTimestamp value={workflow.firstRaisedAt} timezone={timezone} />
+                  ),
+                },
+                {
+                  key: 'ackDue',
+                  label: '确认截止',
+                  children: (
+                    <AdvertisingTimestamp
+                      value={liveTime('acknowledgementDueAt', workflow.acknowledgementDueAt)}
                       timezone={timezone}
                     />
-                  )}
-                  {candidateActions(candidate, workflow.allowedActions).map((action) => (
-                    <button
-                      type="button"
-                      key={action}
-                      disabled={busy || (action !== 'CREATE_COMMAND' && reason.trim().length === 0)}
-                      onClick={() => {
-                        void act(candidate, action);
-                      }}
-                    >
-                      {LABELS[action]}
-                    </button>
-                  ))}
-                  {workflow.allowedActions.some(
-                    (action) => action === 'ENDORSE' || action === 'APPROVE',
-                  ) && (
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => {
-                        void review(candidate);
-                      }}
-                    >
-                      Review complete decision evidence
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          {preview !== undefined && (
-            <section aria-label="Advertising decision preview">
-              <h4>Current guardrail verdict: {preview.verdict.passed ? 'PASS' : 'BLOCKED'}</h4>
-              <p>
-                Endorsement, approval and command creation each recheck current authority and scope.
-              </p>
-              <ul>
-                {[
+                  ),
+                },
+                {
+                  key: 'actDue',
+                  label: '处理截止',
+                  children: (
+                    <AdvertisingTimestamp
+                      value={liveTime('actionDueAt', workflow.actionDueAt)}
+                      timezone={timezone}
+                    />
+                  ),
+                },
+                {
+                  key: 'escalateDue',
+                  label: '升级截止',
+                  children: (
+                    <AdvertisingTimestamp
+                      value={liveTime('escalationDueAt', workflow.escalationDueAt)}
+                      timezone={timezone}
+                    />
+                  ),
+                },
+                {
+                  key: 'coverage',
+                  label: '值班覆盖',
+                  children: (
+                    <CodeTag
+                      labels={COVERAGE_LABELS}
+                      code={liveTime('coverageState', workflow.coverageState) ?? 'UNRESOLVED'}
+                      colors={COVERAGE_COLORS}
+                    />
+                  ),
+                },
+                {
+                  key: 'nextStaffed',
+                  label: '下次值班响应',
+                  children: (
+                    <AdvertisingTimestamp
+                      value={liveTime('nextStaffedResponseAt', workflow.nextStaffedResponseAt)}
+                      timezone={timezone}
+                    />
+                  ),
+                },
+              ]}
+            />
+            <AdvertisingResponseTiming slo={workflow.slo} />
+
+            <Divider titlePlacement="start" style={{ margin: '8px 0' }}>
+              责任与例外
+            </Divider>
+            <AdvertisingResponsibilityControls
+              context={context}
+              workflow={workflow}
+              timezone={timezone}
+              reload={reload}
+            />
+
+            <Divider titlePlacement="start" style={{ margin: '8px 0' }}>
+              出价候选
+            </Divider>
+            {workflow.allowedActions.length > 0 && (
+              <Form layout="vertical" style={{ maxWidth: 720 }}>
+                <Form.Item
+                  label="决策理由"
+                  required
+                  help="选定、驳回、背书和批准都需要填写理由"
+                  style={{ marginBottom: 0 }}
+                >
+                  <Input.TextArea
+                    aria-label="决策理由"
+                    value={reason}
+                    maxLength={2000}
+                    showCount
+                    rows={3}
+                    onChange={(event) => {
+                      setReason(event.target.value);
+                    }}
+                  />
+                </Form.Item>
+              </Form>
+            )}
+            {workflow.candidates.length === 0 ? (
+              <EmptyState description="尚未形成有限的出价候选。缺失的证据不能变成手工输入的目标值。" />
+            ) : (
+              <Flex vertical gap={12}>
+                {workflow.candidates.map((candidate) => {
+                  const step = candidateStep(candidate);
+                  const available = candidateActions(candidate, workflow.allowedActions);
+                  return (
+                    <div key={candidate.id} data-candidate-id={candidate.id}>
+                      <Card
+                        size="small"
+                        title={
+                          <Space size={6} wrap>
+                            <span>候选 {candidate.ordinal}</span>
+                            <CodeTag labels={CANDIDATE_BASIS_LABELS} code={candidate.basis} />
+                            <CodeTag
+                              labels={CANDIDATE_STATE_LABELS}
+                              code={candidate.state}
+                              colors={CANDIDATE_STATE_COLORS}
+                            />
+                          </Space>
+                        }
+                        extra={
+                          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                            版本 {candidate.version}
+                          </Typography.Text>
+                        }
+                      >
+                        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+                          <Steps
+                            size="small"
+                            current={step.current}
+                            status={step.status}
+                            items={CANDIDATE_STEPS.map((item) => ({ title: item.title }))}
+                          />
+                          <BidChange candidate={candidate} />
+                          <Space size={[8, 8]} wrap>
+                            {available.map((action) => {
+                              const needsReason =
+                                action !== 'CREATE_COMMAND' && reason.trim().length === 0;
+                              return (
+                                <ConfirmButton
+                                  key={action}
+                                  type={action === 'REJECT_CANDIDATE' ? 'default' : 'primary'}
+                                  danger={action === 'REJECT_CANDIDATE'}
+                                  title={ACTION_TEXT[action].confirm}
+                                  description={ACTION_TEXT[action].description}
+                                  disabled={busy || needsReason}
+                                  disabledReason={busy ? '正在处理…' : '请先填写决策理由'}
+                                  onConfirm={() => act(candidate, action)}
+                                >
+                                  {ACTION_TEXT[action].label}
+                                </ConfirmButton>
+                              );
+                            })}
+                            {canReview && (
+                              <Button
+                                icon={<FileSearchOutlined />}
+                                disabled={busy}
+                                onClick={() => {
+                                  void review(candidate);
+                                }}
+                              >
+                                查看完整决策证据
+                              </Button>
+                            )}
+                          </Space>
+                          {candidate.commandId !== undefined && (
+                            <AdvertisingCommandTimeline
+                              context={context}
+                              commandId={candidate.commandId}
+                              timezone={timezone}
+                            />
+                          )}
+                        </Space>
+                      </Card>
+                    </div>
+                  );
+                })}
+              </Flex>
+            )}
+          </>
+        )}
+      </Space>
+      <Drawer
+        title="完整决策证据"
+        open={preview !== undefined}
+        size="large"
+        onClose={() => {
+          setPreview(undefined);
+        }}
+      >
+        {preview !== undefined && (
+          <section aria-label="广告决策证据预览">
+            <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+              <Flex align="center" gap={8}>
+                <Typography.Text strong>当前规则校验结论：</Typography.Text>
+                <CodeTag
+                  labels={{ PASS: '通过', BLOCKED: '已阻断' }}
+                  code={preview.verdict.passed ? 'PASS' : 'BLOCKED'}
+                  colors={{ PASS: 'success', BLOCKED: 'error' }}
+                />
+              </Flex>
+              <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
+                背书、批准和创建指令时都会重新校验当前授权与范围。
+              </Typography.Paragraph>
+              <ReasonTags
+                codes={[
                   ...preview.verdict.reasons,
                   ...preview.gateReasons,
                   ...preview.unresolvedReasons,
-                ].map((value, index) => (
-                  <li key={`${String(index)}-${value}`}>{value}</li>
-                ))}
-              </ul>
-              <AdvertisingEvidenceDetails value={preview} label="Complete decision evidence" />
-            </section>
-          )}
-        </>
-      )}
+                ]}
+                empty={<Typography.Text type="secondary">没有阻断或未解决的原因。</Typography.Text>}
+              />
+              <AdvertisingEvidenceDetails value={preview} label="完整决策证据" inline />
+            </Space>
+          </section>
+        )}
+      </Drawer>
     </section>
   );
 }

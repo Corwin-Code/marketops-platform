@@ -1,4 +1,6 @@
-import { presentEvidence } from './evidencePresentation';
+import { Tag, Tooltip } from 'antd';
+import { terms } from '../i18n';
+import { EVIDENCE_TONE_COLORS, presentEvidence } from './evidencePresentation';
 
 /** What a chip needs in order to say what it means. */
 export interface EvidenceChipProps {
@@ -6,6 +8,8 @@ export interface EvidenceChipProps {
   readonly state: string;
   /** What the state is about, for the accessible name. */
   readonly of: string;
+  /** Also print what the state is about before the label. */
+  readonly showOf?: boolean;
 }
 
 /**
@@ -17,23 +21,34 @@ export interface EvidenceChipProps {
  * chip rather than as nothing: an operator seeing a blank where a state belongs
  * would reasonably read it as "fine".
  */
-export function EvidenceChip({ state, of }: EvidenceChipProps): React.JSX.Element {
+export function EvidenceChip({ state, of, showOf = false }: EvidenceChipProps): React.JSX.Element {
   const presentation = presentEvidence(state);
   if (presentation === undefined) {
     return (
-      <span data-evidence-tone="unknown" data-evidence-state={state} title={state}>
-        {of}: unrecognised state
-      </span>
+      <Tooltip title={`${terms.rawCode}：${state}`}>
+        <Tag
+          data-evidence-tone="unknown"
+          data-evidence-state={state}
+          aria-label={`${of}：${terms.unrecognized}`}
+        >
+          {showOf ? `${of}：` : ''}
+          {terms.unrecognized}
+        </Tag>
+      </Tooltip>
     );
   }
   return (
-    <span
-      data-evidence-tone={presentation.tone}
-      data-evidence-state={state}
-      data-write-grade={presentation.writeGrade ? 'yes' : 'no'}
-      title={presentation.explanation}
-    >
-      {of}: {presentation.label}
-    </span>
+    <Tooltip title={presentation.explanation}>
+      <Tag
+        color={EVIDENCE_TONE_COLORS[presentation.tone]}
+        data-evidence-tone={presentation.tone}
+        data-evidence-state={state}
+        data-write-grade={presentation.writeGrade ? 'yes' : 'no'}
+        aria-label={`${of}：${presentation.label}`}
+      >
+        {showOf ? `${of}：` : ''}
+        {presentation.label}
+      </Tag>
+    </Tooltip>
   );
 }
