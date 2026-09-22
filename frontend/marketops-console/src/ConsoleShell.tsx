@@ -41,6 +41,9 @@ const ListingPage = lazy(async () => ({ default: (await import('./pages/listing'
 const ListingAllowancesPage = lazy(async () => ({
   default: (await import('./pages/listingAllowances')).ListingAllowancesPage,
 }));
+const ListingCalibrationsPage = lazy(async () => ({
+  default: (await import('./pages/listingCalibrations')).ListingCalibrationsPage,
+}));
 const SystemStatusPage = lazy(async () => ({
   default: (await import('./pages/system')).SystemStatusPage,
 }));
@@ -132,6 +135,7 @@ export function ConsoleShell({
         />
         <Route path={ROUTES.listing} element={<ListingPage {...page} />} />
         <Route path={ROUTES.listingAllowances} element={<ListingAllowancesPage {...page} />} />
+        <Route path={ROUTES.listingCalibrations} element={<ListingCalibrationsPage {...page} />} />
         <Route
           path={ROUTES.systemStatus}
           element={<SystemStatusPage config={config} fetchImpl={fetchImpl} />}

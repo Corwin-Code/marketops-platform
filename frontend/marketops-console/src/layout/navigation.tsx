@@ -27,6 +27,7 @@ export const ROUTES = {
   advertisingWeekly: '/advertising/briefs/weekly',
   listing: '/listing',
   listingAllowances: '/listing/allowances',
+  listingCalibrations: '/listing/calibrations',
   systemStatus: '/system/status',
 } as const;
 
@@ -98,6 +99,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     items: [
       { path: ROUTES.listing, label: pages.listing },
       { path: ROUTES.listingAllowances, label: pages.listingAllowances },
+      { path: ROUTES.listingCalibrations, label: pages.listingCalibrations },
     ],
   },
   {
