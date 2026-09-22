@@ -34,7 +34,7 @@ import {
 } from '../api/listingConversion';
 import { dialog } from '../i18n/zh/common';
 import { packetText, verifyText } from '../i18n/zh/listingManual';
-import { CodeTag, FormDrawer } from '../ui';
+import { FormDrawer } from '../ui';
 import {
   Code,
   Hint,
@@ -75,9 +75,9 @@ type Match = 'MATCHED_TARGET' | 'MATCHED_PRIOR' | 'DIFFERENT' | 'UNKNOWN';
 type Mode = 'description' | 'promotion' | 'unknown';
 
 /**
- * Whether active emergency stops cover the listing, as far as this client can
- * tell: certainly, possibly (a scope it cannot resolve), unknown (the stops
- * could not be read in full) or provably not.
+ * Whether an effective emergency-stop scope holds the listing: certainly,
+ * possibly (a scope this client cannot resolve), unknown (the stops could not
+ * be read in full) or provably not.
  */
 type Coverage = 'CONTAINED' | 'POSSIBLE' | 'UNKNOWN' | 'CLEAR';
 
@@ -266,19 +266,22 @@ function compareDescription(
 }
 
 /**
- * The participation match an observation of the action's own promotion
- * supports: an observation of another promotion is blocked, because the
- * database refuses it whatever the match. Whether the observed declaration
- * equals the action's terms is not in the list read, so a participation is
- * offered as 与目标一致 in its state only, with the database checking the
- * terms; 不一致 is never offered for it, because the database refuses it when
- * the terms do match. 不一致 is offered only when the listing does not take
- * part.
+ * The participation match an observation supports, decided exactly as
+ * lc_bind_promotion_participation decides it: the observation matches the
+ * target when it participates and its declaration digest equals the action's
+ * promotion terms digest. 不一致 is refused by the database whenever the terms
+ * do match, and also for a participation whose declaration is unknown, so it is
+ * offered only when the listing does not take part or takes part under a
+ * declaration that is provably a different one. Without both digests nothing is
+ * proven and only 未知 remains.
  */
-function comparePromotion(observation: PromotionObservationSummary): Match {
-  if (observation.participationState === 'PARTICIPATING') return 'MATCHED_TARGET';
+function comparePromotion(observation: PromotionObservationSummary, action: ListingAction): Match {
   if (observation.participationState === 'NOT_PARTICIPATING') return 'DIFFERENT';
-  return 'UNKNOWN';
+  if (observation.participationState !== 'PARTICIPATING') return 'UNKNOWN';
+  const declared = observation.declarationDigest;
+  const target = action.promotionTermsDigest;
+  if (declared === undefined || target === undefined) return 'UNKNOWN';
+  return declared === target ? 'MATCHED_TARGET' : 'DIFFERENT';
 }
 
 /**
@@ -301,12 +304,38 @@ function scopeCovers(containment: Containment, action: ListingAction): boolean |
   }
 }
 
+/** What is known here about the listing being held by an emergency stop. */
+interface ContainmentState {
+  readonly coverage: Coverage;
+  /**
+   * The backend decided containment itself on the action read, so nothing about
+   * it is left for it to check at submission.
+   */
+  readonly decided: boolean;
+}
+
+/**
+ * Containment as the backend decided it for this action, or, when the action
+ * read does not carry that answer, what the active stops still allow this
+ * client to say.
+ */
+function containmentState(
+  action: ListingAction | undefined,
+  containments: readonly Containment[] | undefined,
+): ContainmentState {
+  if (action?.scopeContained === true) return { coverage: 'CONTAINED', decided: true };
+  if (action?.scopeContained === false) return { coverage: 'CLEAR', decided: true };
+  return { coverage: containmentCoverage(containments, action), decided: false };
+}
+
 /**
  * How the active stops cover the listing. A shared-version stop also covers
  * listings that depend on one in its scope, which this client cannot follow,
  * so it is only ever provably unrelated when it is not a shared-version stop.
  * The database also contains a listing on an unreleased outcome-protection
- * failure, which no stop lists; backendChecks leaves that to the backend.
+ * failure, which no stop lists, so this inference is only ever the fallback
+ * for an action read that did not decide containment itself, and backendChecks
+ * then leaves both to the backend.
  */
 function containmentCoverage(
   containments: readonly Containment[] | undefined,
@@ -431,31 +460,15 @@ function PromotionComparison({
   if (observation === undefined) {
     return <Typography.Text type="secondary">{verifyText.comparisonNone}</Typography.Text>;
   }
-  // A participation matches the target in its state only: the observation
-  // summary carries no declaration digest, so the terms (and, when the
-  // action's terms cannot be read, the promotion itself) are the backend's to
-  // check. The label says so instead of a plain 与目标一致.
-  const participating = computed === MATCHED_TARGET;
+  // The conclusion is exact: the observed declaration digest is compared with
+  // the action's promotion terms digest, and a matching digest is the whole
+  // declaration, so it also settles that this is the action's own promotion.
+  const participating = observation.participationState === 'PARTICIPATING';
   return (
     <Flex vertical gap={4} data-comparison={computed}>
       <Flex gap={8} wrap align="center">
         <Typography.Text strong>{verifyText.comparison}：</Typography.Text>
-        {participating ? (
-          <span data-family="managementMatch" data-code={computed}>
-            <CodeTag
-              labels={{
-                [MATCHED_TARGET]:
-                  identity === undefined
-                    ? verifyText.promotionParticipatingIdentityUnknown
-                    : verifyText.promotionParticipating,
-              }}
-              code={computed}
-              colors={{ [MATCHED_TARGET]: 'warning' }}
-            />
-          </span>
-        ) : (
-          <Code family="managementMatch" code={computed} />
-        )}
+        <Code family="managementMatch" code={computed} />
         <Typography.Text type="secondary">
           {verifyText.comparisonObservedAt} <When value={observation.observedAt} />
         </Typography.Text>
@@ -473,15 +486,17 @@ function PromotionComparison({
           {verifyText.promotionActionKey}：{identity.nativePromotionKey}
         </Typography.Text>
       )}
-      {computed === 'UNKNOWN' && (
-        <Typography.Text type="secondary">{verifyText.promotionUnknownState}</Typography.Text>
-      )}
-      {participating && (
-        <Typography.Text type="secondary">{verifyText.promotionTermsChecked}</Typography.Text>
-      )}
-      {computed === 'DIFFERENT' && (
-        <Typography.Text type="secondary">{verifyText.promotionNotParticipating}</Typography.Text>
-      )}
+      <Typography.Text type="secondary">
+        {computed === MATCHED_TARGET
+          ? verifyText.promotionTermsMatched
+          : computed === 'DIFFERENT'
+            ? participating
+              ? verifyText.promotionTermsDiffer
+              : verifyText.promotionNotParticipating
+            : participating
+              ? verifyText.promotionTermsUnknown
+              : verifyText.promotionUnknownState}
+      </Typography.Text>
     </Flex>
   );
 }
@@ -550,7 +565,7 @@ function evidenceOnlyReasons({
   mode,
   packet,
   action,
-  coverage,
+  containment,
   evidence,
   match,
   display,
@@ -558,7 +573,7 @@ function evidenceOnlyReasons({
   readonly mode: Mode;
   readonly packet: ManualPacket;
   readonly action: ListingAction | undefined;
-  readonly coverage: Coverage;
+  readonly containment: ContainmentState;
   readonly evidence: boolean;
   readonly match: string | undefined;
   readonly display: DisplayObservationSummary | undefined;
@@ -569,7 +584,7 @@ function evidenceOnlyReasons({
   if (action.state !== 'LAUNCHED') {
     reasons.push(verifyText.reasonActionState(codeText('actionState', action.state)));
   }
-  if (coverage === 'CONTAINED') reasons.push(verifyText.reasonContained);
+  if (containment.coverage === 'CONTAINED') reasons.push(verifyText.reasonContained);
   const deviation = packet.reports.find(
     (report) => report.operationQualification === 'UNAUTHORISED_DEVIATION',
   );
@@ -625,44 +640,36 @@ function evidenceOnlyReasons({
 
 /**
  * What only the backend can confirm before a verification with these choices
- * verifies: stops this client cannot resolve, unreleased outcome-protection
- * failures and, for a promotion, the observed promotion and declared terms.
- * The verified preview is shown only when this is empty.
+ * verifies: the stops this client could not resolve when the action read did
+ * not decide containment itself, and a promotion observation whose promotion
+ * is neither disclosed here nor settled by a matching declaration digest. The
+ * verified preview is shown only when this is empty.
  */
 function backendChecks({
   mode,
-  coverage,
+  containment,
   promotionKnown,
+  promotionProven,
   evidence,
-  match,
 }: {
   readonly mode: Mode;
-  readonly coverage: Coverage;
+  readonly containment: ContainmentState;
   readonly promotionKnown: boolean;
+  /** The chosen observation's declaration digest is the action's own terms digest. */
+  readonly promotionProven: boolean;
   readonly evidence: boolean;
-  readonly match: string | undefined;
 }): string[] {
   const checks: string[] = [];
-  if (coverage === 'POSSIBLE') checks.push(verifyText.checkContainmentPossible);
-  if (coverage === 'UNKNOWN') checks.push(verifyText.checkContainmentUnknown);
-  // lc_scope_contained also holds a listing on an unreleased outcome-protection
-  // failure (ops.lc_unreleased_outcome_failures): a FAIL node result of any
-  // action on the listing not yet released by a re-enabled listing stop. No
-  // console read exposes it (the evaluation read covers one action's plan and
-  // not the release; listing health is a snapshot), so it can never be ruled
-  // out here and the preview stays conditional. Follow-up that makes this
-  // exact: a scopeContained boolean (ops.lc_scope_contained, as
-  // ListingActionRepository.scopeContained) on the action or packet read,
-  // which would also replace the containment-list inference above.
-  checks.push(verifyText.checkOutcomeFailures);
-  if (mode === 'promotion' && evidence) {
-    if (!promotionKnown) checks.push(verifyText.checkPromotionIdentity);
-    // The observation summary has no declaration digest, so a participation
-    // cannot be compared with the action's terms here. Follow-up that makes
-    // this exact: declarationDigest (core.lc_promotion_observation.
-    // declaration_digest) on the promotion observation summary, compared with
-    // action.promotionTermsDigest, which would also let DIFFERENT be offered.
-    if (match === MATCHED_TARGET) checks.push(verifyText.checkPromotionTerms);
+  if (!containment.decided) {
+    if (containment.coverage === 'POSSIBLE') checks.push(verifyText.checkContainmentPossible);
+    if (containment.coverage === 'UNKNOWN') checks.push(verifyText.checkContainmentUnknown);
+    // Without the backend's own answer, an unreleased outcome-protection
+    // failure (ops.lc_unreleased_outcome_failures) also contains the listing
+    // and no stop lists it, so it can never be ruled out from the stop list.
+    checks.push(verifyText.checkOutcomeFailures);
+  }
+  if (mode === 'promotion' && evidence && !promotionKnown && !promotionProven) {
+    checks.push(verifyText.checkPromotionIdentity);
   }
   return checks;
 }
@@ -675,7 +682,7 @@ function VerifyForm({
   observations,
   observationsLoading,
   observationsFailed,
-  coverage,
+  containment,
   promotionIdentity,
   promotionTermsUnreadable,
 }: {
@@ -685,7 +692,7 @@ function VerifyForm({
   readonly observations: ListingObservations | undefined;
   readonly observationsLoading: boolean;
   readonly observationsFailed: boolean;
-  readonly coverage: Coverage;
+  readonly containment: ContainmentState;
   readonly promotionIdentity: PromotionIdentity | undefined;
   /** The action's promotion terms were read and are not disclosed, or the read failed. */
   readonly promotionTermsUnreadable: boolean;
@@ -716,7 +723,7 @@ function VerifyForm({
       : promotion
         ? participation === undefined
           ? 'UNKNOWN'
-          : comparePromotion(participation)
+          : comparePromotion(participation, action)
         : management === undefined
           ? 'UNKNOWN'
           : compareDescription(management, action);
@@ -942,17 +949,17 @@ function VerifyForm({
           mode,
           packet,
           action,
-          coverage,
+          containment,
           evidence: evidence !== undefined,
           match,
           display,
         })}
         checks={backendChecks({
           mode,
-          coverage,
+          containment,
           promotionKnown: promotionIdentity !== undefined,
+          promotionProven: computed === MATCHED_TARGET,
           evidence: evidence !== undefined,
-          match,
         })}
       />
     </>
@@ -967,10 +974,12 @@ function VerifyForm({
  * operation, not recorded by the executor or a reporter, and fitting the
  * chosen basis can be picked. The management conclusion is then the system's
  * comparison of the observed text with the target (or 未知), adopted
- * explicitly; the buyer display conclusion is the chosen display
- * observation's own state. A preview states why the submission only records
- * evidence, or which conditions the backend still decides before the packet
- * and action become verified.
+ * explicitly; a promotion conclusion is the same comparison of the observed
+ * declaration digest with the action's terms digest; the buyer display
+ * conclusion is the chosen display observation's own state. A preview states
+ * that the submission verifies the packet and action, why it only records
+ * evidence, or — when this client could not settle every condition itself —
+ * which of them the backend still decides.
  */
 export function VerifyDrawer({
   context,
@@ -994,10 +1003,15 @@ export function VerifyDrawer({
     open && listingId !== undefined ? `observations:${listingId}` : undefined,
     () => fetchListingObservations(context, listingId ?? '', OBSERVATION_LIMIT),
   );
-  // A verifier without the governance read cannot rule a stop out: the
-  // preview then leaves containment to the backend.
-  const containments = useRemote(open ? 'containments:active' : undefined, () =>
-    fetchContainments(context, true),
+  // The action read decides containment itself; the stop list is read only to
+  // fall back on when it does not carry that answer. A verifier without the
+  // governance read cannot rule a stop out either way: the preview then leaves
+  // containment to the backend.
+  const containments = useRemote(
+    open && action.value !== undefined && action.value.scopeContained === undefined
+      ? 'containments:active'
+      : undefined,
+    () => fetchContainments(context, true),
   );
   const mode: Mode =
     action.value === undefined
@@ -1086,7 +1100,7 @@ export function VerifyDrawer({
         observations={observations.value}
         observationsLoading={observations.loading}
         observationsFailed={action.failed || observations.failed}
-        coverage={containmentCoverage(containments.value, action.value)}
+        containment={containmentState(action.value, containments.value)}
         promotionIdentity={promotionIdentity}
         promotionTermsUnreadable={
           mode === 'promotion' && !terms.loading && promotionIdentity === undefined

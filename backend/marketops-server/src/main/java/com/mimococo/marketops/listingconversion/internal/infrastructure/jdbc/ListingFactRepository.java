@@ -297,10 +297,16 @@ public class ListingFactRepository {
     /**
      * One recent promotion observation of a listing. The declaration, terms, obligations, axis demands and
      * original authority are disclosure-gated and never part of this summary.
+     *
+     * <p>{@code declarationDigest} is the stored {@code declaration_digest}: a fingerprint of the observed
+     * declaration, never its content, so that the observed terms can be compared with an action's own
+     * {@code promotionTermsDigest} exactly as {@code ops.lc_bind_promotion_participation} compares them.
+     * It is null when the observation carries no declaration.
      */
     public record PromotionObservationSummary(UUID observationId, Instant observedAt, Instant acquiredAt,
                                               String engagementKind, String nativePromotionKey,
-                                              String participationState, String contextCoverage,
+                                              String participationState, String declarationDigest,
+                                              String contextCoverage,
                                               Instant verificationExpiresAt, boolean independentCurrent,
                                               String evidenceReference, String sourceKind, UUID recordedByUserId,
                                               List<PromotionContextRecordSummary> contextRecords) {
@@ -345,7 +351,7 @@ public class ListingFactRepository {
     public List<PromotionObservationSummary> recentPromotionSummaries(UUID listingId, int limit) {
         return jdbc.sql("""
                 SELECT o.id, o.observed_at, o.acquired_at, o.engagement_kind, o.native_promotion_key,
-                       o.participation_state, o.context_coverage, o.verification_expires_at,
+                       o.participation_state, o.declaration_digest, o.context_coverage, o.verification_expires_at,
                        ops.lc_promotion_observation_is_independent_current(o.id, clock_timestamp()) AS independent_current,
                        o.evidence_reference, p.source_kind, p.recorded_by_user_id,
                        o.context_snapshot::text AS context_snapshot
@@ -356,6 +362,7 @@ public class ListingFactRepository {
                 .query((rs, n) -> new PromotionObservationSummary(rs.getObject("id", UUID.class),
                         instant(rs, "observed_at"), instant(rs, "acquired_at"), rs.getString("engagement_kind"),
                         rs.getString("native_promotion_key"), rs.getString("participation_state"),
+                        rs.getString("declaration_digest"),
                         rs.getString("context_coverage"), instant(rs, "verification_expires_at"),
                         rs.getBoolean("independent_current"), rs.getString("evidence_reference"),
                         rs.getString("source_kind"), rs.getObject("recorded_by_user_id", UUID.class),

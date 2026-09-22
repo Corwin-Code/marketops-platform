@@ -126,11 +126,10 @@ export const verifyText = {
   promotionComparisonState: '观察到的参与状态',
   promotionComparisonKey: '平台促销标识',
   promotionActionKey: '操作的平台促销标识',
-  promotionParticipating: '参与状态与目标一致；声明条款是否一致由后端核对',
-  promotionParticipatingIdentityUnknown:
-    '参与状态与目标一致；是否同一促销、声明条款是否一致由后端核对',
-  promotionTermsChecked:
-    '观察记录不含声明条款摘要，此处无法比对条款；条款不一致或没有声明时，「与目标一致」会被后端拒绝，可改选「未知」。',
+  promotionTermsMatched: '参与状态与声明条款摘要均与操作的目标一致。',
+  promotionTermsDiffer: '观察到的声明条款摘要与操作的条款不一致。',
+  promotionTermsUnknown:
+    '缺少可比对的声明条款摘要（观察记录没有声明，或操作没有条款摘要），只能记录为「未知」。',
   promotionNotParticipating: '观察到该 Listing 未参与此促销。',
   promotionUnknownState: '观察到的参与状态为未知，只能记录为「未知」。',
   displayLocked: '按所选展示观察自动填入，不能修改；未选择展示观察时为「未知」。',
@@ -148,8 +147,6 @@ export const verifyText = {
     '该 Listing 没有未解除的效果保护失败（由后端判定）；有则仅记录证据，操作保持已启动',
   checkPromotionIdentity:
     '所选观察是否属于操作的同一促销（平台促销标识与参与方式）由后端核对；不一致时提交会被拒绝',
-  checkPromotionTerms:
-    '观察到的声明条款须与操作的条款一致，由后端核对；不一致或没有声明时提交会被拒绝，可改选「未知」只记录证据',
   reasonNoManagement: '未选择管理端正文观察',
   reasonMatch: (label: string): string => `管理端结论为「${label}」，不是「与目标一致」`,
   reasonMatchPending: '管理端结论尚未确认',

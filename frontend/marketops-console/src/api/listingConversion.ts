@@ -786,6 +786,14 @@ export interface ListingAction {
     | undefined;
   readonly occupations: readonly ActionOccupation[];
   readonly bindingGaps: readonly string[];
+  /**
+   * Whether the listing is inside an effective emergency-stop scope, as the
+   * backend decides it: active stops over the organization, platform, store,
+   * listing or a batch, a shared isolation scope, and unreleased
+   * outcome-protection failures. Only the read of one action carries it; a
+   * list, and an older backend, leave it unknown.
+   */
+  readonly scopeContained?: boolean | undefined;
   readonly version: number;
 }
 
@@ -1418,6 +1426,7 @@ export function parseListingAction(body: unknown): ListingAction | undefined {
     launch,
     occupations,
     bindingGaps: strings(r.bindingGaps),
+    scopeContained: bool(r.scopeContained),
     version,
   };
 }
@@ -3462,6 +3471,12 @@ export interface PromotionObservationSummary {
   readonly engagementKind: string;
   readonly nativePromotionKey: string;
   readonly participationState: string;
+  /**
+   * The fingerprint of the observed declaration, to compare with an action's
+   * own `promotionTermsDigest`; never the declared terms themselves. Nothing
+   * when the observation carries no declaration, or the backend is older.
+   */
+  readonly declarationDigest: string | undefined;
   readonly contextCoverage: string;
   readonly verificationExpiresAt: string | undefined;
   readonly independentCurrent: boolean;
@@ -3566,6 +3581,7 @@ function parsePromotionObservation(body: unknown): PromotionObservationSummary |
   return {
     ...base,
     independentCurrent,
+    declarationDigest: text(r.declarationDigest),
     verificationExpiresAt: text(r.verificationExpiresAt),
     recordedByUserId: text(r.recordedByUserId),
     contextRecords,

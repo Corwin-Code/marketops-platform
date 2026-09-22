@@ -187,7 +187,9 @@ public class ListingHealthService {
     /**
      * The recent description, display and promotion observations of one listing, newest first, so an
      * operator picks an observation instead of retyping its identifier. Disclosure-gated promotion content
-     * (declaration, terms, obligations, axis demands, original authority) is never part of the answer.
+     * (declaration, terms, obligations, axis demands, original authority) is never part of the answer;
+     * a promotion observation carries only the digest of its declaration, which is a fingerprint to
+     * compare with an action's own terms digest and discloses nothing of the terms themselves.
      */
     @Transactional(readOnly = true)
     public ListingObservations observations(UUID listingId, int limit) {
