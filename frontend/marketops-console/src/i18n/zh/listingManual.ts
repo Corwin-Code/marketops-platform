@@ -145,6 +145,8 @@ export const verifyText = {
     '此处未能确认紧急停止状态（读取中、无权读取或列表不完整）；该 Listing 是否处于停止范围由后端判定，处于范围内时仅记录证据',
   checkOutcomeFailures:
     '该 Listing 没有未解除的效果保护失败（由后端判定）；有则仅记录证据，操作保持已启动',
+  checkPromotionDisclosure:
+    '当前账号是否具备该操作的促销财务披露权限由后端核对；不具备时提交会被拒绝，且不会记录证据',
   checkPromotionIdentity:
     '所选观察是否属于操作的同一促销（平台促销标识与参与方式）由后端核对；不一致时提交会被拒绝',
   reasonNoManagement: '未选择管理端正文观察',

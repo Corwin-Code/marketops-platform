@@ -641,15 +641,17 @@ function evidenceOnlyReasons({
 /**
  * What only the backend can confirm before a verification with these choices
  * verifies: the stops this client could not resolve when the action read did
- * not decide containment itself, and a promotion observation whose promotion
- * is neither disclosed here nor settled by a matching declaration digest. The
- * verified preview is shown only when this is empty.
+ * not decide containment itself, the promotion financial disclosure the
+ * backend requires of the verifier itself, and a promotion observation whose
+ * promotion is neither disclosed here nor settled by a matching declaration
+ * digest. The verified preview is shown only when this is empty.
  */
 function backendChecks({
   mode,
   containment,
   promotionKnown,
   promotionProven,
+  promotionTermsUnreadable,
   evidence,
 }: {
   readonly mode: Mode;
@@ -657,6 +659,8 @@ function backendChecks({
   readonly promotionKnown: boolean;
   /** The chosen observation's declaration digest is the action's own terms digest. */
   readonly promotionProven: boolean;
+  /** The action's promotion terms were read and are not disclosed, or the read failed. */
+  readonly promotionTermsUnreadable: boolean;
   readonly evidence: boolean;
 }): string[] {
   const checks: string[] = [];
@@ -668,8 +672,16 @@ function backendChecks({
     // and no stop lists it, so it can never be ruled out from the stop list.
     checks.push(verifyText.checkOutcomeFailures);
   }
-  if (mode === 'promotion' && evidence && !promotionKnown && !promotionProven) {
-    checks.push(verifyText.checkPromotionIdentity);
+  if (mode === 'promotion') {
+    // Undisclosed terms are the disclosure the backend demands of the verifier
+    // for a promotion packet: it rejects the submission outright, before any
+    // verification or evidence is written, whatever the chosen evidence says —
+    // so a matching declaration digest cannot settle it.
+    if (promotionTermsUnreadable) {
+      checks.push(verifyText.checkPromotionDisclosure);
+    } else if (evidence && !promotionKnown && !promotionProven) {
+      checks.push(verifyText.checkPromotionIdentity);
+    }
   }
   return checks;
 }
@@ -959,6 +971,7 @@ function VerifyForm({
           containment,
           promotionKnown: promotionIdentity !== undefined,
           promotionProven: computed === MATCHED_TARGET,
+          promotionTermsUnreadable,
           evidence: evidence !== undefined,
         })}
       />
