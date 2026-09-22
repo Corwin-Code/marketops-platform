@@ -14,7 +14,13 @@ import com.mimococo.marketops.listingconversion.internal.application.ConversionM
 import com.mimococo.marketops.listingconversion.internal.application.ListingFactIntakeService;
 import com.mimococo.marketops.listingconversion.internal.application.ListingHealthService;
 import com.mimococo.marketops.listingconversion.internal.application.ListingScopeAuthorization;
+import com.mimococo.marketops.productlisting.ListingIdentity;
+import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.shared.ConsoleApi;
+import com.mimococo.marketops.shared.ErrorCode;
+import com.mimococo.marketops.shared.OperationRejectedException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -59,6 +65,8 @@ class ListingHealthConsoleController {
     private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds;
+    private final ListingIdentityDirectory listingIdentities;
+    private final ObjectMapper mapper;
 
     ListingHealthConsoleController(ListingHealthService health, ConversionMeasurementService measurements,
                                    ListingFactIntakeService facts, ListingScopeAuthorization listings,
@@ -66,7 +74,10 @@ class ListingHealthConsoleController {
                                    com.mimococo.marketops.operationsworkflow.ListingTaskSloQuery responsibility,
                                    com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake diagnosticIntake,
                                    com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals,
-                                   com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds) {
+                                   com.mimococo.marketops.operationsworkflow.ListingTaskDependencyHold dependencyHolds,
+                                   ListingIdentityDirectory listingIdentities, ObjectMapper mapper) {
+        this.listingIdentities = listingIdentities;
+        this.mapper = mapper;
         this.health = health;
         this.measurements = measurements;
         this.facts = facts;
@@ -116,6 +127,49 @@ class ListingHealthConsoleController {
         return result;
     }
 
+    /**
+     * One page of the health queue with its total and each listing's display identity.
+     *
+     * <p>{@code /queue} keeps its bare array for older consoles; a total needs an envelope.
+     * Identity is presentation only and may be {@code null}.
+     */
+    @Transactional
+    @GetMapping(value = "/queue/page", produces = MediaType.APPLICATION_JSON_VALUE)
+    Map<String, Object> queuePage(AuthenticatedActor actor,
+                                  @RequestParam(required = false) String necessaryState,
+                                  @RequestParam(required = false) String q,
+                                  @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit,
+                                  @RequestParam(defaultValue = "0") @Min(0) @Max(10000) int offset) {
+        String state = necessaryState == null || necessaryState.isBlank() ? null : necessaryState.strip();
+        if (state != null && !NECESSARY_STATES.contains(state)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        String keyword = q == null || q.isBlank() ? null : q.strip();
+        if (keyword != null && keyword.length() > 64) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        List<UUID> stores = authorization.permittedStoreIds(actor, ActionScopeCode.LISTING_CONVERSION_VIEW);
+        ListingHealthService.QueuePage page = health.page(actor.organizationId(), stores, state, keyword,
+                limit, offset);
+        Map<UUID, ListingIdentity> names = listingIdentities.listingIdentities(actor.organizationId(),
+                page.items().stream().map(ListingHealthView::platformListingId).toList());
+        List<ObjectNode> items = page.items().stream().map(view -> {
+            ObjectNode node = mapper.valueToTree(view);
+            ListingIdentity identity = names.get(view.platformListingId());
+            node.set("identity", identity == null ? node.nullNode() : mapper.valueToTree(identity));
+            return node;
+        }).toList();
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("items", items);
+        result.put("total", page.total());
+        result.put("offset", page.offset());
+        result.put("limit", page.limit());
+        auditRead(actor, "lc-health-queue", actor.organizationId(), "queue-page");
+        return result;
+    }
+
+    private static final java.util.Set<String> NECESSARY_STATES = java.util.Set.of("PASS", "FAIL", "UNKNOWN");
+
     @Transactional
     @GetMapping(value = "/listings/{listingId}", produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, Object> listing(AuthenticatedActor actor, @PathVariable UUID listingId,
@@ -127,10 +181,23 @@ class ListingHealthConsoleController {
         result.put("storeId", scope.storeId());
         result.put("platformCode", scope.platformCode());
         result.put("nativeListingKey", scope.nativeListingKey());
+        result.put("identity", listingIdentities.listingIdentities(actor.organizationId(), List.of(listingId))
+                .get(listingId));
         result.put("health", health.latest(listingId).orElse(null));
         result.put("diagnosticResponsibilities", responsibility.diagnosticsForListing(listingId));
         result.put("measurements", measurements.history(listingId, measurementLimit));
         auditRead(actor, "lc-listing-health", listingId, "listing");
+        return result;
+    }
+
+    /** Recent observations of one listing, so a recorded observation is picked rather than retyped. */
+    @Transactional
+    @GetMapping(value = "/listings/{listingId}/observations", produces = MediaType.APPLICATION_JSON_VALUE)
+    ListingHealthService.ListingObservations observations(AuthenticatedActor actor, @PathVariable UUID listingId,
+                                                          @RequestParam(defaultValue = "10") @Min(1) @Max(50) int limit) {
+        listings.require(actor, listingId, ActionScopeCode.LISTING_CONVERSION_VIEW);
+        ListingHealthService.ListingObservations result = health.observations(listingId, limit);
+        auditRead(actor, "lc-listing-observation", listingId, "observations");
         return result;
     }
 

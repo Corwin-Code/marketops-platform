@@ -295,6 +295,23 @@ public class AiRepository {
                         java.util.Arrays.asList((UUID[])rs.getArray("product_variant_ids").getArray()))).optional();
     }
 
+    /** Listing-assistance invocations of one listing, newest first; identifiers, window, state and times only. */
+    public List<com.mimococo.marketops.aicopilot.AiCopilot.ListingInvocationRecord> listingInvocations(
+            UUID organizationId,UUID listingId,int limit) {
+        return jdbc.sql("""
+                SELECT i.id,i.window_code,i.state,i.started_at,i.completed_at FROM ops.ai_invocation i
+                WHERE i.organization_id=:org AND i.subject_kind='PLATFORM_LISTING' AND i.subject_id=:listing
+                    AND i.projection_code='LISTING_ASSISTANCE'
+                ORDER BY i.started_at DESC, i.id
+                LIMIT :limit
+                """).param("org",organizationId).param("listing",listingId).param("limit",limit).query((rs,n)->{
+                    java.sql.Timestamp completed=rs.getTimestamp("completed_at");
+                    return new com.mimococo.marketops.aicopilot.AiCopilot.ListingInvocationRecord(
+                            rs.getObject("id",UUID.class),rs.getString("window_code"),rs.getString("state"),
+                            rs.getTimestamp("started_at").toInstant(),completed==null?null:completed.toInstant());
+                }).list();
+    }
+
     /** The claims of one invocation, in the order the model produced them. */
     public List<AiClaim> claimsOf(UUID invocationId) {
         List<AiClaim> claims = new ArrayList<>();

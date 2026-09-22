@@ -24,6 +24,21 @@ class ListingAssistanceConsoleController {
     AiDiagnosis assist(AuthenticatedActor actor,@PathVariable UUID listingId,@RequestBody Request request) {
         return assistance.assist(actor,listingId,request.window(),request.purpose()).consoleView();
     }
+    /** Earlier requests for this listing, newest first, without content; never calls a model. */
+    @GetMapping
+    @Transactional
+    java.util.List<com.mimococo.marketops.aicopilot.AiCopilot.ListingInvocationRecord> history(
+            AuthenticatedActor actor,@PathVariable UUID listingId,
+            @RequestParam(defaultValue="10") @jakarta.validation.constraints.Min(1)
+            @jakarta.validation.constraints.Max(50) int limit) {
+        var result=assistance.history(actor,listingId,limit);
+        audit.recordChange(new com.mimococo.marketops.adminobservability.audit.MetadataAuditChange(
+                com.mimococo.marketops.adminobservability.audit.AuditSourceDomain.LISTING_CONVERSION,actor.userId().toString(),
+                com.mimococo.marketops.adminobservability.audit.AuditAction.READ,"lc-ai-assistance",listingId,null,
+                java.util.Map.of(),"history",null));
+        return result;
+    }
+
     @GetMapping("/{invocationId}")
     @Transactional
     AiDiagnosis read(AuthenticatedActor actor,@PathVariable UUID listingId,@PathVariable UUID invocationId) {

@@ -6,6 +6,7 @@ import com.mimococo.marketops.adminobservability.audit.FieldChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
+import com.mimococo.marketops.productlisting.ListingIdentity;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.productlisting.SubjectIdentity;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +126,33 @@ public class ListingMappingService implements ListingIdentityDirectory {
                 platformListingVariantIds.stream().filter(java.util.Objects::nonNull)
                         .distinct().toList(),
                 clock.instant());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, ListingIdentity> listingIdentities(UUID organizationId,
+                                                        Collection<UUID> platformListingIds) {
+        if (organizationId == null || platformListingIds == null
+                || platformListingIds.isEmpty()) {
+            return Map.of();
+        }
+        return mappings.listingIdentities(organizationId,
+                platformListingIds.stream().filter(java.util.Objects::nonNull)
+                        .distinct().toList(),
+                clock.instant());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<UUID> listingsMatching(UUID organizationId, Collection<UUID> storeIds,
+                                      String text, int limit) {
+        if (organizationId == null || storeIds == null || storeIds.isEmpty()
+                || text == null || text.isBlank()) {
+            return Set.of();
+        }
+        return mappings.listingsMatching(organizationId,
+                storeIds.stream().filter(java.util.Objects::nonNull).distinct().toList(),
+                text.strip(), Math.clamp(limit, 1, 1000), clock.instant());
     }
 
     /**

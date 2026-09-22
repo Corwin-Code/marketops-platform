@@ -275,6 +275,109 @@ public class ListingFactRepository {
                 .list();
     }
 
+    /** One recent description observation of a listing, summarised for picking; the full text is not returned. */
+    public record DescriptionObservationSummary(UUID observationId, Instant observedAt, Instant acquiredAt,
+                                                String languageCode, Boolean kizMarkedDeclared, String textDigest,
+                                                String textPreview, String sourceKind, UUID recordedByUserId) {
+    }
+
+    /** One recent buyer-facing display observation of a listing; the displayed text itself is not returned. */
+    public record DisplayObservationSummary(UUID observationId, Instant observedAt, Instant acquiredAt,
+                                            String displayState, String evidenceGrade, UUID observerUserId,
+                                            String displayedTextDigest, String evidenceReference, String sourceKind,
+                                            UUID recordedByUserId) {
+    }
+
+    /** The state fields of one record of a complete promotion context; terms and authority are left out. */
+    public record PromotionContextRecordSummary(String engagementKind, String nativePromotionKey,
+                                                String participationState, String newTransactionsState,
+                                                String residualObligationState) {
+    }
+
+    /**
+     * One recent promotion observation of a listing. The declaration, terms, obligations, axis demands and
+     * original authority are disclosure-gated and never part of this summary.
+     */
+    public record PromotionObservationSummary(UUID observationId, Instant observedAt, Instant acquiredAt,
+                                              String engagementKind, String nativePromotionKey,
+                                              String participationState, String contextCoverage,
+                                              Instant verificationExpiresAt, boolean independentCurrent,
+                                              String evidenceReference, String sourceKind, UUID recordedByUserId,
+                                              List<PromotionContextRecordSummary> contextRecords) {
+        public PromotionObservationSummary {
+            contextRecords = List.copyOf(contextRecords);
+        }
+    }
+
+    public List<DescriptionObservationSummary> recentDescriptionSummaries(UUID listingId, int limit) {
+        return jdbc.sql("""
+                SELECT o.id, o.observed_at, o.acquired_at, o.language_code, o.kiz_marked_declared, o.text_digest,
+                       left(coalesce(o.description_text, ''), 160) AS text_preview,
+                       p.source_kind, p.recorded_by_user_id
+                  FROM core.lc_description_observation o JOIN core.fact_provenance p ON p.id = o.provenance_id
+                 WHERE o.platform_listing_id = :listing
+                 ORDER BY o.observed_at DESC, o.acquired_at DESC, o.id LIMIT :limit
+                """).param("listing", listingId).param("limit", limit)
+                .query((rs, n) -> new DescriptionObservationSummary(rs.getObject("id", UUID.class),
+                        instant(rs, "observed_at"), instant(rs, "acquired_at"), rs.getString("language_code"),
+                        rs.getObject("kiz_marked_declared", Boolean.class), rs.getString("text_digest"),
+                        rs.getString("text_preview"), rs.getString("source_kind"),
+                        rs.getObject("recorded_by_user_id", UUID.class)))
+                .list();
+    }
+
+    public List<DisplayObservationSummary> recentDisplaySummaries(UUID listingId, int limit) {
+        return jdbc.sql("""
+                SELECT o.id, o.observed_at, o.acquired_at, o.display_state, o.evidence_grade, o.observer_user_id,
+                       o.displayed_text_digest, o.evidence_reference, p.source_kind, p.recorded_by_user_id
+                  FROM core.lc_display_observation o JOIN core.fact_provenance p ON p.id = o.provenance_id
+                 WHERE o.platform_listing_id = :listing
+                 ORDER BY o.observed_at DESC, o.acquired_at DESC, o.id LIMIT :limit
+                """).param("listing", listingId).param("limit", limit)
+                .query((rs, n) -> new DisplayObservationSummary(rs.getObject("id", UUID.class),
+                        instant(rs, "observed_at"), instant(rs, "acquired_at"), rs.getString("display_state"),
+                        rs.getString("evidence_grade"), rs.getObject("observer_user_id", UUID.class),
+                        rs.getString("displayed_text_digest"), rs.getString("evidence_reference"),
+                        rs.getString("source_kind"), rs.getObject("recorded_by_user_id", UUID.class)))
+                .list();
+    }
+
+    public List<PromotionObservationSummary> recentPromotionSummaries(UUID listingId, int limit) {
+        return jdbc.sql("""
+                SELECT o.id, o.observed_at, o.acquired_at, o.engagement_kind, o.native_promotion_key,
+                       o.participation_state, o.context_coverage, o.verification_expires_at,
+                       ops.lc_promotion_observation_is_independent_current(o.id, clock_timestamp()) AS independent_current,
+                       o.evidence_reference, p.source_kind, p.recorded_by_user_id,
+                       o.context_snapshot::text AS context_snapshot
+                  FROM core.lc_promotion_observation o JOIN core.fact_provenance p ON p.id = o.provenance_id
+                 WHERE o.platform_listing_id = :listing
+                 ORDER BY o.observed_at DESC, o.acquired_at DESC, o.id LIMIT :limit
+                """).param("listing", listingId).param("limit", limit)
+                .query((rs, n) -> new PromotionObservationSummary(rs.getObject("id", UUID.class),
+                        instant(rs, "observed_at"), instant(rs, "acquired_at"), rs.getString("engagement_kind"),
+                        rs.getString("native_promotion_key"), rs.getString("participation_state"),
+                        rs.getString("context_coverage"), instant(rs, "verification_expires_at"),
+                        rs.getBoolean("independent_current"), rs.getString("evidence_reference"),
+                        rs.getString("source_kind"), rs.getObject("recorded_by_user_id", UUID.class),
+                        contextRecordStates(rs.getString("context_snapshot"))))
+                .list();
+    }
+
+    /** Only the state fields of each context record; everything else in the snapshot stays undisclosed. */
+    private List<PromotionContextRecordSummary> contextRecordStates(String snapshot) {
+        if (snapshot == null || snapshot.isBlank()) {
+            return List.of();
+        }
+        List<PromotionContextRecordSummary> records = new java.util.ArrayList<>();
+        for (tools.jackson.databind.JsonNode node : json.readTree(snapshot)) {
+            tools.jackson.databind.JsonNode declaration = node.path("declaration");
+            records.add(new PromotionContextRecordSummary(declaration.path("engagementKind").asText(""),
+                    declaration.path("nativePromotionKey").asText(""), node.path("participationState").asText(""),
+                    node.path("newTransactionsState").asText(""), node.path("residualObligationState").asText("")));
+        }
+        return records;
+    }
+
     public void insertVisitFact(UUID id, UUID organizationId, UUID provenanceId, UUID storeId, UUID listingId,
                                 UUID variantId, String sourceFactKey, String visitKey, Instant visitedAt,
                                 Instant acquiredAt, String sellable, String channel, String keyGroup) {

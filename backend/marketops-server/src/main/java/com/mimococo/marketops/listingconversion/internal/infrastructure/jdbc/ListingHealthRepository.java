@@ -99,6 +99,49 @@ public class ListingHealthRepository {
                 .param("limit", limit).query(this::mapHealth).list();
     }
 
+    /**
+     * One page of the latest Listing Health per listing, ranked like {@link #queue} with a stable
+     * tie-breaker so consecutive pages neither repeat nor skip a listing.
+     *
+     * @param matchIds when non-null, only these listings (a keyword pre-selection); when null, all
+     */
+    public List<ListingHealthView> queuePage(UUID organizationId, List<UUID> storeIds, String necessaryState,
+                                             UUID[] matchIds, int limit, int offset) {
+        if (storeIds.isEmpty() || (matchIds != null && matchIds.length == 0)) {
+            return List.of();
+        }
+        return jdbc.sql(HEALTH_SELECT + QUEUE_PAGE_WHERE + """
+                 ORDER BY CASE h.necessary_state WHEN 'FAIL' THEN 0 WHEN 'UNKNOWN' THEN 1 ELSE 2 END,
+                          h.computed_at DESC, h.platform_listing_id
+                 LIMIT :limit OFFSET :offset
+                """).param("org", organizationId).param("stores", storeIds)
+                .param("state", new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.VARCHAR, necessaryState))
+                .param("filtered", matchIds != null)
+                .param("ids", matchIds == null ? new UUID[0] : matchIds)
+                .param("limit", limit).param("offset", offset).query(this::mapHealth).list();
+    }
+
+    /** How many listings {@link #queuePage} ranks in total for the same filters. */
+    public long queueCount(UUID organizationId, List<UUID> storeIds, String necessaryState, UUID[] matchIds) {
+        if (storeIds.isEmpty() || (matchIds != null && matchIds.length == 0)) {
+            return 0L;
+        }
+        return jdbc.sql("SELECT count(*) FROM mart.lc_listing_health h" + QUEUE_PAGE_WHERE)
+                .param("org", organizationId).param("stores", storeIds)
+                .param("state", new org.springframework.jdbc.core.SqlParameterValue(java.sql.Types.VARCHAR, necessaryState))
+                .param("filtered", matchIds != null)
+                .param("ids", matchIds == null ? new UUID[0] : matchIds)
+                .query(Long.class).single();
+    }
+
+    private static final String QUEUE_PAGE_WHERE = """
+             WHERE h.organization_id = :org AND h.store_id IN (:stores)
+               AND h.health_version = (SELECT max(latest.health_version) FROM mart.lc_listing_health latest
+                                        WHERE latest.platform_listing_id = h.platform_listing_id)
+               AND (:state IS NULL OR h.necessary_state = :state)
+               AND (:filtered = false OR h.platform_listing_id = ANY (:ids))
+            """;
+
     private static final String HEALTH_SELECT = """
             SELECT h.id, h.store_id, h.platform_listing_id, l.native_listing_key, h.health_version,
                    h.necessary_conditions::text AS conditions, h.necessary_state, h.eligibility::text AS eligibility,

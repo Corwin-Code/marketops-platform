@@ -484,6 +484,18 @@ public class ListingActionService {
 
     @Transactional
     public ListingActionLaunch.LaunchResult launch(AuthenticatedActor actor, UUID actionId, Map<String, BigDecimal> requested) {
+        return launch(actor, actionId, requested, null);
+    }
+
+    /**
+     * Launch an approved action. The operator's optional reason becomes the note of the task's
+     * {@code ACTION_LAUNCHED} record, so the confirmation's reason reaches the audit trail.
+     */
+    @Transactional
+    public ListingActionLaunch.LaunchResult launch(AuthenticatedActor actor, UUID actionId, Map<String, BigDecimal> requested,
+                                                   String reason) {
+        // Optional, at most 512 characters and free of secret material.
+        String launchNote = MetadataFieldPolicy.optionalText("reason", reason);
         ListingActionRepository.ActionRow action = requireAction(actor, actionId, ActionScopeCode.LISTING_ACTION_LAUNCH);
         if (!List.of("APPROVED", "APPROVED_NOT_LAUNCHABLE").contains(action.state())) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
@@ -505,7 +517,7 @@ public class ListingActionService {
         ListingActionLaunch.LaunchResult result = launcher.launch(actor, actionId, requested);
         if (result.launched()) {
             intake.recordTaskAction(actor, action.recommendationId(), "ACTION_LAUNCHED", "lc-launch:" + result.launchId(),
-                    "launched with every allowance axis acquired");
+                    launchNote == null ? "launched with every allowance axis acquired" : launchNote);
         }
         return result;
     }
@@ -549,7 +561,38 @@ public class ListingActionService {
 
     @Transactional(readOnly = true)
     public List<ListingActionView> actions(UUID organizationId, List<UUID> storeIds, String state, int limit) {
-        return actions.actions(organizationId, storeIds, state, limit).stream().map(this::toView).toList();
+        return actions(organizationId, storeIds, state, null, null, limit);
+    }
+
+    /** Actions of the permitted stores, optionally narrowed to one listing and one execution path. */
+    @Transactional(readOnly = true)
+    public List<ListingActionView> actions(UUID organizationId, List<UUID> storeIds, String state, UUID listingId,
+                                           ExecutionPath executionPath, int limit) {
+        return actions.actions(organizationId, storeIds, state, listingId,
+                        executionPath == null ? null : executionPath.name(), limit)
+                .stream().map(this::toView).toList();
+    }
+
+    /** A restorable earlier description, and whether it applies over the listing's current text. */
+    public record RestorationSourceView(UUID commandId, UUID actionId, Instant completedAt, String priorText,
+                                        boolean appliesToCurrent) {
+    }
+
+    /**
+     * The completed description commands of one listing whose prior text could be restored, newest first.
+     * {@code appliesToCurrent} is the check preparation applies: the command's applied text is the listing's
+     * current observed text.
+     */
+    @Transactional(readOnly = true)
+    public List<RestorationSourceView> restorationSources(AuthenticatedActor actor, UUID listingId) {
+        ListingFactRepository.ListingContext listing = requireListing(actor, listingId,
+                ActionScopeCode.LISTING_CONVERSION_VIEW);
+        String currentDigest = facts.latestDescription(listingId)
+                .map(ListingFactRepository.DescriptionRow::textDigest).orElse(null);
+        return actions.restorationSources(listing.organizationId(), listingId, 20).stream()
+                .map(source -> new RestorationSourceView(source.commandId(), source.actionId(), source.completedAt(),
+                        source.priorText(), source.appliedTextDigest().equals(currentDigest)))
+                .toList();
     }
 
     ListingActionView toView(ListingActionRepository.ActionRow row) {

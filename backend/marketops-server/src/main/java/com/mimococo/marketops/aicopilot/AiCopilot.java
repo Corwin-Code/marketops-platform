@@ -54,4 +54,17 @@ public interface AiCopilot {
         public ListingInvocationScope { productVariantIds=java.util.List.copyOf(productVariantIds); }
     }
     Optional<ListingInvocationScope> listingInvocationScope(UUID invocationId,UUID organizationId,UUID listingId);
+
+    /** One earlier listing-assistance request, without its content. */
+    record ListingInvocationRecord(UUID invocationId, String windowCode, String state,
+                                   java.time.Instant startedAt, java.time.Instant completedAt) {
+    }
+
+    /**
+     * The listing-assistance requests recorded for one listing, newest first, without their content.
+     *
+     * <p>A read of the record only: it never calls a model. Opening one still goes through
+     * {@link #listingInvocation} under the caller's checks of its original scope.
+     */
+    java.util.List<ListingInvocationRecord> listingInvocations(UUID organizationId, UUID listingId, int limit);
 }

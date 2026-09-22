@@ -51,10 +51,13 @@ public class ManualPathService {
     private final MetadataAuditRecorder audit;
     private final IdGenerator ids;
     private final Clock clock;
+    private final com.mimococo.marketops.identityaccess.PeopleDirectory people;
 
     ManualPathService(ManualPathRepository manual, ListingActionRepository actions, ListingFactRepository facts,
                       ListingActionIntake intake, BusinessAuthorization authorization, AuthenticatedInvocationIssuer issuer,
-                      JdbcClient jdbc, MetadataAuditRecorder audit, IdGenerator ids, Clock clock) {
+                      JdbcClient jdbc, MetadataAuditRecorder audit, IdGenerator ids, Clock clock,
+                      com.mimococo.marketops.identityaccess.PeopleDirectory people) {
+        this.people = people;
         this.manual = manual;
         this.actions = actions;
         this.facts = facts;
@@ -321,6 +324,50 @@ public class ManualPathService {
         PromotionEngagementView engagement = manual.engagement(id).orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         requireListing(actor, engagement.platformListingId(), scope);
         return engagement;
+    }
+
+    /** Roles a person can be picked for on the manual path. */
+    public enum PersonRole { MANUAL_EXECUTOR, PROMOTION_STEWARD }
+
+    /** A colleague offered in a picker; {@code self} marks the caller. Display name only. */
+    public record PersonOption(UUID userId, String displayName, boolean self) {
+    }
+
+    /**
+     * Who may take a role on one action or listing, for a picker.
+     *
+     * <p>An executor is someone who may {@code LISTING_MANUAL_EXECUTE} on the action's store, the check the
+     * database applies when a packet is issued; a steward is someone who may {@code LISTING_PROMOTION_MANAGE}
+     * on the listing's store. The caller only needs to see the target. The answer authorises nothing.
+     */
+    @Transactional(readOnly = true)
+    public List<PersonOption> people(AuthenticatedActor actor, PersonRole role, UUID actionId, UUID listingId) {
+        if (role == null) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        UUID storeId;
+        ActionScopeCode needed;
+        switch (role) {
+            case MANUAL_EXECUTOR -> {
+                if (actionId == null || listingId != null) {
+                    throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+                }
+                storeId = requireAction(actor, actionId, ActionScopeCode.LISTING_CONVERSION_VIEW).storeId();
+                needed = ActionScopeCode.LISTING_MANUAL_EXECUTE;
+            }
+            case PROMOTION_STEWARD -> {
+                if (listingId == null || actionId != null) {
+                    throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+                }
+                storeId = requireListing(actor, listingId, ActionScopeCode.LISTING_CONVERSION_VIEW).storeId();
+                needed = ActionScopeCode.LISTING_PROMOTION_MANAGE;
+            }
+            default -> throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        return people.peopleWhoMay(actor.organizationId(), needed, ResourceScope.store(storeId), 50).stream()
+                .map(person -> new PersonOption(person.userId(), person.displayName(),
+                        person.userId().equals(actor.userId())))
+                .toList();
     }
 
     private ListingActionRepository.ActionRow requireAction(AuthenticatedActor actor, UUID actionId, ActionScopeCode scope) {

@@ -348,6 +348,13 @@ public class AiDiagnosisService implements AiCopilot {
 
     @Override
     @Transactional(readOnly=true)
+    public List<AiCopilot.ListingInvocationRecord> listingInvocations(UUID organizationId,UUID listingId,int limit) {
+        if (organizationId==null || listingId==null) return List.of();
+        return repository.listingInvocations(organizationId,listingId,Math.clamp(limit,1,50));
+    }
+
+    @Override
+    @Transactional(readOnly=true)
     public Optional<AiCopilot.ListingInvocationScope> listingInvocationScope(UUID invocationId,UUID organizationId,UUID listingId) {
         return repository.listingInvocationScope(invocationId,organizationId,listingId);
     }

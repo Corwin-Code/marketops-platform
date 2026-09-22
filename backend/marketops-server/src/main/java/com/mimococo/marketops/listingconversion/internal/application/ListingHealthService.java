@@ -43,12 +43,15 @@ public class ListingHealthService {
     private final IdGenerator ids;
     private final com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility;
     private final com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals;
+    private final com.mimococo.marketops.productlisting.ListingIdentityDirectory listingIdentities;
 
     ListingHealthService(ListingFactRepository facts, ListingFeedbackRepository feedback,
                          ListingHealthRepository health, ListingActionRepository actions,
                          CalibrationService calibration, CalculationRunLedger ledger, IdGenerator ids,
                          com.mimococo.marketops.operationsworkflow.ListingDiagnosticIntake responsibility,
-                         com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals) {
+                         com.mimococo.marketops.operationsworkflow.ListingTaskDeferralIntake deferrals,
+                         com.mimococo.marketops.productlisting.ListingIdentityDirectory listingIdentities) {
+        this.listingIdentities = listingIdentities;
         this.facts = facts;
         this.feedback = feedback;
         this.health = health;
@@ -144,5 +147,57 @@ public class ListingHealthService {
     @Transactional(readOnly = true)
     public List<ListingHealthView> queue(UUID organizationId, List<UUID> storeIds, String necessaryState, int limit) {
         return health.queue(organizationId, storeIds, necessaryState, limit);
+    }
+
+    /** At most this many listings are pre-selected by a keyword; {@code total} may undercount beyond it. */
+    static final int KEYWORD_MATCH_LIMIT = 1000;
+
+    /**
+     * One page of the health queue, with the total for the same filters.
+     *
+     * <p>A keyword is resolved to listing identifiers through the product-listing module first,
+     * within the permitted stores only; the ranking stays this module's own.
+     *
+     * @param necessaryState PASS, FAIL or UNKNOWN, or {@code null} for all
+     * @param keyword a trimmed non-blank text, or {@code null} for no keyword filter
+     */
+    @Transactional(readOnly = true)
+    public QueuePage page(UUID organizationId, List<UUID> storeIds, String necessaryState, String keyword,
+                          int limit, int offset) {
+        if (storeIds.isEmpty()) {
+            return new QueuePage(List.of(), 0L, offset, limit);
+        }
+        UUID[] matches = null;
+        if (keyword != null) {
+            matches = listingIdentities.listingsMatching(organizationId, storeIds, keyword, KEYWORD_MATCH_LIMIT)
+                    .toArray(UUID[]::new);
+        }
+        List<ListingHealthView> items = health.queuePage(organizationId, storeIds, necessaryState, matches,
+                limit, offset);
+        long total = health.queueCount(organizationId, storeIds, necessaryState, matches);
+        return new QueuePage(items, total, offset, limit);
+    }
+
+    /**
+     * The recent description, display and promotion observations of one listing, newest first, so an
+     * operator picks an observation instead of retyping its identifier. Disclosure-gated promotion content
+     * (declaration, terms, obligations, axis demands, original authority) is never part of the answer.
+     */
+    @Transactional(readOnly = true)
+    public ListingObservations observations(UUID listingId, int limit) {
+        return new ListingObservations(facts.recentDescriptionSummaries(listingId, limit),
+                facts.recentDisplaySummaries(listingId, limit), facts.recentPromotionSummaries(listingId, limit));
+    }
+
+    public record ListingObservations(List<ListingFactRepository.DescriptionObservationSummary> description,
+                                      List<ListingFactRepository.DisplayObservationSummary> display,
+                                      List<ListingFactRepository.PromotionObservationSummary> promotion) {
+    }
+
+    /** One page of the health queue: items in the backend's ranking, and the filtered total. */
+    public record QueuePage(List<ListingHealthView> items, long total, int offset, int limit) {
+        public QueuePage {
+            items = List.copyOf(items);
+        }
     }
 }

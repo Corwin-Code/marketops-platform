@@ -69,6 +69,8 @@ public final class ListingConversionCodes {
         codes.put("engagementKind", List.of("OFFICIAL_PROMOTION_PARTICIPATION", "SELLER_DIRECT_DISCOUNT"));
         codes.put("exitReason", List.of("MARGIN_BELOW_BOUND", "RETURN_RATE_ABOVE_BOUND", "SUPPLY_COVERAGE_LOST",
                 "PLATFORM_TERMS_CHANGED", "OWNER_DECISION"));
+        codes.put("contextCoverage", List.of("SINGLE_ACTIVITY_ONLY", "COMPLETE_ENUMERATION"));
+        codes.put("factSourceKind", List.of("MARKETPLACE_RAW", "INTERNAL_IMPORT", "MANUAL_ENTRY"));
         codes.put("occupationState", List.of("ACQUIRED", "ACTUAL", "UNKNOWN", "RELEASED"));
         codes.put("containmentScope", List.of("LISTING", "STORE", "PLATFORM", "ORGANIZATION", "BATCH"));
         codes.put("containmentState", List.of("ACTIVE", "REENABLED"));

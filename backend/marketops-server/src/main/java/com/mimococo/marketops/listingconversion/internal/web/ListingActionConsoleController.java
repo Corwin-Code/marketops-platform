@@ -167,10 +167,30 @@ class ListingActionConsoleController {
     @Transactional
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     List<ListingActionView> actions(AuthenticatedActor actor, @RequestParam(required = false) String state,
+                                    @RequestParam(required = false) UUID listingId,
+                                    @RequestParam(required = false) String executionPath,
                                     @RequestParam(defaultValue = "50") @Min(1) @Max(200) int limit) {
+        ExecutionPath path = null;
+        if (executionPath != null && !executionPath.isBlank()) {
+            try {
+                path = ExecutionPath.valueOf(executionPath.strip());
+            } catch (IllegalArgumentException invalid) {
+                throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            }
+        }
         List<UUID> stores = authorization.permittedStoreIds(actor, ActionScopeCode.LISTING_CONVERSION_VIEW);
-        List<ListingActionView> result = actions.actions(actor.organizationId(), stores, state, limit);
+        List<ListingActionView> result = actions.actions(actor.organizationId(), stores, state, listingId, path, limit);
         auditRead(actor, "lc-action", actor.organizationId(), "actions");
+        return result;
+    }
+
+    /** Completed description commands of one listing whose prior text could be restored, newest first. */
+    @Transactional
+    @GetMapping(value = "/restoration-sources", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<ListingActionService.RestorationSourceView> restorationSources(AuthenticatedActor actor,
+                                                                        @RequestParam UUID listingId) {
+        List<ListingActionService.RestorationSourceView> result = actions.restorationSources(actor, listingId);
+        auditRead(actor, "lc-restoration-source", listingId, "restoration-sources");
         return result;
     }
 
@@ -239,7 +259,7 @@ class ListingActionConsoleController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     ListingActionLaunch.LaunchResult launch(AuthenticatedActor actor, @PathVariable UUID actionId,
                                             @RequestBody AxesRequest request) {
-        return actions.launch(actor, actionId, request.axes());
+        return actions.launch(actor, actionId, request.axes(), request.reason());
     }
 
     @PostMapping(value = "/occupations/{occupationId}/release", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -317,7 +337,8 @@ class ListingActionConsoleController {
     record ReasonRequest(@NotBlank String reason) {
     }
 
-    record AxesRequest(Map<String, BigDecimal> axes) {
+    /** {@code reason} is read by launch only (the operator's confirmation reason); the preview ignores it. */
+    record AxesRequest(Map<String, BigDecimal> axes, String reason) {
     }
 
     record ReleaseRequest(@NotBlank String basis, UUID evidenceId, @NotBlank String evidenceReference) {
