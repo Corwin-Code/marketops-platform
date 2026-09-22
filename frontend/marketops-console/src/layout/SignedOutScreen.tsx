@@ -17,6 +17,8 @@ export interface SignedOutScreenProps {
   readonly problem?: string | undefined;
   /** Whether the provider has just returned and the code is being redeemed. */
   readonly completing?: boolean;
+  /** Whether the previous session ran out rather than being ended by the operator. */
+  readonly expired?: boolean;
 }
 
 /** The centred card shown before the signed-in frame exists. */
@@ -70,6 +72,7 @@ export function SignedOutScreen({
   settings,
   problem,
   completing = false,
+  expired = false,
 }: SignedOutScreenProps): React.JSX.Element {
   useEffect(() => {
     document.title = product.name;
@@ -95,7 +98,13 @@ export function SignedOutScreen({
       </Flex>
     );
   } else {
-    entry = <SignIn settings={settings} {...(problem === undefined ? {} : { problem })} />;
+    entry = (
+      <SignIn
+        settings={settings}
+        expired={expired}
+        {...(problem === undefined ? {} : { problem })}
+      />
+    );
   }
 
   return (

@@ -247,6 +247,32 @@ public class AiRepository {
                 .optional();
     }
 
+    /**
+     * The newest invocation recorded for one subject, projection and window,
+     * in any state. Served by the subject index (kind, id, started_at desc).
+     */
+    public Optional<UUID> latestSubjectInvocation(UUID organizationId, String projectionCode,
+                                                  String subjectKind, UUID subjectId,
+                                                  String windowCode) {
+        return jdbc.sql("""
+                        SELECT id FROM ops.ai_invocation
+                         WHERE subject_kind = :subjectKind
+                           AND subject_id = :subjectId
+                           AND organization_id = :organizationId
+                           AND projection_code = :projectionCode
+                           AND window_code = :windowCode
+                         ORDER BY started_at DESC, id DESC
+                         LIMIT 1
+                        """)
+                .param("subjectKind", subjectKind)
+                .param("subjectId", subjectId)
+                .param("organizationId", organizationId)
+                .param("projectionCode", projectionCode)
+                .param("windowCode", windowCode)
+                .query(UUID.class)
+                .optional();
+    }
+
     public boolean isListingInvocation(UUID id,UUID organizationId,UUID listingId) {
         return jdbc.sql("""
                 SELECT EXISTS(SELECT 1 FROM ops.ai_invocation WHERE id=:id AND organization_id=:org

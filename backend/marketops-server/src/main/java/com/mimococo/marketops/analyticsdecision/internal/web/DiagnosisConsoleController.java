@@ -15,6 +15,9 @@ import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.identityaccess.OwnedResource;
+import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
+import com.mimococo.marketops.productlisting.SubjectIdentity;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,17 +52,20 @@ class DiagnosisConsoleController {
     private final AnalyticsCalculationService calculation;
     private final BusinessAuthorization authorization;
     private final AnalyticsQueryService queries;
+    private final ListingIdentityDirectory identities;
 
     DiagnosisConsoleController(MetricQuery metricQuery,
                                DiagnosisQuery diagnosisQuery,
                                AnalyticsCalculationService calculation,
                                BusinessAuthorization authorization,
-                               AnalyticsQueryService queries) {
+                               AnalyticsQueryService queries,
+                               ListingIdentityDirectory identities) {
         this.metricQuery = metricQuery;
         this.diagnosisQuery = diagnosisQuery;
         this.calculation = calculation;
         this.authorization = authorization;
         this.queries = queries;
+        this.identities = identities;
     }
 
     /** Source edges of one exact metric version, with independent evidence permission. */
@@ -75,7 +81,7 @@ class DiagnosisConsoleController {
 
     /** The store's daily work list, most urgent first. */
     @GetMapping(value = "/stores/{storeId}/queue", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<PrioritySubjectView> queue(AuthenticatedActor actor,
+    List<QueueItem> queue(AuthenticatedActor actor,
                                     @PathVariable UUID storeId,
                                     @RequestParam(required = false, defaultValue = "D30")
                                     MetricWindow window,
@@ -83,7 +89,18 @@ class DiagnosisConsoleController {
                                     int limit) {
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(storeId));
-        return diagnosisQuery.priorityQueue(storeId, window, limit);
+        List<PrioritySubjectView> queue = diagnosisQuery.priorityQueue(storeId, window, limit);
+        // One identity read for the whole page; the order stays the queue's own.
+        Map<UUID, SubjectIdentity> names = identities.identities(actor.organizationId(),
+                queue.stream()
+                        .filter(item -> item.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT)
+                        .map(PrioritySubjectView::subjectId)
+                        .toList());
+        return queue.stream()
+                .map(item -> QueueItem.of(item,
+                        item.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT
+                                ? names.get(item.subjectId()) : null))
+                .toList();
     }
 
     /** Everything currently known about one listing variant. */
@@ -103,7 +120,9 @@ class DiagnosisConsoleController {
                 metricQuery.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
                         window),
                 diagnosisQuery.currentFindings(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
-                        window));
+                        window),
+                identities.identities(actor.organizationId(), List.of(subjectId))
+                        .get(subjectId));
     }
 
     /** How one metric moved for one subject. */
@@ -143,12 +162,44 @@ class DiagnosisConsoleController {
      * @param window the observation window
      * @param metrics every current canonical value
      * @param findings every current rule outcome, in rule order
+     * @param identity what an operator calls the subject, or {@code null}
      */
     record SubjectDiagnosis(
             UUID subjectId,
             UUID storeId,
             MetricWindow window,
             Map<MetricCode, MetricValueView> metrics,
-            List<DiagnosisFindingView> findings) {
+            List<DiagnosisFindingView> findings,
+            SubjectIdentity identity) {
+    }
+
+    /**
+     * One work-list entry as the console receives it: the published view's
+     * members, unchanged and in the same order, plus display names.
+     *
+     * @param identity what an operator calls the subject, or {@code null} when
+     *                 it is not a listing variant or cannot be named
+     */
+    record QueueItem(
+            SubjectKind subjectKind,
+            UUID subjectId,
+            UUID storeId,
+            BigDecimal priorityScore,
+            int criticalFindingCount,
+            int warningFindingCount,
+            int declinedRuleCount,
+            BigDecimal netSales,
+            BigDecimal contributionProfit,
+            String currencyCode,
+            List<String> blockingRuleCodes,
+            SubjectIdentity identity) {
+
+        static QueueItem of(PrioritySubjectView view, SubjectIdentity identity) {
+            return new QueueItem(view.subjectKind(), view.subjectId(), view.storeId(),
+                    view.priorityScore(), view.criticalFindingCount(),
+                    view.warningFindingCount(), view.declinedRuleCount(), view.netSales(),
+                    view.contributionProfit(), view.currencyCode(), view.blockingRuleCodes(),
+                    identity);
+        }
     }
 }

@@ -10,8 +10,10 @@ import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,6 +64,36 @@ class AiConsoleController {
                 new OwnedResource(OwnedResource.Kind.AI_INVOCATION, invocationId));
         return copilot.invocation(invocationId).map(AiConsoleController::response)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    /**
+     * The newest recorded explanation of one listing variant for a window, in
+     * any state; 204 when none has been recorded.
+     *
+     * <p>A read only: it never calls a model. The subject is checked against
+     * the store the caller names, and the invocation found is then checked
+     * exactly as {@link #invocation} checks it, so this answers nothing the
+     * single-invocation read would refuse.
+     */
+    @GetMapping(value = "/listing-variants/{listingVariantId}/latest",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ExplanationResponse> latest(AuthenticatedActor actor,
+                                               @PathVariable UUID listingVariantId,
+                                               @RequestParam UUID storeId,
+                                               @RequestParam(required = false,
+                                                       defaultValue = "D30")
+                                               MetricWindow window) {
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, listingVariantId, storeId));
+        Optional<AiDiagnosis> latest =
+                copilot.latestInvocation(actor.organizationId(), listingVariantId, window);
+        if (latest.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.AI_INVOCATION,
+                        latest.get().invocationId()));
+        return ResponseEntity.ok(response(latest.get()));
     }
 
     // Decimal money is text on the console wire, so JavaScript cannot round it.

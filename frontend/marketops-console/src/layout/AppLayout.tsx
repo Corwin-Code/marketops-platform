@@ -1,5 +1,6 @@
 import {
   ClockCircleOutlined,
+  LoginOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -20,7 +21,7 @@ import {
   theme,
 } from 'antd';
 import type { MenuProps } from 'antd';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import {
   environmentLabel,
@@ -29,6 +30,7 @@ import {
   shell as text,
   shortId,
 } from '../i18n/zh/shell';
+import { useReauthenticate } from '../session/reauthenticate';
 import { LoadingState } from '../ui';
 import { NAV_GROUPS, placeRoute } from './navigation';
 
@@ -77,7 +79,20 @@ export function AppLayout({
   const location = useLocation();
   const navigate = useNavigate();
   const { token } = theme.useToken();
-  const { notification } = AntApp.useApp();
+  const { notification, message } = AntApp.useApp();
+  const reauthenticate = useReauthenticate();
+
+  // Leaves for the identity provider; the current page is kept so the
+  // callback brings the operator back here.
+  const startReauthentication = useCallback(() => {
+    if (reauthenticate === undefined) {
+      return;
+    }
+    notification.destroy('session-expiry');
+    reauthenticate().catch(() => {
+      void message.error(text.reauthenticateFailed);
+    });
+  }, [reauthenticate, notification, message]);
   const place = useMemo(() => placeRoute(location.pathname), [location.pathname]);
 
   const [collapsed, setCollapsed] = useState(false);
@@ -106,11 +121,26 @@ export function AppLayout({
         title: text.sessionExpiringTitle,
         description: text.sessionExpiringDescription(minutesLeft),
         duration: 10,
+        ...(reauthenticate === undefined
+          ? {}
+          : {
+              actions: (
+                <Button
+                  type="primary"
+                  size="small"
+                  icon={<LoginOutlined />}
+                  onClick={startReauthentication}
+                  data-testid="session-reauthenticate"
+                >
+                  {text.reauthenticateNow}
+                </Button>
+              ),
+            }),
       });
     }
     // Shown once when the warning window opens; the header tag keeps counting,
     // so the minutes are deliberately not a dependency.
-  }, [expiring, notification]);
+  }, [expiring, notification, reauthenticate, startReauthentication]);
 
   const userMenu: MenuProps = {
     items: [
@@ -124,6 +154,15 @@ export function AppLayout({
             { type: 'divider' as const },
           ]
         : []),
+      ...(expiring && reauthenticate !== undefined
+        ? [
+            {
+              key: 'reauthenticate',
+              icon: <LoginOutlined />,
+              label: text.reauthenticateNow,
+            },
+          ]
+        : []),
       {
         key: 'sign-out',
         icon: <LogoutOutlined />,
@@ -132,7 +171,9 @@ export function AppLayout({
       },
     ],
     onClick: ({ key }) => {
-      if (key === 'sign-out') {
+      if (key === 'reauthenticate') {
+        startReauthentication();
+      } else if (key === 'sign-out') {
         notification.destroy('session-expiry');
         onSignOut();
       }

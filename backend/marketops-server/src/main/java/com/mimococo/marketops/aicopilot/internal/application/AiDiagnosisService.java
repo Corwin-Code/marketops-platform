@@ -325,6 +325,21 @@ public class AiDiagnosisService implements AiCopilot {
 
     @Override
     @Transactional
+    public Optional<AiDiagnosis> latestInvocation(UUID organizationId, UUID listingVariantId,
+                                                  MetricWindow window) {
+        // Database-only: expired invocations are closed first so a stuck call
+        // reads as what it became, then the newest recorded one is returned.
+        recover();
+        return repository.latestSubjectInvocation(organizationId,
+                        ProjectionBuilder.PROJECTION_CODE,
+                        SubjectKind.PLATFORM_LISTING_VARIANT.name(), listingVariantId,
+                        window.name())
+                .flatMap(repository::findInvocation)
+                .map(this::assemble);
+    }
+
+    @Override
+    @Transactional
     public Optional<AiDiagnosis> listingInvocation(UUID invocationId,UUID organizationId,UUID listingId) {
         if (!repository.isListingInvocation(invocationId,organizationId,listingId)) return Optional.empty();
         recover();

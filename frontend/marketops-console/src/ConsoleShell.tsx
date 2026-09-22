@@ -103,7 +103,8 @@ export function ConsoleShell({
         <Route index element={<Navigate to={ROUTES.pricingQueue} replace />} />
         <Route path={ROUTES.pricingQueue} element={<PricingQueuePage {...page} />} />
         <Route path={ROUTES.subject} element={<SubjectPage {...page} />} />
-        <Route path={ROUTES.review} element={<ReviewPage {...page} />} />
+        {/* The review opens beside the diagnosis; the old address redirects there. */}
+        <Route path={ROUTES.review} element={<ReviewPage />} />
         <Route path={ROUTES.command} element={<CommandPage {...page} />} />
         <Route path={ROUTES.pricingExport} element={<PricingExportPage {...page} />} />
         <Route path={ROUTES.availabilityRisks} element={<AvailabilityRisksPage {...page} />} />

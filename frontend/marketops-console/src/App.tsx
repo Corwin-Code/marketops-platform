@@ -8,11 +8,13 @@ import { ConfigurationError } from './layout/ConfigurationError';
 import { SignedOutScreen } from './layout/SignedOutScreen';
 import { completeSignIn } from './session/oidc';
 import type { OidcSettings, SignInOutcome } from './session/oidc';
+import { ReauthenticateContext, startSignIn } from './session/reauthenticate';
+import { CALLBACK_PATH, takeReturnPath } from './session/returnPath';
 import { isUsable } from './session/session';
 import type { Session } from './session/session';
 
 /** Path the identity provider returns the operator to. */
-export const CALLBACK_PATH = '/signed-in';
+export { CALLBACK_PATH };
 
 /** How often the session's expiry is re-checked while signed in. */
 export const SESSION_CHECK_INTERVAL_MS = 30_000;
@@ -86,6 +88,9 @@ function ConsoleRoot({
 
   const [session, setSession] = useState<Session | undefined>(initialSession);
   const [problem, setProblem] = useState<string | undefined>(undefined);
+  // Set when a session ran out on its own, so the signed-out screen can say so
+  // instead of silently showing the sign-in card.
+  const [expired, setExpired] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
   const redirectUri =
@@ -110,6 +115,13 @@ function ConsoleRoot({
   );
 
   const returningFromProvider = here.pathname === CALLBACK_PATH;
+
+  // A fresh sign-in started from inside the console (the expiry warning). It
+  // keeps the current page so the callback brings the operator back to it.
+  const reauthenticate = useMemo(
+    () => (settings === undefined ? undefined : () => startSignIn(settings)),
+    [settings],
+  );
 
   // A second guard for the same reason, against a re-render this component
   // cannot see coming: the code in this URL is redeemed at most once. The
@@ -145,9 +157,12 @@ function ConsoleRoot({
       if (outcome.ok) {
         setSession(outcome.session);
         setProblem(undefined);
+        setExpired(false);
         setNow(Date.now());
-        // The spent code leaves the address bar and the history entry.
-        void navigate('/', { replace: true });
+        // The spent code leaves the address bar and the history entry. The
+        // operator returns to the page they left from, when it was kept and
+        // is a path inside this console; otherwise to the home page.
+        void navigate(takeReturnPath(), { replace: true });
       } else {
         setProblem(describeSignInFailure(outcome.failure.kind));
       }
@@ -175,23 +190,27 @@ function ConsoleRoot({
   useEffect(() => {
     if (session !== undefined && !isUsable(session, now)) {
       setSession(undefined);
+      setExpired(true);
     }
   }, [session, now]);
 
   if (isUsable(session, now) && operating !== undefined) {
     return (
-      <ConsoleShell
-        config={config}
-        session={session}
-        storeId={operating.storeId}
-        fetchImpl={fetchImpl}
-        now={now}
-        onSignOut={() => {
-          setSession(undefined);
-          setProblem(undefined);
-          void navigate('/', { replace: true });
-        }}
-      />
+      <ReauthenticateContext value={reauthenticate}>
+        <ConsoleShell
+          config={config}
+          session={session}
+          storeId={operating.storeId}
+          fetchImpl={fetchImpl}
+          now={now}
+          onSignOut={() => {
+            setSession(undefined);
+            setProblem(undefined);
+            setExpired(false);
+            void navigate('/', { replace: true });
+          }}
+        />
+      </ReauthenticateContext>
     );
   }
 
@@ -201,6 +220,9 @@ function ConsoleRoot({
       fetchImpl={fetchImpl}
       settings={settings}
       problem={problem}
+      // Also true for the one render between the clock passing the expiry and
+      // the effect above clearing the session.
+      expired={expired || session !== undefined}
       completing={
         returningFromProvider &&
         settings !== undefined &&

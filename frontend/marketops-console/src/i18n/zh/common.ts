@@ -24,6 +24,23 @@ export const actions = {
   copy: '复制',
   expand: '展开',
   collapse: '收起',
+  more: '更多',
+  next: '下一步',
+  previous: '上一步',
+  stopWaiting: '停止等待',
+} as const;
+
+/** Words used by dialogs, drawers and folded sections. */
+export const dialog = {
+  reason: '理由',
+  reasonPlaceholder: '写明依据，会记入审计',
+  reasonRequired: '请填写理由',
+  required: '必填',
+  impact: '影响',
+  guard: '规则校验',
+  guardFailed: '规则校验未通过，不能确认',
+  consequence: '后果',
+  help: '说明',
 } as const;
 
 /** Words describing what a screen or a value is doing. */

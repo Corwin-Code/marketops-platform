@@ -2,8 +2,8 @@ import { LoginOutlined } from '@ant-design/icons';
 import { Alert, Button, Flex, Typography } from 'antd';
 import { useState } from 'react';
 import { signIn as text } from '../i18n/zh/shell';
-import { beginSignIn } from './oidc';
 import type { OidcSettings } from './oidc';
+import { startSignIn } from './reauthenticate';
 
 /** What the sign-in screen needs. */
 export interface SignInProps {
@@ -13,6 +13,8 @@ export interface SignInProps {
   readonly navigate?: (url: string) => void;
   /** Why the previous attempt did not produce a session, when there was one. */
   readonly problem?: string;
+  /** Whether the previous session ran out, so the screen says why it is here. */
+  readonly expired?: boolean;
 }
 
 /**
@@ -22,7 +24,12 @@ export interface SignInProps {
  * count. A console that showed even the shape of that data to somebody who has
  * not signed in is telling them something.
  */
-export function SignIn({ settings, navigate, problem }: SignInProps): React.JSX.Element {
+export function SignIn({
+  settings,
+  navigate,
+  problem,
+  expired = false,
+}: SignInProps): React.JSX.Element {
   const [starting, setStarting] = useState(false);
   const [startFailed, setStartFailed] = useState(false);
   const go =
@@ -36,6 +43,15 @@ export function SignIn({ settings, navigate, problem }: SignInProps): React.JSX.
         {problem !== undefined && (
           <Alert type="error" showIcon title={problem} role="alert" data-testid="sign-in-problem" />
         )}
+        {expired && problem === undefined && (
+          <Alert
+            type="warning"
+            showIcon
+            title={text.expired}
+            role="alert"
+            data-testid="sign-in-expired"
+          />
+        )}
         {startFailed && <Alert type="error" showIcon title={text.startFailed} role="alert" />}
         <Typography.Text type="secondary">{text.explanation}</Typography.Text>
         <Button
@@ -47,7 +63,7 @@ export function SignIn({ settings, navigate, problem }: SignInProps): React.JSX.
           onClick={() => {
             setStarting(true);
             setStartFailed(false);
-            void beginSignIn(settings).then(go, () => {
+            void startSignIn(settings, go).then(undefined, () => {
               setStarting(false);
               setStartFailed(true);
             });

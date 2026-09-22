@@ -204,6 +204,26 @@ export interface LeadTimePolicyDraft {
   readonly supersedesPolicyId: string | null;
 }
 
+/**
+ * What an operator calls a listing variant: the product, the variant and the
+ * SKUs on both sides. Every field may be absent (an unmapped listing has no
+ * product yet), and the console falls back to the short identifier then.
+ */
+export interface SubjectIdentity {
+  /** Our product name, from the catalogue. */
+  readonly productName: string | null;
+  /** Our variant name, from the catalogue. */
+  readonly variantName: string | null;
+  /** Our SKU code. */
+  readonly skuCode: string | null;
+  /** Marketplace, e.g. OZON. */
+  readonly platformCode: string | null;
+  /** The marketplace's own SKU or offer key. */
+  readonly platformSkuKey: string | null;
+  readonly colorLabel: string | null;
+  readonly sizeLabel: string | null;
+}
+
 /** One subject on the daily work list. */
 export interface PrioritySubject {
   readonly subjectId: string;
@@ -216,6 +236,8 @@ export interface PrioritySubject {
   readonly contributionProfit: string | null;
   readonly currencyCode: string | null;
   readonly blockingRuleCodes: readonly string[];
+  /** Absent until the backend supplies it. */
+  readonly identity?: SubjectIdentity | undefined;
 }
 
 /** One canonical value, with everything needed to present it honestly. */
@@ -250,6 +272,7 @@ export interface SubjectDiagnosis {
   readonly window: string;
   readonly metrics: Readonly<Record<string, MetricValue>>;
   readonly findings: readonly DiagnosisFinding[];
+  readonly identity?: SubjectIdentity | undefined;
 }
 
 /** AI output is advisory. Decimal money is encoded as text on this API. */
@@ -277,6 +300,9 @@ export interface AiExplanation {
   readonly failureCode: string | null;
   readonly degraded: boolean;
   readonly claims: readonly ExplanationClaim[];
+  /** When the request was recorded, and when it finished; absent on older responses. */
+  readonly startedAt?: string | undefined;
+  readonly completedAt?: string | null | undefined;
 }
 
 function boundedClaimValue(value: unknown, depth = 0): value is ClaimValue {
@@ -402,6 +428,8 @@ export function parseAiExplanation(body: unknown): AiExplanation | undefined {
     failureCode: body.failureCode,
     degraded: body.degraded,
     claims: validated,
+    ...(typeof body.startedAt === 'string' ? { startedAt: body.startedAt } : {}),
+    ...(typeof body.completedAt === 'string' ? { completedAt: body.completedAt } : {}),
   };
 }
 
@@ -420,6 +448,7 @@ export interface Recommendation {
   readonly validUntil: string;
   readonly terminalReason: string | null;
   readonly version: number;
+  readonly identity?: SubjectIdentity | undefined;
 }
 
 /** What a price change would do, and whether it is currently allowed. */
@@ -462,6 +491,9 @@ export interface PriceCommand {
   readonly failureCode: string | null;
   readonly attempts: readonly CommandAttempt[];
   readonly readbacks: readonly CommandReadback[];
+  /** The listing variant the command changes, so the console can link back to it. */
+  readonly subjectId?: string | undefined;
+  readonly identity?: SubjectIdentity | undefined;
 }
 
 /** One call made against a marketplace. */
@@ -712,6 +744,28 @@ export function parseAvailabilityCard(body: unknown): AvailabilityCard | undefin
 }
 
 /** Read one subject from the priority queue. */
+/** Read a subject's identity; absent or malformed means not supplied. */
+export function parseIdentity(body: unknown): SubjectIdentity | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  return {
+    productName: optionalText(body, 'productName'),
+    variantName: optionalText(body, 'variantName'),
+    skuCode: optionalText(body, 'skuCode'),
+    platformCode: optionalText(body, 'platformCode'),
+    platformSkuKey: optionalText(body, 'platformSkuKey'),
+    colorLabel: optionalText(body, 'colorLabel'),
+    sizeLabel: optionalText(body, 'sizeLabel'),
+  };
+}
+
+/** An optional member spread only when present, for exact optional types. */
+function withIdentity(body: Record<string, unknown>): { identity?: SubjectIdentity } {
+  const identity = parseIdentity(body.identity);
+  return identity === undefined ? {} : { identity };
+}
+
 export function parsePrioritySubject(body: unknown): PrioritySubject | undefined {
   if (!isRecord(body)) {
     return undefined;
@@ -732,6 +786,7 @@ export function parsePrioritySubject(body: unknown): PrioritySubject | undefined
     contributionProfit: decimal(body, 'contributionProfit'),
     currencyCode: optionalText(body, 'currencyCode'),
     blockingRuleCodes: textList(body, 'blockingRuleCodes'),
+    ...withIdentity(body),
   };
 }
 
@@ -827,6 +882,7 @@ export function parseRecommendation(body: unknown): Recommendation | undefined {
     validUntil: text(body, 'validUntil') ?? '',
     terminalReason: optionalText(body, 'terminalReason'),
     version: integer(body, 'version'),
+    ...withIdentity(body),
   };
 }
 
@@ -909,6 +965,8 @@ export function parseCommand(body: unknown): PriceCommand | undefined {
           .map(parseReadback)
           .filter((item): item is CommandReadback => item !== undefined)
       : [],
+    ...(text(body, 'subjectId') === undefined ? {} : { subjectId: text(body, 'subjectId') }),
+    ...withIdentity(body),
   };
 }
 
@@ -990,6 +1048,7 @@ export function parseDiagnosis(body: unknown): SubjectDiagnosis | undefined {
           .map(parseFinding)
           .filter((item): item is DiagnosisFinding => item !== undefined)
       : [],
+    ...withIdentity(body),
   };
 }
 
@@ -1772,6 +1831,26 @@ export function fetchDiagnosis(
   );
 }
 
+/**
+ * The most recent explanation already recorded for a subject, or `null`.
+ *
+ * Reading never calls a model: it returns what an earlier request produced, so
+ * an operator coming back to a subject sees the last answer and when it was
+ * made, and asks for a new one only on purpose.
+ */
+export function fetchLatestExplanation(
+  context: ConsoleRequest,
+  subjectId: string,
+  storeId: string,
+  window = 'D30',
+): Promise<ConsoleOutcome<AiExplanation | null>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}/latest?storeId=${encodeURIComponent(storeId)}&window=${encodeURIComponent(window)}`,
+    (body) => (body === undefined || body === null ? null : parseAiExplanation(body)),
+  );
+}
+
 /** An explicit request only; neither component mounting nor polling spends provider quota. */
 export function requestExplanation(
   context: ConsoleRequest,
@@ -1798,6 +1877,23 @@ export function fetchRecommendations(
     `/api/v1/console/workflow/stores/${encodeURIComponent(storeId)}/recommendations` +
       (subjectId === undefined ? '' : `?subjectId=${encodeURIComponent(subjectId)}`),
     list(parseRecommendation),
+  );
+}
+
+/**
+ * One proposal by its identifier, in whatever state it is now.
+ *
+ * Used to reopen a review from its address and to reload the current version
+ * after a conflict, instead of relying on what the previous page passed along.
+ */
+export function fetchRecommendation(
+  context: ConsoleRequest,
+  recommendationId: string,
+): Promise<ConsoleOutcome<Recommendation>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}`,
+    parseRecommendation,
   );
 }
 
@@ -1902,6 +1998,53 @@ export function requestImpactPreview(
     context,
     `/api/v1/console/workflow/recommendations/${recommendationId}/impact-preview`,
     parsePreview,
+    { method: 'POST' },
+  );
+}
+
+/** The standing authorization a policy approval would use, and its verdict. */
+export interface PolicyAuthorizationPreview {
+  /** Whether a standing authorization currently covers the proposal. */
+  readonly usable: boolean;
+  readonly authorizationId: string | null;
+  /** STORE or PRODUCT_VARIANT. */
+  readonly scopeKind: string | null;
+  /** The largest change it allows, as a decimal ratio. */
+  readonly maxChangeRate: string | null;
+  /** Uses left before this one. */
+  readonly remainingUses: number | null;
+  /** The impact and verdict evaluated against that bound. */
+  readonly preview: ImpactPreview | null;
+}
+
+/**
+ * Ask what approving under the standing authorization would find, without
+ * approving. Recorded as one evaluation, like every preview; nothing is used up.
+ */
+export function requestPolicyAuthorizationPreview(
+  context: ConsoleRequest,
+  recommendationId: string,
+): Promise<ConsoleOutcome<PolicyAuthorizationPreview>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}/policy-authorization-preview`,
+    (body) => {
+      if (!isRecord(body) || typeof body.usable !== 'boolean') {
+        return undefined;
+      }
+      const preview = body.preview === null ? null : parsePreview(body.preview);
+      if (preview === undefined || (body.usable && preview === null)) {
+        return undefined;
+      }
+      return {
+        usable: body.usable,
+        authorizationId: optionalText(body, 'authorizationId'),
+        scopeKind: optionalText(body, 'scopeKind'),
+        maxChangeRate: decimal(body, 'maxChangeRate'),
+        remainingUses: typeof body.remainingUses === 'number' ? body.remainingUses : null,
+        preview,
+      };
+    },
     { method: 'POST' },
   );
 }

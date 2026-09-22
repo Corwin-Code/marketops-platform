@@ -1,8 +1,9 @@
-import { Button, Popconfirm, Tooltip } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import type { ButtonProps } from 'antd';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { actions } from '../i18n';
+import { TriggerButton } from './TriggerButton';
 
 /** A button whose action must be confirmed first. */
 export interface ConfirmButtonProps {
@@ -17,8 +18,10 @@ export interface ConfirmButtonProps {
   readonly icon?: ReactNode;
   readonly size?: ButtonProps['size'];
   readonly disabled?: boolean;
-  /** Why the button is disabled, shown on hover. */
+  /** Why the button is disabled. */
   readonly disabledReason?: ReactNode;
+  /** Show the reason on hover (default) or as a visible line under the button. */
+  readonly reasonPlacement?: 'tooltip' | 'inline';
   /** Loading controlled by the caller, in addition to the button's own. */
   readonly loading?: boolean;
 }
@@ -41,6 +44,7 @@ export function ConfirmButton({
   size,
   disabled = false,
   disabledReason,
+  reasonPlacement = 'tooltip',
   loading = false,
 }: ConfirmButtonProps): React.JSX.Element {
   const [pending, setPending] = useState(false);
@@ -70,12 +74,20 @@ export function ConfirmButton({
   );
 
   if (disabled) {
-    return disabledReason === undefined ? (
-      button
-    ) : (
-      <Tooltip title={disabledReason}>
-        <span style={{ display: 'inline-block', cursor: 'not-allowed' }}>{button}</span>
-      </Tooltip>
+    return (
+      <TriggerButton
+        trigger={{
+          label: children,
+          type,
+          danger,
+          disabled: true,
+          reasonPlacement,
+          ...(icon === undefined ? {} : { icon }),
+          ...(size === undefined ? {} : { size }),
+          ...(disabledReason === undefined ? {} : { disabledReason }),
+        }}
+        onClick={() => undefined}
+      />
     );
   }
 

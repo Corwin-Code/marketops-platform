@@ -303,6 +303,7 @@ final class GuardrailEngine {
         Optional<BigDecimal> minimum = policy.rate("MIN_DATA_COMPLETENESS");
         if (completeness != null && minimum.isPresent()) {
             detail.put("dataCompleteness", completeness.toPlainString());
+            detail.put("dataCompletenessThreshold", minimum.get().toPlainString());
             if (completeness.compareTo(minimum.get()) < 0) {
                 reasons.add(GuardrailReason.DATA_COMPLETENESS_BELOW_MINIMUM);
             }
@@ -328,6 +329,7 @@ final class GuardrailEngine {
         }
         long oldest = ages.values().stream().max(Long::compareTo).orElseThrow();
         detail.put("inputAgeSeconds", Long.toString(oldest));
+        detail.put("inputAgeSecondsThreshold", Long.toString(maximumAge.get()));
         detail.put("freshnessWatermarks", freshness.requiredFeeds().stream().map(feed -> {
             DecisionFreshness.Watermark watermark = freshness.watermarks().get(feed);
             return feed + "=" + watermark.watermarkId() + '@' + watermark.effectiveAt()
@@ -348,6 +350,7 @@ final class GuardrailEngine {
         Optional<BigDecimal> minimumProfit = policy.amount("MIN_UNIT_CONTRIBUTION_PROFIT");
         if (projectedUnitProfit != null && minimumProfit.isPresent()) {
             detail.put("projectedUnitProfit", projectedUnitProfit.toPlainString());
+            detail.put("projectedUnitProfitThreshold", minimumProfit.get().toPlainString());
             if (projectedUnitProfit.compareTo(minimumProfit.get()) < 0) {
                 reasons.add(GuardrailReason.UNIT_PROFIT_BELOW_MINIMUM);
             }
@@ -355,6 +358,7 @@ final class GuardrailEngine {
         Optional<BigDecimal> minimumMargin = policy.rate("MIN_CONTRIBUTION_MARGIN");
         if (projectedMargin != null && minimumMargin.isPresent()) {
             detail.put("projectedMargin", projectedMargin.toPlainString());
+            detail.put("projectedMarginThreshold", minimumMargin.get().toPlainString());
             if (projectedMargin.compareTo(minimumMargin.get()) < 0) {
                 reasons.add(GuardrailReason.MARGIN_BELOW_MINIMUM);
             }
@@ -379,6 +383,8 @@ final class GuardrailEngine {
         }
         BigDecimal magnitude = changeRate.abs();
         policy.rate("MAX_SINGLE_CHANGE_RATE").ifPresent(maximum -> {
+            // Compared against the magnitude of changeRate, which is signed.
+            detail.put("changeRateThreshold", maximum.toPlainString());
             if (magnitude.compareTo(maximum) > 0) {
                 reasons.add(GuardrailReason.SINGLE_CHANGE_TOO_LARGE);
             }
@@ -386,6 +392,7 @@ final class GuardrailEngine {
         policy.rate("MAX_DAILY_CHANGE_RATE").ifPresent(maximum -> {
             BigDecimal cumulative = input.cumulativeDailyChangeRate().abs().add(magnitude);
             detail.put("cumulativeDailyChangeRate", cumulative.toPlainString());
+            detail.put("cumulativeDailyChangeRateThreshold", maximum.toPlainString());
             if (cumulative.compareTo(maximum) > 0) {
                 reasons.add(GuardrailReason.DAILY_CHANGE_EXCEEDED);
             }
@@ -403,6 +410,7 @@ final class GuardrailEngine {
         }
         long elapsed = Duration.between(input.lastChangeAt(), input.evaluatedAt()).toSeconds();
         detail.put("secondsSinceLastChange", Long.toString(elapsed));
+        detail.put("secondsSinceLastChangeThreshold", Long.toString(cooldownSeconds.get()));
         if (elapsed < cooldownSeconds.get()) {
             reasons.add(GuardrailReason.COOLDOWN_ACTIVE);
         }
@@ -428,6 +436,7 @@ final class GuardrailEngine {
             return;
         }
         detail.put("availableUnits", available.toPlainString());
+        detail.put("availableUnitsThreshold", Integer.toString(minimumUnits.get()));
         if (available.compareTo(BigDecimal.valueOf(minimumUnits.get())) < 0) {
             reasons.add(GuardrailReason.INVENTORY_BELOW_MINIMUM);
         }

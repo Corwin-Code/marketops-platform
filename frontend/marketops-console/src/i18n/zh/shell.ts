@@ -85,6 +85,8 @@ export const shell = {
   missingRecommendationDescription:
     '请从商品诊断页面打开一条调价建议再进行审核（刷新页面后需要重新打开）。',
   completingSignIn: '正在完成登录…',
+  reauthenticateNow: '立即重新登录',
+  reauthenticateFailed: '无法开始重新登录，请稍后重试。',
 } as const;
 
 /** Sign-in screen wording. */
@@ -93,6 +95,7 @@ export const signIn = {
   explanation: '将跳转到你所在组织的身份认证服务完成登录，登录需要第二重验证。',
   button: '登录',
   startFailed: '无法开始登录，请稍后重试。',
+  expired: '登录已过期，请重新登录',
   consoleRegion: '运营控制台',
   notConfiguredTitle: '未配置身份认证服务',
   notConfiguredDescription:

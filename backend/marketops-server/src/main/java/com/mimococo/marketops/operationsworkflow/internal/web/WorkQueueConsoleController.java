@@ -1,5 +1,6 @@
 package com.mimococo.marketops.operationsworkflow.internal.web;
 
+import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
@@ -10,6 +11,8 @@ import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.WorkTaskView;
 import com.mimococo.marketops.operationsworkflow.internal.application.RecommendationService;
 import com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskService;
+import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
+import com.mimococo.marketops.productlisting.SubjectIdentity;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -52,15 +55,21 @@ class WorkQueueConsoleController {
     private final WorkTaskService tasks;
     private final BusinessAuthorization authorization;
     private final com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy disclosure;
+    private final ListingIdentityDirectory identities;
+    private final tools.jackson.databind.ObjectMapper mapper;
 
     WorkQueueConsoleController(RecommendationService recommendations,
                                WorkTaskService tasks,
                                BusinessAuthorization authorization,
-                               com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy disclosure) {
+                               com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy disclosure,
+                               ListingIdentityDirectory identities,
+                               tools.jackson.databind.ObjectMapper mapper) {
         this.recommendations = recommendations;
         this.tasks = tasks;
         this.authorization = authorization;
         this.disclosure = disclosure;
+        this.identities = identities;
+        this.mapper = mapper;
     }
 
     /** The store's open proposals, most urgent first. */
@@ -73,18 +82,28 @@ class WorkQueueConsoleController {
                                    int limit) {
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(storeId));
+        List<RecommendationView> proposals;
         if (subjectId != null) {
             authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                     new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, subjectId, storeId));
-            return recommendations.queueForSubject(storeId, subjectId, OPEN_STATES, limit).stream()
-                    .filter(view -> view.subjectKind() != com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
-                        || disclosure.mayReadNativeRecommendation(actor, view.id()))
-                .map(view -> disclosure.discloseRecommendation(actor, view)).toList();
+            proposals = recommendations.queueForSubject(storeId, subjectId, OPEN_STATES, limit);
+        } else {
+            proposals = recommendations.queue(storeId, OPEN_STATES, limit);
         }
-        return recommendations.queue(storeId, OPEN_STATES, limit).stream()
-                .filter(view -> view.subjectKind() != com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
+        List<RecommendationView> visible = proposals.stream()
+                .filter(view -> view.subjectKind() != SubjectKind.AD_NATIVE_OBJECT
                         || disclosure.mayReadNativeRecommendation(actor, view.id()))
-                .map(view -> disclosure.discloseRecommendation(actor, view)).toList();
+                .toList();
+        // One identity read for the whole page; the order stays the queue's own.
+        Map<UUID, SubjectIdentity> names = identities.identities(actor.organizationId(),
+                visible.stream()
+                        .filter(view -> view.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT)
+                        .map(RecommendationView::subjectId)
+                        .toList());
+        return visible.stream()
+                .map(view -> withIdentity(disclosure.discloseRecommendation(actor, view), view,
+                        names))
+                .toList();
     }
 
     /** How much of each kind of work the store has. */
@@ -97,16 +116,50 @@ class WorkQueueConsoleController {
         return recommendations.stateCounts(storeId);
     }
 
-    /** One proposal with the evidence its case rests on. */
+    /**
+     * One proposal in any state, with the evidence its case rests on.
+     *
+     * <p>Visibility is the store queue's: the same diagnostic permission on the
+     * proposal's store, the same subject-ownership check for a listing variant,
+     * and the same advertising disclosure filter for an advertising object. A
+     * proposal the caller could not see in that queue answers as not found, so
+     * the endpoint does not reveal that it exists. Advertising proposals keep
+     * their existing advertising-view requirement as well.
+     */
     @GetMapping(value = "/recommendations/{recommendationId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     tools.jackson.databind.node.ObjectNode recommendation(AuthenticatedActor actor,
                                       @PathVariable UUID recommendationId) {
         RecommendationView proposal = recommendations.require(recommendationId);
-        authorization.require(actor, proposal.subjectKind()==com.mimococo.marketops.analyticsdecision.SubjectKind.AD_NATIVE_OBJECT
-                        ? ActionScopeCode.ADVERTISING_VIEW : ActionScopeCode.DIAGNOSTIC_VIEW,
-                ResourceScope.store(proposal.storeId()));
-        return disclosure.discloseRecommendation(actor, proposal);
+        if (!proposal.organizationId().equals(actor.organizationId())) {
+            throw notFound(recommendationId);
+        }
+        boolean advertising = proposal.subjectKind() == SubjectKind.AD_NATIVE_OBJECT;
+        try {
+            authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                    ResourceScope.store(proposal.storeId()));
+            if (advertising) {
+                authorization.require(actor, ActionScopeCode.ADVERTISING_VIEW,
+                        ResourceScope.store(proposal.storeId()));
+            } else if (proposal.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT) {
+                authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                        new OwnedResource(OwnedResource.Kind.LISTING_VARIANT,
+                                proposal.subjectId(), proposal.storeId()));
+            }
+        } catch (com.mimococo.marketops.shared.OperationRejectedException refused) {
+            // The refusal is already journaled by the authority; the caller only
+            // learns that there is nothing here for them.
+            throw notFound(recommendationId);
+        }
+        if (advertising && !disclosure.mayReadNativeRecommendation(actor, proposal.id())) {
+            throw notFound(recommendationId);
+        }
+        Map<UUID, SubjectIdentity> names =
+                proposal.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT
+                        ? identities.identities(actor.organizationId(),
+                                List.of(proposal.subjectId()))
+                        : Map.of();
+        return withIdentity(disclosure.discloseRecommendation(actor, proposal), proposal, names);
     }
 
     /** Move a proposal along its lifecycle. */
@@ -180,6 +233,25 @@ class WorkQueueConsoleController {
                @Valid @RequestBody CloseRequest request) {
         tasks.close(actor, taskId, request.done(),
                 request.closureReason(), request.expectedVersion());
+    }
+
+    /** Attach display names; they are presentation only and never masked data. */
+    private tools.jackson.databind.node.ObjectNode withIdentity(
+            tools.jackson.databind.node.ObjectNode disclosed, RecommendationView view,
+            Map<UUID, SubjectIdentity> names) {
+        SubjectIdentity identity = view.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT
+                ? names.get(view.subjectId()) : null;
+        disclosed.set("identity", identity == null ? disclosed.nullNode()
+                : mapper.valueToTree(identity));
+        return disclosed;
+    }
+
+    private static com.mimococo.marketops.shared.OperationRejectedException notFound(UUID id) {
+        return com.mimococo.marketops.shared.OperationRejectedException.forEntity(
+                com.mimococo.marketops.shared.ErrorCode.RESOURCE_NOT_FOUND,
+                com.mimococo.marketops.adminobservability.audit.AuditSourceDomain.OPERATIONS_WORKFLOW
+                        .dbValue(),
+                "recommendation", id, null);
     }
 
     record TransitionRequest(@NotNull RecommendationState state, String terminalReason,

@@ -11,6 +11,7 @@ import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
+import com.mimococo.marketops.operationsworkflow.ImpactPreview;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
 import com.mimococo.marketops.operationsworkflow.ListingActionDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.ListingActionIntake;
@@ -235,6 +236,52 @@ public class ApprovalService {
                 RecommendationState.POLICY_AUTHORIZED, null, expectedVersion);
         return new Decision(decisionId, RecommendationState.POLICY_AUTHORIZED, verdict,
                 remaining);
+    }
+
+    /**
+     * What approving under the standing authorization would find, without
+     * approving: which authorization would be used, its bound and remaining
+     * uses, and the verdict evaluated against that bound.
+     *
+     * <p>The impact preview is evaluated with no authorization bound, so it
+     * cannot say whether a change exceeds what the standing authorization
+     * allows. This asks the same question the decision will ask, so the person
+     * confirming sees the refusal before spending a use. Nothing is consumed;
+     * the evaluation is recorded like every preview.
+     */
+    public PolicyPreview previewPolicyAuthorization(RecommendationView proposal) {
+        if (proposal.actionKind() != ActionKind.PRICE_CHANGE) {
+            throw OperationRejectedException.of(ErrorCode.POLICY_AUTHORIZATION_UNUSABLE);
+        }
+        Instant now = clock.instant();
+        UUID productVariantId = listings.variantContext(proposal.subjectId(), now)
+                .map(ListingVariantContext::productVariantId)
+                .orElse(null);
+        Optional<PolicyRepository.AuthorizationRow> standing = policies.usableAuthorization(
+                proposal.organizationId(), proposal.storeId(), productVariantId, now);
+        if (standing.isEmpty()) {
+            return new PolicyPreview(false, null, null, null, null, null);
+        }
+        PolicyRepository.AuthorizationRow row = standing.get();
+        ImpactPreview preview = guardrails.preview(proposal, row.maxChangeRate(),
+                GuardrailPurpose.IMPACT_PREVIEW);
+        return new PolicyPreview(true, row.id(), row.scopeKind(), row.maxChangeRate(),
+                row.maxUses() - row.usedCount(), preview);
+    }
+
+    /**
+     * The standing authorization a policy approval would use, and its verdict.
+     *
+     * @param usable whether an authorization currently covers the proposal
+     * @param authorizationId the authorization that would be used, or {@code null}
+     * @param scopeKind STORE or PRODUCT_VARIANT, or {@code null}
+     * @param maxChangeRate the largest change it allows, or {@code null}
+     * @param remainingUses uses left before this one, or {@code null}
+     * @param preview the impact and verdict under that bound, or {@code null}
+     */
+    public record PolicyPreview(boolean usable, UUID authorizationId, String scopeKind,
+                                BigDecimal maxChangeRate, Integer remainingUses,
+                                ImpactPreview preview) {
     }
 
     /** The standing authorization of one proposal, when it has one. */

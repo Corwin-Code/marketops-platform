@@ -34,6 +34,17 @@ public interface AiCopilot {
     /** One recorded invocation and its claims. */
     Optional<AiDiagnosis> invocation(UUID invocationId);
 
+    /**
+     * The most recent recorded explanation of one listing variant for a window,
+     * in whatever state it ended, or empty when nobody has asked yet.
+     *
+     * <p>A read of what an earlier request produced. It never calls a model and
+     * never starts an invocation, so coming back to a subject costs nothing and
+     * a new explanation is only ever requested on purpose.
+     */
+    Optional<AiDiagnosis> latestInvocation(UUID organizationId, UUID listingVariantId,
+                                           MetricWindow window);
+
     /** Listing membership and current disclosure permission are supplied by the listing authority. */
     AiDiagnosis assistListing(UUID requestedByUserId, UUID organizationId, UUID listingId, UUID authorizedStoreId,
                               java.util.List<UUID> listingVariantIds, java.util.List<UUID> authorizedProductVariantIds, MetricWindow window,

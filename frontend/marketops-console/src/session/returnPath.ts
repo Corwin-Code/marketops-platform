@@ -1,0 +1,81 @@
+/**
+ * Where the operator was when they left for the identity provider.
+ *
+ * A sign-in is a full-page round trip, so the page and its query (the lane, the
+ * tab, the page number) are kept in session storage and restored after the
+ * callback succeeds. Only a relative path inside this console is accepted: a
+ * value that could name another origin would turn the callback into an open
+ * redirect, so anything doubtful falls back to the home page.
+ */
+
+/** Path the identity provider returns the operator to. */
+export const CALLBACK_PATH = '/signed-in';
+
+/** Where the return path is kept between navigations. */
+const RETURN_PATH_KEY = 'marketops.oidc.returnPath';
+
+/** Where the operator lands when no usable return path was kept. */
+export const HOME_PATH = '/';
+
+/**
+ * Whether a value is a relative path inside this console.
+ *
+ * It must start with exactly one slash (not `//`, not `/\`, which browsers read
+ * as another host), contain no control characters, resolve to this origin, and
+ * not be the callback itself.
+ */
+export function isInAppPath(value: string | null | undefined): value is string {
+  if (typeof value !== 'string' || value === '' || value.length > 2048) {
+    return false;
+  }
+  if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) {
+    return false;
+  }
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u001f\u007f\\]/.test(value)) {
+    return false;
+  }
+  const base = 'https://console.invalid';
+  let parsed: URL;
+  try {
+    parsed = new URL(value, base);
+  } catch {
+    return false;
+  }
+  if (parsed.origin !== base) {
+    return false;
+  }
+  return parsed.pathname !== CALLBACK_PATH;
+}
+
+/** Keep the current in-app location before leaving for the identity provider. */
+export function rememberReturnPath(path: string, storage: Storage = sessionStorage): void {
+  try {
+    if (isInAppPath(path)) {
+      storage.setItem(RETURN_PATH_KEY, path);
+    } else {
+      storage.removeItem(RETURN_PATH_KEY);
+    }
+  } catch {
+    // Storage may be unavailable; the operator then lands on the home page.
+  }
+}
+
+/** Read and clear the kept location; the home page when nothing usable was kept. */
+export function takeReturnPath(storage: Storage = sessionStorage): string {
+  try {
+    const kept = storage.getItem(RETURN_PATH_KEY);
+    storage.removeItem(RETURN_PATH_KEY);
+    return isInAppPath(kept) ? kept : HOME_PATH;
+  } catch {
+    return HOME_PATH;
+  }
+}
+
+/** The current location as a path plus query, when running in a browser. */
+export function currentInAppPath(): string {
+  if (typeof window === 'undefined') {
+    return HOME_PATH;
+  }
+  return `${window.location.pathname}${window.location.search}`;
+}
