@@ -300,6 +300,9 @@ export interface AiExplanation {
   readonly failureCode: string | null;
   readonly degraded: boolean;
   readonly claims: readonly ExplanationClaim[];
+  /** When the request was recorded, and when it finished; absent on older responses. */
+  readonly startedAt?: string | undefined;
+  readonly completedAt?: string | null | undefined;
 }
 
 function boundedClaimValue(value: unknown, depth = 0): value is ClaimValue {
@@ -425,6 +428,8 @@ export function parseAiExplanation(body: unknown): AiExplanation | undefined {
     failureCode: body.failureCode,
     degraded: body.degraded,
     claims: validated,
+    ...(typeof body.startedAt === 'string' ? { startedAt: body.startedAt } : {}),
+    ...(typeof body.completedAt === 'string' ? { completedAt: body.completedAt } : {}),
   };
 }
 

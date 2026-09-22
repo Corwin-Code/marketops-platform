@@ -250,8 +250,13 @@ function ExplanationBody({
               <>
                 {aiText.justGenerated} <DateTime value={origin.receivedAt} />
               </>
-            ) : (
+            ) : (output.completedAt ?? output.startedAt) === undefined ? (
               aiText.lastRecorded
+            ) : (
+              <>
+                {aiText.lastRecorded}{' '}
+                <DateTime value={output.completedAt ?? output.startedAt ?? ''} />
+              </>
             )}
           </Typography.Text>
         </Flex>

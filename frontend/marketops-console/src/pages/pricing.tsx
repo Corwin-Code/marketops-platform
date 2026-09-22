@@ -1,7 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router';
-import { AdvertisingOutcomeHistory } from '../advertising/AdvertisingOutcomeHistory';
 import type { ConsoleRequest, Recommendation } from '../api/console';
 import { CommandTimeline } from '../commands/CommandTimeline';
 import { DiagnosticExportPanel } from '../diagnosis/DiagnosticExportPanel';
@@ -156,16 +155,6 @@ export function CommandPage({ context }: ConsolePageProps): React.JSX.Element {
       extra={<BackButton to={ROUTES.pricingQueue} label={text.backToQueue} />}
     >
       <CommandTimeline key={commandId} context={context} commandId={commandId} />
-      {/*
-        Kept separate from the timeline because provider acceptance, readback
-        and outcome are three different facts and the timeline only carries
-        the first two.
-      */}
-      <AdvertisingOutcomeHistory
-        key={`outcome:${commandId}`}
-        context={context}
-        commandId={commandId}
-      />
     </Page>
   );
 }

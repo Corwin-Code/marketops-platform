@@ -634,7 +634,7 @@ export const aiText = {
   generate: '生成新解释',
   latest: '查看最新结果',
   none: '尚无已记录的解释。生成解释会调用模型服务。',
-  lastRecorded: '最近一次记录的解释（结果中未包含生成时间）',
+  lastRecorded: '最近一次记录的解释',
   justGenerated: '本次请求返回于',
   waiting: (seconds: number) => `通常约 30 秒 · 已等待 ${String(seconds)} 秒`,
   stopped:
