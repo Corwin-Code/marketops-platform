@@ -1,4 +1,5 @@
-import { useNavigate, useParams } from 'react-router';
+import { useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { AdvertisingBriefView } from '../advertising/AdvertisingBriefView';
 import { AdvertisingCaseView } from '../advertising/AdvertisingCaseView';
 import { AdvertisingOperations } from '../advertising/AdvertisingOperations';
@@ -15,6 +16,17 @@ export const BRIEF_KINDS = {
   weekly: 'WEEKLY_EVIDENCE_REVIEW',
 } as const;
 
+/** History state set when a case is opened from the queue. */
+const FROM_QUEUE_STATE = { fromAdvertisingQueue: true } as const;
+
+function cameFromQueue(state: unknown): boolean {
+  return (
+    typeof state === 'object' &&
+    state !== null &&
+    (state as Record<string, unknown>).fromAdvertisingQueue === true
+  );
+}
+
 /** Advertising cases waiting for a person. */
 export function AdvertisingQueuePage({ context }: ConsolePageProps): React.JSX.Element {
   const navigate = useNavigate();
@@ -23,7 +35,7 @@ export function AdvertisingQueuePage({ context }: ConsolePageProps): React.JSX.E
       <AdvertisingQueue
         context={context}
         onSelect={(caseId) => {
-          void navigate(advertisingCasePath(caseId));
+          void navigate(advertisingCasePath(caseId), { state: FROM_QUEUE_STATE });
         }}
       />
     </Page>
@@ -33,6 +45,15 @@ export function AdvertisingQueuePage({ context }: ConsolePageProps): React.JSX.E
 /** One advertising case. */
 export function AdvertisingCasePage({ context }: ConsolePageProps): React.JSX.Element {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Only a case opened from the queue in this tab steps back in history; a
+  // case reached by a link, a reload into a fresh tab or the sign-in callback
+  // (whose previous entry is the identity provider) goes to the queue route.
+  // Read once on arrival: switching tabs replaces the entry and drops its
+  // state, but the entry behind it is still the queue.
+  const [hasInAppHistory] = useState(
+    () => location.key !== 'default' && cameFromQueue(location.state),
+  );
   const { caseId } = useParams();
   if (caseId === undefined || caseId === '') {
     return <NotFoundPage />;
@@ -44,7 +65,13 @@ export function AdvertisingCasePage({ context }: ConsolePageProps): React.JSX.El
         context={context}
         caseId={caseId}
         onBack={() => {
-          void navigate(ROUTES.advertisingQueue);
+          // Going back returns to the queue with its lane and page intact; a
+          // case opened directly (a link, a reload) falls back to the queue.
+          if (hasInAppHistory) {
+            void navigate(-1);
+          } else {
+            void navigate(ROUTES.advertisingQueue);
+          }
         }}
       />
     </Page>

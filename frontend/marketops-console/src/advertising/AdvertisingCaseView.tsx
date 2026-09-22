@@ -40,6 +40,7 @@ import { FailureAlert } from '../ui/FailureAlert';
 import { LoadingState } from '../ui/LoadingState';
 import { SectionCard } from '../ui/SectionCard';
 import { TechnicalDetails } from '../ui/TechnicalDetails';
+import { useSearchParam } from '../ui/useSearchParam';
 import { AdvertisingWorkflow } from './AdvertisingWorkflow';
 import { AdvertisingStopControls, STOP_ACTION_CODES } from './AdvertisingContainmentControls';
 import { AdvertisingManualShadow } from './AdvertisingManualShadow';
@@ -47,6 +48,16 @@ import { EvidenceChip } from './EvidenceChip';
 import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
 import { AbsentValue, IdText, MeasureValue, ReasonTags, dataAttributes } from './shared';
 import type { AdRow } from './shared';
+
+/** The case's tabs, in their fixed order; the first is the default. */
+const CASE_TABS = ['evidence', 'manual', 'workflow', 'stop'] as const;
+type CaseTab = (typeof CASE_TABS)[number];
+const DEFAULT_CASE_TAB: CaseTab = 'evidence';
+
+/** A tab read from the address bar; anything unknown is the default tab. */
+function readCaseTab(raw: string | undefined): CaseTab {
+  return (CASE_TABS as readonly string[]).includes(raw ?? '') ? (raw as CaseTab) : DEFAULT_CASE_TAB;
+}
 
 /** What the case view needs in order to load itself. */
 export interface AdvertisingCaseViewProps {
@@ -139,6 +150,10 @@ export function AdvertisingCaseView({
   const [detail, setDetail] = useState<AdvertisingCase | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [revision, setRevision] = useState(0);
+  // The open tab lives in the address bar, so a reload or a shared link opens
+  // the same tab; the default tab is left out of the URL.
+  const [rawTab, setRawTab] = useSearchParam('tab');
+  const tab = readCaseTab(rawTab);
 
   useEffect(() => {
     let active = true;
@@ -528,7 +543,11 @@ export function AdvertisingCaseView({
 
         <SectionCard>
           <Tabs
-            defaultActiveKey="evidence"
+            activeKey={tab}
+            onChange={(key) => {
+              const next = readCaseTab(key);
+              setRawTab(next === DEFAULT_CASE_TAB ? undefined : next);
+            }}
             items={[
               { key: 'evidence', label: '证据', children: evidenceTab },
               {

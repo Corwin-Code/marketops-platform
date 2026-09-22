@@ -2,6 +2,7 @@ import { Button, Flex, Segmented, Space, Table, Typography } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { fetchAdvertisingQueue } from '../api/console';
 import type { AdvertisingCase } from '../api/advertising';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
@@ -20,6 +21,7 @@ import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
 import { LoadingState } from '../ui/LoadingState';
 import { SectionCard } from '../ui/SectionCard';
+import { usePageParam, useSearchParam } from '../ui/useSearchParam';
 import { EvidenceChip } from './EvidenceChip';
 import { MeasureValue, ReasonTags, dataAttributes } from './shared';
 
@@ -37,6 +39,15 @@ const LANES = ['PROTECTION', 'DATA_REPAIR', 'OPTIMIZATION', 'WATCH'] as const;
 const PAGE_SIZE = 50;
 const ALL = 'ALL';
 
+/** Address-bar keys for the queue's own state. */
+const LANE_PARAM = 'lane';
+const PAGE_PARAM = 'page';
+
+/** A lane read from the address bar; anything unknown means all lanes. */
+function readLane(raw: string | undefined): string | undefined {
+  return raw !== undefined && (LANES as readonly string[]).includes(raw) ? raw : undefined;
+}
+
 /**
  * The advertising work list, in the order the product ranks it.
  *
@@ -51,8 +62,30 @@ const ALL = 'ALL';
  * spent", because one of those is a finding and the other is a gap.
  */
 export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): React.JSX.Element {
-  const [offset, setOffset] = useState(0);
-  const [lane, setLane] = useState<string | undefined>(undefined);
+  // The lane and page live in the address bar, so opening a case and coming
+  // back, a reload or a shared link all show the same slice of the queue.
+  // They only narrow and page the server's ranking; nothing is re-ordered here.
+  const [rawLane] = useSearchParam(LANE_PARAM);
+  const lane = readLane(rawLane);
+  const [page, setPage] = usePageParam(PAGE_PARAM);
+  const [, setParams] = useSearchParams();
+  const offset = (page - 1) * PAGE_SIZE;
+  const chooseLane = (next: string | undefined): void => {
+    // One update for both keys, so the page resets in the same history entry.
+    setParams(
+      (current) => {
+        const updated = new URLSearchParams(current);
+        if (next === undefined) {
+          updated.delete(LANE_PARAM);
+        } else {
+          updated.set(LANE_PARAM, next);
+        }
+        updated.delete(PAGE_PARAM);
+        return updated;
+      },
+      { replace: true },
+    );
+  };
   const [revision, setRevision] = useState(0);
   const [cases, setCases] = useState<readonly AdvertisingCase[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
@@ -180,8 +213,6 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
     },
   ];
 
-  const page = Math.floor(offset / PAGE_SIZE) + 1;
-
   return (
     <section
       aria-label="广告工作台"
@@ -212,8 +243,7 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
               ...LANES.map((name) => ({ label: LANE_LABELS[name] ?? name, value: name })),
             ]}
             onChange={(value) => {
-              setLane(value === ALL ? undefined : value);
-              setOffset(0);
+              chooseLane(value === ALL ? undefined : value);
             }}
           />
           {failure !== undefined ? (
@@ -241,7 +271,7 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
               <Button
                 disabled={offset === 0}
                 onClick={() => {
-                  setOffset(Math.max(0, offset - PAGE_SIZE));
+                  setPage(page - 1);
                 }}
               >
                 {actions.previousPage}
@@ -250,7 +280,7 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
               <Button
                 disabled={cases === undefined || cases.length < PAGE_SIZE}
                 onClick={() => {
-                  setOffset(offset + PAGE_SIZE);
+                  setPage(page + 1);
                 }}
               >
                 {actions.nextPage}
