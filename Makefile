@@ -15,7 +15,7 @@ MVNW := ./mvnw -B -ntp
 
 .DEFAULT_GOAL := help
 
-.PHONY: help require-repo-root require-env-local doctor env-init bootstrap \
+.PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build
 
 help: ## Show the available targets
@@ -30,13 +30,10 @@ require-env-local: require-repo-root
 	@test -f "$(ENV_LOCAL)" \
 	  || { echo 'FATAL: missing .env.local — run `make env-init` first.' >&2; exit 1; }
 
-doctor: require-repo-root ## Report unmet prerequisites without changing the host
-	@python3 scripts/dev_doctor.py
-
 env-init: require-repo-root ## Generate the ignored local environment files
 	@python3 scripts/init_local_env.py --target all
 
-bootstrap: require-repo-root ## Prepare local configuration and report prerequisites
+bootstrap: require-repo-root ## Prepare the local configuration files
 	@if test -f "$(ENV_LOCAL)" && test -f "$(FRONTEND_ENV_LOCAL)"; then \
 	  echo 'bootstrap: preserving the complete existing ignored configuration'; \
 	elif test ! -e "$(ENV_LOCAL)" && test ! -e "$(FRONTEND_ENV_LOCAL)"; then \
@@ -45,7 +42,6 @@ bootstrap: require-repo-root ## Prepare local configuration and report prerequis
 	  echo 'FATAL: local configuration is incomplete; restore or remove both ignored files before bootstrap.' >&2; \
 	  exit 1; \
 	fi
-	@python3 scripts/dev_doctor.py
 
 up: require-env-local ## Start the local database
 	@$(COMPOSE) up -d --wait

@@ -7,10 +7,8 @@
 | Java | 21 |
 | Node / npm | 24.x / 11.x |
 | 容器运行时 | 提供 `docker compose` 即可 |
-| Python | 3（仅用于生成本地配置与自检） |
+| Python | 3（仅用于生成本地配置） |
 | GNU Make | 任意 |
-
-先运行 `make doctor`：只报告缺什么，不改动主机。
 
 ## 首次运行
 
@@ -53,7 +51,6 @@ make frontend-dev
 
 | 命令 | 作用 |
 | --- | --- |
-| `make doctor` | 报告缺失的前置条件 |
 | `make up` / `make down` | 启动 / 停止本地数据库（保留数据） |
 | `make reset` | 删除本地数据库卷（需确认） |
 | `make backend-run` | 以 `local` profile 启动后端 |

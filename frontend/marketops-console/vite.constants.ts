@@ -1,8 +1,5 @@
 /**
- * Build-time constants shared by the bundler configuration and its test.
- *
- * Keeping them here means the test asserts the same values the build uses,
- * rather than a second copy that can drift.
+ * Build-time constants used by the bundler configuration.
  */
 
 /**
