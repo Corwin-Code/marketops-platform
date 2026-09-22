@@ -35,7 +35,7 @@
 - 平台写必须先有批准、确定性 Guardrail、一次启动、幂等 Command、Readback 与审计；kill switch/containment 可按范围关闭。
 - 重新启用需两人：修复证明与业务同意；关闭不等于平台旧动作已撤销。
 - 额度只凭证据释放（`STOP_EVIDENCE`/`OBLIGATION_CLEARED`/`NOT_APPLIED_PROVEN`/`OUTCOME_MATURED`），单纯时间流逝不释放，Unknown 继续占用；人工与 API 共用额度。
-- `OUTCOME_MATURED`（描述修改的效果观察期满）：描述动作已应用且已确认（人工路径：合格的独立核实使动作进入 `VERIFIED`；API 路径：Readback 与目标一致的 `MANAGEMENT_VERIFIED` 执行回执），且自确认时刻起已满该动作校准包 `RESPONSIBILITY_SLO.outcomeMaturityDays` 天，才释放其全部 `ACQUIRED` 占用。存在更晚的相反核实（与先前一致/不一致/未展示）、处于 containment（含未解除的结果失败）、有未关闭的不明变更调查或越权偏差、该值缺失或非法（须为 1–3660 的整数，缺失时不回退任何默认值）、或校准包无接受人时，一律不释放。促销占用不走此路径。释放由默认关闭的定时任务（`marketops.listing-conversion.allowance-release.enabled`）或本机维护入口触发，幂等；`released_by_user_id` 记为该校准包的接受人（Owner 预授权策略），审计记为系统组件 `listing-allowance-release`。
+- `OUTCOME_MATURED`（描述修改的效果观察期满）：描述动作已应用且已确认（人工路径：合格的独立核实使动作进入 `VERIFIED`；API 路径：Readback 与目标一致的 `MANAGEMENT_VERIFIED` 执行回执），且自确认时刻起已满该动作校准包 `RESPONSIBILITY_SLO.outcomeMaturityDays` 天（按 N×24 小时计，UTC，不受会话时区与夏令时影响），才释放其全部 `ACQUIRED` 占用。存在更晚的相反核实（与先前一致/不一致/未展示）、处于 containment（含未解除的结果失败）、该 Listing 有未关闭的不明变更调查、该 Listing 有未关闭且关联到本动作或未关联任何动作的越权偏差（关联到同一 Listing 其他动作的越权偏差不阻断本动作）、该值缺失或非法（须为 1–3660 的整数，缺失时不回退任何默认值）、或校准包无接受人时，一律不释放。促销占用不走此路径。释放由默认关闭的定时任务（`marketops.listing-conversion.allowance-release.enabled`）或本机维护入口触发，幂等；`released_by_user_id` 记为该校准包的接受人（Owner 预授权策略），审计记为系统组件 `listing-allowance-release`。
 - 金额为 Decimal + 明确币种，不做 FX；Raw 与历史结论不可覆盖，只追加修订。
 - 发起人只见最小授权视图，财务明细需对应权限。
 - 中俄双语，桌面端；俄语原文不自动翻译。

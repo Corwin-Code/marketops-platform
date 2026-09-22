@@ -15,10 +15,14 @@
 --               matched the exact target (the same evidence that moved the action to VERIFIED);
 --   * no later manual verification contradicts it (MATCHED_PRIOR, DIFFERENT or NOT_DISPLAYED);
 --   * the listing is not contained (ops.lc_scope_contained, which also covers unreleased outcome
---     failures) and has no open unresolved-change investigation, and the action has no open
---     unauthorised-deviation record;
+--     failures) and has no open unresolved-change investigation, and no open unauthorised-deviation
+--     record on the listing is linked to this action or left unlinked to any action (a deviation
+--     linked to another action of the listing does not block this one);
 --   * now >= confirmation time + RESPONSIBILITY_SLO.outcomeMaturityDays of the action's own frozen
---     calibration package. The value must be an explicit integer 1..3660, exactly as the Java
+--     calibration package, counted as that many 24-hour periods like the Java Duration.ofDays
+--     (make_interval(hours=>days*24) with TimeZone pinned to UTC; never calendar days in the
+--     session zone, which would shift by an hour across DST). The value must be an explicit
+--     integer 1..3660, exactly as the Java
 --     ListingResponsibilitySchedule reads it (3660 there is the upper bound, not a default). When
 --     it is absent or malformed nothing is released: the state is MATURITY_UNRESOLVED and the
 --     occupation stays, the conservative side of the allowance.
@@ -48,6 +52,7 @@ ALTER TABLE ops.lc_exposure_occupation ADD CONSTRAINT lc_exposure_occupation_bas
 CREATE FUNCTION ops.lc_description_outcome_maturity(p_action uuid, p_at timestamp with time zone) RETURNS jsonb
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'pg_catalog', 'ops', 'core', 'pg_temp'
+    SET "TimeZone" TO 'UTC'
     AS $$
 DECLARE action ops.lc_action%ROWTYPE; confirmation_id uuid; confirmed_at timestamptz; path text;
  slo jsonb; days_node jsonb; maturity_days integer; acceptor uuid; matures_at timestamptz; result jsonb; state text;
@@ -105,7 +110,7 @@ BEGIN
    END IF;
  END IF;
  IF maturity_days IS NOT NULL THEN
-   matures_at:=confirmed_at+make_interval(days=>maturity_days);
+   matures_at:=confirmed_at+make_interval(hours=>maturity_days*24);
    result:=result||jsonb_build_object('outcomeMaturityDays',maturity_days,'maturesAt',matures_at);
  END IF;
  SELECT g.accepted_by_user_id INTO acceptor FROM ops.lc_calibration_governance g
@@ -120,8 +125,9 @@ BEGIN
    WHEN ops.lc_scope_contained(action.organization_id,action.platform_listing_id) THEN 'CONTAINED'
    WHEN EXISTS(SELECT 1 FROM ops.lc_late_association l
         WHERE l.organization_id=action.organization_id AND l.state<>'CLOSED'
-          AND ((l.platform_listing_id=action.platform_listing_id AND l.association_kind='UNRESOLVED_CHANGE')
-            OR (l.action_id=action.id AND l.association_kind='UNAUTHORISED_DEVIATION')))
+          AND l.platform_listing_id=action.platform_listing_id
+          AND (l.association_kind='UNRESOLVED_CHANGE'
+            OR (l.association_kind='UNAUTHORISED_DEVIATION' AND (l.action_id IS NULL OR l.action_id=action.id))))
      THEN 'INVESTIGATION_OPEN'
    WHEN maturity_days IS NULL THEN 'MATURITY_UNRESOLVED'
    WHEN acceptor IS NULL THEN 'POLICY_ACCEPTOR_UNRESOLVED'
@@ -137,6 +143,7 @@ CREATE FUNCTION ops.release_lc_matured_description_occupations(p_limit integer, 
     p_correlation_id text) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'pg_catalog', 'ops', 'core', 'pg_temp'
+    SET "TimeZone" TO 'UTC'
     AS $$
 DECLARE candidate record; released record; basis jsonb; now_at timestamptz; considered integer:=0;
  occupations jsonb:='[]'::jsonb; actions jsonb:='[]'::jsonb; skipped jsonb:='[]'::jsonb; released_here integer;
