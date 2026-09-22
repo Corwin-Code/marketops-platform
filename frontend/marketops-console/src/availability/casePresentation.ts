@@ -1,3 +1,6 @@
+import { codeLabel } from '../i18n/labels';
+import { ACTION_KIND_LABELS, EXCEPTION_STATE_LABELS } from '../i18n/zh/availability';
+
 /**
  * How accountable availability work is allowed to be presented.
  *
@@ -33,64 +36,48 @@ export interface CasePresentation {
 
 const STATES = new Map<string, CasePresentation>(
   Object.entries({
-    OPEN: {
-      tone: 'open',
-      label: 'Open',
-      explanation: 'Raised and waiting for somebody to take it.',
-    },
-    ASSIGNED: { tone: 'open', label: 'Assigned', explanation: 'Somebody owns it.' },
-    IN_PROGRESS: {
-      tone: 'open',
-      label: 'In progress',
-      explanation: 'Somebody is working on it.',
-    },
+    OPEN: { tone: 'open', label: '待处理', explanation: '已创建，等待有人认领。' },
+    ASSIGNED: { tone: 'open', label: '已分派', explanation: '已有负责人。' },
+    IN_PROGRESS: { tone: 'open', label: '处理中', explanation: '负责人正在处理。' },
     ACTION_RECORDED: {
       tone: 'acting',
-      label: 'Action recorded',
-      explanation: 'Structured evidence of action exists. The risk may still be real.',
+      label: '已记录行动',
+      explanation: '已有结构化的行动证据，但风险可能仍然存在。',
     },
     VERIFYING: {
       tone: 'verifying',
-      label: 'Verifying',
-      explanation: 'Waiting for fresh cause-specific evidence that the risk actually improved.',
+      label: '验证中',
+      explanation: '等待与原因对应的新证据，确认风险确实改善。',
     },
     VERIFIED_SUCCESS: {
       tone: 'succeeded',
-      label: 'Verified',
-      explanation: 'Fresh evidence showed the risk improved. The only success state.',
+      label: '已验证解决',
+      explanation: '新证据显示风险已改善，这是唯一的成功状态。',
     },
     REOPENED: {
       tone: 'open',
-      label: 'Reopened',
-      explanation: 'The risk returned, or its evidence expired, on this same case.',
+      label: '已重开',
+      explanation: '风险再次出现或证据过期，在同一工单上重开。',
     },
-    ESCALATED: {
-      tone: 'open',
-      label: 'Escalated',
-      explanation: 'Raised to a higher authority under policy.',
-    },
+    ESCALATED: { tone: 'open', label: '已升级', explanation: '已按策略升级给更高权限。' },
     REWORK_REQUIRED: {
       tone: 'open',
-      label: 'Rework required',
-      explanation: 'The action did not work. This needs different work.',
+      label: '需返工',
+      explanation: '已采取的行动无效，需要换一种处理方式。',
     },
     ACCEPTED_RISK: {
       tone: 'accepted',
-      label: 'Accepted risk',
-      explanation: 'A governed acceptance is in force. The calculated risk is unchanged.',
+      label: '已接受风险',
+      explanation: '一项受管控的风险接受正在生效，计算出的风险本身不变。',
     },
-    CANCELLED: {
-      tone: 'closed',
-      label: 'Cancelled',
-      explanation: 'Withdrawn without a verified outcome.',
-    },
+    CANCELLED: { tone: 'closed', label: '已取消', explanation: '未经验证结果即已撤销。' },
   }),
 );
 
 const UNRECOGNISED: CasePresentation = {
   tone: 'open',
-  label: 'Unknown',
-  explanation: 'This console does not recognise the state the backend reported.',
+  label: '未知',
+  explanation: '控制台无法识别后端返回的状态。',
 };
 
 /** The one place a case state becomes something a person reads. */
@@ -100,22 +87,7 @@ export function presentCaseState(state: string): CasePresentation {
 
 /** The operator-facing name of a structured action. */
 export function actionKindLabel(kind: string): string {
-  switch (kind) {
-    case 'INBOUND_EVIDENCE_BOUND':
-      return 'Attested inbound bound to the shortfall';
-    case 'CHANNEL_RESTORATION_REFERENCE':
-      return 'Channel restoration reference recorded';
-    case 'DATA_OR_MAPPING_REPAIR':
-      return 'Stock, mapping or ownership defect repaired';
-    case 'POLICY_VERSION_PUBLISHED':
-      return 'Policy version published';
-    case 'QUALITY_DISPOSITION_RECORDED':
-      return 'Return or quality disposition recorded';
-    case 'OWNERSHIP_DECLARATION_PUBLISHED':
-      return 'Ownership declaration published';
-    default:
-      return kind;
-  }
+  return codeLabel(ACTION_KIND_LABELS, kind);
 }
 
 /**
@@ -143,22 +115,5 @@ export function dueTone(dueAt: string | null, now: Date): 'none' | 'overdue' | '
 
 /** The operator-facing name of an acceptance state. */
 export function exceptionStateLabel(state: string): string {
-  switch (state) {
-    case 'REQUESTED':
-      return 'Requested';
-    case 'AUTHORITY_BLOCKED':
-      return 'Authority blocked';
-    case 'ACTIVE':
-      return 'Accepted';
-    case 'REJECTED':
-      return 'Rejected';
-    case 'EXPIRED':
-      return 'Expired';
-    case 'INVALIDATED':
-      return 'Invalidated';
-    case 'WITHDRAWN':
-      return 'Withdrawn';
-    default:
-      return state;
-  }
+  return codeLabel(EXCEPTION_STATE_LABELS, state);
 }

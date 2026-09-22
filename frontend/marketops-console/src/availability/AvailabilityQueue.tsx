@@ -1,13 +1,60 @@
+import { ReloadOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Card,
+  Col,
+  Collapse,
+  Descriptions,
+  Flex,
+  Row,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
+} from 'antd';
+import type { CollapseProps, DescriptionsProps, TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
 import { fetchAvailabilityQueue } from '../api/console';
 import type {
   AvailabilityCard,
   AvailabilityChild,
+  AvailabilityDemandWindow,
+  AvailabilityRankFactor,
   ConsoleFailure,
   ConsoleRequest,
 } from '../api/console';
-import { QueueProblem } from '../queue/PriorityQueue';
-import { causeLabel, childLabel, laneIsSafe, laneLabel, presentEvidence } from './riskPresentation';
+import { formatDecimal, formatPercent } from '../format';
+import { actions } from '../i18n';
+import {
+  BLOCKER_LABELS,
+  CENSORING_REASON_LABELS,
+  DEMAND_WINDOW_LABELS,
+  EVIDENCE_LABELS,
+  LANE_LABELS,
+  PROFIT_LANE_LABELS,
+  RANK_FACTOR_LABELS,
+  RISK_CONFIDENCE_LABELS,
+  WINDOW_ELIGIBILITY_LABELS,
+  availabilityText,
+} from '../i18n/zh/availability';
+import {
+  CodeTag,
+  DateTime,
+  EmptyState,
+  FailureAlert,
+  LoadingState,
+  Money,
+  SectionCard,
+  TechnicalDetails,
+} from '../ui';
+import { causeLabel, childLabel, laneIsSafe, presentEvidence } from './riskPresentation';
+import {
+  EVIDENCE_COLORS,
+  LANE_COLORS,
+  PROFIT_LANE_COLORS,
+  RISK_CONFIDENCE_COLORS,
+  WINDOW_ELIGIBILITY_COLORS,
+} from './tagColors';
 
 /** What the availability queue needs in order to load itself. */
 export interface AvailabilityQueueProps {
@@ -39,6 +86,7 @@ export function AvailabilityQueue({
 }: AvailabilityQueueProps): React.JSX.Element {
   const [cards, setCards] = useState<readonly AvailabilityCard[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -57,7 +105,29 @@ export function AvailabilityQueue({
     return () => {
       active = false;
     };
-  }, [context, lane]);
+  }, [context, lane, reloadKey]);
+
+  const refresh = (
+    <Button
+      icon={<ReloadOutlined />}
+      aria-label="刷新风险队列"
+      onClick={() => {
+        setCards(undefined);
+        setFailure(undefined);
+        setReloadKey((key) => key + 1);
+      }}
+    >
+      {actions.refresh}
+    </Button>
+  );
+
+  const frame = (state: string, body: React.ReactNode): React.JSX.Element => (
+    <section aria-label={availabilityText.queueTitle} data-state={state}>
+      <SectionCard title={availabilityText.queueTitle} extra={refresh}>
+        {body}
+      </SectionCard>
+    </section>
+  );
 
   if (failure !== undefined) {
     // A session that has ended is one condition about the whole session rather
@@ -66,42 +136,37 @@ export function AvailabilityQueue({
     // times over and bury the one message that is about this panel.
     if (failure.kind === 'unauthenticated') {
       return (
-        <section aria-label="Stockout and availability" data-state="signed-out">
-          <h2>Stockout &amp; availability</h2>
+        <section aria-label={availabilityText.queueTitle} data-state="signed-out">
+          <SectionCard title={availabilityText.queueTitle} />
         </section>
       );
     }
-    return <QueueProblem failure={failure} />;
+    return frame('failed', <FailureAlert failure={failure} />);
   }
   if (cards === undefined) {
-    return (
-      <section aria-label="Stockout and availability" data-state="loading">
-        <h2>Stockout &amp; availability</h2>
-        <p>Loading the queue.</p>
-      </section>
-    );
+    return frame('loading', <LoadingState />);
   }
   if (cards.length === 0) {
-    return (
-      <section aria-label="Stockout and availability" data-state="empty">
-        <h2>Stockout &amp; availability</h2>
-        <p>
-          No variant in your scope currently carries an availability risk. An empty queue is not the
-          same as an unmonitored one.
-        </p>
-      </section>
-    );
+    return frame('empty', <EmptyState description={availabilityText.queueEmpty} />);
   }
 
-  return (
-    <section aria-label="Stockout and availability" data-state="loaded">
-      <h2>Stockout &amp; availability</h2>
-      <ol data-testid="availability-queue">
-        {cards.map((card) => (
-          <VariantCard key={card.id} card={card} {...(onSelect ? { onSelect } : {})} />
-        ))}
-      </ol>
-    </section>
+  return frame(
+    'loaded',
+    <ol
+      data-testid="availability-queue"
+      style={{
+        listStyle: 'none',
+        margin: 0,
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+      }}
+    >
+      {cards.map((card) => (
+        <VariantCard key={card.id} card={card} {...(onSelect ? { onSelect } : {})} />
+      ))}
+    </ol>,
   );
 }
 
@@ -120,42 +185,99 @@ function VariantCard({
   readonly onSelect?: (productVariantId: string) => void;
 }): React.JSX.Element {
   const trigger = card.children.find((child) => child.id === card.triggeringChildId);
+  const title = (
+    <Flex vertical gap={2} style={{ padding: '8px 0' }}>
+      <Button
+        type="link"
+        style={{ padding: 0, height: 'auto', fontWeight: 600, whiteSpace: 'normal' }}
+        onClick={() => onSelect?.(card.productVariantId)}
+        disabled={onSelect === undefined}
+      >
+        <span lang="ru">{card.displayName}</span>
+      </Button>
+      <Typography.Text type="secondary" style={{ fontSize: 12 }} data-testid="card-sku">
+        SKU {card.skuCode}
+      </Typography.Text>
+    </Flex>
+  );
+  const extra = (
+    <Space size={4} wrap data-testid="card-lane" data-lane={card.lane}>
+      <CodeTag labels={LANE_LABELS} code={card.lane} colors={LANE_COLORS} />
+      {trigger === undefined ? null : (
+        <Typography.Text type="secondary" style={{ fontSize: 12 }} data-testid="card-trigger">
+          由{childLabel(trigger.childKind, trigger.platformCode, trigger.fulfillmentModeCode)}触发
+        </Typography.Text>
+      )}
+    </Space>
+  );
   return (
     <li data-testid="availability-card" data-lane={card.lane}>
-      <article>
-        <header>
-          <h3>
-            <button
-              type="button"
-              onClick={() => onSelect?.(card.productVariantId)}
-              disabled={onSelect === undefined}
-            >
-              {card.displayName}
-            </button>
-          </h3>
-          <p data-testid="card-sku">{card.skuCode}</p>
-          <p data-testid="card-lane" data-lane={card.lane}>
-            {laneLabel(card.lane)}
-            {trigger === undefined ? null : (
-              <span data-testid="card-trigger">
-                {' '}
-                — raised by{' '}
-                {childLabel(trigger.childKind, trigger.platformCode, trigger.fulfillmentModeCode)}
-              </span>
-            )}
-          </p>
-          <p data-testid="card-policy-version">
-            Policy set {card.policyVersionDigest.slice(0, 12)}
-          </p>
-        </header>
-        <ul>
-          {card.children.map((child) => (
-            <ChildRisk key={child.id} child={child} />
-          ))}
-        </ul>
-      </article>
+      <Card size="small" title={title} extra={extra}>
+        <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+          <Row gutter={[12, 12]}>
+            {card.children.map((child) => (
+              <Col key={child.id} xs={24} xl={12}>
+                <ChildRisk child={child} />
+              </Col>
+            ))}
+          </Row>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            计算时间 <DateTime value={card.calculatedAt} relative />
+          </Typography.Text>
+          <TechnicalDetails>
+            <Descriptions
+              size="small"
+              column={1}
+              items={[
+                {
+                  key: 'policy',
+                  label: '策略集摘要',
+                  children: (
+                    <Typography.Text
+                      copyable={{ text: card.policyVersionDigest }}
+                      code
+                      data-testid="card-policy-version"
+                    >
+                      {card.policyVersionDigest.slice(0, 12)}
+                    </Typography.Text>
+                  ),
+                },
+                {
+                  key: 'variant',
+                  label: '商品变体 ID',
+                  children: (
+                    <Typography.Text copyable code>
+                      {card.productVariantId}
+                    </Typography.Text>
+                  ),
+                },
+                {
+                  key: 'card',
+                  label: '卡片 ID',
+                  children: (
+                    <Typography.Text copyable code>
+                      {card.id}
+                    </Typography.Text>
+                  ),
+                },
+                {
+                  key: 'rank',
+                  label: '排序分值',
+                  children: formatDecimal(card.rankScore),
+                },
+                { key: 'asOf', label: '数据截至', children: <DateTime value={card.asOf} /> },
+              ]}
+            />
+          </TechnicalDetails>
+        </Space>
+      </Card>
     </li>
   );
+}
+
+/** A decimal count of days, or the given absence text. */
+function days(value: string | null, absent: string): string {
+  return value === null ? absent : `${formatDecimal(value, { maxFractionDigits: 2 })} 天`;
 }
 
 /**
@@ -168,88 +290,313 @@ function VariantCard({
  */
 function ChildRisk({ child }: { readonly child: AvailabilityChild }): React.JSX.Element {
   const evidence = presentEvidence(child.evidenceState);
+
+  const figures: DescriptionsProps['items'] = [
+    {
+      key: 'available',
+      label: '可用库存',
+      children: (
+        <span data-testid="child-available">
+          {child.availableUnits === null ? '未上报' : `${String(child.availableUnits)} 件`}
+        </span>
+      ),
+    },
+    {
+      key: 'demand',
+      label: '观测日需求',
+      children: (
+        <span data-testid="child-demand">
+          {child.dailyDemandRate === null
+            ? '无法观测'
+            : `${formatDecimal(child.dailyDemandRate, { maxFractionDigits: 2 })} 件/天`}
+        </span>
+      ),
+    },
+    {
+      key: 'cover',
+      label: '可售天数',
+      children: <span data-testid="child-cover">{days(child.daysOfCover, '未预测')}</span>,
+    },
+    {
+      key: 'horizon',
+      label: '覆盖周期',
+      children: (
+        <span data-testid="child-horizon">
+          {child.coverageHorizonDays === null
+            ? '无适用策略'
+            : `${String(child.coverageHorizonDays)} 天`}
+        </span>
+      ),
+    },
+    {
+      key: 'stockout',
+      label: '预计断货',
+      children: <DateTime value={child.projectedStockoutAt} />,
+    },
+    {
+      key: 'profit',
+      label: '利润分层',
+      children: (
+        <span data-testid="child-profit">
+          <CodeTag
+            labels={PROFIT_LANE_LABELS}
+            code={child.profitLane}
+            colors={PROFIT_LANE_COLORS}
+          />
+        </span>
+      ),
+    },
+    {
+      key: 'profitAtRisk',
+      label: '受威胁利润',
+      children: <Money value={child.profitAtRiskAmount} currency={child.profitAtRiskCurrency} />,
+    },
+    {
+      key: 'confidence',
+      label: '置信度',
+      children: (
+        <CodeTag
+          labels={RISK_CONFIDENCE_LABELS}
+          code={child.confidenceState}
+          colors={RISK_CONFIDENCE_COLORS}
+        />
+      ),
+    },
+  ];
+
+  const details: NonNullable<CollapseProps['items']> = [];
+  if (child.conservativeProofTerms.length > 0) {
+    details.push({
+      key: 'proof',
+      label: '为何已可认定风险',
+      forceRender: true,
+      children: (
+        <div data-testid="child-proof">
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            以下为系统计算原文
+          </Typography.Text>
+          <ul style={{ margin: '4px 0 0', paddingInlineStart: 20 }}>
+            {child.conservativeProofTerms.map((term) => (
+              <li key={term} lang="en">
+                {term}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ),
+    });
+  }
+  if (child.rankFactors.length > 0) {
+    details.push({
+      key: 'factors',
+      label: '排序依据',
+      forceRender: true,
+      children: (
+        <div data-testid="child-factors">
+          <Table<AvailabilityRankFactor>
+            size="small"
+            pagination={false}
+            rowKey="factorCode"
+            dataSource={[...child.rankFactors]}
+            columns={RANK_FACTOR_COLUMNS}
+            scroll={{ x: 'max-content' }}
+          />
+        </div>
+      ),
+    });
+  }
+  if (child.demandWindows.length > 0) {
+    details.push({
+      key: 'windows',
+      label: '需求观测窗口',
+      forceRender: true,
+      children: (
+        <div data-testid="child-windows">
+          <Table<AvailabilityDemandWindow>
+            size="small"
+            pagination={false}
+            rowKey="windowCode"
+            dataSource={[...child.demandWindows]}
+            columns={DEMAND_WINDOW_COLUMNS}
+            onRow={(window) =>
+              ({ 'data-eligibility': window.eligibility }) as React.HTMLAttributes<HTMLElement>
+            }
+            scroll={{ x: 'max-content' }}
+          />
+        </div>
+      ),
+    });
+  }
+  details.push({
+    key: 'reason',
+    label: '需求选择依据',
+    forceRender: true,
+    children: (
+      <Flex vertical gap={2}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          系统计算原文
+        </Typography.Text>
+        <Typography.Text data-testid="child-demand-reason" lang="en">
+          {child.demandSelectionReason}
+        </Typography.Text>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          计算时间 <DateTime value={child.calculatedAt} />
+        </Typography.Text>
+      </Flex>
+    ),
+  });
+
+  const heading = (
+    <Typography.Text strong>
+      {childLabel(child.childKind, child.platformCode, child.fulfillmentModeCode)}
+    </Typography.Text>
+  );
+  const tags = (
+    <Space size={4} data-testid="child-lane">
+      <CodeTag labels={LANE_LABELS} code={child.lane} colors={LANE_COLORS} />
+      <Tooltip title={evidence.explanation}>
+        <span data-testid="child-evidence" data-evidence-tone={evidence.tone}>
+          <CodeTag labels={EVIDENCE_LABELS} code={child.evidenceState} colors={EVIDENCE_COLORS} />
+        </span>
+      </Tooltip>
+    </Space>
+  );
+
   return (
-    <li
+    <div
       data-testid="availability-child"
       data-child-kind={child.childKind}
       data-lane={child.lane}
       data-evidence-tone={evidence.tone}
       data-established-fact={String(evidence.establishedFact)}
     >
-      <h4>{childLabel(child.childKind, child.platformCode, child.fulfillmentModeCode)}</h4>
-      <p data-testid="child-lane">
-        {laneLabel(child.lane)} <span data-testid="child-evidence">{evidence.label}</span>
-      </p>
-      <p data-testid="child-evidence-explanation">{evidence.explanation}</p>
-      {laneIsSafe(child.lane) ? null : (
-        <p data-testid="child-cause">{causeLabel(child.causeCode)}</p>
-      )}
-      <dl>
-        <dt>Available</dt>
-        <dd data-testid="child-available">
-          {child.availableUnits === null ? 'Not reported' : String(child.availableUnits)}
-        </dd>
-        <dt>Observed demand</dt>
-        <dd data-testid="child-demand">
-          {child.dailyDemandRate === null ? 'Not observable' : `${child.dailyDemandRate} per day`}
-        </dd>
-        <dt>Days of cover</dt>
-        <dd data-testid="child-cover">{child.daysOfCover ?? 'Not projected'}</dd>
-        <dt>Coverage horizon</dt>
-        <dd data-testid="child-horizon">
-          {child.coverageHorizonDays === null
-            ? 'No policy resolved'
-            : `${String(child.coverageHorizonDays)} days`}
-        </dd>
-        <dt>Profit lane</dt>
-        <dd data-testid="child-profit">{child.profitLane}</dd>
-      </dl>
-      <p data-testid="child-demand-reason">{child.demandSelectionReason}</p>
-      {child.conservativeProofTerms.length === 0 ? null : (
-        <details data-testid="child-proof">
-          <summary>Why this is already established</summary>
-          <ul>
-            {child.conservativeProofTerms.map((term) => (
-              <li key={term}>{term}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-      {child.blockerCodes.length === 0 ? null : (
-        <ul data-testid="child-blockers">
-          {child.blockerCodes.map((code) => (
-            <li key={code}>{code}</li>
-          ))}
-        </ul>
-      )}
-      {child.rankFactors.length === 0 ? null : (
-        <details data-testid="child-factors">
-          <summary>Why it is ranked here</summary>
-          <ul>
-            {child.rankFactors.map((factor) => (
-              <li key={factor.factorCode}>
-                {factor.factorCode}: {factor.displayNote}
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
-      {child.demandWindows.length === 0 ? null : (
-        <details data-testid="child-windows">
-          <summary>Demand windows</summary>
-          <ul>
-            {child.demandWindows.map((window) => (
-              <li key={window.windowCode} data-eligibility={window.eligibility}>
-                {window.windowCode}:{' '}
-                {window.completedUnits === null
-                  ? 'not observed'
-                  : `${String(window.completedUnits)} units`}
-                {window.censored ? ` — censored (${window.censoringReason ?? 'unknown'})` : ''}
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </li>
+      <Card type="inner" size="small" title={heading} extra={tags}>
+        <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+          <Typography.Text type="secondary" data-testid="child-evidence-explanation">
+            {evidence.explanation}
+          </Typography.Text>
+          {laneIsSafe(child.lane) ? null : (
+            <Typography.Text strong data-testid="child-cause">
+              {causeLabel(child.causeCode)}
+            </Typography.Text>
+          )}
+          <Descriptions bordered size="small" column={{ xs: 1, md: 2 }} items={figures} />
+          {child.blockerCodes.length === 0 ? null : (
+            <Flex wrap gap={4} align="center" data-testid="child-blockers">
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                阻断因素
+              </Typography.Text>
+              {child.blockerCodes.map((code) => (
+                <CodeTag
+                  key={code}
+                  labels={BLOCKER_LABELS}
+                  code={code}
+                  colors={{ [code]: 'error' }}
+                />
+              ))}
+            </Flex>
+          )}
+          <Collapse size="small" items={details} />
+        </Space>
+      </Card>
+    </div>
   );
 }
+
+const RANK_FACTOR_COLUMNS: TableColumnsType<AvailabilityRankFactor> = [
+  {
+    title: '因素',
+    dataIndex: 'factorCode',
+    render: (code: string) => <CodeTag labels={RANK_FACTOR_LABELS} code={code} />,
+  },
+  {
+    title: '取值',
+    dataIndex: 'value',
+    align: 'right',
+    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 4 }),
+  },
+  {
+    title: '权重',
+    dataIndex: 'weight',
+    align: 'right',
+    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 4 }),
+  },
+  {
+    title: '贡献',
+    dataIndex: 'contribution',
+    align: 'right',
+    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 4 }),
+  },
+  {
+    title: '系统说明',
+    dataIndex: 'displayNote',
+    render: (note: string) => (
+      <Typography.Text type="secondary" style={{ fontSize: 12 }} lang="en">
+        {note}
+      </Typography.Text>
+    ),
+  },
+];
+
+const DEMAND_WINDOW_COLUMNS: TableColumnsType<AvailabilityDemandWindow> = [
+  {
+    title: '窗口',
+    dataIndex: 'windowCode',
+    render: (code: string) => <CodeTag labels={DEMAND_WINDOW_LABELS} code={code} />,
+  },
+  {
+    title: '完成件数',
+    dataIndex: 'completedUnits',
+    align: 'right',
+    render: (units: number | null) => (units === null ? '未观测' : `${String(units)} 件`),
+  },
+  {
+    title: '日均',
+    dataIndex: 'dailyRate',
+    align: 'right',
+    render: (rate: string | null) => formatDecimal(rate, { maxFractionDigits: 2 }),
+  },
+  {
+    title: '观测天数',
+    dataIndex: 'observedDays',
+    align: 'right',
+    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 2 }),
+  },
+  {
+    title: '覆盖率',
+    dataIndex: 'coverageRatio',
+    align: 'right',
+    render: (ratio: string | null) => formatPercent(ratio),
+  },
+  {
+    title: '可用性',
+    dataIndex: 'eligibility',
+    render: (code: string) => (
+      <CodeTag labels={WINDOW_ELIGIBILITY_LABELS} code={code} colors={WINDOW_ELIGIBILITY_COLORS} />
+    ),
+  },
+  {
+    title: '删失',
+    key: 'censoring',
+    render: (_: unknown, window: AvailabilityDemandWindow) =>
+      window.censored ? (
+        <CodeTag
+          labels={CENSORING_REASON_LABELS}
+          code={window.censoringReason ?? 'UNKNOWN'}
+          colors={{ [window.censoringReason ?? 'UNKNOWN']: 'warning' }}
+        />
+      ) : (
+        <Typography.Text type="secondary">否</Typography.Text>
+      ),
+  },
+  {
+    title: '期间',
+    key: 'period',
+    render: (_: unknown, window: AvailabilityDemandWindow) => (
+      <Flex vertical>
+        <DateTime value={window.periodStart} />
+        <DateTime value={window.periodEnd} />
+      </Flex>
+    ),
+  },
+];
