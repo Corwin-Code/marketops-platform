@@ -772,12 +772,16 @@ function ValuesStep({
   // A removed category has to leave the draft, not only the screen: an
   // unmounted field keeps its initial value in the form store, and the draft is
   // built from that whole map. This runs after the editor's own unmount.
+  // The watched purpose is undefined on the first render, when the category
+  // list is empty but the seeded examples are already in the store: dropping
+  // them here would empty the whole step.
   useEffect(() => {
+    if (purpose === undefined) return;
     const current = (form.getFieldValue('values') ?? {}) as ValueFieldMap;
     const kept = Object.entries(current).filter(([code]) => categories.includes(code));
     if (kept.length === Object.keys(current).length) return;
     form.setFieldValue('values', Object.fromEntries(kept));
-  }, [categories, form]);
+  }, [purpose, categories, form]);
 
   if (purpose === undefined) {
     return <Typography.Text type="secondary">{text.purposeHelp}</Typography.Text>;
