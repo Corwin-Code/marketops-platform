@@ -1,38 +1,65 @@
+import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
+import {
+  Alert,
+  App,
+  Button,
+  Collapse,
+  Form,
+  Input,
+  Segmented,
+  Space,
+  Steps,
+  Table,
+  Typography,
+} from 'antd';
+import type { StepsProps, TableColumnsType } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import { decide } from '../api/console';
 import type {
   Allowance,
-  Candidate,
   DescriptionCommand,
   Evaluation,
   LaunchAnswer,
   ListingAction,
-  ListingActionPurpose,
   MeaningReviewBasis,
 } from '../api/listingConversion';
 import {
   cancelAction,
   fetchAction,
   fetchActions,
-  fetchCandidates,
   fetchDescriptionCommand,
   fetchDescriptionGate,
   fetchEvaluation,
-  evaluateNode,
   launchAction,
-  prepareAction,
-  prepareCandidate,
   previewAllowance,
   reviewAction,
 } from '../api/listingConversion';
-import { Code, ListingProblem, When, YesNo } from './ListingCommon';
-import { ListingPurposeBasisDetails } from './ListingPurposeBasisDetails';
+import { t } from '../i18n/zh/listing';
+import { ConfirmButton, EmptyState, LoadingState, SectionCard, TechnicalDetails } from '../ui';
+import {
+  AllowanceTable,
+  CommandTimeline,
+  EvaluationTable,
+  NodeEvaluationForm,
+} from './ListingActionEvidence';
+import { CandidatePreparation } from './ListingCandidatePreparation';
+import {
+  Code,
+  Codes,
+  Details,
+  IdText,
+  ListingProblem,
+  RussianText,
+  Stack,
+  When,
+  YesNo,
+  codeText,
+} from './ListingCommon';
 import { ListingMeaningReview } from './ListingMeaningReview';
+import { PromotionDeclaration } from './ListingPromotionTerms';
+import { ListingPurposeBasisDetails } from './ListingPurposeBasisDetails';
 import { ListingResponsibility } from './ListingResponsibility';
-import { PromotionDeclaration, PromotionPreparationForm } from './ListingPromotionTerms';
-import { useLanguage } from './i18n/language';
-import { t, type UiKey } from './i18n/ui';
 
 export interface ListingActionsPanelProps {
   readonly context: ConsoleRequest;
@@ -52,6 +79,56 @@ const ACTION_STATES = [
   'CONTAINED',
 ] as const;
 
+const ALL = 'ALL';
+
+/** The ordinary lifecycle of an action, as steps. */
+const LIFECYCLE = ['DRAFT', 'REVIEWED', 'APPROVED', 'LAUNCHED', 'VERIFIED', 'CLOSED'] as const;
+
+function lifecycle(state: string): { current: number; status: StepsProps['status'] } {
+  switch (state) {
+    case 'APPROVED_NOT_LAUNCHABLE':
+      return { current: 2, status: 'error' };
+    case 'CANCELLED':
+    case 'CONTAINED':
+      return { current: 0, status: 'error' };
+    case 'CLOSED':
+      return { current: LIFECYCLE.length - 1, status: 'finish' };
+    default: {
+      const index = LIFECYCLE.indexOf(state as (typeof LIFECYCLE)[number]);
+      return { current: index < 0 ? 0 : index, status: 'process' };
+    }
+  }
+}
+
+/** The action's position in its lifecycle; a stopped action says so in red. */
+function ActionLifecycle({ state }: { readonly state: string }): React.JSX.Element {
+  const { current, status } = lifecycle(state);
+  const stopped = state === 'CANCELLED' || state === 'CONTAINED';
+  return (
+    <div data-state={state}>
+      {stopped && (
+        <Alert
+          style={{ marginBottom: 12 }}
+          type="error"
+          showIcon
+          title={`${t('actionStopped')}：${codeText('actionState', state)}`}
+        />
+      )}
+      <Steps
+        size="small"
+        current={current}
+        {...(status === undefined ? {} : { status })}
+        items={LIFECYCLE.map((step, index) => ({
+          title:
+            index === 2 && state === 'APPROVED_NOT_LAUNCHABLE'
+              ? codeText('actionState', 'APPROVED_NOT_LAUNCHABLE')
+              : codeText('actionState', step),
+        }))}
+      />
+    </div>
+  );
+}
+
 /**
  * Candidates, exact actions, review, approval, allowance and launch.
  *
@@ -65,7 +142,6 @@ export function ListingActionsPanel({
   context,
   listingId,
 }: ListingActionsPanelProps): React.JSX.Element {
-  const { language } = useLanguage();
   const [filter, setFilter] = useState<string | undefined>(undefined);
   const [actions, setActions] = useState<readonly ListingAction[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
@@ -102,384 +178,113 @@ export function ListingActionsPanel({
     );
   }
 
-  return (
-    <section
-      aria-label={t('actions', language)}
-      data-state={actions === undefined ? 'loading' : 'loaded'}
-    >
-      <h3>{t('actions', language)}</h3>
-      {listingId !== undefined && (
-        <CandidatePreparation
-          context={context}
-          listingId={listingId}
-          onPrepared={(actionId) => {
-            setSelected(actionId);
-          }}
-        />
-      )}
-      <fieldset>
-        <legend>{t('state', language)}</legend>
-        <button
-          type="button"
-          aria-pressed={filter === undefined}
+  const columns: TableColumnsType<ListingAction> = [
+    {
+      key: 'listing',
+      title: t('listing'),
+      render: (_, action) => (
+        <Button
+          type="link"
+          style={{ padding: 0 }}
           onClick={() => {
-            setFilter(undefined);
+            setSelected(action.id);
           }}
         >
-          —
-        </button>
-        {ACTION_STATES.map((state) => (
-          <button
-            key={state}
-            type="button"
-            aria-pressed={filter === state}
-            onClick={() => {
-              setFilter(state);
-            }}
-          >
-            <Code family="actionState" code={state} />
-          </button>
-        ))}
-      </fieldset>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      {actions === undefined && failure === undefined && <p>{t('loading', language)}</p>}
-      {actions?.length === 0 && <p>{t('nothing', language)}</p>}
-      {actions !== undefined && actions.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>{t('listing', language)}</th>
-              <th>{t('state', language)}</th>
-              <th>{t('path', language)}</th>
-              <th>{t('materiality', language)}</th>
-              <th>{t('bindingGaps', language)}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {actions.map((action) => (
-              <tr key={action.id} data-action={action.id} data-action-state={action.state}>
-                <td>{action.nativeListingKey}</td>
-                <td>
-                  <Code family="actionState" code={action.state} />
-                </td>
-                <td>
-                  <Code family="executionPath" code={action.executionPath} />
-                </td>
-                <td>
-                  <Code family="materialityRoute" code={action.materialityRoute} />
-                </td>
-                <td>
-                  {action.bindingGaps.map((gap) => (
-                    <span key={gap}>
-                      <Code family="bindingGap" code={gap} />{' '}
-                    </span>
-                  ))}
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelected(action.id);
-                    }}
-                  >
-                    {t('open', language)}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
-  );
-}
-
-interface CandidatePreparationProps {
-  readonly context: ConsoleRequest;
-  readonly listingId: string;
-  readonly onPrepared: (actionId: string) => void;
-}
-
-function CandidatePreparation({
-  context,
-  listingId,
-  onPrepared,
-}: CandidatePreparationProps): React.JSX.Element {
-  const { language } = useLanguage();
-  const [candidates, setCandidates] = useState<readonly Candidate[] | undefined>(undefined);
-  const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
-  const [generation, setGeneration] = useState(0);
-  const [kind, setKind] = useState('CONTENT_DESCRIPTION');
-  const [roundKey, setRoundKey] = useState('round-1');
-  const [evidence, setEvidence] = useState('');
-  const [path, setPath] = useState('API');
-  const [purpose, setPurpose] = useState<ListingActionPurpose>('LISTING_CONVERSION');
-  const [purposeReference, setPurposeReference] = useState('');
-  const [purposeUseConditions, setPurposeUseConditions] = useState('');
-  const [purposeEndConditions, setPurposeEndConditions] = useState('');
-  const [purposeUseUntil, setPurposeUseUntil] = useState('');
-  const [targetText, setTargetText] = useState('');
-  const [restoresCommandId, setRestoresCommandId] = useState('');
-  const [kiz, setKiz] = useState<'undeclared' | 'yes' | 'no'>('undeclared');
-
-  useEffect(() => {
-    let active = true;
-    void fetchCandidates(context, listingId).then((outcome) => {
-      if (!active) return;
-      if (outcome.ok) {
-        setCandidates(outcome.value);
-        setFailure(undefined);
-      } else {
-        setFailure(outcome.failure);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [context, listingId, generation]);
+          {action.nativeListingKey}
+        </Button>
+      ),
+    },
+    {
+      key: 'kind',
+      title: t('actionKind'),
+      render: (_, action) => codeText('actionKind', action.actionKind),
+    },
+    {
+      key: 'state',
+      title: t('state'),
+      render: (_, action) => <Code family="actionState" code={action.state} />,
+    },
+    {
+      key: 'path',
+      title: t('path'),
+      render: (_, action) => <Code family="executionPath" code={action.executionPath} />,
+    },
+    {
+      key: 'materiality',
+      title: t('materiality'),
+      render: (_, action) => <Code family="materialityRoute" code={action.materialityRoute} />,
+    },
+    {
+      key: 'gaps',
+      title: t('bindingGaps'),
+      render: (_, action) => <Codes family="bindingGap" codes={action.bindingGaps} />,
+    },
+  ];
 
   return (
-    <section aria-label={t('candidates', language)} data-listing={listingId}>
-      <h4>{t('candidates', language)}</h4>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          void prepareCandidate(
-            context,
-            listingId,
-            kind,
-            roundKey,
-            evidence === '' ? [] : [evidence],
-          ).then((outcome) => {
-            if (outcome.ok) {
-              setGeneration((value) => value + 1);
-              setFailure(undefined);
-            } else {
-              setFailure(outcome.failure);
-            }
-          });
-        }}
-      >
-        <label>
-          <Code family="candidateKind" code={kind} />
-          <select
-            value={kind}
-            onChange={(e) => {
-              setKind(e.target.value);
-            }}
-          >
-            {[
-              'CONTENT_DESCRIPTION',
-              'OFFICIAL_PROMOTION_PARTICIPATION',
-              'SELLER_DIRECT_DISCOUNT',
-            ].map((code) => (
-              <option key={code} value={code}>
-                {code}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          round{' '}
-          <input
-            value={roundKey}
-            onChange={(e) => {
-              setRoundKey(e.target.value);
+    <section aria-label={t('actions')} data-state={actions === undefined ? 'loading' : 'loaded'}>
+      <Stack>
+        {listingId !== undefined && (
+          <CandidatePreparation
+            context={context}
+            listingId={listingId}
+            onPrepared={(actionId) => {
+              setSelected(actionId);
             }}
           />
-        </label>
-        <label>
-          {t('evidence', language)}{' '}
-          <input
-            value={evidence}
-            onChange={(e) => {
-              setEvidence(e.target.value);
-            }}
-          />
-        </label>
-        <button type="submit">{t('submit', language)}</button>
-      </form>
-      {candidates !== undefined && (
-        <ul>
-          {candidates.map((candidate) => (
-            <li key={candidate.id} data-candidate={candidate.id}>
-              <Code family="candidateKind" code={candidate.candidateKind} /> ·{' '}
-              {candidate.comparisonRoundKey} ·{' '}
-              <Code family="candidateState" code={candidate.state} />
-              {candidate.state === 'OPEN' && candidate.candidateKind !== 'CONTENT_DESCRIPTION' && (
-                <PromotionPreparationForm
-                  context={context}
-                  candidateId={candidate.id}
-                  kind={candidate.candidateKind}
-                  onPrepared={onPrepared}
-                />
-              )}
-              {candidate.state === 'OPEN' && candidate.candidateKind === 'CONTENT_DESCRIPTION' && (
-                <form
-                  aria-label={candidate.id}
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    void prepareAction(
-                      context,
-                      candidate.id,
-                      candidate.candidateKind === 'CONTENT_DESCRIPTION' ? path : 'MANUAL',
-                      targetText,
-                      kiz === 'undeclared' ? undefined : kiz === 'yes',
-                      restoresCommandId.trim() || undefined,
-                      undefined,
-                      purpose,
-                      purpose === 'LISTING_CONVERSION'
-                        ? undefined
-                        : {
-                            evidenceReference: purposeReference,
-                            useConditions: purposeUseConditions
-                              .split('\n')
-                              .filter((value) => value.trim() !== ''),
-                            endConditions: purposeEndConditions
-                              .split('\n')
-                              .filter((value) => value.trim() !== ''),
-                            useUntil: purposeUseUntil.trim() || undefined,
-                          },
-                    ).then((outcome) => {
-                      if (outcome.ok) {
-                        onPrepared(outcome.value.id);
-                      } else {
-                        setFailure(outcome.failure);
-                      }
-                    });
-                  }}
-                >
-                  <>
-                    <label>
-                      {t('actionPurpose', language)}
-                      <select
-                        value={purpose}
-                        onChange={(event) => {
-                          const selected = event.target.value as ListingActionPurpose;
-                          setPurpose(selected);
-                          if (selected === 'BOUNDED_EXPLORATION') setPath('MANUAL');
-                        }}
-                      >
-                        <option value="LISTING_CONVERSION">
-                          {t('purposeImprovement', language)}
-                        </option>
-                        <option value="DESCRIPTION_CORRECTION">
-                          {t('purposeCorrection', language)}
-                        </option>
-                        <option value="BOUNDED_EXPLORATION">
-                          {t('purposeExploration', language)}
-                        </option>
-                      </select>
-                    </label>
-                    <p>{t('purposeHelp', language)}</p>
-                    {purpose !== 'LISTING_CONVERSION' && (
-                      <fieldset>
-                        <legend>{t('purposeBasis', language)}</legend>
-                        <label>
-                          {t('purposeEvidence', language)}
-                          <input
-                            required
-                            maxLength={512}
-                            value={purposeReference}
-                            onChange={(event) => {
-                              setPurposeReference(event.target.value);
-                            }}
-                          />
-                        </label>
-                        <label>
-                          {t('purposeUseConditions', language)}
-                          <textarea
-                            required
-                            value={purposeUseConditions}
-                            onChange={(event) => {
-                              setPurposeUseConditions(event.target.value);
-                            }}
-                          />
-                        </label>
-                        <label>
-                          {t('purposeEndConditions', language)}
-                          <textarea
-                            required
-                            value={purposeEndConditions}
-                            onChange={(event) => {
-                              setPurposeEndConditions(event.target.value);
-                            }}
-                          />
-                        </label>
-                        <label>
-                          {t('purposeUseUntil', language)}
-                          <input
-                            required={purpose === 'BOUNDED_EXPLORATION'}
-                            value={purposeUseUntil}
-                            placeholder="2026-12-01T00:00:00Z"
-                            onChange={(event) => {
-                              setPurposeUseUntil(event.target.value);
-                            }}
-                          />
-                        </label>
-                      </fieldset>
-                    )}
-
-                    <label>
-                      {t('path', language)}
-                      <select
-                        value={path}
-                        onChange={(e) => {
-                          setPath(e.target.value);
-                        }}
-                      >
-                        <option value="API" disabled={purpose === 'BOUNDED_EXPLORATION'}>
-                          API
-                        </option>
-                        <option value="MANUAL">MANUAL</option>
-                      </select>
-                    </label>
-                    <label>
-                      {t('restoresCommandId', language)}
-                      <input
-                        value={restoresCommandId}
-                        onChange={(e) => {
-                          setRestoresCommandId(e.target.value);
-                        }}
-                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                        pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-                      />
-                    </label>
-                    {restoresCommandId.trim() !== '' && <p>{t('restorationApproval', language)}</p>}
-                    <label>
-                      {t('targetText', language)}
-                      <textarea
-                        disabled={restoresCommandId.trim() !== ''}
-                        value={targetText}
-                        onChange={(e) => {
-                          setTargetText(e.target.value);
-                        }}
-                      />
-                    </label>
-                    <label>
-                      {t('kiz', language)}
-                      <select
-                        value={kiz}
-                        onChange={(e) => {
-                          setKiz(e.target.value as 'undeclared' | 'yes' | 'no');
-                        }}
-                      >
-                        <option value="undeclared">{t('undeclared', language)}</option>
-                        <option value="yes">{t('yes', language)}</option>
-                        <option value="no">{t('no', language)}</option>
-                      </select>
-                    </label>
-                  </>
-                  <p>{t('exposureEvidence', language)}</p>
-                  <button type="submit">{t('submit', language)}</button>
-                </form>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+        )}
+        <SectionCard
+          title={t('actions')}
+          extra={
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                setGeneration((value) => value + 1);
+              }}
+            >
+              {t('refresh')}
+            </Button>
+          }
+        >
+          <Stack>
+            <div style={{ overflowX: 'auto' }}>
+              <Segmented<string>
+                aria-label={t('state')}
+                value={filter ?? ALL}
+                options={[
+                  { value: ALL, label: t('all') },
+                  ...ACTION_STATES.map((state) => ({
+                    value: state,
+                    label: codeText('actionState', state),
+                  })),
+                ]}
+                onChange={(value) => {
+                  setFilter(value === ALL ? undefined : value);
+                }}
+              />
+            </div>
+            {failure !== undefined && <ListingProblem failure={failure} />}
+            {actions === undefined && failure === undefined && <LoadingState />}
+            {actions?.length === 0 && <EmptyState description={t('noActions')} />}
+            {actions !== undefined && actions.length > 0 && (
+              <Table<ListingAction>
+                size="middle"
+                rowKey="id"
+                columns={columns}
+                dataSource={[...actions]}
+                pagination={false}
+                scroll={{ x: 'max-content' }}
+                onRow={(action) =>
+                  ({
+                    'data-action': action.id,
+                    'data-action-state': action.state,
+                  }) as React.HTMLAttributes<HTMLElement>
+                }
+              />
+            )}
+          </Stack>
+        </SectionCard>
+      </Stack>
     </section>
   );
 }
@@ -491,7 +296,7 @@ interface ActionDetailProps {
 }
 
 function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.JSX.Element {
-  const { language } = useLanguage();
+  const { message } = App.useApp();
   const [action, setAction] = useState<ListingAction | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [generation, setGeneration] = useState(0);
@@ -501,7 +306,7 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
   const [evaluation, setEvaluation] = useState<Evaluation | undefined>(undefined);
   const [command, setCommand] = useState<DescriptionCommand | undefined>(undefined);
   const [gate, setGate] = useState<readonly string[] | undefined>(undefined);
-  const [message, setMessage] = useState<string | undefined>(undefined);
+  const [busy, setBusy] = useState<string | undefined>(undefined);
   const [approvalMaterial, setApprovalMaterial] = useState<MeaningReviewBasis | undefined>(
     undefined,
   );
@@ -531,7 +336,7 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
   };
   const settle = (outcome: { readonly ok: boolean; readonly failure?: ConsoleFailure }): void => {
     if (outcome.ok) {
-      setMessage(t('done', language));
+      void message.success(t('done'));
       setFailure(undefined);
       refresh();
     } else if (outcome.failure !== undefined) {
@@ -539,662 +344,448 @@ function ActionDetail({ context, actionId, onBack }: ActionDetailProps): React.J
     }
   };
 
-  return (
-    <section aria-label={t('actions', language)} data-action={actionId}>
-      <button type="button" onClick={onBack}>
-        ← {t('actions', language)}
-      </button>
-      {failure !== undefined && <ListingProblem failure={failure} />}
-      {message !== undefined && <p role="status">{message}</p>}
-      {action === undefined && failure === undefined && <p>{t('loading', language)}</p>}
-      {action !== undefined && (
-        <>
-          <h3>
-            {action.nativeListingKey} · <Code family="actionState" code={action.state} /> ·{' '}
-            <Code family="executionPath" code={action.executionPath} /> ·{' '}
-            <Code family="materialityRoute" code={action.materialityRoute} />
-          </h3>
-          <p>
-            {t('actionPurpose', language)}:{' '}
-            {action.purposeCode === undefined
-              ? '—'
-              : action.purposeCode === 'LISTING_CONVERSION'
-                ? t('purposeImprovement', language)
-                : action.purposeCode === 'DESCRIPTION_CORRECTION'
-                  ? t('purposeCorrection', language)
-                  : action.purposeCode === 'BOUNDED_EXPLORATION'
-                    ? t('purposeExploration', language)
-                    : action.purposeCode === 'PROMOTION'
-                      ? t('purposePromotion', language)
-                      : action.purposeCode}
-          </p>
-          {action.purposeBasis !== undefined && (
-            <ListingPurposeBasisDetails basis={action.purposeBasis} />
-          )}
-          <ListingResponsibility context={context} actionId={actionId} />
-          {action.actionKind === 'LISTING_PROMOTION_ACTION' && (
-            <PromotionDeclaration
-              key={actionId}
-              context={context}
-              actionId={actionId}
-              digest={action.promotionTermsDigest}
-            />
-          )}
-          <dl>
-            <dt>{t('author', language)}</dt>
-            <dd>{action.authorUserId}</dd>
-            <dt>{t('reviewer', language)}</dt>
-            <dd>
-              {action.reviews.map((review) => (
-                <span key={review.id}>
-                  {review.reviewerUserId} <Code family="reviewVerdict" code={review.verdict} />{' '}
-                </span>
-              ))}
-            </dd>
-            <dt>{t('affectedSet', language)}</dt>
-            <dd>
-              {action.affectedSetDigest} ({action.affectedVariantCount})
-            </dd>
-            <dt>{language === 'ru' ? 'Идентификатор карточки' : '平台 Listing ID'}</dt>
-            <dd>{action.platformListingId}</dd>
-            <dt>{t('currentDigest', language)}</dt>
-            <dd>{action.currentTextDigest ?? '—'}</dd>
-            <dt>{t('targetDigest', language)}</dt>
-            <dd>{action.targetTextDigest ?? '—'}</dd>
-            <dt>{t('kiz', language)}</dt>
-            <dd>
-              <YesNo value={action.kizMarkedDeclared} />
-            </dd>
-            <dt>{t('version', language)}</dt>
-            <dd>{action.version}</dd>
-            <dt>{language === 'ru' ? 'Ось содержания' : '内容材料性轴'}</dt>
-            <dd>
-              {action.contentAxisMaterial === undefined ? '—' : String(action.contentAxisMaterial)}
-            </dd>
-            <dt>{language === 'ru' ? 'Ось воздействия' : '暴露材料性轴'}</dt>
-            <dd>
-              {action.exposureAxisMaterial === undefined
-                ? '—'
-                : String(action.exposureAxisMaterial)}
-            </dd>
-            <dt>{language === 'ru' ? 'Версия калибровки' : '校准版本'}</dt>
-            <dd>
-              {action.calibrationPackageId ?? '—'} · {action.calibrationVersion ?? '—'}
-            </dd>
-          </dl>
-          {action.restoresCommandId !== undefined && (
-            <p>
-              {t('restoresCommandId', language)}: <code>{action.restoresCommandId}</code> ·{' '}
-              {t('restorationApproval', language)}
-            </p>
-          )}
-          {action.targetText !== undefined && (
-            <details>
-              <summary>{t('targetText', language)}</summary>
-              <pre lang="ru">{action.targetText}</pre>
-            </details>
-          )}
-          {action.bindingGaps.length > 0 && (
-            <p>
-              {t('bindingGaps', language)}:{' '}
-              {action.bindingGaps.map((gap) => (
-                <span key={gap}>
-                  <Code family="bindingGap" code={gap} />{' '}
-                </span>
-              ))}
-            </p>
-          )}
-          <label>
-            {t('reason', language)}{' '}
-            <input
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value);
-              }}
-            />
-          </label>
-          {action.state === 'DRAFT' && (
-            <>
-              <ListingMeaningReview
-                context={context}
-                actionId={actionId}
-                reason={reason}
-                onOutcome={settle}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  void reviewAction(context, actionId, 'RETURNED', reason).then(settle);
-                }}
-              >
-                {t('returnToAuthor', language)}
-              </button>
-            </>
-          )}
-          {action.state === 'REVIEWED' && (
-            <>
-              <ListingMeaningReview
-                context={context}
-                actionId={actionId}
-                reason={reason}
-                onOutcome={settle}
-                approvalMode
-                onMaterialLoaded={receiveApprovalMaterial}
-              />
-              <button
-                type="button"
-                disabled={
-                  approvalMaterial === undefined ||
-                  approvalMaterial.reviewEvidence?.verdict !== 'ATTESTED' ||
-                  approvalMaterial.materialityEvidence.state !== 'CURRENT' ||
-                  reason.trim() === ''
-                }
-                onClick={() => {
-                  void decide(
-                    context,
-                    action.recommendationId,
-                    'approval',
-                    reason,
-                    action.recommendationVersion,
-                  ).then(settle);
-                }}
-              >
-                {t('approve', language)}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  void decide(
-                    context,
-                    action.recommendationId,
-                    'rejection',
-                    reason,
-                    action.recommendationVersion,
-                  ).then(settle);
-                }}
-              >
-                {t('reject', language)}
-              </button>
-            </>
-          )}
-          {(action.state === 'APPROVED' || action.state === 'APPROVED_NOT_LAUNCHABLE') && (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  void previewAllowance(context, actionId).then((outcome) => {
-                    if (outcome.ok) setAllowance(outcome.value);
-                    else setFailure(outcome.failure);
-                  });
-                }}
-              >
-                {t('allowancePreview', language)}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  void launchAction(context, actionId).then((outcome) => {
-                    if (outcome.ok) {
-                      setAnswer(outcome.value);
-                      refresh();
-                    } else setFailure(outcome.failure);
-                  });
-                }}
-              >
-                {t('launch', language)}
-              </button>
-            </>
-          )}
-          {['DRAFT', 'REVIEWED', 'APPROVED', 'APPROVED_NOT_LAUNCHABLE'].includes(action.state) && (
-            <button
-              type="button"
-              onClick={() => {
-                void cancelAction(context, actionId, reason).then(settle);
-              }}
-            >
-              {t('cancel', language)}
-            </button>
-          )}
-          {allowance !== undefined && <AllowanceTable allowance={allowance} />}
-          {answer !== undefined && (
-            <p role="status" data-launched={String(answer.launched)}>
-              {answer.launched
-                ? t('launched', language)
-                : `${t('notLaunched', language)}: ${answer.insufficientAxes.join(', ')}`}
-            </p>
-          )}
-          {action.occupations.length > 0 && (
-            <ul>
-              {action.occupations.map((occupation) => (
-                <li key={occupation.id}>
-                  <Code family="allowanceAxis" code={occupation.axisCode} />{' '}
-                  {occupation.occupiedValue}{' '}
-                  <Code family="occupationState" code={occupation.state} />
-                </li>
-              ))}
-            </ul>
-          )}
-          {action.launch !== undefined && (
-            <p>
-              {t('launched', language)} <When value={action.launch.launchedAt} />
-            </p>
-          )}
-          {action.purposeCode !== 'DESCRIPTION_CORRECTION' &&
-            action.purposeCode !== 'BOUNDED_EXPLORATION' && (
-              <button
-                type="button"
-                onClick={() => {
-                  void fetchEvaluation(context, actionId).then((outcome) => {
-                    if (outcome.ok) setEvaluation(outcome.value);
-                    else setFailure(outcome.failure);
-                  });
-                }}
-              >
-                {t('evaluation', language)}
-              </button>
-            )}
-          {evaluation !== undefined && (
-            <>
-              {action.launch !== undefined && (
-                <NodeEvaluationForm
-                  context={context}
-                  actionId={actionId}
-                  evaluation={evaluation}
-                  onEvaluated={setEvaluation}
-                  onFailure={setFailure}
-                />
-              )}
-              <EvaluationTable evaluation={evaluation} />
-            </>
-          )}
-          {action.executionPath === 'API' && action.launch !== undefined && (
-            <button
-              type="button"
-              onClick={() => {
-                void fetchDescriptionCommand(context, actionId).then((outcome) => {
-                  if (outcome.ok) {
-                    setCommand(outcome.value);
-                    void fetchDescriptionGate(context, outcome.value.id).then((gateOutcome) => {
-                      if (gateOutcome.ok) setGate(gateOutcome.value);
-                      else setFailure(gateOutcome.failure);
-                    });
-                  } else setFailure(outcome.failure);
-                });
-              }}
-            >
-              {t('descriptionCommand', language)}
-            </button>
-          )}
-          {command !== undefined && <CommandTimeline command={command} gate={gate} />}
-        </>
-      )}
-    </section>
-  );
-}
+  const reasonMissing = reason.trim() === '';
+  const approvalBlocked =
+    approvalMaterial === undefined ||
+    approvalMaterial.reviewEvidence?.verdict !== 'ATTESTED' ||
+    approvalMaterial.materialityEvidence.state !== 'CURRENT' ||
+    reasonMissing;
+  const approvalBlockedReason =
+    approvalMaterial === undefined
+      ? t('approveNeedsMaterial')
+      : approvalMaterial.reviewEvidence?.verdict !== 'ATTESTED'
+        ? t('approveNeedsAttestation')
+        : approvalMaterial.materialityEvidence.state !== 'CURRENT'
+          ? t('approveNeedsMateriality')
+          : t('meaningNeedReason');
 
-function AllowanceTable({ allowance }: { readonly allowance: Allowance }): React.JSX.Element {
-  const { language } = useLanguage();
   return (
-    <div>
-      {!allowance.resolved && <p role="status">{t('allowanceUnresolved', language)}</p>}
-      {allowance.gaps.length > 0 && (
-        <ul>
-          {allowance.gaps.map((gap) => {
-            const parts = gap.split(':');
-            const reason = parts.length > 1 ? parts[1] : parts[0];
-            const labels: Readonly<Record<string, UiKey>> = {
-              ALLOWANCE_POLICY_UNRESOLVED: 'allowancePolicyGap',
-              ALLOWANCE_AXES_UNRESOLVED: 'allowanceAxesGap',
-              ALLOWANCE_MISSING: 'allowanceMissingGap',
-              SCOPE_COMPOSITION_UNRESOLVED: 'allowanceCompositionGap',
-              CANONICAL_DEMAND_UNRESOLVED: 'allowanceDemandGap',
-              RESERVE_UNRESOLVED: 'allowanceReserveGap',
-              RESERVE_BELOW_ACCEPTED_POLICY: 'allowanceReserveGap',
-            };
-            return (
-              <li key={gap}>
-                {parts.length > 1 && (
+    <section aria-label={t('actions')} data-action={actionId}>
+      <Stack>
+        <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
+          {t('backToActions')}
+        </Button>
+        {failure !== undefined && <ListingProblem failure={failure} />}
+        {action === undefined && failure === undefined && <LoadingState rows={8} />}
+        {action !== undefined && (
+          <>
+            <SectionCard
+              title={
+                <Space wrap>
+                  <span>{action.nativeListingKey}</span>
+                  <Code family="actionState" code={action.state} />
+                  <Code family="executionPath" code={action.executionPath} />
+                  <Code family="materialityRoute" code={action.materialityRoute} />
+                </Space>
+              }
+              extra={
+                <Button icon={<ReloadOutlined />} onClick={refresh}>
+                  {t('refresh')}
+                </Button>
+              }
+            >
+              <Stack>
+                <ActionLifecycle state={action.state} />
+                <Details
+                  items={[
+                    {
+                      key: 'kind',
+                      label: t('actionKind'),
+                      children: codeText('actionKind', action.actionKind),
+                    },
+                    {
+                      key: 'purpose',
+                      label: t('actionPurpose'),
+                      children:
+                        action.purposeCode === undefined ? (
+                          '—'
+                        ) : (
+                          <Code family="actionPurpose" code={action.purposeCode} />
+                        ),
+                    },
+                    {
+                      key: 'affected',
+                      label: t('affectedSetShort'),
+                      children: (
+                        <Space size={4}>
+                          <Code family="affectedSetState" code={action.affectedSetState} />
+                          <Typography.Text type="secondary">
+                            {action.affectedVariantCount} 个变体
+                          </Typography.Text>
+                        </Space>
+                      ),
+                    },
+                    {
+                      key: 'kiz',
+                      label: t('kiz'),
+                      children: <YesNo value={action.kizMarkedDeclared} />,
+                    },
+                    {
+                      key: 'content',
+                      label: t('contentAxis'),
+                      children: <YesNo value={action.contentAxisMaterial} />,
+                    },
+                    {
+                      key: 'exposure',
+                      label: t('exposureAxis'),
+                      children: <YesNo value={action.exposureAxisMaterial} />,
+                    },
+                    {
+                      key: 'reviews',
+                      label: t('reviewer'),
+                      children:
+                        action.reviews.length === 0 ? (
+                          '—'
+                        ) : (
+                          <Space orientation="vertical" size={2}>
+                            {action.reviews.map((review) => (
+                              <Space key={review.id} size={4} wrap>
+                                <Code family="reviewVerdict" code={review.verdict} />
+                                <When value={review.reviewedAt} />
+                              </Space>
+                            ))}
+                          </Space>
+                        ),
+                    },
+                    {
+                      key: 'launch',
+                      label: t('launchedAt'),
+                      children: <When value={action.launch?.launchedAt} />,
+                    },
+                    { key: 'version', label: t('version'), children: action.version },
+                    ...(action.bindingGaps.length === 0
+                      ? []
+                      : [
+                          {
+                            key: 'gaps',
+                            label: t('bindingGaps'),
+                            span: 'filled' as const,
+                            children: <Codes family="bindingGap" codes={action.bindingGaps} />,
+                          },
+                        ]),
+                  ]}
+                />
+                {action.restoresCommandId !== undefined && (
+                  <Alert
+                    type="info"
+                    showIcon
+                    title={t('restorationApproval')}
+                    description={
+                      <IdText label={t('restoresCommandShort')} value={action.restoresCommandId} />
+                    }
+                  />
+                )}
+                {action.targetText !== undefined && (
+                  <Collapse
+                    size="small"
+                    items={[
+                      {
+                        key: 'target',
+                        label: t('targetText'),
+                        children: <RussianText value={action.targetText} />,
+                      },
+                    ]}
+                  />
+                )}
+                <TechnicalDetails>
+                  <Space orientation="vertical" size={2}>
+                    <IdText label={t('actionId')} value={action.id} />
+                    <IdText label={t('platformListingId')} value={action.platformListingId} />
+                    <IdText label={t('author')} value={action.authorUserId} />
+                    {action.reviews.map((review) => (
+                      <IdText key={review.id} label={t('reviewer')} value={review.reviewerUserId} />
+                    ))}
+                    <IdText label={t('affectedSet')} value={action.affectedSetDigest} />
+                    <IdText label={t('currentDigest')} value={action.currentTextDigest} />
+                    <IdText label={t('targetDigest')} value={action.targetTextDigest} />
+                    <IdText
+                      label={t('calibrationVersion')}
+                      value={`${action.calibrationPackageId ?? '—'} · ${
+                        action.calibrationVersion === undefined
+                          ? '—'
+                          : String(action.calibrationVersion)
+                      }`}
+                    />
+                  </Space>
+                </TechnicalDetails>
+              </Stack>
+            </SectionCard>
+
+            {action.purposeBasis !== undefined && (
+              <SectionCard>
+                <ListingPurposeBasisDetails basis={action.purposeBasis} />
+              </SectionCard>
+            )}
+
+            <SectionCard title={t('decision')}>
+              <Stack>
+                <Form layout="vertical" component={false}>
+                  <Form.Item label={t('reason')} extra={t('reasonHelp')}>
+                    <Input.TextArea
+                      aria-label={t('reason')}
+                      autoSize={{ minRows: 2, maxRows: 4 }}
+                      value={reason}
+                      onChange={(e) => {
+                        setReason(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
+                {action.state === 'DRAFT' && (
                   <>
-                    <Code family="allowanceAxis" code={parts[0] ?? ''} />:{' '}
+                    <ListingMeaningReview
+                      context={context}
+                      actionId={actionId}
+                      reason={reason}
+                      onOutcome={settle}
+                    />
+                    <div>
+                      <ConfirmButton
+                        title="确认退回作者？"
+                        description="操作将回到作者处修改，需重新复核。"
+                        onConfirm={() =>
+                          reviewAction(context, actionId, 'RETURNED', reason).then(settle)
+                        }
+                      >
+                        {t('returnToAuthor')}
+                      </ConfirmButton>
+                    </div>
                   </>
                 )}
-                {t(labels[reason ?? ''] ?? 'allowanceUnresolved', language)}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-      <table
-        aria-label={t('allowancePreview', language)}
-        data-resolved={String(allowance.resolved)}
-      >
-        <thead>
-          <tr>
-            <th>{t('axis', language)}</th>
-            <th>{t('allowanceScope', language)}</th>
-            <th>{t('limit', language)}</th>
-            <th>{t('reserve', language)}</th>
-            <th>{t('occupied', language)}</th>
-            <th>{t('headroom', language)}</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {allowance.axes.map((axis) => (
-            <tr
-              key={`${axis.axisCode}:${axis.scopeKind}`}
-              data-sufficient={String(axis.sufficient)}
-            >
-              <td>
-                <Code family="allowanceAxis" code={axis.axisCode} />
-              </td>
-              <td>
-                {t(
-                  axis.scopeKind === 'ORGANIZATION'
-                    ? 'allowanceOrganization'
-                    : axis.scopeKind === 'PLATFORM'
-                      ? 'allowancePlatform'
-                      : 'allowanceStore',
-                  language,
+                {action.state === 'REVIEWED' && (
+                  <>
+                    <ListingMeaningReview
+                      context={context}
+                      actionId={actionId}
+                      reason={reason}
+                      onOutcome={settle}
+                      approvalMode
+                      onMaterialLoaded={receiveApprovalMaterial}
+                    />
+                    <Space wrap>
+                      <ConfirmButton
+                        type="primary"
+                        title="确认批准此操作？"
+                        description="批准由工作流记录，之后仍需额度与启动。"
+                        disabled={approvalBlocked}
+                        {...(approvalBlocked ? { disabledReason: approvalBlockedReason } : {})}
+                        onConfirm={() =>
+                          decide(
+                            context,
+                            action.recommendationId,
+                            'approval',
+                            reason,
+                            action.recommendationVersion,
+                          ).then(settle)
+                        }
+                      >
+                        {t('approve')}
+                      </ConfirmButton>
+                      <ConfirmButton
+                        danger
+                        title="确认拒绝此操作？"
+                        description="拒绝后该建议不会执行。"
+                        onConfirm={() =>
+                          decide(
+                            context,
+                            action.recommendationId,
+                            'rejection',
+                            reason,
+                            action.recommendationVersion,
+                          ).then(settle)
+                        }
+                      >
+                        {t('reject')}
+                      </ConfirmButton>
+                    </Space>
+                  </>
                 )}
-              </td>
-              <td>{axis.limitValue}</td>
-              <td>{axis.reserveValue}</td>
-              <td>{axis.occupiedValue}</td>
-              <td>{axis.headroom}</td>
-              <td>{axis.sufficient ? t('sufficient', language) : t('insufficient', language)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+                {(action.state === 'APPROVED' || action.state === 'APPROVED_NOT_LAUNCHABLE') && (
+                  <Space wrap>
+                    <Button
+                      loading={busy === 'allowance'}
+                      onClick={() => {
+                        setBusy('allowance');
+                        void previewAllowance(context, actionId).then((outcome) => {
+                          setBusy(undefined);
+                          if (outcome.ok) setAllowance(outcome.value);
+                          else setFailure(outcome.failure);
+                        });
+                      }}
+                    >
+                      {t('allowancePreview')}
+                    </Button>
+                    <ConfirmButton
+                      type="primary"
+                      title="确认启动此操作？"
+                      description="启动将占用额度；额度不足时不会启动。"
+                      onConfirm={() =>
+                        launchAction(context, actionId).then((outcome) => {
+                          if (outcome.ok) {
+                            setAnswer(outcome.value);
+                            refresh();
+                          } else setFailure(outcome.failure);
+                        })
+                      }
+                    >
+                      {t('launch')}
+                    </ConfirmButton>
+                  </Space>
+                )}
+                {['DRAFT', 'REVIEWED', 'APPROVED', 'APPROVED_NOT_LAUNCHABLE'].includes(
+                  action.state,
+                ) && (
+                  <div>
+                    <ConfirmButton
+                      danger
+                      title="确认取消此操作？"
+                      description="取消不可撤销，需要时请重新准备。"
+                      onConfirm={() => cancelAction(context, actionId, reason).then(settle)}
+                    >
+                      {t('cancel')}
+                    </ConfirmButton>
+                  </div>
+                )}
+                {allowance !== undefined && <AllowanceTable allowance={allowance} />}
+                {answer !== undefined && (
+                  <div role="status" data-launched={String(answer.launched)}>
+                    {answer.launched ? (
+                      <Alert type="success" showIcon title={t('launched')} />
+                    ) : (
+                      <Alert
+                        type="warning"
+                        showIcon
+                        title={t('notLaunched')}
+                        description={
+                          <Codes family="allowanceAxis" codes={answer.insufficientAxes} />
+                        }
+                      />
+                    )}
+                  </div>
+                )}
+                {action.occupations.length > 0 && (
+                  <Table
+                    size="middle"
+                    rowKey="id"
+                    pagination={false}
+                    dataSource={[...action.occupations]}
+                    columns={[
+                      {
+                        key: 'axis',
+                        title: t('axis'),
+                        render: (_, occupation) => (
+                          <Code family="allowanceAxis" code={occupation.axisCode} />
+                        ),
+                      },
+                      {
+                        key: 'occupied',
+                        title: t('occupied'),
+                        align: 'right',
+                        dataIndex: 'occupiedValue',
+                      },
+                      {
+                        key: 'state',
+                        title: t('state'),
+                        render: (_, occupation) => (
+                          <Code family="occupationState" code={occupation.state} />
+                        ),
+                      },
+                    ]}
+                  />
+                )}
+              </Stack>
+            </SectionCard>
 
-function NodeEvaluationForm({
-  context,
-  actionId,
-  evaluation,
-  onEvaluated,
-  onFailure,
-}: {
-  readonly context: ConsoleRequest;
-  readonly actionId: string;
-  readonly evaluation: Evaluation;
-  readonly onEvaluated: (value: Evaluation) => void;
-  readonly onFailure: (failure: ConsoleFailure | undefined) => void;
-}): React.JSX.Element {
-  const { language } = useLanguage();
-  const [nodeCode, setNodeCode] = useState(evaluation.formalNodes[0]?.nodeCode ?? '');
-  const [stage, setStage] = useState<'OPERATIONAL' | 'SETTLED'>('OPERATIONAL');
-  const [measurementId, setMeasurementId] = useState('');
-  const [lateFactReference, setLateFactReference] = useState('');
-  return (
-    <form
-      aria-label={t('evaluationRecord', language)}
-      onSubmit={(event) => {
-        event.preventDefault();
-        void evaluateNode(context, actionId, {
-          nodeCode,
-          stage,
-          ...(measurementId.trim() === '' ? {} : { measurementId: measurementId.trim() }),
-          ...(lateFactReference.trim() === ''
-            ? {}
-            : { lateFactReference: lateFactReference.trim() }),
-        }).then((outcome) => {
-          if (outcome.ok) {
-            onEvaluated(outcome.value);
-            onFailure(undefined);
-          } else onFailure(outcome.failure);
-        });
-      }}
-    >
-      <label>
-        {t('nodes', language)}{' '}
-        <select
-          required
-          value={nodeCode}
-          onChange={(event) => {
-            setNodeCode(event.target.value);
-          }}
-        >
-          {evaluation.formalNodes.map((node) => (
-            <option key={node.nodeCode} value={node.nodeCode}>
-              {node.nodeCode}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        {t('evaluationStage', language)}{' '}
-        <select
-          value={stage}
-          onChange={(event) => {
-            setStage(event.target.value as 'OPERATIONAL' | 'SETTLED');
-          }}
-        >
-          <option value="OPERATIONAL">OPERATIONAL</option>
-          <option value="SETTLED">SETTLED</option>
-        </select>
-      </label>
-      <label>
-        {t('measurementId', language)}{' '}
-        <input
-          value={measurementId}
-          onChange={(event) => {
-            setMeasurementId(event.target.value);
-          }}
-        />
-      </label>
-      <label>
-        {t('lateFactReference', language)}{' '}
-        <input
-          value={lateFactReference}
-          onChange={(event) => {
-            setLateFactReference(event.target.value);
-          }}
-        />
-      </label>
-      <button type="submit" disabled={nodeCode === ''}>
-        {t('evaluationRecord', language)}
-      </button>
-    </form>
-  );
-}
+            <SectionCard title={t('responsibilityTitle')}>
+              <ListingResponsibility context={context} actionId={actionId} />
+            </SectionCard>
 
-function EvaluationTable({ evaluation }: { readonly evaluation: Evaluation }): React.JSX.Element {
-  const { language } = useLanguage();
-  return (
-    <div data-plan={evaluation.planId}>
-      <p>
-        {t('evaluationFrozenAt', language)}: <When value={evaluation.frozenAt} />
-      </p>
-      <p>
-        {t('evaluationBoundary', language)}: <When value={evaluation.latestBoundary} />
-      </p>
-      <p>
-        {t('evaluationPlanDigest', language)}: <code>{evaluation.planDigest ?? '—'}</code>
-      </p>
-      <h4>{t('nodes', language)}</h4>
-      <ul>
-        {evaluation.formalNodes.map((node) => (
-          <li key={node.nodeCode}>
-            {node.nodeCode} · {node.maturityDays} · {node.method} · {node.threshold ?? '—'}
-          </li>
-        ))}
-      </ul>
-      {evaluation.results.length === 0 ? (
-        <p>{t('nothing', language)}</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>{t('nodes', language)}</th>
-              <th>{t('ratio', language)}</th>
-              <th>{t('protection', language)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {evaluation.results.map((result) => (
-              <tr
-                key={result.id}
-                id={`evaluation-result-${result.id}`}
-                data-verdict={result.verdict}
+            {action.actionKind === 'LISTING_PROMOTION_ACTION' && (
+              <SectionCard title={t('promotionDeclaration')}>
+                <PromotionDeclaration
+                  key={actionId}
+                  context={context}
+                  actionId={actionId}
+                  digest={action.promotionTermsDigest}
+                />
+              </SectionCard>
+            )}
+
+            {action.purposeCode !== 'DESCRIPTION_CORRECTION' &&
+              action.purposeCode !== 'BOUNDED_EXPLORATION' && (
+                <SectionCard
+                  title={t('evaluation')}
+                  extra={
+                    <Button
+                      loading={busy === 'evaluation'}
+                      onClick={() => {
+                        setBusy('evaluation');
+                        void fetchEvaluation(context, actionId).then((outcome) => {
+                          setBusy(undefined);
+                          if (outcome.ok) setEvaluation(outcome.value);
+                          else setFailure(outcome.failure);
+                        });
+                      }}
+                    >
+                      {t('evaluationLoad')}
+                    </Button>
+                  }
+                >
+                  {evaluation === undefined ? (
+                    <EmptyState description={t('evaluationNotLoaded')} />
+                  ) : (
+                    <Stack>
+                      {action.launch !== undefined && (
+                        <NodeEvaluationForm
+                          context={context}
+                          actionId={actionId}
+                          evaluation={evaluation}
+                          onEvaluated={setEvaluation}
+                          onFailure={setFailure}
+                        />
+                      )}
+                      <EvaluationTable evaluation={evaluation} />
+                    </Stack>
+                  )}
+                </SectionCard>
+              )}
+
+            {action.executionPath === 'API' && action.launch !== undefined && (
+              <SectionCard
+                title={t('descriptionCommand')}
+                extra={
+                  <Button
+                    loading={busy === 'command'}
+                    onClick={() => {
+                      setBusy('command');
+                      void fetchDescriptionCommand(context, actionId).then((outcome) => {
+                        setBusy(undefined);
+                        if (outcome.ok) {
+                          setCommand(outcome.value);
+                          void fetchDescriptionGate(context, outcome.value.id).then(
+                            (gateOutcome) => {
+                              if (gateOutcome.ok) setGate(gateOutcome.value);
+                              else setFailure(gateOutcome.failure);
+                            },
+                          );
+                        } else setFailure(outcome.failure);
+                      });
+                    }}
+                  >
+                    {t('commandLoad')}
+                  </Button>
+                }
               >
-                <td>
-                  {result.nodeCode} <Code family="evaluationStage" code={result.stage} /> #
-                  {result.revisionNo} <Code family="nodeVerdict" code={result.verdict} />
-                </td>
-                <td>
-                  {result.primaryRatio ?? '—'} / {result.conservativeBound ?? '—'} /{' '}
-                  {result.acceptedThreshold ?? '—'}
-                  {result.fixedTrafficObservation !== undefined && (
-                    <p>
-                      {t('observedComparison', language)}:{' '}
-                      {result.fixedTrafficObservation.referenceStandardized ?? '—'} /{' '}
-                      {result.fixedTrafficObservation.targetStandardized ?? '—'} /{' '}
-                      {result.fixedTrafficObservation.observedDifference ?? '—'}
-                      <br />
-                      {t('observationOnly', language)}
-                    </p>
-                  )}
-                  {(result.qualificationGaps?.length ?? 0) > 0 && (
-                    <p>
-                      {t('qualification', language)}: {result.qualificationGaps?.join(', ')}
-                    </p>
-                  )}
-                  <p>
-                    {t('acquisitionTime', language)}: <When value={result.measurementAcquiredAt} />
-                  </p>
-                  <p>
-                    {t('measurementComputedAt', language)}:{' '}
-                    <When value={result.measurementComputedAt} />
-                  </p>
-                </td>
-                <td>
-                  <Code family="protectionVerdict" code={result.protectionVerdict} />{' '}
-                  {Object.entries(result.protectionVector).map(([key, value]) => (
-                    <span key={key}>
-                      <Code family="protection" code={key} />=
-                      <Code family="protectionVerdict" code={value} />{' '}
-                    </span>
-                  ))}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      {(evaluation.revisions?.length ?? 0) > 0 && (
-        <section aria-label={t('evaluationRevisions', language)}>
-          <h4>{t('evaluationRevisions', language)}</h4>
-          <ul>
-            {evaluation.revisions?.map((revision) => (
-              <li key={revision.id}>
-                {t('evaluationRevisionLink', language)}:{' '}
-                <a href={`#evaluation-result-${revision.originalNodeResultId}`}>
-                  {revision.originalNodeResultId}
-                </a>
-                {' → '}
-                <a href={`#evaluation-result-${revision.revisedNodeResultId}`}>
-                  {revision.revisedNodeResultId}
-                </a>
-                {' · '}
-                {revision.revisionReason === 'LATE_FACT'
-                  ? t('evaluationLateFact', language)
-                  : revision.revisionReason === 'CORRECTION'
-                    ? t('evaluationCorrection', language)
-                    : revision.revisionReason}
-                {' · '}
-                {revision.lateFactReference}
-                {' · '}
-                <When value={revision.recordedAt} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </div>
-  );
-}
-
-function CommandTimeline({
-  command,
-  gate,
-}: {
-  readonly command: DescriptionCommand;
-  readonly gate: readonly string[] | undefined;
-}): React.JSX.Element {
-  const { language } = useLanguage();
-  return (
-    <section
-      aria-label={t('descriptionCommand', language)}
-      data-command={command.id}
-      data-command-state={command.state}
-    >
-      <h4>
-        {t('descriptionCommand', language)}: <Code family="commandState" code={command.state} />
-      </h4>
-      <p>
-        {t('attempts', language)}: {command.attemptNo} · {command.retryBudgetRemaining} ·{' '}
-        <Code
-          family="errorCode"
-          code={command.priorTextCaptured ? undefined : 'RESTORE_UNSUPPORTED'}
-        />
-      </p>
-      <h5>{t('executionObservation', language)}</h5>
-      <p>{t('executionBoundary', language)}</p>
-      {command.executionReceipts.length === 0 && <p>{t('noExecutionObservation', language)}</p>}
-      <ul>
-        {command.executionReceipts.map((receipt) => (
-          <li key={receipt.id} data-execution-state={receipt.executionState}>
-            <Code family="descriptionExecutionState" code={receipt.executionState} />{' '}
-            <When value={receipt.recordedAt} />
-            <p>
-              {receipt.taskEventId === undefined
-                ? t('taskDeliveryPending', language)
-                : t('taskDeliveryRecorded', language)}
-            </p>
-            <ul>
-              {receipt.gaps.map((gap) => (
-                <li key={gap}>
-                  <Code family="descriptionExecutionGap" code={gap} />
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-      <h5>{t('gate', language)}</h5>
-      {gate === undefined ? (
-        <p>{t('loading', language)}</p>
-      ) : gate.length === 0 ? (
-        <p>{t('gateOpen', language)}</p>
-      ) : (
-        <ul>
-          {gate.map((reason) => (
-            <li key={reason}>
-              <Code family="gateReason" code={reason} />
-            </li>
-          ))}
-        </ul>
-      )}
-      <ul>
-        {command.attempts.map((attempt) => (
-          <li key={attempt.id}>
-            #{attempt.attemptNo} {attempt.purpose}{' '}
-            <Code family="attemptOutcome" code={attempt.outcomeClass} /> {attempt.errorCode ?? ''}
-          </li>
-        ))}
-      </ul>
-      <ul>
-        {command.readbacks.map((readback) => (
-          <li key={readback.id}>
-            <Code family="readbackMatch" code={readback.matchState} />{' '}
-            <When value={readback.observedAt} />
-          </li>
-        ))}
-      </ul>
+                {command === undefined ? (
+                  <EmptyState description={t('commandNotLoaded')} />
+                ) : (
+                  <CommandTimeline command={command} gate={gate} />
+                )}
+              </SectionCard>
+            )}
+          </>
+        )}
+      </Stack>
     </section>
   );
 }
