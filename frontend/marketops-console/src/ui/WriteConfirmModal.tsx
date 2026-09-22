@@ -30,6 +30,10 @@ export interface WriteConfirmModalProps {
   readonly reasonLabel?: ReactNode;
   /** Whether a reason must be written; true unless the caller says otherwise. */
   readonly reasonRequired?: boolean;
+  /** A reason confirmation is refused besides the guard, e.g. still checking. */
+  readonly blockedReason?: ReactNode;
+  /** Called when the dialog opens, e.g. to run the check it depends on. */
+  readonly onOpen?: () => void;
   readonly onConfirm: (reason: string) => Promise<SubmitOutcome>;
 }
 
@@ -54,15 +58,20 @@ export function WriteConfirmModal({
   confirmText,
   reasonLabel = dialog.reason,
   reasonRequired = true,
+  blockedReason,
+  onOpen,
   onConfirm,
 }: WriteConfirmModalProps): React.JSX.Element {
+  const refused =
+    blockedReason ?? (guard !== undefined && !guard.passed ? dialog.guardFailed : undefined);
   return (
     <ActionModal<ReasonValues>
       trigger={trigger}
       title={title}
       okText={confirmText}
       width={560}
-      {...(guard !== undefined && !guard.passed ? { blockedReason: dialog.guardFailed } : {})}
+      {...(refused === undefined ? {} : { blockedReason: refused })}
+      {...(onOpen === undefined ? {} : { onOpen })}
       summary={
         <Flex vertical gap={12}>
           <div>

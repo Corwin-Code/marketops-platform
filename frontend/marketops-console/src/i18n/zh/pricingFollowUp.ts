@@ -53,6 +53,8 @@ export const commandText = {
   subjectMissing: '商品信息暂缺',
   backToDiagnosis: '回到商品诊断',
   autoRefreshing: (time: string): string => `自动刷新中 · 更新于 ${time}`,
+  watchingUnknown: (time: string): string =>
+    `结果未知，需要关注 · 仍在等待自动回读 · 更新于 ${time}`,
   updatedAt: (time: string): string => `更新于 ${time}`,
   autoRefreshHelp: '指令仍在处理中，每 4 秒自动刷新一次；进入最终或异常状态后停止。',
   refreshFailed: '刷新失败，已停止自动刷新；下方显示的是上一次读取的内容。',

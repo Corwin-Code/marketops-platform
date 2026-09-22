@@ -93,6 +93,22 @@ class ApprovalConsoleController {
     }
 
     /**
+     * What approving under the standing authorization would find: the
+     * authorization that would be used, its bound, and the verdict against it.
+     * Nothing is approved or consumed.
+     */
+    @PostMapping(value = "/recommendations/{recommendationId}/policy-authorization-preview",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ApprovalService.PolicyPreview previewPolicyAuthorization(AuthenticatedActor actor,
+                                                             @PathVariable UUID recommendationId) {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                ResourceScope.store(proposal.storeId()));
+        requireAdvertisingDisclosure(actor, proposal);
+        return approvals.previewPolicyAuthorization(proposal);
+    }
+
+    /**
      * What changing this bid would do, and whether it is currently allowed.
      *
      * <p>A separate route from the price preview rather than a widened one. The

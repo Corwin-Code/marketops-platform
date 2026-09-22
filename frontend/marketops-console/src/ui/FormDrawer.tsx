@@ -1,6 +1,6 @@
 import { Button, Drawer, Flex, Form, Steps } from 'antd';
 import type { FormInstance } from 'antd';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { ConsoleFailure } from '../api/console';
 import { actions } from '../i18n/zh/common';
@@ -72,6 +72,9 @@ export function FormDrawer<V extends object>({
   const [form] = Form.useForm<V>();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
+  // A new form on every opening, so initial values apply afresh each time.
+  const [generation, setGeneration] = useState(0);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
   const close = (): void => {
@@ -99,12 +102,16 @@ export function FormDrawer<V extends object>({
   };
 
   const submit = async (): Promise<void> => {
+    if (submitting.current) {
+      return;
+    }
     let values: V;
     try {
       values = await form.validateFields();
     } catch {
       return;
     }
+    submitting.current = true;
     setBusy(true);
     setFailure(undefined);
     try {
@@ -115,6 +122,7 @@ export function FormDrawer<V extends object>({
         setFailure(outcome);
       }
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   };
@@ -136,6 +144,7 @@ export function FormDrawer<V extends object>({
         <TriggerButton
           trigger={trigger}
           onClick={() => {
+            setGeneration((current) => current + 1);
             setOwnOpen(true);
           }}
         />
@@ -144,13 +153,19 @@ export function FormDrawer<V extends object>({
         open={open}
         title={title}
         size={size}
-        onClose={close}
+        onClose={() => {
+          if (!busy) close();
+        }}
+        closable={!busy}
+        keyboard={!busy}
         destroyOnHidden
         mask={{ closable: false }}
         {...(extra === undefined ? {} : { extra })}
         footer={
           <Flex justify="flex-end" gap={8}>
-            <Button onClick={close}>{actions.cancel}</Button>
+            <Button onClick={close} disabled={busy}>
+              {actions.cancel}
+            </Button>
             {steps !== undefined && step > 0 && (
               <Button
                 onClick={() => {
@@ -194,6 +209,7 @@ export function FormDrawer<V extends object>({
           )}
           {intro}
           <Form
+            key={generation}
             form={form}
             layout="vertical"
             {...(initialValues === undefined ? {} : { initialValues })}

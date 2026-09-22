@@ -9,12 +9,14 @@ import {
   fetchRecommendation,
   fetchRecommendationCommand,
   requestImpactPreview,
+  requestPolicyAuthorizationPreview,
 } from '../api/console';
 import type {
   ConsoleFailure,
   ConsoleRequest,
   GuardrailVerdict,
   ImpactPreview,
+  PolicyAuthorizationPreview,
   Recommendation,
   SubjectIdentity,
 } from '../api/console';
@@ -67,6 +69,11 @@ const AUTHORIZED_STATES: readonly string[] = ['APPROVED', 'POLICY_AUTHORIZED'];
 const FINISHED_STATES: readonly string[] = ['REJECTED', 'EXPIRED', 'CANCELLED', 'CLOSED'];
 /** Refusals that mean the proposal changed under the reviewer. */
 const STALE_CODES: readonly string[] = ['VERSION_CONFLICT', 'RECOMMENDATION_STALE'];
+
+/** A refusal because the rules no longer allow the change: the shown verdict is outdated. */
+function isGuardrailBlocked(failure: ConsoleFailure): boolean {
+  return 'code' in failure && failure.code === 'GUARDRAIL_BLOCKED';
+}
 
 function isStale(failure: ConsoleFailure): boolean {
   const code = 'code' in failure ? failure.code : undefined;
@@ -401,7 +408,22 @@ function ReviewDrawerBody({
   const [actionFailure, setActionFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [commandFailedAfterDecision, setCommandFailedAfterDecision] = useState(false);
   const [busy, setBusy] = useState(false);
+  /** A decision and its command are being sent; every other action waits. */
+  const [submitting, setSubmitting] = useState(false);
   const [reloading, setReloading] = useState(false);
+  const [policyPreview, setPolicyPreview] = useState<PolicyAuthorizationPreview | undefined>(
+    undefined,
+  );
+  const [policyFailure, setPolicyFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const [policyChecking, setPolicyChecking] = useState(false);
+  /** False once the drawer is gone, so a late answer neither navigates nor closes anything. */
+  const live = useRef(true);
+  useEffect(() => {
+    live.current = true;
+    return () => {
+      live.current = false;
+    };
+  }, []);
   /** Proposal versions already previewed, so a re-run effect never evaluates twice. */
   const previewed = useRef(new Set<string>());
   const previewSeq = useRef(0);
@@ -479,18 +501,35 @@ function ReviewDrawerBody({
       setActionFailure({ kind: 'malformed', detail: 'subject mismatch' });
       return;
     }
-    previewed.current.add(`${recommendationId}:${String(outcome.value.version)}`);
+    // The (id, version) effect decides whether the reloaded proposal still
+    // needs a preview; one that can no longer be decided is not evaluated.
+    setPreview(undefined);
+    setPolicyPreview(undefined);
     setRecommendation(outcome.value);
     setActionFailure(undefined);
     setCommandFailedAfterDecision(false);
     onChanged();
-    await runPreview();
+  };
+
+  /** The verdict shown is outdated: drop it and ask the rules again, once. */
+  const invalidatePreview = (): void => {
+    setPreview(undefined);
+    setPolicyPreview(undefined);
+    void runPreview();
   };
 
   /** A stale proposal is reported in the drawer, where it can be reloaded. */
   const route = (failure: ConsoleFailure): SubmitOutcome => {
+    if (!live.current) {
+      return undefined;
+    }
     if (isStale(failure)) {
       setActionFailure(failure);
+      return undefined;
+    }
+    if (isGuardrailBlocked(failure)) {
+      setActionFailure(failure);
+      invalidatePreview();
       return undefined;
     }
     return failure;
@@ -524,36 +563,61 @@ function ReviewDrawerBody({
     kind: 'approval' | 'policy-authorization',
     reason: string,
   ): Promise<SubmitOutcome> => {
-    const decided = await decide(context, recommendation.id, kind, reason, recommendation.version);
-    if (!decided.ok) {
-      return route(decided.failure);
-    }
-    const nextVersion = recommendation.version + 1;
-    // The current preview already covers this proposal; do not re-evaluate it
-    // merely because the decision bumped the version.
-    previewed.current.add(`${recommendation.id}:${String(nextVersion)}`);
-    setRecommendation({ ...recommendation, state: decided.value.state, version: nextVersion });
-    onChanged();
-    const created = await createCommand(context, recommendation.id, nextVersion);
-    if (created.ok) {
-      void message.success(text.commandCreated);
-      onOpenCommand(created.value.commandId);
-    } else {
+    setSubmitting(true);
+    try {
+      const decided = await decide(
+        context,
+        recommendation.id,
+        kind,
+        reason,
+        recommendation.version,
+      );
+      if (!decided.ok) {
+        return route(decided.failure);
+      }
+      const nextVersion = recommendation.version + 1;
+      // The current preview already covers this proposal; do not re-evaluate it
+      // merely because the decision bumped the version.
+      previewed.current.add(`${recommendation.id}:${String(nextVersion)}`);
+      // The drawer keeps showing the decision being sent until the command
+      // exists or has failed, so no second create can start in between.
+      const created = await createCommand(context, recommendation.id, nextVersion);
+      if (!live.current) {
+        return undefined;
+      }
+      onChanged();
+      if (created.ok) {
+        void message.success(text.commandCreated);
+        onOpenCommand(created.value.commandId);
+        return undefined;
+      }
+      setRecommendation({ ...recommendation, state: decided.value.state, version: nextVersion });
       setActionFailure(created.failure);
       setCommandFailedAfterDecision(true);
+      if (isGuardrailBlocked(created.failure)) {
+        invalidatePreview();
+      }
+      return undefined;
+    } finally {
+      if (live.current) setSubmitting(false);
     }
-    return undefined;
   };
 
   const createAuthorized = async (): Promise<SubmitOutcome> => {
-    const created = await createCommand(context, recommendation.id, recommendation.version);
-    if (!created.ok) {
-      return route(created.failure);
+    setSubmitting(true);
+    try {
+      const created = await createCommand(context, recommendation.id, recommendation.version);
+      if (!created.ok) {
+        return route(created.failure);
+      }
+      if (!live.current) return undefined;
+      void message.success(text.commandCreated);
+      onChanged();
+      onOpenCommand(created.value.commandId);
+      return undefined;
+    } finally {
+      if (live.current) setSubmitting(false);
     }
-    void message.success(text.commandCreated);
-    onChanged();
-    onOpenCommand(created.value.commandId);
-    return undefined;
   };
 
   const reject = async (reason: string): Promise<SubmitOutcome> => {
@@ -567,16 +631,33 @@ function ReviewDrawerBody({
     if (!decided.ok) {
       return route(decided.failure);
     }
+    if (!live.current) return undefined;
     void message.success(text.rejected);
     onChanged();
     onClose();
     return undefined;
   };
 
+  /** Ask what the standing authorization would allow before it is used. */
+  const checkPolicy = async (): Promise<void> => {
+    setPolicyChecking(true);
+    setPolicyFailure(undefined);
+    setPolicyPreview(undefined);
+    const outcome = await requestPolicyAuthorizationPreview(context, recommendation.id);
+    if (!live.current) return;
+    setPolicyChecking(false);
+    if (outcome.ok) {
+      setPolicyPreview(outcome.value);
+    } else {
+      setPolicyFailure(outcome.failure);
+    }
+  };
+
   const openCommand = async (): Promise<void> => {
     setBusy(true);
     const result = await fetchRecommendationCommand(context, recommendation.id);
     setBusy(false);
+    if (!live.current) return;
     if (result.ok && result.value.recommendationId === recommendation.id) {
       onOpenCommand(result.value.id);
     } else {
@@ -590,19 +671,37 @@ function ReviewDrawerBody({
     preview === undefined
       ? undefined
       : { passed: preview.verdict.passed, content: <VerdictContent preview={preview} /> };
-  const writeBlockedReason: ReactNode = previewing
-    ? text.previewRunning
-    : preview === undefined
-      ? text.previewMissing
-      : !preview.verdict.passed
-        ? text.verdictBlocked
-        : undefined;
+  const writeBlockedReason: ReactNode = submitting
+    ? text.busy
+    : previewing
+      ? text.previewRunning
+      : preview === undefined
+        ? text.previewMissing
+        : !preview.verdict.passed
+          ? text.verdictBlocked
+          : undefined;
   const approveBlockedReason: ReactNode =
     decisionState !== 'READY_FOR_REVIEW'
       ? text.notReviewable(codeLabel(RECOMMENDATION_STATE_LABELS, decisionState))
       : writeBlockedReason;
   const proposedPrice = formatMoney(preview?.proposedPrice, preview?.currencyCode ?? null);
-  const maxRate = preview?.verdict.detail.authorizationMaxChangeRate;
+  const policyVerdict = policyPreview?.preview ?? undefined;
+  const policyGuard: WriteGuard | undefined =
+    policyVerdict === undefined
+      ? undefined
+      : {
+          passed: policyVerdict.verdict.passed,
+          content: <VerdictContent preview={policyVerdict} />,
+        };
+  const policyBlockedReason: ReactNode = policyChecking
+    ? text.policyChecking
+    : policyFailure !== undefined
+      ? failureMessage(policyFailure)
+      : policyPreview === undefined
+        ? text.policyChecking
+        : !policyPreview.usable
+          ? text.policyUnavailable
+          : undefined;
 
   let footer: ReactNode;
   if (commandExists) {
@@ -683,31 +782,47 @@ function ReviewDrawerBody({
             <WriteConfirmModal
               trigger={{ label: text.policyApprove, ...approveTrigger }}
               title={text.policyTitle}
+              onOpen={() => {
+                void checkPolicy();
+              }}
               impact={
                 <WriteImpact
-                  preview={preview}
+                  preview={policyVerdict ?? preview}
                   identity={identity}
                   subjectId={subjectId}
                   extra={
-                    <Typography.Text>
-                      {text.policyScope(
-                        preview.verdict.policyVersion,
-                        maxRate === undefined ? '未记录' : formatPercent(maxRate),
-                      )}
-                    </Typography.Text>
+                    policyPreview?.usable === true ? (
+                      <Typography.Text>
+                        {text.policyScope(
+                          policyPreview.scopeKind,
+                          policyPreview.maxChangeRate === null
+                            ? null
+                            : formatPercent(policyPreview.maxChangeRate),
+                          policyPreview.remainingUses,
+                        )}
+                      </Typography.Text>
+                    ) : undefined
                   }
                 />
               }
-              {...(guard === undefined ? {} : { guard })}
-              consequence={text.consequence}
-              confirmText={text.confirmPolicyPrice(proposedPrice)}
+              {...(policyGuard === undefined ? {} : { guard: policyGuard })}
+              {...(policyBlockedReason === undefined ? {} : { blockedReason: policyBlockedReason })}
+              consequence={text.policyConsequence}
+              confirmText={text.confirmPolicyPrice(
+                formatMoney(policyVerdict?.proposedPrice ?? preview.proposedPrice, currency),
+              )}
               reasonLabel={text.decisionReason}
               onConfirm={(reason) => decideAndCreate('policy-authorization', reason)}
             />
           </>
         )}
         <ActionModal<{ readonly reason?: string }>
-          trigger={{ label: text.reject, danger: true }}
+          trigger={{
+            label: text.reject,
+            danger: true,
+            disabled: submitting,
+            disabledReason: text.busy,
+          }}
           title={text.rejectTitle}
           consequence={text.rejectConsequence}
           okText={text.reject}
@@ -839,7 +954,7 @@ function ReviewDrawerBody({
         <Button
           icon={<ExperimentOutlined />}
           loading={previewing}
-          disabled={previewing || busy}
+          disabled={previewing || busy || submitting}
           onClick={() => {
             void runPreview();
           }}

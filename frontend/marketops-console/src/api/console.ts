@@ -2002,6 +2002,53 @@ export function requestImpactPreview(
   );
 }
 
+/** The standing authorization a policy approval would use, and its verdict. */
+export interface PolicyAuthorizationPreview {
+  /** Whether a standing authorization currently covers the proposal. */
+  readonly usable: boolean;
+  readonly authorizationId: string | null;
+  /** STORE or PRODUCT_VARIANT. */
+  readonly scopeKind: string | null;
+  /** The largest change it allows, as a decimal ratio. */
+  readonly maxChangeRate: string | null;
+  /** Uses left before this one. */
+  readonly remainingUses: number | null;
+  /** The impact and verdict evaluated against that bound. */
+  readonly preview: ImpactPreview | null;
+}
+
+/**
+ * Ask what approving under the standing authorization would find, without
+ * approving. Recorded as one evaluation, like every preview; nothing is used up.
+ */
+export function requestPolicyAuthorizationPreview(
+  context: ConsoleRequest,
+  recommendationId: string,
+): Promise<ConsoleOutcome<PolicyAuthorizationPreview>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}/policy-authorization-preview`,
+    (body) => {
+      if (!isRecord(body) || typeof body.usable !== 'boolean') {
+        return undefined;
+      }
+      const preview = body.preview === null ? null : parsePreview(body.preview);
+      if (preview === undefined || (body.usable && preview === null)) {
+        return undefined;
+      }
+      return {
+        usable: body.usable,
+        authorizationId: optionalText(body, 'authorizationId'),
+        scopeKind: optionalText(body, 'scopeKind'),
+        maxChangeRate: decimal(body, 'maxChangeRate'),
+        remainingUses: typeof body.remainingUses === 'number' ? body.remainingUses : null,
+        preview,
+      };
+    },
+    { method: 'POST' },
+  );
+}
+
 /** Record a decision about one proposal. */
 export function decide(
   context: ConsoleRequest,

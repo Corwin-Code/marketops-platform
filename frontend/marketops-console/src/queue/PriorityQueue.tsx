@@ -114,13 +114,25 @@ function WriteState({ subject }: { readonly subject: PrioritySubject }): React.J
       title={queueText.blockingRulesTitle}
       trigger={['hover', 'click']}
       content={
-        <Space size={[4, 4]} wrap style={{ maxWidth: 320 }}>
-          {codes.map((code) => (
-            <span key={code} data-rule={code}>
-              <CodeTag labels={RULE_LABELS} code={code} />
-            </span>
-          ))}
-        </Space>
+        // The popover renders in a portal, but React still bubbles its events
+        // to the row, which would open the subject on any click inside it.
+        <div
+          role="presentation"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+          onKeyDown={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          <Space size={[4, 4]} wrap style={{ maxWidth: 320 }}>
+            {codes.map((code) => (
+              <span key={code} data-rule={code}>
+                <CodeTag labels={RULE_LABELS} code={code} />
+              </span>
+            ))}
+          </Space>
+        </div>
       }
     >
       <Tag

@@ -73,8 +73,15 @@ const IN_PROGRESS = new Set([
   'READBACK_PENDING',
   'RETRY_WAIT',
   'COMPENSATION_PENDING',
-  'UNKNOWN_REQUIRES_READBACK',
 ]);
+
+/**
+ * An unknown outcome waits for a person, but the worker may still read it back
+ * on its own. The page watches it for a bounded while and then stops, so it
+ * never shows an operator's task as endless background processing.
+ */
+const WATCHED_WHILE_UNKNOWN = 'UNKNOWN_REQUIRES_READBACK';
+const UNKNOWN_WATCH_MS = 2 * 60_000;
 
 /** States that end automatic handling (PriceCommandState.terminal()). */
 const TERMINAL = new Set(['SUCCEEDED', 'FAILED_FINAL', 'COMPENSATED', 'COMPENSATION_FAILED']);
@@ -230,7 +237,34 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
     };
   }, [context, commandId, tick]);
 
-  const polling = command !== undefined && failure === undefined && IN_PROGRESS.has(command.state);
+  // When the command entered the unknown state on this page, for the bounded watch.
+  const unknownSince = useRef<number | undefined>(undefined);
+  const [unknownExpired, setUnknownExpired] = useState(false);
+  const unknownState = command?.state === WATCHED_WHILE_UNKNOWN;
+  useEffect(() => {
+    if (!unknownState) {
+      unknownSince.current = undefined;
+      setUnknownExpired(false);
+      return;
+    }
+    unknownSince.current ??= Date.now();
+    const remaining = unknownSince.current + UNKNOWN_WATCH_MS - Date.now();
+    if (remaining <= 0) {
+      setUnknownExpired(true);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setUnknownExpired(true);
+    }, remaining);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [unknownState]);
+  const watchingUnknown = unknownState && !unknownExpired;
+  const polling =
+    command !== undefined &&
+    failure === undefined &&
+    (IN_PROGRESS.has(command.state) || watchingUnknown);
 
   useEffect(() => {
     if (!polling) {
@@ -484,7 +518,9 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
       <Tooltip title={`${commandText.autoRefreshHelp}（${STORE_TIMEZONE_LABEL}）`}>
         <Typography.Text type="secondary" data-state="polling" style={{ fontSize: 12 }}>
           <SyncOutlined spin style={{ marginInlineEnd: 4 }} />
-          {commandText.autoRefreshing(clockTime(updatedAt))}
+          {watchingUnknown
+            ? commandText.watchingUnknown(clockTime(updatedAt))
+            : commandText.autoRefreshing(clockTime(updatedAt))}
         </Typography.Text>
       </Tooltip>
     ) : (

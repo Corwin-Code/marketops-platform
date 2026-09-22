@@ -1,6 +1,6 @@
 import { Flex, Form, Modal, Typography } from 'antd';
 import type { FormInstance } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { ConsoleFailure } from '../api/console';
 import { actions } from '../i18n/zh/common';
@@ -66,6 +66,9 @@ export function ActionModal<V extends object>({
   const values: unknown = Form.useWatch([], form);
   const [submittable, setSubmittable] = useState(false);
   const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
+  // A new form on every opening, so initial values apply afresh each time.
+  const [generation, setGeneration] = useState(0);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
   useEffect(() => {
@@ -94,12 +97,18 @@ export function ActionModal<V extends object>({
   };
 
   const submit = async (): Promise<void> => {
+    // One submission at a time: a second click or Enter while the first is
+    // in flight must not send the action again.
+    if (submitting.current) {
+      return;
+    }
     let parsed: V;
     try {
       parsed = await form.validateFields();
     } catch {
       return;
     }
+    submitting.current = true;
     setBusy(true);
     setFailure(undefined);
     try {
@@ -110,6 +119,7 @@ export function ActionModal<V extends object>({
         setFailure(outcome);
       }
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   };
@@ -119,6 +129,7 @@ export function ActionModal<V extends object>({
       <TriggerButton
         trigger={trigger}
         onClick={() => {
+          setGeneration((current) => current + 1);
           setOpen(true);
           onOpen?.();
         }}
@@ -126,7 +137,14 @@ export function ActionModal<V extends object>({
       <Modal
         open={open}
         title={title}
-        onCancel={close}
+        // While the action is being sent the dialog cannot be dismissed: closing
+        // it would hide the outcome and let the action be started again.
+        onCancel={() => {
+          if (!busy) close();
+        }}
+        closable={!busy}
+        keyboard={!busy}
+        cancelButtonProps={{ disabled: busy }}
         onOk={() => {
           void submit();
         }}
@@ -147,6 +165,7 @@ export function ActionModal<V extends object>({
           )}
           {summary}
           <Form
+            key={generation}
             form={form}
             layout="vertical"
             preserve={false}

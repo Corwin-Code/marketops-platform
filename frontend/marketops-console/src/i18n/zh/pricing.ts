@@ -691,8 +691,11 @@ export const reviewText = {
   finished: '建议已结束，不能再驳回',
   noAction: '当前状态没有可执行的操作',
   subjectMismatch: '建议不属于当前商品',
-  policyScope: (version: number | null, maxRate: string) =>
-    `适用常设授权策略版本 ${version === null ? '未记录' : String(version)}，授权幅度上限 ${maxRate}。`,
+  policyScope: (scopeKind: string | null, maxRate: string | null, remaining: number | null) =>
+    `将使用${scopeKind === 'PRODUCT_VARIANT' ? '商品级' : scopeKind === 'STORE' ? '店铺级' : ''}常设授权：幅度上限 ${maxRate ?? '未记录'}，剩余 ${remaining === null ? '未知' : String(remaining)} 次（本次会占用 1 次）。`,
+  policyChecking: '正在按常设授权检查…',
+  policyUnavailable: '当前没有可用的常设授权，不能按常设授权批准',
+  policyConsequence: '确认后将占用 1 次常设授权并立即创建调价指令，经写入闸门后发往平台。',
   platform: '平台',
   subject: '商品',
   priceChange: '价格',
