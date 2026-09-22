@@ -1,6 +1,7 @@
 package com.mimococo.marketops.productlisting.internal.infrastructure.jdbc;
 
 import com.mimococo.marketops.productlisting.ListingVariantContext;
+import com.mimococo.marketops.productlisting.SubjectIdentity;
 import com.mimococo.marketops.productlisting.internal.domain.CandidateState;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictKind;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictState;
@@ -386,6 +387,68 @@ public class MappingRepository {
                         rows.getObject("product_variant_id", UUID.class),
                         rows.getBoolean("conflict_open")))
                 .optional();
+    }
+
+    /**
+     * Display names for many listing variants of one organization at an instant.
+     *
+     * <p>One query for the whole batch. The catalogue side joins through the
+     * active mapping in force at the instant only, so an unmapped listing
+     * variant comes back with its marketplace fields and nothing else. Colour
+     * and size prefer the catalogue's labels and fall back to the marketplace's.
+     */
+    public Map<UUID, SubjectIdentity> identities(UUID organizationId,
+                                                 Collection<UUID> platformListingVariantIds,
+                                                 Instant at) {
+        if (platformListingVariantIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<UUID, SubjectIdentity> resolved = new HashMap<>();
+        jdbc.sql("""
+                        SELECT variant.id AS listing_variant_id,
+                               listing.platform_code,
+                               variant.native_sku_key,
+                               product.display_name AS product_name,
+                               product_variant.display_name AS variant_name,
+                               product_variant.sku_code,
+                               COALESCE(product_variant.color_label,
+                                        variant.native_color_label) AS color_label,
+                               COALESCE(product_variant.size_label,
+                                        variant.native_size_label) AS size_label
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                           AND listing.organization_id = variant.organization_id
+                          LEFT JOIN core.listing_mapping AS mapping
+                            ON mapping.platform_listing_variant_id = variant.id
+                           AND mapping.organization_id = variant.organization_id
+                           AND mapping.status = 'ACTIVE'
+                           AND mapping.effective_from <= :at
+                           AND (mapping.effective_to IS NULL OR mapping.effective_to > :at)
+                          LEFT JOIN core.product_variant AS product_variant
+                            ON product_variant.id = mapping.product_variant_id
+                           AND product_variant.organization_id = variant.organization_id
+                          LEFT JOIN core.product AS product
+                            ON product.id = product_variant.product_id
+                           AND product.organization_id = variant.organization_id
+                         WHERE variant.organization_id = :organizationId
+                           AND variant.id = ANY (:listingVariantIds)
+                        """)
+                .param("organizationId", organizationId)
+                .param("listingVariantIds", platformListingVariantIds.toArray(UUID[]::new))
+                .param("at", Timestamp.from(at))
+                .query((rows, rowNumber) -> resolved.put(
+                        rows.getObject("listing_variant_id", UUID.class),
+                        new SubjectIdentity(
+                                rows.getString("product_name"),
+                                rows.getString("variant_name"),
+                                rows.getString("sku_code"),
+                                rows.getString("platform_code"),
+                                rows.getString("native_sku_key"),
+                                rows.getString("color_label"),
+                                rows.getString("size_label"))))
+                .list();
+        return Map.copyOf(resolved);
     }
 
     /** The organization's open conflict queue, newest detection first. */

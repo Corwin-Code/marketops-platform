@@ -47,4 +47,15 @@ public interface ListingIdentityDirectory {
      * checking one listing's price against another listing's cost.
      */
     Optional<ListingVariantContext> variantContext(UUID platformListingVariantId, Instant at);
+
+    /**
+     * Display names for many listing variants of one organization, in one read.
+     *
+     * <p>Resolved through the mapping in force now. Listing variants outside the
+     * organization, or unknown, are omitted; an unmapped one is present with its
+     * marketplace fields only. For presentation only — never a basis for a rule,
+     * a cost or a write.
+     */
+    Map<UUID, SubjectIdentity> identities(UUID organizationId,
+                                          Collection<UUID> platformListingVariantIds);
 }

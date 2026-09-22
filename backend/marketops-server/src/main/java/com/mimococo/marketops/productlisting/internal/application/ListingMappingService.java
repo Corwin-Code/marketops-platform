@@ -8,6 +8,7 @@ import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
+import com.mimococo.marketops.productlisting.SubjectIdentity;
 import com.mimococo.marketops.productlisting.internal.domain.CandidateState;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictKind;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictState;
@@ -109,6 +110,20 @@ public class ListingMappingService implements ListingIdentityDirectory {
     public Optional<ListingVariantContext> variantContext(UUID platformListingVariantId,
                                                           Instant at) {
         return mappings.variantContext(platformListingVariantId, at);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, SubjectIdentity> identities(UUID organizationId,
+                                                 Collection<UUID> platformListingVariantIds) {
+        if (organizationId == null || platformListingVariantIds == null
+                || platformListingVariantIds.isEmpty()) {
+            return Map.of();
+        }
+        return mappings.identities(organizationId,
+                platformListingVariantIds.stream().filter(java.util.Objects::nonNull)
+                        .distinct().toList(),
+                clock.instant());
     }
 
     /**
