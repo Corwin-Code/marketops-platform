@@ -512,3 +512,191 @@ export const COMMAND_FAILURE_LABELS: CodeLabels = {
   UNEXPECTED_CONTENT_TYPE: '平台回复格式异常',
   PROVIDER_RESPONSE: '平台返回错误',
 };
+
+/** How much weight the model puts on one of its own statements. */
+export const AI_CONFIDENCE_LABELS: CodeLabels = {
+  LOW: '低',
+  MEDIUM: '中',
+  HIGH: '高',
+};
+
+/** Domains the diagnosis groups its measured values into. */
+export const METRIC_GROUP_LABELS = {
+  profit: '利润与价格',
+  funnel: '流量与转化',
+  sales: '销售',
+  returns: '退货',
+  inventory: '库存',
+  advertising: '广告',
+  cost: '成本与费用',
+  other: '数据完整度与其他',
+} as const;
+
+/** Names of the values a guardrail verdict records beside its reasons. */
+export const GUARDRAIL_DETAIL_LABELS: CodeLabels = {
+  policyVersion: '策略版本',
+  lifecycleObjective: '生命周期目标',
+  missingLimit: '未配置的限额',
+  changeRate: '调价幅度',
+  breakEvenPrice: '保本价',
+  minimumPrice: '最低价',
+  currentPrice: '当前价格',
+  proposedPrice: '建议价格',
+  dataCompleteness: '数据完整度',
+  unavailableMetrics: '缺失指标',
+  lowConfidenceMetrics: '可信度不足的指标',
+  freshnessUnavailableFeeds: '无法确认时效的数据源',
+  inputAgeSeconds: '最旧输入的时长',
+  projectedUnitProfit: '调价后单件利润',
+  projectedMargin: '调价后利润率',
+  cumulativeDailyChangeRate: '当日累计调价幅度',
+  secondsSinceLastChange: '距上次调价',
+  availableUnits: '可售库存',
+  authorizationMaxChangeRate: '常设授权幅度上限',
+  expectedCurrency: '期望币种',
+  currencyMismatches: '币种不一致的数据',
+  economicsResolution: '经营参数档案解析结果',
+  projectionBlockingReasons: '无法测算的原因',
+};
+
+/**
+ * What to do about each guardrail refusal, and who usually does it.
+ *
+ * The verdict itself is deterministic; these sentences only point the reviewer
+ * at the fix so a refused proposal is not retried unchanged.
+ */
+export const GUARDRAIL_REASON_HINTS: CodeLabels = {
+  NO_POLICY_IN_FORCE: '由定价负责人发布该店铺的定价策略后再审核。',
+  POLICY_LIMIT_NOT_CONFIGURED: '由定价负责人在定价策略中补齐缺失的限额。',
+  DATA_COMPLETENESS_BELOW_MINIMUM: '等待数据同步补齐，或由数据负责人核对缺失的报表后重新检查。',
+  INPUT_TOO_STALE: '等待下一次平台数据同步后重新检查；持续过期请联系数据负责人。',
+  INPUT_FRESHNESS_UNAVAILABLE: '由数据负责人确认相关数据源的同步状态。',
+  REQUIRED_METRIC_UNAVAILABLE: '补齐缺失指标的来源数据（成本、费用或平台报表）后重新检查。',
+  METRIC_CONFIDENCE_INSUFFICIENT: '等待结算，或由数据负责人处理存疑指标后重新检查。',
+  ECONOMICS_PROFILE_MISSING: '由财务或运营负责人为该商品建立经营参数档案。',
+  ECONOMICS_PROFILE_AMBIGUOUS: '由财务或运营负责人合并或停用重复的经营参数档案。',
+  ECONOMICS_PROFILE_EXPIRED: '由财务或运营负责人更新经营参数档案的有效期。',
+  ECONOMICS_PROFILE_UNVERIFIED: '由财务负责人核实经营参数档案。',
+  PROJECTED_ECONOMICS_UNAVAILABLE: '补齐成本与费用数据，使调价后的利润可以测算。',
+  CURRENCY_MISMATCH: '由数据负责人核对各数据源的币种。',
+  MARGIN_BELOW_MINIMUM: '建议价过低：驳回此建议，或由定价负责人评估策略下限。',
+  UNIT_PROFIT_BELOW_MINIMUM: '建议价过低：驳回此建议，或由定价负责人评估策略下限。',
+  BELOW_BREAK_EVEN: '建议价低于保本价，通常应驳回。',
+  BELOW_MINIMUM_PRICE: '建议价低于最低价，通常应驳回。',
+  SINGLE_CHANGE_TOO_LARGE: '幅度超过策略上限：驳回后分步调价，或由定价负责人调整上限。',
+  DAILY_CHANGE_EXCEEDED: '当日累计调价已达上限，次日再处理。',
+  COOLDOWN_ACTIVE: '仍在冷却期内，冷却结束后重新检查。',
+  INVENTORY_BELOW_MINIMUM: '库存过低，先处理补货再考虑调价。',
+  INVENTORY_EVIDENCE_UNAVAILABLE: '由数据负责人确认库存数据同步。',
+  MAPPING_UNRESOLVED: '先在商品映射中解决该商品的对应关系。',
+  MAPPING_CONFLICT_OPEN: '先解决未结的商品映射冲突。',
+  DIAGNOSIS_BLOCKS_EXECUTION: '先处理诊断页上阻断平台写入的规则结论。',
+  CHANGE_EXCEEDS_POLICY_AUTHORIZATION: '超出常设授权范围：改用人工批准，或由定价负责人调整授权。',
+  ENTITY_VERSION_CHANGED: '数据已变化：重新加载建议后再检查。',
+  RECOMMENDATION_EXPIRED: '建议已过期，等待系统生成新的建议。',
+};
+
+/** Words of the diagnosis page. */
+export const diagnosisText = {
+  aiButton: 'AI 解释（仅供参考）',
+  back: '返回',
+  recommendations: '调价建议',
+  recommendationsEmpty: '该商品暂无待处理的建议',
+  review: '审核',
+  view: '查看',
+  metrics: '平台测量值',
+  metricsHelp:
+    '平台确定性计算的指标，是官方口径。存疑、估算、过期或冲突的数值会明确标注；被规则结论引用的分组默认展开，其余分组收起时标题仍显示缺失与存疑数量。',
+  metricsAbsentNote: '缺失显示为“—”，不是 0。',
+  findings: '规则结论',
+  viewEvidence: '查看证据',
+  evidenceTitle: '指标证据',
+  clearHidden: (n: number) => `另有 ${String(n)} 条规则未发现问题`,
+  clearShown: '收起未发现问题的规则',
+  blockingAlert: (n: number) => `${String(n)} 条规则结论阻断平台写入，当前不能调价`,
+  declinedAlert: (n: number) => `${String(n)} 条规则因数据不足等原因无法判断，不代表没有问题`,
+  noFindings: '暂无规则结论',
+  noMetrics: '暂无指标',
+  noProblems: '所有规则均未发现问题',
+  flagMissing: (n: number) => `${String(n)} 项缺失`,
+  flagEstimated: (n: number) => `${String(n)} 项估算`,
+  flagStale: (n: number) => `${String(n)} 项过期`,
+  flagConflicted: (n: number) => `${String(n)} 项冲突`,
+  flagDoubtful: (n: number) => `${String(n)} 项存疑`,
+  itemCount: (n: number) => `${String(n)} 项`,
+} as const;
+
+/** Words of the AI explanation drawer. */
+export const aiText = {
+  title: 'AI 解释 · 仅供参考',
+  notice: 'AI 生成，仅供参考，不作为官方口径',
+  noticeDetail: 'AI 结论不能批准变更，也不会创建平台指令；以诊断页的规则结论与测量值为准。',
+  generate: '生成新解释',
+  latest: '查看最新结果',
+  none: '尚无已记录的解释。生成解释会调用模型服务。',
+  lastRecorded: '最近一次记录的解释（结果中未包含生成时间）',
+  justGenerated: '本次请求返回于',
+  waiting: (seconds: number) => `通常约 30 秒 · 已等待 ${String(seconds)} 秒`,
+  stopped:
+    '已停止等待。请求无法撤回，可能仍会在后台完成并被记录，系统不会自动重试；可点“查看最新结果”重新读取。',
+  failedNote: '请求可能已被记录，系统不会自动重试。',
+  partial: '部分解释：有些 AI 陈述未通过校验，已通过的陈述仍仅供参考',
+  pendingState: '调用尚在处理中，未假定任何结果',
+  validated: '以下陈述均已通过输出校验，但仍是 AI 的陈述。',
+  unavailable: '暂无解释',
+  unaffected: '官方测量值与规则结论不受影响。',
+  invocation: '调用编号',
+  schemaVersion: '输出格式版本',
+} as const;
+
+/** Words of the review drawer. */
+export const reviewText = {
+  title: '审核建议',
+  recheck: '重新检查',
+  check: '检查调价影响',
+  checking: '正在检查调价影响…',
+  impact: '调价影响预估',
+  verdictPassed: '规则校验通过',
+  verdictFailed: '规则校验未通过，以下列出全部原因，可一次性处理',
+  policyVersion: (v: number | null) => `策略版本 ${v === null ? '未记录' : String(v)}`,
+  actual: '实际',
+  threshold: '阈值',
+  unknown: '未知',
+  approve: '批准调价',
+  policyApprove: '按常设授权批准',
+  policyTitle: '按常设授权批准调价',
+  reject: '驳回',
+  rejectTitle: '驳回此建议',
+  rejectConsequence: '驳回后该建议将关闭，不可撤销，也不会调用平台。',
+  createCommand: '创建已授权指令',
+  createTitle: '创建已授权的调价指令',
+  openCommand: '打开已有指令',
+  reload: '重新加载建议',
+  consequence: '确认后将记录你的决定并创建调价指令，指令经写入闸门检查后才会调用平台。',
+  createConsequence: '确认后将创建调价指令，指令经写入闸门检查后才会调用平台。',
+  confirmPrice: (price: string) => `确认改价为 ${price}`,
+  confirmPolicyPrice: (price: string) => `确认按常设授权改价为 ${price}`,
+  decisionReason: '决策理由',
+  createNote: '备注（可选，不会保存；授权理由已在批准时记录）',
+  commandCreated: '已创建调价指令',
+  commandFailed: '决定已记录，但创建指令失败；可稍后点“创建已授权指令”重试。',
+  rejected: '已驳回该建议',
+  notReviewable: (state: string) => `当前状态为“${state}”，不可审批`,
+  previewMissing: '请先完成调价影响检查',
+  previewRunning: '正在检查调价影响',
+  verdictBlocked: '规则校验未通过，不能批准',
+  busy: '正在处理，请稍候',
+  alreadyAuthorized: '建议已获授权，不能再驳回',
+  commandExistsNoReject: '已创建指令，不能再驳回',
+  finished: '建议已结束，不能再驳回',
+  noAction: '当前状态没有可执行的操作',
+  subjectMismatch: '建议不属于当前商品',
+  policyScope: (version: number | null, maxRate: string) =>
+    `适用常设授权策略版本 ${version === null ? '未记录' : String(version)}，授权幅度上限 ${maxRate}。`,
+  platform: '平台',
+  subject: '商品',
+  priceChange: '价格',
+  changeRate: '变动幅度',
+  projectedMargin: '调价后利润率',
+  breakEven: '保本价',
+} as const;

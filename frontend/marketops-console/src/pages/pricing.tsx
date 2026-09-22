@@ -1,16 +1,14 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router';
 import { AdvertisingOutcomeHistory } from '../advertising/AdvertisingOutcomeHistory';
 import type { ConsoleRequest, Recommendation } from '../api/console';
 import { CommandTimeline } from '../commands/CommandTimeline';
 import { DiagnosticExportPanel } from '../diagnosis/DiagnosticExportPanel';
-import { SubjectDiagnosisView } from '../diagnosis/SubjectDiagnosisView';
+import { REVIEW_PARAM, SubjectDiagnosisView } from '../diagnosis/SubjectDiagnosisView';
 import { pageDescriptions, pages, shell as text } from '../i18n/zh/shell';
 import { commandPath, ROUTES, subjectPath } from '../layout/navigation';
 import { PriorityQueue } from '../queue/PriorityQueue';
-import { EmptyState } from '../ui';
-import { RecommendationReview } from '../workflow/RecommendationReview';
 import { NotFoundPage } from './NotFoundPage';
 import { Page } from './Page';
 
@@ -22,7 +20,7 @@ export interface ConsolePageProps {
   readonly storeId: string;
 }
 
-/** Navigation state carrying the proposal opened from a diagnosis. */
+/** Navigation state an older review link may still carry. */
 export interface ReviewState {
   readonly recommendation: Recommendation;
 }
@@ -31,9 +29,11 @@ export interface ReviewState {
  * Read the proposal handed over in navigation state.
  *
  * State survives a reload only in some browsers and can be anything a stale
- * history entry left behind, so its shape is checked before it is trusted.
+ * history entry left behind, so only the identifiers are read, and checked.
  */
-function readReviewState(state: unknown): Recommendation | undefined {
+function readReviewState(
+  state: unknown,
+): { readonly id: string; readonly subjectId: string } | undefined {
   if (typeof state !== 'object' || state === null || !('recommendation' in state)) {
     return undefined;
   }
@@ -43,11 +43,25 @@ function readReviewState(state: unknown): Recommendation | undefined {
   }
   const record = candidate as Record<string, unknown>;
   return typeof record.id === 'string' &&
+    record.id !== '' &&
     typeof record.subjectId === 'string' &&
-    typeof record.state === 'string' &&
-    typeof record.version === 'number'
-    ? (candidate as Recommendation)
+    record.subjectId !== ''
+    ? { id: record.id, subjectId: record.subjectId }
     : undefined;
+}
+
+/** Address of a subject's page with one proposal's review open. */
+function reviewPath(subjectId: string, recommendationId: string): string {
+  return `${subjectPath(subjectId)}?${REVIEW_PARAM}=${encodeURIComponent(recommendationId)}`;
+}
+
+/** Whether the browser history holds an earlier page of this console. */
+function hasInAppHistory(): boolean {
+  const state: unknown = window.history.state;
+  if (typeof state !== 'object' || state === null || !('idx' in state)) {
+    return false;
+  }
+  return typeof state.idx === 'number' && state.idx > 0;
 }
 
 function BackButton({ to, label }: { readonly to: string; readonly label: string }) {
@@ -81,74 +95,51 @@ export function PricingQueuePage({ context, storeId }: ConsolePageProps): React.
   );
 }
 
-/** One subject's evidence and the proposals waiting on it. */
+/** One subject's proposals, evidence and conclusions; the review opens beside them. */
 export function SubjectPage({ context, storeId }: ConsolePageProps): React.JSX.Element {
   const navigate = useNavigate();
+  const location = useLocation();
   const { subjectId } = useParams();
   if (subjectId === undefined || subjectId === '') {
     return <NotFoundPage />;
   }
   return (
-    <Page title={pages.subject} description={pageDescriptions.subject}>
-      <SubjectDiagnosisView
-        key={`${storeId}:${subjectId}`}
-        context={context}
-        subjectId={subjectId}
-        storeId={storeId}
-        onBack={() => {
+    <SubjectDiagnosisView
+      key={`${storeId}:${subjectId}`}
+      context={context}
+      subjectId={subjectId}
+      storeId={storeId}
+      onBack={() => {
+        // Back to wherever the operator came from, filters and page intact;
+        // a page opened directly has no such place, so the queue it is. The
+        // router's history index is checked as well as the location key,
+        // because opening a review replaces the entry and gives it a key.
+        if (location.key !== 'default' && hasInAppHistory()) {
+          void navigate(-1);
+        } else {
           void navigate(ROUTES.pricingQueue);
-        }}
-        onReview={(recommendation) => {
-          const state: ReviewState = { recommendation };
-          void navigate(ROUTES.review, { state });
-        }}
-      />
-    </Page>
+        }
+      }}
+      onOpenCommand={(commandId) => {
+        void navigate(commandPath(commandId));
+      }}
+    />
   );
 }
 
-/** The decision on one proposal, opened from its subject's diagnosis. */
-export function ReviewPage({ context }: ConsolePageProps): React.JSX.Element {
-  const navigate = useNavigate();
+/**
+ * The old review address. The review now opens beside the subject's
+ * diagnosis, so a link carrying a proposal is sent there with the review open;
+ * anything else goes to the work list.
+ */
+export function ReviewPage(): React.JSX.Element {
   const location = useLocation();
-  const recommendation = readReviewState(location.state);
-  if (recommendation === undefined) {
-    return (
-      <Page title={pages.review} description={pageDescriptions.review}>
-        <div data-state="missing-recommendation">
-          <EmptyState description={text.missingRecommendationDescription}>
-            <Button
-              type="primary"
-              onClick={() => {
-                void navigate(ROUTES.pricingQueue);
-              }}
-            >
-              {text.backToQueue}
-            </Button>
-          </EmptyState>
-        </div>
-      </Page>
-    );
-  }
+  const target = readReviewState(location.state);
   return (
-    <Page
-      title={pages.review}
-      description={pageDescriptions.review}
-      extra={<BackButton to={subjectPath(recommendation.subjectId)} label={text.backToDiagnosis} />}
-    >
-      <RecommendationReview
-        key={recommendation.id}
-        context={context}
-        recommendation={recommendation}
-        onDecided={(_state, commandId) => {
-          // The decided proposal is not a page to come back to, so the
-          // review entry is replaced rather than stacked.
-          void navigate(commandId === undefined ? ROUTES.pricingQueue : commandPath(commandId), {
-            replace: true,
-          });
-        }}
-      />
-    </Page>
+    <Navigate
+      to={target === undefined ? ROUTES.pricingQueue : reviewPath(target.subjectId, target.id)}
+      replace
+    />
   );
 }
 
