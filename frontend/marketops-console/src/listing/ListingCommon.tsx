@@ -183,6 +183,27 @@ const CODE_COLORS: Partial<Record<ListingCodeFamily, Readonly<Record<string, Tag
   meaningAnswer: { UNKNOWN: ATTENTION },
   contextCoverage: { COMPLETE_ENUMERATION: GOOD, SINGLE_ACTIVITY_ONLY: ATTENTION },
   factSourceKind: { MARKETPLACE_RAW: GOOD, INTERNAL_IMPORT: MOVING, MANUAL_ENTRY: ATTENTION },
+  calibrationStage: {
+    DRAFTED: ATTENTION,
+    VALIDATED: ATTENTION,
+    ACCEPTED: ATTENTION,
+    ACTIVE: GOOD,
+    ENDED: 'default',
+    RETIRED: 'default',
+  },
+  calibrationEvent: {
+    DRAFTED: MOVING,
+    VALIDATED: MOVING,
+    ACCEPTED: MOVING,
+    ACTIVATED: GOOD,
+    RETIRED: 'default',
+  },
+  calibrationBlocker: Object.fromEntries(
+    Object.keys(LISTING_CODES.calibrationBlocker).map((code) => [code, BAD]),
+  ),
+  calibrationFailure: Object.fromEntries(
+    Object.keys(LISTING_CODES.calibrationFailure).map((code) => [code, BAD]),
+  ),
 };
 
 /** A backend code, shown as a Chinese tag with the raw code on hover. */

@@ -79,8 +79,11 @@ public class ListingCalibrationService {
     @Transactional
     public JsonNode view(AuthenticatedActor actor,UUID id) {
         ResourceScope scope=scope(actor,id);
+        // Holding a grant is enough to read, even when a fresh sign-in is still needed to use it:
+        // all three actions require step-up, and a stale sign-in must not hide the package.
         boolean visible=List.of(ActionScopeCode.LISTING_CALIBRATION_PREPARE,ActionScopeCode.LISTING_CALIBRATION_VALIDATE,
-                ActionScopeCode.LISTING_CALIBRATION_ACCEPT).stream().anyMatch(a -> authorization.evaluate(actor,a,scope).permitted());
+                ActionScopeCode.LISTING_CALIBRATION_ACCEPT).stream().map(a -> authorization.evaluate(actor,a,scope))
+                .anyMatch(v -> v==AuthorizationVerdict.PERMITTED || v==AuthorizationVerdict.STEP_UP_REQUIRED);
         if (!visible) throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
         String body=jdbc.sql("""
                 SELECT jsonb_build_object('package',to_jsonb(p),'governance',to_jsonb(g),

@@ -38,6 +38,7 @@ export const pages = {
   advertisingWeekly: '每周复盘',
   listing: '转化工作台',
   listingAllowances: '额度管理',
+  listingCalibrations: '校准包',
   systemStatus: '系统状态',
   notFound: '页面不存在',
 } as const;
@@ -60,6 +61,8 @@ export const pageDescriptions = {
   listing: '诊断商品卡片的转化问题，并跟进内容与操作的处理。',
   listingAllowances:
     '由 Owner 发布和停用 Listing 改动的启动额度，查看各维度的上限、处置余量、已占用与可用额度。',
+  listingCalibrations:
+    '专业人员起草并校验校准包，Owner 独立接受并启用；按用途查看必需参数类别与当前生效版本。',
   systemStatus: '查看后端服务、数据库与数据结构版本的当前状态。',
 } as const;
 
