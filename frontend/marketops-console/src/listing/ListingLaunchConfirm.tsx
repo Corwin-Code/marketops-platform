@@ -39,6 +39,31 @@ function settled<T>(
     : { kind: 'failed', failure: outcome.failure };
 }
 
+/**
+ * A projection gap meaning no allowance is published for this action: the
+ * current calibration package gives no usable axes policy, or an axis has no
+ * active allowance row.
+ */
+function isUnpublishedGap(gap: string): boolean {
+  return (
+    gap === 'ALLOWANCE_AXES_UNRESOLVED' ||
+    gap === 'ALLOWANCE_MISSING' ||
+    gap.endsWith(':ALLOWANCE_MISSING')
+  );
+}
+
+/**
+ * The projection gap for an action whose calibration recheck is neither
+ * CURRENT nor UNCHANGED_DEPENDENCIES: either no package resolves for the
+ * listing now (none active, or a conflict; a package must be activated or
+ * resolved first), or the action's basis changed (its bound package cannot be
+ * resolved, or is no longer the current one and its dependencies are unproven
+ * or changed; re-prepare on the current package and approve again). The
+ * allowance read does not say which, so the text names both; publishing an
+ * allowance changes neither.
+ */
+const CALIBRATION_STALE_GAP = 'ALLOWANCE_POLICY_UNRESOLVED';
+
 /** One line of the rule check, with its verdict. */
 function Check({
   passed,
@@ -145,6 +170,31 @@ export function LaunchConfirm({
     allowanceValue !== undefined &&
     allowanceValue.axes.length > 0 &&
     allowanceValue.axes.every((axis) => axis.sufficient);
+  // No current package, or a changed calibration basis, leaves the policy and
+  // so the axes unresolved; it is stated as itself (both causes, since the
+  // read does not say which), because publishing an allowance cannot clear it.
+  const calibrationStale = allowanceValue?.gaps.includes(CALIBRATION_STALE_GAP) === true;
+  // No axis is not "unlimited": it means the Owner has not published an
+  // allowance (or its axes), so launch stays refused with that stated plainly
+  // rather than as a generic insufficiency.
+  const unpublished =
+    allowanceValue !== undefined &&
+    !calibrationStale &&
+    ((allowanceValue.resolved && allowanceValue.axes.length === 0) ||
+      allowanceValue.gaps.some(isUnpublishedGap));
+  const allowanceProblem = calibrationStale
+    ? {
+        headline: launchText.allowanceCalibrationStale,
+        detail: launchText.allowanceCalibrationStaleDetail,
+        check: launchText.checkAllowanceCalibrationStale,
+      }
+    : unpublished
+      ? {
+          headline: launchText.allowanceUnpublished,
+          detail: launchText.allowanceUnpublishedDetail,
+          check: launchText.checkAllowanceUnpublished,
+        }
+      : undefined;
   const bindingClear = action.bindingGaps.length === 0;
   const necessaryState =
     detail.kind === 'ok' ? (detail.value.health?.necessaryState ?? 'UNKNOWN') : undefined;
@@ -157,7 +207,7 @@ export function LaunchConfirm({
       ? launchText.loading
       : allowance.kind === 'failed'
         ? launchText.allowanceFailed(failureMessage(allowance.failure))
-        : undefined;
+        : allowanceProblem?.headline;
 
   const guard: WriteGuard | undefined =
     allowance.kind === 'ok' && detail.kind !== 'loading'
@@ -165,8 +215,28 @@ export function LaunchConfirm({
           passed: resolved && sufficient && bindingClear && healthPassed,
           content: (
             <Flex vertical gap={6}>
-              <Check passed={resolved} label={launchText.checkAllowanceResolved} />
-              <Check passed={sufficient} label={launchText.checkAllowanceSufficient} />
+              {allowanceProblem !== undefined && (
+                <Typography.Text type="danger" strong>
+                  {allowanceProblem.headline}
+                </Typography.Text>
+              )}
+              <Check
+                passed={resolved}
+                label={launchText.checkAllowanceResolved}
+                {...(allowanceProblem === undefined
+                  ? {}
+                  : {
+                      detail: (
+                        <Typography.Text type="secondary">
+                          {allowanceProblem.detail}
+                        </Typography.Text>
+                      ),
+                    })}
+              />
+              <Check
+                passed={sufficient}
+                label={allowanceProblem?.check ?? launchText.checkAllowanceSufficient}
+              />
               <Check
                 passed={bindingClear}
                 label={launchText.checkBinding}

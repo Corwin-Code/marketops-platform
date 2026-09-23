@@ -786,6 +786,14 @@ export interface ListingAction {
     | undefined;
   readonly occupations: readonly ActionOccupation[];
   readonly bindingGaps: readonly string[];
+  /**
+   * Whether the listing is inside an effective emergency-stop scope, as the
+   * backend decides it: active stops over the organization, platform, store,
+   * listing or a batch, a shared isolation scope, and unreleased
+   * outcome-protection failures. Only the read of one action carries it; a
+   * list, and an older backend, leave it unknown.
+   */
+  readonly scopeContained?: boolean | undefined;
   readonly version: number;
 }
 
@@ -918,6 +926,12 @@ export interface ManualPacket {
     readonly reporterUserId: string;
     readonly reportState: string;
     readonly note: string;
+    /** When the reporter says the change was made; the evidence floor follows it. */
+    readonly operationTime?: string;
+    readonly reportedAt?: string;
+    /** WITHIN_PACKET_AUTHORITY, LAWFUL_LATE_REPORT, UNAUTHORISED_DEVIATION or HISTORICAL_UNQUALIFIED. */
+    readonly operationQualification?: string;
+    readonly deviationReason?: string;
   }[];
   readonly verifications: readonly {
     readonly id: string;
@@ -967,6 +981,8 @@ export interface Containment {
   readonly id: string;
   readonly scopeKind: string;
   readonly platformListingId: string | undefined;
+  /** The stopped store, for a STORE scope. */
+  readonly storeId?: string | undefined;
   readonly causeClass: string;
   readonly causeOwnerRoleCode: string;
   readonly stoppedByUserId: string;
@@ -1410,6 +1426,7 @@ export function parseListingAction(body: unknown): ListingAction | undefined {
     launch,
     occupations,
     bindingGaps: strings(r.bindingGaps),
+    scopeContained: bool(r.scopeContained),
     version,
   };
 }
@@ -1696,13 +1713,26 @@ export function parseManualPacket(body: unknown): ManualPacket | undefined {
     const reportId = text(c?.id),
       reporterUserId = text(c?.reporterUserId),
       reportState = text(c?.reportState),
-      note = text(c?.note);
+      note = text(c?.note),
+      operationTime = text(c?.operationTime),
+      reportedAt = text(c?.reportedAt),
+      operationQualification = text(c?.operationQualification),
+      deviationReason = text(c?.deviationReason);
     return reportId === undefined ||
       reporterUserId === undefined ||
       reportState === undefined ||
       note === undefined
       ? undefined
-      : { id: reportId, reporterUserId, reportState, note };
+      : {
+          id: reportId,
+          reporterUserId,
+          reportState,
+          note,
+          ...(operationTime === undefined ? {} : { operationTime }),
+          ...(reportedAt === undefined ? {} : { reportedAt }),
+          ...(operationQualification === undefined ? {} : { operationQualification }),
+          ...(deviationReason === undefined ? {} : { deviationReason }),
+        };
   });
   const verifications = list(r.verifications, (item) => {
     const c = row(item);
@@ -1859,6 +1889,7 @@ export function parseContainment(body: unknown): Containment | undefined {
     id,
     scopeKind,
     platformListingId: text(r.platformListingId),
+    storeId: text(r.storeId),
     causeClass,
     causeOwnerRoleCode,
     stoppedByUserId,
@@ -3161,13 +3192,16 @@ export function closeBatch(
   });
 }
 
+/** At most this many stops are listed; a full list may leave some out. */
+export const CONTAINMENT_LIST_LIMIT = 50;
+
 export function fetchContainments(
   context: ConsoleRequest,
   activeOnly: boolean,
 ): Promise<ConsoleOutcome<readonly Containment[]>> {
   return request(
     context,
-    `${GOVERNANCE}/containments?activeOnly=${String(activeOnly)}&limit=50`,
+    `${GOVERNANCE}/containments?activeOnly=${String(activeOnly)}&limit=${String(CONTAINMENT_LIST_LIMIT)}`,
     (body) => list(body, parseContainment),
   );
 }
@@ -3437,6 +3471,12 @@ export interface PromotionObservationSummary {
   readonly engagementKind: string;
   readonly nativePromotionKey: string;
   readonly participationState: string;
+  /**
+   * The fingerprint of the observed declaration, to compare with an action's
+   * own `promotionTermsDigest`; never the declared terms themselves. Nothing
+   * when the observation carries no declaration, or the backend is older.
+   */
+  readonly declarationDigest: string | undefined;
   readonly contextCoverage: string;
   readonly verificationExpiresAt: string | undefined;
   readonly independentCurrent: boolean;
@@ -3541,6 +3581,7 @@ function parsePromotionObservation(body: unknown): PromotionObservationSummary |
   return {
     ...base,
     independentCurrent,
+    declarationDigest: text(r.declarationDigest),
     verificationExpiresAt: text(r.verificationExpiresAt),
     recordedByUserId: text(r.recordedByUserId),
     contextRecords,

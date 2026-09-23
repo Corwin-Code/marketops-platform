@@ -182,6 +182,14 @@ export const launchText = {
   title: '确认启动操作',
   loading: '正在读取额度与变更内容…',
   allowanceFailed: (reason: string): string => `无法读取额度：${reason}`,
+  allowanceUnpublished: '额度未发布或没有额度维度',
+  allowanceUnpublishedDetail:
+    '校准包未给出额度维度，或某个维度没有已发布的额度上限；须由 Owner 发布额度后才能启动。',
+  checkAllowanceUnpublished: '额度未发布或没有额度维度，不能按"不限"处理',
+  allowanceCalibrationStale: '无法确定额度策略：没有可解析的当前校准包，或操作的校准依据已变化',
+  allowanceCalibrationStaleDetail:
+    '可能原因有两种：① 当前没有适用于该 Listing 的可解析校准包（组织、平台或店铺范围内没有生效的校准包，或多个校准包冲突），须先激活或解决校准包；② 操作的校准依据已变化（绑定的校准包已无法解析，或已不是当前适用的版本且其依赖未经证明或已变化），须在当前校准包上重新准备该操作并重新审批。发布额度不能解决以上任一问题，解决前不能启动。',
+  checkAllowanceCalibrationStale: '额度策略无法确定，不能按"不限"处理',
   confirmApi: '确认启动并创建写入指令',
   confirmManual: '确认启动（占用额度）',
   consequenceApi:

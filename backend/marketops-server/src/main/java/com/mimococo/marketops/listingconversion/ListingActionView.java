@@ -9,6 +9,13 @@ import java.util.UUID;
  *
  * <p>The target Russian text is carried verbatim: it is reviewed as written and
  * never machine-translated.
+ *
+ * <p>{@code scopeContained} is {@code ops.lc_scope_contained} for this action's
+ * listing at read time: an active emergency stop over the organization, the
+ * platform, the store, the listing or one of its batches, a shared isolation
+ * scope, or an unreleased outcome-protection failure. It is decided on the read
+ * of one action only and is {@code null} everywhere else, so a list never pays
+ * for it; a launch re-decides it in its own transaction either way.
  */
 public record ListingActionView(
         UUID id,
@@ -46,7 +53,8 @@ public record ListingActionView(
         UUID restoresCommandId,
         String promotionTermsDigest,
         String purposeCode,
-        ListingPurposeBasis purposeBasis) {
+        ListingPurposeBasis purposeBasis,
+        Boolean scopeContained) {
 
     public record Review(UUID id, UUID reviewerUserId, String verdict, String reason, Instant reviewedAt,
                          String evaluationPlanDigest) {

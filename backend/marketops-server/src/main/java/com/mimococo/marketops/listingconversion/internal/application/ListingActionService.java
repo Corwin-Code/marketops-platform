@@ -554,9 +554,15 @@ public class ListingActionService {
                     ActionScopeCode.LISTING_DECISION_EVIDENCE_VIEW,ResourceScope.productVariant(product)).permitted());
     }
 
+    /**
+     * One action, with containment decided for it. The read of a single action is the one place a
+     * console asks about this listing alone, so the one {@code ops.lc_scope_contained} evaluation is
+     * paid here and never per row of a list; the scope required is unchanged.
+     */
     @Transactional(readOnly = true)
     public ListingActionView require(AuthenticatedActor actor, UUID actionId) {
-        return toView(requireAction(actor, actionId, ActionScopeCode.LISTING_CONVERSION_VIEW));
+        ListingActionRepository.ActionRow action = requireAction(actor, actionId, ActionScopeCode.LISTING_CONVERSION_VIEW);
+        return toView(action, actions.scopeContained(action.organizationId(), action.listingId()));
     }
 
     @Transactional(readOnly = true)
@@ -596,6 +602,11 @@ public class ListingActionService {
     }
 
     ListingActionView toView(ListingActionRepository.ActionRow row) {
+        return toView(row, null);
+    }
+
+    /** @param scopeContained containment as {@code ops.lc_scope_contained} decides it, or null when it was not asked */
+    ListingActionView toView(ListingActionRepository.ActionRow row, Boolean scopeContained) {
         ListingFactRepository.ListingContext listing = facts.listing(row.listingId()).orElse(null);
         ListingFactRepository.AffectedSetRow set = facts.affectedSetById(row.affectedSetId()).orElse(null);
         ListingActionRepository.RecommendationRow recommendation = actions.recommendation(row.recommendationId()).orElse(null);
@@ -609,7 +620,7 @@ public class ListingActionService {
                 row.authorUserId(), ListingActionState.valueOf(row.state()), actions.reviews(row.id()),
                 actions.binding(row.id()).orElse(null), actions.launch(row.id()).orElse(null), actions.occupations(row.id()),
                 actions.binding(row.id()).isPresent() ? actions.bindingGaps(row.id()) : List.of(),
-                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId(), row.promotionTermsDigest(), row.purposeCode(),actions.purposeBasis(row.id()).orElse(null));
+                row.createdAt(), row.updatedAt(), row.version(), row.restoresCommandId(), row.promotionTermsDigest(), row.purposeCode(),actions.purposeBasis(row.id()).orElse(null),scopeContained);
     }
 
     ListingActionRepository.ActionRow requireAction(AuthenticatedActor actor, UUID actionId, ActionScopeCode scope) {
