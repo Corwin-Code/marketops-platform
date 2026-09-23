@@ -1,0 +1,144 @@
+/**
+ * Chinese text for the launch allowance maintenance page (额度管理).
+ *
+ * Axis and scope names come from the shared listing code labels, so the launch
+ * check and this page call the same axis by the same name.
+ */
+
+export const allowanceText = {
+  intro:
+    '额度限制同一时间内可以处于"修改中、效果未确定"状态的 Listing 改动有多少。启动一个改动时，系统按各维度检查可用额度，任何一个维度不足都会阻止启动。',
+  introBoundary: '发布、停用额度只改变本系统的启动检查，不会调用任何平台接口。',
+  axesHelpTitle: '四个额度维度与可用额度',
+  axesHelp: [
+    '并发 Listing 数：还占着额度的不同 Listing 个数（含进行中或正在退出的促销）。同一个 Listing 再次改动不会重复计数。',
+    '受影响变体数：这些改动涉及的不同商品变体个数。',
+    '收入敞口：这些改动涉及的金额，币种为店铺币种。促销按必要情景中最高的净收入加固定费用计算，其他改动按受影响商品的留存净销售额计算。',
+    '类目份额：受影响商品占店铺净销售额的比例之和，填小数，0.1 表示 10%。',
+    '可用额度 = 上限 − 处置余量 − 已占用。处置余量是为纠错、处置类动作预留、普通启动不能使用的部分。',
+    '各维度相互独立：一个维度有余量不能抵另一个维度的不足。额度是长期上限，不是每天或每月的配额。',
+  ],
+  releaseNote:
+    '已占用的额度只在有证据时释放（例如确认没有执行、促销已退出），不会因时间流逝自动释放。',
+  publish: '发布额度',
+  publishTitle: '发布新的额度版本',
+  publishConsequence:
+    '发布后，该范围、该维度的额度立即（或在指定时间）按新数值生效；同一范围、同一维度正在生效的旧版本在新版本生效时结束，保留在历史中。',
+  publishDisabled: '只有 Owner 可以发布额度',
+  published: (version: number) => `已发布第 ${String(version)} 版额度`,
+  publishedWithWarning: (version: number) =>
+    `已发布第 ${String(version)} 版额度，但处置余量低于已接受的校准要求，相关启动仍会被阻止`,
+  scopeKind: '适用范围',
+  store: '店铺',
+  platform: '平台',
+  organizationScope: '整个组织',
+  pickStore: '选择店铺',
+  pickPlatform: '选择平台',
+  axis: '额度维度',
+  pickAxis: '选择维度',
+  unit: '单位',
+  unitCount: '个数',
+  unitRatio: '比例（小数，0.1 = 10%）',
+  unitCurrency: (currency: string) => `金额（${currency}）`,
+  unitCurrencyUnknown: '金额（范围内店铺币种不唯一或未设置，无法发布）',
+  limit: '上限',
+  reserve: '处置余量',
+  reserveHelp: '为纠错、处置类动作预留，普通启动不能使用；必须小于上限。',
+  effectiveFrom: '生效时间',
+  effectiveFromHelp: '留空表示发布后立即生效；只能选当前或以后的时间。',
+  effectiveFromPast: '生效时间早于当前时间，发布会被拒绝；请留空（立即生效）或选择当前或以后的时间',
+  evidence: '依据',
+  evidencePlaceholder: '例如：2026-09 季度运营会议纪要、测算表链接或编号',
+  reason: '发布理由',
+  reasonPlaceholder: '写明为什么是这个数值，会记入审计',
+  numberInvalid: '请输入不超过 4 位小数的非负数',
+  wholeNumber: '该维度只能填写整数',
+  limitPositive: '上限必须大于 0',
+  reserveBelowLimit: '处置余量必须小于上限',
+  previewTitle: '发布后',
+  previewCurrent: (version: number) => `当前生效的是第 ${String(version)} 版`,
+  previewNone: '该范围、该维度目前没有生效中的额度',
+  previewStartsNow: '新版本在发布时立即生效',
+  previewStartsAt: (at: string) => `新版本将于 ${at} 起生效`,
+  previewStartsPast: (at: string) =>
+    `所选生效时间 ${at} 早于当前时间超过 5 分钟，发布会被拒绝，现有版本不会有任何变化；请留空表示立即生效，或改选当前或以后的时间`,
+  previewEndsNow: (version: number) => `第 ${String(version)} 版在新版本发布时结束`,
+  previewEndsAt: (version: number, at: string) =>
+    `第 ${String(version)} 版将于 ${at} 结束，由新版本接替`,
+  previewScheduledKept: (version: number, from: string, until: string) =>
+    `已排期的第 ${String(version)} 版不会停用：它仍会在 ${from} 至 ${until} 生效，之后由新版本接替。如果不希望它生效，请先停用它`,
+  previewReplaced: (version: number, from: string) =>
+    `已排期的第 ${String(version)} 版（原定 ${from} 起生效）会被新版本取代并停用`,
+  previewTimesIn: (zone: string) => `以上时间均为${zone}`,
+  previewHeadroom: (headroom: string, occupied: string) =>
+    `该范围当前已占用 ${occupied}（新版本同样计入），按当前占用，发布后可用额度为 ${headroom}`,
+  previewOccupancyUnknown:
+    '无法预览该范围当前的占用：范围内已有的占用都会计入新版本，发布后以列表中的可用额度为准',
+  previewOccupancyUnresolved:
+    '该范围部分占用无法完全确认，启动检查会把该维度判为"缺少合格依据"，与本次发布的数值无关',
+  previewNegative: '发布后可用额度为零或负数，新的启动会在该维度被阻止，直到有占用释放',
+  reserveWarningTitle: '处置余量低于已接受的校准要求',
+  reserveWarning: (packages: string) =>
+    `以下校准包要求该维度的处置余量更高：${packages}。受其约束的启动会因"处置余量低于已接受要求"被阻止。`,
+  reserveWarningItem: (code: string, purpose: string, reserve: string) =>
+    `${code}（${purpose}，要求至少 ${reserve}）`,
+  reserveUnresolvedTitle: '校准包的处置余量无法确认',
+  reserveUnresolved: (packages: string) =>
+    `以下校准包对该维度的处置余量缺失或无法解析：${packages}。受其约束的启动会因"处置余量未明确"被阻止，与本次发布的数值无关；需要替换校准包。`,
+  reserveUnresolvedItem: (code: string, purpose: string) => `${code}（${purpose}）`,
+  retire: '停用',
+  retireTitle: '停用这一版额度',
+  retireConsequence:
+    '停用后，这个范围内新的启动在该维度上将找不到有效额度而被阻止（除非另一个范围的额度适用）；已经占用的额度不受影响，也不会释放。',
+  retireScheduledRestores: (version: number, until: string | undefined) =>
+    `这一版尚未生效，停用即取消这次排期，它不会生效。第 ${String(version)} 版原本在它生效时结束，停用后改为${until === undefined ? '长期生效' : `生效至 ${until}`}，当前的启动检查不变；已经占用的额度不受影响。`,
+  retireScheduledConsequence:
+    '这一版尚未生效，停用即取消这次排期，它不会生效。没有在它生效时结束的版本，其他版本的生效时间不变；到它原定的生效时间，如果该范围没有其他有效额度，新的启动会在该维度被阻止。已经占用的额度不受影响。',
+  retireReason: '停用理由',
+  retireDisabled: '只有 Owner 可以停用额度',
+  retired: '额度已停用',
+  refresh: '刷新',
+  current: '当前与待生效',
+  history: '历史版本',
+  historyCount: (count: number) => `${String(count)} 个版本`,
+  noCurrent: '该维度尚未发布有效额度，启动检查会提示"额度未发布或没有额度维度"。',
+  noHistory: '暂无历史版本',
+  columnScope: '范围',
+  columnLimit: '上限',
+  columnReserve: '处置余量',
+  columnOccupied: '已占用',
+  columnHeadroom: '可用',
+  columnVersion: '版本',
+  columnEffective: '生效时间',
+  columnPublisher: '发布人',
+  columnEvidence: '依据与理由',
+  columnState: '状态',
+  columnRetired: '停用',
+  columnActions: '操作',
+  versionLabel: (version: number) => `第 ${String(version)} 版`,
+  lifecycle: {
+    CURRENT: '生效中',
+    SCHEDULED: '待生效',
+    ENDED: '已结束',
+    RETIRED: '已停用',
+  } as Readonly<Record<string, string>>,
+  occupancyUnresolved: '占用无法完全确认',
+  occupancyUnresolvedHelp:
+    '部分占用缺少完整的商品范围或金额依据；启动检查会把该维度判为"缺少合格依据"。',
+  liveOccupations: (count: number) => `${String(count)} 个在途改动`,
+  exhausted: '已用尽',
+  from: '起',
+  until: '至',
+  openEnded: '长期',
+  supersededBy: '已被新版本取代',
+  reasonLabel: '理由',
+  evidenceLabel: '依据',
+  unknownPerson: '未知',
+  storeUnknown: '未知店铺',
+  purposeLabels: {
+    LISTING_CONVERSION: 'Listing 转化',
+    DESCRIPTION_CORRECTION: '描述纠错',
+    BOUNDED_EXPLORATION: '有界探索',
+    PROMOTION: '促销',
+  } as Readonly<Record<string, string>>,
+} as const;
