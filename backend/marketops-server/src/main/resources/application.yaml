@@ -124,6 +124,17 @@ marketops:
     # marketplace at all.
     worker-enabled: false
     listings-per-pass: 50
+    allowance-release:
+      # Releases the allowance an applied, verified description change still
+      # holds once RESPONSIBILITY_SLO.outcomeMaturityDays of its calibration
+      # package has passed since confirmation. Off by default; it reaches no
+      # marketplace. The loopback maintenance endpoint
+      # POST /api/v1/admin/metadata/listing-allowance-occupations/outcome-release-runs
+      # runs one pass on demand even while the timer is off.
+      enabled: ${MARKETOPS_LISTING_ALLOWANCE_RELEASE_ENABLED:false}
+      actions-per-pass: 50
+      initial-delay: PT2M
+      interval: PT1H
   advertising:
     # The calculation loop, not a write path. Off by default so a workstation or
     # a test container does not start scanning; the loop reads facts and writes

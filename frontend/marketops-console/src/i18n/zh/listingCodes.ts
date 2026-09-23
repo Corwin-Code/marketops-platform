@@ -57,6 +57,7 @@ export const LISTING_CODES = {
     STOP_EVIDENCE: '停止证据',
     OBLIGATION_CLEARED: '义务已清',
     NOT_APPLIED_PROVEN: '已证明未应用',
+    OUTCOME_MATURED: '效果观察期满',
   },
   recalculationClass: {
     RISK: '风险（5 分钟）',
