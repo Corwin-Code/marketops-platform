@@ -299,7 +299,7 @@ export const calibrationText = {
   reviewSummary: '草稿概要',
   reviewDecisions: '四项决定',
   reviewDecisionExposure: (ordinary: string, material: string, window: string) =>
-    `普通 ${ordinary} 起 · 重大 ${material} 起（${window}）`,
+    `普通 不高于 ${ordinary} · 重大 不低于 ${material}（${window}）`,
   reviewDecisionApproval: (amount: string, unit: string) => `${amount} ${unit}`,
   reviewDecisionMaturity: (ordinary: string) => `普通动作 ${ordinary} 天`,
   reviewDecisionMaturityRisk: (risk: string) => `必要风险动作 ${risk} 天`,

@@ -786,8 +786,11 @@ const DECLARATIONS = 'declarations';
  * be what opens the folded section.
  */
 const DECIDED_FIELDS: Readonly<Partial<Record<string, readonly ValueField[]>>> = {
+  // The ordinary window is here because the card renders that field; the
+  // material one is only written behind it, so a problem on it has nowhere to
+  // be seen but the folded section, and has to open it.
   ORDINARY_TRIGGER_EXPOSURE: ['numeric', 'windowDays'],
-  MATERIAL_TRIGGER_EXPOSURE: ['numeric', 'windowDays'],
+  MATERIAL_TRIGGER_EXPOSURE: ['numeric'],
   APPROVAL_VALIDITY: ['numeric'],
 };
 
@@ -858,17 +861,13 @@ function ValuesStep({
   const [openKeys, setOpenKeys] = useState<readonly string[]>([]);
 
   // A problem inside the folded section would otherwise look like a dead 下一步
-  // button. It opens by itself when one appears, and stays where the operator
-  // last left it afterwards.
-  const wasFailing = useRef(false);
-  useEffect(() => {
-    if (failing && !wasFailing.current) {
-      setOpenKeys((current) =>
-        current.includes(DECLARATIONS) ? current : [...current, DECLARATIONS],
-      );
-    }
-    wasFailing.current = failing;
-  }, [failing]);
+  // button: the step refuses to advance and the message sits on a field that is
+  // mounted but hidden, and the review step's own jump back here would land on
+  // the same folded section. So the section stays open for as long as a
+  // blocking problem is inside it; folding is the reader's choice again once it
+  // is answered.
+  const shownKeys =
+    failing && !openKeys.includes(DECLARATIONS) ? [...openKeys, DECLARATIONS] : openKeys;
 
   // A new purpose brings its own examples; anything already edited is kept.
   useEffect(() => {
@@ -926,7 +925,7 @@ function ValuesStep({
       <Decisions purpose={purpose} categories={categories} />
       <SectionCollapse
         size="small"
-        openKeys={openKeys}
+        openKeys={shownKeys}
         onOpenChange={setOpenKeys}
         items={[
           {
@@ -1023,6 +1022,11 @@ function Decisions({
               <Form.Item
                 name={['values', 'ORDINARY_TRIGGER_EXPOSURE', 'numeric']}
                 label={text.decisionExposureOrdinary}
+                // The same field is edited again in 「口径声明」, so the field id
+                // antd would point the label at belongs to that copy, which is
+                // hidden while the section is folded. Each label here names the
+                // control beside it instead.
+                htmlFor="decision-ordinary-exposure"
                 required
                 style={{ flex: '1 1 180px', marginBottom: 0 }}
                 rules={fieldRules('ORDINARY_TRIGGER_EXPOSURE', 'numeric')}
@@ -1032,6 +1036,7 @@ function Decisions({
               <Form.Item
                 name={['values', 'MATERIAL_TRIGGER_EXPOSURE', 'numeric']}
                 label={text.decisionExposureMaterial}
+                htmlFor="decision-material-exposure"
                 required
                 style={{ flex: '1 1 180px', marginBottom: 0 }}
                 rules={fieldRules('MATERIAL_TRIGGER_EXPOSURE', 'numeric')}
@@ -1041,12 +1046,13 @@ function Decisions({
               <Form.Item
                 name={['values', 'ORDINARY_TRIGGER_EXPOSURE', 'windowDays']}
                 label={text.decisionExposureWindow}
+                htmlFor="decision-exposure-window"
                 required
                 extra={text.decisionExposureWindowHelp}
                 style={{ flex: '1 1 220px', marginBottom: 0 }}
                 rules={fieldRules('ORDINARY_TRIGGER_EXPOSURE', 'windowDays')}
               >
-                <ExposureWindowField id="decision-exposure-window" />
+                <WindowField id="decision-exposure-window" sibling="MATERIAL_TRIGGER_EXPOSURE" />
               </Form.Item>
             </Flex>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
@@ -1064,6 +1070,7 @@ function Decisions({
             <Form.Item
               name={['values', 'APPROVAL_VALIDITY', 'numeric']}
               label={text.decisionApprovalValue(unitName(validityUnit))}
+              htmlFor="decision-approval-validity"
               required
               style={{ maxWidth: 240, marginBottom: 0 }}
               rules={fieldRules('APPROVAL_VALIDITY', 'numeric')}
@@ -1095,25 +1102,33 @@ function Decisions({
             codes={['ALLOWANCE_AXES', 'ALLOWANCE_RESERVE']}
             purpose={purpose}
           >
-            <Form.Item
-              name={['values', 'ALLOWANCE_AXES', 'json']}
-              label={text.decisionAllowanceAxes}
-              required
-              style={{ marginBottom: 12 }}
-              rules={fieldRules('ALLOWANCE_AXES', 'json')}
-            >
-              <AxesField />
-            </Form.Item>
-            <Form.Item
-              name={['values', 'ALLOWANCE_RESERVE', 'json']}
-              label={text.decisionAllowanceReserve}
-              required
-              extra={text.decisionAllowanceReserveHelp}
-              style={{ marginBottom: 0 }}
-              rules={fieldRules('ALLOWANCE_RESERVE', 'json')}
-            >
-              <ReserveField />
-            </Form.Item>
+            {/*
+              Both are several controls over one JSON document, so no single
+              label could name the thing a reader would click into. They are
+              titled the way MaturityDays titles its own: a heading above, and
+              an aria-label on each control inside.
+            */}
+            <Flex vertical gap={2} style={{ marginBottom: 12 }}>
+              <Typography.Text>{text.decisionAllowanceAxes}</Typography.Text>
+              <Form.Item
+                name={['values', 'ALLOWANCE_AXES', 'json']}
+                style={{ marginBottom: 0 }}
+                rules={fieldRules('ALLOWANCE_AXES', 'json')}
+              >
+                <AxesField />
+              </Form.Item>
+            </Flex>
+            <Flex vertical gap={2}>
+              <Typography.Text>{text.decisionAllowanceReserve}</Typography.Text>
+              <Form.Item
+                name={['values', 'ALLOWANCE_RESERVE', 'json']}
+                extra={text.decisionAllowanceReserveHelp}
+                style={{ marginBottom: 0 }}
+                rules={fieldRules('ALLOWANCE_RESERVE', 'json')}
+              >
+                <ReserveField />
+              </Form.Item>
+            </Flex>
           </Decision>
         )}
       </Flex>
@@ -1234,18 +1249,34 @@ function CountField({
   );
 }
 
-/** The window both exposure thresholds are measured over: one choice sets both. */
-function ExposureWindowField({
+/** The categories that are measured over one window: each writes the other's. */
+const SHARED_WINDOW: Readonly<Partial<Record<string, string>>> = {
+  ORDINARY_TRIGGER_EXPOSURE: 'MATERIAL_TRIGGER_EXPOSURE',
+  MATERIAL_TRIGGER_EXPOSURE: 'ORDINARY_TRIGGER_EXPOSURE',
+};
+
+/**
+ * A window, written to the category that shares it as well.
+ *
+ * Both exposure thresholds are measured over one window, which the decision
+ * card and the review step both say. Every editor of it has to keep that true —
+ * the card's own and the two in 「口径声明」 — or the draft carries two windows:
+ * the combination check only refuses the thresholds out of order, so a draft
+ * measuring the two triggers differently would be accepted and can no longer be
+ * changed.
+ */
+function WindowField({
   value,
   onChange,
   id,
+  sibling,
 }: {
   readonly value?: number;
   readonly onChange?: (value: number) => void;
   readonly id?: string;
+  readonly sibling?: string;
 }): React.JSX.Element {
   const form = Form.useFormInstance<DraftValues>();
-  const other = ['values', 'MATERIAL_TRIGGER_EXPOSURE', 'windowDays'];
   return (
     <Select<number>
       {...(id === undefined ? {} : { id })}
@@ -1254,6 +1285,8 @@ function ExposureWindowField({
       options={WINDOW_DAYS.map((days) => ({ value: days, label: text.valueWindowDays(days) }))}
       onChange={(next) => {
         onChange?.(next);
+        if (sibling === undefined) return;
+        const other = ['values', sibling, 'windowDays'];
         form.setFieldValue(other, next);
         void form.validateFields([other]).catch(() => undefined);
       }}
@@ -1469,6 +1502,7 @@ function CategoryEditor({
   const fields = Form.useWatch((values: DraftValues) => values.values?.[code], form);
   const found = categorySpec(code);
   const shape = found?.shape ?? 'JSON';
+  const sibling = SHARED_WINDOW[code];
   const help = calibrationCategoryHelp[code];
   const example = exampleFields(code, purpose);
   const path = (field: keyof ValueFields): (string | number)[] => ['values', code, field];
@@ -1583,13 +1617,7 @@ function CategoryEditor({
             style={{ flex: '0 1 140px', marginBottom: 8 }}
             rules={fieldRules(code, 'windowDays')}
           >
-            <Select
-              placeholder={text.windowPlaceholder}
-              options={WINDOW_DAYS.map((days) => ({
-                value: days,
-                label: text.valueWindowDays(days),
-              }))}
-            />
+            <WindowField {...(sibling === undefined ? {} : { sibling })} />
           </Form.Item>
         )}
       </Flex>
