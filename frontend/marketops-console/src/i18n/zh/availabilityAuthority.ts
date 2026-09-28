@@ -20,7 +20,6 @@ export const variantPickerText = {
 
 /** Inbound attestations. */
 export const inboundText = {
-  productFilter: '商品',
   productFilterPlaceholder: '全部商品',
   statusFilter: '业务状态',
   allStatuses: '全部状态',
@@ -47,7 +46,6 @@ export const inboundText = {
     '登记一份可追溯的在途补货证明。它只在到货窗口的最晚端计入供应，永远不算当前在手；登记后会触发重新计算。',
   created: (version: number): string => `入库证明第 ${String(version)} 版已受理`,
   product: '商品',
-  productRequired: '请选择商品',
   externalReference: '外部订单或发运单号',
   externalReferenceRequired: '请填写外部订单或发运单号',
   quantityLabel: '数量（件）',
@@ -122,7 +120,6 @@ export const leadTimeText = {
   scopeKindRequired: '请选择范围类型',
   organizationOnly: '需要组织级策略管理授权',
   variant: '商品变体',
-  variantRequired: '请选择商品变体',
   supplierCode: '供应商代码',
   supplierRequired: '请填写供应商代码',
   routeCode: '路线代码',

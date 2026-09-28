@@ -34,7 +34,6 @@ export const caseListText = {
   columnActions: '操作',
   counts: (reopens: number, escalations: number): string =>
     `重开 ${String(reopens)} · 升级 ${String(escalations)}`,
-  companyChild: '公司库存',
 } as const;
 
 /** Deadlines, which are never merged into one badge. */
@@ -61,8 +60,6 @@ export const caseDetailText = {
   tabJournal: '处理历史',
   tabExceptions: '风险接受',
   tabTechnical: '技术信息',
-  product: '商品',
-  channel: '渠道',
   cause: '原因',
   severity: '严重程度',
   state: '状态',
@@ -114,7 +111,6 @@ export const caseActionText = {
   evidenceRequired: '请填写证据引用',
   attestation: '绑定的入库证明',
   attestationHelp: '从这个商品的入库证明中选择；列表不可用时可输入入库证明编号。',
-  attestationRequired: '请选择或填写入库证明',
   attestationOption: (reference: string, version: number): string =>
     `${reference} · 第 ${String(version)} 版`,
   reason: '原因说明',
