@@ -108,20 +108,20 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 后端不在 8080 端口时，下面每条 `make` 命令都加上 `API=http://127.0.0.1:<端口>`。
 
-1. **准备 key**：在 Ozon 卖家后台「Настройки → Seller API」生成只读 key，然后把 key 和 Client ID 分别存成下面两个文件（目录 700、文件 600，不要放进仓库）：
+1. **准备 key**：在 Ozon 卖家后台「Настройки → Seller API」生成 key，**只勾选下面 4 个只读角色**：`Product read-only`（商品目录、价格、库存、描述）、`Report`（流量分析、财务交易、报表）、`Returns read-only`（退货）、`Actions read-only`（促销）。不要选 `Admin read only`：按官方文档核对，它含有切换定价策略状态、创建和删除 FBO 货位等写方法。然后把 key 和 Client ID 分别存成下面两个文件（目录 700、文件 600，不要放进仓库）：
 
    ```
    ~/.marketops-platform/secrets/ozon/pilot/seller-api-key
    ~/.marketops-platform/secrets/ozon/pilot/client-id
    ```
 
-2. **探测**（只连 Ozon，不需要后端）：
+2. **探测**（只连 Ozon，不需要后端）：先在浏览器打开 <https://docs.ozon.ru/api/seller/swagger.json>，另存为 JSON 文件（例如 `~/Downloads/swagger.json`）。这一步要在浏览器里做，因为文档站会用反爬校验拦截脚本下载。然后运行：
 
    ```bash
-   make ozon-probe
+   make ozon-probe OFFICIAL_SOURCE=~/Downloads/swagger.json
    ```
 
-   脚本用 key 调用一次 `/v1/roles`，并下载官方 OpenAPI 文件，两份原文都存进 `~/.marketops-platform/evidence/ozon/pilot/`（仅本人可读）。终端打印 key 的角色、到期日和证据摘要，不打印 key 本身。**如果角色里有能改价格、库存、商品或订单的，就删掉这个 key，重新生成只读 key，再探测一次。**
+   脚本用 key 调用一次 `/v1/roles`，终端打印 key 的角色和到期日，不打印 key 本身。接着用官方文档里每个接口的说明，判断哪些角色能改数据。只要有这样的角色，就不记录证据：请删掉这个 key，只勾选只读角色重新生成，再探测一次。确认全部是只读角色后，响应原文和官方文档都会存进 `~/.marketops-platform/evidence/ozon/pilot/`（仅本人可读）。
 
 3. **登记**（需要后端已启动）：
 

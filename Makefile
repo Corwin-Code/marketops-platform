@@ -79,8 +79,9 @@ ai-provider: require-repo-root ## Install the model key and register the Qwen pr
 	@python3 scripts/register_ai_provider.py --api "$(API)" \
 	  $(if $(wildcard $(AI_KEY_FILE)),--install-key "$(AI_KEY_FILE)") $(if $(REACTIVATE),--reactivate)
 
-ozon-probe: require-repo-root ## Ozon pilot: call /v1/roles once with the key and keep the evidence
-	@python3 scripts/ozon_pilot.py probe --pilot "$(PILOT)"
+ozon-probe: require-repo-root ## Ozon pilot: call /v1/roles with the key; OFFICIAL_SOURCE=<saved swagger.json>
+	@python3 scripts/ozon_pilot.py probe --pilot "$(PILOT)" \
+	  $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)")
 
 ozon-setup: require-repo-root ## Ozon pilot: register account, credential and job (backend running)
 	@python3 scripts/ozon_pilot.py setup --api "$(API)" --pilot "$(PILOT)"

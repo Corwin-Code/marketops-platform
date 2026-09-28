@@ -290,25 +290,35 @@ def post_roles(client_id: str, api_key: str, context: ssl.SSLContext) -> tuple[i
         connection.close()
 
 
-def official_source(pilot: Pilot, given: str | None, context: ssl.SSLContext) -> tuple[Path, str]:
-    """The official OpenAPI document, downloaded or given, kept beside the evidence."""
-    if given:
-        data = Path(given).expanduser().read_bytes()
-    else:
-        request = urllib.request.Request(OFFICIAL_SOURCE_URL, headers={
-            "Accept": "application/json", "User-Agent": "marketops-ozon-probe/1"})
-        try:
-            with urllib.request.urlopen(request, timeout=60, context=context) as response:
-                data = response.read(MAXIMUM_OPENAPI_BYTES + 1)
-        except (urllib.error.URLError, OSError) as failure:
-            sys.exit(f"probe: could not download {OFFICIAL_SOURCE_URL} ({failure}). Open it in a browser, "
-                     "save it as a file and pass --official-source-file")
+# A documented method whose summary starts with one of these verbs changes the
+# seller's data. The official summaries are Russian; report generation
+# (/report/ paths) only queues a report and is not counted as a change.
+MUTATING_SUMMARY = re.compile(
+    r"^(Создать|Создайте|Cоздать|Создание|Обновить|Обновление|Удалить|Удаление|Изменить|Изменение|"
+    r"Установить|Установка|Добавить|Загрузить|Загрузка|Отправить|Отменить|Перенести|Вернуть|"
+    r"Привязать|Отвязать|Согласовать|Отклонить|Подтвердить|Подтверждение|Собрать|Частичная сборка|"
+    r"Разделить|Передать|Открыть|Включить|Поставить|Снять|Указать|Уточнить|Проверить и сохранить|"
+    r"Наполнить|Разместить|Убрать|Настроить|Управлять|Перевести|Отредактировать|Редактировать|"
+    r"Редактирование|Оставить|Отметить|Связать|Свяжите|Подключить|Сгенерировать)")
+
+
+def official_source(pilot: Pilot, given: str) -> tuple[Path, str, dict]:
+    """The official OpenAPI document the operator saved, kept beside the evidence.
+
+    docs.ozon.ru answers scripted downloads with an anti-bot challenge that
+    needs a browser, so the document is saved from a browser rather than
+    fetched here.
+    """
+    path = Path(given).expanduser()
+    if not path.is_file() or path.stat().st_size > MAXIMUM_OPENAPI_BYTES:
+        sys.exit(f"probe: {path} is not a readable OpenAPI file")
+    data = path.read_bytes()
     try:
         document = json.loads(data)
         operation = document["paths"][ROLES_PATH]["post"]
     except (ValueError, KeyError, TypeError):
-        sys.exit(f"probe: {OFFICIAL_SOURCE_URL} did not return the OpenAPI document with {ROLES_PATH} "
-                 "(an anti-bot page?). Open it in a browser, save it and pass --official-source-file")
+        sys.exit(f"probe: {path} is not the Seller API OpenAPI document (no {ROLES_PATH}); save "
+                 f"{OFFICIAL_SOURCE_URL} again as the raw JSON, not as a web page")
     if "requestBody" in operation:
         sys.exit(f"probe: the official {ROLES_PATH} now declares a request body; the registered "
                  "request has to be reviewed before any evidence is recorded")
@@ -316,7 +326,19 @@ def official_source(pilot: Pilot, given: str | None, context: ssl.SSLContext) ->
     target = pilot.evidence_dir / f"ozon-seller-openapi-{utc_now():%Y%m%d}.json"
     private_write(target, data)
     print(f"official source: {OFFICIAL_SOURCE_URL} (info.version {version}) kept at {target}")
-    return target, hashlib.sha256(data).hexdigest()
+    return target, hashlib.sha256(data).hexdigest(), document
+
+
+def mutating_methods(document: dict) -> set[str]:
+    """Documented methods that change data, judged from their official summaries."""
+    found = set()
+    for path, operations in document.get("paths", {}).items():
+        if "/report/" in path or not isinstance(operations, dict):
+            continue
+        for operation in operations.values():
+            if isinstance(operation, dict) and MUTATING_SUMMARY.match(str(operation.get("summary", "")).strip()):
+                found.add(path)
+    return found
 
 
 def command_probe(args: argparse.Namespace) -> int:
@@ -346,20 +368,50 @@ def command_probe(args: argparse.Namespace) -> int:
         return 1
     try:
         key_expires = parse_instant(str(answer["expires_at"]))
-        roles = [{"name": str(role["name"]), "methods": len(role.get("methods") or [])}
-                 for role in answer["roles"]]
+        granted = {str(role["name"]): [str(method) for method in (role.get("methods") or [])]
+                   for role in answer["roles"]}
     except (KeyError, TypeError, ValueError):
         print("the answer does not have the documented shape (expires_at, roles[].name); nothing recorded")
         return 1
+    print(f"key expires {iso(key_expires)} ({(key_expires - tested_at).days} days left)")
+    print("roles on this key:")
+    for name, methods in granted.items():
+        print(f"  - {name} ({len(methods)} methods)")
 
-    source_file, source_digest = official_source(pilot, args.official_source_file, context)
+    if not args.official_source_file:
+        print(f"no evidence recorded yet: open {OFFICIAL_SOURCE_URL} in a browser, save it as a "
+              "JSON file and run the probe again with --official-source-file <file> "
+              "(make ozon-probe OFFICIAL_SOURCE=<file>)")
+        return 2
+    source_file, source_digest, document = official_source(pilot, args.official_source_file)
+
+    # A read-only integration keeps a read-only key: a role that can change the
+    # store is refused unless the operator accepts it explicitly.
+    mutating = mutating_methods(document)
+    documented = set(document.get("paths", {}))
+    writers = {name: sorted(set(methods) & mutating) for name, methods in granted.items()}
+    writers = {name: found for name, found in writers.items() if found}
+    unclassified = sorted({m for methods in granted.values() for m in methods} - documented)
+    if unclassified:
+        print(f"{len(unclassified)} granted methods are not in the official document and were not classified")
+    if writers:
+        print("roles that can change the store:")
+        for name, found in sorted(writers.items(), key=lambda item: -len(item[1])):
+            print(f"  - {name}: {len(found)} methods, e.g. {', '.join(found[:3])}")
+        if not args.allow_write_roles:
+            print("no evidence recorded: generate a key with read-only roles only and probe again "
+                  "(or pass --allow-write-roles to accept these roles on purpose)")
+            return 1
+        print("--allow-write-roles given: recording evidence for a key that can change the store")
+
     valid_until = min(tested_at + EVIDENCE_WINDOW, key_expires)
     manifest = {
         "pilot": pilot.code,
         "testedAt": iso(tested_at),
         "validUntil": iso(valid_until),
         "keyExpiresAt": iso(key_expires),
-        "roles": roles,
+        "roles": [{"name": name, "methods": len(methods)} for name, methods in granted.items()],
+        "writeRolesAccepted": sorted(writers),
         "evidenceClass": "REAL_ACCOUNT",
         "accountEvidenceRef": pilot.evidence_ref(file_name),
         "accountEvidenceSha256": digest,
@@ -368,14 +420,7 @@ def command_probe(args: argparse.Namespace) -> int:
         "officialSourceFile": str(source_file),
     }
     private_write(pilot.manifest, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode())
-
-    print(f"key expires {iso(key_expires)} ({(key_expires - tested_at).days} days left)")
-    print("roles on this key:")
-    for role in roles:
-        print(f"  - {role['name']} ({role['methods']} methods)")
-    print("check that none of these roles can change prices, stock, products or orders;")
-    print("if one can, delete the key in the Ozon cabinet and generate a read-only one.")
-    print(f"evidence valid until {iso(valid_until)}; summary kept at {pilot.manifest}")
+    print(f"evidence recorded, valid until {iso(valid_until)}; summary kept at {pilot.manifest}")
     return 0
 
 
@@ -805,9 +850,11 @@ def main(argv: list[str] | None = None) -> int:
 
     probe = commands.add_parser("probe", help="call /v1/roles once and keep the evidence")
     common(probe, backend=False)
-    probe.add_argument("--ca-file", help="trusted root bundle for api-seller.ozon.ru and docs.ozon.ru")
+    probe.add_argument("--ca-file", help="trusted root bundle for api-seller.ozon.ru")
     probe.add_argument("--official-source-file", help="the OpenAPI document saved from "
-                                                      f"{OFFICIAL_SOURCE_URL} if it cannot be downloaded")
+                                                      f"{OFFICIAL_SOURCE_URL} in a browser")
+    probe.add_argument("--allow-write-roles", action="store_true",
+                       help="record evidence even though the key has roles that can change the store")
     probe.set_defaults(handler=command_probe)
 
     setup = commands.add_parser("setup", help="register the pilot account, credential and job")
