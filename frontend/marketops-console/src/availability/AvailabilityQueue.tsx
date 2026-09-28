@@ -355,13 +355,11 @@ function ChildChip({ child }: { readonly child: AvailabilityChild }): React.JSX.
         {childLabel(child.childKind, child.platformCode, child.fulfillmentModeCode)}
       </Typography.Text>
       <CodeTag labels={LANE_LABELS} code={child.lane} colors={LANE_COLORS} />
-      {evidence.establishedFact ? null : (
-        <Tooltip title={evidence.explanation}>
-          <span>
-            <CodeTag labels={EVIDENCE_LABELS} code={child.evidenceState} colors={EVIDENCE_COLORS} />
-          </span>
-        </Tooltip>
-      )}
+      <Tooltip title={evidence.explanation}>
+        <span>
+          <CodeTag labels={EVIDENCE_LABELS} code={child.evidenceState} colors={EVIDENCE_COLORS} />
+        </span>
+      </Tooltip>
       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
         {child.daysOfCover === null
           ? text.noCover

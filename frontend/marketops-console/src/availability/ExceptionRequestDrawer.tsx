@@ -90,20 +90,24 @@ export function ExceptionRequestDrawer({
   readonly onDone: () => void;
 }): React.JSX.Element {
   const { message } = App.useApp();
-  const [options, setOptions] = useState<Options>({ kind: 'loading' });
+  // Options belong to one case: a drawer reopened for another case never shows,
+  // or submits, the previous case's scopes while the new ones load.
+  const [read, setRead] = useState<{ readonly caseId: string; readonly options: Options }>();
   const caseId = governed?.id;
+  const options: Options =
+    read !== undefined && read.caseId === caseId ? read.options : { kind: 'loading' };
 
   useEffect(() => {
     if (caseId === undefined) return;
     let live = true;
-    setOptions({ kind: 'loading' });
     void fetchExceptionOptions(context, caseId).then((outcome) => {
       if (!live) return;
-      setOptions(
-        outcome.ok
+      setRead({
+        caseId,
+        options: outcome.ok
           ? { kind: 'loaded', options: outcome.value }
           : { kind: 'failed', failure: outcome.failure },
-      );
+      });
     });
     return () => {
       live = false;
@@ -116,12 +120,17 @@ export function ExceptionRequestDrawer({
     values: RequestValues,
     form: FormInstance<RequestValues>,
   ): Promise<SubmitOutcome> => {
-    if (governed === undefined || loaded === undefined) return undefined;
-    const scope = loaded.scopes.find((option) => scopeValue(option) === values.scope);
+    if (governed === undefined) return undefined;
+    const scope = loaded?.scopes.find((option) => scopeValue(option) === values.scope);
     const from = values.effectiveFrom;
     const until = values.expiresAt;
     const review = values.reviewAt;
-    if (scope === undefined || !from || !until || !review) return undefined;
+    if (loaded === undefined || scope === undefined || !from || !until || !review) {
+      // The required fields make this unreachable; if it is reached anyway the
+      // drawer stays open and says so instead of closing as if it had asked.
+      form.setFields([{ name: 'scope', errors: [text.scopeRequired] }]);
+      return LOCAL_REFUSAL;
+    }
     const amount = (values.consequenceAmount ?? '').trim();
     const currency = (values.consequenceCurrency ?? '').trim();
     const outcome = await requestException(context, governed.id, {
@@ -233,6 +242,14 @@ export function ExceptionRequestDrawer({
 }
 
 const PERIOD_CODE = 'EXCEPTION_PERIOD_EXCEEDS_MAXIMUM';
+
+/** A submission the form itself refuses, named by the backend's own validation code. */
+const LOCAL_REFUSAL: ConsoleFailure = {
+  kind: 'refused',
+  status: 400,
+  detail: '',
+  code: 'VALIDATION_FAILED',
+};
 
 function periodTooLong(options: ExceptionOptions): string {
   return options.maxDurationDays === null
