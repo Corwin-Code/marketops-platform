@@ -80,4 +80,5 @@ export const ERROR_CODE_LABELS: CodeLabels = {
   EVIDENCE_PATH_UNQUALIFIED: '证据路径不满足标准化测量要求',
   MATERIALITY_UNRESOLVED: '无法判定该操作的重要程度',
   EXIT_REASON_NOT_APPROVED: '退出原因不在预先批准的范围内',
+  EXCEPTION_PERIOD_EXCEEDS_MAXIMUM: '风险接受期限超过当前配置允许的上限',
 };

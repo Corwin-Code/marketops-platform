@@ -105,3 +105,17 @@ export const POLICY_STATUS_COLORS: Colors = {
   CANCELLED: 'default',
   SUPERSEDED: 'default',
 };
+
+export const EXCEPTION_DECISION_COLORS: Colors = {
+  APPROVED: 'success',
+  REJECTED: 'error',
+  AUTHORITY_BLOCKED: 'warning',
+};
+
+export const POLICY_LIFECYCLE_COLORS: Colors = {
+  CURRENT: 'success',
+  SCHEDULED: 'processing',
+  ENDED: 'default',
+  RETIRED: 'default',
+  CANCELLED: 'default',
+};
