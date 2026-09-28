@@ -32,7 +32,9 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Maintenance of acquisition jobs and their manual runs.
@@ -72,6 +74,7 @@ public class IngestionJobService {
     private final OrganizationDirectory organizationDirectory;
     private final AccessMetadataDirectory accessMetadata;
     private final MetadataAuditRecorder auditRecorder;
+    private final TransactionTemplate transactions;
     private final IdGenerator idGenerator;
     private final Clock clock;
 
@@ -82,6 +85,7 @@ public class IngestionJobService {
                         OrganizationDirectory organizationDirectory,
                         AccessMetadataDirectory accessMetadata,
                         MetadataAuditRecorder auditRecorder,
+                        PlatformTransactionManager transactionManager,
                         IdGenerator idGenerator,
                         Clock clock) {
         this.jobs = jobs;
@@ -91,6 +95,7 @@ public class IngestionJobService {
         this.organizationDirectory = organizationDirectory;
         this.accessMetadata = accessMetadata;
         this.auditRecorder = auditRecorder;
+        this.transactions = new TransactionTemplate(transactionManager);
         this.idGenerator = idGenerator;
         this.clock = clock;
     }
@@ -207,17 +212,19 @@ public class IngestionJobService {
      * Claim and execute one queued run now, in this request.
      *
      * <p>Not transactional: the runner claims, calls and finishes in separate
-     * transactions, exactly as the scheduler would.
+     * transactions, exactly as the scheduler would. The audit record of who
+     * asked, and where the run came to rest, is written in its own transaction
+     * afterwards, because the recorder requires one.
      */
     public ExecutionResult executeRun(String operator, UUID runId) {
         RunState before = requireRun(runId);
         AcquisitionRunner.RunOutcome outcome = runner.execute(runId, WorkerIdentity.current());
         RunState after = requireRun(runId);
-        auditRecorder.recordChange(new MetadataAuditChange(
+        transactions.executeWithoutResult(status -> auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.MARKETPLACE_INTEGRATION, operator, AuditAction.STATUS_CHANGE,
                 RUN_ENTITY_TYPE, runId, null,
                 Map.of("state", new FieldChange(before.state(), after.state())),
-                outcome.reason(), null));
+                outcome.reason(), null)));
         return new ExecutionResult(after, outcome.pagesStored(), outcome.reason());
     }
 
