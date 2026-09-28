@@ -172,9 +172,7 @@ export const calibrationText = {
   stepOwnerWarning: '你持有接受授权。若由你校验这份包，之后需要另一位持有接受授权的人来接受它。',
   stepAcceptors: (names: string) => `可以接受此包的人：${names}`,
   stepNoAcceptors: '目前没有其他持有接受授权的人可以接受此包（起草人和校验人除外）。',
-  stepUpTitle: '该操作需要近期重新登录验证身份',
   stepUpHelp: '重新登录后回到本页再提交；已填写的依据不会保存。',
-  stepUpAction: '重新登录',
   stepBlocked: (reasons: string) => `现在不能执行：${reasons}`,
   stepNotGranted: {
     VALIDATE: '你没有校验该范围校准包的授权',

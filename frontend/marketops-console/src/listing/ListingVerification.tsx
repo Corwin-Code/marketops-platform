@@ -34,7 +34,8 @@ import {
 } from '../api/listingConversion';
 import { dialog } from '../i18n/zh/common';
 import { packetText, verifyText } from '../i18n/zh/listingManual';
-import { FormDrawer } from '../ui';
+import { FormDrawer, useRemote } from '../ui';
+import type { PickOption } from '../ui';
 import {
   Code,
   Hint,
@@ -45,13 +46,7 @@ import {
   codeOptions,
   codeText,
 } from './ListingCommon';
-import {
-  descriptionOptions,
-  displayOptions,
-  promotionOptions,
-  useRemote,
-} from './ListingManualPickers';
-import type { PickOption } from './ListingManualPickers';
+import { descriptionOptions, displayOptions, promotionOptions } from './ListingManualPickers';
 
 const TEXT_LIMIT = 512;
 const OBSERVATION_LIMIT = 20;
