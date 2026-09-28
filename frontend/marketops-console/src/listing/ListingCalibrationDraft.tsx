@@ -35,10 +35,11 @@ import {
   calibrationUnits,
   calibrationRules,
 } from '../i18n/zh/listingCalibrations';
-import { DateTime, FormDrawer, InfoTip } from '../ui';
-import type { FormDrawerStep, SubmitOutcome } from '../ui';
+import { DateTime, FormDrawer, InfoTip, SectionCollapse } from '../ui';
+import type { FormDrawerStep, SectionFlag, SubmitOutcome } from '../ui';
 import type { Finding, ValueField, ValueFieldMap, ValueFields } from './calibrationValues';
 import {
+  ALLOWANCE_AXES,
   EXAMPLE_PACKAGE,
   EQUIVALENCE_RULES,
   GROUP_ORDER,
@@ -97,6 +98,48 @@ function joined(findings: readonly Finding[], level: Finding['level']): string |
 /** Characters as the database counts them. */
 function length(value: string | undefined): number {
   return Array.from((value ?? '').trim()).length;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+const DECIMAL = /^-?\d+(\.\d+)?$/;
+
+/**
+ * A decimal with its point moved `places` digits to the right.
+ *
+ * A ratio is decided as a percentage but stored as the ratio itself, and the
+ * two have to convert without the drift `0.07 * 100` would introduce: the value
+ * is compared against the stored one to decide whether it is still the example.
+ */
+function shiftDecimal(textValue: string, places: number): string {
+  const negative = textValue.startsWith('-');
+  const body = negative ? textValue.slice(1) : textValue;
+  const point = body.indexOf('.');
+  const digits = body.replace('.', '');
+  const target = (point < 0 ? digits.length : point) + places;
+  const padded = target < 0 ? `${'0'.repeat(-target)}${digits}` : digits.padEnd(target, '0');
+  const cut = Math.max(target, 0);
+  const head = padded.slice(0, cut).replace(/^0+(?=\d)/, '');
+  const tail = padded.slice(cut).replace(/0+$/, '');
+  const shifted = `${head === '' ? '0' : head}${tail === '' ? '' : `.${tail}`}`;
+  return negative && shifted !== '0' ? `-${shifted}` : shifted;
+}
+
+/** A unit's Chinese name, for a label that has to say what the number means. */
+function unitName(unit: string | undefined): string {
+  if (unit === undefined || unit === '') return text.decisionMaturityDaysUnit;
+  return calibrationUnits[unit] ?? unit;
+}
+
+/** The allowance axes a document names, in the fixed order of the four. */
+function chosenAxes(jsonText: string | undefined): readonly string[] {
+  const parsed = parseJsonText(jsonText);
+  if (!parsed.ok) return [];
+  const listed = isRecord(parsed.value) ? parsed.value.axes : parsed.value;
+  const named: readonly unknown[] = Array.isArray(listed) ? (listed as unknown[]) : [];
+  return ALLOWANCE_AXES.filter((axis) => named.includes(axis));
 }
 
 function textRules(label: string): FormRule[] {
@@ -733,6 +776,64 @@ function BasicsStep({
 
 // ------------------------------------------------------------------ step 2
 
+/** The section key of the folded declarations. */
+const DECLARATIONS = 'declarations';
+
+/**
+ * The fields a decision card edits itself.
+ *
+ * A problem on one of these is already in front of the operator, so it must not
+ * be what opens the folded section.
+ */
+const DECIDED_FIELDS: Readonly<Partial<Record<string, readonly ValueField[]>>> = {
+  // The ordinary window is here because the card renders that field; the
+  // material one is only written behind it, so a problem on it has nowhere to
+  // be seen but the folded section, and has to open it.
+  ORDINARY_TRIGGER_EXPOSURE: ['numeric', 'windowDays'],
+  MATERIAL_TRIGGER_EXPOSURE: ['numeric'],
+  APPROVAL_VALIDITY: ['numeric'],
+};
+
+function noteMissing(value: string | undefined): boolean {
+  const count = length(value);
+  return count === 0 || count > MAX_TEXT;
+}
+
+/**
+ * What the folded section holds that the operator has not seen.
+ *
+ * Only an error opens it by itself: the seeded examples carry warnings of their
+ * own (the existence of a Listing can only be confirmed by the database, a
+ * purpose may want scenarios), and opening on those would leave the section
+ * permanently unfolded, which is the state this step moved away from. A warning
+ * is shown as a flag in the header instead, which stays visible while folded.
+ *
+ * A category the watched values do not carry yet is passed over, not called
+ * incomplete: the step is rendered before the watch has read the seeded values,
+ * and a new purpose adds its categories one render before their fields are
+ * read back. Neither is a problem the operator could answer here.
+ */
+function foldedState(
+  categories: readonly string[],
+  values: ValueFieldMap,
+  purpose: CalibrationPurpose | undefined,
+): { readonly failing: boolean; readonly doubtful: boolean } {
+  let failing = false;
+  let doubtful = false;
+  for (const code of categories) {
+    const fields = values[code];
+    if (fields === undefined) continue;
+    const decided = DECIDED_FIELDS[code] ?? [];
+    for (const finding of valueFindings(code, fields, purpose)) {
+      if (finding.field !== undefined && decided.includes(finding.field)) continue;
+      if (finding.level === 'error') failing = true;
+      else doubtful = true;
+    }
+    if (noteMissing(fields.scopeNote) || noteMissing(fields.evidenceReference)) failing = true;
+  }
+  return { failing, doubtful };
+}
+
 function ValuesStep({
   catalogue,
   extras,
@@ -752,6 +853,21 @@ function ValuesStep({
     [catalogue, purpose, extras],
   );
   const required = requiredOf(catalogue, purpose);
+  const values = Form.useWatch((all: DraftValues) => all.values, form);
+  const { failing, doubtful } = useMemo(
+    () => foldedState(categories, values ?? {}, purpose),
+    [categories, values, purpose],
+  );
+  const [openKeys, setOpenKeys] = useState<readonly string[]>([]);
+
+  // A problem inside the folded section would otherwise look like a dead 下一步
+  // button: the step refuses to advance and the message sits on a field that is
+  // mounted but hidden, and the review step's own jump back here would land on
+  // the same folded section. So the section stays open for as long as a
+  // blocking problem is inside it; folding is the reader's choice again once it
+  // is answered.
+  const shownKeys =
+    failing && !openKeys.includes(DECLARATIONS) ? [...openKeys, DECLARATIONS] : openKeys;
 
   // A new purpose brings its own examples; anything already edited is kept.
   useEffect(() => {
@@ -806,27 +922,536 @@ function ValuesStep({
           {text.fillEvidence}
         </Button>
       </Flex>
-      {GROUP_ORDER.map((group) => {
-        const codes = categories.filter(
-          (code) => (categorySpec(code)?.group ?? 'protection') === group,
-        );
-        if (codes.length === 0) return null;
-        return (
-          <Card key={group} size="small" title={calibrationGroups[group] ?? group}>
-            <Flex vertical gap={16}>
-              {codes.map((code) => (
-                <CategoryEditor
-                  key={code}
-                  code={code}
-                  purpose={purpose}
-                  extra={!required.includes(code)}
-                  onRemove={() => {
-                    onRemoveExtra(code);
-                  }}
-                />
-              ))}
+      <Decisions purpose={purpose} categories={categories} />
+      <SectionCollapse
+        size="small"
+        openKeys={shownKeys}
+        onOpenChange={setOpenKeys}
+        items={[
+          {
+            key: DECLARATIONS,
+            title: text.declarationsTitle,
+            summary: text.declarationsSummary(categories.length),
+            flags: declarationFlags(failing, doubtful),
+            forceRender: true,
+            children: (
+              <Flex vertical gap={12}>
+                <Typography.Text type="secondary">{text.declarationsHelp}</Typography.Text>
+                {GROUP_ORDER.map((group) => {
+                  const codes = categories.filter(
+                    (code) => (categorySpec(code)?.group ?? 'protection') === group,
+                  );
+                  if (codes.length === 0) return null;
+                  return (
+                    <Card key={group} size="small" title={calibrationGroups[group] ?? group}>
+                      <Flex vertical gap={16}>
+                        {codes.map((code) => (
+                          <CategoryEditor
+                            key={code}
+                            code={code}
+                            purpose={purpose}
+                            extra={!required.includes(code)}
+                            onRemove={() => {
+                              onRemoveExtra(code);
+                            }}
+                          />
+                        ))}
+                      </Flex>
+                    </Card>
+                  );
+                })}
+              </Flex>
+            ),
+          },
+        ]}
+      />
+    </Flex>
+  );
+}
+
+/** What the folded header must keep in view: a blocking problem, or a prompt. */
+function declarationFlags(failing: boolean, doubtful: boolean): SectionFlag[] {
+  return [
+    ...(failing ? [{ key: 'error', label: text.declarationsError, color: 'error' as const }] : []),
+    ...(doubtful
+      ? [{ key: 'warning', label: text.declarationsWarning, color: 'warning' as const }]
+      : []),
+  ];
+}
+
+/**
+ * The few values the operator actually decides, ahead of the declarations.
+ *
+ * Every editor here writes the same form value its full editor in the folded
+ * section writes; nothing is held twice. What is different is what the operator
+ * is asked: a percentage instead of a ratio, a day count instead of a place in
+ * a JSON document, the four axes instead of an array literal.
+ */
+function Decisions({
+  purpose,
+  categories,
+}: {
+  readonly purpose: CalibrationPurpose;
+  readonly categories: readonly string[];
+}): React.JSX.Element | null {
+  const form = Form.useFormInstance<DraftValues>();
+  const validityUnit = Form.useWatch(
+    (values: DraftValues) => values.values?.APPROVAL_VALIDITY?.unitCode,
+    form,
+  );
+  const has = (...codes: readonly string[]): boolean =>
+    codes.every((code) => categories.includes(code));
+  const exposure = has('ORDINARY_TRIGGER_EXPOSURE', 'MATERIAL_TRIGGER_EXPOSURE');
+  const approval = has('APPROVAL_VALIDITY');
+  const maturity = has('RESPONSIBILITY_SLO');
+  const allowance = has('ALLOWANCE_AXES', 'ALLOWANCE_RESERVE');
+  if (!exposure && !approval && !maturity && !allowance) return null;
+
+  return (
+    <Card size="small" title={text.decisionsTitle}>
+      <Flex vertical gap={20}>
+        <Typography.Text type="secondary">{text.decisionsHelp}</Typography.Text>
+        {exposure && (
+          <Decision
+            title={text.decisionExposure}
+            effect={text.decisionExposureEffect}
+            codes={['ORDINARY_TRIGGER_EXPOSURE', 'MATERIAL_TRIGGER_EXPOSURE']}
+            purpose={purpose}
+          >
+            <Flex gap={12} wrap align="flex-start">
+              <Form.Item
+                name={['values', 'ORDINARY_TRIGGER_EXPOSURE', 'numeric']}
+                label={text.decisionExposureOrdinary}
+                // The same field is edited again in 「口径声明」, so the field id
+                // antd would point the label at belongs to that copy, which is
+                // hidden while the section is folded. Each label here names the
+                // control beside it instead.
+                htmlFor="decision-ordinary-exposure"
+                required
+                style={{ flex: '1 1 180px', marginBottom: 0 }}
+                rules={fieldRules('ORDINARY_TRIGGER_EXPOSURE', 'numeric')}
+              >
+                <PercentField id="decision-ordinary-exposure" />
+              </Form.Item>
+              <Form.Item
+                name={['values', 'MATERIAL_TRIGGER_EXPOSURE', 'numeric']}
+                label={text.decisionExposureMaterial}
+                htmlFor="decision-material-exposure"
+                required
+                style={{ flex: '1 1 180px', marginBottom: 0 }}
+                rules={fieldRules('MATERIAL_TRIGGER_EXPOSURE', 'numeric')}
+              >
+                <PercentField id="decision-material-exposure" />
+              </Form.Item>
+              <Form.Item
+                name={['values', 'ORDINARY_TRIGGER_EXPOSURE', 'windowDays']}
+                label={text.decisionExposureWindow}
+                htmlFor="decision-exposure-window"
+                required
+                extra={text.decisionExposureWindowHelp}
+                style={{ flex: '1 1 220px', marginBottom: 0 }}
+                rules={fieldRules('ORDINARY_TRIGGER_EXPOSURE', 'windowDays')}
+              >
+                <WindowField id="decision-exposure-window" sibling="MATERIAL_TRIGGER_EXPOSURE" />
+              </Form.Item>
             </Flex>
-          </Card>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {text.decisionExposurePercentHelp}
+            </Typography.Text>
+          </Decision>
+        )}
+        {approval && (
+          <Decision
+            title={text.decisionApproval}
+            effect={text.decisionApprovalEffect}
+            codes={['APPROVAL_VALIDITY']}
+            purpose={purpose}
+          >
+            <Form.Item
+              name={['values', 'APPROVAL_VALIDITY', 'numeric']}
+              label={text.decisionApprovalValue(unitName(validityUnit))}
+              htmlFor="decision-approval-validity"
+              required
+              style={{ maxWidth: 240, marginBottom: 0 }}
+              rules={fieldRules('APPROVAL_VALIDITY', 'numeric')}
+            >
+              <CountField id="decision-approval-validity" suffix={unitName(validityUnit)} />
+            </Form.Item>
+          </Decision>
+        )}
+        {maturity && (
+          <Decision
+            title={text.decisionMaturity}
+            effect={text.decisionMaturityEffect}
+            codes={['RESPONSIBILITY_SLO']}
+            purpose={purpose}
+          >
+            <Form.Item
+              name={['values', 'RESPONSIBILITY_SLO', 'json']}
+              style={{ marginBottom: 0 }}
+              rules={fieldRules('RESPONSIBILITY_SLO', 'json')}
+            >
+              <MaturityField />
+            </Form.Item>
+          </Decision>
+        )}
+        {allowance && (
+          <Decision
+            title={text.decisionAllowance}
+            effect={text.decisionAllowanceEffect}
+            codes={['ALLOWANCE_AXES', 'ALLOWANCE_RESERVE']}
+            purpose={purpose}
+          >
+            {/*
+              Both are several controls over one JSON document, so no single
+              label could name the thing a reader would click into. They are
+              titled the way MaturityDays titles its own: a heading above, and
+              an aria-label on each control inside.
+            */}
+            <Flex vertical gap={2} style={{ marginBottom: 12 }}>
+              <Typography.Text>{text.decisionAllowanceAxes}</Typography.Text>
+              <Form.Item
+                name={['values', 'ALLOWANCE_AXES', 'json']}
+                style={{ marginBottom: 0 }}
+                rules={fieldRules('ALLOWANCE_AXES', 'json')}
+              >
+                <AxesField />
+              </Form.Item>
+            </Flex>
+            <Flex vertical gap={2}>
+              <Typography.Text>{text.decisionAllowanceReserve}</Typography.Text>
+              <Form.Item
+                name={['values', 'ALLOWANCE_RESERVE', 'json']}
+                extra={text.decisionAllowanceReserveHelp}
+                style={{ marginBottom: 0 }}
+                rules={fieldRules('ALLOWANCE_RESERVE', 'json')}
+              >
+                <ReserveField />
+              </Form.Item>
+            </Flex>
+          </Decision>
+        )}
+      </Flex>
+    </Card>
+  );
+}
+
+/** One decision: its plain name, what the value causes, its raw category codes. */
+function Decision({
+  title,
+  effect,
+  codes,
+  purpose,
+  children,
+}: {
+  readonly title: string;
+  readonly effect: string;
+  readonly codes: readonly string[];
+  readonly purpose: CalibrationPurpose;
+  readonly children: React.ReactNode;
+}): React.JSX.Element {
+  const form = Form.useFormInstance<DraftValues>();
+  // Only this decision's own categories: the whole map is serialized on every
+  // keystroke to decide whether the watch changed, and it holds every document.
+  const held = Form.useWatch((all: DraftValues) => codes.map((code) => all.values?.[code]), form);
+  const examples = codes.map((code) => exampleFields(code, purpose));
+  return (
+    <Flex vertical gap={6} data-decision={codes[0]}>
+      <Flex gap={8} align="center" wrap>
+        <Typography.Text strong>{title}</Typography.Text>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          {text.decisionCodes(codes)}
+        </Typography.Text>
+        {codes.every((code, index) => isExample(code, purpose, held[index])) && (
+          <Tag color="gold" style={{ marginInlineEnd: 0 }}>
+            {text.valueExample}
+          </Tag>
+        )}
+        {examples.some((fields) => fields !== undefined) && (
+          <Button
+            size="small"
+            type="link"
+            style={{ marginInlineStart: 'auto' }}
+            onClick={() => {
+              codes.forEach((code, index) => {
+                const fields = examples[index];
+                if (fields !== undefined) form.setFieldValue(['values', code], fields);
+              });
+              void form
+                .validateFields(
+                  codes.map((code) => ['values', code]),
+                  { recursive: true },
+                )
+                .catch(() => undefined);
+            }}
+          >
+            {text.useExample}
+          </Button>
+        )}
+      </Flex>
+      <Typography.Text type="secondary">{effect}</Typography.Text>
+      {children}
+    </Flex>
+  );
+}
+
+/** A form control over one value of the form; antd fills in value and onChange. */
+interface ControlProps {
+  readonly value?: string;
+  readonly onChange?: (value: string) => void;
+  readonly id?: string;
+}
+
+/** A 0–1 ratio, decided as a percentage; the form keeps the ratio itself. */
+function PercentField({ value, onChange, id }: ControlProps): React.JSX.Element {
+  const trimmed = value?.trim() ?? '';
+  return (
+    <InputNumber<string>
+      stringMode
+      {...(id === undefined ? {} : { id })}
+      style={{ width: '100%' }}
+      value={DECIMAL.test(trimmed) ? shiftDecimal(trimmed, 2) : null}
+      min="0"
+      max="100"
+      suffix="%"
+      onChange={(next) => {
+        if (next === null) {
+          onChange?.('');
+          return;
+        }
+        onChange?.(DECIMAL.test(next) ? shiftDecimal(next, -2) : next);
+      }}
+    />
+  );
+}
+
+/** A whole count, with the unit it is counted in beside it. */
+function CountField({
+  value,
+  onChange,
+  id,
+  suffix,
+}: ControlProps & { readonly suffix: string }): React.JSX.Element {
+  const trimmed = value?.trim() ?? '';
+  return (
+    <InputNumber<string>
+      stringMode
+      {...(id === undefined ? {} : { id })}
+      style={{ width: '100%' }}
+      value={DECIMAL.test(trimmed) ? trimmed : null}
+      min="1"
+      precision={0}
+      suffix={suffix}
+      onChange={(next) => {
+        onChange?.(next ?? '');
+      }}
+    />
+  );
+}
+
+/** The categories that are measured over one window: each writes the other's. */
+const SHARED_WINDOW: Readonly<Partial<Record<string, string>>> = {
+  ORDINARY_TRIGGER_EXPOSURE: 'MATERIAL_TRIGGER_EXPOSURE',
+  MATERIAL_TRIGGER_EXPOSURE: 'ORDINARY_TRIGGER_EXPOSURE',
+};
+
+/**
+ * A window, written to the category that shares it as well.
+ *
+ * Both exposure thresholds are measured over one window, which the decision
+ * card and the review step both say. Every editor of it has to keep that true —
+ * the card's own and the two in 「口径声明」 — or the draft carries two windows:
+ * the combination check only refuses the thresholds out of order, so a draft
+ * measuring the two triggers differently would be accepted and can no longer be
+ * changed.
+ */
+function WindowField({
+  value,
+  onChange,
+  id,
+  sibling,
+}: {
+  readonly value?: number;
+  readonly onChange?: (value: number) => void;
+  readonly id?: string;
+  readonly sibling?: string;
+}): React.JSX.Element {
+  const form = Form.useFormInstance<DraftValues>();
+  return (
+    <Select<number>
+      {...(id === undefined ? {} : { id })}
+      {...(value === undefined ? {} : { value })}
+      placeholder={text.windowPlaceholder}
+      options={WINDOW_DAYS.map((days) => ({ value: days, label: text.valueWindowDays(days) }))}
+      onChange={(next) => {
+        onChange?.(next);
+        if (sibling === undefined) return;
+        const other = ['values', sibling, 'windowDays'];
+        form.setFieldValue(other, next);
+        void form.validateFields([other]).catch(() => undefined);
+      }}
+    />
+  );
+}
+
+/**
+ * The outcome maturity of the responsibility SLO, one input per risk class.
+ *
+ * `ops.lc_description_outcome_maturity` (V0006) reads the document's own
+ * `outcomeMaturityDays` to decide when a verified description change releases
+ * the launch allowance it occupies, and `ListingResponsibilitySchedule` reads
+ * the same key for the ordinary clock and `necessaryRisk.outcomeMaturityDays`
+ * for the risk clock. Those are the keys edited here; every other key of the
+ * document is carried over untouched.
+ */
+function MaturityField({ value, onChange }: ControlProps): React.JSX.Element {
+  const parsed = parseJsonText(value);
+  const document = parsed.ok && isRecord(parsed.value) ? parsed.value : undefined;
+  if (document === undefined) {
+    return <Alert type="warning" showIcon title={text.decisionMaturityUnreadable} />;
+  }
+  const riskValue = document.necessaryRisk;
+  const risk = isRecord(riskValue) ? riskValue : undefined;
+  const write = (next: Record<string, unknown>): void => {
+    onChange?.(JSON.stringify(next, null, 2));
+  };
+  const withDays = (
+    target: Record<string, unknown>,
+    days: number | null,
+  ): Record<string, unknown> => {
+    const next = { ...target };
+    if (days === null) delete next.outcomeMaturityDays;
+    else next.outcomeMaturityDays = days;
+    return next;
+  };
+  return (
+    <Flex vertical gap={8}>
+      <Flex gap={16} wrap align="flex-start">
+        <MaturityDays
+          label={text.decisionMaturityOrdinary}
+          path="RESPONSIBILITY_SLO.outcomeMaturityDays"
+          value={document.outcomeMaturityDays}
+          onChange={(days) => {
+            write(withDays(document, days));
+          }}
+        />
+        {risk !== undefined && (
+          <MaturityDays
+            label={text.decisionMaturityRisk}
+            path="RESPONSIBILITY_SLO.necessaryRisk.outcomeMaturityDays"
+            value={risk.outcomeMaturityDays}
+            onChange={(days) => {
+              write({ ...document, necessaryRisk: withDays(risk, days) });
+            }}
+          />
+        )}
+      </Flex>
+      {risk === undefined && (
+        <Typography.Text type="warning">{text.decisionMaturityNoRisk}</Typography.Text>
+      )}
+      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+        {text.decisionMaturityKeep}
+      </Typography.Text>
+    </Flex>
+  );
+}
+
+/** One risk class's day count, with the document key it writes named beneath it. */
+function MaturityDays({
+  label,
+  path,
+  value,
+  onChange,
+}: {
+  readonly label: string;
+  readonly path: string;
+  readonly value: unknown;
+  readonly onChange: (days: number | null) => void;
+}): React.JSX.Element {
+  return (
+    <Flex vertical gap={2} style={{ flex: '0 1 240px' }}>
+      <Typography.Text>{label}</Typography.Text>
+      <InputNumber
+        aria-label={label}
+        style={{ width: '100%' }}
+        min={1}
+        max={3660}
+        precision={0}
+        suffix={text.decisionMaturityDaysUnit}
+        value={typeof value === 'number' ? value : null}
+        onChange={onChange}
+      />
+      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+        {text.decisionMaturityPath(path)}
+      </Typography.Text>
+    </Flex>
+  );
+}
+
+/** Which allowance axes a launch occupies. */
+function AxesField({ value, onChange }: ControlProps): React.JSX.Element {
+  const parsed = parseJsonText(value);
+  if (!parsed.ok) {
+    return <Alert type="warning" showIcon title={text.decisionAllowanceUnreadable} />;
+  }
+  const document = parsed.value;
+  return (
+    <Checkbox.Group<string>
+      value={[...chosenAxes(value)]}
+      options={ALLOWANCE_AXES.map((axis) => ({
+        value: axis,
+        label: codeText('allowanceAxis', axis),
+      }))}
+      onChange={(next) => {
+        const axes = ALLOWANCE_AXES.filter((axis) => next.includes(axis));
+        onChange?.(JSON.stringify(isRecord(document) ? { ...document, axes } : axes, null, 2));
+      }}
+    />
+  );
+}
+
+/** The disposal reserve of every axis the package occupies. */
+function ReserveField({ value, onChange }: ControlProps): React.JSX.Element {
+  const form = Form.useFormInstance<DraftValues>();
+  const axesText = Form.useWatch(
+    (values: DraftValues) => values.values?.ALLOWANCE_AXES?.json,
+    form,
+  );
+  const parsed = parseJsonText(value);
+  const document = parsed.ok && isRecord(parsed.value) ? parsed.value : undefined;
+  if (document === undefined) {
+    return <Alert type="warning" showIcon title={text.decisionAllowanceUnreadable} />;
+  }
+  const axes = chosenAxes(axesText);
+  if (axes.length === 0) {
+    return <Typography.Text type="secondary">{text.decisionAllowanceNoAxes}</Typography.Text>;
+  }
+  return (
+    <Flex gap={16} wrap align="flex-start">
+      {axes.map((axis) => {
+        const amount = document[axis];
+        const name = codeText('allowanceAxis', axis);
+        return (
+          <Flex key={axis} vertical gap={2} style={{ flex: '0 1 220px' }}>
+            <Typography.Text>{name}</Typography.Text>
+            <InputNumber
+              aria-label={name}
+              style={{ width: '100%' }}
+              min={0}
+              value={typeof amount === 'number' ? amount : null}
+              onChange={(next) => {
+                // Replaced where it already stands, so the document an operator
+                // reads in 「口径声明」 keeps its order; cleared it leaves, and the
+                // combination check names the axis that has lost its reserve.
+                const entries = Object.entries(document).flatMap<[string, unknown]>(
+                  ([key, held]) =>
+                    key !== axis ? [[key, held]] : next === null ? [] : [[key, next]],
+                );
+                if (!Object.hasOwn(document, axis) && next !== null) entries.push([axis, next]);
+                onChange?.(JSON.stringify(Object.fromEntries(entries), null, 2));
+              }}
+            />
+          </Flex>
         );
       })}
     </Flex>
@@ -877,6 +1502,7 @@ function CategoryEditor({
   const fields = Form.useWatch((values: DraftValues) => values.values?.[code], form);
   const found = categorySpec(code);
   const shape = found?.shape ?? 'JSON';
+  const sibling = SHARED_WINDOW[code];
   const help = calibrationCategoryHelp[code];
   const example = exampleFields(code, purpose);
   const path = (field: keyof ValueFields): (string | number)[] => ['values', code, field];
@@ -991,13 +1617,7 @@ function CategoryEditor({
             style={{ flex: '0 1 140px', marginBottom: 8 }}
             rules={fieldRules(code, 'windowDays')}
           >
-            <Select
-              placeholder={text.windowPlaceholder}
-              options={WINDOW_DAYS.map((days) => ({
-                value: days,
-                label: text.valueWindowDays(days),
-              }))}
-            />
+            <WindowField {...(sibling === undefined ? {} : { sibling })} />
           </Form.Item>
         )}
       </Flex>
@@ -1066,6 +1686,72 @@ function shortValue(fields: ValueFields | undefined, code: string): string {
   return compact.length > 80 ? `${compact.slice(0, 80)}…` : compact;
 }
 
+/** The four decisions said in plain language, for the review step to lead with. */
+function decisionSummary(
+  all: DraftValues,
+): { key: string; label: string; children: React.ReactNode }[] {
+  const values = all.values ?? {};
+  const missing = text.reviewDecisionMissing;
+  const percent = (fields: ValueFields | undefined): string => {
+    const trimmed = fields?.numeric?.trim() ?? '';
+    return DECIMAL.test(trimmed) ? `${shiftDecimal(trimmed, 2)}%` : missing;
+  };
+  const amount = (value: unknown): string => (typeof value === 'number' ? String(value) : missing);
+  const window = values.ORDINARY_TRIGGER_EXPOSURE?.windowDays;
+  const validity = values.APPROVAL_VALIDITY?.numeric?.trim() ?? '';
+  const slo = parseJsonText(values.RESPONSIBILITY_SLO?.json);
+  const document = slo.ok && isRecord(slo.value) ? slo.value : undefined;
+  const riskValue = document === undefined ? undefined : document.necessaryRisk;
+  const risk = isRecord(riskValue) ? riskValue : undefined;
+  const axes = chosenAxes(values.ALLOWANCE_AXES?.json);
+  const reserveParsed = parseJsonText(values.ALLOWANCE_RESERVE?.json);
+  const reserve = reserveParsed.ok && isRecord(reserveParsed.value) ? reserveParsed.value : {};
+  return [
+    {
+      key: 'exposure',
+      label: text.decisionExposure,
+      children: text.reviewDecisionExposure(
+        percent(values.ORDINARY_TRIGGER_EXPOSURE),
+        percent(values.MATERIAL_TRIGGER_EXPOSURE),
+        window === undefined ? missing : text.valueWindowDays(window),
+      ),
+    },
+    {
+      key: 'approval',
+      label: text.decisionApproval,
+      children: text.reviewDecisionApproval(
+        validity === '' ? missing : validity,
+        unitName(values.APPROVAL_VALIDITY?.unitCode),
+      ),
+    },
+    {
+      key: 'maturity',
+      label: text.decisionMaturity,
+      children: [
+        text.reviewDecisionMaturity(amount(document?.outcomeMaturityDays)),
+        ...(risk === undefined
+          ? []
+          : [text.reviewDecisionMaturityRisk(amount(risk.outcomeMaturityDays))]),
+      ].join(' · '),
+    },
+    {
+      key: 'allowance',
+      label: text.decisionAllowance,
+      children:
+        axes.length === 0
+          ? text.decisionAllowanceNoAxes
+          : axes
+              .map((axis) =>
+                text.reviewDecisionAllowanceAxis(
+                  codeText('allowanceAxis', axis),
+                  amount(reserve[axis]),
+                ),
+              )
+              .join('、'),
+    },
+  ];
+}
+
 function ReviewStep({
   overview,
   catalogue,
@@ -1105,6 +1791,15 @@ function ReviewStep({
 
   return (
     <Flex vertical gap={16}>
+      {all.purposeCode !== undefined && (
+        <Descriptions
+          bordered
+          size="small"
+          title={text.reviewDecisions}
+          column={1}
+          items={decisionSummary(all)}
+        />
+      )}
       <Descriptions
         bordered
         size="small"

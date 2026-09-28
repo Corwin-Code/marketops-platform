@@ -244,7 +244,67 @@ export const calibrationText = {
   profitJsonHelp:
     '可留空。填写时须为 {"currentAccountingComparisons": {...}}，键为本组织的 Listing ID。',
   scopeNote: '适用说明',
+
+  // draft — the four decisions, always in view
+  decisionsTitle: '需要你决定',
+  decisionsHelp:
+    '这四项直接决定动作怎么判、什么时候还能再启动，请按真实业务逐项确认。其余参数是口径声明，已按用途预填，通常不需要改动。',
+  decisionCodes: (codes: readonly string[]) => codes.join(' · '),
+
+  decisionExposure: '敞口阈值',
+  decisionExposureEffect:
+    '按受影响变体的留存销售额占本店铺的比例判定：占比不高于普通阈值时判为普通动作，不低于重大阈值时判为重大动作；落在两者之间时重要性未确定。',
+  decisionExposureOrdinary: '普通阈值',
+  decisionExposureMaterial: '重大阈值',
+  decisionExposureWindow: '统计窗口',
+  decisionExposureWindowHelp:
+    '两个阈值共用同一个窗口，且必须是店铺真实具备的口径（本地目前只有 D30）。',
+  decisionExposurePercentHelp: '按百分比填写，存入时换算为 0–1 的比例。',
+
+  decisionApproval: '批准有效期',
+  decisionApprovalEffect: '审批通过后超过这个时长仍未执行，批准即失效，该动作必须重新审批。',
+  decisionApprovalValue: (unit: string) => `有效期（${unit}）`,
+
+  decisionMaturity: '效果观察期',
+  decisionMaturityEffect:
+    '描述修改经核实确认后，它占用的启动额度要等这段观察期满才释放；责任时钟的结果成熟时间也按它计算。',
+  decisionMaturityOrdinary: '普通动作',
+  decisionMaturityRisk: '必要风险动作',
+  decisionMaturityDaysUnit: '天',
+  decisionMaturityPath: (path: string) => `写入 ${path}`,
+  decisionMaturityKeep:
+    '文档里的确认时限、处理时限等其他字段保持不变，可在「口径声明」里直接改 JSON。',
+  decisionMaturityNoRisk:
+    '当前文档没有 necessaryRisk 段，必要风险动作的责任时钟会判为 SLO 未解析；如需要，请在「口径声明」里补齐。',
+  decisionMaturityUnreadable:
+    'RESPONSIBILITY_SLO 的 JSON 现在无法解析，请先在「口径声明」里修正，再回到这里设置观察期。',
+
+  decisionAllowance: '额度维度与保留',
+  decisionAllowanceEffect:
+    '启动时按每个维度检查「已发布额度 − 处置保留 − 已占用」是否够用：维度之间不能互相抵扣，任何一个维度不够就拒绝启动，且每个选中的维度都必须已有发布的额度。',
+  decisionAllowanceAxes: '占用哪些额度维度',
+  decisionAllowanceReserve: '处置保留',
+  decisionAllowanceReserveHelp: '为人工处置留出的余量，不计入可用额度；每个选中的维度都要填。',
+  decisionAllowanceNoAxes: '还没有选择额度维度。',
+  decisionAllowanceUnreadable: '额度维度或处置保留的 JSON 现在无法解析，请在「口径声明」里修正。',
+
+  // draft — the declarations, folded
+  declarationsTitle: '口径声明',
+  declarationsSummary: (count: number) => `共 ${String(count)} 类参数 · 已预填，通常不需要改动`,
+  declarationsHelp:
+    '这里是本用途要求的全部参数，包含上面四项决定的完整编辑器（数值、单位、适用说明、依据）。两处编辑的是同一份值，改动后互相同步。',
+  declarationsError: '有必须更正的参数',
+  declarationsWarning: '有提示需要确认',
+
   reviewSummary: '草稿概要',
+  reviewDecisions: '四项决定',
+  reviewDecisionExposure: (ordinary: string, material: string, window: string) =>
+    `普通 不高于 ${ordinary} · 重大 不低于 ${material}（${window}）`,
+  reviewDecisionApproval: (amount: string, unit: string) => `${amount} ${unit}`,
+  reviewDecisionMaturity: (ordinary: string) => `普通动作 ${ordinary} 天`,
+  reviewDecisionMaturityRisk: (risk: string) => `必要风险动作 ${risk} 天`,
+  reviewDecisionAllowanceAxis: (axis: string, reserve: string) => `${axis}（保留 ${reserve}）`,
+  reviewDecisionMissing: '未填写',
   reviewValues: '参数值',
   reviewFindings: '提交前检查',
   reviewErrors: '以下问题会被数据库拒绝，必须先更正',
