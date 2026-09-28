@@ -111,7 +111,12 @@ public class NormalizationDeclarationService {
             });
         }
         declared.forEach((field, source) -> validate(field, source, known.get(field), childPointer));
-        List<String> required = declarations.requiredFields(datasetKind);
+        List<String> required = new java.util.ArrayList<>(declarations.requiredFields(datasetKind));
+        if (!"LISTING".equals(datasetKind) && declared.containsKey(FactRecorder.ITEM_KEY)) {
+            // An item identifier stands in for the listing and variant keys: the
+            // fact recorder resolves it through what the catalog recorded.
+            required.removeAll(FactRecorder.VARIANT_KEYS);
+        }
         if (!declared.keySet().containsAll(required)) {
             // A declaration that cannot produce the fields a fact needs would
             // reject every record it read. Refusing it now is more useful than
@@ -172,7 +177,7 @@ public class NormalizationDeclarationService {
                     });
                 }
             }
-            case "OBSERVATION_TIME" -> {
+            case "OBSERVATION_TIME", "WINDOW_START", "WINDOW_END" -> {
                 if (!"INSTANT".equals(valueKind) || source.pointer() != null
                         || source.value() != null || source.valueMap() != null) {
                     throw invalid();
@@ -196,7 +201,8 @@ public class NormalizationDeclarationService {
     /**
      * Where one declared field comes from.
      *
-     * @param kind {@code POINTER}, {@code PARENT_POINTER}, {@code OBSERVATION_TIME} or {@code CONSTANT}
+     * @param kind {@code POINTER}, {@code PARENT_POINTER}, {@code OBSERVATION_TIME},
+     *        {@code WINDOW_START}, {@code WINDOW_END} or {@code CONSTANT}
      * @param pointer the JSON pointer for the two pointer kinds
      * @param value the constant's text
      * @param valueMap native words translated into the canonical text, for the pointer kinds

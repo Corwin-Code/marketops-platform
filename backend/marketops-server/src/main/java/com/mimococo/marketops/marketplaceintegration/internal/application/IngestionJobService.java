@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.dao.DataAccessException;
@@ -186,14 +187,19 @@ public class IngestionJobService {
 
     /** Queue one MANUAL run; refused while the job is not ACTIVE or already has a live run. */
     @Transactional
-    public RunState enqueueManualRun(String operator, UUID jobId) {
+    public RunState enqueueManualRun(String operator, UUID jobId, Instant windowFrom,
+                                     Instant windowTo) {
         JobRow job = require(jobId);
         if (!"ACTIVE".equals(job.status())) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
+        if ((windowFrom == null) != (windowTo == null)
+                || (windowFrom != null && !windowFrom.isBefore(windowTo))) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         UUID runId;
         try {
-            runId = runner.enqueue(jobId, "MANUAL", null, null);
+            runId = runner.enqueue(jobId, "MANUAL", windowFrom, windowTo);
         } catch (DataAccessException refused) {
             if (LIVE_RUN_EXISTS.equals(sqlState(refused))) {
                 throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
@@ -203,8 +209,13 @@ public class IngestionJobService {
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.MARKETPLACE_INTEGRATION, operator, AuditAction.CREATE,
                 RUN_ENTITY_TYPE, runId, job.jobCode(),
-                Map.of("runKind", new FieldChange(null, "MANUAL"),
-                        "jobId", new FieldChange(null, jobId.toString())), null, null));
+                windowFrom == null
+                        ? Map.of("runKind", new FieldChange(null, "MANUAL"),
+                                "jobId", new FieldChange(null, jobId.toString()))
+                        : Map.of("runKind", new FieldChange(null, "MANUAL"),
+                                "jobId", new FieldChange(null, jobId.toString()),
+                                "window", new FieldChange(null, windowFrom + "/" + windowTo)),
+                null, null));
         return requireRun(runId);
     }
 
@@ -244,6 +255,16 @@ public class IngestionJobService {
     @Transactional(readOnly = true)
     public RunState run(UUID runId) {
         return requireRun(runId);
+    }
+
+    /**
+     * The job's run that has not come to rest. A job has at most one, and it
+     * blocks the next run until it finishes.
+     */
+    @Transactional(readOnly = true)
+    public Optional<RunState> liveRun(UUID jobId) {
+        require(jobId);
+        return runs.findLiveRun(jobId);
     }
 
     private JobRow require(UUID jobId) {

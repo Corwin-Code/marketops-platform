@@ -5,7 +5,8 @@ Run from the repository root. Every step except ``probe`` needs the local backen
 (``--api``, default http://127.0.0.1:8080). Every step takes ``--capability``:
 ``connectivity`` (POST /v1/roles, the default), ``catalog`` (product identity,
 names and barcodes from POST /v4/product/info/attributes), ``prices`` (POST
-/v5/product/info/prices) or ``stocks`` (POST /v4/product/info/stocks).
+/v5/product/info/prices), ``stocks`` (POST /v4/product/info/stocks) or ``traffic``
+(units ordered per SKU and UTC day from POST /v1/analytics/data; one run per day).
 
   probe      Call /v1/roles to check the key (read-only roles, expiry), then make
              the capability's real calls and keep every answer, together with the
@@ -126,7 +127,7 @@ HEADER_DEFINITIONS = (
 # Counts over the probe's own answers that decide whether a mapping can be
 # registered as it is. Nothing a record contains is printed.
 
-def inspect_prices(answers: list[dict]) -> tuple[list[str], str | None]:
+def inspect_prices(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
     items = [item for answer in answers for item in answer.get("items") or []]
     prices = [item.get("price") or {} for item in items]
     currencies = sorted({str(price.get("currency_code")) for price in prices})
@@ -146,7 +147,7 @@ STOCK_TYPES = {"fbo": "MARKETPLACE_FULFILLED", "fbs": "SELLER_FULFILLED", "rfbs"
                "fbp": "UNKNOWN"}
 
 
-def inspect_stocks(answers: list[dict]) -> tuple[list[str], str | None]:
+def inspect_stocks(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
     items = [item for answer in answers for item in answer.get("items") or []]
     seen_types: dict[str, int] = {}
     collisions, unknown = 0, set()
@@ -169,6 +170,73 @@ def inspect_stocks(answers: list[dict]) -> tuple[list[str], str | None]:
         refusal = (f"{collisions} product/fulfillment-mode pairs have more than one stock entry; one fact "
                    "per pair would keep only one of them, so the entries need summing first")
     return lines, refusal
+
+
+def catalog_skus(pilot: "Pilot") -> dict[str, str]:
+    """Ozon SKU -> product id, from the newest catalog probe kept as evidence."""
+    bundles = sorted(pilot.evidence_dir.glob("catalog-*-bundle.json"))
+    if not bundles:
+        return {}
+    bundle = json.loads(bundles[-1].read_text(encoding="utf-8"))
+    found = {}
+    for page in bundle["pages"]:
+        if not page.get("records"):
+            continue
+        answer = json.loads((pilot.evidence_dir / page["file"]).read_text(encoding="utf-8"))
+        for item in answer.get("result") or []:
+            if item.get("sku") is not None:
+                found[str(item["sku"])] = str(item.get("id"))
+    return found
+
+
+def inspect_traffic(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    rows = [row for answer in answers for row in ((answer.get("result") or {}).get("data") or [])]
+    metrics = TRAFFIC_METRICS[TRAFFIC_METRIC_SET]
+    known = catalog_skus(pilot)
+    skus, malformed, fractional = [], 0, 0
+    for row in rows:
+        dimensions, values = row.get("dimensions"), row.get("metrics")
+        if not (isinstance(dimensions, list) and dimensions and isinstance(dimensions[0], dict)
+                and isinstance(values, list) and len(values) == len(metrics)):
+            malformed += 1
+            continue
+        skus.append(str(dimensions[0].get("id")))
+        fractional += sum(1 for value in values
+                          if not isinstance(value, (int, float)) or float(value) != int(float(value)))
+    unknown = sum(1 for sku in set(skus) if sku not in known)
+    lines = [f"traffic: {len(rows)} rows, {len(set(skus))} SKUs ({unknown} not in the catalog probe), "
+             f"metrics {metrics}, non-integral values {fractional}"]
+    refusal = None
+    if malformed:
+        refusal = f"{malformed} rows do not carry one dimension and {len(metrics)} metric values"
+    elif fractional:
+        refusal = f"{fractional} metric values are not whole numbers; the counts cannot be stored as integers"
+    elif not known:
+        refusal = "no catalog probe evidence; probe the catalog first so SKUs can be matched"
+    return lines, refusal
+
+
+# Premium Plus decides which analytics metrics a store may ask for (official docs,
+# 2026-09-29): revenue and ordered_units for every seller; views, sessions and cart
+# additions only with Premium Plus. The metric order fixes the /metrics/N pointers.
+TRAFFIC_METRICS = {
+    "premium": ["hits_view_search", "session_view_pdp", "hits_tocart", "ordered_units"],
+    "basic": ["ordered_units"],
+}
+TRAFFIC_FIELDS = {"hits_view_search": "impressions", "session_view_pdp": "visits",
+                  "hits_tocart": "addToCart", "ordered_units": "orderedUnits"}
+# Probed 2026-09-29: the pilot store has no Premium Plus, and Ozon does not refuse
+# metrics a store may not ask for — it drops them silently (four requested, one
+# value per row came back), which would shift every positional pointer. Only the
+# metrics open to every seller are registered.
+TRAFFIC_METRIC_SET = "basic"
+
+
+def traffic_body(window_from: str, window_to: str, limit: str, offset: str) -> str:
+    """The analytics request exactly as the registered template renders it."""
+    metrics = ",".join(f'"{metric}"' for metric in TRAFFIC_METRICS[TRAFFIC_METRIC_SET])
+    return (f'{{"date_from":"{window_from}","date_to":"{window_to}","dimension":["sku"],"filters":[],'
+            f'"limit":{limit},"metrics":[{metrics}],"offset":{offset}}}')
 
 
 # One entry per capability: its registry rows, the job that reads it, and the
@@ -222,18 +290,19 @@ CAPABILITIES = {
                 # last_id; a request with it is answered 404 {"code": 5}.
                 "continuation_end_rule": "SHORT_PAGE_OR_NOT_FOUND", "records_pointer": "/result",
             },
-            "probe_body": lambda cursor: {"filter": {"visibility": "ALL"}, "last_id": cursor, "limit": PAGE_SIZE},
+            "probe_body": lambda cursor, window: {"filter": {"visibility": "ALL"}, "last_id": cursor, "limit": PAGE_SIZE},
             "token_key": "last_id",
             "records_key": "result",
         },
         "job": {"suffix": "catalog", "dataset": "LISTING", "display": "Ozon 试点：商品目录"},
         "inspect": None,
         # Ozon's product id is both the listing and its only variant; the seller's
-        # offer id is the stock-keeping unit a company matches on.
+        # offer id is the stock-keeping unit a company matches on. Version 2 also
+        # records the Ozon SKU, which analytics and finance answers name products by.
         "mapping": {
-            "dataset": "LISTING", "version": 1, "record_pointer": "/result",
+            "dataset": "LISTING", "version": 2, "record_pointer": "/result",
             "fields": {"nativeListingKey": "/id", "nativeVariantKey": "/id", "nativeSkuKey": "/offer_id",
-                       "title": "/name", "nativeBarcode": "/barcode"},
+                       "title": "/name", "nativeBarcode": "/barcode", "nativeItemKey": "/sku"},
         },
     },
     "prices": {
@@ -259,7 +328,7 @@ CAPABILITIES = {
                 # cursor; a request with it answers 200 with no items, never 404.
                 "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/items",
             },
-            "probe_body": lambda cursor: {"cursor": cursor, "filter": {"visibility": "ALL"}, "limit": PAGE_SIZE},
+            "probe_body": lambda cursor, window: {"cursor": cursor, "filter": {"visibility": "ALL"}, "limit": PAGE_SIZE},
             "token_key": "cursor",
             "records_key": "items",
         },
@@ -300,7 +369,7 @@ CAPABILITIES = {
                 # cursor; a request with it answers 200 with no items, never 404.
                 "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/items",
             },
-            "probe_body": lambda cursor: {"cursor": cursor, "filter": {"visibility": "ALL"}, "limit": PAGE_SIZE},
+            "probe_body": lambda cursor, window: {"cursor": cursor, "filter": {"visibility": "ALL"}, "limit": PAGE_SIZE},
             "token_key": "cursor",
             "records_key": "items",
         },
@@ -319,6 +388,51 @@ CAPABILITIES = {
             },
         },
         "inspect": inspect_stocks,
+    },
+    "traffic": {
+        "code": "ozon-traffic-read",
+        "display": "Ozon analytics: units ordered per SKU and day (with Premium Plus also views, "
+                   "sessions and cart additions)",
+        "description": "Reads one UTC day of analytics per run, grouped by SKU (POST /v1/analytics/data; "
+                       "official docs checked 2026-09-29).",
+        "manifest": "traffic-latest.json",
+        "endpoint": {
+            "code": "ozon-analytics-data-v1", "api_version": "v1", "schema_version": "AnalyticsGetDataResponse",
+            "rate_note": "Ozon: at most 1 request per minute; without Premium Plus at most 50 requests a day "
+                         "and only the last 3 months. Our cap: 1/min, 100 rows per page. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "One UTC day per run: the run's window is the day asked for.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/analytics/data",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": traffic_body("{windowStartUtcDate}", "{windowEndUtcDate}", "{limit}", "{offset}"),
+                "response_content_type": "application/json", "continuation_pointer": None,
+                # The answer carries no cursor: the next offset is the last one
+                # plus the page size, and a short page is the last.
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 1,
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/result/data",
+            },
+            "probe_body": lambda cursor, window: json.loads(
+                traffic_body(window["from"], window["to"], str(PAGE_SIZE), cursor or "0")),
+            "token_key": None,
+            "records_key": ("result", "data"),
+            "computed": "OFFSET",
+            # Documented as one request a minute; on 2026-09-29 a call about 62 s
+            # after the previous one was still answered 429, so calls keep 90 s apart.
+            "probe_pause": 90,
+            "window": "DAY",
+        },
+        "job": {"suffix": "traffic", "dataset": "TRAFFIC", "display": "Ozon 试点：流量与下单"},
+        # Rows name the Ozon SKU, not the product id listings are keyed by: the
+        # SKU is resolved through the catalog, which records it on each variant.
+        "mapping": {
+            "dataset": "TRAFFIC", "version": 1, "record_pointer": "/result/data", "child_pointer": None,
+            "fields": {"nativeItemKey": "/dimensions/0/id",
+                       **{TRAFFIC_FIELDS[metric]: f"/metrics/{index}"
+                          for index, metric in enumerate(TRAFFIC_METRICS[TRAFFIC_METRIC_SET])}},
+            "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
+        },
+        "inspect": inspect_traffic,
     },
 }
 
@@ -632,8 +746,15 @@ def check_key(pilot: Pilot, args: argparse.Namespace, client_id: str, api_key: s
             "sourceFile": source_file, "sourceDigest": source_digest}
 
 
+def records_in(answer: dict, key) -> object:
+    """The records of one answer, at a top-level key or a path of keys."""
+    for part in (key if isinstance(key, tuple) else (key,)):
+        answer = answer.get(part) if isinstance(answer, dict) else None
+    return answer
+
+
 def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_key: str,
-                context: ssl.SSLContext) -> tuple[str, str] | None:
+                context: ssl.SSLContext, window: dict | None) -> tuple[str, str] | None:
     """Page one capability's endpoint to its end and keep every answer as a bundle.
 
     The bundle is what the verification case points at: each page's own file
@@ -654,9 +775,13 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     short_rule = rule in ("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND")
     stamp = f"{key['testedAt']:%Y%m%d-%H%M%S}z"
     suffix = capability["job"]["suffix"]
+    # A method with its own rate limit is probed no faster than it allows.
+    pause = endpoint.get("probe_pause", PROBE_PAUSE_SECONDS)
+    computed = endpoint.get("computed")
 
     def call(cursor: str, file_name: str) -> tuple[dict, dict | None]:
-        status, content_type, body = post_ozon(path, endpoint["probe_body"](cursor), client_id, api_key, context)
+        status, content_type, body = post_ozon(path, endpoint["probe_body"](cursor, window), client_id,
+                                               api_key, context)
         private_write(pilot.evidence_dir / file_name, body)
         try:
             answer = json.loads(body) if content_type == "application/json" else None
@@ -668,7 +793,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     pages, answers, cursor, end_signal, total_records, follow_up = [], [], "", None, 0, None
     for index in range(MAXIMUM_PROBE_PAGES):
         if index:
-            time.sleep(PROBE_PAUSE_SECONDS)
+            time.sleep(pause)
         page, answer = call(cursor, f"{suffix}-{stamp}-p{index:03d}.json")
         pages.append(page)
         if page["status"] == 404 and index > 0 and rule == "SHORT_PAGE_OR_NOT_FOUND":
@@ -678,8 +803,12 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             detail = f" code={answer.get('code')} message={answer.get('message')}" if answer else ""
             print(f"POST {path} page {index + 1} -> HTTP {page['status']}{detail}; nothing recorded")
             return None
-        records = answer.get(endpoint["records_key"])
-        token = answer.get(endpoint["token_key"])
+        records = records_in(answer, endpoint["records_key"])
+        if computed == "OFFSET":
+            # The answer carries no cursor: the next offset is this one plus a page.
+            token = str(int(cursor or "0") + PAGE_SIZE)
+        else:
+            token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
             print(f"page {index + 1} does not have the documented shape ({endpoint['records_key']}[], "
                   f"{endpoint['token_key']}); nothing recorded")
@@ -693,9 +822,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             # Evidence that the short page really was the last one: the next
             # request must answer "not found" or no records at all.
             if token:
-                time.sleep(PROBE_PAUSE_SECONDS)
+                time.sleep(pause)
                 follow_up, after = call(token, f"{suffix}-{stamp}-after.json")
-                more = after.get(endpoint["records_key"]) if after else None
+                more = records_in(after, endpoint["records_key"]) if after else None
                 follow_up["records"] = len(more) if isinstance(more, list) else None
                 if follow_up["status"] == 200 and follow_up["records"]:
                     print("a short page was followed by more records; the short-page rule would lose "
@@ -708,6 +837,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                           f"which the registered rule {rule} does not read as the end; nothing recorded")
                     return None
             break
+        if computed == "OFFSET":
+            cursor = token
+            continue
         if endpoint["token_key"] not in answer:
             print(f"page {index + 1} has no {endpoint['token_key']}; nothing recorded")
             return None
@@ -741,7 +873,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     # Whether the registered mapping can read these answers as they are.
     inspection = []
     if capability.get("inspect") is not None:
-        inspection, refusal = capability["inspect"](answers)
+        inspection, refusal = capability["inspect"](answers, pilot)
         for line in inspection:
             print(line)
         if refusal:
@@ -751,7 +883,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     bundle = {"capability": capability["code"], "endpoint": endpoint["code"], "path": path,
               "testedAt": iso(key["testedAt"]), "pageSize": PAGE_SIZE, "endRule": rule,
               "endSignal": end_signal, "records": total_records, "pages": pages,
-              "followUp": follow_up, "inspection": inspection}
+              "followUp": follow_up, "inspection": inspection, "window": window}
     bundle_name = f"{capability['job']['suffix']}-{stamp}-bundle.json"
     data = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     private_write(pilot.evidence_dir / bundle_name, data)
@@ -771,7 +903,12 @@ def command_probe(args: argparse.Namespace) -> int:
     if capability["endpoint"]["definition"]["path_template"] == ROLES_PATH:
         evidence_name, evidence_digest = key["rolesFile"], key["rolesDigest"]
     else:
-        probed = probe_pages(pilot, capability, key, client_id, api_key, context)
+        window = None
+        if capability["endpoint"].get("window") == "DAY":
+            day = args.date or (utc_now() - timedelta(days=1)).strftime("%Y-%m-%d")
+            window = {"from": day, "to": day}
+            print(f"probing the UTC day {day}")
+        probed = probe_pages(pilot, capability, key, client_id, api_key, context, window)
         if probed is None:
             return 1
         evidence_name, evidence_digest = probed
@@ -1022,9 +1159,15 @@ def command_setup(args: argparse.Namespace) -> int:
         same = next((m for m in existing if m.get("mappingVersion") == mapping["version"]), None)
         if same is None:
             live = [m for m in existing if m.get("status") == "ACTIVE"]
-            if live:
+            if live and not args.supersede_mapping:
                 sys.exit(f"another live {PLATFORM}/{mapping['dataset']} mapping exists "
-                         f"(version {live[0].get('mappingVersion')}); retire it on purpose first")
+                         f"(version {live[0].get('mappingVersion')}); pass --supersede-mapping to retire it "
+                         f"in favour of version {mapping['version']}")
+            for old in live:
+                admin.require("POST", f"/normalization-mappings/{old['id']}/retirement", {
+                    "reason": f"superseded by version {mapping['version']}",
+                    "expectedVersion": old.get("version", 0)}, 204)
+                result["retiredMapping"] = f"{PLATFORM}/{mapping['dataset']} v{old.get('mappingVersion')}"
             created = admin.require("POST", "/normalization-mappings", {
                 "platformCode": PLATFORM, "datasetKind": mapping["dataset"],
                 "mappingVersion": mapping["version"], "recordPointer": mapping["record_pointer"],
@@ -1046,7 +1189,8 @@ def command_setup(args: argparse.Namespace) -> int:
                    "storeId": store["id"], "capabilityId": registered["id"],
                    "endpointId": endpoint["id"], "jobId": job["id"]})
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    print("next: the registry rows are still UNVERIFIED; run the verify step with two Owners")
+    if endpoint.get("verificationState") != "VERIFIED":
+        print("next: the registry rows are still UNVERIFIED; run the verify step with two Owners")
     return 0
 
 
@@ -1163,6 +1307,16 @@ def command_verify(args: argparse.Namespace) -> int:
     if account is None or registered is None or endpoint is None:
         sys.exit("the pilot account, capability or endpoint is missing; run the setup step first")
 
+    marker = pilot.evidence_dir / f"{capability['job']['suffix']}-verified.json"
+    if not args.again and marker.is_file():
+        done = json.loads(marker.read_text(encoding="utf-8"))
+        if (done.get("evidenceSha256") == manifest["accountEvidenceSha256"]
+                and parse_instant(done["validUntil"]) > utc_now()
+                and endpoint.get("verificationState") == "VERIFIED"):
+            print(f"{capability['code']} is already verified with this evidence (case {done['case']}, valid "
+                  f"until {done['validUntil']}); nothing submitted. Pass --again to submit a new case.")
+            return 0
+
     print("Two different Owners are needed: one submits the evidence, the other approves it.")
     submitter_name, submitter_token = sign_in(args, "Submitting Owner")
     reviewer_name, reviewer_token = sign_in(args, "Reviewing Owner")
@@ -1219,6 +1373,10 @@ def command_verify(args: argparse.Namespace) -> int:
     reviewer.call("POST", f"/cases/{case['id']}/review",
                   {"expectedVersion": submitted["version"], "approve": True}, 204)
     approved = reviewer.call("GET", f"/cases/{case['id']}", None, 200)
+    if approved.get("state") == "APPROVED":
+        private_write(marker, (json.dumps({"case": case["id"], "evidenceSha256": manifest["accountEvidenceSha256"],
+                                           "validUntil": approved.get("validUntil") or manifest["validUntil"],
+                                           "reviewedBy": reviewer_name}, indent=2) + "\n").encode())
     print(json.dumps({"capability": capability["code"], "case": case["id"], "state": approved.get("state"),
                       "currentEvidence": approved.get("currentEvidence"),
                       "validUntil": approved.get("validUntil"), "reviewedBy": reviewer_name},
@@ -1242,12 +1400,79 @@ def pilot_job(args: argparse.Namespace) -> tuple[Admin, Pilot, dict, dict]:
     return admin, pilot, capability, job
 
 
+MAXIMUM_RUN_DAYS = 30
+
+
+def run_windows(capability: dict, args: argparse.Namespace) -> list[dict | None]:
+    """One window per run: whole UTC days, oldest first, for a windowed capability."""
+    if capability["endpoint"].get("window") != "DAY":
+        return [None]
+    last = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc) if args.date \
+        else utc_now().replace(hour=0, minute=0, second=0) - timedelta(days=1)
+    if not 1 <= args.days <= MAXIMUM_RUN_DAYS:
+        sys.exit(f"--days must be between 1 and {MAXIMUM_RUN_DAYS}")
+    first = last - timedelta(days=args.days - 1)
+    return [{"windowFrom": iso(first + timedelta(days=offset)), "windowTo": iso(first + timedelta(days=offset + 1))}
+            for offset in range(args.days)]
+
+
+RUN_RETRIES = 3
+
+
+def execute(admin: Admin, run_id: str, pause: float) -> dict:
+    """Execute one run; a throttled or interrupted call is retried in place.
+
+    A run waiting to retry blocks the job's next run, so it is finished here
+    rather than left behind.
+    """
+    outcome = admin.require("POST", f"/ingestion-runs/{run_id}/execution", {}, 200)
+    for _ in range(RUN_RETRIES):
+        if outcome.get("run", {}).get("state") != "RETRY_WAIT":
+            break
+        time.sleep(max(pause, 30))
+        outcome = admin.require("POST", f"/ingestion-runs/{run_id}/execution", {}, 200)
+    return outcome
+
+
+def report(outcome: dict, window: dict | None) -> None:
+    run = outcome.get("run", {})
+    if window is None and not run.get("windowFrom"):
+        print(json.dumps(outcome, ensure_ascii=False, indent=2))
+        return
+    day = (window or {}).get("windowFrom") or run.get("windowFrom") or ""
+    print(f"{day[:10]}: run {run.get('state')}, attempt {run.get('attemptNo')}, "
+          f"{outcome.get('pagesStored')} pages ({outcome.get('reason')})")
+
+
 def command_run(args: argparse.Namespace) -> int:
-    admin, _, _, job = pilot_job(args)
-    run = admin.require("POST", f"/ingestion-jobs/{job['id']}/runs", {}, 201)
-    outcome = admin.require("POST", f"/ingestion-runs/{run['id']}/execution", {}, 200)
-    print(json.dumps(outcome, ensure_ascii=False, indent=2))
-    return 0 if outcome.get("run", {}).get("state") == "SUCCEEDED" else 1
+    admin, _, capability, job = pilot_job(args)
+    windows = run_windows(capability, args)
+    pause = capability["endpoint"].get("probe_pause", 0)
+    # A run an earlier attempt left unfinished blocks every new one: finish it first.
+    status, live = admin.call("GET", f"/ingestion-jobs/{job['id']}/live-run")
+    if status == 200 and live:
+        if live.get("state") not in ("QUEUED", "RETRY_WAIT"):
+            sys.exit(f"run {live['id']} is {live.get('state')}; wait for it or resolve it first")
+        print(f"finishing the unfinished run {live['id']} first")
+        outcome = execute(admin, live["id"], pause)
+        report(outcome, None)
+        if outcome.get("run", {}).get("state") != "SUCCEEDED":
+            print("stopped: the unfinished run did not succeed; no new run was started")
+            return 1
+        time.sleep(pause)
+    for index, window in enumerate(windows):
+        if index:
+            # The method's own rate limit (analytics: one call a minute, kept 90 s apart).
+            time.sleep(pause)
+        run = admin.require("POST", f"/ingestion-jobs/{job['id']}/runs", window or {}, 201)
+        outcome = execute(admin, run["id"], pause)
+        report(outcome, window)
+        state = outcome.get("run", {}).get("state")
+        if state != "SUCCEEDED":
+            if index + 1 < len(windows):
+                print(f"stopped: run {run['id']} is {state}; the remaining days were not read")
+            return 1
+    return 0
 
 
 def command_normalize(args: argparse.Namespace) -> int:
@@ -1282,6 +1507,7 @@ def main(argv: list[str] | None = None) -> int:
     probe.add_argument("--ca-file", help="trusted root bundle for api-seller.ozon.ru")
     probe.add_argument("--official-source-file", help="the OpenAPI document saved from "
                                                       f"{OFFICIAL_SOURCE_URL} in a browser")
+    probe.add_argument("--date", help="UTC day a windowed capability is probed with (default: yesterday)")
     probe.add_argument("--allow-write-roles", action="store_true",
                        help="record evidence even though the key has roles that can change the store")
     probe.set_defaults(handler=command_probe)
@@ -1290,6 +1516,8 @@ def main(argv: list[str] | None = None) -> int:
     common(setup)
     setup.add_argument("--legal-entity-code", help="legal entity code when there is more than one")
     setup.add_argument("--display-name", default="Ozon 试点店铺", help="account and store display name")
+    setup.add_argument("--supersede-mapping", action="store_true",
+                       help="retire the live older normalization mapping in favour of this version")
     setup.set_defaults(handler=command_setup)
 
     reviewer = commands.add_parser("reviewer", help="make a second Keycloak user an Owner who can review")
@@ -1309,10 +1537,15 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--redirect-uri", default=DEFAULT_REDIRECT_URI, help="registered console redirect URI")
     verify.add_argument("--audience", default=DEFAULT_AUDIENCE, help="API audience")
     verify.add_argument("--oidc-ca-file", help=f"CA for the issuer; default: {LOCAL_OIDC_CA} when present")
+    verify.add_argument("--again", action="store_true",
+                        help="submit a new case even though this evidence is already verified")
     verify.set_defaults(handler=command_verify)
 
     run = commands.add_parser("run", help="queue and execute one manual run of the capability's job")
     common(run)
+    run.add_argument("--date", help="last UTC day a windowed capability reads (default: yesterday)")
+    run.add_argument("--days", type=int, default=1,
+                     help=f"how many UTC days, one run each, ending at --date (1-{MAXIMUM_RUN_DAYS})")
     run.set_defaults(handler=command_run)
 
     normalize = commands.add_parser("normalize", help="normalize what the capability's job stored")

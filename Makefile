@@ -84,11 +84,11 @@ ai-provider: require-repo-root ## Install the model key and register the Qwen pr
 
 ozon-probe: require-repo-root ## Ozon pilot: check the key, keep CAPABILITY's evidence; OFFICIAL_SOURCE=<swagger.json>
 	@python3 scripts/ozon_pilot.py probe --pilot "$(PILOT)" --capability "$(CAPABILITY)" \
-	  $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)")
+	  $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)") $(if $(DATE),--date "$(DATE)")
 
 ozon-setup: require-repo-root ## Ozon pilot: register account, credential and CAPABILITY's rows (backend running)
 	@python3 scripts/ozon_pilot.py setup --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
-	  --capability "$(CAPABILITY)"
+	  --capability "$(CAPABILITY)" $(if $(SUPERSEDE),--supersede-mapping)
 
 ozon-reviewer: require-repo-root ## Ozon pilot: make Keycloak user SUBJECT a reviewing Owner (local)
 	@test -n "$(SUBJECT)" || { echo 'usage: make ozon-reviewer SUBJECT=<keycloak-user-id>' >&2; exit 2; }
@@ -96,11 +96,11 @@ ozon-reviewer: require-repo-root ## Ozon pilot: make Keycloak user SUBJECT a rev
 
 ozon-verify: require-repo-root ## Ozon pilot: submit and approve CAPABILITY's probe evidence as two Owners
 	@python3 scripts/ozon_pilot.py verify --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
-	  --capability "$(CAPABILITY)"
+	  --capability "$(CAPABILITY)" $(if $(AGAIN),--again)
 
-ozon-run: require-repo-root ## Ozon pilot: queue and execute one run of CAPABILITY's job (backend running)
+ozon-run: require-repo-root ## Ozon pilot: run CAPABILITY's job (windowed: DAYS=<n> DATE=<last UTC day>)
 	@python3 scripts/ozon_pilot.py run --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
-	  --capability "$(CAPABILITY)"
+	  --capability "$(CAPABILITY)" $(if $(DATE),--date "$(DATE)") $(if $(DAYS),--days "$(DAYS)")
 
 ozon-normalize: require-repo-root ## Ozon pilot: normalize what CAPABILITY's job stored (backend running)
 	@python3 scripts/ozon_pilot.py normalize --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \

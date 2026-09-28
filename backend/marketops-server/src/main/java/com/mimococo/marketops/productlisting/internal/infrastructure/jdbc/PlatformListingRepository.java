@@ -85,11 +85,12 @@ public class PlatformListingRepository {
     }
 
     /** Record an observation of one listing variant, inserting it the first time. */
-    public void observeVariant(PlatformListingVariant variant) {
-        insertVariant(variant, """
+    public void observeVariant(PlatformListingVariant variant, String nativeItemKey) {
+        insertVariant(variant, nativeItemKey, """
                         ON CONFLICT (platform_listing_id, native_variant_key) DO UPDATE
                         SET native_sku_key = EXCLUDED.native_sku_key,
                             native_barcode = EXCLUDED.native_barcode,
+                            native_item_key = EXCLUDED.native_item_key,
                             native_color_label = EXCLUDED.native_color_label,
                             native_size_label = EXCLUDED.native_size_label,
                             native_status = EXCLUDED.native_status,
@@ -106,23 +107,26 @@ public class PlatformListingRepository {
      * Insert a listing variant nobody has observed yet, and leave an existing one
      * exactly as it is: the caller only knows the variant's keys.
      */
-    public void mentionVariant(PlatformListingVariant variant) {
-        insertVariant(variant, "ON CONFLICT (platform_listing_id, native_variant_key) DO NOTHING");
+    public void mentionVariant(PlatformListingVariant variant, String nativeItemKey) {
+        insertVariant(variant, nativeItemKey,
+                "ON CONFLICT (platform_listing_id, native_variant_key) DO NOTHING");
     }
 
-    private void insertVariant(PlatformListingVariant variant, String conflictClause) {
+    private void insertVariant(PlatformListingVariant variant, String nativeItemKey,
+                               String conflictClause) {
         jdbc.sql("""
                         INSERT INTO core.platform_listing_variant (
                             id, organization_id, platform_listing_id, native_variant_key,
                             native_sku_key, native_barcode, native_color_label,
-                            native_size_label, native_status, first_seen_at, last_seen_at,
-                            status, created_at, updated_at, version)
+                            native_size_label, native_status, native_item_key, first_seen_at,
+                            last_seen_at, status, created_at, updated_at, version)
                         VALUES (:id, :organizationId, :listingId, :nativeVariantKey,
                             :nativeSkuKey, :nativeBarcode, :nativeColorLabel,
-                            :nativeSizeLabel, :nativeStatus, :seenAt, :seenAt,
-                            :status, :seenAt, :seenAt, 0)
+                            :nativeSizeLabel, :nativeStatus, :nativeItemKey, :seenAt,
+                            :seenAt, :status, :seenAt, :seenAt, 0)
                         """ + conflictClause)
                 .param("id", variant.id())
+                .param("nativeItemKey", nativeItemKey)
                 .param("organizationId", variant.organizationId())
                 .param("listingId", variant.platformListingId())
                 .param("nativeVariantKey", variant.nativeVariantKey())
@@ -165,6 +169,35 @@ public class PlatformListingRepository {
     }
 
     /** Load a listing variant by the marketplace's own key. */
+    /**
+     * The listing and variant keys of the one observed variant a store recorded
+     * under a marketplace item identifier. None, or more than one, resolves to
+     * nothing: an item that names two variants cannot be attributed to either.
+     */
+    public Optional<ItemKeys> findKeysByItem(UUID storeId, String nativeItemKey) {
+        List<ItemKeys> found = jdbc.sql("""
+                        SELECT listing.native_listing_key, variant.native_variant_key
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE listing.store_id = :storeId
+                           AND variant.organization_id = listing.organization_id
+                           AND variant.native_item_key = :nativeItemKey
+                           AND variant.status = 'OBSERVED'
+                         LIMIT 2
+                        """)
+                .param("storeId", storeId)
+                .param("nativeItemKey", nativeItemKey)
+                .query((rows, rowNumber) -> new ItemKeys(
+                        rows.getString("native_listing_key"), rows.getString("native_variant_key")))
+                .list();
+        return found.size() == 1 ? Optional.of(found.getFirst()) : Optional.empty();
+    }
+
+    /** The marketplace's own listing and variant keys behind one item identifier. */
+    public record ItemKeys(String nativeListingKey, String nativeVariantKey) {
+    }
+
     public Optional<PlatformListingVariant> findVariantByNativeKey(UUID listingId,
                                                                    String nativeVariantKey) {
         return jdbc.sql("""

@@ -136,6 +136,21 @@ public class PlatformCallSpecRepository {
                 .optional();
     }
 
+    /** The window a run asked its source for, when it asked for one. */
+    public Optional<com.mimococo.marketops.marketplaceintegration.IngestionJobDirectory.RunWindow> runWindow(
+            UUID runId) {
+        return jdbc.sql("""
+                        SELECT window_from, window_to FROM ops.ingestion_run
+                         WHERE id = :runId AND window_from IS NOT NULL AND window_to IS NOT NULL
+                        """)
+                .param("runId", runId)
+                .query((rows, rowNumber) -> new com.mimococo.marketops.marketplaceintegration
+                        .IngestionJobDirectory.RunWindow(
+                                rows.getTimestamp("window_from").toInstant(),
+                                rows.getTimestamp("window_to").toInstant()))
+                .optional();
+    }
+
     /** Atomically consumes the deployment-wide endpoint quota; an absent limit denies. */
     public boolean reserveCallBudget(UUID endpointId) {
         return Boolean.TRUE.equals(jdbc.sql("SELECT platform.reserve_endpoint_quota(:id)")

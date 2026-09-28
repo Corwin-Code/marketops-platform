@@ -3,6 +3,7 @@ package com.mimococo.marketops.marketplaceintegration.internal.application;
 import com.mimococo.marketops.marketplaceintegration.IngestionJobDirectory;
 import com.mimococo.marketops.marketplaceintegration.IngestionJobView;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IngestionJobRepository;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IngestionRunRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class IngestionJobDirectoryService implements IngestionJobDirectory {
 
     private final IngestionJobRepository jobs;
+    private final IngestionRunRepository runs;
 
-    IngestionJobDirectoryService(IngestionJobRepository jobs) {
+    IngestionJobDirectoryService(IngestionJobRepository jobs, IngestionRunRepository runs) {
         this.jobs = jobs;
+        this.runs = runs;
     }
 
     @Override
@@ -29,5 +32,13 @@ public class IngestionJobDirectoryService implements IngestionJobDirectory {
     @Transactional(readOnly = true)
     public List<IngestionJobView> jobs(UUID organizationId) {
         return jobs.listByOrganization(organizationId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RunWindow> runWindow(UUID runId) {
+        return runs.findRun(runId)
+                .filter(run -> run.windowFrom() != null && run.windowTo() != null)
+                .map(run -> new RunWindow(run.windowFrom(), run.windowTo()));
     }
 }

@@ -142,6 +142,21 @@ public class IngestionRunRepository {
                 .optional();
     }
 
+    /** The job's one run that has not come to rest, when there is one. */
+    public Optional<RunState> findLiveRun(UUID jobId) {
+        return jdbc.sql("""
+                        SELECT id, job_id, state, fence_token, lease_owner,
+                               lease_expires_at, attempt_no, last_call_seq, run_kind,
+                               window_from, window_to, failure_code
+                          FROM ops.ingestion_run
+                         WHERE job_id = :jobId
+                           AND state IN ('QUEUED', 'LEASED', 'RUNNING', 'RETRY_WAIT', 'BLOCKED')
+                        """)
+                .param("jobId", jobId)
+                .query(IngestionRunRepository::mapRun)
+                .optional();
+    }
+
     /** Runs that a worker may claim right now, oldest first. */
     public List<RunState> claimableRuns(int limit) {
         return jdbc.sql("""

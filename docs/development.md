@@ -157,7 +157,7 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices` 和 `/v4/product/info/stocks`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks` 和 `/v1/analytics/data`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
@@ -232,3 +232,55 @@ make ozon-normalize CAPABILITY=prices
 ```
 
 库存把上面的 `CAPABILITY=prices` 换成 `CAPABILITY=stocks`，步骤相同。每次执行都会生成一份新的价格和库存快照；重复标准化同一份 Raw 不会产生重复事实。
+
+## Ozon 第 3 步：流量分析（按天的下单件数）
+
+目标：用 `POST /v1/analytics/data` 按 SKU 读取每个 UTC 日的分析数据，存为 Raw，再标准化成流量事实（`core.listing_traffic_observation`）。依赖迁移 `V0011`。
+
+- **订阅限制**：按官方文档，没有订阅 Premium Plus 的卖家只能用 `revenue`（下单金额）和 `ordered_units`（下单件数）两个指标，只能查最近 3 个月，每天最多 50 次；所有卖家每分钟最多 1 次。2026-09-29 探测时确认试点店铺没有订阅 Premium Plus。而且请求无权使用的指标时，Ozon 不会报错，只是把这些指标悄悄丢掉：请求了 4 个指标，每行只回来 1 个值。如果按位置读取，下单件数会被当成曝光。所以这次只登记 `ordered_units`。将来订阅了 Premium Plus，要按新的指标集重新探测和核验。
+- **一次运行读一个 UTC 日**：运行带时间窗口 `[当天 00:00Z, 次日 00:00Z)`，请求里的 `date_from` 和 `date_to` 都是这一天（模板占位符 `{windowStartUtcDate}`、`{windowEndUtcDate}`）。官方文档写明 "Seller API работает по UTC"，所以日期按 UTC 日理解。但这个接口本身没有说明分析数据按哪个时区切分日期，这一点是有记录的假设。
+- **周期**：响应里不带日期，事实的 `periodStart` 和 `periodEnd` 取运行窗口（取值来源 `WINDOW_START`、`WINDOW_END`）。没有带窗口的运行不会调用接口，拒绝原因记为 `run_window_required`。
+- **翻页**：响应里没有游标。端点登记为 `OFFSET` 加 `SHORT_PAGE`，不设游标指针：下一页的 offset 等于上一页加 100，遇到短页就结束。审批函数原来要求分页端点必须有游标指针，V0011 对"offset 或页码翻页、并且登记了短页规则"的端点放开了这一条。
+- **SKU 对应**：分析数据按 Ozon `sku` 分组，而 listing 用的是 `product_id`。商品目录映射升级到 v2，多记录一个 `sku`（写入 `platform_listing_variant.native_item_key`）。流量记录用 `nativeItemKey` 代替 listing 键和变体键，标准化时通过目录反查。目录里没有的 SKU（例如已归档的商品）不会产生事实，也不会凭 SKU 新建商品。
+- **key 的角色**：需要 `Report`。
+
+步骤（后端需已启动；端口不是 8080 时加 `API=...`）：
+
+```bash
+make ozon-probe CAPABILITY=traffic OFFICIAL_SOURCE=~/Downloads/swagger.json
+```
+
+```bash
+make ozon-setup CAPABILITY=traffic
+```
+
+目录映射升级到 v2（只需一次），然后重新采集并标准化目录，让每个变体记下自己的 `sku`：
+
+```bash
+make ozon-setup CAPABILITY=catalog SUPERSEDE=1
+```
+
+```bash
+make ozon-run CAPABILITY=catalog
+```
+
+```bash
+make ozon-normalize CAPABILITY=catalog
+```
+
+```bash
+make ozon-verify CAPABILITY=traffic
+```
+
+```bash
+make ozon-run CAPABILITY=traffic DAYS=7
+```
+
+```bash
+make ozon-normalize CAPABILITY=traffic
+```
+
+- `ozon-run` 每天发起一次运行，两次运行之间间隔 90 秒。默认只跑昨天（1 天）；`DATE=YYYY-MM-DD` 指定最后一天，最多 30 天。探测时，短页之后的确认请求也会等 90 秒再发。
+- **限流**：官方文档写的是每分钟 1 次。但 2026-09-29 补数时，两次调用间隔约 62 秒，仍然收到 HTTP 429 `{"code":8,"message":"You have reached request rate limit per second"}`；隔了 3.5 分钟重试，又收到一次同样的 429；第三次才成功。原因可能是同一个 Client-Id 的配额也被别的调用方占用了。所以调用间隔放宽到 90 秒。运行被限流后会进入 `RETRY_WAIT`，脚本会在原地最多重试 3 次。任务里有没跑完的运行时，下一次 `ozon-run` 会先把它跑完，再开新的运行；新接口 `GET /api/v1/admin/metadata/ingestion-jobs/{id}/live-run` 用来查这个运行。
+- 同一天重新采集时，新的 Raw 会被保存，但事实按"任务 + 商品 + 周期"去重，已有事实不会被更新，所以 Ozon 事后修正的数字不会进来。这是现有事实写入的通用规则。
+- verify 核验成功后，脚本会在证据目录记下这次核验。之后用同一份证据再运行 verify 会直接跳过；确实需要重新提交时，加 `AGAIN=1`。

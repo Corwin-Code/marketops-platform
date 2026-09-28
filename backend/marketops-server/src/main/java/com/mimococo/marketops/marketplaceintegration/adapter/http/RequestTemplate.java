@@ -35,7 +35,9 @@ final class RequestTemplate {
      * the renderer would give it two places to drift from.
      */
     private static final java.util.Set<String> ALLOWED = java.util.Set.of(
-            "cursor", "limit", "accountKey", "endpointCode", "nativeListingKey", "nativeVariantKey",
+            "cursor", "limit", "accountKey", "endpointCode", "offset", "page",
+            "windowFrom", "windowTo", "windowStartUtcDate", "windowEndUtcDate",
+            "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
             "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",
             "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared");

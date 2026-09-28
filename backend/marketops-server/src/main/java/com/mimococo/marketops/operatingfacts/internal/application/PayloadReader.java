@@ -59,7 +59,9 @@ public class PayloadReader {
                            String childPointer,
                            Map<String, FieldSource> fields,
                            Map<String, String> valueKinds,
-                           Instant observationTime) {
+                           Instant observationTime,
+                           Instant windowFrom,
+                           Instant windowTo) {
         JsonNode document;
         try {
             document = com.mimococo.marketops.shared.JsonValues.read(objectMapper,payload);
@@ -116,7 +118,8 @@ public class PayloadReader {
             if (!record.isObject()) throw new PayloadUnreadableException("every record must be an object");
             collectUnmapped(record, "", recordPointers, unmapped, DRIFT_DEPTH);
             if (childPointer == null) {
-                canonical.add(readRecord(record, null, fields, valueMaps, valueKinds, observationTime));
+                canonical.add(readRecord(record, null, fields, valueMaps, valueKinds,
+                        new Times(observationTime, windowFrom, windowTo)));
                 continue;
             }
             JsonNode children = record.at(childPointer);
@@ -130,7 +133,8 @@ public class PayloadReader {
             for (JsonNode child : children) {
                 if (!child.isObject()) throw new PayloadUnreadableException("every child record must be an object");
                 if (canonical.size() >= MAXIMUM_RECORDS) throw new PayloadUnreadableException("record limit exceeded");
-                canonical.add(readRecord(child, record, fields, valueMaps, valueKinds, observationTime));
+                canonical.add(readRecord(child, record, fields, valueMaps, valueKinds,
+                        new Times(observationTime, windowFrom, windowTo)));
                 collectUnmapped(child, childPointer, childPointers, unmapped, DRIFT_DEPTH);
             }
         }
@@ -148,12 +152,15 @@ public class PayloadReader {
                                               Map<String, FieldSource> fields,
                                               Map<String, Map<String, String>> valueMaps,
                                               Map<String, String> valueKinds,
-                                              Instant observationTime) {
+                                              Times times) {
         Map<String, Object> values = new LinkedHashMap<>();
         fields.forEach((field, source) -> {
             String valueKind = valueKinds.getOrDefault(field, "TEXT");
+            boolean instant = "INSTANT".equals(valueKind);
             Object converted = switch (source.kind()) {
-                case "OBSERVATION_TIME" -> "INSTANT".equals(valueKind) ? observationTime : null;
+                case "OBSERVATION_TIME" -> instant ? times.observation() : null;
+                case "WINDOW_START" -> instant ? times.windowFrom() : null;
+                case "WINDOW_END" -> instant ? times.windowTo() : null;
                 case "CONSTANT" -> convertText(source.constant(), valueKind);
                 case "PARENT_POINTER" -> parent == null
                         ? null : resolve(parent.at(source.pointer()), valueKind, valueMaps.get(field));
@@ -317,6 +324,16 @@ public class PayloadReader {
     /** Escape a property name into a JSON Pointer reference token. */
     private static String escapeToken(String name) {
         return name.replace("~", "~0").replace("/", "~1");
+    }
+
+    /**
+     * The times a record may take a value from.
+     *
+     * @param observation when the answer was true, or stored when the source gave no time
+     * @param windowFrom start of the window the run asked for, or {@code null}
+     * @param windowTo end of the window the run asked for, or {@code null}
+     */
+    private record Times(Instant observation, Instant windowFrom, Instant windowTo) {
     }
 
     /**

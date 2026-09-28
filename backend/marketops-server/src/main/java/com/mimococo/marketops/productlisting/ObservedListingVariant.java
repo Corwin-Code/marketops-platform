@@ -11,6 +11,8 @@ import java.util.Objects;
  * @param nativeColorLabel colour as the marketplace states it, or {@code null}
  * @param nativeSizeLabel size as the marketplace states it, or {@code null}
  * @param nativeStatus the marketplace's own status word, or {@code null}
+ * @param nativeItemKey the marketplace item identifier other datasets may name the
+ *        variant by (Ozon: sku), or {@code null}
  */
 public record ObservedListingVariant(
         String nativeVariantKey,
@@ -18,7 +20,8 @@ public record ObservedListingVariant(
         String nativeBarcode,
         String nativeColorLabel,
         String nativeSizeLabel,
-        String nativeStatus) {
+        String nativeStatus,
+        String nativeItemKey) {
 
     public ObservedListingVariant {
         Objects.requireNonNull(nativeVariantKey, "nativeVariantKey");

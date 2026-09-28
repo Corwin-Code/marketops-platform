@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,12 +59,18 @@ class IngestionJobAdminController {
                 request.reason(), request.expectedVersion()));
     }
 
-    /** Queue one MANUAL run for a job. */
+    /**
+     * Queue one MANUAL run for a job, optionally bounded to a window the source is
+     * asked for (both ends or neither).
+     */
     @PostMapping(value = "/ingestion-jobs/{id}/runs", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     RunView enqueue(@RequestAttribute(OperatorAttribution.REQUEST_ATTRIBUTE) String operator,
-                    @PathVariable UUID id) {
-        return RunView.of(jobService.enqueueManualRun(operator, id));
+                    @PathVariable UUID id,
+                    @RequestBody(required = false) RunRequest request) {
+        return RunView.of(jobService.enqueueManualRun(operator, id,
+                request == null ? null : request.windowFrom(),
+                request == null ? null : request.windowTo()));
     }
 
     /** Claim and execute a queued run now; answers once the run rests. */
@@ -87,6 +94,13 @@ class IngestionJobAdminController {
         return jobService.jobsForAccount(marketplaceAccountId).stream().map(JobView::of).toList();
     }
 
+    /** The job's run that has not come to rest; 204 when every run has. */
+    @GetMapping(value = "/ingestion-jobs/{id}/live-run", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<RunView> liveRun(@PathVariable UUID id) {
+        return jobService.liveRun(id).map(RunView::of).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
     /** Load one run. */
     @GetMapping(value = "/ingestion-runs/{runId}", produces = MediaType.APPLICATION_JSON_VALUE)
     RunView run(@PathVariable UUID runId) {
@@ -101,6 +115,9 @@ class IngestionJobAdminController {
             String datasetKind,
             @NotBlank String jobCode,
             @NotBlank String displayName) {
+    }
+
+    record RunRequest(Instant windowFrom, Instant windowTo) {
     }
 
     record StatusChangeRequest(
@@ -123,10 +140,11 @@ class IngestionJobAdminController {
 
     /** A run without its lease holder or fence: those identify a worker, not an outcome. */
     record RunView(UUID id, UUID jobId, String state, String runKind, int attemptNo,
-                   int lastCallSeq, String failureCode) {
+                   int lastCallSeq, String failureCode, Instant windowFrom, Instant windowTo) {
         static RunView of(RunState run) {
             return new RunView(run.id(), run.jobId(), run.state(), run.runKind(),
-                    run.attemptNo(), run.lastCallSeq(), run.failureCode());
+                    run.attemptNo(), run.lastCallSeq(), run.failureCode(), run.windowFrom(),
+                    run.windowTo());
         }
     }
 

@@ -241,7 +241,8 @@ public class NormalizationDeclarationRepository {
      *
      * @param kind {@code POINTER} (the record, or the child record when the mapping
      *        has children), {@code PARENT_POINTER} (the record above a child),
-     *        {@code OBSERVATION_TIME} or {@code CONSTANT}
+     *        {@code OBSERVATION_TIME}, {@code WINDOW_START} / {@code WINDOW_END} (the run's
+     *        window) or {@code CONSTANT}
      * @param pointer the JSON pointer for the two pointer kinds, otherwise {@code null}
      * @param constant the text of a constant, otherwise {@code null}
      * @param valueMapJson a JSON object translating native words, or {@code null}
