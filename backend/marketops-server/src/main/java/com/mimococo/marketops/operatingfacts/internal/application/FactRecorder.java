@@ -193,8 +193,42 @@ public class FactRecorder {
                 canonical.decimal("sellingPrice").orElse(null),
                 canonical.decimal("discountPrice").orElse(null),
                 canonical.triState("promotionActive"),
-                canonical.text("nativePriceKind").orElse(null));
+                canonical.text("nativePriceKind").orElse(null),
+                competitiveness(canonical));
         return 1;
+    }
+
+    /**
+     * The marketplace's view of how competitive the price is.
+     *
+     * <p>A competitor price is kept only as a positive amount with a currency
+     * code: Ozon writes "no competitor found" as 0 with an empty currency, and a
+     * price of zero must not stand in for an absence.
+     */
+    private static FactWriteRepository.PriceCompetitiveness competitiveness(CanonicalRecord canonical) {
+        Optional<java.math.BigDecimal> platform = competitorPrice(canonical,
+                "platformCompetitorMinPrice", "platformCompetitorCurrencyCode");
+        Optional<java.math.BigDecimal> external = competitorPrice(canonical,
+                "externalCompetitorMinPrice", "externalCompetitorCurrencyCode");
+        return new FactWriteRepository.PriceCompetitiveness(
+                canonical.text("priceIndexNative").filter(word -> !word.isBlank()).orElse(null),
+                platform.orElse(null),
+                platform.isPresent() ? currency(canonical, "platformCompetitorCurrencyCode") : null,
+                external.orElse(null),
+                external.isPresent() ? currency(canonical, "externalCompetitorCurrencyCode") : null);
+    }
+
+    private static Optional<java.math.BigDecimal> competitorPrice(CanonicalRecord canonical,
+                                                                  String amountField,
+                                                                  String currencyField) {
+        return canonical.decimal(amountField)
+                .filter(amount -> amount.signum() > 0)
+                .filter(amount -> currency(canonical, currencyField) != null);
+    }
+
+    private static String currency(CanonicalRecord canonical, String field) {
+        return canonical.text(field).map(code -> code.trim().toUpperCase(Locale.ROOT))
+                .filter(code -> code.matches("[A-Z]{3}")).orElse(null);
     }
 
     private int recordStock(IngestionJobView job, CanonicalRecord canonical,
