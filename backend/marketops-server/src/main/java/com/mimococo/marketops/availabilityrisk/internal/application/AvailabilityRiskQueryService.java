@@ -2,6 +2,7 @@ package com.mimococo.marketops.availabilityrisk.internal.application;
 
 import com.mimococo.marketops.availabilityrisk.AvailabilityCardView;
 import com.mimococo.marketops.availabilityrisk.AvailabilityChildView;
+import com.mimococo.marketops.availabilityrisk.AvailabilityQueuePage;
 import com.mimococo.marketops.availabilityrisk.AvailabilityRankFactorView;
 import com.mimococo.marketops.availabilityrisk.AvailabilityRiskQuery;
 import com.mimococo.marketops.availabilityrisk.DemandWindowView;
@@ -47,14 +48,17 @@ public class AvailabilityRiskQueryService implements AvailabilityRiskQuery {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AvailabilityCardView> queue(UUID organizationId, List<UUID> permittedStoreIds,
-                                            List<UUID> permittedProductVariantIds,
-                                            String laneFilter, int limit, int offset) {
+    public AvailabilityQueuePage queue(UUID organizationId, List<UUID> permittedStoreIds,
+                                       List<UUID> permittedProductVariantIds,
+                                       String laneFilter, String query, int limit, int offset) {
         UUID[] stores = permittedStoreIds.toArray(UUID[]::new);
         UUID[] products = permittedProductVariantIds.toArray(UUID[]::new);
+        int page = Math.clamp(limit, 1, MAX_PAGE);
+        int skip = Math.max(0, offset);
         List<AvailabilityQueryRepository.CardRow> cards = queries.queue(organizationId, stores,
-                products, laneFilter, Math.clamp(limit, 1, MAX_PAGE), Math.max(0, offset));
-        return assemble(organizationId, cards, stores);
+                products, laneFilter, query, page, skip);
+        long total = queries.countQueue(organizationId, stores, products, laneFilter, query);
+        return new AvailabilityQueuePage(assemble(organizationId, cards, stores), total, skip, page);
     }
 
     @Override

@@ -1,15 +1,24 @@
 package com.mimococo.marketops.availabilityrisk.internal.web;
 
+import com.mimococo.marketops.adminobservability.audit.AuditAction;
+import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
+import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
+import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityPolicyManagementService;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository.LeadPolicyRow;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository.ManagedPolicy;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository.PolicyKind;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository.PolicyScope;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
+import com.mimococo.marketops.identityaccess.AuthorizationVerdict;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
+import com.mimococo.marketops.identityaccess.PeopleDirectory;
 import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.shared.ConsoleApi;
+import com.mimococo.marketops.shared.ErrorCode;
+import com.mimococo.marketops.shared.OperationRejectedException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -18,13 +27,19 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Product/procurement console API for effective-dated availability policy authority. */
@@ -33,13 +48,86 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/console/availability/policies")
 class AvailabilityPolicyConsoleController {
 
+    /** The largest page the console may ask for. */
+    private static final int MAX_PAGE = 200;
+
     private final AvailabilityPolicyManagementService service;
+    private final AvailabilityPolicyManagementRepository policies;
     private final BusinessAuthorization authorization;
+    private final PeopleDirectory people;
+    private final MetadataAuditRecorder audit;
+    private final Clock clock;
 
     AvailabilityPolicyConsoleController(AvailabilityPolicyManagementService service,
-                                        BusinessAuthorization authorization) {
+                                        AvailabilityPolicyManagementRepository policies,
+                                        BusinessAuthorization authorization,
+                                        PeopleDirectory people,
+                                        MetadataAuditRecorder audit,
+                                        Clock clock) {
         this.service = service;
+        this.policies = policies;
         this.authorization = authorization;
+        this.people = people;
+        this.audit = audit;
+        this.clock = clock;
+    }
+
+    /**
+     * The policy versions of one kind this person may read.
+     *
+     * <p>Only {@code LEAD_TIME} is listed here. Organization-wide versions need
+     * the availability view on the organization, exactly as reading one of them
+     * does; variant-route versions follow the variants the view covers. Each
+     * row says whether this person may retire it, and the page says whether
+     * they may publish at organization level and whether their sign-in is
+     * recent enough for the step-up the management grant requires. A grant held
+     * behind a stale sign-in still counts: the page asks for a fresh sign-in
+     * when the person acts rather than hiding what they manage.
+     */
+    @GetMapping
+    @Transactional
+    PolicyPage list(AuthenticatedActor actor,
+                    @RequestParam(defaultValue = "LEAD_TIME") PolicyKind kind,
+                    @RequestParam(required = false) String status,
+                    @RequestParam(defaultValue = "100") int limit,
+                    @RequestParam(defaultValue = "0") int offset) {
+        if (kind != PolicyKind.LEAD_TIME) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        ResourceScope organization = ResourceScope.organization(actor.organizationId());
+        boolean readOrganization = authorization.evaluate(actor,
+                ActionScopeCode.AVAILABILITY_VIEW, organization).permitted();
+        List<UUID> readableVariants = authorization.permittedProductVariantIds(
+                actor, ActionScopeCode.AVAILABILITY_VIEW);
+        if (!readOrganization && readableVariants.isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        boolean manageOrganization = holds(actor, ActionScopeCode.SUPPLY_POLICY_MANAGE,
+                organization);
+        Set<UUID> manageableVariants = Set.copyOf(authorization.permittedProductVariantIds(
+                actor, ActionScopeCode.SUPPLY_POLICY_MANAGE));
+        int page = Math.clamp(limit, 1, MAX_PAGE);
+        int skip = Math.max(0, offset);
+        String stored = status == null || status.isBlank() ? null : status.strip();
+        UUID[] variants = readableVariants.toArray(UUID[]::new);
+        List<LeadPolicyRow> rows = policies.leadPolicies(actor.organizationId(), readOrganization,
+                variants, stored, page, skip);
+        long total = policies.countLeadPolicies(actor.organizationId(), readOrganization,
+                variants, stored);
+        Map<UUID, String> owners = people.displayNames(actor.organizationId(),
+                rows.stream().map(LeadPolicyRow::ownerUserId).toList());
+        List<LeadPolicyItem> items = rows.stream()
+                .map(row -> LeadPolicyItem.of(row, owners.get(row.ownerUserId()),
+                        row.productVariantId() == null
+                                ? manageOrganization
+                                : manageableVariants.contains(row.productVariantId())))
+                .toList();
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.AVAILABILITY_RISK,
+                actor.userId().toString(), AuditAction.READ, "availability_policy_list",
+                actor.organizationId(), null, Map.of(), "lead-time policy list", null));
+        return new PolicyPage(items, total, skip, page, manageOrganization,
+                !manageableVariants.isEmpty(), actor.stepUpSatisfiedAt(clock.instant()),
+                actor.stepUpValidUntil());
     }
 
     @PostMapping("/lead-time")
@@ -140,6 +228,13 @@ class AvailabilityPolicyConsoleController {
                 ResourceScope.organization(actor.organizationId()));
     }
 
+    /** Holding the grant, even when a fresh sign-in is still needed before using it. */
+    private boolean holds(AuthenticatedActor actor, ActionScopeCode action, ResourceScope scope) {
+        AuthorizationVerdict verdict = authorization.evaluate(actor, action, scope);
+        return verdict == AuthorizationVerdict.PERMITTED
+                || verdict == AuthorizationVerdict.STEP_UP_REQUIRED;
+    }
+
     private static ResourceScope resource(PolicyScope scope) {
         if (scope.productVariantId() != null) {
             return ResourceScope.productVariant(scope.productVariantId());
@@ -216,5 +311,46 @@ class AvailabilityPolicyConsoleController {
     }
 
     record RetireBody(@NotBlank String reason, @NotBlank String evidenceReference) {
+    }
+
+    /**
+     * One page of policy versions and what this person may do with them.
+     *
+     * @param canPublishOrganization whether they hold the management grant organization-wide
+     * @param canPublishVariant whether they hold it on at least one variant
+     * @param stepUpSatisfied whether their sign-in is recent enough to act now
+     * @param stepUpValidUntil until when it stays recent enough
+     */
+    record PolicyPage(List<LeadPolicyItem> items, long total, int offset, int limit,
+                      boolean canPublishOrganization, boolean canPublishVariant,
+                      boolean stepUpSatisfied, Instant stepUpValidUntil) {
+    }
+
+    /**
+     * One lead-time and safety version, with its scope spelled out rather than
+     * packed into a key.
+     *
+     * @param ownerName who published it, or {@code null}
+     * @param canManage whether this person holds the grant to retire it
+     */
+    record LeadPolicyItem(UUID id, PolicyKind kind, int version, String scopeKind,
+                          String scopeKey, UUID productVariantId, String skuCode,
+                          String displayName, String supplierCode, String routeCode,
+                          String categoryCode, int leadTimeDaysMin, int leadTimeDaysMax,
+                          int safetyDays, String reason, String evidenceReference,
+                          Instant lastReviewedAt, Instant effectiveFrom, Instant effectiveTo,
+                          String status, String lifecycle, UUID fallbackOfId,
+                          Instant createdAt, UUID ownerUserId, String ownerName,
+                          boolean canManage) {
+
+        static LeadPolicyItem of(LeadPolicyRow row, String ownerName, boolean canManage) {
+            return new LeadPolicyItem(row.id(), PolicyKind.LEAD_TIME, row.version(),
+                    row.scopeKind(), row.scopeKey(), row.productVariantId(), row.skuCode(),
+                    row.displayName(), row.supplierCode(), row.routeCode(), row.categoryCode(),
+                    row.leadTimeDaysMin(), row.leadTimeDaysMax(), row.safetyDays(), row.reason(),
+                    row.evidenceReference(), row.lastReviewedAt(), row.effectiveFrom(),
+                    row.effectiveTo(), row.status(), row.lifecycle(), row.fallbackOfId(),
+                    row.createdAt(), row.ownerUserId(), ownerName, canManage);
+        }
     }
 }

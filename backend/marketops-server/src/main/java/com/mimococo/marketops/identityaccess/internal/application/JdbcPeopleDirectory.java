@@ -10,7 +10,10 @@ import com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.UserPr
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -25,12 +28,19 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>It decides nothing. The provider-status check the database applies at
  * write time is not repeated here, so a listed person can still be refused by
  * that write; the refusal is then shown where the write was attempted.
+ *
+ * <p>It also names the people a record already mentions, so a history reads
+ * "who" instead of an identifier; that lookup reads the display name and
+ * nothing else.
  */
 @Service
 class JdbcPeopleDirectory implements PeopleDirectory {
 
     /** Profiles examined per request; organizations are small, and the answer is capped anyway. */
     private static final int PROFILE_SCAN_LIMIT = 500;
+
+    /** Names resolved per request; a history page never names more people than this. */
+    private static final int NAME_LOOKUP_LIMIT = 500;
 
     private final UserProfileRepository profiles;
     private final UserAuthorizationRepository authorization;
@@ -69,5 +79,21 @@ class JdbcPeopleDirectory implements PeopleDirectory {
             }
         }
         return List.copyOf(people);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, String> displayNames(UUID organizationId, Collection<UUID> userIds) {
+        if (organizationId == null || userIds == null) {
+            return Map.of();
+        }
+        UUID[] ids = userIds.stream().filter(Objects::nonNull).distinct().limit(NAME_LOOKUP_LIMIT)
+                .toArray(UUID[]::new);
+        if (ids.length == 0) {
+            return Map.of();
+        }
+        // Names only, and only inside the caller's organization: an identifier of
+        // another organization comes back absent, never as somebody's name.
+        return Map.copyOf(profiles.displayNames(organizationId, ids));
     }
 }

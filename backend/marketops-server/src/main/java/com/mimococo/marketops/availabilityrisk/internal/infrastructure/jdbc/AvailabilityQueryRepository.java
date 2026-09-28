@@ -39,10 +39,13 @@ public class AvailabilityQueryRepository {
      * risk is about goods rather than a shop, so scoping it away because the
      * viewer holds only one store would hide the shortage that explains the
      * empty shelf they can see.
+     *
+     * <p>{@code query} is matched literally against the SKU and the variant
+     * name; {@code null} means no search.
      */
     public List<CardRow> queue(UUID organizationId, UUID[] permittedStoreIds,
                                UUID[] permittedProductVariantIds, String laneFilter,
-                               int limit, int offset) {
+                               String query, int limit, int offset) {
         return jdbc.sql("""
                         SELECT card.id, card.product_variant_id, variant.sku_code,
                                variant.display_name, visible.lane,
@@ -50,46 +53,124 @@ public class AvailabilityQueryRepository {
                                     ELSE visible.child_id END AS triggering_child_id,
                                visible.rank_score, card.policy_version_digest, card.as_of,
                                card.calculated_at
-                          FROM mart.availability_risk_card AS card
-                          JOIN core.product_variant AS variant
-                            ON variant.id = card.product_variant_id
-                           AND variant.organization_id = card.organization_id
-                          JOIN LATERAL (
-                               SELECT child.id AS child_id, child.lane,
-                                      (CASE child.lane
-                                         WHEN 'CRITICAL' THEN 300000
-                                         WHEN 'HIGH' THEN 200000
-                                         WHEN 'REVIEW' THEN 200000
-                                         WHEN 'UNRESOLVED' THEN 200000
-                                         WHEN 'WATCH' THEN 100000 ELSE 0 END
-                                       + LEAST(99999, GREATEST(0,
-                                           coalesce(sum(factor.contribution), 0)))) AS rank_score
-                                 FROM mart.availability_risk_child AS child
-                                 LEFT JOIN mart.availability_risk_factor AS factor
-                                   ON factor.calculation_id = child.calculation_id
-                                  AND factor.organization_id = child.organization_id
-                                WHERE child.card_id = card.id
-                                  AND child.organization_id = card.organization_id
-                                  AND (child.child_kind = 'COMPANY'
-                                       OR child.store_id = ANY (:permittedStoreIds))
-                                GROUP BY child.id, child.lane
-                                ORDER BY rank_score DESC, child.id
-                                LIMIT 1
-                          ) AS visible ON true
-                         WHERE card.organization_id = :organizationId
-                           AND card.product_variant_id = ANY (:permittedProductVariantIds)
-                           AND (CAST(:laneFilter AS text) IS NULL OR visible.lane = :laneFilter)
-                         ORDER BY visible.rank_score DESC, variant.sku_code
+                        """ + QUEUE_FROM + """
+                         ORDER BY visible.rank_score DESC, variant.sku_code, card.id
                          LIMIT :limit OFFSET :offset
                         """)
                 .param("organizationId", organizationId)
                 .param("permittedStoreIds", permittedStoreIds)
                 .param("permittedProductVariantIds", permittedProductVariantIds)
                 .param("laneFilter", laneFilter)
+                .param("pattern", likePattern(query))
                 .param("limit", limit)
                 .param("offset", offset)
                 .query(AvailabilityQueryRepository::mapCard)
                 .list();
+    }
+
+    /** How many cards the same scope, lane and search match in total. */
+    public long countQueue(UUID organizationId, UUID[] permittedStoreIds,
+                           UUID[] permittedProductVariantIds, String laneFilter, String query) {
+        Long count = jdbc.sql("SELECT count(*)" + QUEUE_FROM)
+                .param("organizationId", organizationId)
+                .param("permittedStoreIds", permittedStoreIds)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("laneFilter", laneFilter)
+                .param("pattern", likePattern(query))
+                .query(Long.class)
+                .single();
+        return count == null ? 0 : count;
+    }
+
+    /**
+     * Variants of the organization a person may name, found by SKU or name.
+     *
+     * <p>The caller passes the variants its grant permits; nothing outside
+     * them is ever listed, so a picker built on this cannot offer a product
+     * the person could not act on or read.
+     */
+    public List<VariantRow> variants(UUID organizationId, UUID[] permittedProductVariantIds,
+                                     String query, int limit) {
+        return jdbc.sql("""
+                        SELECT variant.id, variant.sku_code, variant.display_name,
+                               variant.color_label, variant.size_label, variant.status
+                          FROM core.product_variant AS variant
+                         WHERE variant.organization_id = :organizationId
+                           AND variant.id = ANY (:permittedProductVariantIds)
+                           AND (CAST(:pattern AS text) IS NULL
+                                OR variant.sku_code ILIKE :pattern ESCAPE '\\'
+                                OR variant.display_name ILIKE :pattern ESCAPE '\\')
+                         ORDER BY CASE WHEN variant.status = 'ACTIVE' THEN 0 ELSE 1 END,
+                                  variant.sku_code, variant.id
+                         LIMIT :limit
+                        """)
+                .param("organizationId", organizationId)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("pattern", likePattern(query))
+                .param("limit", limit)
+                .query((rows, rowNumber) -> new VariantRow(
+                        rows.getObject("id", UUID.class),
+                        rows.getString("sku_code"),
+                        rows.getString("display_name"),
+                        rows.getString("color_label"),
+                        rows.getString("size_label"),
+                        rows.getString("status")))
+                .list();
+    }
+
+    /**
+     * The scope, lane and search every queue read shares.
+     *
+     * <p>Kept as one fragment so the page and its total can never be counted
+     * over different rows.
+     */
+    private static final String QUEUE_FROM = """
+              FROM mart.availability_risk_card AS card
+              JOIN core.product_variant AS variant
+                ON variant.id = card.product_variant_id
+               AND variant.organization_id = card.organization_id
+              JOIN LATERAL (
+                   SELECT child.id AS child_id, child.lane,
+                          (CASE child.lane
+                             WHEN 'CRITICAL' THEN 300000
+                             WHEN 'HIGH' THEN 200000
+                             WHEN 'REVIEW' THEN 200000
+                             WHEN 'UNRESOLVED' THEN 200000
+                             WHEN 'WATCH' THEN 100000 ELSE 0 END
+                           + LEAST(99999, GREATEST(0,
+                               coalesce(sum(factor.contribution), 0)))) AS rank_score
+                     FROM mart.availability_risk_child AS child
+                     LEFT JOIN mart.availability_risk_factor AS factor
+                       ON factor.calculation_id = child.calculation_id
+                      AND factor.organization_id = child.organization_id
+                    WHERE child.card_id = card.id
+                      AND child.organization_id = card.organization_id
+                      AND (child.child_kind = 'COMPANY'
+                           OR child.store_id = ANY (:permittedStoreIds))
+                    GROUP BY child.id, child.lane
+                    ORDER BY rank_score DESC, child.id
+                    LIMIT 1
+              ) AS visible ON true
+             WHERE card.organization_id = :organizationId
+               AND card.product_variant_id = ANY (:permittedProductVariantIds)
+               AND (CAST(:laneFilter AS text) IS NULL OR visible.lane = :laneFilter)
+               AND (CAST(:pattern AS text) IS NULL
+                    OR variant.sku_code ILIKE :pattern ESCAPE '\\'
+                    OR variant.display_name ILIKE :pattern ESCAPE '\\')
+            """;
+
+    /**
+     * A search text as a literal {@code ILIKE} pattern, or {@code null}.
+     *
+     * <p>{@code %}, {@code _} and the escape character are escaped, so a SKU
+     * containing an underscore matches itself rather than any character.
+     */
+    static String likePattern(String query) {
+        if (query == null || query.isBlank()) {
+            return null;
+        }
+        return "%" + query.strip().replace("\\", "\\\\").replace("%", "\\%")
+                .replace("_", "\\_") + "%";
     }
 
     /** One card by internal variant. */
@@ -303,6 +384,11 @@ public class AvailabilityQueryRepository {
 
     /** One rank factor, keyed by the calculation that produced it. */
     public record FactorRow(UUID calculationId, AvailabilityRankFactorView factor) {
+    }
+
+    /** One internal variant as a picker shows it. */
+    public record VariantRow(UUID productVariantId, String skuCode, String displayName,
+                             String colorLabel, String sizeLabel, String status) {
     }
 
     /** One demand window, keyed by the calculation that produced it. */
