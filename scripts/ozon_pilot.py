@@ -74,8 +74,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #     ≤ 1000} and answers {result: [{id, offer_id, name, barcode, barcodes, sku,
 #     attributes, ...}], last_id, total}; "leave last_id empty on the first
 #     request, then pass last_id from the previous answer". The documentation
-#     does not state how the listing ends, so the probe pages to the end and
-#     records the signal the real account gives;
+#     does not state how the listing ends. The real account (2026-09-29) ends it
+#     with a page shorter than the limit that still carries a last_id; a request
+#     with that last_id is answered HTTP 404 {"code": 5, "message": "item not
+#     found"}. The probe pages to the end and records the signal every time;
 #   - a method without its own limit allows at most 50 requests per second per
 #     Client-Id across all methods; a 429 carries Retry-After in seconds;
 #   - 403 "Offer not signed" when the seller offer is not accepted.
@@ -154,7 +156,9 @@ CAPABILITIES = {
                 "body_template": '{"filter":{"visibility":"ALL"},"last_id":"{cursor}","limit":{limit}}',
                 "response_content_type": "application/json", "continuation_pointer": "/last_id",
                 "pagination_model": "CURSOR", "rate_limit_per_minute": 60,
-                "continuation_end_rule": "EMPTY_TOKEN_OR_RECORDS", "records_pointer": "/result",
+                # Probed 2026-09-29: the last page is short and still carries a
+                # last_id; a request with it is answered 404 {"code": 5}.
+                "continuation_end_rule": "SHORT_PAGE_OR_NOT_FOUND", "records_pointer": "/result",
             },
             "probe_body": lambda cursor: {"filter": {"visibility": "ALL"}, "last_id": cursor, "limit": PAGE_SIZE},
             "token_key": "last_id",
@@ -499,36 +503,60 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         print(f"the official document no longer describes POST {path} with a body; review before recording")
         return None
 
+    rule = endpoint["definition"]["continuation_end_rule"]
+    short_rule = rule in ("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND")
     stamp = f"{key['testedAt']:%Y%m%d-%H%M%S}z"
-    pages, cursor, end_signal, total_records = [], "", None, 0
-    for index in range(MAXIMUM_PROBE_PAGES):
-        if index:
-            time.sleep(PROBE_PAUSE_SECONDS)
+    suffix = capability["job"]["suffix"]
+
+    def call(cursor: str, file_name: str) -> tuple[dict, dict | None]:
         status, content_type, body = post_ozon(path, endpoint["probe_body"](cursor), client_id, api_key, context)
-        file_name = f"{capability['job']['suffix']}-{stamp}-p{index:03d}.json"
         private_write(pilot.evidence_dir / file_name, body)
-        page = {"file": file_name, "sha256": hashlib.sha256(body).hexdigest(), "status": status,
-                "contentType": content_type}
         try:
             answer = json.loads(body) if content_type == "application/json" else None
         except ValueError:
             answer = None
-        if status != 200 or not isinstance(answer, dict):
-            pages.append(page)
-            detail = f" code={answer.get('code')} message={answer.get('message')}" if isinstance(answer, dict) else ""
-            print(f"POST {path} page {index + 1} -> HTTP {status}{detail}; nothing recorded")
+        return {"file": file_name, "sha256": hashlib.sha256(body).hexdigest(), "status": status,
+                "contentType": content_type}, (answer if isinstance(answer, dict) else None)
+
+    pages, cursor, end_signal, total_records, follow_up = [], "", None, 0, None
+    for index in range(MAXIMUM_PROBE_PAGES):
+        if index:
+            time.sleep(PROBE_PAUSE_SECONDS)
+        page, answer = call(cursor, f"{suffix}-{stamp}-p{index:03d}.json")
+        pages.append(page)
+        if page["status"] == 404 and index > 0 and rule == "SHORT_PAGE_OR_NOT_FOUND":
+            end_signal = "NOT_FOUND_AFTER_CURSOR"
+            break
+        if page["status"] != 200 or answer is None:
+            detail = f" code={answer.get('code')} message={answer.get('message')}" if answer else ""
+            print(f"POST {path} page {index + 1} -> HTTP {page['status']}{detail}; nothing recorded")
             return None
         records = answer.get(endpoint["records_key"])
         token = answer.get(endpoint["token_key"])
-        if (not isinstance(records, list) or endpoint["token_key"] not in answer
-                or not (token is None or isinstance(token, str))):
+        if not isinstance(records, list) or not (token is None or isinstance(token, str)):
             print(f"page {index + 1} does not have the documented shape ({endpoint['records_key']}[], "
                   f"{endpoint['token_key']}); nothing recorded")
             return None
         page["records"] = len(records)
         page["token"] = "null" if token is None else ("empty" if token == "" else "present")
-        pages.append(page)
         total_records += len(records)
+        if short_rule and len(records) < PAGE_SIZE:
+            end_signal = "SHORT_PAGE"
+            # Evidence that the short page really was the last one: the next
+            # request must answer "not found" or no records at all.
+            if token:
+                time.sleep(PROBE_PAUSE_SECONDS)
+                follow_up, after = call(token, f"{suffix}-{stamp}-after.json")
+                more = after.get(endpoint["records_key"]) if after else None
+                follow_up["records"] = len(more) if isinstance(more, list) else None
+                if follow_up["status"] == 200 and follow_up["records"]:
+                    print("a short page was followed by more records; the short-page rule would lose "
+                          "data, nothing recorded")
+                    return None
+            break
+        if endpoint["token_key"] not in answer:
+            print(f"page {index + 1} has no {endpoint['token_key']}; nothing recorded")
+            return None
         if token is None:
             end_signal = "JSON_NULL"
         elif not records:
@@ -543,18 +571,23 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         return None
     # The backend ends a listing on JSON null always, and on the other signals
     # only when the endpoint's recorded rule names them.
-    rule = endpoint["definition"]["continuation_end_rule"]
     accepted = {"JSON_NULL",
                 *({"EMPTY_RECORDS"} if rule in ("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS") else ()),
-                *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ())}
+                *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
+                *({"SHORT_PAGE"} if short_rule else ()),
+                *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ())}
     if end_signal not in accepted:
         print(f"the listing ended with {end_signal}, which the registered rule {rule} does not accept")
         return None
-    print(f"POST {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}")
+    after_note = ""
+    if follow_up is not None:
+        after_note = f"; the next request was answered HTTP {follow_up['status']}"
+    print(f"POST {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
 
     bundle = {"capability": capability["code"], "endpoint": endpoint["code"], "path": path,
-              "testedAt": iso(key["testedAt"]), "pageSize": PAGE_SIZE, "endSignal": end_signal,
-              "records": total_records, "pages": pages}
+              "testedAt": iso(key["testedAt"]), "pageSize": PAGE_SIZE, "endRule": rule,
+              "endSignal": end_signal, "records": total_records, "pages": pages,
+              "followUp": follow_up}
     bundle_name = f"{capability['job']['suffix']}-{stamp}-bundle.json"
     data = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     private_write(pilot.evidence_dir / bundle_name, data)

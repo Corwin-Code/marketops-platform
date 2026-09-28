@@ -49,6 +49,13 @@ public record EndpointCallSpec(
         String continuationEndRule,
         String recordsPointer) {
 
+    /**
+     * The page size a recorded template's {@code {limit}} renders as. A short-page
+     * end rule compares a page's records with exactly this number, so the two can
+     * never disagree.
+     */
+    public static final int REQUESTED_PAGE_SIZE = 100;
+
     /** A specification whose pages end only on a JSON null token, as write operations never page. */
     public EndpointCallSpec(UUID endpointId, String platformCode, String endpointCode, String baseUrl,
                             String httpMethod, String pathTemplate, String queryTemplate,
