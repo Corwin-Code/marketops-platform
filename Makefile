@@ -16,6 +16,8 @@ API ?= http://127.0.0.1:8080
 AI_KEY_FILE ?= $(HOME)/.marketops-platform/dashscope_api_key.txt
 PILOT ?= pilot
 CAPABILITY ?= connectivity
+# Recorded as the operator in the audit of every maintenance call the pilot makes.
+OPERATOR ?= owner-local
 
 .DEFAULT_GOAL := help
 
@@ -85,17 +87,21 @@ ozon-probe: require-repo-root ## Ozon pilot: check the key, keep CAPABILITY's ev
 	  $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)")
 
 ozon-setup: require-repo-root ## Ozon pilot: register account, credential and CAPABILITY's rows (backend running)
-	@python3 scripts/ozon_pilot.py setup --api "$(API)" --pilot "$(PILOT)" --capability "$(CAPABILITY)"
+	@python3 scripts/ozon_pilot.py setup --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  --capability "$(CAPABILITY)"
 
 ozon-reviewer: require-repo-root ## Ozon pilot: make Keycloak user SUBJECT a reviewing Owner (local)
 	@test -n "$(SUBJECT)" || { echo 'usage: make ozon-reviewer SUBJECT=<keycloak-user-id>' >&2; exit 2; }
-	@python3 scripts/ozon_pilot.py reviewer --api "$(API)" --subject "$(SUBJECT)"
+	@python3 scripts/ozon_pilot.py reviewer --api "$(API)" --operator "$(OPERATOR)" --subject "$(SUBJECT)"
 
 ozon-verify: require-repo-root ## Ozon pilot: submit and approve CAPABILITY's probe evidence as two Owners
-	@python3 scripts/ozon_pilot.py verify --api "$(API)" --pilot "$(PILOT)" --capability "$(CAPABILITY)"
+	@python3 scripts/ozon_pilot.py verify --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  --capability "$(CAPABILITY)"
 
 ozon-run: require-repo-root ## Ozon pilot: queue and execute one run of CAPABILITY's job (backend running)
-	@python3 scripts/ozon_pilot.py run --api "$(API)" --pilot "$(PILOT)" --capability "$(CAPABILITY)"
+	@python3 scripts/ozon_pilot.py run --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  --capability "$(CAPABILITY)"
 
 ozon-normalize: require-repo-root ## Ozon pilot: normalize what CAPABILITY's job stored (backend running)
-	@python3 scripts/ozon_pilot.py normalize --api "$(API)" --pilot "$(PILOT)" --capability "$(CAPABILITY)"
+	@python3 scripts/ozon_pilot.py normalize --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  --capability "$(CAPABILITY)"

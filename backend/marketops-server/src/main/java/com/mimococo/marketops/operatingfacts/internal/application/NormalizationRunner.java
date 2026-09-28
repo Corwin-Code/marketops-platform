@@ -8,6 +8,7 @@ import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.Normal
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -106,7 +107,8 @@ public class NormalizationRunner {
             return new PassOutcome(jobId, 0, 0, 0, "NOTHING_TO_PROCESS");
         }
 
-        Map<String, String> fieldPointers = declarations.fieldPointers(declaration.get().id());
+        Map<String, NormalizationDeclarationRepository.FieldSource> fields =
+                declarations.fieldSources(declaration.get().id());
         Map<String, String> valueKinds = declarations.valueKinds(job.datasetKind());
         List<String> requiredFields = declarations.requiredFields(job.datasetKind());
 
@@ -133,8 +135,12 @@ public class NormalizationRunner {
 
             PayloadReader.ReadResult read;
             try {
+                // A declared observation-time field takes the time the source gave
+                // the answer, or the time it was stored when the source gave none.
+                Instant observedAt = observation.sourceTime() != null
+                        ? observation.sourceTime() : observation.ingestionTime();
                 read = payloadReader.read(body.get(), declaration.get().recordPointer(),
-                        fieldPointers, valueKinds);
+                        declaration.get().childPointer(), fields, valueKinds, observedAt);
             } catch (PayloadReader.PayloadUnreadableException unreadable) {
                 log.atWarn().addKeyValue("event","normalization_payload_unreadable")
                         .addKeyValue("observationId",observation.observationId())

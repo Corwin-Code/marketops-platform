@@ -60,6 +60,25 @@ marketops:
         max-request-bytes: 16384
         max-response-bytes: 8388608
         timeout-millis: 30000
+      # Prices, paged with cursor (official OpenAPI, POST /v5/product/info/prices).
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v5/product/info/prices
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      # Stock per warehouse type, paged with cursor (official OpenAPI,
+      # POST /v4/product/info/stocks, limit 1–1000).
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v4/product/info/stocks
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
 
 logging:
   pattern:

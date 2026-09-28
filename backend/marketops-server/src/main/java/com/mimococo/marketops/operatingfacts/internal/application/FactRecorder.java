@@ -9,6 +9,7 @@ import com.mimococo.marketops.productlisting.ObservedListingVariant;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -130,10 +131,14 @@ public class FactRecorder {
                 canonical.text("nativeStatus").orElse(null),
                 List.of(variant));
 
-        Map<String, Map<String, UUID>> recorded = listings.record(
-                List.of(listing),
-                observation.sourceTime() == null ? observation.ingestionTime()
-                        : observation.sourceTime());
+        Instant observedAt = observation.sourceTime() == null ? observation.ingestionTime()
+                : observation.sourceTime();
+        // Only a listing record states the title, barcode and status; any other
+        // dataset names the listing by its keys and must not overwrite what the
+        // catalog said with nothing.
+        Map<String, Map<String, UUID>> recorded = "LISTING".equals(job.datasetKind())
+                ? listings.record(List.of(listing), observedAt)
+                : listings.mention(List.of(listing), observedAt);
         return Optional.ofNullable(recorded.get(listingKey.get()))
                 .map(variants -> variants.get(variantKey.get()));
     }

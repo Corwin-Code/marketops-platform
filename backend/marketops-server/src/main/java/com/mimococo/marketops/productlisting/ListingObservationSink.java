@@ -28,4 +28,17 @@ public interface ListingObservationSink {
      */
     Map<String, Map<String, UUID>> record(List<ObservedListing> listings,
                                           Instant observedAt);
+
+    /**
+     * Establish that listing variants exist and return their identifiers, without
+     * restating anything about them.
+     *
+     * <p>A price, stock or funnel record names a listing by its keys and says
+     * nothing about its title, barcode or status. Recording it as an observation
+     * would overwrite what the catalog said with nothing, so a mention only
+     * inserts a listing or variant nobody has observed yet and otherwise leaves
+     * the row exactly as it was.
+     */
+    Map<String, Map<String, UUID>> mention(List<ObservedListing> listings,
+                                           Instant observedAt);
 }

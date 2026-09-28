@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.stereotype.Component;
+import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.NormalizationDeclarationRepository.FieldSource;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -55,8 +56,10 @@ public class PayloadReader {
      */
     public ReadResult read(byte[] payload,
                            String recordPointer,
-                           Map<String, String> fieldPointers,
-                           Map<String, String> valueKinds) {
+                           String childPointer,
+                           Map<String, FieldSource> fields,
+                           Map<String, String> valueKinds,
+                           Instant observationTime) {
         JsonNode document;
         try {
             document = com.mimococo.marketops.shared.JsonValues.read(objectMapper,payload);
@@ -87,32 +90,136 @@ public class PayloadReader {
                     "the record pointer addresses neither an object nor an array");
         }
 
+        // Pointers a record's own fields reach, and pointers a child's fields
+        // reach (written under the child pointer, so drift names the full path).
+        Set<String> recordPointers = new LinkedHashSet<>();
+        Set<String> childPointers = new LinkedHashSet<>();
+        Map<String, Map<String, String>> valueMaps = new LinkedHashMap<>();
+        fields.forEach((field, source) -> {
+            switch (source.kind()) {
+                case "POINTER" -> (childPointer == null ? recordPointers : childPointers)
+                        .add(childPointer == null ? source.pointer() : childPointer + source.pointer());
+                case "PARENT_POINTER" -> recordPointers.add(source.pointer());
+                default -> { }
+            }
+            if (source.valueMapJson() != null) {
+                valueMaps.put(field, valueMap(source.valueMapJson()));
+            }
+        });
+        if (childPointer != null) {
+            recordPointers.add(childPointer);
+        }
+
         List<CanonicalRecord> canonical = new ArrayList<>(records.size());
         Set<String> unmapped = new LinkedHashSet<>();
-        Set<String> declaredPointers = Set.copyOf(fieldPointers.values());
         for (JsonNode record : records) {
             if (!record.isObject()) throw new PayloadUnreadableException("every record must be an object");
-            canonical.add(readRecord(record, fieldPointers, valueKinds));
-            collectUnmapped(record, "", declaredPointers, unmapped, DRIFT_DEPTH);
+            collectUnmapped(record, "", recordPointers, unmapped, DRIFT_DEPTH);
+            if (childPointer == null) {
+                canonical.add(readRecord(record, null, fields, valueMaps, valueKinds, observationTime));
+                continue;
+            }
+            JsonNode children = record.at(childPointer);
+            if (children.isMissingNode() || children.isNull()) {
+                // A record with no children contributes no facts; it is not an error.
+                continue;
+            }
+            if (!children.isArray()) {
+                throw new PayloadUnreadableException("the child pointer addresses something other than an array");
+            }
+            for (JsonNode child : children) {
+                if (!child.isObject()) throw new PayloadUnreadableException("every child record must be an object");
+                if (canonical.size() >= MAXIMUM_RECORDS) throw new PayloadUnreadableException("record limit exceeded");
+                canonical.add(readRecord(child, record, fields, valueMaps, valueKinds, observationTime));
+                collectUnmapped(child, childPointer, childPointers, unmapped, DRIFT_DEPTH);
+            }
         }
         return new ReadResult(List.copyOf(canonical), List.copyOf(unmapped));
     }
 
-    private CanonicalRecord readRecord(JsonNode record,
-                                       Map<String, String> fieldPointers,
-                                       Map<String, String> valueKinds) {
+    /**
+     * Resolve every declared field of one record.
+     *
+     * @param node the record, or the child record when the mapping has children
+     * @param parent the record above a child, or {@code null}
+     */
+    private static CanonicalRecord readRecord(JsonNode node,
+                                              JsonNode parent,
+                                              Map<String, FieldSource> fields,
+                                              Map<String, Map<String, String>> valueMaps,
+                                              Map<String, String> valueKinds,
+                                              Instant observationTime) {
         Map<String, Object> values = new LinkedHashMap<>();
-        fieldPointers.forEach((field, pointer) -> {
-            JsonNode node = record.at(pointer);
-            if (node.isMissingNode() || node.isNull()) {
-                return;
-            }
-            Object converted = convert(node, valueKinds.getOrDefault(field, "TEXT"));
+        fields.forEach((field, source) -> {
+            String valueKind = valueKinds.getOrDefault(field, "TEXT");
+            Object converted = switch (source.kind()) {
+                case "OBSERVATION_TIME" -> "INSTANT".equals(valueKind) ? observationTime : null;
+                case "CONSTANT" -> convertText(source.constant(), valueKind);
+                case "PARENT_POINTER" -> parent == null
+                        ? null : resolve(parent.at(source.pointer()), valueKind, valueMaps.get(field));
+                default -> resolve(node.at(source.pointer()), valueKind, valueMaps.get(field));
+            };
             if (converted != null) {
                 values.put(field, converted);
             }
         });
         return new CanonicalRecord(values);
+    }
+
+    /**
+     * One addressed value, translated through its value map when it has one.
+     *
+     * <p>A native word the map does not name is absent rather than passed
+     * through: an untranslated word is exactly what a canonical field must never
+     * hold, and a required field that stays absent rejects the record.
+     */
+    private static Object resolve(JsonNode node, String valueKind, Map<String, String> valueMap) {
+        if (node.isMissingNode() || node.isNull()) {
+            return null;
+        }
+        if (valueMap == null) {
+            return convert(node, valueKind);
+        }
+        if (!node.isValueNode()) {
+            return null;
+        }
+        String translated = valueMap.get(node.asString());
+        return translated == null ? null : convertText(translated, valueKind);
+    }
+
+    /** A declared text (a constant or a translation) converted to the field's kind. */
+    static Object convertText(String text, String valueKind) {
+        if (text == null) {
+            return null;
+        }
+        return switch (valueKind) {
+            case "TEXT" -> text;
+            case "INTEGER" -> parseLong(text);
+            case "DECIMAL" -> parseDecimal(text);
+            case "INSTANT" -> parseInstant(text);
+            case "BOOLEAN" -> "true".equals(text) ? Boolean.TRUE : "false".equals(text) ? Boolean.FALSE : null;
+            default -> null;
+        };
+    }
+
+    private Map<String, String> valueMap(String json) {
+        try {
+            JsonNode node = com.mimococo.marketops.shared.JsonValues.read(objectMapper,
+                    json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            Map<String, String> map = new LinkedHashMap<>();
+            if (node == null || !node.isObject()) {
+                throw new PayloadUnreadableException("a value map is not a JSON object");
+            }
+            node.propertyStream().forEach(entry -> {
+                if (!entry.getValue().isString()) {
+                    throw new PayloadUnreadableException("a value map translates into text only");
+                }
+                map.put(entry.getKey(), entry.getValue().asString());
+            });
+            return Map.copyOf(map);
+        } catch (JacksonException | IllegalArgumentException unreadable) {
+            throw new PayloadUnreadableException("a value map is not readable");
+        }
     }
 
     /**
