@@ -58,12 +58,13 @@ make frontend-dev
 | `make frontend-dev` | 启动前端开发服务器 |
 | `make frontend-build` | 前端类型检查并构建 |
 | `make ai-provider` | 安装模型 key 并登记 Qwen 模型服务（需后端已启动） |
+| `make ozon-probe` 等 | Ozon 试点店铺只读接入，见下文「接入 Ozon 试点店铺」 |
 
 ## 说明
 
 - `make down` 保留数据卷，下次 `make up` 时 schema 已迁移；`make reset` 后重新初始化并重跑角色脚本。修改 `infra/compose/postgres-init/sql/01-roles.sql` 只对新卷生效。
 - 所有平台写入与后台 worker 默认关闭；本地只使用合成数据。
-- 真实 Ozon / Wildberries API 尚未接入；LLM 已接入 Qwen（阿里云百炼），本地启用方式见下一节。
+- Ozon 只读接入处于第 0 步（API key 连通性），步骤见最后一节；Wildberries 尚未接入。LLM 已接入 Qwen（阿里云百炼），本地启用方式见下一节。
 - CI 与自动化测试目前暂停，待按新开发链重新规划。
 
 ## 接入 Qwen 模型（本地）
@@ -98,3 +99,65 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 - 更换 key 后重新执行 `make ai-provider`。停用模型服务用维护接口 `POST /api/v1/admin/metadata/ai-providers/{id}/retirement`；停用后重跑脚本不会自动恢复，需要恢复时执行 `make ai-provider REACTIVATE=1`。
 - 目前只登记一个模型（`qwen3.8-max`）。更换模型还不支持：网关取按字母序第一个启用的模型，而模型尚无停用接口。
 
+
+## 接入 Ozon 试点店铺（只读，第 0 步：连通性）
+
+目标：让后端经完整的受控链路（注册表核验 → 采集任务 → 调用授权 → Raw 保管）成功调用一次 Ozon `POST /v1/roles`。这个接口只返回当前 key 的角色、可调用的方法和到期日，不含店铺经营数据。全程只读，后台 worker 保持关闭，由人手动触发。
+
+平台事实（2026-09-28 核验）：官方文档 <https://docs.ozon.ru/api/seller/> 及其 OpenAPI 文件 <https://docs.ozon.ru/api/seller/swagger.json>（info.version 2.1）。请求发往 `api-seller.ozon.ru`，带 `Client-Id` 和 `Api-Key` 两个请求头；key 有效期 3 个月；`/v1/roles` 没有请求体。出处也记录在 `scripts/ozon_pilot.py` 开头。
+
+后端不在 8080 端口时，下面每条 `make` 命令都加上 `API=http://127.0.0.1:<端口>`。
+
+1. **准备 key**：在 Ozon 卖家后台「Настройки → Seller API」生成 key，**只勾选下面 4 个只读角色**：`Product read-only`（商品目录、价格、库存、描述）、`Report`（流量分析、财务交易、报表）、`Returns read-only`（退货）、`Actions read-only`（促销）。不要选 `Admin read only`：按官方文档核对，它含有切换定价策略状态、创建和删除 FBO 货位等写方法。然后把 key 和 Client ID 分别存成下面两个文件（目录 700、文件 600，不要放进仓库）：
+
+   ```
+   ~/.marketops-platform/secrets/ozon/pilot/seller-api-key
+   ~/.marketops-platform/secrets/ozon/pilot/client-id
+   ```
+
+2. **探测**（只连 Ozon，不需要后端）：先在浏览器打开 <https://docs.ozon.ru/api/seller/swagger.json>，另存为 JSON 文件（例如 `~/Downloads/swagger.json`）。这一步要在浏览器里做，因为文档站会用反爬校验拦截脚本下载。然后运行：
+
+   ```bash
+   make ozon-probe OFFICIAL_SOURCE=~/Downloads/swagger.json
+   ```
+
+   脚本用 key 调用一次 `/v1/roles`，终端打印 key 的角色和到期日，不打印 key 本身。接着用官方文档里每个接口的说明，判断哪些角色能改数据。只要有这样的角色，就不记录证据：请删掉这个 key，只勾选只读角色重新生成，再探测一次。确认全部是只读角色后，响应原文和官方文档都会存进 `~/.marketops-platform/evidence/ozon/pilot/`（仅本人可读）。
+
+3. **登记**（需要后端已启动）：
+
+   ```bash
+   make ozon-setup
+   ```
+
+   通过本机维护接口登记以下对象：试点账户和店铺（Client ID 写入账户的 `nativeAccountKey`）、READ 凭证（按 key 的实际到期日设置 `expiresAt`）、只读服务账号及其对账户的 READ 授权、连通性能力 `ozon-seller-connectivity` 和端点 `ozon-roles-v1`、采集任务 `ozon-pilot-roles`。可以重复运行，已存在的对象会跳过。
+
+4. **准备第二个 Owner**：注册表核验要求一个 Owner 提交证据、另一个 Owner 审核，而且两人都要有 `KILL_SWITCH_OPERATE` 授权。本地做法：在 Keycloak 管理台新建一个用户，然后运行：
+
+   ```bash
+   make ozon-reviewer SUBJECT=<该用户的 Keycloak ID>
+   ```
+
+   这个做法只适用于本地开发；生产环境的审核人必须是另一位真人。
+
+5. **核验**：
+
+   ```bash
+   make ozon-verify
+   ```
+
+   脚本会先后要求两位 Owner 在终端里登录，密码不会保存。它依次起草 Ozon 接口配置（profile）、两个认证头和端点，由第一位 Owner 提交探测证据，第二位 Owner 批准。证据最多有效 30 天，而且不会超过 key 的到期日；过期后要重新探测和核验。
+
+6. **执行一次**：
+
+   ```bash
+   make ozon-run
+   ```
+
+   期望输出的运行状态为 `SUCCEEDED`、`pagesStored` 为 1。原始响应保存在 `local-data/raw-custody` 和 `raw.raw_acquisition_observation`。
+
+说明：
+
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）目前只放行 `/v1/roles`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
+- 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
+- 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。

@@ -14,12 +14,13 @@ COMPOSE := docker compose --project-name "$(COMPOSE_PROJECT_NAME)" --env-file "$
 MVNW := ./mvnw -B -ntp
 API ?= http://127.0.0.1:8080
 AI_KEY_FILE ?= $(HOME)/.marketops-platform/dashscope_api_key.txt
+PILOT ?= pilot
 
 .DEFAULT_GOAL := help
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider
+        ai-provider ozon-probe ozon-setup ozon-reviewer ozon-verify ozon-run
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -77,3 +78,20 @@ frontend-build: require-repo-root ## Type-check and build the frontend
 ai-provider: require-repo-root ## Install the model key and register the Qwen provider (backend running)
 	@python3 scripts/register_ai_provider.py --api "$(API)" \
 	  $(if $(wildcard $(AI_KEY_FILE)),--install-key "$(AI_KEY_FILE)") $(if $(REACTIVATE),--reactivate)
+
+ozon-probe: require-repo-root ## Ozon pilot: call /v1/roles with the key; OFFICIAL_SOURCE=<saved swagger.json>
+	@python3 scripts/ozon_pilot.py probe --pilot "$(PILOT)" \
+	  $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)")
+
+ozon-setup: require-repo-root ## Ozon pilot: register account, credential and job (backend running)
+	@python3 scripts/ozon_pilot.py setup --api "$(API)" --pilot "$(PILOT)"
+
+ozon-reviewer: require-repo-root ## Ozon pilot: make Keycloak user SUBJECT a reviewing Owner (local)
+	@test -n "$(SUBJECT)" || { echo 'usage: make ozon-reviewer SUBJECT=<keycloak-user-id>' >&2; exit 2; }
+	@python3 scripts/ozon_pilot.py reviewer --api "$(API)" --subject "$(SUBJECT)"
+
+ozon-verify: require-repo-root ## Ozon pilot: submit and approve the probe evidence as two Owners
+	@python3 scripts/ozon_pilot.py verify --api "$(API)" --pilot "$(PILOT)"
+
+ozon-run: require-repo-root ## Ozon pilot: queue and execute one connectivity run (backend running)
+	@python3 scripts/ozon_pilot.py run --api "$(API)" --pilot "$(PILOT)"
