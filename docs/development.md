@@ -157,7 +157,7 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles` 和 `/v4/product/info/attributes`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices` 和 `/v4/product/info/stocks`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
@@ -197,3 +197,38 @@ make ozon-normalize CAPABILITY=catalog
 - 核验和第 0 步一样，需要两位 Owner。接口配置和认证头已经核验过，这一步只起草新端点。
 - 执行成功时，运行状态为 `SUCCEEDED`，`pagesStored` 等于页数（最后一页可能是空页）。标准化成功时，最后一行的 `lastReason` 为 `NOTHING_TO_PROCESS`。
 
+
+## Ozon 第 2 步：价格与库存
+
+目标：读取试点店铺每个商品的当前价格（`POST /v5/product/info/prices`）和各仓库类型下的库存（`POST /v4/product/info/stocks`），存为 Raw，再标准化成价格事实（`core.listing_price_observation`）和库存事实（`core.listing_stock_observation`）。这些数据不含买家个人信息。依赖迁移 `V0010`。
+
+- **接口**：两个接口都按 `cursor` 翻页，每页 100 个商品。2026-09-29 用真实账户探测：最后一页的记录数少于每页条数，但仍然带着 `cursor`；拿这个 `cursor` 再请求，返回 HTTP 200、0 条记录、空 `cursor`，不会返回 404。因此两个端点都登记为 `SHORT_PAGE`，没有用 `SHORT_PAGE_OR_NOT_FOUND`：这两个接口从未出现过 404，如果把 404 当作结束，中途出错时数据会被悄悄截断。商品数正好是 100 的整数倍时，最后多出的那次请求返回空页，同样按短页结束。探测遇到短页后会再请求一次，确认返回的结果符合登记的规则。
+- **价格映射**（官方字段含义）：`price`（不含促销的限价，也就是改价接口设置的值）→ `sellingPrice`；`old_price`（划线价）→ `listPrice`；`marketing_seller_price`（含卖家促销的限价，不含 Ozon 额外补贴）→ `discountPrice`；`currency_code` → 币种。三者都不是买家最终支付价。接口不返回价格生效时间，所以 `observedAt` 取这次响应的时间（`OBSERVATION_TIME`）。
+- **库存映射**：每个商品下的 `stocks[]` 每个元素是一个仓库类型，一个元素产生一条事实（`childPointer = /stocks`）。商品标识从上层读取（`PARENT_POINTER /product_id`），`present` → 可售数量，`reserved` → 预留数量。`type` 通过登记的值映射转换：`fbo` → `MARKETPLACE_FULFILLED`，`fbs`/`rfbs` → `SELLER_FULFILLED`，`fbp` → `UNKNOWN`。映射里没有的仓库类型不会被猜测，这条记录会被拒绝。
+- **探测检查**：只打印计数。价格检查币种，以及三种价格为 0 或缺失的数量；如果有商品没有 `price`，就不记录证据。库存按仓库类型统计条数；遇到值映射里没有的仓库类型，或者同一商品在同一履约方式下有多条库存（例如同时有 `fbs` 和 `rfbs`，或同一类型下按包装方式拆成多条），就不记录证据。因为一对商品和履约方式只保留一条事实，其余几条会被丢掉，这种情况要先决定是否合计。
+- **目录不会被覆盖**：价格和库存记录只带商品标识。关联商品时，只在商品还不存在时插入；已有商品的标题、`offer_id`、条码保持不变。只有商品目录（`LISTING`）记录会更新这些字段。
+- **key 的角色**：需要 `Product read-only`。
+
+步骤（后端需已启动；端口不是 8080 时加 `API=...`；代人执行时加 `OPERATOR=<名字>`，审计里会记录这个操作人）：
+
+```bash
+make ozon-probe CAPABILITY=prices OFFICIAL_SOURCE=~/Downloads/swagger.json
+```
+
+```bash
+make ozon-setup CAPABILITY=prices
+```
+
+```bash
+make ozon-verify CAPABILITY=prices
+```
+
+```bash
+make ozon-run CAPABILITY=prices
+```
+
+```bash
+make ozon-normalize CAPABILITY=prices
+```
+
+库存把上面的 `CAPABILITY=prices` 换成 `CAPABILITY=stocks`，步骤相同。每次执行都会生成一份新的价格和库存快照；重复标准化同一份 Raw 不会产生重复事实。

@@ -30,7 +30,7 @@ public class NormalizationDeclarationRepository {
     /** The live declaration for one platform and dataset, when one is verified. */
     public Optional<MappingDeclaration> liveMapping(String platformCode, String datasetKind) {
         return jdbc.sql("""
-                        SELECT id, record_pointer, mapping_version
+                        SELECT id, record_pointer, child_pointer, mapping_version
                           FROM staging.normalization_mapping
                          WHERE platform_code = :platformCode
                            AND dataset_kind = :datasetKind
@@ -42,22 +42,26 @@ public class NormalizationDeclarationRepository {
                 .query((rows, rowNumber) -> new MappingDeclaration(
                         rows.getObject("id", UUID.class),
                         rows.getString("record_pointer"),
+                        rows.getString("child_pointer"),
                         rows.getInt("mapping_version")))
                 .optional();
     }
 
-    /** The declared field pointers of one mapping, keyed by canonical field. */
-    public Map<String, String> fieldPointers(UUID mappingId) {
-        Map<String, String> pointers = new LinkedHashMap<>();
+    /** Where each canonical field of one mapping comes from, keyed by canonical field. */
+    public Map<String, FieldSource> fieldSources(UUID mappingId) {
+        Map<String, FieldSource> sources = new LinkedHashMap<>();
         jdbc.sql("""
-                        SELECT field_name, source_pointer FROM staging.normalization_field
+                        SELECT field_name, source_kind, source_pointer, constant_value,
+                               value_map::text AS value_map
+                          FROM staging.normalization_field
                          WHERE mapping_id = :mappingId ORDER BY field_name
                         """)
                 .param("mappingId", mappingId)
-                .query((rows, rowNumber) -> pointers.put(
-                        rows.getString("field_name"), rows.getString("source_pointer")))
+                .query((rows, rowNumber) -> sources.put(rows.getString("field_name"), new FieldSource(
+                        rows.getString("source_kind"), rows.getString("source_pointer"),
+                        rows.getString("constant_value"), rows.getString("value_map"))))
                 .list();
-        return Map.copyOf(pointers);
+        return Map.copyOf(sources);
     }
 
     /** The canonical fields of one dataset that a record must carry. */
@@ -224,9 +228,25 @@ public class NormalizationDeclarationRepository {
      *
      * @param id identifier
      * @param recordPointer where the repeated records live inside the payload
+     * @param childPointer where each record's own array of child records lives, when
+     *        the children rather than the records are the facts; otherwise {@code null}
      * @param mappingVersion which recorded version this is
      */
-    public record MappingDeclaration(UUID id, String recordPointer, int mappingVersion) {
+    public record MappingDeclaration(UUID id, String recordPointer, String childPointer,
+                                     int mappingVersion) {
+    }
+
+    /**
+     * Where one canonical field's value comes from.
+     *
+     * @param kind {@code POINTER} (the record, or the child record when the mapping
+     *        has children), {@code PARENT_POINTER} (the record above a child),
+     *        {@code OBSERVATION_TIME} or {@code CONSTANT}
+     * @param pointer the JSON pointer for the two pointer kinds, otherwise {@code null}
+     * @param constant the text of a constant, otherwise {@code null}
+     * @param valueMapJson a JSON object translating native words, or {@code null}
+     */
+    public record FieldSource(String kind, String pointer, String constant, String valueMapJson) {
     }
 
     /**

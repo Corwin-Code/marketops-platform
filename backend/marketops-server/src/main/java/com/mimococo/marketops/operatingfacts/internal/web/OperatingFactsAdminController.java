@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -92,9 +93,15 @@ class OperatingFactsAdminController {
     MappingCreated registerMapping(
             @RequestAttribute(OperatorAttribution.REQUEST_ATTRIBUTE) String operator,
             @Valid @RequestBody RegisterMappingRequest request) {
+        Map<String, NormalizationDeclarationService.SourceDeclaration> sources = new LinkedHashMap<>();
+        if (request.fieldSources() != null) {
+            request.fieldSources().forEach((field, source) -> sources.put(field, source == null ? null
+                    : new NormalizationDeclarationService.SourceDeclaration(source.kind(),
+                            source.pointer(), source.value(), source.valueMap())));
+        }
         return new MappingCreated(declarations.register(operator, request.platformCode(),
                 request.datasetKind(), request.mappingVersion(), request.recordPointer(),
-                request.fieldPointers(), request.ownerLabel()));
+                request.childPointer(), request.fieldPointers(), sources, request.ownerLabel()));
     }
 
     /** Record verified evidence and start normalizing the dataset. */
@@ -155,8 +162,18 @@ class OperatingFactsAdminController {
             @NotBlank String datasetKind,
             int mappingVersion,
             @NotNull String recordPointer,
+            String childPointer,
             @NotEmpty Map<String, String> fieldPointers,
+            Map<String, FieldSourceRequest> fieldSources,
             @NotBlank String ownerLabel) {
+    }
+
+    /**
+     * One non-pointer field source: {@code PARENT_POINTER} with a pointer,
+     * {@code OBSERVATION_TIME}, {@code CONSTANT} with a value, or {@code POINTER}
+     * with a value map.
+     */
+    record FieldSourceRequest(String kind, String pointer, String value, Map<String, String> valueMap) {
     }
 
     record VerifyMappingRequest(

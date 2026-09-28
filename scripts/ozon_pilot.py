@@ -3,8 +3,9 @@
 
 Run from the repository root. Every step except ``probe`` needs the local backend
 (``--api``, default http://127.0.0.1:8080). Every step takes ``--capability``:
-``connectivity`` (POST /v1/roles, the default) or ``catalog`` (product identity,
-names and barcodes from POST /v4/product/info/attributes).
+``connectivity`` (POST /v1/roles, the default), ``catalog`` (product identity,
+names and barcodes from POST /v4/product/info/attributes), ``prices`` (POST
+/v5/product/info/prices) or ``stocks`` (POST /v4/product/info/stocks).
 
   probe      Call /v1/roles to check the key (read-only roles, expiry), then make
              the capability's real calls and keep every answer, together with the
@@ -78,6 +79,16 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #     with a page shorter than the limit that still carries a last_id; a request
 #     with that last_id is answered HTTP 404 {"code": 5, "message": "item not
 #     found"}. The probe pages to the end and records the signal every time;
+#   - POST /v5/product/info/prices and POST /v4/product/info/stocks take {cursor,
+#     filter{visibility}, limit} and answer {cursor, items[], total, total_items}
+#     ("total" is announced to be switched off on 2026-11-23). On the real account
+#     (2026-09-29) both end with a page shorter than the limit that still carries
+#     a cursor; a request with it answers HTTP 200 with no items and an empty
+#     cursor, never 404;
+#   - v5 prices: price is the ceiling without promotions, old_price the
+#     crossed-out price, marketing_seller_price the ceiling with the seller's
+#     promotions (numbers, in currency_code); v4 stocks: items[].stocks[] holds one
+#     entry per warehouse type (fbo, fbs, rfbs, fbp) with present and reserved;
 #   - a method without its own limit allows at most 50 requests per second per
 #     Client-Id across all methods; a 429 carries Retry-After in seconds;
 #   - 403 "Offer not signed" when the seller offer is not accepted.
@@ -110,6 +121,56 @@ HEADER_DEFINITIONS = (
      "credential_purpose": "READ", "ordinal": 2, "owner_label": OWNER_LABEL},
 )
 
+
+# --- Probe inspections ----------------------------------------------------------
+# Counts over the probe's own answers that decide whether a mapping can be
+# registered as it is. Nothing a record contains is printed.
+
+def inspect_prices(answers: list[dict]) -> tuple[list[str], str | None]:
+    items = [item for answer in answers for item in answer.get("items") or []]
+    prices = [item.get("price") or {} for item in items]
+    currencies = sorted({str(price.get("currency_code")) for price in prices})
+    zero_old = sum(1 for price in prices if not price.get("old_price"))
+    zero_marketing = sum(1 for price in prices if not price.get("marketing_seller_price"))
+    zero_price = sum(1 for price in prices if not price.get("price"))
+    lines = [f"prices: {len(items)} products, currencies {currencies}, "
+             f"price 0/missing {zero_price}, old_price 0/missing {zero_old}, "
+             f"marketing_seller_price 0/missing {zero_marketing}"]
+    refusal = None
+    if zero_price:
+        refusal = f"{zero_price} products have no selling price; review before mapping prices"
+    return lines, refusal
+
+
+STOCK_TYPES = {"fbo": "MARKETPLACE_FULFILLED", "fbs": "SELLER_FULFILLED", "rfbs": "SELLER_FULFILLED",
+               "fbp": "UNKNOWN"}
+
+
+def inspect_stocks(answers: list[dict]) -> tuple[list[str], str | None]:
+    items = [item for answer in answers for item in answer.get("items") or []]
+    seen_types: dict[str, int] = {}
+    collisions, unknown = 0, set()
+    for item in items:
+        modes: dict[str, int] = {}
+        for stock in item.get("stocks") or []:
+            kind = str(stock.get("type"))
+            seen_types[kind] = seen_types.get(kind, 0) + 1
+            if kind not in STOCK_TYPES:
+                unknown.add(kind)
+                continue
+            mode = STOCK_TYPES[kind]
+            modes[mode] = modes.get(mode, 0) + 1
+        collisions += sum(1 for count in modes.values() if count > 1)
+    lines = [f"stocks: {len(items)} products, entries by warehouse type {dict(sorted(seen_types.items()))}"]
+    refusal = None
+    if unknown:
+        refusal = f"unknown warehouse types {sorted(unknown)}; the value map has to name them first"
+    elif collisions:
+        refusal = (f"{collisions} product/fulfillment-mode pairs have more than one stock entry; one fact "
+                   "per pair would keep only one of them, so the entries need summing first")
+    return lines, refusal
+
+
 # One entry per capability: its registry rows, the job that reads it, and the
 # normalization mapping that turns its answers into facts.
 CAPABILITIES = {
@@ -135,6 +196,7 @@ CAPABILITIES = {
         },
         "job": {"suffix": "roles", "dataset": "UNKNOWN", "display": "Ozon 试点：API key 连通性"},
         "mapping": None,
+        "inspect": None,
     },
     "catalog": {
         "code": "ozon-catalog-read",
@@ -165,6 +227,7 @@ CAPABILITIES = {
             "records_key": "result",
         },
         "job": {"suffix": "catalog", "dataset": "LISTING", "display": "Ozon 试点：商品目录"},
+        "inspect": None,
         # Ozon's product id is both the listing and its only variant; the seller's
         # offer id is the stock-keeping unit a company matches on.
         "mapping": {
@@ -172,6 +235,90 @@ CAPABILITIES = {
             "fields": {"nativeListingKey": "/id", "nativeVariantKey": "/id", "nativeSkuKey": "/offer_id",
                        "title": "/name", "nativeBarcode": "/barcode"},
         },
+    },
+    "prices": {
+        "code": "ozon-price-read",
+        "display": "Ozon prices: seller price, crossed-out price, price with seller promotions",
+        "description": "Reads every product's current prices (POST /v5/product/info/prices, paged by "
+                       "cursor; official docs checked 2026-09-29).",
+        "manifest": "prices-latest.json",
+        "endpoint": {
+            "code": "ozon-product-prices-v5", "api_version": "v5",
+            "schema_version": "v5GetProductInfoPricesResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, 100 products per page. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full snapshot of current prices on every run, stamped with the answer's time.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v5/product/info/prices",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"cursor":"{cursor}","filter":{"visibility":"ALL"},"limit":{limit}}',
+                "response_content_type": "application/json", "continuation_pointer": "/cursor",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 60,
+                # Probed 2026-09-29: the last page is short and still carries a
+                # cursor; a request with it answers 200 with no items, never 404.
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/items",
+            },
+            "probe_body": lambda cursor: {"cursor": cursor, "filter": {"visibility": "ALL"}, "limit": PAGE_SIZE},
+            "token_key": "cursor",
+            "records_key": "items",
+        },
+        "job": {"suffix": "prices", "dataset": "PRICE", "display": "Ozon 试点：价格"},
+        # Official meanings (v5): price is the seller's price ceiling without
+        # promotions (what a price change sets), old_price the crossed-out price,
+        # marketing_seller_price the ceiling with the seller's promotions. None is
+        # what a buyer finally pays; Ozon's own co-funded discount is not in it.
+        "mapping": {
+            "dataset": "PRICE", "version": 1, "record_pointer": "/items", "child_pointer": None,
+            "fields": {"nativeListingKey": "/product_id", "nativeVariantKey": "/product_id",
+                       "currencyCode": "/price/currency_code", "sellingPrice": "/price/price",
+                       "listPrice": "/price/old_price", "discountPrice": "/price/marketing_seller_price"},
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
+        },
+        "inspect": inspect_prices,
+    },
+    "stocks": {
+        "code": "ozon-stock-read",
+        "display": "Ozon stock: present and reserved units per warehouse type",
+        "description": "Reads every product's stock by warehouse type (POST /v4/product/info/stocks, "
+                       "paged by cursor; official docs checked 2026-09-29).",
+        "manifest": "stocks-latest.json",
+        "endpoint": {
+            "code": "ozon-product-stocks-v4", "api_version": "v4",
+            "schema_version": "v4GetProductInfoStocksResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, 100 products per page. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full snapshot of stock on every run, stamped with the answer's time.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v4/product/info/stocks",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"cursor":"{cursor}","filter":{"visibility":"ALL"},"limit":{limit}}',
+                "response_content_type": "application/json", "continuation_pointer": "/cursor",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 60,
+                # Probed 2026-09-29: the last page is short and still carries a
+                # cursor; a request with it answers 200 with no items, never 404.
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/items",
+            },
+            "probe_body": lambda cursor: {"cursor": cursor, "filter": {"visibility": "ALL"}, "limit": PAGE_SIZE},
+            "token_key": "cursor",
+            "records_key": "items",
+        },
+        "job": {"suffix": "stocks", "dataset": "STOCK", "display": "Ozon 试点：库存"},
+        # One stock entry per warehouse type under each product. Official types:
+        # fbo (Ozon warehouse), fbs (seller warehouse, Ozon delivers), rfbs (seller
+        # warehouse and delivery), fbp (partner warehouse, no internal mode yet).
+        "mapping": {
+            "dataset": "STOCK", "version": 1, "record_pointer": "/items", "child_pointer": "/stocks",
+            "fields": {"availableQuantity": "/present", "reservedQuantity": "/reserved"},
+            "sources": {
+                "nativeListingKey": {"kind": "PARENT_POINTER", "pointer": "/product_id"},
+                "nativeVariantKey": {"kind": "PARENT_POINTER", "pointer": "/product_id"},
+                "observedAt": {"kind": "OBSERVATION_TIME"},
+                "fulfillmentModeCode": {"kind": "POINTER", "pointer": "/type", "valueMap": STOCK_TYPES},
+            },
+        },
+        "inspect": inspect_stocks,
     },
 }
 
@@ -518,7 +665,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         return {"file": file_name, "sha256": hashlib.sha256(body).hexdigest(), "status": status,
                 "contentType": content_type}, (answer if isinstance(answer, dict) else None)
 
-    pages, cursor, end_signal, total_records, follow_up = [], "", None, 0, None
+    pages, answers, cursor, end_signal, total_records, follow_up = [], [], "", None, 0, None
     for index in range(MAXIMUM_PROBE_PAGES):
         if index:
             time.sleep(PROBE_PAUSE_SECONDS)
@@ -540,6 +687,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         page["records"] = len(records)
         page["token"] = "null" if token is None else ("empty" if token == "" else "present")
         total_records += len(records)
+        answers.append(answer)
         if short_rule and len(records) < PAGE_SIZE:
             end_signal = "SHORT_PAGE"
             # Evidence that the short page really was the last one: the next
@@ -552,6 +700,12 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                 if follow_up["status"] == 200 and follow_up["records"]:
                     print("a short page was followed by more records; the short-page rule would lose "
                           "data, nothing recorded")
+                    return None
+                empty_after = follow_up["status"] == 200 and follow_up["records"] == 0
+                not_found_after = follow_up["status"] == 404 and rule == "SHORT_PAGE_OR_NOT_FOUND"
+                if not (empty_after or not_found_after):
+                    print(f"the request after the short page was answered HTTP {follow_up['status']}, "
+                          f"which the registered rule {rule} does not read as the end; nothing recorded")
                     return None
             break
         if endpoint["token_key"] not in answer:
@@ -584,10 +738,20 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         after_note = f"; the next request was answered HTTP {follow_up['status']}"
     print(f"POST {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
 
+    # Whether the registered mapping can read these answers as they are.
+    inspection = []
+    if capability.get("inspect") is not None:
+        inspection, refusal = capability["inspect"](answers)
+        for line in inspection:
+            print(line)
+        if refusal:
+            print(f"nothing recorded: {refusal}")
+            return None
+
     bundle = {"capability": capability["code"], "endpoint": endpoint["code"], "path": path,
               "testedAt": iso(key["testedAt"]), "pageSize": PAGE_SIZE, "endRule": rule,
               "endSignal": end_signal, "records": total_records, "pages": pages,
-              "followUp": follow_up}
+              "followUp": follow_up, "inspection": inspection}
     bundle_name = f"{capability['job']['suffix']}-{stamp}-bundle.json"
     data = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     private_write(pilot.evidence_dir / bundle_name, data)
@@ -864,7 +1028,8 @@ def command_setup(args: argparse.Namespace) -> int:
             created = admin.require("POST", "/normalization-mappings", {
                 "platformCode": PLATFORM, "datasetKind": mapping["dataset"],
                 "mappingVersion": mapping["version"], "recordPointer": mapping["record_pointer"],
-                "fieldPointers": mapping["fields"], "ownerLabel": OWNER_LABEL}, 201)
+                "childPointer": mapping.get("child_pointer"), "fieldPointers": mapping["fields"],
+                "fieldSources": mapping.get("sources") or {}, "ownerLabel": OWNER_LABEL}, 201)
             same = {"id": created["id"], "verificationState": "UNVERIFIED", "version": 0}
             result["mapping"] = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} registered"
         else:

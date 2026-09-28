@@ -37,6 +37,28 @@ public class PlatformListingRepository {
      * never rewritten, so a listing cannot silently become a different one.
      */
     public void observeListing(PlatformListing listing) {
+        insertListing(listing, """
+                        ON CONFLICT (store_id, native_listing_key) DO UPDATE
+                        SET title = EXCLUDED.title,
+                            native_product_key = EXCLUDED.native_product_key,
+                            native_status = EXCLUDED.native_status,
+                            last_seen_at = GREATEST(
+                                core.platform_listing.last_seen_at, EXCLUDED.last_seen_at),
+                            status = EXCLUDED.status,
+                            updated_at = EXCLUDED.updated_at,
+                            version = core.platform_listing.version + 1
+                        """);
+    }
+
+    /**
+     * Insert a listing nobody has observed yet, and leave an existing one exactly
+     * as it is: the caller only knows the listing's keys.
+     */
+    public void mentionListing(PlatformListing listing) {
+        insertListing(listing, "ON CONFLICT (store_id, native_listing_key) DO NOTHING");
+    }
+
+    private void insertListing(PlatformListing listing, String conflictClause) {
         jdbc.sql("""
                         INSERT INTO core.platform_listing (
                             id, organization_id, store_id, marketplace_account_id,
@@ -47,16 +69,7 @@ public class PlatformListingRepository {
                             :platformCode, :nativeListingKey, :nativeProductKey, :title,
                             :nativeStatus, :seenAt, :seenAt, :status,
                             :seenAt, :seenAt, 0)
-                        ON CONFLICT (store_id, native_listing_key) DO UPDATE
-                        SET title = EXCLUDED.title,
-                            native_product_key = EXCLUDED.native_product_key,
-                            native_status = EXCLUDED.native_status,
-                            last_seen_at = GREATEST(
-                                core.platform_listing.last_seen_at, EXCLUDED.last_seen_at),
-                            status = EXCLUDED.status,
-                            updated_at = EXCLUDED.updated_at,
-                            version = core.platform_listing.version + 1
-                        """)
+                        """ + conflictClause)
                 .param("id", listing.id())
                 .param("organizationId", listing.organizationId())
                 .param("storeId", listing.storeId())
@@ -73,16 +86,7 @@ public class PlatformListingRepository {
 
     /** Record an observation of one listing variant, inserting it the first time. */
     public void observeVariant(PlatformListingVariant variant) {
-        jdbc.sql("""
-                        INSERT INTO core.platform_listing_variant (
-                            id, organization_id, platform_listing_id, native_variant_key,
-                            native_sku_key, native_barcode, native_color_label,
-                            native_size_label, native_status, first_seen_at, last_seen_at,
-                            status, created_at, updated_at, version)
-                        VALUES (:id, :organizationId, :listingId, :nativeVariantKey,
-                            :nativeSkuKey, :nativeBarcode, :nativeColorLabel,
-                            :nativeSizeLabel, :nativeStatus, :seenAt, :seenAt,
-                            :status, :seenAt, :seenAt, 0)
+        insertVariant(variant, """
                         ON CONFLICT (platform_listing_id, native_variant_key) DO UPDATE
                         SET native_sku_key = EXCLUDED.native_sku_key,
                             native_barcode = EXCLUDED.native_barcode,
@@ -95,7 +99,29 @@ public class PlatformListingRepository {
                             status = EXCLUDED.status,
                             updated_at = EXCLUDED.updated_at,
                             version = core.platform_listing_variant.version + 1
-                        """)
+                        """);
+    }
+
+    /**
+     * Insert a listing variant nobody has observed yet, and leave an existing one
+     * exactly as it is: the caller only knows the variant's keys.
+     */
+    public void mentionVariant(PlatformListingVariant variant) {
+        insertVariant(variant, "ON CONFLICT (platform_listing_id, native_variant_key) DO NOTHING");
+    }
+
+    private void insertVariant(PlatformListingVariant variant, String conflictClause) {
+        jdbc.sql("""
+                        INSERT INTO core.platform_listing_variant (
+                            id, organization_id, platform_listing_id, native_variant_key,
+                            native_sku_key, native_barcode, native_color_label,
+                            native_size_label, native_status, first_seen_at, last_seen_at,
+                            status, created_at, updated_at, version)
+                        VALUES (:id, :organizationId, :listingId, :nativeVariantKey,
+                            :nativeSkuKey, :nativeBarcode, :nativeColorLabel,
+                            :nativeSizeLabel, :nativeStatus, :seenAt, :seenAt,
+                            :status, :seenAt, :seenAt, 0)
+                        """ + conflictClause)
                 .param("id", variant.id())
                 .param("organizationId", variant.organizationId())
                 .param("listingId", variant.platformListingId())

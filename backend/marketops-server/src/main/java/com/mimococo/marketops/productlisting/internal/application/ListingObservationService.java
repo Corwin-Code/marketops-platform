@@ -55,16 +55,33 @@ public class ListingObservationService implements ListingObservationSink {
     @Transactional
     public Map<String, Map<String, UUID>> record(List<ObservedListing> observed,
                                                  Instant observedAt) {
+        return observe(observed, observedAt, true);
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Map<String, UUID>> mention(List<ObservedListing> observed,
+                                                  Instant observedAt) {
+        return observe(observed, observedAt, false);
+    }
+
+    /**
+     * @param restate whether the observation states the listing's descriptive
+     *        fields, or only names it by its keys
+     */
+    private Map<String, Map<String, UUID>> observe(List<ObservedListing> observed,
+                                                   Instant observedAt,
+                                                   boolean restate) {
         Map<String, Map<String, UUID>> resolved = new LinkedHashMap<>();
         Map<UUID, StorePlacement> storeCache = new HashMap<>();
 
         for (ObservedListing listing : observed) {
             StorePlacement store = storeCache.computeIfAbsent(listing.storeId(), this::requirePlacement);
-            UUID listingId = recordListing(listing, store, observedAt);
+            UUID listingId = recordListing(listing, store, observedAt, restate);
             Map<String, UUID> variantIds = new LinkedHashMap<>();
             for (ObservedListingVariant variant : listing.variants()) {
                 variantIds.put(variant.nativeVariantKey(),
-                        recordVariant(variant, listingId, store, observedAt));
+                        recordVariant(variant, listingId, store, observedAt, restate));
             }
             resolved.put(listing.nativeListingKey(), Map.copyOf(variantIds));
         }
@@ -73,14 +90,19 @@ public class ListingObservationService implements ListingObservationSink {
 
     private UUID recordListing(ObservedListing observed,
                                StorePlacement store,
-                               Instant observedAt) {
+                               Instant observedAt,
+                               boolean restate) {
         PlatformListing listing = new PlatformListing(
                 idGenerator.newId(), store.organizationId(), store.id(),
                 store.marketplaceAccountId(), store.platformCode(),
                 observed.nativeListingKey(), observed.nativeProductKey(), observed.title(),
                 observed.nativeStatus(), observedAt, observedAt,
                 ObservationLifecycle.OBSERVED, observedAt, observedAt, 0L);
-        listings.observeListing(listing);
+        if (restate) {
+            listings.observeListing(listing);
+        } else {
+            listings.mentionListing(listing);
+        }
         // The insert may have been absorbed by an existing row, so the
         // identifier is read back rather than assumed to be the one generated.
         return listings.findListingByNativeKey(store.id(), observed.nativeListingKey())
@@ -91,14 +113,19 @@ public class ListingObservationService implements ListingObservationSink {
     private UUID recordVariant(ObservedListingVariant observed,
                                UUID listingId,
                                StorePlacement store,
-                               Instant observedAt) {
+                               Instant observedAt,
+                               boolean restate) {
         PlatformListingVariant variant = new PlatformListingVariant(
                 idGenerator.newId(), store.organizationId(), listingId,
                 observed.nativeVariantKey(), observed.nativeSkuKey(), observed.nativeBarcode(),
                 observed.nativeColorLabel(), observed.nativeSizeLabel(), observed.nativeStatus(),
                 observedAt, observedAt, ObservationLifecycle.OBSERVED,
                 observedAt, observedAt, 0L);
-        listings.observeVariant(variant);
+        if (restate) {
+            listings.observeVariant(variant);
+        } else {
+            listings.mentionVariant(variant);
+        }
         return listings.findVariantByNativeKey(listingId, observed.nativeVariantKey())
                 .map(PlatformListingVariant::id)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.INTERNAL_ERROR));

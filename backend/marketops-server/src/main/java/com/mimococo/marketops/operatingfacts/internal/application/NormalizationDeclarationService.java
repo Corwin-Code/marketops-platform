@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Registering and verifying the payload shape of one platform dataset.
@@ -45,74 +46,162 @@ public class NormalizationDeclarationService {
     /** A non-empty JSON Pointer, which a field declaration always is. */
     private static final Pattern FIELD_POINTER = Pattern.compile("^(/[^/~]*(~[01][^/~]*)*)+$");
 
+    /** The most native words one value map may translate. */
+    private static final int MAXIMUM_VALUE_MAP = 64;
+
     private final NormalizationRegistrationRepository registrations;
     private final NormalizationDeclarationRepository declarations;
     private final MetadataAuditRecorder auditRecorder;
+    private final ObjectMapper objectMapper;
     private final IdGenerator idGenerator;
     private final Clock clock;
 
     NormalizationDeclarationService(NormalizationRegistrationRepository registrations,
                                     NormalizationDeclarationRepository declarations,
                                     MetadataAuditRecorder auditRecorder,
+                                    ObjectMapper objectMapper,
                                     IdGenerator idGenerator,
                                     Clock clock) {
         this.registrations = registrations;
         this.declarations = declarations;
         this.auditRecorder = auditRecorder;
+        this.objectMapper = objectMapper;
         this.idGenerator = idGenerator;
         this.clock = clock;
     }
 
-    /** Register a payload shape. It starts unverified and normalizes nothing. */
+    /**
+     * Register a payload shape. It starts unverified and normalizes nothing.
+     *
+     * <p>{@code fieldPointers} declares plain pointers into a record (or into a
+     * child record when {@code childPointer} is given); {@code fieldSources}
+     * declares every other kind of source. A field is declared once.
+     */
     @Transactional
     public UUID register(String operator,
                          String platformCode,
                          String datasetKind,
                          int mappingVersion,
                          String recordPointer,
+                         String childPointer,
                          Map<String, String> fieldPointers,
+                         Map<String, SourceDeclaration> fieldSources,
                          String ownerLabel) {
         String validOwner = MetadataFieldPolicy.requireText("ownerLabel", ownerLabel);
         if (recordPointer == null || !RECORD_POINTER.matcher(recordPointer).matches()) {
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            throw invalid();
+        }
+        if (childPointer != null && !FIELD_POINTER.matcher(childPointer).matches()) {
+            throw invalid();
         }
         Map<String, String> known = declarations.valueKinds(datasetKind);
         if (known.isEmpty()) {
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            throw invalid();
         }
-        Map<String, String> validated = new LinkedHashMap<>();
-        fieldPointers.forEach((field, pointer) -> {
-            if (!known.containsKey(field) || pointer == null
-                    || !FIELD_POINTER.matcher(pointer).matches()) {
-                throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
-            }
-            validated.put(field, pointer);
-        });
+        Map<String, SourceDeclaration> declared = new LinkedHashMap<>();
+        if (fieldPointers != null) {
+            fieldPointers.forEach((field, pointer) ->
+                    declared.put(field, new SourceDeclaration("POINTER", pointer, null, null)));
+        }
+        if (fieldSources != null) {
+            fieldSources.forEach((field, source) -> {
+                if (declared.putIfAbsent(field, source) != null) {
+                    throw invalid();
+                }
+            });
+        }
+        declared.forEach((field, source) -> validate(field, source, known.get(field), childPointer));
         List<String> required = declarations.requiredFields(datasetKind);
-        if (!validated.keySet().containsAll(required)) {
+        if (!declared.keySet().containsAll(required)) {
             // A declaration that cannot produce the fields a fact needs would
             // reject every record it read. Refusing it now is more useful than
             // an empty dataset nobody can explain.
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            throw invalid();
         }
 
         Instant now = clock.instant();
         UUID mappingId = idGenerator.newId();
         registrations.insertMapping(mappingId, platformCode, datasetKind, mappingVersion,
-                recordPointer, validOwner, now);
-        validated.forEach((field, pointer) ->
-                registrations.insertField(mappingId, datasetKind, field, pointer));
+                recordPointer, childPointer, validOwner, now);
+        declared.forEach((field, source) -> registrations.insertField(mappingId, datasetKind,
+                field, source.kind(), source.pointer(), source.value(),
+                source.valueMap() == null ? null : objectMapper.writeValueAsString(source.valueMap())));
 
+        Map<String, FieldChange> changes = new LinkedHashMap<>();
+        changes.put("recordPointer", new FieldChange(null, recordPointer));
+        if (childPointer != null) {
+            changes.put("childPointer", new FieldChange(null, childPointer));
+        }
+        changes.put("declaredFieldCount", new FieldChange(null, Integer.toString(declared.size())));
+        changes.put("verificationState", new FieldChange(null, "UNVERIFIED"));
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATING_FACTS, operator, AuditAction.CREATE,
                 ENTITY_TYPE, mappingId, platformCode + "/" + datasetKind,
-                Map.of(
-                        "recordPointer", new FieldChange(null, recordPointer),
-                        "declaredFieldCount",
-                        new FieldChange(null, Integer.toString(validated.size())),
-                        "verificationState", new FieldChange(null, "UNVERIFIED")),
-                null, null));
+                Map.copyOf(changes), null, null));
         return mappingId;
+    }
+
+    /**
+     * Refuse a field source the normalizer could not honour.
+     *
+     * <p>Constants and translations are converted with exactly the rules
+     * normalization will apply, so a declaration that registers is one that can
+     * produce its field.
+     */
+    private static void validate(String field, SourceDeclaration source, String valueKind,
+                                 String childPointer) {
+        if (valueKind == null || source == null || source.kind() == null) {
+            throw invalid();
+        }
+        switch (source.kind()) {
+            case "POINTER", "PARENT_POINTER" -> {
+                if (source.pointer() == null || !FIELD_POINTER.matcher(source.pointer()).matches()
+                        || source.value() != null
+                        || ("PARENT_POINTER".equals(source.kind()) && childPointer == null)) {
+                    throw invalid();
+                }
+                if (source.valueMap() != null) {
+                    if (source.valueMap().isEmpty() || source.valueMap().size() > MAXIMUM_VALUE_MAP) {
+                        throw invalid();
+                    }
+                    source.valueMap().forEach((nativeWord, canonical) -> {
+                        if (nativeWord == null || nativeWord.isEmpty() || nativeWord.length() > 128
+                                || PayloadReader.convertText(canonical, valueKind) == null) {
+                            throw invalid();
+                        }
+                    });
+                }
+            }
+            case "OBSERVATION_TIME" -> {
+                if (!"INSTANT".equals(valueKind) || source.pointer() != null
+                        || source.value() != null || source.valueMap() != null) {
+                    throw invalid();
+                }
+            }
+            case "CONSTANT" -> {
+                if (source.value() == null || source.value().isEmpty() || source.value().length() > 256
+                        || source.pointer() != null || source.valueMap() != null
+                        || PayloadReader.convertText(source.value(), valueKind) == null) {
+                    throw invalid();
+                }
+            }
+            default -> throw invalid();
+        }
+    }
+
+    private static OperationRejectedException invalid() {
+        return OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+    }
+
+    /**
+     * Where one declared field comes from.
+     *
+     * @param kind {@code POINTER}, {@code PARENT_POINTER}, {@code OBSERVATION_TIME} or {@code CONSTANT}
+     * @param pointer the JSON pointer for the two pointer kinds
+     * @param value the constant's text
+     * @param valueMap native words translated into the canonical text, for the pointer kinds
+     */
+    public record SourceDeclaration(String kind, String pointer, String value, Map<String, String> valueMap) {
     }
 
     /** Record verified evidence and start normalizing the dataset. */
