@@ -165,7 +165,7 @@ export const CASE_STATE_LABELS: CodeLabels = {
   REOPENED: '已重开',
   ESCALATED: '已升级',
   REWORK_REQUIRED: '需返工',
-  ACCEPTED_RISK: '已接受风险',
+  ACCEPTED_RISK: '风险接受中',
   CANCELLED: '已取消',
 };
 
@@ -207,7 +207,7 @@ export const EXCEPTION_STATE_LABELS: CodeLabels = {
   REQUESTED: '已申请',
   AUTHORITY_BLOCKED: '权限不足',
   ACTIVE: '已接受',
-  REJECTED: '已拒绝',
+  REJECTED: '已驳回',
   EXPIRED: '已过期',
   INVALIDATED: '已失效',
   WITHDRAWN: '已撤回',
@@ -263,4 +263,61 @@ export const POLICY_STATUS_LABELS: CodeLabels = {
   RETIRED: '已停用',
   CANCELLED: '已取消',
   SUPERSEDED: '已被替代',
+};
+
+/** Views of the case list. */
+export const CASE_VIEW_LABELS: CodeLabels = {
+  LIVE: '待处理',
+  ESCALATED: '已升级',
+  EXCEPTION_PENDING: '待审批风险接受',
+  ALL: '全部',
+};
+
+/** What an acceptance covers. */
+export const EXCEPTION_SCOPE_LABELS: CodeLabels = {
+  CHILD: '仅此子风险',
+  VARIANT: '整个商品变体',
+  STORE: '该店铺',
+  CHANNEL: '该 Listing 与发货模式',
+};
+
+/** Recorded decisions on an acceptance request. */
+export const EXCEPTION_DECISION_LABELS: CodeLabels = {
+  APPROVED: '已批准',
+  REJECTED: '已驳回',
+  AUTHORITY_BLOCKED: '权限不足，未能决定',
+};
+
+/** What a cause-specific verification checked. */
+export const VERIFICATION_KIND_LABELS: CodeLabels = {
+  COMPANY_RISK_BELOW_THRESHOLD: '公司库存风险已低于阈值',
+  CHANNEL_FRESH_AND_SELLABLE: '渠道库存新鲜且可售',
+  SOURCE_RECOVERED: '数据源已恢复',
+  UNIQUE_POLICY_RESOLVED: '已解析到唯一有效策略',
+  QUALITY_DISPOSITION_RECOMPUTED: '质量处置已重新计算',
+};
+
+/** How an inbound version came about. */
+export const INBOUND_CHANGE_KIND_LABELS: CodeLabels = {
+  CREATE: '登记',
+  AMEND: '修订',
+  CANCEL: '取消',
+  REVERIFY: '重新核验',
+};
+
+/** The scope a lead-time and safety version applies to. */
+export const LEAD_SCOPE_KIND_LABELS: CodeLabels = {
+  ORGANIZATION: '组织默认',
+  SUPPLIER: '供应商',
+  PRODUCT_CATEGORY: '商品品类',
+  VARIANT_SUPPLIER_ROUTE: '变体 + 供应商 + 路线',
+};
+
+/** Where a policy version stands at the time of reading. */
+export const POLICY_LIFECYCLE_LABELS: CodeLabels = {
+  CURRENT: '生效中',
+  SCHEDULED: '待生效',
+  ENDED: '已到期',
+  RETIRED: '已停用',
+  CANCELLED: '已取消',
 };

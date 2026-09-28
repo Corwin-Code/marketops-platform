@@ -36,13 +36,13 @@ import {
   calibrationText as text,
   calibrationUnits,
 } from '../i18n/zh/listingCalibrations';
-import { useReauthenticate } from '../session/reauthenticate';
 import {
   ActionModal,
   DateTime,
   DetailDrawer,
   InfoTip,
   SectionCollapse,
+  StepUpNotice,
   TechnicalDetails,
 } from '../ui';
 import type { SectionCollapseItem, SubmitOutcome } from '../ui';
@@ -733,7 +733,6 @@ function StepAction({
   readonly onDone: () => void;
 }): React.JSX.Element {
   const { message } = App.useApp();
-  const reauthenticate = useReauthenticate();
   const summary = detail.summary;
   const viewerId = overview.viewer.userId;
   const blocked = step.blockers.length > 0;
@@ -856,28 +855,7 @@ function StepAction({
               }
             />
           )}
-          {step.stepUpRequired && (
-            <Alert
-              type="warning"
-              showIcon
-              title={text.stepUpTitle}
-              description={text.stepUpHelp}
-              {...(reauthenticate === undefined
-                ? {}
-                : {
-                    action: (
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          void reauthenticate().catch(() => undefined);
-                        }}
-                      >
-                        {text.stepUpAction}
-                      </Button>
-                    ),
-                  })}
-            />
-          )}
+          {step.stepUpRequired && <StepUpNotice description={text.stepUpHelp} />}
         </Flex>
       }
       onSubmit={submit}

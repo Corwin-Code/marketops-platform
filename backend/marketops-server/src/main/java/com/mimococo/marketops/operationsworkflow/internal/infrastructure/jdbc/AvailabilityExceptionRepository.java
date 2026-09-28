@@ -553,6 +553,40 @@ public class AvailabilityExceptionRepository {
                 .list();
     }
 
+    /**
+     * Every decision recorded on one request, oldest first.
+     *
+     * <p>Including the blocked attempts: a review asking why a risk was carried
+     * unaccepted for a week needs to see that somebody tried and could not.
+     */
+    public List<RecordedDecision> decisions(UUID exceptionId) {
+        return jdbc.sql("""
+                        SELECT id, decision, authority_level, decided_by_user_id,
+                               decided_by_role_code, delegation_reference, requester_is_approver,
+                               separation_required, step_up_satisfied, reason,
+                               granted_effective_from, granted_expires_at, decided_at
+                          FROM ops.availability_exception_decision
+                         WHERE exception_id = :exceptionId
+                         ORDER BY decided_at, id
+                        """)
+                .param("exceptionId", exceptionId)
+                .query((rows, number) -> new RecordedDecision(
+                        rows.getObject("id", UUID.class),
+                        rows.getString("decision"),
+                        ExceptionAuthorityLevel.valueOf(rows.getString("authority_level")),
+                        rows.getObject("decided_by_user_id", UUID.class),
+                        rows.getString("decided_by_role_code"),
+                        rows.getString("delegation_reference"),
+                        rows.getBoolean("requester_is_approver"),
+                        rows.getBoolean("separation_required"),
+                        rows.getBoolean("step_up_satisfied"),
+                        rows.getString("reason"),
+                        instant(rows, "granted_effective_from"),
+                        instant(rows, "granted_expires_at"),
+                        instant(rows, "decided_at")))
+                .list();
+    }
+
     /** Append one decision. */
     public void insertDecision(DecisionRow row) {
         jdbc.sql("""
@@ -695,6 +729,23 @@ public class AvailabilityExceptionRepository {
                               Instant authenticatedAt, boolean stepUpSatisfied, String reason,
                               Instant grantedEffectiveFrom, Instant grantedExpiresAt,
                               Instant decidedAt, String correlationId) {
+    }
+
+    /**
+     * One decision as it was recorded.
+     *
+     * @param decision {@code APPROVED}, {@code REJECTED} or {@code AUTHORITY_BLOCKED}
+     * @param authorityLevel the level it was decided at
+     * @param delegationReference the delegation relied on, or {@code null}
+     * @param grantedEffectiveFrom the granted start, or {@code null}
+     * @param grantedExpiresAt the granted end, or {@code null}
+     */
+    public record RecordedDecision(UUID id, String decision, ExceptionAuthorityLevel authorityLevel,
+                                   UUID decidedByUserId, String decidedByRoleCode,
+                                   String delegationReference, boolean requesterIsApprover,
+                                   boolean separationRequired, boolean stepUpSatisfied,
+                                   String reason, Instant grantedEffectiveFrom,
+                                   Instant grantedExpiresAt, Instant decidedAt) {
     }
 
     public record CurrentRisk(String causeCode, String severity, UUID storeId,

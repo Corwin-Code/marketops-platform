@@ -99,15 +99,15 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                     request.requestedByUserId().toString(),
                     Map.of("state", new FieldChange(null,
                             AcceptedExceptionState.AUTHORITY_BLOCKED.name())));
-            return find(id);
+            return require(id);
         }
 
         ExceptionMaterialityPolicy sizing = policy.get();
         if (sizing.exceedsMaximum(request.requestedFrom(), request.requestedUntil())) {
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            throw OperationRejectedException.of(ErrorCode.EXCEPTION_PERIOD_EXCEEDS_MAXIMUM);
         }
-        int occurrence = exceptions.countGrantedSince(request.organizationId(), request.childId(),
-                request.causeCode(), request.at().minus(sizing.repeatLookback())) + 1;
+        int occurrence = occurrence(sizing, request.organizationId(), request.childId(),
+                request.causeCode(), request.at());
         ExceptionAuthorityLevel required = sizing.requiredAuthority(request.severity(), occurrence,
                 request.consequenceAmount(), request.consequenceCurrency(),
                 request.requestedFrom(), request.requestedUntil());
@@ -118,14 +118,14 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 request.requestedByUserId().toString(),
                 Map.of("state", new FieldChange(null, AcceptedExceptionState.REQUESTED.name()),
                         "requiredAuthority", new FieldChange(null, required.name())));
-        return find(id);
+        return require(id);
     }
 
     @Override
     @Transactional
     public AcceptedExceptionView decide(ExceptionDecision decision) {
         validateDecision(decision);
-        AcceptedExceptionView existing = find(decision.exceptionId());
+        AcceptedExceptionView existing = require(decision.exceptionId());
         if (existing.state() != AcceptedExceptionState.REQUESTED) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
@@ -169,7 +169,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                     decision.decidedByUserId().toString(),
                     Map.of("state", new FieldChange(existing.state().name(),
                             AcceptedExceptionState.REJECTED.name())));
-            return find(existing.id());
+            return require(existing.id());
         }
         if (separationRequired && requesterIsApprover) {
             // The database refuses this row too. Refusing it here as well gives
@@ -178,7 +178,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         }
         validateApprovalProof(decision);
         if (sizing.exceedsMaximum(existing.effectiveFrom(), existing.expiresAt())) {
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            throw OperationRejectedException.of(ErrorCode.EXCEPTION_PERIOD_EXCEEDS_MAXIMUM);
         }
 
         exceptions.insertDecision(decisionRow(existing, decision, effectiveRole, "APPROVED",
@@ -193,7 +193,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 decision.decidedByUserId().toString(),
                 Map.of("state", new FieldChange(existing.state().name(),
                         AcceptedExceptionState.ACTIVE.name())));
-        return find(existing.id());
+        return require(existing.id());
     }
 
     @Override
@@ -264,7 +264,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
     @Override
     @Transactional
     public AcceptedExceptionView withdraw(UUID exceptionId, String reason, Instant at) {
-        AcceptedExceptionView existing = find(exceptionId);
+        AcceptedExceptionView existing = require(exceptionId);
         if (blank(reason)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
@@ -278,14 +278,14 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 Map.of("state", new FieldChange(existing.state().name(),
                                 AcceptedExceptionState.WITHDRAWN.name()),
                         "withdrawalReason", new FieldChange(null, reason)));
-        return find(exceptionId);
+        return require(exceptionId);
     }
 
     @Override
     @Transactional
     public AcceptedExceptionView invalidate(UUID exceptionId, InvalidationCause cause,
                                             String reason, Instant at) {
-        AcceptedExceptionView existing = find(exceptionId);
+        AcceptedExceptionView existing = require(exceptionId);
         if (existing.state() != AcceptedExceptionState.ACTIVE) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
@@ -296,10 +296,10 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         if (cause == InvalidationCause.REPEATED_CONDITION
                 || cause == InvalidationCause.AUTHORITY_LOST
                 || cause == InvalidationCause.MATERIALITY_INCREASED) {
-            caseService.escalate(existing.caseId(),
+            caseService.escalateUnderPolicy(existing.caseId(),
                     "accepted risk invalidated: " + cause.name(), at);
         }
-        return find(exceptionId);
+        return require(exceptionId);
     }
 
     @Override
@@ -309,7 +309,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         for (AcceptedExceptionView expiring : exceptions.dueForExpiry(organizationId, at)) {
             end(expiring, AcceptedExceptionState.EXPIRED,
                     "the granted acceptance period ended at " + expiring.expiresAt(), at);
-            ended.add(find(expiring.id()));
+            ended.add(require(expiring.id()));
         }
         return List.copyOf(ended);
     }
@@ -419,6 +419,103 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         return exceptions.forCase(caseId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<AcceptedExceptionView> find(UUID exceptionId) {
+        return exceptions.find(exceptionId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExceptionTerms terms(UUID organizationId, UUID childId, String causeCode, Instant at) {
+        Optional<ExceptionMaterialityPolicy> policy =
+                exceptions.resolveMateriality(organizationId, at);
+        if (policy.isEmpty()) {
+            return ExceptionTerms.unsized();
+        }
+        ExceptionMaterialityPolicy sizing = policy.get();
+        return new ExceptionTerms(true, sizing.policyId(), sizing.policyVersion(),
+                sizing.maxExceptionDuration(), sizing.materialDuration(),
+                sizing.materialProfitAtRisk(), sizing.currencyCode(),
+                sizing.repeatOccurrenceCount(), sizing.repeatLookback(),
+                occurrence(sizing, organizationId, childId, causeCode, at));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExceptionPreview preview(ExceptionSizing sizing) {
+        validateSizing(sizing);
+        AvailabilityCaseView governed = cases.find(sizing.caseId())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        if (!governed.organizationId().equals(sizing.organizationId())
+                || !governed.childId().equals(sizing.childId())
+                || !governed.causeCode().equals(sizing.causeCode())) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        Optional<ExceptionMaterialityPolicy> policy =
+                exceptions.resolveMateriality(sizing.organizationId(), sizing.at());
+        if (policy.isEmpty()) {
+            // What request() would record: blocked, at the highest level, with
+            // separation assumed because nothing established that it is not.
+            return new ExceptionPreview(false, ExceptionAuthorityLevel.RISK_AUTHORITY, true, null,
+                    false);
+        }
+        ExceptionMaterialityPolicy terms = policy.get();
+        if (terms.exceedsMaximum(sizing.requestedFrom(), sizing.requestedUntil())) {
+            throw OperationRejectedException.of(ErrorCode.EXCEPTION_PERIOD_EXCEEDS_MAXIMUM);
+        }
+        int occurrence = occurrence(terms, sizing.organizationId(), sizing.childId(),
+                sizing.causeCode(), sizing.at());
+        return new ExceptionPreview(true,
+                terms.requiredAuthority(sizing.severity(), occurrence, sizing.consequenceAmount(),
+                        sizing.consequenceCurrency(), sizing.requestedFrom(),
+                        sizing.requestedUntil()),
+                terms.separationRequired(sizing.severity(), occurrence,
+                        sizing.consequenceAmount(), sizing.consequenceCurrency(),
+                        sizing.requestedFrom(), sizing.requestedUntil()),
+                occurrence, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExceptionPreview previewDecision(UUID exceptionId, Instant at) {
+        AcceptedExceptionView existing = require(exceptionId);
+        AvailabilityCaseView governed = cases.find(existing.caseId())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        Optional<ExceptionMaterialityPolicy> policy =
+                exceptions.resolveMateriality(existing.organizationId(), at);
+        if (policy.isEmpty()) {
+            // decide() would block the request at the level it was recorded
+            // with, separation required.
+            return new ExceptionPreview(false, existing.requiredAuthority(), true,
+                    existing.occurrenceCount(), false);
+        }
+        // The same inputs decide() sizes by: the case's current severity and the
+        // request's own occurrence, exposure and period.
+        ExceptionMaterialityPolicy sizing = policy.get();
+        return new ExceptionPreview(true,
+                sizing.requiredAuthority(governed.severity(), existing.occurrenceCount(),
+                        existing.consequenceAmount(), existing.consequenceCurrency(),
+                        existing.effectiveFrom(), existing.expiresAt()),
+                sizing.separationRequired(governed.severity(), existing.occurrenceCount(),
+                        existing.consequenceAmount(), existing.consequenceCurrency(),
+                        existing.effectiveFrom(), existing.expiresAt()),
+                existing.occurrenceCount(),
+                sizing.exceedsMaximum(existing.effectiveFrom(), existing.expiresAt()));
+    }
+
+    /**
+     * Which acceptance of this cause a new one would be.
+     *
+     * <p>Counted over granted acceptances inside the version's lookback, plus
+     * the one being asked for, exactly as a request is sized.
+     */
+    private int occurrence(ExceptionMaterialityPolicy sizing, UUID organizationId, UUID childId,
+                           String causeCode, Instant at) {
+        return exceptions.countGrantedSince(organizationId, childId, causeCode,
+                at.minus(sizing.repeatLookback())) + 1;
+    }
+
     /**
      * End an acceptance and hand the case back.
      *
@@ -459,7 +556,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 decision.decidedByUserId().toString(),
                 Map.of("state", new FieldChange(existing.state().name(),
                         AcceptedExceptionState.AUTHORITY_BLOCKED.name())));
-        return find(existing.id());
+        return require(existing.id());
     }
 
     private void store(UUID id, ExceptionRequest request, ExceptionAuthorityLevel required,
@@ -495,7 +592,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 grantedFrom, grantedUntil, decision.at(), decision.correlationId());
     }
 
-    private AcceptedExceptionView find(UUID id) {
+    private AcceptedExceptionView require(UUID id) {
         return exceptions.find(id)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
     }
@@ -598,6 +695,24 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         if ((request.consequenceAmount() == null) != (request.consequenceCurrency() == null)) {
+            throw OperationRejectedException.of(ErrorCode.CURRENCY_MISMATCH);
+        }
+    }
+
+    /**
+     * Refuse a preview that could not be sized.
+     *
+     * <p>The same period and currency rules as {@link #validate}, and the same
+     * codes, so a preview never passes what the request would then refuse.
+     */
+    private static void validateSizing(ExceptionSizing sizing) {
+        if (sizing == null || sizing.organizationId() == null || sizing.caseId() == null
+                || sizing.childId() == null || blank(sizing.causeCode()) || sizing.at() == null
+                || sizing.requestedFrom() == null || sizing.requestedUntil() == null
+                || !sizing.requestedUntil().isAfter(sizing.requestedFrom())) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        if ((sizing.consequenceAmount() == null) != (sizing.consequenceCurrency() == null)) {
             throw OperationRejectedException.of(ErrorCode.CURRENCY_MISMATCH);
         }
     }

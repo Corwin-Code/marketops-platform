@@ -3,12 +3,13 @@ package com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-/** Writes attributable effective-dated availability policy versions. */
+/** Writes and lists attributable effective-dated availability policy versions. */
 @Repository
 public class AvailabilityPolicyManagementRepository {
 
@@ -255,6 +256,100 @@ public class AvailabilityPolicyManagementRepository {
                 .optional();
     }
 
+    /**
+     * Lead-time and safety versions a person may read, grouped by scope with
+     * the newest version first.
+     *
+     * <p>Organization-wide scopes (organization, supplier, category) are
+     * included only when the caller may read the organization; variant-route
+     * scopes only for the variants the caller may read. Every version is
+     * returned, including retired and cancelled ones, so a reader can see what
+     * governed a past calculation.
+     *
+     * @param status one stored status, or {@code null} for all
+     */
+    public List<LeadPolicyRow> leadPolicies(UUID organizationId,
+                                                      boolean includeOrganization,
+                                                      UUID[] permittedProductVariantIds,
+                                                      String status, int limit, int offset) {
+        return jdbc.sql("""
+                        SELECT policy.id, policy.scope_kind, policy.scope_key,
+                               policy.product_variant_id, variant.sku_code, variant.display_name,
+                               policy.supplier_code, policy.route_code, policy.category_code,
+                               policy.lead_time_days_min, policy.lead_time_days_max,
+                               policy.safety_days, policy.owner_user_id, policy.reason,
+                               policy.evidence_reference, policy.last_reviewed_at,
+                               policy.effective_from, policy.effective_to, policy.status,
+                               policy.policy_version, policy.fallback_of_id, policy.created_at,
+                               CASE WHEN policy.status <> 'ACTIVE' THEN policy.status
+                                    WHEN policy.effective_from > now() THEN 'SCHEDULED'
+                                    WHEN policy.effective_to IS NOT NULL
+                                         AND policy.effective_to <= now() THEN 'ENDED'
+                                    ELSE 'CURRENT' END AS lifecycle
+                        """ + LEAD_LIST_FROM + """
+                         ORDER BY policy.scope_precedence DESC, policy.scope_key,
+                                  policy.policy_version DESC, policy.id
+                         LIMIT :limit OFFSET :offset
+                        """)
+                .param("organizationId", organizationId)
+                .param("includeOrganization", includeOrganization)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("status", status)
+                .param("limit", limit)
+                .param("offset", offset)
+                .query((rows, number) -> new LeadPolicyRow(
+                        rows.getObject("id", UUID.class),
+                        rows.getString("scope_kind"),
+                        rows.getString("scope_key"),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getString("sku_code"),
+                        rows.getString("display_name"),
+                        rows.getString("supplier_code"),
+                        rows.getString("route_code"),
+                        rows.getString("category_code"),
+                        rows.getInt("lead_time_days_min"),
+                        rows.getInt("lead_time_days_max"),
+                        rows.getInt("safety_days"),
+                        rows.getObject("owner_user_id", UUID.class),
+                        rows.getString("reason"),
+                        rows.getString("evidence_reference"),
+                        rows.getTimestamp("last_reviewed_at").toInstant(),
+                        rows.getTimestamp("effective_from").toInstant(),
+                        timestampOrNull(rows.getTimestamp("effective_to")),
+                        rows.getString("status"),
+                        rows.getString("lifecycle"),
+                        rows.getInt("policy_version"),
+                        rows.getObject("fallback_of_id", UUID.class),
+                        rows.getTimestamp("created_at").toInstant()))
+                .list();
+    }
+
+    /** How many lead-time versions the same filter matches in total. */
+    public long countLeadPolicies(UUID organizationId, boolean includeOrganization,
+                                  UUID[] permittedProductVariantIds, String status) {
+        Long count = jdbc.sql("SELECT count(*)" + LEAD_LIST_FROM)
+                .param("organizationId", organizationId)
+                .param("includeOrganization", includeOrganization)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("status", status)
+                .query(Long.class)
+                .single();
+        return count == null ? 0 : count;
+    }
+
+    /** The versions and the visibility filter every lead-time list read shares. */
+    private static final String LEAD_LIST_FROM = """
+              FROM core.lead_time_safety_policy AS policy
+              LEFT JOIN core.product_variant AS variant
+                ON variant.id = policy.product_variant_id
+               AND variant.organization_id = policy.organization_id
+             WHERE policy.organization_id = :organizationId
+               AND ((policy.product_variant_id IS NULL
+                     AND CAST(:includeOrganization AS boolean))
+                    OR policy.product_variant_id = ANY (:permittedProductVariantIds))
+               AND (CAST(:status AS text) IS NULL OR policy.status = :status)
+            """;
+
     /** End a current version, or cancel one that never became effective. */
     public void retire(PolicyScope scope, Instant at) {
         String table = table(scope.kind());
@@ -390,6 +485,23 @@ public class AvailabilityPolicyManagementRepository {
                               UUID storeId, String scopeReference, Instant effectiveFrom,
                               Instant effectiveTo, int policyVersion, String status,
                               UUID policyId) {
+    }
+
+    /**
+     * One lead-time and safety version as the console lists it.
+     *
+     * @param scopeKey the stored scope identity versions of one scope share
+     * @param lifecycle {@code CURRENT}, {@code SCHEDULED} or {@code ENDED} for an
+     *                  active version, otherwise its stored status
+     */
+    public record LeadPolicyRow(UUID id, String scopeKind, String scopeKey, UUID productVariantId,
+                                String skuCode, String displayName, String supplierCode,
+                                String routeCode, String categoryCode, int leadTimeDaysMin,
+                                int leadTimeDaysMax, int safetyDays, UUID ownerUserId,
+                                String reason, String evidenceReference, Instant lastReviewedAt,
+                                Instant effectiveFrom, Instant effectiveTo, String status,
+                                String lifecycle, int version, UUID fallbackOfId,
+                                Instant createdAt) {
     }
 
     public record LeadDraft(UUID organizationId, String scopeKind, UUID productVariantId,

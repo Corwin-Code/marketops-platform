@@ -16,6 +16,7 @@ import com.mimococo.marketops.shared.OperationRejectedException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -274,7 +275,38 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
 
     @Override
     @Transactional
-    public AvailabilityCaseView escalate(UUID caseId, String reason, Instant at) {
+    public AvailabilityCaseView escalate(UUID caseId, UUID actorUserId, String actorRoleCode,
+                                         String reason, Instant at) {
+        if (actorUserId == null || blank(actorRoleCode) || blank(reason)) {
+            // A person's escalation without the person is exactly the
+            // fabricated attribution the journal exists to prevent.
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        return raise(caseId, actorUserId, actorRoleCode, reason, at, actorUserId.toString());
+    }
+
+    /**
+     * Raise a case because a governed acceptance of it failed.
+     *
+     * <p>Not on {@link AvailabilityCaseIntake}: nothing human caused this, so
+     * the event carries no person and the audit record names the policy that
+     * raised it. Attributing it to whoever last touched the case would be a
+     * fabricated attribution. The only caller is the exception governance, when
+     * an invalidation needs a higher authority than the one that let it happen.
+     */
+    @Transactional
+    public AvailabilityCaseView escalateUnderPolicy(UUID caseId, String reason, Instant at) {
+        return raise(caseId, null, null, reason, at, "availability-escalation-policy");
+    }
+
+    /**
+     * Raise the level by one, at most to three.
+     *
+     * <p>A flag and a level, nothing more: an escalation neither reassigns the
+     * case nor notifies anybody, and the calculated lane does not move.
+     */
+    private AvailabilityCaseView raise(UUID caseId, UUID actorUserId, String actorRoleCode,
+                                       String reason, Instant at, String auditActor) {
         AvailabilityCaseView existing = require(caseId);
         requireTransition(existing, AvailabilityCaseState.ESCALATED);
         if (existing.escalationLevel() >= 3) {
@@ -282,15 +314,25 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         }
         cases.transition(new AvailabilityCaseRepository.Transition(caseId,
                 AvailabilityCaseState.ESCALATED, null, null, null, null, null, null, 0, 1, at));
-        cases.appendEvent(event(caseId, existing.organizationId(), "ESCALATED",
-                existing.state().name(), AvailabilityCaseState.ESCALATED.name(), reason,
-                "case-" + caseId, at));
-        record(caseId, AuditAction.STATUS_CHANGE,
-                "availability-escalation-policy",
-                Map.of("escalationLevel",
-                        new com.mimococo.marketops.adminobservability.audit.FieldChange(
-                                String.valueOf(existing.escalationLevel()),
-                                String.valueOf(existing.escalationLevel() + 1))));
+        cases.appendEvent(new AvailabilityCaseRepository.CaseEvent(ids.newId(), caseId,
+                existing.organizationId(), "ESCALATED", existing.state().name(),
+                AvailabilityCaseState.ESCALATED.name(), null, null, null, null, actorUserId,
+                actorRoleCode, reason, null, null, at, "case-" + caseId));
+        Map<String, com.mimococo.marketops.adminobservability.audit.FieldChange> changes =
+                new LinkedHashMap<>();
+        changes.put("escalationLevel",
+                new com.mimococo.marketops.adminobservability.audit.FieldChange(
+                        String.valueOf(existing.escalationLevel()),
+                        String.valueOf(existing.escalationLevel() + 1)));
+        if (actorRoleCode != null) {
+            changes.put("actingRole",
+                    new com.mimococo.marketops.adminobservability.audit.FieldChange(
+                            null, actorRoleCode));
+        }
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
+                auditActor, AuditAction.STATUS_CHANGE, "availability_case", caseId, null,
+                Map.copyOf(changes),
+                actorUserId == null ? "availability case lifecycle" : reason, null));
         return cases.find(caseId).orElseThrow();
     }
 

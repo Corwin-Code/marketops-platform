@@ -98,6 +98,229 @@ public class AvailabilityCaseRepository {
                 .list();
     }
 
+    /**
+     * One page of the organization's cases as the console lists them: the
+     * case, the product and channel it is about, and the acceptance currently
+     * occupying it.
+     *
+     * <p>Scoped exactly as {@link #queue} is, ordered the same way, with the
+     * identifier as the final tie-break so pages never overlap or skip.
+     *
+     * @param productVariantId one variant, or {@code null} for all permitted
+     * @param assigneeUserId one assignee, or {@code null}
+     */
+    public List<ConsoleCaseRow> consoleQueue(UUID organizationId, QueueView view,
+                                             UUID productVariantId, UUID assigneeUserId,
+                                             UUID[] permittedStoreIds,
+                                             UUID[] permittedProductVariantIds,
+                                             int limit, int offset) {
+        return jdbc.sql(CONSOLE_SELECT + consoleWhere(view) + """
+                         ORDER BY CASE c.severity
+                                      WHEN 'CRITICAL' THEN 0
+                                      WHEN 'UNRESOLVED' THEN 1
+                                      WHEN 'REVIEW' THEN 1
+                                      WHEN 'HIGH' THEN 2
+                                      ELSE 3
+                                  END,
+                                  c.action_due_at, c.id
+                         LIMIT :limit OFFSET :offset
+                        """)
+                .param("organizationId", organizationId)
+                .param("productVariantId", productVariantId)
+                .param("assigneeUserId", assigneeUserId)
+                .param("permittedStoreIds", permittedStoreIds)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("limit", limit)
+                .param("offset", offset)
+                .query(AvailabilityCaseRepository::mapConsole)
+                .list();
+    }
+
+    /** How many cases the same view, variant and scope match in total. */
+    public long countConsoleQueue(UUID organizationId, QueueView view, UUID productVariantId,
+                                  UUID assigneeUserId, UUID[] permittedStoreIds,
+                                  UUID[] permittedProductVariantIds) {
+        Long count = jdbc.sql("SELECT count(*)" + CONSOLE_FROM + consoleWhere(view))
+                .param("organizationId", organizationId)
+                .param("productVariantId", productVariantId)
+                .param("assigneeUserId", assigneeUserId)
+                .param("permittedStoreIds", permittedStoreIds)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .query(Long.class)
+                .single();
+        return count == null ? 0 : count;
+    }
+
+    /**
+     * One case as the console shows it, without any scope narrowing.
+     *
+     * <p>The caller authorizes the case itself first; this only adds what the
+     * case is about and what occupies it.
+     */
+    public Optional<ConsoleCaseRow> consoleFind(UUID caseId) {
+        return jdbc.sql(CONSOLE_SELECT + " WHERE c.id = :caseId")
+                .param("caseId", caseId)
+                .query(AvailabilityCaseRepository::mapConsole)
+                .optional();
+    }
+
+    /**
+     * Which cases a console view asks for.
+     *
+     * <p>{@code ESCALATED} means live work that has been raised at least once,
+     * whatever its current state: a case that was escalated and then acted on
+     * is still escalated work. {@code EXCEPTION_PENDING} means a request to
+     * accept the risk is waiting for a decision.
+     */
+    public enum QueueView { LIVE, ESCALATED, EXCEPTION_PENDING, ALL }
+
+    /** The scope filter every console read shares, plus the one view predicate. */
+    private static String consoleWhere(QueueView view) {
+        String predicate = switch (view) {
+            case LIVE -> "c.state NOT IN ('VERIFIED_SUCCESS', 'CANCELLED')";
+            case ESCALATED -> "c.state NOT IN ('VERIFIED_SUCCESS', 'CANCELLED')"
+                    + " AND c.escalation_level > 0";
+            case EXCEPTION_PENDING -> """
+                    EXISTS (SELECT 1
+                              FROM ops.availability_accepted_exception pending
+                             WHERE pending.case_id = c.id
+                               AND pending.organization_id = c.organization_id
+                               AND pending.state = 'REQUESTED')""";
+            case ALL -> "TRUE";
+        };
+        return """
+                 WHERE c.organization_id = :organizationId
+                   AND card.product_variant_id = ANY (:permittedProductVariantIds)
+                   AND (child.child_kind = 'COMPANY'
+                        OR child.store_id = ANY (:permittedStoreIds))
+                   AND (CAST(:productVariantId AS uuid) IS NULL
+                        OR card.product_variant_id = CAST(:productVariantId AS uuid))
+                   AND (CAST(:assigneeUserId AS uuid) IS NULL
+                        OR c.assignee_user_id = CAST(:assigneeUserId AS uuid))
+                   AND (""" + predicate + ")\n";
+    }
+
+    /**
+     * A case, the child and variant it was raised on, and the acceptance
+     * occupying it.
+     *
+     * <p>The card is the case's own; the occupying acceptance is the newest
+     * request still holding the one-live-acceptance slot, when there is one.
+     */
+    private static final String CONSOLE_FROM = """
+              FROM ops.availability_case c
+              JOIN mart.availability_risk_child child
+                ON child.id = c.child_id
+               AND child.organization_id = c.organization_id
+              JOIN mart.availability_risk_card card
+                ON card.id = c.card_id
+               AND card.organization_id = c.organization_id
+              JOIN core.product_variant variant
+                ON variant.id = card.product_variant_id
+               AND variant.organization_id = card.organization_id
+              LEFT JOIN core.store store
+                ON store.id = child.store_id
+               AND store.organization_id = child.organization_id
+              LEFT JOIN core.marketplace_account account
+                ON account.id = store.marketplace_account_id
+               AND account.organization_id = store.organization_id
+              LEFT JOIN core.platform_listing_variant listing_variant
+                ON listing_variant.id = child.platform_listing_variant_id
+               AND listing_variant.organization_id = child.organization_id
+              LEFT JOIN LATERAL (
+                   SELECT accepted.id, accepted.state, accepted.required_authority_level,
+                          accepted.expires_at
+                     FROM ops.availability_accepted_exception accepted
+                    WHERE accepted.case_id = c.id
+                      AND accepted.organization_id = c.organization_id
+                      AND accepted.state IN ('REQUESTED', 'AUTHORITY_BLOCKED', 'ACTIVE')
+                    ORDER BY accepted.requested_at DESC, accepted.id
+                    LIMIT 1
+              ) open_exception ON true
+            """;
+
+    private static final String CONSOLE_SELECT = """
+            SELECT c.id, c.organization_id, c.card_id, c.child_id, c.cause_code, c.cause_key,
+                   c.severity, c.state, c.accountable_role_code, c.assignee_user_id,
+                   c.action_due_at, c.outcome_due_at, c.original_action_due_at,
+                   c.action_sla_paused_at, c.action_sla_remaining_ms, c.reopen_count,
+                   c.escalation_level, c.first_activated_at, c.last_evidence_at,
+                   c.improvement_first_seen_at,
+                   card.product_variant_id AS subject_variant_id,
+                   variant.sku_code AS subject_sku_code,
+                   variant.display_name AS subject_display_name,
+                   child.child_kind AS subject_child_kind,
+                   account.platform_code AS subject_platform_code,
+                   child.fulfillment_mode_code AS subject_fulfillment_mode_code,
+                   child.store_id AS subject_store_id,
+                   store.code AS subject_store_code,
+                   store.display_name AS subject_store_name,
+                   child.platform_listing_variant_id AS subject_listing_variant_id,
+                   coalesce(listing_variant.native_sku_key, listing_variant.native_variant_key)
+                       AS subject_platform_sku_key,
+                   child.profit_at_risk_amount AS subject_profit_at_risk_amount,
+                   child.profit_at_risk_currency AS subject_profit_at_risk_currency,
+                   open_exception.id AS open_exception_id,
+                   open_exception.state AS open_exception_state,
+                   open_exception.required_authority_level AS open_exception_authority,
+                   open_exception.expires_at AS open_exception_expires_at
+            """ + CONSOLE_FROM;
+
+    private static ConsoleCaseRow mapConsole(java.sql.ResultSet rows, int rowNumber)
+            throws java.sql.SQLException {
+        UUID openId = rows.getObject("open_exception_id", UUID.class);
+        return new ConsoleCaseRow(
+                map(rows, rowNumber),
+                new CaseSubject(
+                        rows.getObject("subject_variant_id", UUID.class),
+                        rows.getString("subject_sku_code"),
+                        rows.getString("subject_display_name"),
+                        rows.getString("subject_child_kind"),
+                        rows.getString("subject_platform_code"),
+                        rows.getString("subject_fulfillment_mode_code"),
+                        rows.getObject("subject_store_id", UUID.class),
+                        rows.getString("subject_store_code"),
+                        rows.getString("subject_store_name"),
+                        rows.getObject("subject_listing_variant_id", UUID.class),
+                        rows.getString("subject_platform_sku_key"),
+                        rows.getBigDecimal("subject_profit_at_risk_amount"),
+                        rows.getString("subject_profit_at_risk_currency")),
+                openId == null ? null : new OpenException(openId,
+                        rows.getString("open_exception_state"),
+                        rows.getString("open_exception_authority"),
+                        rows.getTimestamp("open_exception_expires_at") == null
+                                ? null : rows.getTimestamp("open_exception_expires_at").toInstant()));
+    }
+
+    /**
+     * One case with what the console needs beside it.
+     *
+     * @param openException the acceptance occupying the case, or {@code null}
+     */
+    public record ConsoleCaseRow(AvailabilityCaseView view, CaseSubject subject,
+                                 OpenException openException) {
+    }
+
+    /**
+     * What a case is about: the variant, and for a channel child the exact
+     * store, marketplace, listing variant and fulfillment mode.
+     *
+     * @param platformSkuKey the marketplace's own key for the listing variant, or {@code null}
+     * @param profitAtRiskAmount the child's calculated exposure, or {@code null}
+     */
+    public record CaseSubject(UUID productVariantId, String skuCode, String displayName,
+                              String childKind, String platformCode, String fulfillmentModeCode,
+                              UUID storeId, String storeCode, String storeName,
+                              UUID platformListingVariantId, String platformSkuKey,
+                              java.math.BigDecimal profitAtRiskAmount,
+                              String profitAtRiskCurrency) {
+    }
+
+    /** The acceptance occupying a case. */
+    public record OpenException(UUID id, String state, String requiredAuthority,
+                                Instant expiresAt) {
+    }
+
     /** Every case raised from one card, newest evidence first. */
     public List<AvailabilityCaseView> forCard(UUID cardId) {
         return jdbc.sql(SELECT + " WHERE card_id = :cardId ORDER BY last_evidence_at DESC")

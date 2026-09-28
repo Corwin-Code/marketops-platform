@@ -6,15 +6,11 @@
  * `listing.ts`; this file holds only the sentences these two cards add.
  */
 
+import { picker } from './common';
+
 /** Pickers that choose a record instead of typing its identifier. */
 export const pickerText = {
-  manualEntry: '其他（手动输入）',
-  listUnavailable: '列表暂不可用，可手动输入编号',
-  listEmpty: '暂无可选记录，可手动输入编号',
-  backToList: '从列表选择',
-  typeId: '输入编号（UUID）',
-  pick: '请选择',
-  invalidId: '编号格式不正确，应为 UUID',
+  ...picker,
   self: '（我）',
   notIndependent: '非独立',
   notIndependentHelp: '由执行人本人或报告人记录，不能作为独立核实依据',

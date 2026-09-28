@@ -39,8 +39,12 @@ import {
   EmptyState,
   FormDrawer,
   LoadingState,
+  PickOrType,
   SectionCard,
   TechnicalDetails,
+  idRules,
+  isUuid,
+  useRemote,
   useSearchParam,
 } from '../ui';
 import {
@@ -63,16 +67,7 @@ import {
   readPromotionTerms,
 } from './ListingPromotionTermsForm';
 import type { PromotionTermsFieldValues } from './ListingPromotionTermsForm';
-import {
-  IdLookup,
-  InstantField,
-  PersonField,
-  PickOrType,
-  idRules,
-  isUuid,
-  promotionOptions,
-  useRemote,
-} from './ListingManualPickers';
+import { IdLookup, InstantField, PersonField, promotionOptions } from './ListingManualPickers';
 
 const TEXT_LIMIT = 512;
 const LISTING_KEY = 'mlisting';

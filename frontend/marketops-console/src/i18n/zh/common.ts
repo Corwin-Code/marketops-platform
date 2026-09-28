@@ -43,6 +43,24 @@ export const dialog = {
   help: '说明',
 } as const;
 
+/** Pickers that choose a record from a list instead of typing its identifier. */
+export const picker = {
+  manualEntry: '其他（手动输入）',
+  listUnavailable: '列表暂不可用，可手动输入编号',
+  listEmpty: '暂无可选记录，可手动输入编号',
+  backToList: '从列表选择',
+  typeId: '输入编号（UUID）',
+  pick: '请选择',
+  invalidId: '编号格式不正确，应为 UUID',
+} as const;
+
+/** A sensitive action that needs a recent sign-in (step-up). */
+export const stepUp = {
+  title: '该操作需要近期重新登录验证身份',
+  help: '重新登录后回到本页再提交；已填写的内容不会保存。',
+  action: '重新登录',
+} as const;
+
 /** Words describing what a screen or a value is doing. */
 export const states = {
   loading: '加载中…',

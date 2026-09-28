@@ -178,6 +178,34 @@ export function childLabel(
   return `${platform}${mode}`;
 }
 
+/**
+ * Where a case's child sits, in words: the company, or the marketplace, store
+ * and fulfillment mode of a channel.
+ */
+export function subjectChannelLabel(subject: {
+  readonly childKind: string | null;
+  readonly platformCode: string | null;
+  readonly storeCode: string | null;
+  readonly fulfillmentModeCode: string | null;
+}): string {
+  if (subject.childKind === 'COMPANY') {
+    return childLabel('COMPANY', null, null);
+  }
+  const platform =
+    subject.platformCode === null
+      ? '渠道'
+      : Object.hasOwn(PLATFORM_LABELS, subject.platformCode)
+        ? codeLabel(PLATFORM_LABELS, subject.platformCode)
+        : subject.platformCode;
+  return [
+    platform,
+    subject.storeCode,
+    subject.fulfillmentModeCode === null ? null : modeLabel(subject.fulfillmentModeCode),
+  ]
+    .filter((part): part is string => part !== null && part !== '')
+    .join(' · ');
+}
+
 /** The operator-facing name of a fulfillment mode. */
 export function modeLabel(code: string): string {
   return Object.hasOwn(FULFILLMENT_MODE_LABELS, code)

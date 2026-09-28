@@ -1,602 +1,370 @@
 import { ReloadOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Col,
-  Collapse,
-  Descriptions,
-  Flex,
-  Row,
-  Space,
-  Table,
-  Tooltip,
-  Typography,
-} from 'antd';
-import type { CollapseProps, DescriptionsProps, TableColumnsType } from 'antd';
+import { Button, Flex, Input, Segmented, Space, Table, Tooltip, Typography } from 'antd';
+import type { TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
-import { fetchAvailabilityQueue } from '../api/console';
-import type {
-  AvailabilityCard,
-  AvailabilityChild,
-  AvailabilityDemandWindow,
-  AvailabilityRankFactor,
-  ConsoleFailure,
-  ConsoleRequest,
-} from '../api/console';
-import { formatDecimal, formatPercent } from '../format';
-import { actions } from '../i18n';
-import {
-  BLOCKER_LABELS,
-  CENSORING_REASON_LABELS,
-  DEMAND_WINDOW_LABELS,
-  EVIDENCE_LABELS,
-  LANE_LABELS,
-  PROFIT_LANE_LABELS,
-  RANK_FACTOR_LABELS,
-  RISK_CONFIDENCE_LABELS,
-  WINDOW_ELIGIBILITY_LABELS,
-  availabilityText,
-} from '../i18n/zh/availability';
+import { useNavigate } from 'react-router';
+import type { AvailabilityCard, AvailabilityChild, Page } from '../api/availability';
+import { fetchAvailabilityQueue } from '../api/availability';
+import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import { formatDecimal } from '../format';
+import { actions, codeLabel } from '../i18n';
+import { EVIDENCE_LABELS, LANE_LABELS, availabilityText } from '../i18n/zh/availability';
+import { riskQueueText as text } from '../i18n/zh/availabilityRisks';
+import { ROUTES } from '../layout/navigation';
 import {
   CodeTag,
   DateTime,
   EmptyState,
   FailureAlert,
+  InfoTip,
   LoadingState,
   Money,
   SectionCard,
-  TechnicalDetails,
+  VariantName,
+  usePageParam,
+  useSearchParam,
+  useSearchParamsPatch,
 } from '../ui';
-import { causeLabel, childLabel, laneIsSafe, presentEvidence } from './riskPresentation';
-import {
-  EVIDENCE_COLORS,
-  LANE_COLORS,
-  PROFIT_LANE_COLORS,
-  RISK_CONFIDENCE_COLORS,
-  WINDOW_ELIGIBILITY_COLORS,
-} from './tagColors';
+import { AvailabilityCardDrawer } from './AvailabilityCardDrawer';
+import { childLabel, presentEvidence } from './riskPresentation';
+import { EVIDENCE_COLORS, LANE_COLORS } from './tagColors';
 
 /** What the availability queue needs in order to load itself. */
 export interface AvailabilityQueueProps {
   /** Where to send the request and who is asking. */
   readonly context: ConsoleRequest;
-  /** Narrow to one lane, or show every lane. */
-  readonly lane?: string;
-  /** Called when the operator opens a card. */
-  readonly onSelect?: (productVariantId: string) => void;
 }
 
+const LANES = ['CRITICAL', 'HIGH', 'REVIEW', 'UNRESOLVED', 'WATCH', 'HEALTHY'] as const;
+const ALL = 'ALL';
+const PAGE_SIZE = 20;
+
+/** Address-bar keys of the queue. */
+const LANE_PARAM = 'lane';
+const QUERY_PARAM = 'q';
+const PAGE_PARAM = 'page';
+const VARIANT_PARAM = 'variant';
+
+/** A lane filter read from the address bar; anything else is no filter. */
+function readLane(raw: string | undefined): string | undefined {
+  return (LANES as readonly string[]).includes(raw ?? '') ? raw : undefined;
+}
+
+type Queue =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'loaded'; readonly page: Page<AvailabilityCard> }
+  | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
+
 /**
- * What is about to run out, and who owns it.
+ * What is about to run out, most urgent first.
  *
  * The list is ordered by the backend and is not re-sorted here: the order is a
  * deterministic figure with a published definition, and a console that
- * reordered it would present its own opinion as the product's.
+ * reordered it would present its own opinion as the product's. It is filtered,
+ * searched and paged by the backend, and every choice lives in the address bar.
  *
- * Every card shows both of its children rather than a blended state, because
- * they fail differently and are fixed by different people. A channel with an
- * empty shelf and a warehouse that is full is a marketplace problem; a company
- * that is running out is a procurement one, and a single merged badge would
- * send both to the wrong person.
+ * Every row shows its children side by side rather than a blended state,
+ * because they fail differently and are fixed by different people: a channel
+ * with an empty shelf and a full warehouse is a marketplace problem, a company
+ * running out is a procurement one. A row opens the card beside the list.
  */
-export function AvailabilityQueue({
-  context,
-  lane,
-  onSelect,
-}: AvailabilityQueueProps): React.JSX.Element {
-  const [cards, setCards] = useState<readonly AvailabilityCard[] | undefined>(undefined);
-  const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
-  const [reloadKey, setReloadKey] = useState(0);
+export function AvailabilityQueue({ context }: AvailabilityQueueProps): React.JSX.Element {
+  const navigate = useNavigate();
+  const [rawLane] = useSearchParam(LANE_PARAM);
+  const [query] = useSearchParam(QUERY_PARAM);
+  const [page, setPage] = usePageParam(PAGE_PARAM);
+  const [variant] = useSearchParam(VARIANT_PARAM);
+  const patch = useSearchParamsPatch();
+  const lane = readLane(rawLane);
+  const [search, setSearch] = useState(query ?? '');
+  const [queue, setQueue] = useState<Queue>({ kind: 'loading' });
+  const [generation, setGeneration] = useState(0);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    let active = true;
-    void fetchAvailabilityQueue(context, lane).then((outcome) => {
-      if (!active) {
-        return;
-      }
-      if (outcome.ok) {
-        setCards(outcome.value);
-        setFailure(undefined);
-      } else {
-        setCards(undefined);
-        setFailure(outcome.failure);
-      }
+    setSearch(query ?? '');
+  }, [query]);
+
+  useEffect(() => {
+    let live = true;
+    setFetching(true);
+    void fetchAvailabilityQueue(context, {
+      lane,
+      q: query,
+      limit: PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
+    }).then((outcome) => {
+      if (!live) return;
+      setFetching(false);
+      setQueue(
+        outcome.ok
+          ? { kind: 'loaded', page: outcome.value }
+          : { kind: 'failed', failure: outcome.failure },
+      );
     });
     return () => {
-      active = false;
+      live = false;
     };
-  }, [context, lane, reloadKey]);
+  }, [context, lane, query, page, generation]);
 
-  const refresh = (
-    <Button
-      icon={<ReloadOutlined />}
-      aria-label="刷新风险队列"
-      onClick={() => {
-        setCards(undefined);
-        setFailure(undefined);
-        setReloadKey((key) => key + 1);
-      }}
-    >
-      {actions.refresh}
-    </Button>
-  );
-
-  const frame = (state: string, body: React.ReactNode): React.JSX.Element => (
-    <section aria-label={availabilityText.queueTitle} data-state={state}>
-      <SectionCard title={availabilityText.queueTitle} extra={refresh}>
-        {body}
-      </SectionCard>
-    </section>
-  );
-
-  if (failure !== undefined) {
-    // A session that has ended is one condition about the whole session rather
-    // than about this panel. The session surface reports it once; every panel
-    // repeating the same sentence would tell an operator nothing new three
-    // times over and bury the one message that is about this panel.
-    if (failure.kind === 'unauthenticated') {
-      return (
-        <section aria-label={availabilityText.queueTitle} data-state="signed-out">
-          <SectionCard title={availabilityText.queueTitle} />
-        </section>
-      );
+  const loaded = queue.kind === 'loaded' ? queue.page : undefined;
+  // A page past the end (a shorter queue, an old link) goes back to the last
+  // page instead of showing an empty queue with no pager.
+  useEffect(() => {
+    const total = loaded?.total ?? 0;
+    if (loaded?.items.length === 0 && page > 1 && total > 0) {
+      setPage(Math.max(1, Math.ceil(total / PAGE_SIZE)));
     }
-    return frame('failed', <FailureAlert failure={failure} />);
-  }
-  if (cards === undefined) {
-    return frame('loading', <LoadingState />);
-  }
-  if (cards.length === 0) {
-    return frame('empty', <EmptyState description={availabilityText.queueEmpty} />);
-  }
+  }, [loaded, page, setPage]);
 
-  return frame(
-    'loaded',
-    <ol
-      data-testid="availability-queue"
-      style={{
-        listStyle: 'none',
-        margin: 0,
-        padding: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-      }}
-    >
-      {cards.map((card) => (
-        <VariantCard key={card.id} card={card} {...(onSelect ? { onSelect } : {})} />
-      ))}
-    </ol>,
-  );
-}
+  const open = (productVariantId: string): void => {
+    patch({ [VARIANT_PARAM]: productVariantId });
+  };
 
-/**
- * One grouped Internal Variant card.
- *
- * The parent names the child that produced its lane rather than leaving the
- * reader to infer it. Two children can share the parent's lane, and an operator
- * who opens the wrong one has spent their attention for nothing.
- */
-function VariantCard({
-  card,
-  onSelect,
-}: {
-  readonly card: AvailabilityCard;
-  readonly onSelect?: (productVariantId: string) => void;
-}): React.JSX.Element {
-  const trigger = card.children.find((child) => child.id === card.triggeringChildId);
-  const title = (
-    <Flex vertical gap={2} style={{ padding: '8px 0' }}>
+  const toolbar = (
+    <Flex gap={8} wrap align="center" justify="flex-end">
+      <Segmented<string>
+        aria-label={text.laneFilter}
+        value={lane ?? ALL}
+        options={[
+          { value: ALL, label: text.allLanes },
+          ...LANES.map((code) => ({ value: code, label: codeLabel(LANE_LABELS, code) })),
+        ]}
+        onChange={(value) => {
+          patch({ [LANE_PARAM]: value === ALL ? undefined : value, [PAGE_PARAM]: undefined });
+        }}
+      />
+      <Input.Search
+        aria-label={text.searchLabel}
+        placeholder={text.searchPlaceholder}
+        allowClear
+        style={{ width: 240 }}
+        maxLength={64}
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+        }}
+        onSearch={(value) => {
+          const trimmed = value.trim();
+          patch({ [QUERY_PARAM]: trimmed === '' ? undefined : trimmed, [PAGE_PARAM]: undefined });
+        }}
+      />
       <Button
-        type="link"
-        style={{ padding: 0, height: 'auto', fontWeight: 600, whiteSpace: 'normal' }}
-        onClick={() => onSelect?.(card.productVariantId)}
-        disabled={onSelect === undefined}
+        icon={<ReloadOutlined />}
+        aria-label={text.refreshLabel}
+        onClick={() => {
+          setGeneration((value) => value + 1);
+        }}
       >
-        <span lang="ru">{card.displayName}</span>
+        {actions.refresh}
       </Button>
-      <Typography.Text type="secondary" style={{ fontSize: 12 }} data-testid="card-sku">
-        SKU {card.skuCode}
-      </Typography.Text>
     </Flex>
   );
-  const extra = (
-    <Space size={4} wrap data-testid="card-lane" data-lane={card.lane}>
-      <CodeTag labels={LANE_LABELS} code={card.lane} colors={LANE_COLORS} />
-      {trigger === undefined ? null : (
-        <Typography.Text type="secondary" style={{ fontSize: 12 }} data-testid="card-trigger">
-          由{childLabel(trigger.childKind, trigger.platformCode, trigger.fulfillmentModeCode)}触发
-        </Typography.Text>
-      )}
-    </Space>
-  );
-  return (
-    <li data-testid="availability-card" data-lane={card.lane}>
-      <Card size="small" title={title} extra={extra}>
-        <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-          <Row gutter={[12, 12]}>
-            {card.children.map((child) => (
-              <Col key={child.id} xs={24} xl={12}>
-                <ChildRisk child={child} />
-              </Col>
-            ))}
-          </Row>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            计算时间 <DateTime value={card.calculatedAt} relative />
-          </Typography.Text>
-          <TechnicalDetails>
-            <Descriptions
-              size="small"
-              column={1}
-              items={[
-                {
-                  key: 'policy',
-                  label: '策略集摘要',
-                  children: (
-                    <Typography.Text
-                      copyable={{ text: card.policyVersionDigest }}
-                      code
-                      data-testid="card-policy-version"
-                    >
-                      {card.policyVersionDigest.slice(0, 12)}
-                    </Typography.Text>
-                  ),
-                },
-                {
-                  key: 'variant',
-                  label: '商品变体 ID',
-                  children: (
-                    <Typography.Text copyable code>
-                      {card.productVariantId}
-                    </Typography.Text>
-                  ),
-                },
-                {
-                  key: 'card',
-                  label: '卡片 ID',
-                  children: (
-                    <Typography.Text copyable code>
-                      {card.id}
-                    </Typography.Text>
-                  ),
-                },
-                {
-                  key: 'rank',
-                  label: '排序分值',
-                  children: formatDecimal(card.rankScore),
-                },
-                { key: 'asOf', label: '数据截至', children: <DateTime value={card.asOf} /> },
-              ]}
-            />
-          </TechnicalDetails>
-        </Space>
-      </Card>
-    </li>
-  );
-}
 
-/** A decimal count of days, or the given absence text. */
-function days(value: string | null, absent: string): string {
-  return value === null ? absent : `${formatDecimal(value, { maxFractionDigits: 2 })} 天`;
-}
+  // A session that has ended is one condition about the whole session, reported
+  // once by the session surface rather than by every panel.
+  if (queue.kind === 'failed' && queue.failure.kind === 'unauthenticated') {
+    return (
+      <section aria-label={availabilityText.queueTitle} data-state="signed-out">
+        <SectionCard title={availabilityText.queueTitle} />
+      </section>
+    );
+  }
 
-/**
- * One independently governed child risk.
- *
- * The evidence tone is a separate attribute from the lane so that a provisional
- * critical and a confirmed critical cannot be styled identically by accident.
- * The conservative proof is shown in full when there is one: an operator asked
- * to act on a lower-bound argument is entitled to read the argument.
- */
-function ChildRisk({ child }: { readonly child: AvailabilityChild }): React.JSX.Element {
-  const evidence = presentEvidence(child.evidenceState);
+  const total =
+    loaded === undefined
+      ? 0
+      : (loaded.total ??
+        (page - 1) * PAGE_SIZE + loaded.items.length + (loaded.items.length >= PAGE_SIZE ? 1 : 0));
 
-  const figures: DescriptionsProps['items'] = [
+  const columns: TableColumnsType<AvailabilityCard> = [
     {
-      key: 'available',
-      label: '可用库存',
-      children: (
-        <span data-testid="child-available">
-          {child.availableUnits === null ? '未上报' : `${String(child.availableUnits)} 件`}
-        </span>
+      key: 'product',
+      title: text.columnProduct,
+      width: 260,
+      render: (_, card) => (
+        <VariantName
+          identity={{ displayName: card.displayName, skuCode: card.skuCode }}
+          productVariantId={card.productVariantId}
+        />
       ),
     },
     {
-      key: 'demand',
-      label: '观测日需求',
-      children: (
-        <span data-testid="child-demand">
-          {child.dailyDemandRate === null
-            ? '无法观测'
-            : `${formatDecimal(child.dailyDemandRate, { maxFractionDigits: 2 })} 件/天`}
-        </span>
-      ),
+      key: 'risk',
+      title: text.columnRisk,
+      render: (_, card) => {
+        const trigger = card.children.find((child) => child.id === card.triggeringChildId);
+        return (
+          <Flex vertical gap={2} align="flex-start">
+            <CodeTag labels={LANE_LABELS} code={card.lane} colors={LANE_COLORS} />
+            {trigger === undefined ? null : (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {text.triggeredBy(
+                  childLabel(trigger.childKind, trigger.platformCode, trigger.fulfillmentModeCode),
+                )}
+              </Typography.Text>
+            )}
+          </Flex>
+        );
+      },
     },
     {
-      key: 'cover',
-      label: '可售天数',
-      children: <span data-testid="child-cover">{days(child.daysOfCover, '未预测')}</span>,
-    },
-    {
-      key: 'horizon',
-      label: '覆盖周期',
-      children: (
-        <span data-testid="child-horizon">
-          {child.coverageHorizonDays === null
-            ? '无适用策略'
-            : `${String(child.coverageHorizonDays)} 天`}
-        </span>
+      key: 'children',
+      title: text.columnChildren,
+      render: (_, card) => (
+        <Flex vertical gap={4}>
+          {card.children.map((child) => (
+            <ChildChip key={child.id} child={child} />
+          ))}
+        </Flex>
       ),
     },
     {
       key: 'stockout',
-      label: '预计断货',
-      children: <DateTime value={child.projectedStockoutAt} />,
+      title: text.columnStockout,
+      render: (_, card) => <DateTime value={earliestStockout(card.children)} />,
     },
     {
       key: 'profit',
-      label: '利润分层',
-      children: (
-        <span data-testid="child-profit">
-          <CodeTag
-            labels={PROFIT_LANE_LABELS}
-            code={child.profitLane}
-            colors={PROFIT_LANE_COLORS}
+      title: (
+        <Space size={0}>
+          {text.columnProfit}
+          <InfoTip title={text.columnProfitHelp} />
+        </Space>
+      ),
+      align: 'right',
+      render: (_, card) => {
+        const source =
+          card.children.find((child) => child.id === card.triggeringChildId) ??
+          card.children.find((child) => child.profitAtRiskAmount !== null);
+        return (
+          <Money
+            value={source?.profitAtRiskAmount ?? null}
+            currency={source?.profitAtRiskCurrency ?? null}
           />
-        </span>
-      ),
+        );
+      },
     },
     {
-      key: 'profitAtRisk',
-      label: '受威胁利润',
-      children: <Money value={child.profitAtRiskAmount} currency={child.profitAtRiskCurrency} />,
-    },
-    {
-      key: 'confidence',
-      label: '置信度',
-      children: (
-        <CodeTag
-          labels={RISK_CONFIDENCE_LABELS}
-          code={child.confidenceState}
-          colors={RISK_CONFIDENCE_COLORS}
-        />
-      ),
+      key: 'calculated',
+      title: text.columnCalculated,
+      render: (_, card) => <DateTime value={card.calculatedAt} relative />,
     },
   ];
 
-  const details: NonNullable<CollapseProps['items']> = [];
-  if (child.conservativeProofTerms.length > 0) {
-    details.push({
-      key: 'proof',
-      label: '为何已可认定风险',
-      forceRender: true,
-      children: (
-        <div data-testid="child-proof">
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            以下为系统计算原文
-          </Typography.Text>
-          <ul style={{ margin: '4px 0 0', paddingInlineStart: 20 }}>
-            {child.conservativeProofTerms.map((term) => (
-              <li key={term} lang="en">
-                {term}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ),
-    });
-  }
-  if (child.rankFactors.length > 0) {
-    details.push({
-      key: 'factors',
-      label: '排序依据',
-      forceRender: true,
-      children: (
-        <div data-testid="child-factors">
-          <Table<AvailabilityRankFactor>
-            size="small"
-            pagination={false}
-            rowKey="factorCode"
-            dataSource={[...child.rankFactors]}
-            columns={RANK_FACTOR_COLUMNS}
-            scroll={{ x: 'max-content' }}
-          />
-        </div>
-      ),
-    });
-  }
-  if (child.demandWindows.length > 0) {
-    details.push({
-      key: 'windows',
-      label: '需求观测窗口',
-      forceRender: true,
-      children: (
-        <div data-testid="child-windows">
-          <Table<AvailabilityDemandWindow>
-            size="small"
-            pagination={false}
-            rowKey="windowCode"
-            dataSource={[...child.demandWindows]}
-            columns={DEMAND_WINDOW_COLUMNS}
-            onRow={(window) =>
-              ({ 'data-eligibility': window.eligibility }) as React.HTMLAttributes<HTMLElement>
-            }
-            scroll={{ x: 'max-content' }}
-          />
-        </div>
-      ),
-    });
-  }
-  details.push({
-    key: 'reason',
-    label: '需求选择依据',
-    forceRender: true,
-    children: (
-      <Flex vertical gap={2}>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          系统计算原文
-        </Typography.Text>
-        <Typography.Text data-testid="child-demand-reason" lang="en">
-          {child.demandSelectionReason}
-        </Typography.Text>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          计算时间 <DateTime value={child.calculatedAt} />
-        </Typography.Text>
-      </Flex>
-    ),
-  });
-
-  const heading = (
-    <Typography.Text strong>
-      {childLabel(child.childKind, child.platformCode, child.fulfillmentModeCode)}
-    </Typography.Text>
-  );
-  const tags = (
-    <Space size={4} data-testid="child-lane">
-      <CodeTag labels={LANE_LABELS} code={child.lane} colors={LANE_COLORS} />
-      <Tooltip title={evidence.explanation}>
-        <span data-testid="child-evidence" data-evidence-tone={evidence.tone}>
-          <CodeTag labels={EVIDENCE_LABELS} code={child.evidenceState} colors={EVIDENCE_COLORS} />
-        </span>
-      </Tooltip>
-    </Space>
-  );
-
   return (
-    <div
-      data-testid="availability-child"
-      data-child-kind={child.childKind}
-      data-lane={child.lane}
-      data-evidence-tone={evidence.tone}
-      data-established-fact={String(evidence.establishedFact)}
-    >
-      <Card type="inner" size="small" title={heading} extra={tags}>
-        <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-          <Typography.Text type="secondary" data-testid="child-evidence-explanation">
-            {evidence.explanation}
-          </Typography.Text>
-          {laneIsSafe(child.lane) ? null : (
-            <Typography.Text strong data-testid="child-cause">
-              {causeLabel(child.causeCode)}
-            </Typography.Text>
-          )}
-          <Descriptions bordered size="small" column={{ xs: 1, md: 2 }} items={figures} />
-          {child.blockerCodes.length === 0 ? null : (
-            <Flex wrap gap={4} align="center" data-testid="child-blockers">
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                阻断因素
-              </Typography.Text>
-              {child.blockerCodes.map((code) => (
-                <CodeTag
-                  key={code}
-                  labels={BLOCKER_LABELS}
-                  code={code}
-                  colors={{ [code]: 'error' }}
-                />
-              ))}
-            </Flex>
-          )}
-          <Collapse size="small" items={details} />
-        </Space>
-      </Card>
-    </div>
+    <section aria-label={availabilityText.queueTitle} data-state={queue.kind}>
+      <SectionCard title={availabilityText.queueTitle} extra={toolbar}>
+        {queue.kind === 'failed' && <FailureAlert failure={queue.failure} />}
+        {queue.kind === 'loading' && <LoadingState />}
+        {loaded?.items.length === 0 && !(page > 1 && (loaded.total ?? 0) > 0) && (
+          <EmptyState
+            description={
+              query === undefined && lane === undefined ? availabilityText.queueEmpty : text.noMatch
+            }
+          />
+        )}
+        {loaded !== undefined && loaded.items.length > 0 && (
+          <Table<AvailabilityCard>
+            size="middle"
+            rowKey="id"
+            columns={columns}
+            dataSource={[...loaded.items]}
+            scroll={{ x: 'max-content' }}
+            loading={fetching}
+            pagination={{
+              current: page,
+              pageSize: PAGE_SIZE,
+              total,
+              showSizeChanger: false,
+              hideOnSinglePage: true,
+              showTotal: () =>
+                loaded.total === undefined ? text.totalUnknown : text.total(loaded.total),
+              onChange: (next) => {
+                setPage(next);
+              },
+            }}
+            onRow={(card) =>
+              ({
+                'data-card': card.id,
+                'data-lane': card.lane,
+                onClick: () => {
+                  open(card.productVariantId);
+                },
+                onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+                  if (event.key === 'Enter' && event.target === event.currentTarget) {
+                    open(card.productVariantId);
+                  }
+                },
+                tabIndex: 0,
+                'aria-label': text.openCard(card.displayName),
+                style: { cursor: 'pointer' },
+              }) as React.HTMLAttributes<HTMLElement>
+            }
+          />
+        )}
+      </SectionCard>
+      <AvailabilityCardDrawer
+        context={context}
+        productVariantId={variant}
+        onClose={() => {
+          patch({ [VARIANT_PARAM]: undefined });
+        }}
+        onOpenCases={(productVariantId) => {
+          void navigate(
+            `${ROUTES.availabilityCases}?variant=${encodeURIComponent(productVariantId)}`,
+          );
+        }}
+      />
+    </section>
   );
 }
 
-const RANK_FACTOR_COLUMNS: TableColumnsType<AvailabilityRankFactor> = [
-  {
-    title: '因素',
-    dataIndex: 'factorCode',
-    render: (code: string) => <CodeTag labels={RANK_FACTOR_LABELS} code={code} />,
-  },
-  {
-    title: '取值',
-    dataIndex: 'value',
-    align: 'right',
-    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 4 }),
-  },
-  {
-    title: '权重',
-    dataIndex: 'weight',
-    align: 'right',
-    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 4 }),
-  },
-  {
-    title: '贡献',
-    dataIndex: 'contribution',
-    align: 'right',
-    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 4 }),
-  },
-  {
-    title: '系统说明',
-    dataIndex: 'displayNote',
-    render: (note: string) => (
-      <Typography.Text type="secondary" style={{ fontSize: 12 }} lang="en">
-        {note}
-      </Typography.Text>
-    ),
-  },
-];
+/** The soonest projected stockout among the children, or nothing. */
+function earliestStockout(children: readonly AvailabilityChild[]): string | null {
+  let earliest: string | null = null;
+  let earliestAt = Number.POSITIVE_INFINITY;
+  for (const child of children) {
+    if (child.projectedStockoutAt === null) continue;
+    const at = Date.parse(child.projectedStockoutAt);
+    if (!Number.isNaN(at) && at < earliestAt) {
+      earliestAt = at;
+      earliest = child.projectedStockoutAt;
+    }
+  }
+  return earliest;
+}
 
-const DEMAND_WINDOW_COLUMNS: TableColumnsType<AvailabilityDemandWindow> = [
-  {
-    title: '窗口',
-    dataIndex: 'windowCode',
-    render: (code: string) => <CodeTag labels={DEMAND_WINDOW_LABELS} code={code} />,
-  },
-  {
-    title: '完成件数',
-    dataIndex: 'completedUnits',
-    align: 'right',
-    render: (units: number | null) => (units === null ? '未观测' : `${String(units)} 件`),
-  },
-  {
-    title: '日均',
-    dataIndex: 'dailyRate',
-    align: 'right',
-    render: (rate: string | null) => formatDecimal(rate, { maxFractionDigits: 2 }),
-  },
-  {
-    title: '观测天数',
-    dataIndex: 'observedDays',
-    align: 'right',
-    render: (value: string | null) => formatDecimal(value, { maxFractionDigits: 2 }),
-  },
-  {
-    title: '覆盖率',
-    dataIndex: 'coverageRatio',
-    align: 'right',
-    render: (ratio: string | null) => formatPercent(ratio),
-  },
-  {
-    title: '可用性',
-    dataIndex: 'eligibility',
-    render: (code: string) => (
-      <CodeTag labels={WINDOW_ELIGIBILITY_LABELS} code={code} colors={WINDOW_ELIGIBILITY_COLORS} />
-    ),
-  },
-  {
-    title: '删失',
-    key: 'censoring',
-    render: (_: unknown, window: AvailabilityDemandWindow) =>
-      window.censored ? (
-        <CodeTag
-          labels={CENSORING_REASON_LABELS}
-          code={window.censoringReason ?? 'UNKNOWN'}
-          colors={{ [window.censoringReason ?? 'UNKNOWN']: 'warning' }}
-        />
-      ) : (
-        <Typography.Text type="secondary">否</Typography.Text>
-      ),
-  },
-  {
-    title: '期间',
-    key: 'period',
-    render: (_: unknown, window: AvailabilityDemandWindow) => (
-      <Flex vertical>
-        <DateTime value={window.periodStart} />
-        <DateTime value={window.periodEnd} />
-      </Flex>
-    ),
-  },
-];
+/**
+ * One child as a compact chip: where it sits, its lane, what its evidence
+ * rests on and its days of cover. The evidence tag is never dropped, because a
+ * provisional critical must not read like a confirmed one.
+ */
+function ChildChip({ child }: { readonly child: AvailabilityChild }): React.JSX.Element {
+  const evidence = presentEvidence(child.evidenceState);
+  return (
+    <Flex
+      gap={4}
+      align="center"
+      wrap
+      data-child-kind={child.childKind}
+      data-lane={child.lane}
+      data-evidence-tone={evidence.tone}
+    >
+      <Typography.Text style={{ fontSize: 12 }}>
+        {childLabel(child.childKind, child.platformCode, child.fulfillmentModeCode)}
+      </Typography.Text>
+      <CodeTag labels={LANE_LABELS} code={child.lane} colors={LANE_COLORS} />
+      <Tooltip title={evidence.explanation}>
+        <span>
+          <CodeTag labels={EVIDENCE_LABELS} code={child.evidenceState} colors={EVIDENCE_COLORS} />
+        </span>
+      </Tooltip>
+      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+        {child.daysOfCover === null
+          ? text.noCover
+          : text.daysOfCover(formatDecimal(child.daysOfCover, { maxFractionDigits: 1 }))}
+      </Typography.Text>
+    </Flex>
+  );
+}

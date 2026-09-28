@@ -1,5 +1,7 @@
+import type { BlockedAction } from '../api/availability';
 import { codeLabel } from '../i18n/labels';
 import { ACTION_KIND_LABELS, EXCEPTION_STATE_LABELS } from '../i18n/zh/availability';
+import { BLOCK_REASON_LABELS, clockText } from '../i18n/zh/availabilityCases';
 
 /**
  * How accountable availability work is allowed to be presented.
@@ -67,8 +69,8 @@ const STATES = new Map<string, CasePresentation>(
     },
     ACCEPTED_RISK: {
       tone: 'accepted',
-      label: '已接受风险',
-      explanation: '一项受管控的风险接受正在生效，计算出的风险本身不变。',
+      label: '风险接受中',
+      explanation: '一项受管控的风险接受正在生效，行动计时暂停；计算出的风险本身不变。',
     },
     CANCELLED: { tone: 'closed', label: '已取消', explanation: '未经验证结果即已撤销。' },
   }),
@@ -116,4 +118,102 @@ export function dueTone(dueAt: string | null, now: Date): 'none' | 'overdue' | '
 /** The operator-facing name of an acceptance state. */
 export function exceptionStateLabel(state: string): string {
   return codeLabel(EXCEPTION_STATE_LABELS, state);
+}
+
+/** How a case's ordinary action clock stands. */
+export type ActionClock =
+  | {
+      readonly kind: 'paused';
+      readonly pausedAt: string;
+      /** What was left when it paused, or null when the server did not say. */
+      readonly remainingMillis: number | null;
+    }
+  | {
+      readonly kind: 'running';
+      readonly dueAt: string;
+      readonly tone: 'none' | 'overdue' | 'soon' | 'ok';
+    };
+
+/**
+ * The action clock of a case.
+ *
+ * While a governed acceptance is in force the clock is paused and the stored
+ * remainder is what matters; judging the stale deadline against now would show
+ * a paused case as overdue, which it is not.
+ */
+export function actionClock(
+  governed: {
+    readonly actionDueAt: string;
+    readonly actionSlaPausedAt: string | null;
+    readonly actionSlaRemainingMillis: number | null;
+  },
+  now: Date,
+): ActionClock {
+  if (governed.actionSlaPausedAt !== null) {
+    return {
+      kind: 'paused',
+      pausedAt: governed.actionSlaPausedAt,
+      remainingMillis: governed.actionSlaRemainingMillis,
+    };
+  }
+  return { kind: 'running', dueAt: governed.actionDueAt, tone: dueTone(governed.actionDueAt, now) };
+}
+
+/** A duration in the coarsest unit that still says something, e.g. `2 天`. */
+export function formatDuration(millis: number): string {
+  const minutes = Math.max(0, Math.floor(millis / 60_000));
+  if (minutes >= 2 * 24 * 60) return clockText.days(Math.floor(minutes / (24 * 60)));
+  if (minutes >= 120) return clockText.hours(Math.floor(minutes / 60));
+  return clockText.minutes(minutes);
+}
+
+/** Whether the server offers one action to the viewer, and why not in words. */
+export interface ActionOffer {
+  readonly allowed: boolean;
+  /** Why not, in the operator's language; undefined when allowed. */
+  readonly reason: string | undefined;
+  /** The server's stable reason code, when it gave one. */
+  readonly reasonCode: string | undefined;
+}
+
+/**
+ * Read one action from the server's offer.
+ *
+ * Strictly from the server: an action it neither allows nor explains is not
+ * offered, and the console never widens an offer on its own.
+ */
+export function offerOf(
+  allowedActions: readonly string[],
+  blockedActions: readonly BlockedAction[],
+  action: string,
+): ActionOffer {
+  if (allowedActions.includes(action)) {
+    return { allowed: true, reason: undefined, reasonCode: undefined };
+  }
+  const blocked = blockedActions.find((item) => item.action === action);
+  return {
+    allowed: false,
+    reason: codeLabel(BLOCK_REASON_LABELS, blocked?.reason ?? 'NOT_PERMITTED'),
+    reasonCode: blocked?.reason,
+  };
+}
+
+/** The evidence reference prefix that binds one inbound attestation to an action. */
+const ATTESTATION_PREFIX = 'inbound-attestation:';
+
+/** The reference recorded for an action that binds this attestation version. */
+export function attestationReference(attestationId: string, versionNo?: number): string {
+  return versionNo === undefined
+    ? `${ATTESTATION_PREFIX}${attestationId}`
+    : `${ATTESTATION_PREFIX}${attestationId}:v${String(versionNo)}`;
+}
+
+/** The attestation an evidence reference binds, or nothing when it binds none. */
+export function readAttestationReference(
+  reference: string | null,
+): { readonly attestationId: string; readonly versionNo: string | undefined } | undefined {
+  if (!reference?.startsWith(ATTESTATION_PREFIX)) return undefined;
+  const [attestationId, version] = reference.slice(ATTESTATION_PREFIX.length).split(':v');
+  if (attestationId === undefined || attestationId === '') return undefined;
+  return { attestationId, versionNo: version };
 }

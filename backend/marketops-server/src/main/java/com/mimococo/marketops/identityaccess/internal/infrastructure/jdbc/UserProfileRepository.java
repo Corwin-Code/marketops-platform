@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -122,6 +124,31 @@ public class UserProfileRepository {
                 .param("pageLimit", limit)
                 .query(UserProfileRepository::map)
                 .list();
+    }
+
+    /**
+     * Display names of the given profiles inside one organization.
+     *
+     * <p>Only the name is read: contact address, login hint and external
+     * subject never leave this repository through here.
+     */
+    public Map<UUID, String> displayNames(UUID organizationId, UUID[] ids) {
+        Map<UUID, String> names = new LinkedHashMap<>();
+        jdbc.sql("""
+                        SELECT id, display_name FROM iam.user_account
+                        WHERE organization_id = :organizationId
+                          AND id = ANY (:ids)
+                        """)
+                .param("organizationId", organizationId)
+                .param("ids", ids)
+                .query((rows, rowNumber) -> new DisplayName(
+                        rows.getObject("id", UUID.class), rows.getString("display_name")))
+                .list()
+                .forEach(row -> names.put(row.id(), row.displayName()));
+        return names;
+    }
+
+    private record DisplayName(UUID id, String displayName) {
     }
 
     private static Timestamp timestamp(Instant instant) {

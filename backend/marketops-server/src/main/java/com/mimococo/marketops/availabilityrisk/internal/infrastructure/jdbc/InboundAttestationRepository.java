@@ -185,6 +185,96 @@ public class InboundAttestationRepository {
                 .optional();
     }
 
+    /**
+     * The current version of every claim on the permitted variants, newest
+     * change first.
+     *
+     * <p>Each claim appears once, at its latest version: the list answers
+     * "what do we currently believe is coming", and the superseded versions
+     * stay in the table for anybody reviewing how that belief changed.
+     *
+     * @param productVariantId one variant, or {@code null} for all permitted
+     * @param status one business status of the current version, or {@code null}
+     */
+    public List<CurrentListRow> listCurrent(UUID organizationId, UUID[] permittedProductVariantIds,
+                                            UUID productVariantId, String status, int limit,
+                                            int offset) {
+        return jdbc.sql("""
+                        SELECT claim.id, claim.product_variant_id, claim.external_reference,
+                               variant.sku_code, variant.display_name,
+                               version.id AS version_id, version.version_no, version.quantity,
+                               version.expected_arrival_from, version.expected_arrival_to,
+                               version.business_status, version.change_kind,
+                               version.evidence_reference, version.source_time,
+                               version.last_verified_at, version.recorded_at, version.reason,
+                               version.attested_by_user_id
+                        """ + CURRENT_LIST_FROM + """
+                         ORDER BY version.recorded_at DESC, claim.id
+                         LIMIT :limit OFFSET :offset
+                        """)
+                .param("organizationId", organizationId)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("productVariantId", productVariantId)
+                .param("status", status)
+                .param("limit", limit)
+                .param("offset", offset)
+                .query((rows, number) -> new CurrentListRow(
+                        rows.getObject("id", UUID.class),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getString("sku_code"),
+                        rows.getString("display_name"),
+                        rows.getString("external_reference"),
+                        rows.getObject("version_id", UUID.class),
+                        rows.getInt("version_no"),
+                        rows.getInt("quantity"),
+                        rows.getTimestamp("expected_arrival_from").toInstant(),
+                        rows.getTimestamp("expected_arrival_to").toInstant(),
+                        rows.getString("business_status"),
+                        rows.getString("change_kind"),
+                        rows.getString("evidence_reference"),
+                        rows.getTimestamp("source_time") == null
+                                ? null : rows.getTimestamp("source_time").toInstant(),
+                        rows.getTimestamp("last_verified_at").toInstant(),
+                        rows.getTimestamp("recorded_at").toInstant(),
+                        rows.getString("reason"),
+                        rows.getObject("attested_by_user_id", UUID.class)))
+                .list();
+    }
+
+    /** How many claims the same filter matches in total. */
+    public long countCurrent(UUID organizationId, UUID[] permittedProductVariantIds,
+                             UUID productVariantId, String status) {
+        Long count = jdbc.sql("SELECT count(*)" + CURRENT_LIST_FROM)
+                .param("organizationId", organizationId)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
+                .param("productVariantId", productVariantId)
+                .param("status", status)
+                .query(Long.class)
+                .single();
+        return count == null ? 0 : count;
+    }
+
+    /** The claims, their current versions and the filter every list read shares. */
+    private static final String CURRENT_LIST_FROM = """
+              FROM core.inbound_supply_attestation AS claim
+              JOIN core.product_variant AS variant
+                ON variant.id = claim.product_variant_id
+               AND variant.organization_id = claim.organization_id
+              JOIN LATERAL (
+                   SELECT one.*
+                     FROM core.inbound_supply_attestation_version AS one
+                    WHERE one.attestation_id = claim.id
+                      AND one.organization_id = claim.organization_id
+                    ORDER BY one.version_no DESC
+                    LIMIT 1
+              ) AS version ON true
+             WHERE claim.organization_id = :organizationId
+               AND claim.product_variant_id = ANY (:permittedProductVariantIds)
+               AND (CAST(:productVariantId AS uuid) IS NULL
+                    OR claim.product_variant_id = CAST(:productVariantId AS uuid))
+               AND (CAST(:status AS text) IS NULL OR version.business_status = :status)
+            """;
+
     /** One attested state to append. */
     public record InboundVersion(
             UUID id, UUID attestationId, UUID organizationId, int versionNo, int quantity,
@@ -199,5 +289,15 @@ public class InboundAttestationRepository {
                                      int quantity, Instant expectedArrivalFrom,
                                      Instant expectedArrivalTo, String businessStatus,
                                      String evidenceReference, Instant lastVerifiedAt) {
+    }
+
+    /** One claim at its current version, with the variant it is for. */
+    public record CurrentListRow(UUID id, UUID productVariantId, String skuCode,
+                                 String displayName, String externalReference, UUID versionId,
+                                 int versionNo, int quantity, Instant expectedArrivalFrom,
+                                 Instant expectedArrivalTo, String businessStatus,
+                                 String changeKind, String evidenceReference, Instant sourceTime,
+                                 Instant lastVerifiedAt, Instant recordedAt, String reason,
+                                 UUID attestedByUserId) {
     }
 }
