@@ -122,9 +122,9 @@ public class ListingObservationService implements ListingObservationSink {
                 observedAt, observedAt, ObservationLifecycle.OBSERVED,
                 observedAt, observedAt, 0L);
         if (restate) {
-            listings.observeVariant(variant);
+            listings.observeVariant(variant, observed.nativeItemKey());
         } else {
-            listings.mentionVariant(variant);
+            listings.mentionVariant(variant, observed.nativeItemKey());
         }
         return listings.findVariantByNativeKey(listingId, observed.nativeVariantKey())
                 .map(PlatformListingVariant::id)

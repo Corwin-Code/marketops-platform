@@ -114,6 +114,8 @@ public class NormalizationRunner {
 
         int factsRecorded = 0;
         int recordsRejected = 0;
+        boolean itemKeyStandsIn = !"LISTING".equals(job.datasetKind());
+        Map<UUID, Optional<IngestionJobDirectory.RunWindow>> windows = new java.util.HashMap<>();
         RawObservationView last = observations.getLast();
         for (RawObservationView observation : observations) {
             if (!observation.carriesPayload()) {
@@ -139,8 +141,13 @@ public class NormalizationRunner {
                 // the answer, or the time it was stored when the source gave none.
                 Instant observedAt = observation.sourceTime() != null
                         ? observation.sourceTime() : observation.ingestionTime();
+                // A declared window field takes the window the run asked the source for.
+                Optional<IngestionJobDirectory.RunWindow> window = windows.computeIfAbsent(
+                        observation.runId(), jobs::runWindow);
                 read = payloadReader.read(body.get(), declaration.get().recordPointer(),
-                        declaration.get().childPointer(), fields, valueKinds, observedAt);
+                        declaration.get().childPointer(), fields, valueKinds, observedAt,
+                        window.map(IngestionJobDirectory.RunWindow::from).orElse(null),
+                        window.map(IngestionJobDirectory.RunWindow::to).orElse(null));
             } catch (PayloadReader.PayloadUnreadableException unreadable) {
                 log.atWarn().addKeyValue("event","normalization_payload_unreadable")
                         .addKeyValue("observationId",observation.observationId())
@@ -158,7 +165,7 @@ public class NormalizationRunner {
                 int accepted = 0;
                 int rejected = 0;
                 for (CanonicalRecord record : read.records()) {
-                    if (!carriesRequiredFields(record, requiredFields)) {
+                    if (!carriesRequiredFields(record, requiredFields, itemKeyStandsIn)) {
                         rejected++;
                     }
                 }
@@ -171,6 +178,11 @@ public class NormalizationRunner {
                         .addKeyValue("observationId",observation.observationId())
                         .log("Normalization refused an unrepresentable source value");
                 return new PassOutcome(jobId,observations.size(),factsRecorded,recordsRejected+read.records().size(),"RECORD_OUT_OF_RANGE");
+            } catch (FactRecorder.RecordWithoutMeasureException noMeasure) {
+                log.atWarn().addKeyValue("event","normalization_record_without_measure")
+                        .addKeyValue("observationId",observation.observationId())
+                        .log("Normalization stopped at a record whose declared measures are all absent");
+                return new PassOutcome(jobId,observations.size(),factsRecorded,recordsRejected+1,"RECORD_WITHOUT_MEASURE");
             }
             factsRecorded += counts[0];
             recordsRejected += counts[1];
@@ -190,9 +202,19 @@ public class NormalizationRunner {
                 "PROCESSED");
     }
 
+    /**
+     * Whether a record carries every field its dataset requires.
+     *
+     * <p>Outside the catalog itself, an item identifier can stand in for the
+     * listing and variant keys: the fact recorder resolves it through what the
+     * catalog recorded, and a record it cannot resolve produces nothing.
+     */
     private static boolean carriesRequiredFields(CanonicalRecord record,
-                                                 List<String> requiredFields) {
-        return requiredFields.stream().allMatch(field -> record.values().containsKey(field));
+                                                 List<String> requiredFields,
+                                                 boolean itemKeyStandsIn) {
+        boolean byItem = itemKeyStandsIn && record.values().containsKey(FactRecorder.ITEM_KEY);
+        return requiredFields.stream().allMatch(field -> record.values().containsKey(field)
+                || (byItem && FactRecorder.VARIANT_KEYS.contains(field)));
     }
 
     /**

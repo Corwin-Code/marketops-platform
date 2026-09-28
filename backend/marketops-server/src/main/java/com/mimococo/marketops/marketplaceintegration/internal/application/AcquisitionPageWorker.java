@@ -89,12 +89,13 @@ public class AcquisitionPageWorker {
         }
         // Whether this call carries a cursor from an earlier page: only then can a
         // "not found" answer mean the listing has ended rather than a wrong request.
-        boolean continuationCall = callSpecs.checkpointPosition(context.jobId())
-                .filter(position -> !position.isEmpty()).isPresent();
+        String position = callSpecs.checkpointPosition(context.jobId()).orElse("");
+        boolean continuationCall = !position.isEmpty();
         AcquisitionResult result = gateway.acquire(runId, fence, workerName,
                 context.scopeGrantId(), CALL_AUTHORITY, CorrelationId.current());
         RawContentRef content = custody.store(custodyNamespace(context), result.body());
-        Continuation continuation = continuationToken(result, specification.get(), continuationCall);
+        Continuation continuation = continuationToken(result, specification.get(), continuationCall,
+                position);
         return transactions.execute(status -> {
             UUID observationId = storeEvidence(runId, context, result, content,continuation.kind());
             if (continuation.kind() == Kind.END || continuation.kind() == Kind.NEXT) {
@@ -143,14 +144,25 @@ public class AcquisitionPageWorker {
      * ended.
      */
     static boolean validPagination(EndpointCallSpec spec) {
-        return "NONE".equals(spec.paginationModel()) ||
+        return "NONE".equals(spec.paginationModel()) || computedContinuation(spec) ||
                 (List.of("CURSOR", "OFFSET", "PAGE", "DATE_WINDOW").contains(spec.paginationModel())
                         && spec.continuationPointer() != null
                         && spec.continuationPointer().startsWith("/"));
     }
 
+    /**
+     * Whether the next position is computed here rather than returned by the
+     * source: an offset or page endpoint whose answer carries no continuation,
+     * and whose recorded rule says a short page is the last one.
+     */
+    static boolean computedContinuation(EndpointCallSpec spec) {
+        return spec.continuationPointer() == null
+                && List.of("OFFSET", "PAGE").contains(spec.paginationModel())
+                && List.of("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND").contains(spec.continuationEndRule());
+    }
+
     Continuation continuationToken(AcquisitionResult result, EndpointCallSpec spec,
-                                   boolean continuationCall) {
+                                   boolean continuationCall, String position) {
         if (!validPagination(spec)) return new Continuation(Kind.CONFIG_INVALID, null);
         String endRule = spec.continuationEndRule() == null ? "JSON_NULL" : spec.continuationEndRule();
         // A source that answers "not found" to a cursor past its last item ends
@@ -181,6 +193,19 @@ public class AcquisitionPageWorker {
                 if (records.size() < EndpointCallSpec.REQUESTED_PAGE_SIZE) {
                     return new Continuation(Kind.END, null);
                 }
+            }
+            if (computedContinuation(spec)) {
+                // A full page: the next offset is this one plus the page, the next
+                // page number this one plus one.
+                boolean paged = "PAGE".equals(spec.paginationModel());
+                long current;
+                try {
+                    current = position.isEmpty() ? (paged ? 1 : 0) : Long.parseLong(position);
+                } catch (NumberFormatException notAPosition) {
+                    return new Continuation(Kind.CONFIG_INVALID, null);
+                }
+                long next = paged ? current + 1 : current + EndpointCallSpec.REQUESTED_PAGE_SIZE;
+                return new Continuation(Kind.NEXT, Long.toString(next));
             }
             JsonNode token = document.at(spec.continuationPointer());
             if (token.isMissingNode()) return new Continuation(Kind.SCHEMA_DRIFT, null);

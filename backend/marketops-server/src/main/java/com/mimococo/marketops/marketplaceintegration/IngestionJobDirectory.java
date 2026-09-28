@@ -1,5 +1,6 @@
 package com.mimococo.marketops.marketplaceintegration;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,4 +19,21 @@ public interface IngestionJobDirectory {
 
     /** An organization's jobs, ordered by business code. */
     List<IngestionJobView> jobs(UUID organizationId);
+
+    /**
+     * The window a run asked its source for, when it asked for one.
+     *
+     * <p>A source whose answer does not state the period it covers is about the
+     * window it was asked for, so normalization reads the period from here.
+     */
+    Optional<RunWindow> runWindow(UUID runId);
+
+    /**
+     * One bounded acquisition window.
+     *
+     * @param from inclusive start
+     * @param to exclusive end
+     */
+    record RunWindow(Instant from, Instant to) {
+    }
 }

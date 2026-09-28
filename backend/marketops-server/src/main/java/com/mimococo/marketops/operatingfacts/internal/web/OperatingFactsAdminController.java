@@ -170,7 +170,8 @@ class OperatingFactsAdminController {
 
     /**
      * One non-pointer field source: {@code PARENT_POINTER} with a pointer,
-     * {@code OBSERVATION_TIME}, {@code CONSTANT} with a value, or {@code POINTER}
+     * {@code OBSERVATION_TIME}, {@code WINDOW_START}, {@code WINDOW_END}, {@code CONSTANT}
+     * with a value, or {@code POINTER}
      * with a value map.
      */
     record FieldSourceRequest(String kind, String pointer, String value, Map<String, String> valueMap) {

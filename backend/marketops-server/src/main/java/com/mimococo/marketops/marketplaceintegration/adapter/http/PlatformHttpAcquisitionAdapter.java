@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +61,13 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
 
     /** Placeholder carrying the marketplace account's own identifier. */
     private static final String ACCOUNT_KEY_PLACEHOLDER = "accountKey";
+
+    /** Placeholders carrying a position this system computes rather than the source returns. */
+    private static final String OFFSET_PLACEHOLDER = "offset";
+    private static final String PAGE_PLACEHOLDER = "page";
+
+    /** Placeholder carrying the start of the run's window; the others follow it. */
+    private static final String WINDOW_FROM_PLACEHOLDER = "windowFrom";
 
     /** Placeholder a template uses when a platform has no cursor yet. */
     private static final String INITIAL_CURSOR = "";
@@ -106,6 +115,11 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         }
 
         Map<String, String> placeholders = placeholders(request, spec);
+        if (asksForWindow(spec) && !placeholders.containsKey(WINDOW_FROM_PLACEHOLDER)) {
+            // Without a window the source would be asked about nothing in
+            // particular; the call does not happen.
+            return refused("run_window_required", startedAt);
+        }
         OutboundHttp.Request builder;
         List<char[]> resolvedSecrets = new ArrayList<>();
         try {
@@ -202,15 +216,32 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
 
     private Map<String, String> placeholders(AcquisitionRequest request, EndpointCallSpec spec) {
         Map<String, String> values = new HashMap<>();
-        values.put(CURSOR_PLACEHOLDER,
-                specs.checkpointPosition(request.jobId()).orElse(INITIAL_CURSOR));
+        String position = specs.checkpointPosition(request.jobId()).orElse(INITIAL_CURSOR);
+        values.put(CURSOR_PLACEHOLDER, position);
+        // A computed position starts where the source's own numbering starts.
+        values.put(OFFSET_PLACEHOLDER, position.isEmpty() ? "0" : position);
+        values.put(PAGE_PLACEHOLDER, position.isEmpty() ? "1" : position);
         values.put(LIMIT_PLACEHOLDER, DEFAULT_PAGE_SIZE);
+        specs.runWindow(request.runId()).ifPresent(window -> {
+            values.put(WINDOW_FROM_PLACEHOLDER, window.from().toString());
+            values.put("windowTo", window.to().toString());
+            // The UTC days of the first and of the last instant inside the window.
+            values.put("windowStartUtcDate", LocalDate.ofInstant(window.from(), ZoneOffset.UTC).toString());
+            values.put("windowEndUtcDate",
+                    LocalDate.ofInstant(window.to().minusNanos(1), ZoneOffset.UTC).toString());
+        });
         values.put(ACCOUNT_KEY_PLACEHOLDER,
                 specs.accountNativeKey(request.credentialId()).orElse(INITIAL_CURSOR));
         // The endpoint code is included so a recorded template can address a
         // family of resources that differ only by registry name.
         values.put("endpointCode", spec.endpointCode());
         return values;
+    }
+
+    /** Whether any recorded template names the run's window. */
+    private static boolean asksForWindow(EndpointCallSpec spec) {
+        return java.util.stream.Stream.of(spec.pathTemplate(), spec.queryTemplate(), spec.bodyTemplate())
+                .anyMatch(template -> template != null && template.contains("{window"));
     }
 
     /**

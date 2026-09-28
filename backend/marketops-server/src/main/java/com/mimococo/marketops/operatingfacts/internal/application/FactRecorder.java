@@ -3,6 +3,7 @@ package com.mimococo.marketops.operatingfacts.internal.application;
 import com.mimococo.marketops.marketplaceintegration.IngestionJobView;
 import com.mimococo.marketops.marketplaceintegration.RawObservationView;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactWriteRepository;
+import com.mimococo.marketops.productlisting.ListingItemDirectory;
 import com.mimococo.marketops.productlisting.ListingObservationSink;
 import com.mimococo.marketops.productlisting.ObservedListing;
 import com.mimococo.marketops.productlisting.ObservedListingVariant;
@@ -10,10 +11,12 @@ import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -45,17 +48,26 @@ public class FactRecorder {
     /** The settlement state a source that does not publish one is recorded under. */
     private static final String UNKNOWN_SETTLEMENT = "UNKNOWN";
 
+    /** The canonical fields that name a listing variant. */
+    static final Set<String> VARIANT_KEYS = Set.of("nativeListingKey", "nativeVariantKey");
+
+    /** The marketplace item identifier a dataset may name a variant by instead. */
+    static final String ITEM_KEY = "nativeItemKey";
+
     private final FactWriteRepository facts;
     private final ListingObservationSink listings;
+    private final ListingItemDirectory items;
     private final IdGenerator idGenerator;
     private final Clock clock;
 
     FactRecorder(FactWriteRepository facts,
                  ListingObservationSink listings,
+                 ListingItemDirectory items,
                  IdGenerator idGenerator,
                  Clock clock) {
         this.facts = facts;
         this.listings = listings;
+        this.items = items;
         this.idGenerator = idGenerator;
         this.clock = clock;
     }
@@ -77,6 +89,21 @@ public class FactRecorder {
                     && ((long)amount.precision()-amount.scale()>14 || amount.stripTrailingZeros().scale()>4)) {
                 throw new ArithmeticException("source money is not exactly representable");
             }
+        }
+        if (!"LISTING".equals(job.datasetKind()) && canonical.text("nativeListingKey").isEmpty()
+                && canonical.text(ITEM_KEY).isPresent()) {
+            // The record names its variant by the marketplace item identifier:
+            // resolve it through what the catalog recorded. An item nobody
+            // recorded produces nothing rather than a listing built from a guess.
+            Optional<ListingItemDirectory.ListingKeys> keys =
+                    items.byItemKey(job.storeId(), canonical.requiredText(ITEM_KEY));
+            if (keys.isEmpty()) {
+                return 0;
+            }
+            Map<String, Object> resolved = new LinkedHashMap<>(canonical.values());
+            resolved.put("nativeListingKey", keys.get().nativeListingKey());
+            resolved.put("nativeVariantKey", keys.get().nativeVariantKey());
+            canonical = new CanonicalRecord(resolved);
         }
         Optional<UUID> listingVariantId = resolveListingVariant(job, canonical, observation);
         if (listingVariantId.isEmpty()) {
@@ -122,7 +149,8 @@ public class FactRecorder {
                 canonical.text("nativeBarcode").orElse(null),
                 canonical.text("nativeColorLabel").orElse(null),
                 canonical.text("nativeSizeLabel").orElse(null),
-                canonical.text("nativeStatus").orElse(null));
+                canonical.text("nativeStatus").orElse(null),
+                canonical.text(ITEM_KEY).orElse(null));
         ObservedListing listing = new ObservedListing(
                 job.storeId(),
                 listingKey.get(),
@@ -185,6 +213,12 @@ public class FactRecorder {
 
     private int recordTraffic(IngestionJobView job, CanonicalRecord canonical,
                               UUID variantId, UUID provenanceId) {
+        if (java.util.stream.Stream.of("impressions", "clicks", "visits", "addToCart", "orderedUnits")
+                .allMatch(measure -> canonical.integer(measure).isEmpty())) {
+            // A traffic fact with no measure says nothing; the declaration no
+            // longer reads the answer, and that has to stop the pass visibly.
+            throw new RecordWithoutMeasureException();
+        }
         facts.insertTraffic(idGenerator.newId(), job.organizationId(), provenanceId, variantId,
                 sourceFactKey(job, canonical, canonical.requiredInstant("periodStart")
                         + "|" + canonical.requiredInstant("periodEnd")),
@@ -277,6 +311,16 @@ public class FactRecorder {
      * delivered it, because the same fact delivered twice must resolve to one
      * key and therefore to one row.
      */
+    /** A record whose dataset needs a measure and whose declared measures are all absent. */
+    static final class RecordWithoutMeasureException extends RuntimeException {
+
+        private static final long serialVersionUID = 1L;
+
+        RecordWithoutMeasureException() {
+            super("the record carries none of its dataset's measures");
+        }
+    }
+
     private static String sourceFactKey(IngestionJobView job,
                                         CanonicalRecord canonical,
                                         String discriminator) {
