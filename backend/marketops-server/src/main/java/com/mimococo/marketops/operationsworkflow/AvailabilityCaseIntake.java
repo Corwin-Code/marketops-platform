@@ -82,8 +82,21 @@ public interface AvailabilityCaseIntake {
     /** Reopen the same case because the risk returned or its evidence expired. */
     AvailabilityCaseView reopen(UUID caseId, String reason, Instant at);
 
-    /** Raise the case to a higher authority under policy. */
-    AvailabilityCaseView escalate(UUID caseId, String reason, Instant at);
+    /**
+     * Raise the case to a higher authority because a person asked to.
+     *
+     * <p>The person and the role they act under are journalled on the event and
+     * the audit record, exactly as an action is: an escalation is a claim that
+     * the owner cannot resolve the cause alone, and a review asking who made
+     * that claim must get a name rather than a component. What an escalation
+     * does is unchanged by who asked: it raises the level by one, at most to
+     * three, and neither reassigns the case nor notifies anybody.
+     *
+     * @param actorUserId the person escalating
+     * @param actorRoleCode the role they are actually acting as
+     */
+    AvailabilityCaseView escalate(UUID caseId, UUID actorUserId, String actorRoleCode,
+                                  String reason, Instant at);
 
     /** The live case governing a cause, when one exists. */
     Optional<AvailabilityCaseView> liveCase(UUID organizationId, String causeKey);

@@ -1,6 +1,7 @@
 package com.mimococo.marketops.operationsworkflow;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +70,38 @@ public interface AvailabilityExceptionGovernance {
 
     /** Every acceptance recorded against one case, newest first. */
     List<AcceptedExceptionView> forCase(UUID caseId);
+
+    /** One acceptance by identity, when it exists. */
+    Optional<AcceptedExceptionView> find(UUID exceptionId);
+
+    /**
+     * What would size a request on one cause right now, before anybody asks.
+     *
+     * <p>Read from the materiality version in force, never invented: with no
+     * version in force the answer says so, and a request made then is recorded
+     * as {@code AUTHORITY_BLOCKED}.
+     */
+    ExceptionTerms terms(UUID organizationId, UUID childId, String causeCode, Instant at);
+
+    /**
+     * How much authority a request would need if it were made now, without
+     * recording anything.
+     *
+     * <p>Sized exactly as {@link #request} sizes it, including its refusals: a
+     * period longer than the version in force allows is refused here with the
+     * same code the request would get.
+     */
+    ExceptionPreview preview(ExceptionSizing sizing);
+
+    /**
+     * How much authority deciding one request needs now, sized exactly as a
+     * decision would size it, without deciding anything.
+     *
+     * <p>This is what lets a console offer a decision only to somebody who can
+     * make it: a decider below the required level who decided anyway would
+     * move the request to {@code AUTHORITY_BLOCKED}.
+     */
+    ExceptionPreview previewDecision(UUID exceptionId, Instant at);
 
     /**
      * Why an acceptance stopped being valid.
@@ -173,6 +206,90 @@ public interface AvailabilityExceptionGovernance {
             String reason,
             String correlationId,
             Instant at) {
+    }
+
+    /**
+     * The published terms a request on one cause would be sized by.
+     *
+     * <p>Every value comes from the materiality version in force. With none in
+     * force only {@code policyInForce} is meaningful and the rest is empty.
+     *
+     * @param policyInForce whether a materiality version is in force
+     * @param policyId that version, or {@code null}
+     * @param policyVersion its number, or {@code null}
+     * @param maxDuration the longest acceptance allowed, or {@code null}
+     * @param materialDuration a period at or above which approval needs the Risk Authority,
+     *                         or {@code null}
+     * @param materialProfitAtRisk an exposure at or above which it does, or {@code null}
+     * @param currencyCode the currency that exposure is expressed in, or {@code null}
+     * @param repeatOccurrenceCount acceptances of one cause that count as repetition, or
+     *                              {@code null}
+     * @param repeatLookback how far back repetition is counted, or {@code null}
+     * @param occurrenceCount which acceptance of this cause a new one would be, or {@code null}
+     */
+    record ExceptionTerms(
+            boolean policyInForce,
+            UUID policyId,
+            Integer policyVersion,
+            Duration maxDuration,
+            Duration materialDuration,
+            BigDecimal materialProfitAtRisk,
+            String currencyCode,
+            Integer repeatOccurrenceCount,
+            Duration repeatLookback,
+            Integer occurrenceCount) {
+
+        /** The answer when no materiality version is in force. */
+        public static ExceptionTerms unsized() {
+            return new ExceptionTerms(false, null, null, null, null, null, null, null, null,
+                    null);
+        }
+    }
+
+    /**
+     * What a request would be sized by, without its narrative.
+     *
+     * @param organizationId owning organization
+     * @param caseId the case the acceptance would dispose of
+     * @param childId the exact calculated child
+     * @param causeCode the cause being accepted
+     * @param severity the calculated lane, which sizes the approval
+     * @param consequenceAmount the expected exposure, or {@code null}
+     * @param consequenceCurrency its currency, or {@code null}
+     * @param requestedFrom when the acceptance would start
+     * @param requestedUntil when it would end
+     * @param at the instant of the preview
+     */
+    record ExceptionSizing(
+            UUID organizationId,
+            UUID caseId,
+            UUID childId,
+            String causeCode,
+            String severity,
+            BigDecimal consequenceAmount,
+            String consequenceCurrency,
+            Instant requestedFrom,
+            Instant requestedUntil,
+            Instant at) {
+    }
+
+    /**
+     * How much authority accepting a risk needs, as the rules would decide now.
+     *
+     * @param policyInForce whether a materiality version sized it; without one a request is
+     *                      recorded as {@code AUTHORITY_BLOCKED} and a decision blocks it
+     * @param requiredAuthority the level a decision needs
+     * @param separationRequired whether the requester may not also be the approver
+     * @param occurrenceCount which acceptance of this cause it is, or {@code null}
+     * @param periodExceedsMaximum whether the period is longer than the version in force
+     *                             allows, so an approval would be refused
+     */
+    record ExceptionPreview(
+            boolean policyInForce,
+            ExceptionAuthorityLevel requiredAuthority,
+            boolean separationRequired,
+            Integer occurrenceCount,
+            boolean periodExceedsMaximum) {
     }
 
     /** An attributable grant of bounded decision authority. */

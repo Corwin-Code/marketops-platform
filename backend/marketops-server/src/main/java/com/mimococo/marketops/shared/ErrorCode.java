@@ -229,7 +229,10 @@ public enum ErrorCode {
     MATERIALITY_UNRESOLVED("The materiality of the action could not be classified."),
 
     /** The promotion exit reason is not one of the pre-approved reasons. */
-    EXIT_REASON_NOT_APPROVED("The exit reason is not pre-approved.");
+    EXIT_REASON_NOT_APPROVED("The exit reason is not pre-approved."),
+
+    /** An accepted-risk period is longer than the published maximum allows. */
+    EXCEPTION_PERIOD_EXCEEDS_MAXIMUM("The requested acceptance period exceeds the maximum.");
 
     private final String safeMessage;
 
