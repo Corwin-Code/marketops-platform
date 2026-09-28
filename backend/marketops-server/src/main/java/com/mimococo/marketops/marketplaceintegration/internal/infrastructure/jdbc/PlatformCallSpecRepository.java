@@ -45,7 +45,8 @@ public class PlatformCallSpecRepository {
                                endpoint.response_content_type, endpoint.continuation_pointer,
                                endpoint.pagination_model,
                                endpoint.rate_limit_per_minute, profile.request_timeout_ms,
-                               profile.max_response_bytes
+                               profile.max_response_bytes, endpoint.continuation_end_rule,
+                               endpoint.records_pointer
                           FROM platform.platform_endpoint AS endpoint
                           JOIN platform.platform_api_profile AS profile
                             ON profile.platform_code = endpoint.platform_code
@@ -412,6 +413,8 @@ public class PlatformCallSpecRepository {
                 rows.getString("pagination_model"),
                 rateLimit,
                 rows.getInt("request_timeout_ms"),
-                rows.getLong("max_response_bytes"));
+                rows.getLong("max_response_bytes"),
+                rows.getString("continuation_end_rule"),
+                rows.getString("records_pointer"));
     }
 }

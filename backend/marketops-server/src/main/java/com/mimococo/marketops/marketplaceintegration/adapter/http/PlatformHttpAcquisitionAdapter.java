@@ -64,7 +64,7 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
     private static final String INITIAL_CURSOR = "";
 
     /** Page size requested when a recorded template asks for one. */
-    private static final String DEFAULT_PAGE_SIZE = "100";
+    private static final String DEFAULT_PAGE_SIZE = String.valueOf(EndpointCallSpec.REQUESTED_PAGE_SIZE);
 
     private final OutboundHttp httpClient;
     private final PlatformCallSpecRepository specs;

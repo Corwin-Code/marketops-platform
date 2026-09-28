@@ -87,10 +87,14 @@ public class AcquisitionPageWorker {
         if (specification.isEmpty() || !validPagination(specification.get())) {
             return new PageOutcome(Kind.CONFIG_INVALID, null);
         }
+        // Whether this call carries a cursor from an earlier page: only then can a
+        // "not found" answer mean the listing has ended rather than a wrong request.
+        boolean continuationCall = callSpecs.checkpointPosition(context.jobId())
+                .filter(position -> !position.isEmpty()).isPresent();
         AcquisitionResult result = gateway.acquire(runId, fence, workerName,
                 context.scopeGrantId(), CALL_AUTHORITY, CorrelationId.current());
         RawContentRef content = custody.store(custodyNamespace(context), result.body());
-        Continuation continuation = continuationToken(result, specification.get());
+        Continuation continuation = continuationToken(result, specification.get(), continuationCall);
         return transactions.execute(status -> {
             UUID observationId = storeEvidence(runId, context, result, content,continuation.kind());
             if (continuation.kind() == Kind.END || continuation.kind() == Kind.NEXT) {
@@ -145,8 +149,18 @@ public class AcquisitionPageWorker {
                         && spec.continuationPointer().startsWith("/"));
     }
 
-    Continuation continuationToken(AcquisitionResult result, EndpointCallSpec spec) {
+    Continuation continuationToken(AcquisitionResult result, EndpointCallSpec spec,
+                                   boolean continuationCall) {
         if (!validPagination(spec)) return new Continuation(Kind.CONFIG_INVALID, null);
+        String endRule = spec.continuationEndRule() == null ? "JSON_NULL" : spec.continuationEndRule();
+        // A source that answers "not found" to a cursor past its last item ends
+        // the listing that way. Only a call that carried a cursor, and only an
+        // endpoint that recorded this rule, reads that answer as the end; the
+        // answer itself is kept, and carries no payload to normalize.
+        if ("SHORT_PAGE_OR_NOT_FOUND".equals(endRule) && continuationCall
+                && result.responseComplete() && "HTTP 404".equals(result.nativeStatus())) {
+            return new Continuation(Kind.END, null);
+        }
         if ("UNEXPECTED_CONTENT_TYPE".equals(result.failureCode()) && !result.retryable()) {
             return new Continuation(Kind.SCHEMA_DRIFT,null);
         }
@@ -159,11 +173,31 @@ public class AcquisitionPageWorker {
                 return new Continuation(Kind.UNREADABLE, null);
             }
             if ("NONE".equals(spec.paginationModel())) return new Continuation(Kind.END, null);
+            // A page shorter than the size asked for is the last one, whatever
+            // token came with it, when the endpoint recorded that rule.
+            if (List.of("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND").contains(endRule)) {
+                JsonNode records = spec.recordsPointer() == null ? null : document.at(spec.recordsPointer());
+                if (records == null || !records.isArray()) return new Continuation(Kind.SCHEMA_DRIFT, null);
+                if (records.size() < EndpointCallSpec.REQUESTED_PAGE_SIZE) {
+                    return new Continuation(Kind.END, null);
+                }
+            }
             JsonNode token = document.at(spec.continuationPointer());
             if (token.isMissingNode()) return new Continuation(Kind.SCHEMA_DRIFT, null);
-            // The declared cursor contract terminates on JSON null. Absence,
-            // an empty string, and a value of another type never imply END.
+            // A cursor terminates on JSON null. The endpoint may also record that
+            // its source ends a listing with an empty token, an empty page of
+            // records, or either; a recorded fact, never a guess. Absence and a
+            // value of another type still never imply END.
             if (token.isNull()) return new Continuation(Kind.END, null);
+            if (List.of("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS").contains(endRule)) {
+                JsonNode records = spec.recordsPointer() == null ? null : document.at(spec.recordsPointer());
+                if (records == null || !records.isArray()) return new Continuation(Kind.SCHEMA_DRIFT, null);
+                if (records.isEmpty()) return new Continuation(Kind.END, null);
+            }
+            if (List.of("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS").contains(endRule)
+                    && token.isString() && token.asString().isEmpty()) {
+                return new Continuation(Kind.END, null);
+            }
             if (List.of("OFFSET","PAGE").contains(spec.paginationModel())) {
                 if (!token.isIntegralNumber() || !token.canConvertToLong()
                         || token.longValue() < ("PAGE".equals(spec.paginationModel()) ? 1 : 0)) {

@@ -157,7 +157,43 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）目前只放行 `/v1/roles`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles` 和 `/v4/product/info/attributes`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
+
+## Ozon 第 1 步：商品目录
+
+目标：用 `POST /v4/product/info/attributes` 读完试点店铺的全部商品，存为 Raw，再标准化成 Listing 事实（`core.platform_listing` / `platform_listing_variant`），供后续商品映射使用。这些数据不含买家个人信息。
+
+- **接口**：按 `last_id` 翻页，每页 100 个商品。官方文档没有写明列表怎么结束。2026-09-29 用真实账户探测发现：最后一页的记录数少于每页条数，但仍然带着 `last_id`；拿这个 `last_id` 再请求，会返回 HTTP 404 `{"code": 5, "message": "item not found"}`。所以端点登记为 `SHORT_PAGE_OR_NOT_FOUND`：遇到短页就结束；商品数正好是 100 的整数倍、最后一页是满页时，带游标的请求返回 404 也算结束。第一页返回 404 仍按失败处理。每次探测都会完整翻一遍，并记录实际遇到的结束方式；遇到短页时会再请求一次，确认后面确实没有数据。依赖迁移 `V0008`、`V0009`。
+- **映射**：`id` → Listing 和变体的标识（Ozon 里一个商品就是一个变体），`offer_id` → SKU 键，`name` → 标题，`barcode` → 条码。
+- **key 的角色**：需要 `Product read-only`。
+
+步骤（后端需已启动；端口不是 8080 时加 `API=...`）：
+
+```bash
+make ozon-probe CAPABILITY=catalog OFFICIAL_SOURCE=~/Downloads/swagger.json
+```
+
+```bash
+make ozon-setup CAPABILITY=catalog
+```
+
+```bash
+make ozon-verify CAPABILITY=catalog
+```
+
+```bash
+make ozon-run CAPABILITY=catalog
+```
+
+```bash
+make ozon-normalize CAPABILITY=catalog
+```
+
+- 探测会先查一次 key 的角色，再完整翻一遍商品目录，每页原文存进证据目录。终端只打印页数、商品数和结束方式，不打印任何商品内容。
+- 登记步骤会同时登记商品目录能力、端点、采集任务 `ozon-pilot-catalog`，以及 `OZON/LISTING` 标准化映射；映射以探测证据为依据完成核验。
+- 核验和第 0 步一样，需要两位 Owner。接口配置和认证头已经核验过，这一步只起草新端点。
+- 执行成功时，运行状态为 `SUCCEEDED`，`pagesStored` 等于页数（最后一页可能是空页）。标准化成功时，最后一行的 `lastReason` 为 `NOTHING_TO_PROCESS`。
+

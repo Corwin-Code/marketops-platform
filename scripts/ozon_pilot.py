@@ -2,27 +2,32 @@
 """Connect the Ozon pilot account to MarketOps for reading, one governed step at a time.
 
 Run from the repository root. Every step except ``probe`` needs the local backend
-(``--api``, default http://127.0.0.1:8080).
+(``--api``, default http://127.0.0.1:8080). Every step takes ``--capability``:
+``connectivity`` (POST /v1/roles, the default) or ``catalog`` (product identity,
+names and barcodes from POST /v4/product/info/attributes).
 
-  probe     Call POST /v1/roles once with the pilot key and keep the answer, together
-            with the official OpenAPI document, as verification evidence. Talks to
-            Ozon only.
-  setup     Register the pilot account and store, its READ credential, a reader
-            service account with a READ grant on the account, the connectivity
-            capability and endpoint, and the ingestion job, through the loopback
-            maintenance API.
-  reviewer  Give a second Keycloak user the OWNER role and KILL_SWITCH_OPERATE, so
-            registry evidence can be submitted by one Owner and approved by another.
-  verify    Draft the Ozon profile, the two authentication headers and the endpoint,
-            submit the probe evidence as one Owner and approve it as the other,
-            through the authenticated console API.
-  run       Queue one manual run of the connectivity job and execute it.
+  probe      Call /v1/roles to check the key (read-only roles, expiry), then make
+             the capability's real calls and keep every answer, together with the
+             official OpenAPI document, as verification evidence. Talks to Ozon only.
+  setup      Register the pilot account and store, its READ credential, a reader
+             service account with a READ grant on the account, and the capability's
+             registry rows, ingestion job and normalization mapping, through the
+             loopback maintenance API.
+  reviewer   Give a second Keycloak user the OWNER role and KILL_SWITCH_OPERATE, so
+             registry evidence can be submitted by one Owner and approved by another.
+  verify     Draft the Ozon profile, the two authentication headers and the
+             capability's endpoint, submit the probe evidence as one Owner and
+             approve it as the other, through the authenticated console API.
+  run        Queue one manual run of the capability's job and execute it.
+  normalize  Turn what the capability's job stored into canonical facts.
 
 Secrets. The Api-Key is read only by ``probe``, which sends it to api-seller.ozon.ru
 and nowhere else and never prints it; the backend resolves its own copy from the
 secret mount at call time. The Client-Id is read from the mount by ``probe`` and
 ``setup``; ``setup`` stores it as the account's native key. Keycloak passwords are
-asked for by ``verify`` and are neither stored nor printed.
+asked for by ``verify`` and are neither stored nor printed. Evidence files hold the
+store's own catalog data and are kept owner-only outside the repository; only
+counts are printed.
 
 The key files are expected at <mount>/ozon/<pilot>/seller-api-key and
 <mount>/ozon/<pilot>/client-id, owner-only, exactly as the backend reads them.
@@ -45,6 +50,7 @@ import ssl
 import stat
 import sys
 import tempfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -54,7 +60,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # --- Platform facts -------------------------------------------------------------
-# Verified 2026-09-28 against the official Ozon Seller API documentation,
+# Verified 2026-09-28/29 against the official Ozon Seller API documentation,
 # https://docs.ozon.ru/api/seller/ ("Документация Ozon Seller API (2.1)"), and the
 # OpenAPI document it loads, https://docs.ozon.ru/api/seller/swagger.json
 # (openapi 3.0.0, info.version 2.1, 481 paths):
@@ -64,6 +70,14 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #     AccessAPI_RolesByToken) takes no request body and answers
 #     {"expires_at": <date-time>, "roles": [{"name": ..., "methods": [...]}]}
 #     for the calling key, without any store data;
+#   - POST /v4/product/info/attributes takes {filter{visibility}, last_id, limit
+#     ≤ 1000} and answers {result: [{id, offer_id, name, barcode, barcodes, sku,
+#     attributes, ...}], last_id, total}; "leave last_id empty on the first
+#     request, then pass last_id from the previous answer". The documentation
+#     does not state how the listing ends. The real account (2026-09-29) ends it
+#     with a page shorter than the limit that still carries a last_id; a request
+#     with that last_id is answered HTTP 404 {"code": 5, "message": "item not
+#     found"}. The probe pages to the end and records the signal every time;
 #   - a method without its own limit allows at most 50 requests per second per
 #     Client-Id across all methods; a 429 carries Retry-After in seconds;
 #   - 403 "Offer not signed" when the seller offer is not accepted.
@@ -74,15 +88,14 @@ OFFICIAL_SOURCE_URL = "https://docs.ozon.ru/api/seller/swagger.json"
 REQUEST_TIMEOUT_SECONDS = 30
 MAXIMUM_RESPONSE_BYTES = 8 * 1024 * 1024
 MAXIMUM_OPENAPI_BYTES = 32 * 1024 * 1024
-# Our own cap for the connectivity endpoint, far below Ozon's shared limit; the
-# method states no limit of its own.
-ROLES_RATE_LIMIT_PER_MINUTE = 10
 # platform.registry_verification_case: valid_until <= tested_at + 30 days.
 EVIDENCE_WINDOW = timedelta(days=30)
+# The backend renders {limit} as 100; the probe asks for exactly what runs will.
+PAGE_SIZE = 100
+MAXIMUM_PROBE_PAGES = 60
+PROBE_PAUSE_SECONDS = 0.3
 
 PLATFORM = "OZON"
-CAPABILITY_CODE = "ozon-seller-connectivity"
-ENDPOINT_CODE = "ozon-roles-v1"
 OWNER_LABEL = "owner"
 PROFILE_DEFINITION = {
     "base_url": OZON_BASE_URL,
@@ -96,23 +109,76 @@ HEADER_DEFINITIONS = (
     {"header_name": "Api-Key", "value_source": "RESOLVED_SECRET", "value_template": "{value}",
      "credential_purpose": "READ", "ordinal": 2, "owner_label": OWNER_LABEL},
 )
-ENDPOINT_DEFINITION = {
-    "http_method": "POST",
-    "path_template": ROLES_PATH,
-    "operation_function": "READ_DATA",
-    "query_template": None,
-    "body_template": None,
-    "response_content_type": "application/json",
-    "continuation_pointer": None,
-    "pagination_model": "NONE",
-    "rate_limit_per_minute": ROLES_RATE_LIMIT_PER_MINUTE,
+
+# One entry per capability: its registry rows, the job that reads it, and the
+# normalization mapping that turns its answers into facts.
+CAPABILITIES = {
+    "connectivity": {
+        "code": "ozon-seller-connectivity",
+        "display": "Ozon Seller API key connectivity",
+        "description": "Proves the account's key is accepted and shows its roles and expiry "
+                       "(POST /v1/roles; official docs checked 2026-09-28).",
+        "manifest": "roles-latest.json",
+        "endpoint": {
+            "code": "ozon-roles-v1", "api_version": "v1", "schema_version": "v1RolesByTokenResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; /v1/roles states none. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-28",
+            "freshness": "Each call answers the key's current roles and expiry.",
+            "definition": {
+                "http_method": "POST", "path_template": ROLES_PATH, "operation_function": "READ_DATA",
+                "query_template": None, "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": None,
+            },
+        },
+        "job": {"suffix": "roles", "dataset": "UNKNOWN", "display": "Ozon 试点：API key 连通性"},
+        "mapping": None,
+    },
+    "catalog": {
+        "code": "ozon-catalog-read",
+        "display": "Ozon catalog: product identity, names and barcodes",
+        "description": "Reads every product's Ozon id, seller offer id, name and barcode "
+                       "(POST /v4/product/info/attributes, paged by last_id; official docs "
+                       "checked 2026-09-29).",
+        "manifest": "catalog-latest.json",
+        "endpoint": {
+            "code": "ozon-product-attributes-v4", "api_version": "v4",
+            "schema_version": "v4GetProductAttributesResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, 100 products per page. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full re-read on every run; the listing is a snapshot of the catalog.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v4/product/info/attributes",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"filter":{"visibility":"ALL"},"last_id":"{cursor}","limit":{limit}}',
+                "response_content_type": "application/json", "continuation_pointer": "/last_id",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 60,
+                # Probed 2026-09-29: the last page is short and still carries a
+                # last_id; a request with it is answered 404 {"code": 5}.
+                "continuation_end_rule": "SHORT_PAGE_OR_NOT_FOUND", "records_pointer": "/result",
+            },
+            "probe_body": lambda cursor: {"filter": {"visibility": "ALL"}, "last_id": cursor, "limit": PAGE_SIZE},
+            "token_key": "last_id",
+            "records_key": "result",
+        },
+        "job": {"suffix": "catalog", "dataset": "LISTING", "display": "Ozon 试点：商品目录"},
+        # Ozon's product id is both the listing and its only variant; the seller's
+        # offer id is the stock-keeping unit a company matches on.
+        "mapping": {
+            "dataset": "LISTING", "version": 1, "record_pointer": "/result",
+            "fields": {"nativeListingKey": "/id", "nativeVariantKey": "/id", "nativeSkuKey": "/offer_id",
+                       "title": "/name", "nativeBarcode": "/barcode"},
+        },
+    },
 }
 
 DEFAULT_SECRET_MOUNT = Path.home() / ".marketops-platform" / "secrets"
 DEFAULT_EVIDENCE_ROOT = Path.home() / ".marketops-platform" / "evidence"
 MAXIMUM_SECRET_BYTES = 16 * 1024
 PILOT_CODE = re.compile(r"^[a-z0-9]([a-z0-9-]{0,40}[a-z0-9])?$")
-MANIFEST_NAME = "roles-latest.json"
 
 DEFAULT_ISSUER = "https://localhost/realms/marketops"
 DEFAULT_CLIENT_ID = "marketops-console"
@@ -134,17 +200,25 @@ class Pilot:
         self.store_code = f"ozon-{code}"
         self.credential_code = f"ozon-{code}-read"
         self.service_account_code = f"ozon-{code}-reader"
-        self.job_code = f"ozon-{code}-roles"
         self.secret_dir = mount / "ozon" / code
         self.api_key_file = self.secret_dir / "seller-api-key"
         self.client_id_file = self.secret_dir / "client-id"
         self.secret_reference = f"secret-ref://ozon/{code}/seller-api-key"
         self.mount = mount
         self.evidence_dir = evidence_root / "ozon" / code
-        self.manifest = self.evidence_dir / MANIFEST_NAME
+
+    def job_code(self, capability: dict) -> str:
+        return f"ozon-{self.code}-{capability['job']['suffix']}"
+
+    def manifest(self, capability: dict) -> Path:
+        return self.evidence_dir / capability["manifest"]
 
     def evidence_ref(self, file_name: str) -> str:
         return f"evidence://ozon/{self.code}/{file_name}"
+
+
+def capability_from(args: argparse.Namespace) -> dict:
+    return CAPABILITIES[args.capability]
 
 
 def env_local_value(name: str) -> str | None:
@@ -268,19 +342,24 @@ def tls_context(ca_file: str | None) -> ssl.SSLContext:
 
 # --- probe ------------------------------------------------------------------------
 
-def post_roles(client_id: str, api_key: str, context: ssl.SSLContext) -> tuple[int, str, bytes]:
-    """The exact request the connectivity endpoint is registered to send: POST, no body."""
+def post_ozon(path: str, body: dict | None, client_id: str, api_key: str,
+              context: ssl.SSLContext) -> tuple[int, str, bytes]:
+    """One Seller API call exactly as the registered endpoint sends it."""
+    headers = {"Client-Id": client_id, "Api-Key": api_key, "Accept": "application/json"}
+    payload = None
+    if body is not None:
+        payload = json.dumps(body, separators=(",", ":")).encode("utf-8")
+        headers["Content-Type"] = "application/json"
     connection = http.client.HTTPSConnection(OZON_HOST, 443, timeout=REQUEST_TIMEOUT_SECONDS,
                                              context=context)
     try:
-        connection.request("POST", ROLES_PATH, body=None, headers={
-            "Client-Id": client_id, "Api-Key": api_key, "Accept": "application/json"})
+        connection.request("POST", path, body=payload, headers=headers)
         response = connection.getresponse()
-        body = response.read(MAXIMUM_RESPONSE_BYTES + 1)
-        if len(body) > MAXIMUM_RESPONSE_BYTES:
-            sys.exit("probe: the answer is larger than the registered response limit")
+        answer = response.read(MAXIMUM_RESPONSE_BYTES + 1)
+        if len(answer) > MAXIMUM_RESPONSE_BYTES:
+            sys.exit(f"probe: the answer of {path} is larger than the registered response limit")
         content_type = (response.getheader("Content-Type") or "").split(";", 1)[0].strip()
-        return response.status, content_type, body
+        return response.status, content_type, answer
     except ssl.SSLCertVerificationError as failure:
         sys.exit(f"probe: TLS certificate of {OZON_HOST} could not be verified ({failure.verify_message}); "
                  "pass --ca-file with a trusted root bundle")
@@ -341,22 +420,20 @@ def mutating_methods(document: dict) -> set[str]:
     return found
 
 
-def command_probe(args: argparse.Namespace) -> int:
-    pilot = pilot_from(args)
-    client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
-    api_key = read_secret(pilot, pilot.api_key_file, "Api-Key")
-    context = tls_context(args.ca_file)
+def check_key(pilot: Pilot, args: argparse.Namespace, client_id: str, api_key: str,
+              context: ssl.SSLContext) -> dict | None:
+    """Call /v1/roles, keep the answer, and refuse a key that can change the store.
 
+    Returns what the evidence needs, or ``None`` after printing why nothing can
+    be recorded.
+    """
     tested_at = utc_now()
-    status, content_type, body = post_roles(client_id, api_key, context)
-    del api_key
+    status, content_type, body = post_ozon(ROLES_PATH, None, client_id, api_key, context)
     file_name = f"roles-{tested_at:%Y%m%d-%H%M%S}z.json"
-    evidence_file = pilot.evidence_dir / file_name
-    private_write(evidence_file, body)
+    private_write(pilot.evidence_dir / file_name, body)
     digest = hashlib.sha256(body).hexdigest()
     print(f"POST {OZON_BASE_URL}{ROLES_PATH} -> HTTP {status} ({content_type or 'no content type'})")
-    print(f"answer kept at {evidence_file} (sha256 {digest})")
-
+    print(f"answer kept at {pilot.evidence_dir / file_name} (sha256 {digest})")
     try:
         answer = json.loads(body) if content_type == "application/json" else None
     except ValueError:
@@ -365,14 +442,14 @@ def command_probe(args: argparse.Namespace) -> int:
         if isinstance(answer, dict):
             print(f"Ozon refused: code={answer.get('code')} message={answer.get('message')}")
         print("no evidence recorded: only a successful answer can verify the endpoint")
-        return 1
+        return None
     try:
         key_expires = parse_instant(str(answer["expires_at"]))
         granted = {str(role["name"]): [str(method) for method in (role.get("methods") or [])]
                    for role in answer["roles"]}
     except (KeyError, TypeError, ValueError):
         print("the answer does not have the documented shape (expires_at, roles[].name); nothing recorded")
-        return 1
+        return None
     print(f"key expires {iso(key_expires)} ({(key_expires - tested_at).days} days left)")
     print("roles on this key:")
     for name, methods in granted.items():
@@ -382,7 +459,7 @@ def command_probe(args: argparse.Namespace) -> int:
         print(f"no evidence recorded yet: open {OFFICIAL_SOURCE_URL} in a browser, save it as a "
               "JSON file and run the probe again with --official-source-file <file> "
               "(make ozon-probe OFFICIAL_SOURCE=<file>)")
-        return 2
+        return None
     source_file, source_digest, document = official_source(pilot, args.official_source_file)
 
     # A read-only integration keeps a read-only key: a role that can change the
@@ -401,34 +478,167 @@ def command_probe(args: argparse.Namespace) -> int:
         if not args.allow_write_roles:
             print("no evidence recorded: generate a key with read-only roles only and probe again "
                   "(or pass --allow-write-roles to accept these roles on purpose)")
-            return 1
+            return None
         print("--allow-write-roles given: recording evidence for a key that can change the store")
+    return {"testedAt": tested_at, "keyExpires": key_expires, "granted": granted, "writers": writers,
+            "document": document, "rolesFile": file_name, "rolesDigest": digest,
+            "sourceFile": source_file, "sourceDigest": source_digest}
 
-    valid_until = min(tested_at + EVIDENCE_WINDOW, key_expires)
+
+def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_key: str,
+                context: ssl.SSLContext) -> tuple[str, str] | None:
+    """Page one capability's endpoint to its end and keep every answer as a bundle.
+
+    The bundle is what the verification case points at: each page's own file
+    and digest, how many records it held, and the signal that ended the
+    listing. Record contents are never printed.
+    """
+    endpoint = capability["endpoint"]
+    path = endpoint["definition"]["path_template"]
+    if not any(path in methods for methods in key["granted"].values()):
+        print(f"the key has no role that allows {path}; generate one with the needed read-only role")
+        return None
+    operation = key["document"].get("paths", {}).get(path, {}).get("post")
+    if not isinstance(operation, dict) or "requestBody" not in operation:
+        print(f"the official document no longer describes POST {path} with a body; review before recording")
+        return None
+
+    rule = endpoint["definition"]["continuation_end_rule"]
+    short_rule = rule in ("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND")
+    stamp = f"{key['testedAt']:%Y%m%d-%H%M%S}z"
+    suffix = capability["job"]["suffix"]
+
+    def call(cursor: str, file_name: str) -> tuple[dict, dict | None]:
+        status, content_type, body = post_ozon(path, endpoint["probe_body"](cursor), client_id, api_key, context)
+        private_write(pilot.evidence_dir / file_name, body)
+        try:
+            answer = json.loads(body) if content_type == "application/json" else None
+        except ValueError:
+            answer = None
+        return {"file": file_name, "sha256": hashlib.sha256(body).hexdigest(), "status": status,
+                "contentType": content_type}, (answer if isinstance(answer, dict) else None)
+
+    pages, cursor, end_signal, total_records, follow_up = [], "", None, 0, None
+    for index in range(MAXIMUM_PROBE_PAGES):
+        if index:
+            time.sleep(PROBE_PAUSE_SECONDS)
+        page, answer = call(cursor, f"{suffix}-{stamp}-p{index:03d}.json")
+        pages.append(page)
+        if page["status"] == 404 and index > 0 and rule == "SHORT_PAGE_OR_NOT_FOUND":
+            end_signal = "NOT_FOUND_AFTER_CURSOR"
+            break
+        if page["status"] != 200 or answer is None:
+            detail = f" code={answer.get('code')} message={answer.get('message')}" if answer else ""
+            print(f"POST {path} page {index + 1} -> HTTP {page['status']}{detail}; nothing recorded")
+            return None
+        records = answer.get(endpoint["records_key"])
+        token = answer.get(endpoint["token_key"])
+        if not isinstance(records, list) or not (token is None or isinstance(token, str)):
+            print(f"page {index + 1} does not have the documented shape ({endpoint['records_key']}[], "
+                  f"{endpoint['token_key']}); nothing recorded")
+            return None
+        page["records"] = len(records)
+        page["token"] = "null" if token is None else ("empty" if token == "" else "present")
+        total_records += len(records)
+        if short_rule and len(records) < PAGE_SIZE:
+            end_signal = "SHORT_PAGE"
+            # Evidence that the short page really was the last one: the next
+            # request must answer "not found" or no records at all.
+            if token:
+                time.sleep(PROBE_PAUSE_SECONDS)
+                follow_up, after = call(token, f"{suffix}-{stamp}-after.json")
+                more = after.get(endpoint["records_key"]) if after else None
+                follow_up["records"] = len(more) if isinstance(more, list) else None
+                if follow_up["status"] == 200 and follow_up["records"]:
+                    print("a short page was followed by more records; the short-page rule would lose "
+                          "data, nothing recorded")
+                    return None
+            break
+        if endpoint["token_key"] not in answer:
+            print(f"page {index + 1} has no {endpoint['token_key']}; nothing recorded")
+            return None
+        if token is None:
+            end_signal = "JSON_NULL"
+        elif not records:
+            end_signal = "EMPTY_RECORDS"
+        elif token == "":
+            end_signal = "EMPTY_TOKEN"
+        if end_signal:
+            break
+        cursor = token
+    if end_signal is None:
+        print(f"the listing did not end within {MAXIMUM_PROBE_PAGES} pages; nothing recorded")
+        return None
+    # The backend ends a listing on JSON null always, and on the other signals
+    # only when the endpoint's recorded rule names them.
+    accepted = {"JSON_NULL",
+                *({"EMPTY_RECORDS"} if rule in ("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS") else ()),
+                *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
+                *({"SHORT_PAGE"} if short_rule else ()),
+                *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ())}
+    if end_signal not in accepted:
+        print(f"the listing ended with {end_signal}, which the registered rule {rule} does not accept")
+        return None
+    after_note = ""
+    if follow_up is not None:
+        after_note = f"; the next request was answered HTTP {follow_up['status']}"
+    print(f"POST {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
+
+    bundle = {"capability": capability["code"], "endpoint": endpoint["code"], "path": path,
+              "testedAt": iso(key["testedAt"]), "pageSize": PAGE_SIZE, "endRule": rule,
+              "endSignal": end_signal, "records": total_records, "pages": pages,
+              "followUp": follow_up}
+    bundle_name = f"{capability['job']['suffix']}-{stamp}-bundle.json"
+    data = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    private_write(pilot.evidence_dir / bundle_name, data)
+    return bundle_name, hashlib.sha256(data).hexdigest()
+
+
+def command_probe(args: argparse.Namespace) -> int:
+    pilot = pilot_from(args)
+    capability = capability_from(args)
+    client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
+    api_key = read_secret(pilot, pilot.api_key_file, "Api-Key")
+    context = tls_context(args.ca_file)
+
+    key = check_key(pilot, args, client_id, api_key, context)
+    if key is None:
+        return 1
+    if capability["endpoint"]["definition"]["path_template"] == ROLES_PATH:
+        evidence_name, evidence_digest = key["rolesFile"], key["rolesDigest"]
+    else:
+        probed = probe_pages(pilot, capability, key, client_id, api_key, context)
+        if probed is None:
+            return 1
+        evidence_name, evidence_digest = probed
+    del api_key
+
+    valid_until = min(key["testedAt"] + EVIDENCE_WINDOW, key["keyExpires"])
     manifest = {
         "pilot": pilot.code,
-        "testedAt": iso(tested_at),
+        "capability": capability["code"],
+        "testedAt": iso(key["testedAt"]),
         "validUntil": iso(valid_until),
-        "keyExpiresAt": iso(key_expires),
-        "roles": [{"name": name, "methods": len(methods)} for name, methods in granted.items()],
-        "writeRolesAccepted": sorted(writers),
+        "keyExpiresAt": iso(key["keyExpires"]),
+        "roles": [{"name": name, "methods": len(methods)} for name, methods in key["granted"].items()],
+        "writeRolesAccepted": sorted(key["writers"]),
         "evidenceClass": "REAL_ACCOUNT",
-        "accountEvidenceRef": pilot.evidence_ref(file_name),
-        "accountEvidenceSha256": digest,
+        "accountEvidenceRef": pilot.evidence_ref(evidence_name),
+        "accountEvidenceSha256": evidence_digest,
         "officialSourceUrl": OFFICIAL_SOURCE_URL,
-        "officialSourceSha256": source_digest,
-        "officialSourceFile": str(source_file),
+        "officialSourceSha256": key["sourceDigest"],
+        "officialSourceFile": str(key["sourceFile"]),
     }
-    private_write(pilot.manifest, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode())
-    print(f"evidence recorded, valid until {iso(valid_until)}; summary kept at {pilot.manifest}")
+    private_write(pilot.manifest(capability), (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode())
+    print(f"evidence recorded, valid until {iso(valid_until)}; summary kept at {pilot.manifest(capability)}")
     return 0
 
 
-def load_manifest(pilot: Pilot) -> dict:
+def load_manifest(pilot: Pilot, capability: dict) -> dict:
     try:
-        manifest = json.loads(pilot.manifest.read_text(encoding="utf-8"))
+        manifest = json.loads(pilot.manifest(capability).read_text(encoding="utf-8"))
     except FileNotFoundError:
-        sys.exit(f"no probe evidence at {pilot.manifest}; run the probe first")
+        sys.exit(f"no probe evidence at {pilot.manifest(capability)}; run the probe for this capability first")
     if parse_instant(manifest["validUntil"]) <= utc_now():
         sys.exit(f"the probe evidence expired at {manifest['validUntil']}; run the probe again")
     return manifest
@@ -451,7 +661,7 @@ class Admin:
             request.add_header("Content-Type", "application/json")
             request.add_header("X-Operator", self.operator)
         try:
-            with urllib.request.urlopen(request, timeout=90) as response:
+            with urllib.request.urlopen(request, timeout=300) as response:
                 raw = response.read()
                 return response.status, json.loads(raw) if raw else None
         except urllib.error.HTTPError as error:
@@ -511,9 +721,25 @@ def pilot_account(admin: Admin, pilot: Pilot, organization_id: str) -> dict | No
                       lambda item: item.get("code") == pilot.account_code)
 
 
+def find_capability(admin: Admin, capability: dict) -> dict | None:
+    return admin.find("/capabilities", {"platformCode": PLATFORM},
+                      lambda item: item.get("capabilityCode") == capability["code"])
+
+
+def find_endpoint(admin: Admin, capability: dict) -> dict | None:
+    return admin.find("/endpoints", {"platformCode": PLATFORM},
+                      lambda item: item.get("endpointCode") == capability["endpoint"]["code"])
+
+
+def find_job(admin: Admin, pilot: Pilot, capability: dict, account_id: str) -> dict | None:
+    jobs = admin.require("GET", f"/ingestion-jobs?marketplaceAccountId={account_id}", None, 200)
+    return next((j for j in jobs if j.get("jobCode") == pilot.job_code(capability)), None)
+
+
 def command_setup(args: argparse.Namespace) -> int:
     pilot = pilot_from(args)
-    manifest = load_manifest(pilot)
+    capability = capability_from(args)
+    manifest = load_manifest(pilot, capability)
     client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
     if not (pilot.api_key_file.is_file() and pilot.api_key_file.stat().st_size > 0):
         sys.exit(f"Api-Key: {pilot.api_key_file} does not exist")
@@ -586,52 +812,73 @@ def command_setup(args: argparse.Namespace) -> int:
     else:
         result["scopeGrant"] = "already granted"
 
-    capability = admin.find("/capabilities", {"platformCode": PLATFORM},
-                            lambda item: item.get("capabilityCode") == CAPABILITY_CODE)
-    if capability is None:
-        capability = admin.require("POST", "/capabilities", {
-            "platformCode": PLATFORM, "capabilityCode": CAPABILITY_CODE,
-            "displayName": "Ozon Seller API key connectivity",
-            "description": "Proves the account's key is accepted and shows its roles and expiry "
-                           "(POST /v1/roles; official docs checked 2026-09-28).",
+    registered = find_capability(admin, capability)
+    if registered is None:
+        registered = admin.require("POST", "/capabilities", {
+            "platformCode": PLATFORM, "capabilityCode": capability["code"],
+            "displayName": capability["display"], "description": capability["description"],
             "appliesTo": "MARKETPLACE_ACCOUNT", "readWriteClass": "READ",
             "subscriptionRequired": "NO", "ownerLabel": OWNER_LABEL}, 201)
-        result["capability"] = "registered"
+        result["capability"] = f"{capability['code']} registered"
     else:
-        result["capability"] = "already registered"
+        result["capability"] = f"{capability['code']} already registered"
 
-    endpoint = admin.find("/endpoints", {"platformCode": PLATFORM},
-                          lambda item: item.get("endpointCode") == ENDPOINT_CODE)
+    spec = capability["endpoint"]
+    definition = spec["definition"]
+    endpoint = find_endpoint(admin, capability)
     if endpoint is None:
         endpoint = admin.require("POST", "/endpoints", {
-            "platformCode": PLATFORM, "endpointCode": ENDPOINT_CODE, "apiVersion": "v1",
-            "httpMethod": "POST", "pathTemplate": ROLES_PATH, "capabilityId": capability["id"],
-            "readWriteClass": "READ", "paginationModel": "NONE",
-            "rateLimitPerMinute": ROLES_RATE_LIMIT_PER_MINUTE,
-            "rateLimitNote": "Ozon: at most 50 requests/s per Client-Id across methods without their "
-                             "own limit; /v1/roles states none. Our cap: 10/min. "
-                             "https://docs.ozon.ru/api/seller/ checked 2026-09-28",
+            "platformCode": PLATFORM, "endpointCode": spec["code"], "apiVersion": spec["api_version"],
+            "httpMethod": definition["http_method"], "pathTemplate": definition["path_template"],
+            "capabilityId": registered["id"], "readWriteClass": "READ",
+            "paginationModel": definition["pagination_model"],
+            "rateLimitPerMinute": definition["rate_limit_per_minute"], "rateLimitNote": spec["rate_note"],
             "quotaNote": None, "idempotencySupport": "YES", "lateDataBehavior": None,
-            "freshnessExpectation": "Each call answers the key's current roles and expiry.",
-            "businessKeyNote": None, "schemaVersion": "v1RolesByTokenResponse",
-            "ownerLabel": OWNER_LABEL}, 201)
-        result["endpoint"] = "registered"
+            "freshnessExpectation": spec["freshness"], "businessKeyNote": None,
+            "schemaVersion": spec["schema_version"], "ownerLabel": OWNER_LABEL}, 201)
+        result["endpoint"] = f"{spec['code']} registered"
     else:
-        result["endpoint"] = "already registered"
+        result["endpoint"] = f"{spec['code']} already registered"
 
-    jobs = admin.require("GET", f"/ingestion-jobs?marketplaceAccountId={account['id']}", None, 200)
-    job = next((j for j in jobs if j.get("jobCode") == pilot.job_code), None)
+    job = find_job(admin, pilot, capability, account["id"])
     if job is None:
         job = admin.require("POST", "/ingestion-jobs", {
             "marketplaceAccountId": account["id"], "serviceAccountId": reader["id"],
-            "endpointId": endpoint["id"], "storeId": store["id"], "datasetKind": "UNKNOWN",
-            "jobCode": pilot.job_code, "displayName": "Ozon 试点：API key 连通性"}, 201)
-        result["job"] = "registered"
+            "endpointId": endpoint["id"], "storeId": store["id"],
+            "datasetKind": capability["job"]["dataset"], "jobCode": pilot.job_code(capability),
+            "displayName": capability["job"]["display"]}, 201)
+        result["job"] = f"{pilot.job_code(capability)} registered"
     else:
-        result["job"] = "already registered"
+        result["job"] = f"{pilot.job_code(capability)} already registered"
+
+    mapping = capability["mapping"]
+    if mapping is not None:
+        existing = [m for m in admin.require("GET", "/normalization-mappings", None, 200)
+                    if m.get("platformCode") == PLATFORM and m.get("datasetKind") == mapping["dataset"]]
+        same = next((m for m in existing if m.get("mappingVersion") == mapping["version"]), None)
+        if same is None:
+            live = [m for m in existing if m.get("status") == "ACTIVE"]
+            if live:
+                sys.exit(f"another live {PLATFORM}/{mapping['dataset']} mapping exists "
+                         f"(version {live[0].get('mappingVersion')}); retire it on purpose first")
+            created = admin.require("POST", "/normalization-mappings", {
+                "platformCode": PLATFORM, "datasetKind": mapping["dataset"],
+                "mappingVersion": mapping["version"], "recordPointer": mapping["record_pointer"],
+                "fieldPointers": mapping["fields"], "ownerLabel": OWNER_LABEL}, 201)
+            same = {"id": created["id"], "verificationState": "UNVERIFIED", "version": 0}
+            result["mapping"] = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} registered"
+        else:
+            result["mapping"] = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} already registered"
+        if same.get("verificationState") != "VERIFIED":
+            admin.require("POST", f"/normalization-mappings/{same['id']}/verification", {
+                "evidenceRef": manifest["accountEvidenceRef"],
+                "verifiedSourceTitle": f"Ozon Seller API {spec['definition']['path_template']} answers "
+                                       f"of the pilot account, {manifest['testedAt']}",
+                "expectedVersion": same.get("version", 0)}, 204)
+            result["mapping"] += ", verified against the probe answers"
 
     result.update({"organizationId": org["id"], "marketplaceAccountId": account["id"],
-                   "storeId": store["id"], "capabilityId": capability["id"],
+                   "storeId": store["id"], "capabilityId": registered["id"],
                    "endpointId": endpoint["id"], "jobId": job["id"]})
     print(json.dumps(result, ensure_ascii=False, indent=2))
     print("next: the registry rows are still UNVERIFIED; run the verify step with two Owners")
@@ -738,18 +985,17 @@ def differs(row: dict | None, definition: dict) -> bool:
 
 def command_verify(args: argparse.Namespace) -> int:
     pilot = pilot_from(args)
-    manifest = load_manifest(pilot)
+    capability = capability_from(args)
+    manifest = load_manifest(pilot, capability)
     source = Path(manifest["officialSourceFile"])
     if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != manifest["officialSourceSha256"]:
         sys.exit(f"the official source kept at {source} changed since the probe; run the probe again")
     admin = Admin(args.api, args.operator)
     org = organization(admin, args.organization_code)
     account = pilot_account(admin, pilot, org["id"])
-    capability = admin.find("/capabilities", {"platformCode": PLATFORM},
-                            lambda item: item.get("capabilityCode") == CAPABILITY_CODE)
-    endpoint = admin.find("/endpoints", {"platformCode": PLATFORM},
-                          lambda item: item.get("endpointCode") == ENDPOINT_CODE)
-    if account is None or capability is None or endpoint is None:
+    registered = find_capability(admin, capability)
+    endpoint = find_endpoint(admin, capability)
+    if account is None or registered is None or endpoint is None:
         sys.exit("the pilot account, capability or endpoint is missing; run the setup step first")
 
     print("Two different Owners are needed: one submits the evidence, the other approves it.")
@@ -759,7 +1005,7 @@ def command_verify(args: argparse.Namespace) -> int:
         sys.exit("the reviewing Owner must be a different person from the submitting Owner")
     submitter = Console(args.api, submitter_token)
     reviewer = Console(args.api, reviewer_token)
-    scope = f"/accounts/{account['id']}/capabilities/{capability['id']}"
+    scope = f"/accounts/{account['id']}/capabilities/{registered['id']}"
 
     snapshot = submitter.call("GET", scope, None, 200)["snapshot"]
     profile = snapshot.get("profile")
@@ -784,15 +1030,17 @@ def command_verify(args: argparse.Namespace) -> int:
             print(f"drafted the {definition['header_name']} header")
         else:
             header_ids.append(row["id"])
+    wanted = capability["endpoint"]["definition"]
     row = next((e for e in snapshot.get("endpoints") or [] if e.get("id") == endpoint["id"]), None)
-    if differs(row, ENDPOINT_DEFINITION):
+    if differs(row, wanted):
         if row is None:
-            sys.exit(f"endpoint {ENDPOINT_CODE} is not under capability {CAPABILITY_CODE}")
+            sys.exit(f"endpoint {capability['endpoint']['code']} is not under capability {capability['code']}")
         if row.get("verification_state") == "VERIFIED":
-            sys.exit(f"the verified {ENDPOINT_CODE} endpoint differs; open a registry revision first")
+            sys.exit(f"the verified {capability['endpoint']['code']} endpoint differs; "
+                     "open a registry revision first")
         submitter.call("POST", f"{scope}/draft", {"kind": "ENDPOINT", "id": endpoint["id"],
-                       "expectedVersion": row["version"], "definition": ENDPOINT_DEFINITION}, 201)
-        print(f"drafted the {ENDPOINT_CODE} endpoint")
+                       "expectedVersion": row["version"], "definition": wanted}, 201)
+        print(f"drafted the {capability['endpoint']['code']} endpoint")
 
     digest = submitter.call("GET", scope, None, 200)["digest"]
     evidence = {key: manifest[key] for key in ("officialSourceUrl", "officialSourceSha256",
@@ -806,30 +1054,44 @@ def command_verify(args: argparse.Namespace) -> int:
     reviewer.call("POST", f"/cases/{case['id']}/review",
                   {"expectedVersion": submitted["version"], "approve": True}, 204)
     approved = reviewer.call("GET", f"/cases/{case['id']}", None, 200)
-    print(json.dumps({"case": case["id"], "state": approved.get("state"),
+    print(json.dumps({"capability": capability["code"], "case": case["id"], "state": approved.get("state"),
                       "currentEvidence": approved.get("currentEvidence"),
                       "validUntil": approved.get("validUntil"), "reviewedBy": reviewer_name},
                      ensure_ascii=False, indent=2))
     return 0 if approved.get("state") == "APPROVED" else 1
 
 
-# --- run ----------------------------------------------------------------------------
+# --- run and normalize --------------------------------------------------------------
 
-def command_run(args: argparse.Namespace) -> int:
+def pilot_job(args: argparse.Namespace) -> tuple[Admin, Pilot, dict, dict]:
     pilot = pilot_from(args)
+    capability = capability_from(args)
     admin = Admin(args.api, args.operator)
     org = organization(admin, args.organization_code)
     account = pilot_account(admin, pilot, org["id"])
     if account is None:
         sys.exit("the pilot account is missing; run the setup step first")
-    jobs = admin.require("GET", f"/ingestion-jobs?marketplaceAccountId={account['id']}", None, 200)
-    job = next((j for j in jobs if j.get("jobCode") == pilot.job_code), None)
+    job = find_job(admin, pilot, capability, account["id"])
     if job is None:
-        sys.exit(f"job {pilot.job_code} is missing; run the setup step first")
+        sys.exit(f"job {pilot.job_code(capability)} is missing; run the setup step for this capability first")
+    return admin, pilot, capability, job
+
+
+def command_run(args: argparse.Namespace) -> int:
+    admin, _, _, job = pilot_job(args)
     run = admin.require("POST", f"/ingestion-jobs/{job['id']}/runs", {}, 201)
     outcome = admin.require("POST", f"/ingestion-runs/{run['id']}/execution", {}, 200)
     print(json.dumps(outcome, ensure_ascii=False, indent=2))
     return 0 if outcome.get("run", {}).get("state") == "SUCCEEDED" else 1
+
+
+def command_normalize(args: argparse.Namespace) -> int:
+    admin, _, capability, job = pilot_job(args)
+    if capability["mapping"] is None:
+        sys.exit(f"capability {capability['code']} produces no facts to normalize")
+    summary = admin.require("POST", f"/ingestion-jobs/{job['id']}/normalization-passes", {}, 200)
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0 if summary.get("lastReason") == "NOTHING_TO_PROCESS" else 1
 
 
 # --- CLI ------------------------------------------------------------------------------
@@ -840,6 +1102,8 @@ def main(argv: list[str] | None = None) -> int:
 
     def common(sub: argparse.ArgumentParser, backend: bool = True) -> None:
         sub.add_argument("--pilot", default="pilot", help="short code of the pilot account (default: pilot)")
+        sub.add_argument("--capability", choices=sorted(CAPABILITIES), default="connectivity",
+                         help="which capability to work on (default: connectivity)")
         sub.add_argument("--secret-mount", help="secret mount; default: MARKETOPS_SECRET_MOUNT_DIRECTORY "
                                                 f"or {DEFAULT_SECRET_MOUNT}")
         sub.add_argument("--evidence-root", help=f"evidence directory; default: {DEFAULT_EVIDENCE_ROOT}")
@@ -848,7 +1112,7 @@ def main(argv: list[str] | None = None) -> int:
             sub.add_argument("--operator", default="owner-local", help="operator recorded in the audit")
             sub.add_argument("--organization-code", help="organization code when there is more than one")
 
-    probe = commands.add_parser("probe", help="call /v1/roles once and keep the evidence")
+    probe = commands.add_parser("probe", help="check the key and keep the capability's evidence")
     common(probe, backend=False)
     probe.add_argument("--ca-file", help="trusted root bundle for api-seller.ozon.ru")
     probe.add_argument("--official-source-file", help="the OpenAPI document saved from "
@@ -857,7 +1121,7 @@ def main(argv: list[str] | None = None) -> int:
                        help="record evidence even though the key has roles that can change the store")
     probe.set_defaults(handler=command_probe)
 
-    setup = commands.add_parser("setup", help="register the pilot account, credential and job")
+    setup = commands.add_parser("setup", help="register the account, credential and capability rows")
     common(setup)
     setup.add_argument("--legal-entity-code", help="legal entity code when there is more than one")
     setup.add_argument("--display-name", default="Ozon 试点店铺", help="account and store display name")
@@ -882,9 +1146,13 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--oidc-ca-file", help=f"CA for the issuer; default: {LOCAL_OIDC_CA} when present")
     verify.set_defaults(handler=command_verify)
 
-    run = commands.add_parser("run", help="queue and execute one manual run of the connectivity job")
+    run = commands.add_parser("run", help="queue and execute one manual run of the capability's job")
     common(run)
     run.set_defaults(handler=command_run)
+
+    normalize = commands.add_parser("normalize", help="normalize what the capability's job stored")
+    common(normalize)
+    normalize.set_defaults(handler=command_normalize)
 
     args = parser.parse_args(argv)
     return args.handler(args)

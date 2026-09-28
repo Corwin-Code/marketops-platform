@@ -50,6 +50,16 @@ marketops:
         max-request-bytes: 16384
         max-response-bytes: 8388608
         timeout-millis: 30000
+      # Catalog: product attributes, names and barcodes, paged with last_id
+      # (official OpenAPI, POST /v4/product/info/attributes, limit ≤ 1000).
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v4/product/info/attributes
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
 
 logging:
   pattern:
