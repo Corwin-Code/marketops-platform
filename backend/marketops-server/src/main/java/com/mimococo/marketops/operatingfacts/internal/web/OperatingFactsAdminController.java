@@ -3,6 +3,7 @@ package com.mimococo.marketops.operatingfacts.internal.web;
 import com.mimococo.marketops.adminobservability.audit.OperatorAttribution;
 import com.mimococo.marketops.operatingfacts.internal.application.ImportIntakeService;
 import com.mimococo.marketops.operatingfacts.internal.application.NormalizationDeclarationService;
+import com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner;
 import com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.NormalizationRegistrationRepository;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,13 +38,51 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/admin/metadata")
 class OperatingFactsAdminController {
 
+    /** The most passes one request may run; each pass reads at most one batch of observations. */
+    private static final int MAXIMUM_PASSES = 50;
+
     private final NormalizationDeclarationService declarations;
     private final ImportIntakeService imports;
+    private final NormalizationRunner normalization;
 
     OperatingFactsAdminController(NormalizationDeclarationService declarations,
-                                  ImportIntakeService imports) {
+                                  ImportIntakeService imports,
+                                  NormalizationRunner normalization) {
         this.declarations = declarations;
         this.imports = imports;
+        this.normalization = normalization;
+    }
+
+    /**
+     * Normalize what one acquisition job has stored, now.
+     *
+     * <p>Passes run until the job has nothing left, a pass stops for a reason a
+     * person has to look at, or the pass limit is reached. Each pass is the
+     * runner's own transaction and cursor, exactly as a scheduled pass would
+     * be; the operator only chooses when.
+     */
+    @PostMapping(value = "/ingestion-jobs/{jobId}/normalization-passes",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    NormalizationSummary normalize(@PathVariable UUID jobId,
+                                   @RequestParam(defaultValue = "20") int maximumPasses) {
+        int limit = Math.max(1, Math.min(MAXIMUM_PASSES, maximumPasses));
+        int passes = 0;
+        int examined = 0;
+        int recorded = 0;
+        int rejected = 0;
+        String reason = "NOT_STARTED";
+        while (passes < limit) {
+            NormalizationRunner.PassOutcome outcome = normalization.runOnce(jobId);
+            passes++;
+            examined += outcome.observationsExamined();
+            recorded += outcome.factsRecorded();
+            rejected += outcome.recordsRejected();
+            reason = outcome.reason();
+            if (!"PROCESSED".equals(reason)) {
+                break;
+            }
+        }
+        return new NormalizationSummary(jobId, passes, examined, recorded, rejected, reason);
     }
 
     /** Register a marketplace payload shape. It starts unverified. */
@@ -97,6 +137,17 @@ class OperatingFactsAdminController {
 
     /** What a registration created. */
     record MappingCreated(UUID id) {
+    }
+
+    /**
+     * What a normalization request did.
+     *
+     * @param lastReason why the last pass stopped: {@code NOTHING_TO_PROCESS} when
+     *        everything stored is normalized, {@code PROCESSED} when the pass limit
+     *        was reached first, anything else when a person has to look
+     */
+    record NormalizationSummary(UUID jobId, int passes, int observationsExamined,
+                                int factsRecorded, int recordsRejected, String lastReason) {
     }
 
     record RegisterMappingRequest(

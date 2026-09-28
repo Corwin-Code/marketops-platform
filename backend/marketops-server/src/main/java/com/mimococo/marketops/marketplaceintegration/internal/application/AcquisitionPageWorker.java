@@ -161,9 +161,21 @@ public class AcquisitionPageWorker {
             if ("NONE".equals(spec.paginationModel())) return new Continuation(Kind.END, null);
             JsonNode token = document.at(spec.continuationPointer());
             if (token.isMissingNode()) return new Continuation(Kind.SCHEMA_DRIFT, null);
-            // The declared cursor contract terminates on JSON null. Absence,
-            // an empty string, and a value of another type never imply END.
+            // A cursor terminates on JSON null. The endpoint may also record that
+            // its source ends a listing with an empty token, an empty page of
+            // records, or either; a recorded fact, never a guess. Absence and a
+            // value of another type still never imply END.
             if (token.isNull()) return new Continuation(Kind.END, null);
+            String endRule = spec.continuationEndRule() == null ? "JSON_NULL" : spec.continuationEndRule();
+            if (List.of("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS").contains(endRule)) {
+                JsonNode records = spec.recordsPointer() == null ? null : document.at(spec.recordsPointer());
+                if (records == null || !records.isArray()) return new Continuation(Kind.SCHEMA_DRIFT, null);
+                if (records.isEmpty()) return new Continuation(Kind.END, null);
+            }
+            if (List.of("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS").contains(endRule)
+                    && token.isString() && token.asString().isEmpty()) {
+                return new Continuation(Kind.END, null);
+            }
             if (List.of("OFFSET","PAGE").contains(spec.paginationModel())) {
                 if (!token.isIntegralNumber() || !token.canConvertToLong()
                         || token.longValue() < ("PAGE".equals(spec.paginationModel()) ? 1 : 0)) {
