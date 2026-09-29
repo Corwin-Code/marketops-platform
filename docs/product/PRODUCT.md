@@ -55,11 +55,11 @@
 ## 当前状态与下一步
 
 - 后端：Java/Spring Boot 模块化单体（`analyticsdecision`、`operatingfacts`、`operationsworkflow`、`availabilityrisk`、`advertisingefficiency`、`listingconversion`、`marketplaceintegration`、`aicopilot`、`identityaccess` 等），PostgreSQL + Flyway。
-- 前端：React + TypeScript 控制台，含诊断、优先级队列、建议审阅、命令时间线、可用性、广告、Listing 页面与 OIDC 登录；未使用 UI 组件库。
+- 前端：React + TypeScript + Ant Design 控制台，首页为店铺诊断，另含诊断、优先级队列、建议审阅、命令时间线、可用性、广告、Listing 页面与 OIDC 登录。
 - Slice 001–004 的代码均已在 main（004 经 PR #35 合入）。
-- 未接入真实 Ozon/WB API：调用规格由登记数据驱动，目前无已核验规格，只用合成数据和脚本化响应；生产写入全部关闭。
+- Ozon 只读已接入真实试点店铺（商品目录、价格与价格指数、库存、按天下单件数、商品状态、内容评分），调用规格由登记数据驱动并经两位 Owner 核验；WB 未接入；平台写入全部关闭。
 - LLM 已接入阿里云百炼 `qwen3.8-max`（本地经 `make ai-provider` 登记，见 `docs/development.md`）；AI 仍只做解释与建议。
-- 下一步：接入 Qwen；分阶段接入 Ozon 真实读取 API（WB 后置）；用 Ant Design 按基础组件 → 独立区块 → 全局布局重构 UI；结合真实场景完善 001–004 并发布 1.0。
+- 下一步：按 `docs/product/intelligence-plan.md`（智能化运营方案与接入排期，待 Owner 审批）把 001–004 接上真实数据与 Qwen，并发布 1.0。
 
 ## 待决问题
 
