@@ -263,7 +263,9 @@ public class FactRecorder {
                 canonical.decimal("discountPrice").orElse(null),
                 canonical.triState("promotionActive"),
                 canonical.text("nativePriceKind").orElse(null),
-                competitiveness(canonical));
+                competitiveness(canonical),
+                // Zero is how an unfilled cost field reads, not a cost.
+                canonical.decimal("sellerCostPrice").filter(cost -> cost.signum() > 0).orElse(null));
         return 1;
     }
 

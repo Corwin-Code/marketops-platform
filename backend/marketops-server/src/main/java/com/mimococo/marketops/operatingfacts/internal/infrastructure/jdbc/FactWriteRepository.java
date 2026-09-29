@@ -90,12 +90,18 @@ public class FactWriteRepository {
                 .update();
     }
 
-    /** Record an observed price state. */
+    /**
+     * Record an observed price state.
+     *
+     * @param sellerCostPrice the seller's own unit cost as entered at the marketplace, in
+     *        {@code currencyCode}, or {@code null} when the seller entered none
+     */
     public void insertPrice(UUID id, UUID organizationId, UUID provenanceId,
                             UUID listingVariantId, String sourceFactKey, Instant observedAt,
                             String currencyCode, BigDecimal listPrice, BigDecimal sellingPrice,
                             BigDecimal discountPrice, String promotionActive,
-                            String nativePriceKind, PriceCompetitiveness competitiveness) {
+                            String nativePriceKind, PriceCompetitiveness competitiveness,
+                            BigDecimal sellerCostPrice) {
         jdbc.sql("""
                         INSERT INTO core.listing_price_observation (
                             id, organization_id, provenance_id, platform_listing_variant_id,
@@ -103,14 +109,15 @@ public class FactWriteRepository {
                             selling_price, discount_price, promotion_active, native_price_kind,
                             price_index_native, platform_competitor_min_price,
                             platform_competitor_currency_code, external_competitor_min_price,
-                            external_competitor_currency_code)
+                            external_competitor_currency_code, seller_cost_price)
                         VALUES (:id, :organizationId, :provenanceId, :listingVariantId,
                             :sourceFactKey, :observedAt, :currencyCode, :listPrice,
                             :sellingPrice, :discountPrice, :promotionActive, :nativePriceKind,
                             :indexNative, :platformMinPrice, :platformCurrency,
-                            :externalMinPrice, :externalCurrency)
+                            :externalMinPrice, :externalCurrency, :sellerCostPrice)
                         ON CONFLICT (organization_id, source_fact_key) DO NOTHING
                         """)
+                .param("sellerCostPrice", sellerCostPrice)
                 .param("indexNative", competitiveness.indexNative())
                 .param("platformMinPrice", competitiveness.platformMinPrice())
                 .param("platformCurrency", competitiveness.platformCurrency())

@@ -141,14 +141,21 @@ def inspect_prices(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str 
     with_platform = sum(1 for index in indexes if ((index.get("ozon_index_data") or {}).get("min_price") or 0) > 0)
     with_external = sum(1 for index in indexes
                         if ((index.get("external_index_data") or {}).get("min_price") or 0) > 0)
+    costs = [price.get("net_price") for price in prices]
+    with_cost = sum(1 for cost in costs if isinstance(cost, (int, float)) and cost > 0)
     lines = [f"prices: {len(items)} products, currencies {currencies}, "
              f"price 0/missing {zero_price}, old_price 0/missing {zero_old}, "
              f"marketing_seller_price 0/missing {zero_marketing}",
              f"price index: classes {classes}, competitor price on Ozon for {with_platform}, "
-             f"on other marketplaces for {with_external}"]
+             f"on other marketplaces for {with_external}",
+             f"seller cost price (net_price) entered for {with_cost} of {len(items)}"]
     refusal = None
     if zero_price:
         refusal = f"{zero_price} products have no selling price; review before mapping prices"
+    elif any(cost is not None and (not isinstance(cost, (int, float)) or cost < 0) for cost in costs):
+        refusal = "some net_price values are not non-negative numbers"
+    elif any(isinstance(cost, float) and abs(decimal.Decimal(str(cost)).as_tuple().exponent) > 4 for cost in costs):
+        refusal = "some net_price values have more than 4 decimals, which cannot be stored exactly"
     return lines, refusal
 
 
@@ -492,8 +499,10 @@ CAPABILITIES = {
         # what a buyer finally pays; Ozon's own co-funded discount is not in it.
         # Version 2 adds Ozon's price index (color_index, and the lowest competitor
         # price on Ozon and elsewhere): platform analytics for diagnosis only.
+        # Version 3 adds net_price, the unit cost the seller entered in the cabinet
+        # (the Owner's accepted cost source, 2026-09-29); 0 reads as not entered.
         "mapping": {
-            "dataset": "PRICE", "version": 2, "record_pointer": "/items", "child_pointer": None,
+            "dataset": "PRICE", "version": 3, "record_pointer": "/items", "child_pointer": None,
             "fields": {"nativeListingKey": "/product_id", "nativeVariantKey": "/product_id",
                        "currencyCode": "/price/currency_code", "sellingPrice": "/price/price",
                        "listPrice": "/price/old_price", "discountPrice": "/price/marketing_seller_price",
@@ -501,7 +510,8 @@ CAPABILITIES = {
                        "platformCompetitorMinPrice": "/price_indexes/ozon_index_data/min_price",
                        "platformCompetitorCurrencyCode": "/price_indexes/ozon_index_data/min_price_currency",
                        "externalCompetitorMinPrice": "/price_indexes/external_index_data/min_price",
-                       "externalCompetitorCurrencyCode": "/price_indexes/external_index_data/min_price_currency"},
+                       "externalCompetitorCurrencyCode": "/price_indexes/external_index_data/min_price_currency",
+                       "sellerCostPrice": "/price/net_price"},
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
         "inspect": inspect_prices,
@@ -1745,6 +1755,183 @@ def command_verify(args: argparse.Namespace) -> int:
     return 0 if approved.get("state") == "APPROVED" else 1
 
 
+# --- internal catalogue (plan phase P2) -------------------------------------------------
+
+# The internal catalogue's code rule (core.product.code, core.product_variant.sku_code) and the
+# barcode rule of core.product_barcode, as the backend enforces them.
+INTERNAL_CODE = re.compile(r"^[a-z0-9]([a-z0-9._-]{0,61}[a-z0-9])?$")
+BARCODE_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+# Catalog attributes read for the variant labels, checked on the pilot catalogue 2026-09-29:
+# 9533 carries the seller's size (S, M, XL-2XL ...), 10097 the seller's colour name and 10096
+# Ozon's colour dictionary value, used when the seller named none.
+SIZE_ATTRIBUTE = 9533
+COLOUR_ATTRIBUTE = 10097
+OZON_COLOUR_ATTRIBUTE = 10096
+INTERNAL_CATALOG_PLAN = "internal-catalog-plan.json"
+
+
+def catalog_products(pilot: "Pilot") -> list[dict]:
+    """Every product of the newest catalog probe kept as evidence (/v4/product/info/attributes)."""
+    bundles = sorted(pilot.evidence_dir.glob("catalog-*-bundle.json"))
+    if not bundles:
+        return []
+    bundle = json.loads(bundles[-1].read_text(encoding="utf-8"))
+    found: dict[str, dict] = {}
+    for page in bundle["pages"]:
+        if not page.get("records"):
+            continue
+        answer = json.loads((pilot.evidence_dir / page["file"]).read_text(encoding="utf-8"))
+        for item in answer.get("result") or []:
+            if item.get("offer_id"):
+                found[str(item["offer_id"])] = item
+    return [found[offer] for offer in sorted(found)]
+
+
+def internal_code(text: str) -> str:
+    """An internal code from a marketplace article: lower case, brackets and anything else outside
+    the code alphabet as single hyphens (W-2643-D17(D22)-XL(2XL) -> w-2643-d17-d22-xl-2xl)."""
+    code = text.lower().replace("(", "-").replace(")", "")
+    code = re.sub(r"[^a-z0-9._-]+", "-", code)
+    return re.sub(r"-{2,}", "-", code).strip("-._")
+
+
+def style_code(offers: list[str]) -> str:
+    """The seller's style code: the articles' common prefix, cut back to a hyphen."""
+    prefix = os.path.commonprefix(offers)
+    if "-" in prefix and not (len(offers) > 1 and prefix.endswith("-")):
+        prefix = prefix[:prefix.rfind("-")]
+    return internal_code(prefix)
+
+
+def attribute_text(item: dict, attribute_id: int) -> str | None:
+    for attribute in item.get("attributes") or []:
+        if attribute.get("id") == attribute_id:
+            values = [str(value.get("value")).strip() for value in attribute.get("values") or []
+                      if str(value.get("value") or "").strip()]
+            return " / ".join(values) or None
+    return None
+
+
+def internal_catalog_plan(pilot: "Pilot") -> dict:
+    """One internal product per title (a style in all its sizes and colours), one variant per
+    marketplace article, the marketplace barcode on each variant so the matcher maps by barcode."""
+    groups: dict[str, list[dict]] = {}
+    for item in catalog_products(pilot):
+        groups.setdefault(str(item.get("name") or "").strip(), []).append(item)
+    products, problems = [], []
+    for title, group in sorted(groups.items(), key=lambda entry: min(i["offer_id"] for i in entry[1])):
+        offers = sorted(i["offer_id"] for i in group)
+        variants = [{"offerId": i["offer_id"], "skuCode": internal_code(i["offer_id"]),
+                     "displayName": i["offer_id"],
+                     "colorLabel": attribute_text(i, COLOUR_ATTRIBUTE) or attribute_text(i, OZON_COLOUR_ATTRIBUTE),
+                     "sizeLabel": attribute_text(i, SIZE_ATTRIBUTE),
+                     "barcode": i.get("barcode") or None,
+                     "ozonSku": str(i.get("sku")), "ozonProductId": str(i.get("id"))}
+                    for i in sorted(group, key=lambda i: i["offer_id"])]
+        products.append({"code": style_code(offers), "displayName": title, "variants": variants})
+    codes = [product["code"] for product in products]
+    skus = [variant["skuCode"] for product in products for variant in product["variants"]]
+    barcodes = [variant["barcode"] for product in products for variant in product["variants"] if variant["barcode"]]
+    for product in products:
+        if not INTERNAL_CODE.match(product["code"]):
+            problems.append(f"product code {product['code']!r} breaks the internal code rule")
+        if not product["displayName"] or len(product["displayName"]) > 512:
+            problems.append(f"product {product['code']} has no usable title")
+        for variant in product["variants"]:
+            if not INTERNAL_CODE.match(variant["skuCode"]):
+                problems.append(f"SKU code {variant['skuCode']!r} (from {variant['offerId']}) breaks the code rule")
+            if variant["barcode"] and not BARCODE_VALUE.match(variant["barcode"]):
+                problems.append(f"barcode of {variant['offerId']} breaks the barcode rule")
+    for label, values in (("product code", codes), ("SKU code", skus), ("barcode", barcodes)):
+        repeated = sorted({value for value in values if values.count(value) > 1})
+        if repeated:
+            problems.append(f"repeated {label}s: {', '.join(repeated)}")
+    return {"products": products, "problems": problems}
+
+
+def command_internal_catalog(args: argparse.Namespace) -> int:
+    """Plan (and with --apply create) the internal catalogue behind the pilot's listings."""
+    pilot = pilot_from(args)
+    plan = internal_catalog_plan(pilot)
+    if not plan["products"]:
+        sys.exit("no catalog probe evidence; probe the catalog first")
+    variants = sum(len(product["variants"]) for product in plan["products"])
+    renamed = [variant for product in plan["products"] for variant in product["variants"]
+               if variant["skuCode"] != variant["offerId"].lower()]
+    print(f"internal catalogue: {len(plan['products'])} products, {variants} variants "
+          f"({len(renamed)} SKU codes differ from the lower-cased article)")
+    for product in plan["products"]:
+        labelled = sum(1 for variant in product["variants"] if variant["sizeLabel"] and variant["colorLabel"])
+        print(f"  {product['code']}: {len(product['variants'])} variants ({labelled} with size and colour)")
+    private_write(pilot.evidence_dir / INTERNAL_CATALOG_PLAN,
+                  (json.dumps(plan, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+    print(f"plan kept at {pilot.evidence_dir / INTERNAL_CATALOG_PLAN}")
+    if plan["problems"]:
+        for problem in plan["problems"]:
+            print(f"problem: {problem}")
+        return 1
+    if not args.apply:
+        print("nothing created: review the plan, then run again with --apply (APPLY=1)")
+        return 0
+
+    admin = Admin(args.api, args.operator)
+    org = organization(admin, args.organization_code)
+    created = {"products": 0, "variants": 0, "barcodes": 0}
+    for product in plan["products"]:
+        query = urllib.parse.urlencode({"organizationId": org["id"], "code": product["code"]})
+        status, existing = admin.call("GET", f"/products?{query}")
+        if status == 200:
+            if existing.get("displayName") != product["displayName"]:
+                sys.exit(f"product {product['code']} exists with another name; nothing more created")
+        elif status == 404:
+            existing = admin.require("POST", "/products", {
+                "organizationId": org["id"], "code": product["code"], "displayName": product["displayName"],
+                "brandLabel": None, "categoryLabel": None}, 201)
+            created["products"] += 1
+        else:
+            sys.exit(f"GET /products?{query} -> HTTP {status}")
+        for variant in product["variants"]:
+            query = urllib.parse.urlencode({"organizationId": org["id"], "skuCode": variant["skuCode"]})
+            status, found = admin.call("GET", f"/product-variants?{query}")
+            if status == 200:
+                if found.get("productId") != existing["id"]:
+                    sys.exit(f"SKU {variant['skuCode']} exists under another product; nothing more created")
+            elif status == 404:
+                found = admin.require("POST", f"/products/{existing['id']}/variants", {
+                    "skuCode": variant["skuCode"], "displayName": variant["displayName"],
+                    "colorLabel": variant["colorLabel"], "sizeLabel": variant["sizeLabel"]}, 201)
+                created["variants"] += 1
+            else:
+                sys.exit(f"GET /product-variants?{query} -> HTTP {status}")
+            if not variant["barcode"]:
+                continue
+            barcodes = admin.require("GET", f"/product-variants/{found['id']}/barcodes", None, 200)
+            if any(barcode.get("barcodeValue") == variant["barcode"] and barcode.get("status") == "ACTIVE"
+                   for barcode in barcodes):
+                continue
+            # UNKNOWN: Ozon generates these (OZN...) and states no symbology; guessing one would
+            # be an invented fact.
+            admin.require("POST", f"/product-variants/{found['id']}/barcodes",
+                          {"barcodeType": "UNKNOWN", "barcodeValue": variant["barcode"]}, 201)
+            created["barcodes"] += 1
+    print(f"created {created['products']} products, {created['variants']} variants, "
+          f"{created['barcodes']} barcodes; the rest already existed")
+    # New internal variants can map new listings: the store's master-data policy, when one is in
+    # force, takes them in at once.
+    store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
+    if store is None:
+        print("the pilot store is not registered yet; map the listings once it is")
+        return 0
+    run = admin.require("POST", f"/stores/{store['id']}/master-data-automation/runs", {}, 200).get("result")
+    if run is None:
+        print("no master-data policy in force: in the console, 商品映射与成本 -> 启用自动规则, "
+              "or generate proposals and confirm them there")
+    else:
+        print(f"master-data policy: {run['mappingsConfirmed']} mappings confirmed, {run['costsAdopted']} costs "
+              f"adopted; {run['listingsAwaitingReview']} listings and {run['costsWaiting']} costs wait for review")
+    return 0
+
+
 # --- run and normalize --------------------------------------------------------------
 
 def pilot_job(args: argparse.Namespace) -> tuple[Admin, Pilot, dict, dict]:
@@ -1949,6 +2136,12 @@ def main(argv: list[str] | None = None) -> int:
                          help="retry after fixing the cause, or close the run")
     resolve.add_argument("--reason", required=True, help="what was found; kept in the audit")
     resolve.set_defaults(handler=command_resolve)
+
+    catalogue = commands.add_parser("internal-catalog",
+                                    help="plan, and with --apply create, the internal catalogue of the listings")
+    common(catalogue)
+    catalogue.add_argument("--apply", action="store_true", help="create what the plan lists (default: plan only)")
+    catalogue.set_defaults(handler=command_internal_catalog)
 
     normalize = commands.add_parser("normalize", help="normalize what the capability's job stored")
     common(normalize)

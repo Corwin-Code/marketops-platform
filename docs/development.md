@@ -411,6 +411,68 @@ make ozon-normalize CAPABILITY=queries
 
 搜索词把上面的 `CAPABILITY=queries` 换成 `CAPABILITY=query-details`，步骤相同。
 
+## P2：内部商品、映射与成本
+
+目标：把试点店铺的 Ozon 商品对应到内部商品（SKU），并把卖家在 Ozon 后台填写的成本价（`net_price`）采用为内部采购成本。SKU 诊断、缺货风险、Listing 辅助都要求商品先有映射；利润和保本价要求有成本。
+
+- **成本价入库（V0017）**：价格映射升到 v3，`/v5/product/info/prices` 的 `price.net_price` 存为价格事实的 `seller_cost_price`（与价格同币种）。0 表示卖家没填，不保存。
+- **生成内部商品（`make pilot-catalog`）**：
+  - 读取最近一次商品目录探测，按标题分组，每个款式一个内部商品，每个货号一个变体。
+  - 编码规则：变体编码取货号转小写，括号和其他不合法字符换成连字符（例如 `W-2643-D17(D22)-XL(2XL)` → `w-2643-d17-d22-xl-2xl`）；商品编码取同款货号的公共前缀。
+  - 名称与标签：商品名取 Ozon 标题，变体名取原货号；尺码、颜色取卖家在 Ozon 填写的尺码（属性 9533）和颜色名（10097，缺失时取 10096）。
+  - 条码：Ozon 条码（OZN 开头）登记到变体上，类型记为 `UNKNOWN`，匹配器会按条码自动提议映射。
+  - 默认只生成草案（`~/.marketops-platform/evidence/ozon/<pilot>/internal-catalog-plan.json`），加 `APPLY=1` 才创建，可以重复执行。
+  - 内部商品和变体建好后没有改名、停用接口，所以一定要先核对草案。
+  - 维护接口新增 `GET /api/v1/admin/metadata/products?organizationId=&code=` 和 `GET /api/v1/admin/metadata/product-variants?organizationId=&skuCode=`，用来按编码查找。
+- **控制台"商品映射与成本"**（`/store/master-data`，接口 `GET /api/v1/console/stores/{storeId}/master-data`，需要 `MAPPING_RESOLVE`）：
+  - 每个平台商品显示映射状态（已映射、待确认、冲突、未匹配）、对应的内部商品和匹配方式、Ozon 成本价和当前采购成本。
+  - 没有 `INTERNAL_FACT_INTAKE` 权限的人看不到成本。
+  - "生成映射提议"调用 `POST /api/v1/console/mapping/stores/{storeId}/proposals`。
+  - "确认选中的映射"逐条调用 `POST /api/v1/console/mapping/candidates/{id}/confirmation`：映射从确认时起生效，记录确认人、原因并写审计。
+- **采用 Ozon 成本价**（`POST /api/v1/console/stores/{storeId}/marketplace-costs/adoption`，需要 `INTERNAL_FACT_INTAKE`）：
+  - 为选中的已映射商品各新增一个采购成本版本（`PURCHASE`，诊断引擎只读这一种），金额取最新价格事实里的成本价，从 Ozon 给出该值的时间起生效。
+  - 证据指向那次 Ozon 价格采集（`MARKETPLACE_RAW`），记录采用人和原因，并写审计。
+  - 之前生效的成本在同一时间结束；已经一致的跳过。
+  - 以下情况会拒绝整批：商品未映射、有冲突、成本价不是最新一次采集的，或者当前成本的生效时间晚于这次采集。
+- **主数据自动规则（V0018，Owner 于 2026-09-29 授权）**：
+  - 页面上的"启用自动规则"会写入一条 Owner 预授权策略（`ops.master_data_automation_policy`，每个店铺只有一条生效），需要 `MAPPING_RESOLVE` 和 `INTERNAL_FACT_INTAKE`；启用时立即运行一次。
+  - **映射自动确认**：只处理无歧义的提议，即条码或货号完全一致、置信度 ≥ 0.90、该商品只有唯一提议、内部商品正常，且没有映射或提议给本店其他商品。较早一次生成提议时留下的"找不到对应内部商品"冲突不算阻碍，确认时会一并关闭；其他类型的冲突仍留给人处理。
+  - **成本自动采用**：Ozon 成本价变化时自动采用。以下情况留给人确认，页面上标出原因：与当前成本相比变动超过阈值（默认 ±30%）、成本不低于买家价（含促销价，没有时用售价）、币种变化。
+  - **何时运行**：启用时；商品目录（LISTING）或价格（PRICE）标准化记下新事实之后；`make pilot-catalog APPLY=1` 之后；维护接口 `POST /api/v1/admin/metadata/stores/{storeId}/master-data-automation/runs`。
+  - **留痕**：确认人和采用人记为授权人，审计的操作者为 `master-data-automation`，映射和成本的原因里写明规则编号。
+  - **停用**：用"停用"按钮（`POST /api/v1/console/stores/{storeId}/master-data-automation/retirement`），已完成的映射和成本保持不变。
+- **Owner 决定（2026-09-29）**：
+  - 按上述规则建内部商品，目前 4 个款式（20、9、6、6 个变体），以后新增款式时重新运行 `make pilot-catalog APPLY=1` 补建；
+  - Ozon 成本价就是含所有杂费的单件总成本，数值以接口实际取到的为准；
+  - 映射和成本不逐条手动确认，改为 Owner 一次授权的自动规则，成本变动阈值暂定 ±30%。
+- **生效时间**：SKU 诊断的计算窗口按整点截止，映射和成本要在窗口截止前生效才会被算进去；刚确认的映射和成本，要到下一个整点之后的重算才会出现。
+
+步骤：
+
+```bash
+make ozon-setup CAPABILITY=prices SUPERSEDE=1
+```
+
+```bash
+make ozon-run CAPABILITY=prices
+```
+
+```bash
+make ozon-normalize CAPABILITY=prices
+```
+
+```bash
+make pilot-catalog
+```
+
+核对草案无误后：
+
+```bash
+make pilot-catalog APPLY=1
+```
+
+然后在控制台打开"店铺概览 → 商品映射与成本"，点"启用自动规则"（一次授权，之后自动运行）；也可以手动操作：先点"生成映射提议"，全选后点"确认选中的映射"，再筛选"成本待采用"，全选后点"采用选中的 Ozon 成本价"。
+
 ## 控制台：店铺诊断
 
 控制台首页（导航里的"店铺概览 → 店铺诊断"，路径 `/store/diagnosis`）按商品汇总平台给出的各项信号，用来回答"为什么卖不动"。

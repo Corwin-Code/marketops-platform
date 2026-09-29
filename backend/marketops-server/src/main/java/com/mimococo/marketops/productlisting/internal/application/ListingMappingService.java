@@ -8,6 +8,7 @@ import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.productlisting.ListingIdentity;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
+import com.mimococo.marketops.productlisting.ListingMappingAutomation;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.productlisting.SubjectIdentity;
 import com.mimococo.marketops.productlisting.internal.domain.CandidateState;
@@ -53,9 +54,13 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>Confirmation is attributed and effective-dated. Correcting a mapping ends
  * the previous interval and opens a new one, so a profit figure computed last
  * month still resolves the mapping that was in force then.
+ *
+ * <p>A person confirms, or a person's standing authorization does: under a
+ * store's master-data policy the unambiguous proposals are confirmed in the
+ * authorizing person's name, and every other proposal still waits for review.
  */
 @Service
-public class ListingMappingService implements ListingIdentityDirectory {
+public class ListingMappingService implements ListingIdentityDirectory, ListingMappingAutomation {
 
     static final String CANDIDATE_ENTITY_TYPE = "listing-mapping-candidate";
     static final String MAPPING_ENTITY_TYPE = "listing-mapping";
@@ -166,6 +171,7 @@ public class ListingMappingService implements ListingIdentityDirectory {
      *
      * @return how many listing variants the pass examined
      */
+    @Override
     @Transactional
     public int proposeForStore(UUID storeId, int limit) {
         Instant now = clock.instant();
@@ -190,6 +196,33 @@ public class ListingMappingService implements ListingIdentityDirectory {
                                   UUID candidateId,
                                   String reason,
                                   long expectedVersion) {
+        return confirmAs(actor.userId(), actor.userId().toString(), candidateId, reason, expectedVersion);
+    }
+
+    @Override
+    @Transactional
+    public AutoConfirmation confirmUnambiguous(UUID organizationId, UUID storeId, UUID authorizedByUserId,
+                                               String auditActor, String reason) {
+        int confirmed = 0;
+        for (MappingCandidate candidate : mappings.unambiguousProposals(organizationId, storeId)) {
+            confirmAs(authorizedByUserId, auditActor, candidate.id(), reason, candidate.version());
+            confirmed++;
+        }
+        return new AutoConfirmation(confirmed, mappings.listingsAwaitingReview(organizationId, storeId));
+    }
+
+    /**
+     * Confirm one proposal in the name of the person it is recorded under.
+     *
+     * @param confirmerUserId the person recorded as confirmer: the one who acted, or the one whose
+     *        standing authorization the confirmation rests on
+     * @param auditActor who the audit names as having acted
+     */
+    private ListingMapping confirmAs(UUID confirmerUserId,
+                                     String auditActor,
+                                     UUID candidateId,
+                                     String reason,
+                                     long expectedVersion) {
         MappingCandidate candidate = requireCandidate(candidateId);
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
         ProductVariant target = products.findVariant(candidate.productVariantId())
@@ -200,20 +233,20 @@ public class ListingMappingService implements ListingIdentityDirectory {
 
         Instant now = clock.instant();
         applyVersioned(mappings.decideCandidate(candidateId, CandidateState.CONFIRMED,
-                actor.userId(), now, validReason, expectedVersion));
+                confirmerUserId, now, validReason, expectedVersion));
         mappings.endOpenMapping(candidate.platformListingVariantId(), now, validReason);
 
         ListingMapping mapping = new ListingMapping(
                 idGenerator.newId(), candidate.organizationId(),
                 candidate.platformListingVariantId(), candidate.productVariantId(),
-                candidateId, now, null, MappingStatus.ACTIVE, actor.userId(), validReason,
+                candidateId, now, null, MappingStatus.ACTIVE, confirmerUserId, validReason,
                 now, now, 0L);
         mappings.insertMapping(mapping);
-        mappings.closeConflictsFor(candidate.platformListingVariantId(), actor.userId(), now,
+        mappings.closeConflictsFor(candidate.platformListingVariantId(), confirmerUserId, now,
                 validReason);
 
         auditRecorder.recordChange(new MetadataAuditChange(
-                AuditSourceDomain.PRODUCT_LISTING, actor.userId().toString(),
+                AuditSourceDomain.PRODUCT_LISTING, auditActor,
                 AuditAction.MAPPING_DECISION, MAPPING_ENTITY_TYPE, mapping.id(), null,
                 Map.of(
                         "platformListingVariantId", new FieldChange(

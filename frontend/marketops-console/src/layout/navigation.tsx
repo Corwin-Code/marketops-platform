@@ -14,6 +14,7 @@ import { areas, pages, shortId } from '../i18n/zh/shell';
 export const ROUTES = {
   home: '/',
   storeDiagnosis: '/store/diagnosis',
+  masterData: '/store/master-data',
   pricingQueue: '/pricing/queue',
   subject: '/pricing/subjects/:subjectId',
   review: '/pricing/review',
@@ -68,7 +69,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     key: 'store',
     label: areas.store,
     icon: <DashboardOutlined />,
-    items: [{ path: ROUTES.storeDiagnosis, label: pages.storeDiagnosis }],
+    items: [
+      { path: ROUTES.storeDiagnosis, label: pages.storeDiagnosis },
+      { path: ROUTES.masterData, label: pages.masterData },
+    ],
   },
   {
     key: 'pricing',

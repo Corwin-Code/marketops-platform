@@ -23,7 +23,7 @@ OPERATOR ?= owner-local
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider ozon-probe ozon-setup ozon-reviewer ozon-verify ozon-run ozon-resolve ozon-normalize
+        ai-provider ozon-probe ozon-setup ozon-reviewer ozon-verify ozon-run ozon-resolve ozon-normalize pilot-catalog
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -106,6 +106,10 @@ ozon-resolve: require-repo-root ## Ozon pilot: retry or close CAPABILITY's BLOCK
 	@test -n "$(RESOLUTION)" -a -n "$(REASON)" || { echo "usage: make ozon-resolve CAPABILITY=<c> RESOLUTION=retry|close REASON='<what was found>'" >&2; exit 2; }
 	@python3 scripts/ozon_pilot.py resolve --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
 	  --capability "$(CAPABILITY)" --resolution "$(RESOLUTION)" --reason "$(REASON)"
+
+pilot-catalog: require-repo-root ## Pilot: plan the internal catalogue of the listings; APPLY=1 creates it (backend running)
+	@python3 scripts/ozon_pilot.py internal-catalog --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  $(if $(APPLY),--apply)
 
 ozon-normalize: require-repo-root ## Ozon pilot: normalize what CAPABILITY's job stored (backend running)
 	@python3 scripts/ozon_pilot.py normalize --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \

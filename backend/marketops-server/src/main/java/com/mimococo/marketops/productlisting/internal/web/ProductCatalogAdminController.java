@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,6 +55,18 @@ class ProductCatalogAdminController {
     @GetMapping(value = "/products/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     Product getProduct(@PathVariable UUID id) {
         return catalog.requireProduct(id);
+    }
+
+    /** Find a product by its business code; 404 when the organization has none. */
+    @GetMapping(value = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
+    Product findProduct(@RequestParam UUID organizationId, @RequestParam String code) {
+        return catalog.requireProductByCode(organizationId, code);
+    }
+
+    /** Find a variant by its internal SKU code; 404 when the organization has none. */
+    @GetMapping(value = "/product-variants", produces = MediaType.APPLICATION_JSON_VALUE)
+    ProductVariant findVariant(@RequestParam UUID organizationId, @RequestParam String skuCode) {
+        return catalog.requireVariantBySku(organizationId, skuCode);
     }
 
     /** Create a sellable variant. */

@@ -208,6 +208,20 @@ public class ProductCatalogService {
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
+    /** Load a product by its business code, so tooling can create the catalogue idempotently. */
+    @Transactional(readOnly = true)
+    public Product requireProductByCode(UUID organizationId, String code) {
+        return products.findProductByCode(organizationId, code)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    /** Load a variant by its internal SKU code. */
+    @Transactional(readOnly = true)
+    public ProductVariant requireVariantBySku(UUID organizationId, String skuCode) {
+        return products.findVariantBySku(organizationId, skuCode)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
     /** List a product's variants. */
     @Transactional(readOnly = true)
     public List<ProductVariant> listVariants(UUID productId) {
