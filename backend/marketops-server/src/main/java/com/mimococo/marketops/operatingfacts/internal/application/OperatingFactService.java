@@ -115,6 +115,21 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<com.mimococo.marketops.operatingfacts.SearchTermsSnapshot> topSearchTerms(
+            UUID platformListingVariantId, Instant asOf, int limit) {
+        List<FactQueryRepository.SearchTermRow> rows =
+                facts.topSearchTerms(platformListingVariantId, asOf, Math.clamp(limit, 1, 15));
+        if (rows.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new com.mimococo.marketops.operatingfacts.SearchTermsSnapshot(
+                rows.getFirst().periodStart(), rows.getFirst().periodEnd(),
+                rows.stream().map(row -> new com.mimococo.marketops.operatingfacts.SearchTermsSnapshot.Term(
+                        row.term(), row.searchUsers(), row.orderedUnits())).toList()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf) {
         List<FactQueryRepository.StockRow> rows =
                 facts.latestStockByMode(platformListingVariantId, asOf);

@@ -35,6 +35,18 @@ public interface AiCopilot {
     Optional<AiDiagnosis> invocation(UUID invocationId);
 
     /**
+     * Ask a model to summarize one store: why its listings do not sell and what to do first, from
+     * the newest completed calculation over the window. An unchanged situation reuses the recorded
+     * answer instead of calling the model again.
+     *
+     * @param requestedByUserId who asked, or {@code null} for the weekly scheduled summary
+     */
+    AiDiagnosis explainStore(UUID requestedByUserId, UUID organizationId, UUID storeId, MetricWindow window);
+
+    /** The newest recorded summary of one store for a window, in any state; never calls a model. */
+    Optional<AiDiagnosis> latestStoreInvocation(UUID organizationId, UUID storeId, MetricWindow window);
+
+    /**
      * The most recent recorded explanation of one listing variant for a window,
      * in whatever state it ended, or empty when nobody has asked yet.
      *

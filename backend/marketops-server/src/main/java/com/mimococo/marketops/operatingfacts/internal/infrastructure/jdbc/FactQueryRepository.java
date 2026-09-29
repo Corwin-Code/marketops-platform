@@ -162,6 +162,45 @@ public class FactQueryRepository {
                 .optional();
     }
 
+    /**
+     * The most searched terms of a listing variant's newest search period ending at or before an
+     * instant, the same ranking the store diagnosis shows.
+     */
+    public List<SearchTermRow> topSearchTerms(UUID listingVariantId, Instant asOf, int limit) {
+        return jdbc.sql("""
+                        WITH latest AS (
+                            SELECT period_start, period_end
+                              FROM core.listing_search_term_observation
+                             WHERE platform_listing_variant_id = :listingVariantId AND period_end <= :asOf
+                             ORDER BY period_end DESC, period_start DESC
+                             LIMIT 1
+                        )
+                        SELECT term.search_term, term.search_users, term.ordered_count,
+                               term.period_start, term.period_end
+                          FROM core.listing_search_term_observation AS term
+                          JOIN latest
+                            ON latest.period_start = term.period_start AND latest.period_end = term.period_end
+                         WHERE term.platform_listing_variant_id = :listingVariantId
+                         ORDER BY term.search_users DESC, term.search_term
+                         LIMIT :termLimit
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .param("termLimit", limit)
+                .query((rows, rowNumber) -> new SearchTermRow(
+                        rows.getString("search_term"),
+                        rows.getLong("search_users"),
+                        (Long) rows.getObject("ordered_count"),
+                        rows.getTimestamp("period_start").toInstant(),
+                        rows.getTimestamp("period_end").toInstant()))
+                .list();
+    }
+
+    /** One search term of a period. */
+    public record SearchTermRow(String term, long searchUsers, Long orderedUnits, Instant periodStart,
+                                Instant periodEnd) {
+    }
+
     /** The newest content rating of a listing variant before an exclusive instant. */
     public Optional<ContentRow> latestContentRating(UUID listingVariantId, Instant asOf) {
         return jdbc.sql("""

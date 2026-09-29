@@ -174,6 +174,11 @@ public class UserAuthorizationRepository {
                        AND v.organization_id = i.organization_id
                       JOIN core.platform_listing l ON l.id = v.platform_listing_id
                      WHERE i.id = :resourceId AND i.subject_kind = 'PLATFORM_LISTING_VARIANT'
+                    UNION ALL
+                    SELECT i.organization_id, s.id AS store_id,
+                           NULL::uuid AS product_variant_id FROM ops.ai_invocation i
+                      JOIN core.store s ON s.id = i.subject_id AND s.organization_id = i.organization_id
+                     WHERE i.id = :resourceId AND i.subject_kind = 'STORE'
                     """;
             case WORK_TASK -> """
                     SELECT t.organization_id, r.store_id,

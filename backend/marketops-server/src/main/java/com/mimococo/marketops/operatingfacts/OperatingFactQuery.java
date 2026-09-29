@@ -39,6 +39,12 @@ public interface OperatingFactQuery {
     /** The newest content rating observed before an exclusive instant. */
     Optional<ContentRatingSnapshot> latestContentRating(UUID platformListingVariantId, Instant asOf);
 
+    /**
+     * The most searched terms of the listing's newest search period that ended at or before an
+     * instant, at most {@code limit}; empty when no period did.
+     */
+    Optional<SearchTermsSnapshot> topSearchTerms(UUID platformListingVariantId, Instant asOf, int limit);
+
     /** The most recent observed availability, per fulfillment mode. */
     StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf);
 

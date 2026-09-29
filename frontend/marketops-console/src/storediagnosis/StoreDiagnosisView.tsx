@@ -51,6 +51,9 @@ import {
   useSearchParamsPatch,
 } from '../ui';
 import type { TagColor } from '../ui';
+import { METRIC_LABELS } from '../i18n/zh/pricing';
+import type { ReferenceLabel } from './AiInterpretation';
+import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
 import type { FindingsLoad } from './DiagnosisConclusions';
 import {
   ConclusionsSection,
@@ -283,6 +286,26 @@ export function StoreDiagnosisView({
     }
     return byVariant;
   }, [findingsLoad]);
+  /** Names what an explanation cites: a conclusion or a value, and the product it belongs to. */
+  const referenceLabel = useMemo<ReferenceLabel>(() => {
+    const labels = new Map<string, string>();
+    const products = new Map(
+      (diagnosis?.products ?? []).map((product) => [product.variantId, product]),
+    );
+    for (const [variantId, listing] of findingsByVariant) {
+      const product = products.get(variantId);
+      const name = product?.nativeSkuKey ?? product?.title ?? variantId.slice(0, 8);
+      for (const finding of listing.findings) {
+        labels.set(finding.findingId, text.aiReference(conclusionTitle(finding.ruleCode), name));
+      }
+      for (const [code, metric] of Object.entries(listing.metrics)) {
+        if (metric.valueId !== null) {
+          labels.set(metric.valueId, text.aiReference(METRIC_LABELS[code] ?? code, name));
+        }
+      }
+    }
+    return (id: string) => labels.get(id);
+  }, [diagnosis, findingsByVariant]);
   const rows = useMemo(
     () =>
       (diagnosis?.products ?? []).filter(
@@ -613,6 +636,8 @@ export function StoreDiagnosisView({
         </Row>
       </SectionCard>
 
+      <StoreAiSummary context={context} storeId={storeId} referenceLabel={referenceLabel} />
+
       <ConclusionsSection
         load={findingsLoad}
         withoutStockCount={summary.withoutStock}
@@ -708,6 +733,9 @@ export function StoreDiagnosisView({
       </SectionCard>
 
       <ProductDrawer
+        context={context}
+        storeId={storeId}
+        referenceLabel={referenceLabel}
         product={selected}
         listing={selected === undefined ? undefined : findingsByVariant.get(selected.variantId)}
         searchPeriod={searchPeriod}
@@ -739,11 +767,17 @@ const TERM_COLUMNS: TableColumnsType<DiagnosisSearchTerm> = [
 ];
 
 function ProductDrawer({
+  context,
+  storeId,
+  referenceLabel,
   product,
   listing,
   searchPeriod,
   onClose,
 }: {
+  readonly context: ConsoleRequest;
+  readonly storeId: string;
+  readonly referenceLabel: ReferenceLabel;
   readonly product: DiagnosisProduct | undefined;
   readonly listing: ListingFindings | undefined;
   readonly searchPeriod: DiagnosisSearchPeriod | null;
@@ -762,6 +796,14 @@ function ProductDrawer({
             listing={listing}
             product={product}
             withoutStock={withoutStock(product)}
+          />
+
+          <ListingAiExplanation
+            key={product.variantId}
+            context={context}
+            storeId={storeId}
+            listingVariantId={product.variantId}
+            referenceLabel={referenceLabel}
           />
 
           <Descriptions size="small" column={1} bordered title={text.sectionIdentity}>

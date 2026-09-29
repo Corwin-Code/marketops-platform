@@ -74,6 +74,8 @@ const EVENT_COLORS: Readonly<Record<string, TagColor>> = {
   NORMALIZATION_STOPPED: 'error',
   RECALCULATED: 'processing',
   RECALCULATION_FAILED: 'error',
+  INTERPRETED: 'processing',
+  INTERPRETATION_FAILED: 'error',
 };
 
 /** A UTC window as the dates it covers: one date for a day, a range for a week. */
@@ -199,6 +201,8 @@ function eventDetail(event: CollectionEvent): string {
     parts.push(REASON_LABELS[detail.normalization] ?? detail.normalization);
   }
   if (detail.failureType !== undefined) parts.push(detail.failureType);
+  if (event.kind.startsWith('INTERPRET') && detail.reused === 'true')
+    parts.push(text.summaryReused);
   return parts.join(' · ');
 }
 
@@ -337,7 +341,9 @@ export function DataCollectionView({
       render: (_, event) =>
         event.kind.startsWith('RECALCULAT')
           ? text.calculationWindow(event.targetKey ?? '')
-          : datasetLabel(event.datasetKind),
+          : event.kind.startsWith('INTERPRET')
+            ? text.weeklySummary
+            : datasetLabel(event.datasetKind),
     },
     {
       key: 'event',

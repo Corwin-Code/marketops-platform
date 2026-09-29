@@ -118,17 +118,17 @@ public class AiRepository {
                                int projectionVersion, String promptTemplateCode,
                                int promptVersion, UUID modelId, String subjectKind,
                                UUID subjectId, String windowCode, String requestDigest,
-                               String state, UUID requestedByUserId, Instant startedAt,
-                               String correlationId) {
+                               String contentDigest, String state, UUID requestedByUserId,
+                               Instant startedAt, String correlationId) {
         jdbc.sql("""
                         INSERT INTO ops.ai_invocation (
                             id, organization_id, projection_code, projection_version,
                             prompt_template_code, prompt_version, model_id, subject_kind,
-                            subject_id, window_code, request_digest, state, degraded,
+                            subject_id, window_code, request_digest, content_digest, state, degraded,
                             requested_by_user_id, started_at, correlation_id)
                         VALUES (:id, :organizationId, :projectionCode, :projectionVersion,
                             :promptTemplateCode, :promptVersion, :modelId, :subjectKind,
-                            :subjectId, :windowCode, :requestDigest, :state, false,
+                            :subjectId, :windowCode, :requestDigest, :contentDigest, :state, false,
                             :requestedByUserId, :startedAt, :correlationId)
                         """)
                 .param("id", id)
@@ -142,6 +142,7 @@ public class AiRepository {
                 .param("subjectId", subjectId)
                 .param("windowCode", windowCode)
                 .param("requestDigest", requestDigest)
+                .param("contentDigest", contentDigest)
                 .param("state", state)
                 .param("requestedByUserId", requestedByUserId)
                 .param("startedAt", Timestamp.from(startedAt))
@@ -252,7 +253,7 @@ public class AiRepository {
      * in any state. Served by the subject index (kind, id, started_at desc).
      */
     public Optional<UUID> latestSubjectInvocation(UUID organizationId, String projectionCode,
-                                                  String subjectKind, UUID subjectId,
+                                                  int projectionVersion, String subjectKind, UUID subjectId,
                                                   String windowCode) {
         return jdbc.sql("""
                         SELECT id FROM ops.ai_invocation
@@ -260,6 +261,7 @@ public class AiRepository {
                            AND subject_id = :subjectId
                            AND organization_id = :organizationId
                            AND projection_code = :projectionCode
+                           AND projection_version = :projectionVersion
                            AND window_code = :windowCode
                          ORDER BY started_at DESC, id DESC
                          LIMIT 1
@@ -268,6 +270,67 @@ public class AiRepository {
                 .param("subjectId", subjectId)
                 .param("organizationId", organizationId)
                 .param("projectionCode", projectionCode)
+                .param("projectionVersion", projectionVersion)
+                .param("windowCode", windowCode)
+                .query(UUID.class)
+                .optional();
+    }
+
+    /**
+     * The newest invocation with a usable answer (all or some claims accepted) that asked the same
+     * question about the same content: the same projection and prompt versions, subject and
+     * window, and a projection whose content digest is equal. Its answer can be reused instead of
+     * calling the model again; rejected claims stay hidden either way.
+     */
+    public Optional<UUID> reusableInvocation(UUID organizationId, String projectionCode, int projectionVersion,
+                                             String promptTemplateCode, int promptVersion, String subjectKind,
+                                             UUID subjectId, String windowCode, String contentDigest) {
+        return jdbc.sql("""
+                        SELECT id FROM ops.ai_invocation
+                         WHERE subject_kind = :subjectKind AND subject_id = :subjectId
+                           AND projection_code = :projectionCode AND projection_version = :projectionVersion
+                           AND window_code = :windowCode AND content_digest = :contentDigest
+                           AND state IN ('SUCCEEDED', 'PARTIAL_OUTPUT_REJECTED')
+                           AND organization_id = :organizationId
+                           AND prompt_template_code = :promptTemplateCode AND prompt_version = :promptVersion
+                         ORDER BY started_at DESC, id DESC
+                         LIMIT 1
+                        """)
+                .param("subjectKind", subjectKind)
+                .param("subjectId", subjectId)
+                .param("projectionCode", projectionCode)
+                .param("projectionVersion", projectionVersion)
+                .param("windowCode", windowCode)
+                .param("contentDigest", contentDigest)
+                .param("organizationId", organizationId)
+                .param("promptTemplateCode", promptTemplateCode)
+                .param("promptVersion", promptVersion)
+                .query(UUID.class)
+                .optional();
+    }
+
+    /**
+     * An invocation of the same projection about the same subject and window that is still waiting
+     * for its model and has not passed its deadline; a second request joins it instead of asking
+     * again.
+     */
+    public Optional<UUID> inFlightInvocation(UUID organizationId, String projectionCode, int projectionVersion,
+                                             String subjectKind, UUID subjectId, String windowCode) {
+        return jdbc.sql("""
+                        SELECT id FROM ops.ai_invocation
+                         WHERE subject_kind = :subjectKind AND subject_id = :subjectId
+                           AND organization_id = :organizationId
+                           AND projection_code = :projectionCode AND projection_version = :projectionVersion
+                           AND window_code = :windowCode
+                           AND state = 'DISPATCHED' AND execution_deadline_at > clock_timestamp()
+                         ORDER BY started_at DESC, id DESC
+                         LIMIT 1
+                        """)
+                .param("subjectKind", subjectKind)
+                .param("subjectId", subjectId)
+                .param("organizationId", organizationId)
+                .param("projectionCode", projectionCode)
+                .param("projectionVersion", projectionVersion)
                 .param("windowCode", windowCode)
                 .query(UUID.class)
                 .optional();

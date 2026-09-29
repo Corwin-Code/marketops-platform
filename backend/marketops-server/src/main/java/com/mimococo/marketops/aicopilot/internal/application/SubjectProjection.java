@@ -55,15 +55,47 @@ public record SubjectProjection(
         return Digest.ofComponents(components);
     }
 
+    /**
+     * The digest of what the model was shown without its volatile fields: equal whenever nothing
+     * about the subject changed, so a recorded answer can be reused instead of asking again.
+     *
+     * <p>Value and finding references and the calculation period change on every recalculation
+     * even when every number stays the same, because a new period mints new identifiers. They are
+     * left out; everything a statement could say is kept.
+     */
+    public String contentDigest() {
+        List<String> components = new ArrayList<>();
+        fields.forEach(field -> {
+            if (!volatileField(field.path())) {
+                components.add(field.path());
+                components.add(field.value());
+            }
+        });
+        return Digest.ofComponents(components);
+    }
+
+    /** Whether a field changes with every recalculation even when the situation does not. */
+    static boolean volatileField(String path) {
+        String last = path.substring(path.lastIndexOf('.') + 1);
+        return last.endsWith("Ref") || "window.periodStart".equals(path) || "window.periodEnd".equals(path);
+    }
+
     /** The distinct field paths this projection carries. */
     public Set<String> paths() {
         return fields.stream().map(Field::path).collect(java.util.stream.Collectors.toSet());
     }
 
+    /** Fields that start a repeated group; a blank line before each keeps the groups apart. */
+    private static final Set<String> GROUP_STARTS = Set.of("conclusions.code", "listings.listingRef",
+            "listing.memberRef", "findings.findingRef", "searchTerms.term");
+
     /** Render the projection as the lines a prompt carries. */
     public String render() {
         StringBuilder rendered = new StringBuilder();
         for (Field field : fields) {
+            if (GROUP_STARTS.contains(field.path()) && !rendered.isEmpty()) {
+                rendered.append('\n');
+            }
             rendered.append(field.path()).append('=').append(field.value()).append('\n');
         }
         return rendered.toString();
