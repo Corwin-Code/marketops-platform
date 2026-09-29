@@ -1602,6 +1602,29 @@ def command_reviewer(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_grant(args: argparse.Namespace) -> int:
+    """Grant one person one action over the whole organization, e.g. an action a new release adds.
+
+    The local Owner was granted every Owner action when the workstation was provisioned; an action
+    added later (DATA_COLLECTION_MANAGE in V0020) needs its grant too. Asking again changes nothing.
+    """
+    admin = Admin(args.api, args.operator)
+    org = organization(admin, args.organization_code)
+    users = admin.require("GET", f"/users?organizationId={org['id']}&limit=200", None, 200)
+    user = only([item for item in users if item.get("loginHint") == args.login_hint], "user", None)
+    grants = admin.require("GET", f"/users/{user['id']}/scope-grants", None, 200)
+    if any(grant.get("action") == args.action and grant.get("resourceType") == "ORGANIZATION"
+           and grant.get("resourceId") == org["id"] and grant.get("status") == "ACTIVE" for grant in grants):
+        print(json.dumps({"userId": user["id"], "loginHint": args.login_hint, "action": args.action,
+                          "grant": "already granted"}, ensure_ascii=False, indent=2))
+        return 0
+    grant = admin.require("POST", f"/users/{user['id']}/scope-grants", {
+        "action": args.action, "resourceType": "ORGANIZATION", "resourceId": org["id"]}, 201)
+    print(json.dumps({"userId": user["id"], "loginHint": args.login_hint, "action": args.action,
+                      "grantId": grant.get("id")}, ensure_ascii=False, indent=2))
+    return 0
+
+
 # --- Console API ------------------------------------------------------------------
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -2128,6 +2151,14 @@ def main(argv: list[str] | None = None) -> int:
     reviewer.add_argument("--login-hint", default="owner-reviewer", help="login hint for the profile")
     reviewer.add_argument("--display-name", default="Local Owner (reviewer)", help="profile display name")
     reviewer.set_defaults(handler=command_reviewer)
+
+    grant = commands.add_parser("grant", help="grant one person one action over the organization")
+    grant.add_argument("--api", default="http://127.0.0.1:8080", help="backend base URL")
+    grant.add_argument("--operator", default="owner-local", help="operator recorded in the audit")
+    grant.add_argument("--organization-code", help="organization code when there is more than one")
+    grant.add_argument("--login-hint", default="owner", help="login hint of the person (default: owner)")
+    grant.add_argument("--action", required=True, help="the action code, e.g. DATA_COLLECTION_MANAGE")
+    grant.set_defaults(handler=command_grant)
 
     verify = commands.add_parser("verify", help="submit and approve the probe evidence with two Owners")
     common(verify)

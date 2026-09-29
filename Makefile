@@ -23,7 +23,7 @@ OPERATOR ?= owner-local
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider ozon-probe ozon-setup ozon-reviewer ozon-verify ozon-run ozon-resolve ozon-normalize pilot-catalog
+        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify ozon-run ozon-resolve ozon-normalize pilot-catalog
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -93,6 +93,11 @@ ozon-setup: require-repo-root ## Ozon pilot: register account, credential and CA
 ozon-reviewer: require-repo-root ## Ozon pilot: make Keycloak user SUBJECT a reviewing Owner (local)
 	@test -n "$(SUBJECT)" || { echo 'usage: make ozon-reviewer SUBJECT=<keycloak-user-id>' >&2; exit 2; }
 	@python3 scripts/ozon_pilot.py reviewer --api "$(API)" --operator "$(OPERATOR)" --subject "$(SUBJECT)"
+
+owner-grant: require-repo-root ## Local: grant the person LOGIN (default owner) the action ACTION over the organization
+	@test -n "$(ACTION)" || { echo 'usage: make owner-grant ACTION=<action code> [LOGIN=owner]' >&2; exit 2; }
+	@python3 scripts/ozon_pilot.py grant --api "$(API)" --operator "$(OPERATOR)" --login-hint "$(or $(LOGIN),owner)" \
+	  --action "$(ACTION)"
 
 ozon-verify: require-repo-root ## Ozon pilot: submit and approve CAPABILITY's probe evidence as two Owners
 	@python3 scripts/ozon_pilot.py verify --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \

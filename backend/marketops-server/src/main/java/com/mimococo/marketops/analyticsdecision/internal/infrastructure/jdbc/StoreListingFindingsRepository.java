@@ -51,6 +51,22 @@ public class StoreListingFindingsRepository {
                 .optional();
     }
 
+    /** Where the store's newest completed run over the window ended, whoever started it. */
+    public Optional<Instant> latestPeriodEnd(UUID storeId, String windowCode) {
+        Timestamp end = jdbc.sql("""
+                        SELECT max(period_end)
+                          FROM mart.calculation_run
+                         WHERE scope_kind = 'STORE' AND store_ref_id = :storeId
+                           AND window_code = :windowCode AND state = 'SUCCEEDED'
+                        """)
+                .param("storeId", storeId)
+                .param("windowCode", windowCode)
+                .query(Timestamp.class)
+                .optional()
+                .orElse(null);
+        return Optional.ofNullable(end).map(Timestamp::toInstant);
+    }
+
     /** Every finding that stands after the run and triggered, in rule order. */
     public List<FindingRow> triggeredFindings(RunRow run, String windowCode) {
         return jdbc.sql("""

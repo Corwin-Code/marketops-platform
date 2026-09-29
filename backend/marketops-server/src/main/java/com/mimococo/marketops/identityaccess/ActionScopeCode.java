@@ -161,7 +161,15 @@ public enum ActionScopeCode {
     LISTING_CONTAINMENT_CONSENT(true),
 
     /** Adopt, exit and release simple promotion engagements on the governed manual path. */
-    LISTING_PROMOTION_MANAGE(true);
+    LISTING_PROMOTION_MANAGE(true),
+
+    /**
+     * Put scheduled read-only marketplace collection for a store in force, or retire it.
+     *
+     * <p>Step-up is required because from then on the platform calls the marketplace without
+     * anybody asking each time.
+     */
+    DATA_COLLECTION_MANAGE(true);
 
     private final boolean stepUpRequired;
 

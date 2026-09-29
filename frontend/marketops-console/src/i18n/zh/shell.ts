@@ -26,6 +26,7 @@ export const areas = {
 export const pages = {
   storeDiagnosis: '店铺诊断',
   masterData: '商品映射与成本',
+  dataCollection: '数据采集',
   pricingQueue: '今日工作',
   pricingExport: '诊断导出',
   subject: '商品诊断',
@@ -52,6 +53,8 @@ export const pageDescriptions = {
     '按商品汇总平台给出的可见性、库存、价格竞争力、内容评分和近期下单件数，找出卖不动的原因。',
   masterData:
     '把平台商品对应到内部商品，并采用卖家在 Ozon 填写的成本价作为采购成本；映射和成本是 SKU 诊断、缺货风险和利润计算的前提。',
+  dataCollection:
+    '按 Owner 的一次授权，定时读取 Ozon 只读数据并在采集后重算诊断；这里查看每项数据最近一次读到的时间、下一次计划和执行记录。',
   pricingQueue: '按优先级排列今天最值得处理的商品，点击一行查看诊断证据与调价建议。',
   pricingExport: '导出本店铺的诊断数据文件，用于离线复核或存档。',
   subject: '查看该商品的指标证据、诊断结论与待审核的调价建议。',

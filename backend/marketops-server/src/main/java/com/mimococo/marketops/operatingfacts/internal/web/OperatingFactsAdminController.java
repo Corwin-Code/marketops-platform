@@ -2,9 +2,9 @@ package com.mimococo.marketops.operatingfacts.internal.web;
 
 import com.mimococo.marketops.adminobservability.audit.OperatorAttribution;
 import com.mimococo.marketops.operatingfacts.internal.application.ImportIntakeService;
-import com.mimococo.marketops.operatingfacts.internal.application.NormalizationDeclarationService;
+import com.mimococo.marketops.operatingfacts.internal.application.JobNormalizationService;
 import com.mimococo.marketops.operatingfacts.internal.application.MasterDataAutomationService;
-import com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner;
+import com.mimococo.marketops.operatingfacts.internal.application.NormalizationDeclarationService;
 import com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.NormalizationRegistrationRepository;
 import jakarta.validation.Valid;
@@ -43,26 +43,18 @@ class OperatingFactsAdminController {
     /** The most passes one request may run; each pass reads at most one batch of observations. */
     private static final int MAXIMUM_PASSES = 50;
 
-    /** The datasets whose new facts can change a store's mappings or costs. */
-    private static final java.util.Set<String> MASTER_DATA_DATASETS = java.util.Set.of("LISTING", "PRICE");
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OperatingFactsAdminController.class);
-
     private final NormalizationDeclarationService declarations;
     private final ImportIntakeService imports;
-    private final NormalizationRunner normalization;
-    private final com.mimococo.marketops.marketplaceintegration.IngestionJobDirectory jobs;
+    private final JobNormalizationService normalization;
     private final MasterDataAutomationService automation;
 
     OperatingFactsAdminController(NormalizationDeclarationService declarations,
                                   ImportIntakeService imports,
-                                  NormalizationRunner normalization,
-                                  com.mimococo.marketops.marketplaceintegration.IngestionJobDirectory jobs,
+                                  JobNormalizationService normalization,
                                   MasterDataAutomationService automation) {
         this.declarations = declarations;
         this.imports = imports;
         this.normalization = normalization;
-        this.jobs = jobs;
         this.automation = automation;
     }
 
@@ -79,41 +71,10 @@ class OperatingFactsAdminController {
     NormalizationSummary normalize(@PathVariable UUID jobId,
                                    @RequestParam(defaultValue = "20") int maximumPasses) {
         int limit = Math.max(1, Math.min(MAXIMUM_PASSES, maximumPasses));
-        int passes = 0;
-        int examined = 0;
-        int recorded = 0;
-        int rejected = 0;
-        String reason = "NOT_STARTED";
-        while (passes < limit) {
-            NormalizationRunner.PassOutcome outcome = normalization.runOnce(jobId);
-            passes++;
-            examined += outcome.observationsExamined();
-            recorded += outcome.factsRecorded();
-            rejected += outcome.recordsRejected();
-            reason = outcome.reason();
-            if (!"PROCESSED".equals(reason)) {
-                break;
-            }
-        }
-        // New catalogue or price facts can mean new listings to map or changed seller costs: the
-        // store's master-data policy, when one is in force, takes them in at once.
-        MasterDataAutomationService.RunResult automated = null;
-        boolean automationFailed = false;
-        var job = recorded > 0 ? jobs.job(jobId) : java.util.Optional.<com.mimococo.marketops.marketplaceintegration.IngestionJobView>empty();
-        if (job.isPresent() && job.get().storeId() != null
-                && MASTER_DATA_DATASETS.contains(job.get().datasetKind())) {
-            try {
-                automated = automation.runForStore(job.get().storeId()).orElse(null);
-            } catch (RuntimeException failed) {
-                // The facts are recorded either way; the policy runs again next time.
-                automationFailed = true;
-                log.atWarn().addKeyValue("event", "master_data_automation_failed")
-                        .addKeyValue("storeId", job.get().storeId())
-                        .log("The store's master-data policy did not run after normalization");
-            }
-        }
-        return new NormalizationSummary(jobId, passes, examined, recorded, rejected, reason, automated,
-                automationFailed);
+        JobNormalizationService.Result result = normalization.normalize(jobId, limit);
+        return new NormalizationSummary(jobId, result.passes(), result.observationsExamined(),
+                result.factsRecorded(), result.recordsRejected(), result.lastReason(), result.automated(),
+                result.automationFailed());
     }
 
     /** Run a store's master-data policy now, e.g. after its internal catalogue changed. */
