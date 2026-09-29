@@ -45,6 +45,13 @@ export const REQUEST_TIMEOUT_MS = 10_000;
  */
 export const AI_REQUEST_TIMEOUT_MS = 70_000;
 
+/**
+ * How long a store recalculation may take: every listing's metrics and rules
+ * are computed in one transaction, which a freshly started backend needs tens
+ * of seconds for.
+ */
+export const CALCULATION_REQUEST_TIMEOUT_MS = 60_000;
+
 /** Header carrying the correlation identifier in both directions. */
 export const CORRELATION_HEADER = 'X-Correlation-ID';
 

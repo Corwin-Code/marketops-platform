@@ -46,6 +46,13 @@ public class DiagnosisEngine {
     private static final String LOW_CONVERSION = "LOW_CONVERSION";
     private static final String ADVERTISING_INEFFICIENT = "ADVERTISING_INEFFICIENT";
     private static final String PRICE_BELOW_MINIMUM = "PRICE_BELOW_MINIMUM";
+    private static final String LISTING_NOT_SELLABLE = "LISTING_NOT_SELLABLE";
+    private static final String DEMAND_NOT_CONVERTING = "DEMAND_NOT_CONVERTING";
+    private static final String PRICE_GAP_REDUCIBLE = "PRICE_GAP_REDUCIBLE";
+    private static final String PRICE_GAP_PARTIAL = "PRICE_GAP_PARTIAL";
+    private static final String PRICE_GAP_STRUCTURAL = "PRICE_GAP_STRUCTURAL";
+    private static final String LOW_SEARCH_EXPOSURE = "LOW_SEARCH_EXPOSURE";
+    private static final String CONTENT_BELOW_TARGET = "CONTENT_BELOW_TARGET";
 
     /** The version of every rule this release evaluates. */
     public static final int RULE_VERSION = 1;
@@ -86,7 +93,184 @@ public class DiagnosisEngine {
                 ADVERTISING_INEFFICIENT));
         outcomes.add(guarded(blocking, () -> evaluatePriceBelowMinimum(metrics),
                 PRICE_BELOW_MINIMUM));
+
+        // Listing rules describe a listing nobody buys, so they cannot wait for realized
+        // profit data: a block on that data does not decline them.
+        outcomes.add(evaluateNotSellable(metrics));
+        outcomes.add(evaluateDemandNotConverting(metrics));
+        outcomes.addAll(evaluatePriceGap(metrics));
+        outcomes.add(evaluateLowSearchExposure(metrics));
+        outcomes.add(evaluateContentBelowTarget(metrics));
         return List.copyOf(outcomes);
+    }
+
+    // -----------------------------------------------------------------------
+    // Listing rules (version 1, independent of realized profit)
+    // -----------------------------------------------------------------------
+
+    private RuleOutcome evaluateNotSellable(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric sellable = metrics.get(MetricCode.LISTING_SELLABLE);
+        Optional<RuleOutcome> unavailable = requireAvailable(LISTING_NOT_SELLABLE, sellable);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        Map<String, String> detail = detail("listingSellable", sellable.numericValue().toPlainString());
+        return sellable.numericValue().signum() == 0
+                ? RuleOutcome.triggered(LISTING_NOT_SELLABLE, DiagnosisFindingView.Severity.CRITICAL,
+                        detail, List.of(sellable))
+                : RuleOutcome.clear(LISTING_NOT_SELLABLE, detail, List.of(sellable));
+    }
+
+    /**
+     * Buyers look for an in-stock listing and nobody orders it: the core
+     * question the store diagnosis answers. The other listing rules say why.
+     */
+    private RuleOutcome evaluateDemandNotConverting(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric search = metrics.get(MetricCode.SEARCH_USERS);
+        ComputedMetric ordered = metrics.get(MetricCode.ORDERED_UNITS);
+        ComputedMetric available = metrics.get(MetricCode.PLATFORM_AVAILABLE_UNITS);
+        Optional<RuleOutcome> unavailable = requireAvailable(DEMAND_NOT_CONVERTING, search, ordered, available);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        Long floor = properties.getThresholds().getDemandSearchUsersFloor();
+        if (floor == null) {
+            return RuleOutcome.declined(DEMAND_NOT_CONVERTING, THRESHOLD_NOT_CONFIGURED, Map.of());
+        }
+        Map<String, String> detail = detail(
+                "searchUsers", search.numericValue().toPlainString(),
+                "orderedUnits", ordered.numericValue().toPlainString(),
+                "platformAvailableUnits", available.numericValue().toPlainString(),
+                "demandSearchUsersFloor", Long.toString(floor));
+        List<ComputedMetric> read = List.of(search, ordered, available);
+        boolean demand = search.numericValue().compareTo(BigDecimal.valueOf(floor)) >= 0;
+        return demand && available.numericValue().signum() > 0 && ordered.numericValue().signum() == 0
+                ? RuleOutcome.triggered(DEMAND_NOT_CONVERTING, DiagnosisFindingView.Severity.WARNING, detail, read)
+                : RuleOutcome.clear(DEMAND_NOT_CONVERTING, detail, read);
+    }
+
+    /**
+     * Whether a buyer price above the lowest competitor price can be closed:
+     * profitably at the minimum margin (reducible), only below it (partial), or
+     * not without a loss (structural). Exactly one triggers when there is a gap.
+     * An undefined break-even or target price means no price reaches it, so it
+     * counts as above any competitor price. The competitor price is grade C
+     * platform analytics: this diagnoses, it never authorizes a price change.
+     */
+    private List<RuleOutcome> evaluatePriceGap(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric price = metrics.get(MetricCode.OBSERVED_SELLING_PRICE);
+        ComputedMetric competitor = metrics.get(MetricCode.PLATFORM_COMPETITOR_MIN_PRICE);
+        ComputedMetric breakEven = metrics.get(MetricCode.PROJECTED_BREAK_EVEN_PRICE);
+        ComputedMetric target = metrics.get(MetricCode.TARGET_MARGIN_PRICE);
+        BigDecimal marginRate = properties.getThresholds().getMinimumUnitMarginRate();
+        Optional<RuleOutcome> reducibleMissing = requireAvailable(PRICE_GAP_REDUCIBLE, price, competitor)
+                .or(() -> requirePresent(PRICE_GAP_REDUCIBLE, target));
+        Optional<RuleOutcome> partialMissing = requireAvailable(PRICE_GAP_PARTIAL, price, competitor)
+                .or(() -> requirePresent(PRICE_GAP_PARTIAL, breakEven, target));
+        Optional<RuleOutcome> structuralMissing = requireAvailable(PRICE_GAP_STRUCTURAL, price, competitor)
+                .or(() -> requirePresent(PRICE_GAP_STRUCTURAL, breakEven));
+        if (marginRate == null) {
+            reducibleMissing = Optional.of(RuleOutcome.declined(PRICE_GAP_REDUCIBLE, THRESHOLD_NOT_CONFIGURED,
+                    Map.of()));
+            partialMissing = Optional.of(RuleOutcome.declined(PRICE_GAP_PARTIAL, THRESHOLD_NOT_CONFIGURED,
+                    Map.of()));
+        }
+        Map<String, String> detail = new LinkedHashMap<>();
+        if (price != null && price.valueState() == ValueState.AVAILABLE) {
+            detail.put("buyerPrice", price.numericValue().toPlainString());
+            detail.put("currencyCode", String.valueOf(price.currencyCode()));
+        }
+        if (competitor != null && competitor.valueState() == ValueState.AVAILABLE) {
+            detail.put("platformCompetitorMinPrice", competitor.numericValue().toPlainString());
+        }
+        if (breakEven != null && breakEven.valueState() == ValueState.AVAILABLE) {
+            detail.put("breakEvenPrice", breakEven.numericValue().toPlainString());
+        }
+        if (target != null && target.valueState() == ValueState.AVAILABLE) {
+            detail.put("targetMarginPrice", target.numericValue().toPlainString());
+        }
+        if (marginRate != null) {
+            detail.put("minimumUnitMarginRate", marginRate.toPlainString());
+        }
+        boolean comparable = price != null && competitor != null
+                && price.valueState() == ValueState.AVAILABLE && competitor.valueState() == ValueState.AVAILABLE
+                && java.util.Objects.equals(price.currencyCode(), competitor.currencyCode());
+        boolean gap = comparable && price.numericValue().compareTo(competitor.numericValue()) > 0;
+        if (comparable && competitor.numericValue().signum() > 0) {
+            detail.put("premiumOverCompetitor", price.numericValue()
+                    .divide(competitor.numericValue(), 4, java.math.RoundingMode.HALF_UP)
+                    .subtract(BigDecimal.ONE).toPlainString());
+        }
+        Map<String, String> shared = Map.copyOf(detail);
+        List<RuleOutcome> outcomes = new ArrayList<>();
+        outcomes.add(reducibleMissing.orElseGet(() -> {
+            boolean reducible = gap && atMost(target, competitor.numericValue());
+            return reducible
+                    ? RuleOutcome.triggered(PRICE_GAP_REDUCIBLE, DiagnosisFindingView.Severity.WARNING, shared,
+                            List.of(price, competitor, target))
+                    : RuleOutcome.clear(PRICE_GAP_REDUCIBLE, shared, List.of(price, competitor, target));
+        }));
+        outcomes.add(partialMissing.orElseGet(() -> {
+            boolean partial = gap && atMost(breakEven, competitor.numericValue())
+                    && !atMost(target, competitor.numericValue());
+            return partial
+                    ? RuleOutcome.triggered(PRICE_GAP_PARTIAL, DiagnosisFindingView.Severity.WARNING, shared,
+                            List.of(price, competitor, breakEven, target))
+                    : RuleOutcome.clear(PRICE_GAP_PARTIAL, shared, List.of(price, competitor, breakEven, target));
+        }));
+        outcomes.add(structuralMissing.orElseGet(() -> {
+            boolean structural = gap && !atMost(breakEven, competitor.numericValue());
+            return structural
+                    ? RuleOutcome.triggered(PRICE_GAP_STRUCTURAL, DiagnosisFindingView.Severity.WARNING, shared,
+                            List.of(price, competitor, breakEven))
+                    : RuleOutcome.clear(PRICE_GAP_STRUCTURAL, shared, List.of(price, competitor, breakEven));
+        }));
+        return outcomes;
+    }
+
+    /** An in-stock, sellable listing that almost nobody finds in search. */
+    private RuleOutcome evaluateLowSearchExposure(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric search = metrics.get(MetricCode.SEARCH_USERS);
+        ComputedMetric available = metrics.get(MetricCode.PLATFORM_AVAILABLE_UNITS);
+        Optional<RuleOutcome> unavailable = requireAvailable(LOW_SEARCH_EXPOSURE, search, available);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        Long ceiling = properties.getThresholds().getLowExposureSearchUsers();
+        if (ceiling == null) {
+            return RuleOutcome.declined(LOW_SEARCH_EXPOSURE, THRESHOLD_NOT_CONFIGURED, Map.of());
+        }
+        ComputedMetric sellable = metrics.get(MetricCode.LISTING_SELLABLE);
+        boolean notSellable = sellable != null && sellable.valueState() == ValueState.AVAILABLE
+                && sellable.numericValue().signum() == 0;
+        Map<String, String> detail = detail(
+                "searchUsers", search.numericValue().toPlainString(),
+                "platformAvailableUnits", available.numericValue().toPlainString(),
+                "lowExposureSearchUsers", Long.toString(ceiling));
+        List<ComputedMetric> read = List.of(search, available);
+        boolean low = search.numericValue().compareTo(BigDecimal.valueOf(ceiling)) < 0;
+        return low && available.numericValue().signum() > 0 && !notSellable
+                ? RuleOutcome.triggered(LOW_SEARCH_EXPOSURE, DiagnosisFindingView.Severity.WARNING, detail, read)
+                : RuleOutcome.clear(LOW_SEARCH_EXPOSURE, detail, read);
+    }
+
+    private RuleOutcome evaluateContentBelowTarget(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric rating = metrics.get(MetricCode.CONTENT_RATING);
+        Optional<RuleOutcome> unavailable = requireAvailable(CONTENT_BELOW_TARGET, rating);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        BigDecimal floor = properties.getThresholds().getContentRatingFloor();
+        if (floor == null) {
+            return RuleOutcome.declined(CONTENT_BELOW_TARGET, THRESHOLD_NOT_CONFIGURED, Map.of());
+        }
+        Map<String, String> detail = detail(
+                "contentRating", rating.numericValue().toPlainString(),
+                "contentRatingFloor", floor.toPlainString());
+        return rating.numericValue().compareTo(floor) < 0
+                ? RuleOutcome.triggered(CONTENT_BELOW_TARGET, DiagnosisFindingView.Severity.WARNING, detail,
+                        List.of(rating))
+                : RuleOutcome.clear(CONTENT_BELOW_TARGET, detail, List.of(rating));
     }
 
     /**
@@ -378,6 +562,23 @@ public class DiagnosisEngine {
             }
         }
         return Optional.empty();
+    }
+
+    /** Like {@link #requireAvailable}, but an undefined value is an answer, not a gap. */
+    private static Optional<RuleOutcome> requirePresent(String ruleCode, ComputedMetric... required) {
+        for (ComputedMetric metric : required) {
+            if (metric == null || metric.valueState() == ValueState.NOT_AVAILABLE) {
+                return Optional.of(RuleOutcome.declined(ruleCode, REQUIRED_METRIC_UNAVAILABLE,
+                        metric == null ? Map.of()
+                                : detail("metric", metric.metricCode().name())));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** Whether a price bound is reached at or below {@code value}; an undefined bound never is. */
+    private static boolean atMost(ComputedMetric bound, BigDecimal value) {
+        return bound.valueState() == ValueState.AVAILABLE && bound.numericValue().compareTo(value) <= 0;
     }
 
     private static Map<String, String> detail(String... pairs) {

@@ -101,7 +101,7 @@ public class FactWriteRepository {
                             String currencyCode, BigDecimal listPrice, BigDecimal sellingPrice,
                             BigDecimal discountPrice, String promotionActive,
                             String nativePriceKind, PriceCompetitiveness competitiveness,
-                            BigDecimal sellerCostPrice) {
+                            BigDecimal sellerCostPrice, PriceTariffs tariffs) {
         jdbc.sql("""
                         INSERT INTO core.listing_price_observation (
                             id, organization_id, provenance_id, platform_listing_variant_id,
@@ -109,15 +109,39 @@ public class FactWriteRepository {
                             selling_price, discount_price, promotion_active, native_price_kind,
                             price_index_native, platform_competitor_min_price,
                             platform_competitor_currency_code, external_competitor_min_price,
-                            external_competitor_currency_code, seller_cost_price)
+                            external_competitor_currency_code, seller_cost_price,
+                            sales_commission_percent_fbs, sales_commission_percent_fbo,
+                            fbs_first_mile_min, fbs_first_mile_max, fbs_direct_flow_min,
+                            fbs_direct_flow_max, fbs_last_mile, fbs_return_flow,
+                            fbo_direct_flow_min, fbo_direct_flow_max, fbo_last_mile,
+                            fbo_return_flow, acquiring_max, vat_rate)
                         VALUES (:id, :organizationId, :provenanceId, :listingVariantId,
                             :sourceFactKey, :observedAt, :currencyCode, :listPrice,
                             :sellingPrice, :discountPrice, :promotionActive, :nativePriceKind,
                             :indexNative, :platformMinPrice, :platformCurrency,
-                            :externalMinPrice, :externalCurrency, :sellerCostPrice)
+                            :externalMinPrice, :externalCurrency, :sellerCostPrice,
+                            :commissionFbs, :commissionFbo,
+                            :fbsFirstMileMin, :fbsFirstMileMax, :fbsDirectFlowMin,
+                            :fbsDirectFlowMax, :fbsLastMile, :fbsReturnFlow,
+                            :fboDirectFlowMin, :fboDirectFlowMax, :fboLastMile,
+                            :fboReturnFlow, :acquiringMax, :vatRate)
                         ON CONFLICT (organization_id, source_fact_key) DO NOTHING
                         """)
                 .param("sellerCostPrice", sellerCostPrice)
+                .param("commissionFbs", tariffs.salesCommissionPercentFbs())
+                .param("commissionFbo", tariffs.salesCommissionPercentFbo())
+                .param("fbsFirstMileMin", tariffs.fbsFirstMileMin())
+                .param("fbsFirstMileMax", tariffs.fbsFirstMileMax())
+                .param("fbsDirectFlowMin", tariffs.fbsDirectFlowMin())
+                .param("fbsDirectFlowMax", tariffs.fbsDirectFlowMax())
+                .param("fbsLastMile", tariffs.fbsLastMile())
+                .param("fbsReturnFlow", tariffs.fbsReturnFlow())
+                .param("fboDirectFlowMin", tariffs.fboDirectFlowMin())
+                .param("fboDirectFlowMax", tariffs.fboDirectFlowMax())
+                .param("fboLastMile", tariffs.fboLastMile())
+                .param("fboReturnFlow", tariffs.fboReturnFlow())
+                .param("acquiringMax", tariffs.acquiringMax())
+                .param("vatRate", tariffs.vatRate())
                 .param("indexNative", competitiveness.indexNative())
                 .param("platformMinPrice", competitiveness.platformMinPrice())
                 .param("platformCurrency", competitiveness.platformCurrency())
@@ -151,6 +175,19 @@ public class FactWriteRepository {
     public record PriceCompetitiveness(String indexNative, BigDecimal platformMinPrice,
                                        String platformCurrency, BigDecimal externalMinPrice,
                                        String externalCurrency) {
+    }
+
+    /**
+     * The tariffs the marketplace states for a listing with its price, in the
+     * price currency; every one is {@code null} when not stated.
+     */
+    public record PriceTariffs(BigDecimal salesCommissionPercentFbs, BigDecimal salesCommissionPercentFbo,
+                               BigDecimal fbsFirstMileMin, BigDecimal fbsFirstMileMax,
+                               BigDecimal fbsDirectFlowMin, BigDecimal fbsDirectFlowMax,
+                               BigDecimal fbsLastMile, BigDecimal fbsReturnFlow,
+                               BigDecimal fboDirectFlowMin, BigDecimal fboDirectFlowMax,
+                               BigDecimal fboLastMile, BigDecimal fboReturnFlow,
+                               BigDecimal acquiringMax, BigDecimal vatRate) {
     }
 
     /** Record the marketplace's content rating of a listing variant (0 to 100). */

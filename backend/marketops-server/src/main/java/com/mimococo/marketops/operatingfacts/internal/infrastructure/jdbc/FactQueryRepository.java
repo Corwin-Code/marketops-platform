@@ -84,6 +84,108 @@ public class FactQueryRepository {
     }
 
     /**
+     * The most recent price before an exclusive instant with its competitor
+     * price, seller cost and tariffs.
+     */
+    public Optional<PriceTermsRow> latestPriceTerms(UUID listingVariantId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT price.id, price.observed_at, price.currency_code,
+                               coalesce(price.discount_price, price.selling_price) AS buyer_price,
+                               price.platform_competitor_min_price, price.platform_competitor_currency_code,
+                               price.price_index_native, price.seller_cost_price,
+                               price.sales_commission_percent_fbs, price.sales_commission_percent_fbo,
+                               price.fbs_first_mile_max, price.fbs_direct_flow_max, price.fbs_last_mile,
+                               price.fbo_direct_flow_max, price.fbo_last_mile, price.acquiring_max,
+                               price.vat_rate, price.provenance_id, provenance.source_time
+                          FROM core.listing_price_observation AS price
+                          JOIN core.fact_provenance AS provenance
+                            ON provenance.id = price.provenance_id
+                         WHERE price.platform_listing_variant_id = :listingVariantId
+                           AND price.observed_at < :asOf
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_price_observation", "price")
+                        + """
+                         ORDER BY price.observed_at DESC, price.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new PriceTermsRow(
+                        rows.getObject("id", UUID.class),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("currency_code"),
+                        rows.getBigDecimal("buyer_price"),
+                        rows.getBigDecimal("platform_competitor_min_price"),
+                        rows.getString("platform_competitor_currency_code"),
+                        rows.getString("price_index_native"),
+                        rows.getBigDecimal("seller_cost_price"),
+                        rows.getBigDecimal("sales_commission_percent_fbs"),
+                        rows.getBigDecimal("sales_commission_percent_fbo"),
+                        rows.getBigDecimal("fbs_first_mile_max"),
+                        rows.getBigDecimal("fbs_direct_flow_max"),
+                        rows.getBigDecimal("fbs_last_mile"),
+                        rows.getBigDecimal("fbo_direct_flow_max"),
+                        rows.getBigDecimal("fbo_last_mile"),
+                        rows.getBigDecimal("acquiring_max"),
+                        rows.getBigDecimal("vat_rate"),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .optional();
+    }
+
+    /**
+     * The newest search period of a listing variant that ended at or before an
+     * instant and after the oldest end still accepted.
+     */
+    public Optional<SearchRow> latestSearchDemand(UUID listingVariantId, Instant asOf, Instant oldestEnd) {
+        return jdbc.sql("""
+                        SELECT search.search_users, search.period_start, search.period_end,
+                               search.provenance_id, provenance.source_time
+                          FROM core.listing_search_observation AS search
+                          JOIN core.fact_provenance AS provenance
+                            ON provenance.id = search.provenance_id
+                         WHERE search.platform_listing_variant_id = :listingVariantId
+                           AND search.period_end <= :asOf
+                           AND search.period_end > :oldestEnd
+                         ORDER BY search.period_end DESC, search.period_start DESC, search.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .param("oldestEnd", Timestamp.from(oldestEnd))
+                .query((rows, rowNumber) -> new SearchRow(
+                        rows.getLong("search_users"),
+                        rows.getTimestamp("period_start").toInstant(),
+                        rows.getTimestamp("period_end").toInstant(),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .optional();
+    }
+
+    /** The newest content rating of a listing variant before an exclusive instant. */
+    public Optional<ContentRow> latestContentRating(UUID listingVariantId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT content.content_rating, content.observed_at, content.provenance_id,
+                               provenance.source_time
+                          FROM core.listing_content_observation AS content
+                          JOIN core.fact_provenance AS provenance
+                            ON provenance.id = content.provenance_id
+                         WHERE content.platform_listing_variant_id = :listingVariantId
+                           AND content.observed_at < :asOf
+                         ORDER BY content.observed_at DESC, content.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new ContentRow(
+                        rows.getBigDecimal("content_rating"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .optional();
+    }
+
+    /**
      * The most recent availability per fulfillment mode before an exclusive instant.
      *
      * <p>Each mode is answered from its own latest observation, because a source
@@ -894,6 +996,26 @@ public class FactQueryRepository {
             UUID id, Instant observedAt, String currencyCode, BigDecimal listPrice,
             BigDecimal sellingPrice, BigDecimal discountPrice, String promotionActive,
             UUID provenanceId, Instant sourceTime) {
+    }
+
+    /** The newest price with its competitor price, seller cost and tariffs. */
+    public record PriceTermsRow(
+            UUID id, Instant observedAt, String currencyCode, BigDecimal buyerPrice,
+            BigDecimal platformCompetitorMinPrice, String platformCompetitorCurrencyCode,
+            String priceIndexNative, BigDecimal sellerCostPrice,
+            BigDecimal salesCommissionPercentFbs, BigDecimal salesCommissionPercentFbo,
+            BigDecimal fbsFirstMileMax, BigDecimal fbsDirectFlowMax, BigDecimal fbsLastMile,
+            BigDecimal fboDirectFlowMax, BigDecimal fboLastMile, BigDecimal acquiringMax,
+            BigDecimal vatRate, UUID provenanceId, Instant sourceTime) {
+    }
+
+    /** One search period of a listing variant. */
+    public record SearchRow(long searchUsers, Instant periodStart, Instant periodEnd, UUID provenanceId,
+                            Instant sourceTime) {
+    }
+
+    /** One content rating of a listing variant. */
+    public record ContentRow(BigDecimal rating, Instant observedAt, UUID provenanceId, Instant sourceTime) {
     }
 
     /** The latest availability of one fulfillment mode. */

@@ -47,7 +47,16 @@ public enum MetricCode {
     OBSERVED_SELLING_PRICE(MetricDomain.PROFIT),
     BREAK_EVEN_PRICE(MetricDomain.PROFIT),
     MINIMUM_PRICE(MetricDomain.PROFIT),
-    DATA_COMPLETENESS(MetricDomain.QUALITY);
+    DATA_COMPLETENESS(MetricDomain.QUALITY),
+    ORDERED_UNITS(MetricDomain.FUNNEL),
+    SEARCH_USERS(MetricDomain.FUNNEL),
+    LISTING_SELLABLE(MetricDomain.INVENTORY),
+    CONTENT_RATING(MetricDomain.QUALITY),
+    PLATFORM_COMPETITOR_MIN_PRICE(MetricDomain.PROFIT),
+    PROJECTED_UNIT_PROFIT(MetricDomain.PROFIT),
+    PROJECTED_UNIT_MARGIN(MetricDomain.PROFIT),
+    PROJECTED_BREAK_EVEN_PRICE(MetricDomain.PROFIT),
+    TARGET_MARGIN_PRICE(MetricDomain.PROFIT);
 
     /** The version of every definition this release computes. */
     public static final int DEFINITION_VERSION = 2;
