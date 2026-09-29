@@ -194,6 +194,53 @@ public class PlatformListingRepository {
         return found.size() == 1 ? Optional.of(found.getFirst()) : Optional.empty();
     }
 
+    /**
+     * One batch of a store's recorded keys, ordered by the key itself so an
+     * offset names the same keys on every call.
+     *
+     * @param itemKeys item keys when {@code true}, listing keys otherwise
+     */
+    public List<String> storeKeys(UUID storeId, boolean itemKeys, int offset, int limit) {
+        return jdbc.sql(itemKeys ? """
+                        SELECT DISTINCT variant.native_item_key AS key
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE listing.store_id = :storeId AND variant.status = 'OBSERVED'
+                           AND variant.native_item_key IS NOT NULL
+                         ORDER BY key OFFSET :offset LIMIT :limit
+                        """ : """
+                        SELECT DISTINCT listing.native_listing_key AS key
+                          FROM core.platform_listing AS listing
+                         WHERE listing.store_id = :storeId AND listing.status = 'OBSERVED'
+                         ORDER BY key OFFSET :offset LIMIT :limit
+                        """)
+                .param("storeId", storeId)
+                .param("offset", offset)
+                .param("limit", limit)
+                .query(String.class)
+                .list();
+    }
+
+    /** How many keys of one kind a store has recorded. */
+    public int storeKeyCount(UUID storeId, boolean itemKeys) {
+        return jdbc.sql(itemKeys ? """
+                        SELECT count(DISTINCT variant.native_item_key)
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE listing.store_id = :storeId AND variant.status = 'OBSERVED'
+                           AND variant.native_item_key IS NOT NULL
+                        """ : """
+                        SELECT count(DISTINCT listing.native_listing_key)
+                          FROM core.platform_listing AS listing
+                         WHERE listing.store_id = :storeId AND listing.status = 'OBSERVED'
+                        """)
+                .param("storeId", storeId)
+                .query(Integer.class)
+                .single();
+    }
+
     /** The marketplace's own listing and variant keys behind one item identifier. */
     public record ItemKeys(String nativeListingKey, String nativeVariantKey) {
     }

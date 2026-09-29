@@ -117,6 +117,7 @@ public class FactRecorder {
         return switch (job.datasetKind()) {
             case "LISTING" -> 1;
             case "LISTING_HEALTH" -> recordHealth(job, canonical, variantId, provenanceId);
+            case "LISTING_CONTENT" -> recordContent(job, canonical, variantId, provenanceId);
             case "PRICE" -> recordPrice(job, canonical, variantId, provenanceId);
             case "STOCK" -> recordStock(job, canonical, variantId, provenanceId);
             case "TRAFFIC" -> recordTraffic(job, canonical, variantId, provenanceId);
@@ -180,6 +181,15 @@ public class FactRecorder {
                 canonical.text("nativeStatus").orElse(null),
                 canonical.triState("sellable"),
                 canonical.text("blockedReasonNative").orElse(null));
+        return 1;
+    }
+
+    private int recordContent(IngestionJobView job, CanonicalRecord canonical,
+                              UUID variantId, UUID provenanceId) {
+        facts.insertContent(idGenerator.newId(), job.organizationId(), provenanceId, variantId,
+                sourceFactKey(job, canonical, canonical.requiredInstant("observedAt").toString()),
+                canonical.requiredInstant("observedAt"),
+                canonical.requiredDecimal("contentRating"));
         return 1;
     }
 

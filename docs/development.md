@@ -157,7 +157,7 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks` 和 `/v1/analytics/data`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list` 和 `/v1/product/rating-by-sku`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
@@ -315,3 +315,43 @@ make ozon-run CAPABILITY=prices
 ```bash
 make ozon-normalize CAPABILITY=prices
 ```
+
+## Ozon 第 4b / 4c 步：商品状态与内容评分
+
+目标：继续补充诊断数据，回答"商品对买家是否可见"和"内容质量如何"。依赖迁移 `V0013`（按键分批请求）和 `V0014`（内容评分数据集）。
+
+- **按键分批请求（V0013）**：`/v3/product/info/list` 和 `/v1/product/rating-by-sku` 不能翻页，只能按指定的商品来问。请求模板用 `{listingKeyBatch}`（目录里记下的 `product_id`）或 `{itemKeyBatch}`（记下的 SKU），由系统按固定顺序每次取 100 个，渲染成 JSON 字符串数组。端点登记为 `OFFSET` 加新的结束规则 `KEYS_EXHAUSTED`：所有键都问完才结束，不看每次返回了多少条，因为 Ozon 不认识的商品不会返回任何内容，但后面的键仍然要问。目录里一个键都没有时，不会发出请求（`no_keys_to_request`）。所以要先跑商品目录这一步。
+- **商品状态（4b）**：`/v3/product/info/list` → LISTING_HEALTH。
+  - `availabilities[0].availability` 映射为可售：`AVAILABLE` 算可售；`HIDDEN`（被隐藏）和 `UNAVAILABLE`（SKU 已删除）算不可售。
+  - `statuses.status` 映射为状态词，第一条隐藏原因映射为 `blockedReasonNative`。
+  - listing 健康、可用性风险、广告保护都读取这份可售状态。商品一旦被隐藏，listing 健康的必要条件就会失败。
+- **内容评分（4c）**：`/v1/product/rating-by-sku` → 新数据集 `LISTING_CONTENT`，写入 `core.listing_content_observation`，保存 0–100 的评分，最多 4 位小数，不做四舍五入。
+  - 评分按 SKU 返回，通过目录反查到商品。
+  - 内容评分没有写进 `listing_health_observation`：有三个模块把那张表的最新一行当作可售状态，而评分没有可售信息，写进去会把状态覆盖成 `UNKNOWN`。
+  - 评分背后的分组和未满足的条件暂时只保存在 Raw 里。
+- **key 的角色**：需要 `Product read-only`。
+- **2026-09-29 试点店铺结果**：41 个商品全部 `AVAILABLE`，没有隐藏原因，状态都是 `price_sent`，其中 11 个没有库存；内容评分全部在 75 分以上，平均 92.7，未满足的条件主要是媒体素材（每个商品约缺 3 项）。
+
+步骤（先完成商品目录那一步）：
+
+```bash
+make ozon-probe CAPABILITY=status OFFICIAL_SOURCE=~/Downloads/swagger.json
+```
+
+```bash
+make ozon-setup CAPABILITY=status
+```
+
+```bash
+make ozon-verify CAPABILITY=status
+```
+
+```bash
+make ozon-run CAPABILITY=status
+```
+
+```bash
+make ozon-normalize CAPABILITY=status
+```
+
+内容评分把上面的 `CAPABILITY=status` 换成 `CAPABILITY=content`，步骤相同。

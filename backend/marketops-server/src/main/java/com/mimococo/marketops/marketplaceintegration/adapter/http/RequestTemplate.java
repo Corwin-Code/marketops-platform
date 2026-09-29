@@ -37,10 +37,23 @@ final class RequestTemplate {
     private static final java.util.Set<String> ALLOWED = java.util.Set.of(
             "cursor", "limit", "accountKey", "endpointCode", "offset", "page",
             "windowFrom", "windowTo", "windowStartUtcDate", "windowEndUtcDate",
+            "listingKeyBatch", "itemKeyBatch",
             "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
             "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",
             "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared");
+
+    /** Placeholders whose value is a JSON array rendered by {@link #keyBatch}. */
+    static final java.util.Set<String> KEY_BATCHES = java.util.Set.of("listingKeyBatch", "itemKeyBatch");
+
+    /** Render recorded keys as a JSON array of strings, each escaped for JSON. */
+    static String keyBatch(java.util.List<String> keys) {
+        StringBuilder json = new StringBuilder("[");
+        for (int index = 0; index < keys.size(); index++) {
+            json.append(index == 0 ? "\"" : ",\"").append(jsonEscape(keys.get(index))).append('"');
+        }
+        return json.append(']').toString();
+    }
 
     /** How a substituted value is escaped for the position it occupies. */
     enum Escaping {
@@ -76,7 +89,10 @@ final class RequestTemplate {
             if (value == null || !ALLOWED.contains(name)) {
                 throw OperationRejectedException.of(ErrorCode.CAPABILITY_NOT_USABLE);
             }
-            matcher.appendReplacement(rendered, Matcher.quoteReplacement(escape(value, escaping)));
+            // A key batch is a JSON array this system built from recorded keys,
+            // each element already escaped; it is structure, not a string value.
+            String substituted = KEY_BATCHES.contains(name) ? value : escape(value, escaping);
+            matcher.appendReplacement(rendered, Matcher.quoteReplacement(substituted));
         }
         matcher.appendTail(rendered);
         return rendered.toString();
