@@ -44,6 +44,10 @@ public class OutputValidator {
     static final String STATEMENT_TOO_LONG = "STATEMENT_TOO_LONG";
     static final String INSTRUCTION_LIKE_CONTENT = "INSTRUCTION_LIKE_CONTENT";
     static final String DERIVED_CALCULATION_NOT_PRODUCTIZED = "DERIVED_CALCULATION_NOT_PRODUCTIZED";
+    static final String DRAFT_ATTRIBUTE_NOT_NAMED = "DRAFT_ATTRIBUTE_NOT_NAMED";
+
+    /** The projected names a content draft's attribute must be one of. */
+    private static final String DRAFT_ATTRIBUTE_PATH = "rating.improveAttributeName";
 
     /**
      * A number as text writes it: digits with optional thousands separators and decimals. Digits
@@ -272,6 +276,11 @@ public class OutputValidator {
         if (!validKind(node, kind)) {
             return ValidatedClaim.rejected(kind, ordinal, statement, SCHEMA_INVALID);
         }
+        if (!draftAttributeNamed(node, projection)) {
+            // A draft for an attribute nobody named would send a person to fill a field the
+            // marketplace never asked for, under a name the model made up.
+            return ValidatedClaim.rejected(kind, ordinal, statement, DRAFT_ATTRIBUTE_NOT_NAMED);
+        }
         return ValidatedClaim.accepted(kind, ordinal, statement, metricRefs, findingRefs, payload);
     }
 
@@ -392,7 +401,34 @@ public class OutputValidator {
             return amount.signum() > 0 && amount.scale() <= 4
                     && amount.precision() - amount.scale() <= 14;
         }
+        if ("LISTING_CONTENT_REVIEW".equals(capability) && parameters.has("contentField")) {
+            return draft(parameters);
+        }
         return parameters.isEmpty() || (keys(parameters, "reviewFocus") && text(parameters.get("reviewFocus")));
+    }
+
+    /**
+     * A content draft: which part of the card it rewrites and the Russian text, plus the attribute's
+     * name when it fills an attribute.
+     */
+    private static boolean draft(JsonNode parameters) {
+        if (!enumString(parameters.get("contentField"), "TITLE", "DESCRIPTION", "ATTRIBUTE")) {
+            return false;
+        }
+        boolean attribute = "ATTRIBUTE".equals(parameters.get("contentField").asString());
+        return text(parameters.get("draftText")) && (attribute
+                ? keys(parameters, "contentField", "draftText", "attributeName") && text(parameters.get("attributeName"))
+                : keys(parameters, "contentField", "draftText"));
+    }
+
+    /** Whether a draft that names an attribute names one the projection asked to fill. */
+    private static boolean draftAttributeNamed(JsonNode node, SubjectProjection projection) {
+        JsonNode name = node.path("proposedParameters").get("attributeName");
+        if (name == null) {
+            return true;
+        }
+        return name.isString() && projection.fields().stream().anyMatch(field ->
+                DRAFT_ATTRIBUTE_PATH.equals(field.path()) && field.value().equals(name.asString().strip()));
     }
 
     private static boolean effect(JsonNode node) {

@@ -8,8 +8,10 @@ import type {
   ExplanationClaim,
 } from '../api/console';
 import {
+  fetchLatestContentDraft,
   fetchLatestExplanation,
   fetchLatestStoreExplanation,
+  requestContentDraft,
   requestExplanation,
   requestStoreExplanation,
 } from '../api/console';
@@ -33,13 +35,47 @@ type Loaded =
   | { readonly kind: 'loaded'; readonly explanation: AiExplanation | null }
   | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
 
-type Source = 'store' | 'listing';
+type Source = 'store' | 'listing' | 'content';
+
+/** Read the newest recorded answer of a source. */
+function latest(
+  context: ConsoleRequest,
+  source: Source,
+  storeId: string,
+  listingVariantId: string | undefined,
+): ReturnType<typeof fetchLatestStoreExplanation> {
+  switch (source) {
+    case 'store':
+      return fetchLatestStoreExplanation(context, storeId, 'D7');
+    case 'listing':
+      return fetchLatestExplanation(context, listingVariantId ?? '', storeId, 'D7');
+    case 'content':
+      return fetchLatestContentDraft(context, listingVariantId ?? '', storeId, 'D7');
+  }
+}
+
+/** Ask a source for a new answer. */
+function ask(
+  context: ConsoleRequest,
+  source: Source,
+  storeId: string,
+  listingVariantId: string | undefined,
+): ReturnType<typeof requestStoreExplanation> {
+  switch (source) {
+    case 'store':
+      return requestStoreExplanation(context, storeId, 'D7');
+    case 'listing':
+      return requestExplanation(context, listingVariantId ?? '', storeId, 'D7');
+    case 'content':
+      return requestContentDraft(context, listingVariantId ?? '', storeId, 'D7');
+  }
+}
 
 /**
  * The recorded explanation, and the explicit request for a new one. Opening only reads what an
  * earlier request recorded; asking calls the model unless nothing changed since the last answer.
  */
-function useExplanation(
+export function useExplanation(
   context: ConsoleRequest,
   source: Source,
   storeId: string,
@@ -59,11 +95,7 @@ function useExplanation(
 
   useEffect(() => {
     let live = true;
-    const read =
-      source === 'store'
-        ? fetchLatestStoreExplanation(context, storeId, 'D7')
-        : fetchLatestExplanation(context, listingVariantId ?? '', storeId, 'D7');
-    void read.then((outcome) => {
+    void latest(context, source, storeId, listingVariantId).then((outcome) => {
       if (!live) return;
       setLoaded(
         outcome.ok
@@ -91,11 +123,7 @@ function useExplanation(
     timer.current = setInterval(() => {
       setWaitedSeconds(Math.floor((Date.now() - started) / 1000));
     }, 1000);
-    const ask =
-      source === 'store'
-        ? requestStoreExplanation(context, storeId, 'D7')
-        : requestExplanation(context, listingVariantId ?? '', storeId, 'D7');
-    void ask.then((outcome) => {
+    void ask(context, source, storeId, listingVariantId).then((outcome) => {
       if (timer.current !== null) clearInterval(timer.current);
       timer.current = null;
       setWaitedSeconds(null);
@@ -119,7 +147,7 @@ function useExplanation(
 }
 
 /** Cited identifiers as named tags; ones the page no longer shows are only counted. */
-function References({
+export function References({
   claim,
   referenceLabel,
 }: {
@@ -148,7 +176,7 @@ function References({
   );
 }
 
-function payloadText(value: unknown): string | null {
+export function payloadText(value: unknown): string | null {
   if (typeof value === 'string') return value;
   if (typeof value === 'object' && value !== null && 'rationale' in value) {
     const rationale = (value as { readonly rationale?: unknown }).rationale;
@@ -158,7 +186,11 @@ function payloadText(value: unknown): string | null {
 }
 
 /** When the answer was produced, and whether it was handed out again. */
-function Provenance({ explanation }: { readonly explanation: AiExplanation }): React.JSX.Element {
+export function Provenance({
+  explanation,
+}: {
+  readonly explanation: AiExplanation;
+}): React.JSX.Element {
   const at = explanation.completedAt ?? explanation.startedAt;
   return (
     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
@@ -173,7 +205,11 @@ function Provenance({ explanation }: { readonly explanation: AiExplanation }): R
 }
 
 /** Why no answer is shown: still running, or unavailable for a recorded reason. */
-function Unavailable({ explanation }: { readonly explanation: AiExplanation }): React.JSX.Element {
+export function Unavailable({
+  explanation,
+}: {
+  readonly explanation: AiExplanation;
+}): React.JSX.Element {
   if (explanation.state === 'PREPARED' || explanation.state === 'DISPATCHED') {
     return <Alert type="info" showIcon title={text.aiInFlight} />;
   }
@@ -192,7 +228,7 @@ function Unavailable({ explanation }: { readonly explanation: AiExplanation }): 
   );
 }
 
-function Rejected({
+export function Rejected({
   claims,
 }: {
   readonly claims: readonly ExplanationClaim[];

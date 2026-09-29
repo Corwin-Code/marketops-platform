@@ -124,6 +124,41 @@ class AiConsoleController {
         return ResponseEntity.ok(response(latest.get()));
     }
 
+    /**
+     * Ask a model for Russian drafts of one listing variant's title, description and the attributes
+     * its content rating names to fill. The drafts are for a person to review and copy; they change
+     * nothing. An unchanged card hands out the recorded drafts again without calling the model.
+     */
+    @PostMapping(value = "/listing-variants/{listingVariantId}/content-drafts",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ExplanationResponse draftContent(AuthenticatedActor actor,
+                                     @PathVariable UUID listingVariantId,
+                                     @RequestParam UUID storeId,
+                                     @RequestParam(required = false, defaultValue = "D7") MetricWindow window) {
+        authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, listingVariantId, storeId));
+        return response(copilot.draftListingContent(actor.userId(), actor.organizationId(), listingVariantId, window));
+    }
+
+    /** The newest recorded content drafts of one listing variant for a window, in any state; 204 when none. */
+    @GetMapping(value = "/listing-variants/{listingVariantId}/content-drafts/latest",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ExplanationResponse> latestContentDraft(AuthenticatedActor actor,
+                                                           @PathVariable UUID listingVariantId,
+                                                           @RequestParam UUID storeId,
+                                                           @RequestParam(required = false, defaultValue = "D7")
+                                                           MetricWindow window) {
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, listingVariantId, storeId));
+        Optional<AiDiagnosis> latest = copilot.latestContentDraft(actor.organizationId(), listingVariantId, window);
+        if (latest.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.AI_INVOCATION, latest.get().invocationId()));
+        return ResponseEntity.ok(response(latest.get()));
+    }
+
     // Decimal money is text on the console wire, so JavaScript cannot round it.
     // Database payloads and validation retain the original exact numeric type.
     private static ExplanationResponse response(AiDiagnosis diagnosis) {

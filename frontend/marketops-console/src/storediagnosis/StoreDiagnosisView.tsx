@@ -54,6 +54,7 @@ import type { TagColor } from '../ui';
 import { METRIC_LABELS } from '../i18n/zh/pricing';
 import type { ReferenceLabel } from './AiInterpretation';
 import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
+import { ListingContentOptimization } from './ContentOptimization';
 import type { FindingsLoad } from './DiagnosisConclusions';
 import {
   ConclusionsSection,
@@ -803,6 +804,14 @@ function ProductDrawer({
             context={context}
             storeId={storeId}
             listingVariantId={product.variantId}
+            referenceLabel={referenceLabel}
+          />
+
+          <ListingContentOptimization
+            key={`content-${product.variantId}`}
+            context={context}
+            storeId={storeId}
+            product={product}
             referenceLabel={referenceLabel}
           />
 

@@ -76,11 +76,16 @@ public class NormalizationDeclarationService {
      * <p>{@code fieldPointers} declares plain pointers into a record (or into a
      * child record when {@code childPointer} is given); {@code fieldSources}
      * declares every other kind of source. A field is declared once.
+     *
+     * <p>With {@code sourceDatasetKind}, the declaration is a companion: it reads the
+     * evidence of that dataset's jobs, beside that dataset's own declaration, and its
+     * child records become facts of {@code datasetKind}.
      */
     @Transactional
     public UUID register(String operator,
                          String platformCode,
                          String datasetKind,
+                         String sourceDatasetKind,
                          int mappingVersion,
                          String recordPointer,
                          String childPointer,
@@ -94,14 +99,20 @@ public class NormalizationDeclarationService {
         if (childPointer != null && !FIELD_POINTER.matcher(childPointer).matches()) {
             throw invalid();
         }
+        if (sourceDatasetKind != null && (childPointer == null || sourceDatasetKind.equals(datasetKind)
+                || declarations.valueKinds(sourceDatasetKind).isEmpty())) {
+            // A companion reads the nested records of another dataset's evidence.
+            throw invalid();
+        }
         Map<String, String> known = declarations.valueKinds(datasetKind);
         if (known.isEmpty()) {
             throw invalid();
         }
+        java.util.Set<String> repeated = declarations.repeatedFields(datasetKind);
         Map<String, SourceDeclaration> declared = new LinkedHashMap<>();
         if (fieldPointers != null) {
             fieldPointers.forEach((field, pointer) ->
-                    declared.put(field, new SourceDeclaration("POINTER", pointer, null, null)));
+                    declared.put(field, new SourceDeclaration("POINTER", pointer, null, null, null)));
         }
         if (fieldSources != null) {
             fieldSources.forEach((field, source) -> {
@@ -110,7 +121,8 @@ public class NormalizationDeclarationService {
                 }
             });
         }
-        declared.forEach((field, source) -> validate(field, source, known.get(field), childPointer));
+        declared.forEach((field, source) -> validate(field, source, known.get(field), repeated.contains(field),
+                childPointer));
         List<String> required = new java.util.ArrayList<>(declarations.requiredFields(datasetKind));
         if (!"LISTING".equals(datasetKind) && declared.containsKey(FactRecorder.ITEM_KEY)) {
             // An item identifier stands in for the listing and variant keys: the
@@ -126,16 +138,20 @@ public class NormalizationDeclarationService {
 
         Instant now = clock.instant();
         UUID mappingId = idGenerator.newId();
-        registrations.insertMapping(mappingId, platformCode, datasetKind, mappingVersion,
+        registrations.insertMapping(mappingId, platformCode, datasetKind, sourceDatasetKind, mappingVersion,
                 recordPointer, childPointer, validOwner, now);
         declared.forEach((field, source) -> registrations.insertField(mappingId, datasetKind,
                 field, source.kind(), source.pointer(), source.value(),
-                source.valueMap() == null ? null : objectMapper.writeValueAsString(source.valueMap())));
+                source.valueMap() == null ? null : objectMapper.writeValueAsString(source.valueMap()),
+                source.elementPointer()));
 
         Map<String, FieldChange> changes = new LinkedHashMap<>();
         changes.put("recordPointer", new FieldChange(null, recordPointer));
         if (childPointer != null) {
             changes.put("childPointer", new FieldChange(null, childPointer));
+        }
+        if (sourceDatasetKind != null) {
+            changes.put("sourceDatasetKind", new FieldChange(null, sourceDatasetKind));
         }
         changes.put("declaredFieldCount", new FieldChange(null, Integer.toString(declared.size())));
         changes.put("verificationState", new FieldChange(null, "UNVERIFIED"));
@@ -153,9 +169,15 @@ public class NormalizationDeclarationService {
      * normalization will apply, so a declaration that registers is one that can
      * produce its field.
      */
-    private static void validate(String field, SourceDeclaration source, String valueKind,
+    private static void validate(String field, SourceDeclaration source, String valueKind, boolean repeated,
                                  String childPointer) {
         if (valueKind == null || source == null || source.kind() == null) {
+            throw invalid();
+        }
+        // A list goes only into a field declared to hold one, and a field declared to hold a
+        // list takes nothing else; an element pointer belongs to a list only.
+        if (repeated != "EACH_POINTER".equals(source.kind())
+                || (source.elementPointer() != null && !"EACH_POINTER".equals(source.kind()))) {
             throw invalid();
         }
         switch (source.kind()) {
@@ -190,6 +212,21 @@ public class NormalizationDeclarationService {
                     throw invalid();
                 }
             }
+            case "EACH_POINTER" -> {
+                if (source.pointer() == null || !FIELD_POINTER.matcher(source.pointer()).matches()
+                        || source.elementPointer() == null
+                        || !FIELD_POINTER.matcher(source.elementPointer()).matches()
+                        || source.value() != null || source.valueMap() != null
+                        || "INSTANT".equals(valueKind)) {
+                    throw invalid();
+                }
+            }
+            case "ARRAY_LENGTH" -> {
+                if (source.pointer() == null || !FIELD_POINTER.matcher(source.pointer()).matches()
+                        || !"INTEGER".equals(valueKind) || source.value() != null || source.valueMap() != null) {
+                    throw invalid();
+                }
+            }
             default -> throw invalid();
         }
     }
@@ -202,12 +239,15 @@ public class NormalizationDeclarationService {
      * Where one declared field comes from.
      *
      * @param kind {@code POINTER}, {@code PARENT_POINTER}, {@code OBSERVATION_TIME},
-     *        {@code WINDOW_START}, {@code WINDOW_END} or {@code CONSTANT}
-     * @param pointer the JSON pointer for the two pointer kinds
+     *        {@code WINDOW_START}, {@code WINDOW_END}, {@code CONSTANT}, {@code EACH_POINTER}
+     *        or {@code ARRAY_LENGTH}
+     * @param pointer the JSON pointer for the pointer kinds (the array for the last two)
      * @param value the constant's text
      * @param valueMap native words translated into the canonical text, for the pointer kinds
+     * @param elementPointer for {@code EACH_POINTER}, the value inside each element of the array
      */
-    public record SourceDeclaration(String kind, String pointer, String value, Map<String, String> valueMap) {
+    public record SourceDeclaration(String kind, String pointer, String value, Map<String, String> valueMap,
+                                    String elementPointer) {
     }
 
     /** Record verified evidence and start normalizing the dataset. */

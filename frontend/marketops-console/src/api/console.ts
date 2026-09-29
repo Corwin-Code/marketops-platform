@@ -1180,6 +1180,36 @@ export function requestStoreExplanation(
   );
 }
 
+/** The newest recorded content drafts of one listing for a window, or `null` when none was asked for. */
+export function fetchLatestContentDraft(
+  context: ConsoleRequest,
+  subjectId: string,
+  storeId: string,
+  window = 'D7',
+): Promise<ConsoleOutcome<AiExplanation | null>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}/content-drafts/latest?storeId=${encodeURIComponent(storeId)}&window=${encodeURIComponent(window)}`,
+    (body) => (body === undefined || body === null ? null : parseAiExplanation(body)),
+  );
+}
+
+/** An explicit request for Russian content drafts; an unchanged card is answered from the record. */
+export function requestContentDraft(
+  context: ConsoleRequest,
+  subjectId: string,
+  storeId: string,
+  window = 'D7',
+): Promise<ConsoleOutcome<AiExplanation>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}/content-drafts?storeId=${encodeURIComponent(storeId)}&window=${encodeURIComponent(window)}`,
+    parseAiExplanation,
+    { method: 'POST' },
+    AI_REQUEST_TIMEOUT_MS,
+  );
+}
+
 /** The store's open proposals, most urgent first. */
 export function fetchRecommendations(
   context: ConsoleRequest,

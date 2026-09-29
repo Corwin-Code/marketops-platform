@@ -532,4 +532,171 @@ public class FactWriteRepository {
                 .query(UUID.class)
                 .optional();
     }
+
+    /**
+     * Record what one catalog snapshot said about a listing card: category, product type, image
+     * count and the attributes it carries.
+     */
+    public void insertCatalogObservation(UUID id, UUID organizationId, UUID provenanceId, UUID listingVariantId,
+                                         String sourceFactKey, Instant observedAt, String descriptionCategoryKey,
+                                         String typeKey, Integer imageCount, java.util.List<String> attributeKeys) {
+        jdbc.sql("""
+                        INSERT INTO core.listing_catalog_observation (
+                            id, organization_id, provenance_id, platform_listing_variant_id, source_fact_key,
+                            observed_at, description_category_key, type_key, image_count, attribute_keys)
+                        VALUES (:id, :organizationId, :provenanceId, :listingVariantId, :sourceFactKey,
+                            :observedAt, :descriptionCategoryKey, :typeKey, :imageCount,
+                            CAST(:attributeKeys AS text[]))
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("descriptionCategoryKey", descriptionCategoryKey)
+                .param("typeKey", typeKey)
+                .param("imageCount", imageCount)
+                .param("attributeKeys", attributeKeys.toArray(String[]::new))
+                .update();
+    }
+
+    /** Whether an attribute's values differ from the newest ones recorded for the listing. */
+    public boolean attributeChanged(UUID listingVariantId, String attributeKey, String valuesDigest) {
+        return jdbc.sql("""
+                        SELECT values_digest FROM core.listing_attribute_observation
+                         WHERE platform_listing_variant_id = :listingVariantId AND attribute_key = :attributeKey
+                         ORDER BY observed_at DESC, id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("attributeKey", attributeKey)
+                .query(String.class)
+                .optional()
+                .map(latest -> !latest.equals(valuesDigest))
+                .orElse(true);
+    }
+
+    /** Record an attribute of a listing whose values changed. */
+    public void insertAttribute(UUID id, UUID organizationId, UUID provenanceId, UUID listingVariantId,
+                                String sourceFactKey, Instant observedAt, String attributeKey, String contentRole,
+                                java.util.List<String> valueTexts, int valueCount, int valuesLength,
+                                String valuesDigest) {
+        jdbc.sql("""
+                        INSERT INTO core.listing_attribute_observation (
+                            id, organization_id, provenance_id, platform_listing_variant_id, source_fact_key,
+                            observed_at, attribute_key, content_role, value_texts, value_count, values_length,
+                            values_digest)
+                        VALUES (:id, :organizationId, :provenanceId, :listingVariantId, :sourceFactKey,
+                            :observedAt, :attributeKey, :contentRole, CAST(:valueTexts AS text[]), :valueCount,
+                            :valuesLength, :valuesDigest)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("attributeKey", attributeKey)
+                .param("contentRole", contentRole)
+                .param("valueTexts", valueTexts.toArray(String[]::new))
+                .param("valueCount", valueCount)
+                .param("valuesLength", valuesLength)
+                .param("valuesDigest", valuesDigest)
+                .update();
+    }
+
+    /** Whether a content rating group differs from the newest one recorded for the listing. */
+    public boolean contentGroupChanged(UUID listingVariantId, String groupKey, String contentDigest) {
+        return jdbc.sql("""
+                        SELECT content_digest FROM core.listing_content_group_observation
+                         WHERE platform_listing_variant_id = :listingVariantId AND group_key = :groupKey
+                         ORDER BY observed_at DESC, id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("groupKey", groupKey)
+                .query(String.class)
+                .optional()
+                .map(latest -> !latest.equals(contentDigest))
+                .orElse(true);
+    }
+
+    /** Record a content rating group of a listing that changed. */
+    public void insertContentGroup(UUID id, UUID organizationId, UUID provenanceId, UUID listingVariantId,
+                                   String sourceFactKey, Instant observedAt, ContentGroup group,
+                                   String contentDigest) {
+        jdbc.sql("""
+                        INSERT INTO core.listing_content_group_observation (
+                            id, organization_id, provenance_id, platform_listing_variant_id, source_fact_key,
+                            observed_at, group_key, group_name, group_rating, group_weight, improve_at_least,
+                            condition_keys, condition_texts, condition_met, condition_points,
+                            improve_attribute_keys, improve_attribute_names, content_digest)
+                        VALUES (:id, :organizationId, :provenanceId, :listingVariantId, :sourceFactKey,
+                            :observedAt, :groupKey, :groupName, :groupRating, :groupWeight, :improveAtLeast,
+                            CAST(:conditionKeys AS text[]), CAST(:conditionTexts AS text[]),
+                            CAST(:conditionMet AS boolean[]), CAST(:conditionPoints AS numeric[]),
+                            CAST(:improveAttributeKeys AS text[]), CAST(:improveAttributeNames AS text[]),
+                            :contentDigest)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("groupKey", group.groupKey())
+                .param("groupName", group.groupName())
+                .param("groupRating", group.groupRating())
+                .param("groupWeight", group.groupWeight())
+                .param("improveAtLeast", group.improveAtLeast())
+                .param("conditionKeys", group.conditionKeys().toArray(String[]::new))
+                .param("conditionTexts", group.conditionTexts().toArray(String[]::new))
+                .param("conditionMet", group.conditionMet().stream()
+                        .map(met -> met == null ? null : met.toString()).toArray(String[]::new))
+                .param("conditionPoints", group.conditionPoints().stream()
+                        .map(points -> points == null ? null : points.toPlainString()).toArray(String[]::new))
+                .param("improveAttributeKeys", group.improveAttributeKeys().toArray(String[]::new))
+                .param("improveAttributeNames", group.improveAttributeNames().toArray(String[]::new))
+                .param("contentDigest", contentDigest)
+                .update();
+    }
+
+    /**
+     * One group of a listing's content rating, its condition lists lined up element by element.
+     *
+     * @param conditionMet {@code null} at a condition whose fulfilment the source did not state
+     */
+    public record ContentGroup(String groupKey, String groupName, BigDecimal groupRating, BigDecimal groupWeight,
+                               Integer improveAtLeast, java.util.List<String> conditionKeys,
+                               java.util.List<String> conditionTexts, java.util.List<Boolean> conditionMet,
+                               java.util.List<BigDecimal> conditionPoints, java.util.List<String> improveAttributeKeys,
+                               java.util.List<String> improveAttributeNames) {
+
+        /** What the group says, as one digest: equal exactly when nothing about it changed. */
+        public String digest() {
+            java.util.List<String> components = new java.util.ArrayList<>();
+            components.add(groupKey);
+            components.add(groupName);
+            components.add(groupRating == null ? null : groupRating.stripTrailingZeros().toPlainString());
+            components.add(groupWeight == null ? null : groupWeight.stripTrailingZeros().toPlainString());
+            components.add(improveAtLeast == null ? null : improveAtLeast.toString());
+            for (int index = 0; index < conditionKeys.size(); index++) {
+                components.add(conditionKeys.get(index));
+                components.add(conditionTexts.get(index));
+                components.add(conditionMet.get(index) == null ? null : conditionMet.get(index).toString());
+                components.add(conditionPoints.get(index) == null ? null
+                        : conditionPoints.get(index).stripTrailingZeros().toPlainString());
+            }
+            components.add("improve");
+            for (int index = 0; index < improveAttributeKeys.size(); index++) {
+                components.add(improveAttributeKeys.get(index));
+                components.add(improveAttributeNames.get(index));
+            }
+            return com.mimococo.marketops.shared.Digest.ofComponents(components);
+        }
+    }
 }

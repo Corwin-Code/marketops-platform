@@ -130,6 +130,81 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<com.mimococo.marketops.operatingfacts.ListingContentSnapshot> listingContent(
+            UUID platformListingVariantId, Instant asOf) {
+        Optional<FactQueryRepository.CatalogRow> catalog = facts.latestCatalogObservation(platformListingVariantId, asOf);
+        List<FactQueryRepository.ContentGroupRow> groups = facts.latestContentGroups(platformListingVariantId, asOf);
+        if (catalog.isEmpty() && groups.isEmpty()) {
+            return Optional.empty();
+        }
+        // Only the attributes the newest snapshot carried are current: one the seller removed keeps
+        // its last recorded row, and that row is not the card any more.
+        List<String> keys = catalog.map(FactQueryRepository.CatalogRow::attributeKeys).orElse(List.of());
+        Map<String, FactQueryRepository.AttributeRow> byKey = new LinkedHashMap<>();
+        facts.latestAttributes(platformListingVariantId, asOf, keys)
+                .forEach(row -> byKey.put(row.attributeKey(), row));
+        List<com.mimococo.marketops.operatingfacts.ListingContentSnapshot.Attribute> attributes = keys.stream()
+                .map(byKey::get)
+                .filter(java.util.Objects::nonNull)
+                .map(row -> new com.mimococo.marketops.operatingfacts.ListingContentSnapshot.Attribute(
+                        row.attributeKey(), row.contentRole(),
+                        row.valueTexts().stream().filter(java.util.Objects::nonNull).toList(),
+                        row.valueCount(), row.valuesLength(), row.observedAt()))
+                .toList();
+        List<com.mimococo.marketops.operatingfacts.ListingContentSnapshot.RatingGroup> ratingGroups = groups.stream()
+                .map(OperatingFactService::ratingGroup)
+                .toList();
+
+        List<UUID> provenance = new java.util.ArrayList<>();
+        List<Instant> sourceTimes = new java.util.ArrayList<>();
+        catalog.ifPresent(row -> {
+            provenance.add(row.provenanceId());
+            sourceTimes.add(row.sourceTime());
+        });
+        byKey.values().forEach(row -> {
+            provenance.add(row.provenanceId());
+            sourceTimes.add(row.sourceTime());
+        });
+        groups.forEach(row -> {
+            provenance.add(row.provenanceId());
+            sourceTimes.add(row.sourceTime());
+        });
+        return Optional.of(new com.mimococo.marketops.operatingfacts.ListingContentSnapshot(
+                catalog.map(FactQueryRepository.CatalogRow::observedAt).orElse(null),
+                catalog.map(FactQueryRepository.CatalogRow::imageCount).orElse(null),
+                catalog.map(FactQueryRepository.CatalogRow::descriptionCategoryKey).orElse(null),
+                catalog.map(FactQueryRepository.CatalogRow::typeKey).orElse(null),
+                attributes, ratingGroups,
+                FactEvidence.of(provenance.stream().distinct().toList(), sourceTimes.stream()
+                        .filter(java.util.Objects::nonNull).min(Instant::compareTo).orElse(null))));
+    }
+
+    private static com.mimococo.marketops.operatingfacts.ListingContentSnapshot.RatingGroup ratingGroup(
+            FactQueryRepository.ContentGroupRow row) {
+        List<com.mimococo.marketops.operatingfacts.ListingContentSnapshot.Condition> conditions =
+                new java.util.ArrayList<>();
+        for (int index = 0; index < row.conditionKeys().size(); index++) {
+            if (row.conditionKeys().get(index) != null) {
+                conditions.add(new com.mimococo.marketops.operatingfacts.ListingContentSnapshot.Condition(
+                        row.conditionKeys().get(index), row.conditionTexts().get(index),
+                        row.conditionMet().get(index), row.conditionPoints().get(index)));
+            }
+        }
+        List<com.mimococo.marketops.operatingfacts.ListingContentSnapshot.ImproveAttribute> improve =
+                new java.util.ArrayList<>();
+        for (int index = 0; index < row.improveAttributeKeys().size(); index++) {
+            if (row.improveAttributeKeys().get(index) != null) {
+                improve.add(new com.mimococo.marketops.operatingfacts.ListingContentSnapshot.ImproveAttribute(
+                        row.improveAttributeKeys().get(index), row.improveAttributeNames().get(index)));
+            }
+        }
+        return new com.mimococo.marketops.operatingfacts.ListingContentSnapshot.RatingGroup(row.groupKey(),
+                row.groupName(), row.rating(), row.weight(), row.improveAtLeast(), conditions, improve,
+                row.observedAt());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf) {
         List<FactQueryRepository.StockRow> rows =
                 facts.latestStockByMode(platformListingVariantId, asOf);

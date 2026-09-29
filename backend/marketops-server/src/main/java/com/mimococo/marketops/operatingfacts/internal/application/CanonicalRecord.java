@@ -2,6 +2,7 @@ package com.mimococo.marketops.operatingfacts.internal.application;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -74,6 +75,22 @@ public record CanonicalRecord(Map<String, Object> values) {
         return value(field, Boolean.class)
                 .map(flag -> flag ? "YES" : "NO")
                 .orElse("UNKNOWN");
+    }
+
+    /**
+     * A repeated field, in the source's order; an element the source did not send, or sent in a
+     * form the field's kind cannot hold, is a null at its position. Empty when the record does not
+     * carry the field at all.
+     */
+    public <T> Optional<List<T>> list(String field, Class<T> elementType) {
+        if (!(values.get(field) instanceof List<?> raw)) {
+            return Optional.empty();
+        }
+        List<T> typed = new java.util.ArrayList<>(raw.size());
+        for (Object element : raw) {
+            typed.add(elementType.isInstance(element) ? elementType.cast(element) : null);
+        }
+        return Optional.of(java.util.Collections.unmodifiableList(typed));
     }
 
     private <T> Optional<T> value(String field, Class<T> type) {

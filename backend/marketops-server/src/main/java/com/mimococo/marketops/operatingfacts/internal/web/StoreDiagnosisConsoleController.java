@@ -51,15 +51,18 @@ class StoreDiagnosisConsoleController {
     static final int TERMS_PER_PRODUCT = 5;
 
     private final StoreDiagnosisRepository diagnosis;
+    private final com.mimococo.marketops.operatingfacts.OperatingFactQuery facts;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
     private final Clock clock;
 
     StoreDiagnosisConsoleController(StoreDiagnosisRepository diagnosis,
+                                    com.mimococo.marketops.operatingfacts.OperatingFactQuery facts,
                                     BusinessAuthorization authorization,
                                     MetadataAuditRecorder audit,
                                     Clock clock) {
         this.diagnosis = diagnosis;
+        this.facts = facts;
         this.authorization = authorization;
         this.audit = audit;
         this.clock = clock;
@@ -90,6 +93,24 @@ class StoreDiagnosisConsoleController {
         return new StoreDiagnosis(storeId, clock.instant(), summary(products), window,
                 searchWindow == null ? null : new SearchPeriod(searchWindow.from(), searchWindow.to()),
                 products);
+    }
+
+    /**
+     * What one listing card says and what the marketplace's content rating finds missing: the
+     * description, rich content, images, attribute count and every rating group with its
+     * conditions and the attributes it names to fill.
+     */
+    @GetMapping("/{storeId}/listing-variants/{variantId}/content")
+    @Transactional
+    ListingContent content(AuthenticatedActor actor, @PathVariable UUID storeId, @PathVariable UUID variantId) {
+        authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW, new com.mimococo.marketops.identityaccess
+                .OwnedResource(com.mimococo.marketops.identityaccess.OwnedResource.Kind.LISTING_VARIANT, variantId, storeId));
+        com.mimococo.marketops.operatingfacts.ListingContentSnapshot snapshot =
+                facts.listingContent(variantId, clock.instant()).orElse(null);
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATING_FACTS,
+                actor.userId().toString(), AuditAction.READ, "store_listing_content", variantId, null,
+                Map.of(), "content", null));
+        return ListingContent.of(variantId, snapshot);
     }
 
     private static ProductDiagnosis product(Row row, List<Term> terms) {
@@ -253,6 +274,76 @@ class StoreDiagnosisConsoleController {
     }
 
     /** The marketplace's content rating, 0 to 100. */
+    /**
+     * What a listing card says and what its content rating finds missing; every part is
+     * {@code null} or empty when no snapshot recorded it.
+     *
+     * @param attributeCount how many attributes the card carries
+     */
+    record ListingContent(UUID variantId, Instant catalogObservedAt, Integer imageCount, int attributeCount,
+                          Description description, RichContent richContent, List<RatingGroup> ratingGroups) {
+
+        static ListingContent of(UUID variantId, com.mimococo.marketops.operatingfacts.ListingContentSnapshot snapshot) {
+            if (snapshot == null) {
+                return new ListingContent(variantId, null, null, 0, null, null, List.of());
+            }
+            java.util.Set<String> filled = snapshot.attributes().stream()
+                    .map(com.mimococo.marketops.operatingfacts.ListingContentSnapshot.Attribute::attributeKey)
+                    .collect(Collectors.toSet());
+            Description description = snapshot.role("DESCRIPTION")
+                    .map(attribute -> new Description(attribute.values().isEmpty() ? null : attribute.text(),
+                            attribute.valuesLength(), attribute.since()))
+                    .orElse(null);
+            RichContent richContent = snapshot.role("RICH_CONTENT")
+                    .map(attribute -> new RichContent(attribute.valuesLength(), attribute.since()))
+                    .orElse(null);
+            List<RatingGroup> groups = snapshot.ratingGroups().stream()
+                    .map(group -> new RatingGroup(group.groupKey(), group.groupName(), plain(group.rating()),
+                            plain(group.weight()), group.improveAtLeast(),
+                            group.conditions().stream().map(condition -> new Condition(condition.conditionKey(),
+                                    condition.text(), condition.met(), plain(condition.points()))).toList(),
+                            group.improveAttributes().stream().map(attribute -> new ImproveAttribute(
+                                    attribute.attributeKey(), attribute.name(),
+                                    filled.contains(attribute.attributeKey()))).toList(),
+                            group.since()))
+                    .toList();
+            return new ListingContent(variantId, snapshot.catalogObservedAt(), snapshot.imageCount(),
+                    snapshot.attributes().size(), description, richContent, groups);
+        }
+
+        /** A rating, share or point count as the marketplace wrote it: 100, not 100.0000. */
+        private static String plain(BigDecimal value) {
+            return value == null ? null : value.stripTrailingZeros().toPlainString();
+        }
+    }
+
+    /**
+     * The card's description, seller-written marketplace text.
+     *
+     * @param text {@code null} when it was too long to keep
+     * @param length its length in characters
+     * @param since when it was first seen as it is
+     */
+    record Description(String text, int length, Instant since) {
+    }
+
+    /** The card's rich content, by length only. */
+    record RichContent(int length, Instant since) {
+    }
+
+    /** One group of the content rating, ratings and points as decimal text. */
+    record RatingGroup(String groupKey, String groupName, String rating, String weight, Integer improveAtLeast,
+                       List<Condition> conditions, List<ImproveAttribute> improveAttributes, Instant since) {
+    }
+
+    /** One condition of a rating group; {@code met} is {@code null} when the marketplace did not say. */
+    record Condition(String conditionKey, String text, Boolean met, String points) {
+    }
+
+    /** An attribute the rating names to fill, and whether the card now carries it. */
+    record ImproveAttribute(String attributeKey, String name, boolean filled) {
+    }
+
     record Content(String rating, Instant observedAt) {
     }
 

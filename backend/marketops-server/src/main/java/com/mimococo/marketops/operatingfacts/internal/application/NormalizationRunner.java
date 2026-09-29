@@ -107,14 +107,16 @@ public class NormalizationRunner {
             return new PassOutcome(jobId, 0, 0, 0, "NOTHING_TO_PROCESS");
         }
 
-        Map<String, NormalizationDeclarationRepository.FieldSource> fields =
-                declarations.fieldSources(declaration.get().id());
-        Map<String, String> valueKinds = declarations.valueKinds(job.datasetKind());
-        List<String> requiredFields = declarations.requiredFields(job.datasetKind());
+        Reading main = reading(declaration.get());
+        List<Reading> companions = declarations.companionMappings(job.platformCode(), job.datasetKind())
+                .stream().map(this::reading).toList();
+        // What the companions read is theirs: it is not drift of the main declaration.
+        java.util.Set<String> covered = companions.stream()
+                .map(companion -> companion.declaration().childPointer())
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
 
         int factsRecorded = 0;
         int recordsRejected = 0;
-        boolean itemKeyStandsIn = !"LISTING".equals(job.datasetKind());
         Map<UUID, Optional<IngestionJobDirectory.RunWindow>> windows = new java.util.HashMap<>();
         RawObservationView last = observations.getLast();
         for (RawObservationView observation : observations) {
@@ -134,20 +136,21 @@ public class NormalizationRunner {
                 return new PassOutcome(jobId, observations.size(), factsRecorded,
                         recordsRejected + 1, "RAW_UNVERIFIABLE");
             }
+            // A declared observation-time field takes the time the source gave
+            // the answer, or the time it was stored when the source gave none.
+            Instant observedAt = observation.sourceTime() != null
+                    ? observation.sourceTime() : observation.ingestionTime();
+            // A declared window field takes the window the run asked the source for.
+            Optional<IngestionJobDirectory.RunWindow> window = windows.computeIfAbsent(
+                    observation.runId(), jobs::runWindow);
+            Instant windowFrom = window.map(IngestionJobDirectory.RunWindow::from).orElse(null);
+            Instant windowTo = window.map(IngestionJobDirectory.RunWindow::to).orElse(null);
 
             PayloadReader.ReadResult read;
             try {
-                // A declared observation-time field takes the time the source gave
-                // the answer, or the time it was stored when the source gave none.
-                Instant observedAt = observation.sourceTime() != null
-                        ? observation.sourceTime() : observation.ingestionTime();
-                // A declared window field takes the window the run asked the source for.
-                Optional<IngestionJobDirectory.RunWindow> window = windows.computeIfAbsent(
-                        observation.runId(), jobs::runWindow);
-                read = payloadReader.read(body.get(), declaration.get().recordPointer(),
-                        declaration.get().childPointer(), fields, valueKinds, observedAt,
-                        window.map(IngestionJobDirectory.RunWindow::from).orElse(null),
-                        window.map(IngestionJobDirectory.RunWindow::to).orElse(null));
+                read = payloadReader.read(body.get(), main.declaration().recordPointer(),
+                        main.declaration().childPointer(), main.fields(), main.valueKinds(), observedAt,
+                        windowFrom, windowTo, covered, true);
             } catch (PayloadReader.PayloadUnreadableException unreadable) {
                 log.atWarn().addKeyValue("event","normalization_payload_unreadable")
                         .addKeyValue("observationId",observation.observationId())
@@ -157,22 +160,7 @@ public class NormalizationRunner {
 
             int[] counts;
             try {
-                counts = transactions.execute(status -> {
-                for (String pointer : read.unmappedPointers()) {
-                    declarations.recordDrift(idGenerator.newId(), jobId, declaration.get().id(),
-                            pointer, observation.observationId(), clock.instant());
-                }
-                int accepted = 0;
-                int rejected = 0;
-                for (CanonicalRecord record : read.records()) {
-                    if (!carriesRequiredFields(record, requiredFields, itemKeyStandsIn)) {
-                        rejected++;
-                    }
-                }
-                if (rejected>0) return new int[]{0,rejected};
-                for (CanonicalRecord record : read.records()) accepted += factRecorder.record(job, observation, record);
-                return new int[]{accepted, rejected};
-                });
+                counts = transactions.execute(status -> recordAll(job, observation, main, read));
             } catch (ArithmeticException outOfRange) {
                 log.atWarn().addKeyValue("event","normalization_record_out_of_range")
                         .addKeyValue("observationId",observation.observationId())
@@ -187,6 +175,15 @@ public class NormalizationRunner {
             factsRecorded += counts[0];
             recordsRejected += counts[1];
             if (counts[1]>0) return new PassOutcome(jobId,observations.size(),factsRecorded,recordsRejected,"REQUIRED_FIELD_MISSING");
+
+            // Companions add facts of their own from the same evidence. They never hold the main
+            // facts back: one that cannot read or record this observation is skipped for it, and
+            // the pass reports the rejected records and moves on.
+            for (Reading companion : companions) {
+                int[] added = companion(job, observation, companion, body.get(), observedAt, windowFrom, windowTo);
+                factsRecorded += added[0];
+                recordsRejected += added[1];
+            }
         }
 
         boolean advanced = declarations.advanceProgress(jobId, last.ingestionTime(),
@@ -200,6 +197,86 @@ public class NormalizationRunner {
         }
         return new PassOutcome(jobId, observations.size(), factsRecorded, recordsRejected,
                 "PROCESSED");
+    }
+
+    /** One declaration with everything a pass needs to read and check its records. */
+    private record Reading(NormalizationDeclarationRepository.MappingDeclaration declaration,
+                           Map<String, NormalizationDeclarationRepository.FieldSource> fields,
+                           Map<String, String> valueKinds,
+                           List<String> requiredFields) {
+
+        String datasetKind() {
+            return declaration.datasetKind();
+        }
+    }
+
+    private Reading reading(NormalizationDeclarationRepository.MappingDeclaration declaration) {
+        return new Reading(declaration, declarations.fieldSources(declaration.id()),
+                declarations.valueKinds(declaration.datasetKind()),
+                declarations.requiredFields(declaration.datasetKind()));
+    }
+
+    /**
+     * Record drift and every record of one declaration's reading, or nothing when a record lacks
+     * a required field: {accepted facts, rejected records}.
+     */
+    private int[] recordAll(IngestionJobView job, RawObservationView observation, Reading reading,
+                            PayloadReader.ReadResult read) {
+        for (String pointer : read.unmappedPointers()) {
+            declarations.recordDrift(idGenerator.newId(), job.jobId(), reading.declaration().id(),
+                    pointer, observation.observationId(), clock.instant());
+        }
+        // Outside the catalog itself, an item identifier can stand in for the listing keys.
+        boolean itemKeyStandsIn = !"LISTING".equals(reading.datasetKind());
+        int rejected = 0;
+        for (CanonicalRecord record : read.records()) {
+            if (!carriesRequiredFields(record, reading.requiredFields(), itemKeyStandsIn)) {
+                rejected++;
+            }
+        }
+        if (rejected > 0) {
+            return new int[]{0, rejected};
+        }
+        int accepted = 0;
+        for (CanonicalRecord record : read.records()) {
+            accepted += factRecorder.record(job, reading.datasetKind(), observation, record);
+        }
+        return new int[]{accepted, 0};
+    }
+
+    /** One companion's facts from one observation, in a transaction of its own. */
+    private int[] companion(IngestionJobView job, RawObservationView observation, Reading companion,
+                            byte[] body, Instant observedAt, Instant windowFrom, Instant windowTo) {
+        String refusal;
+        int rejected;
+        try {
+            PayloadReader.ReadResult read = payloadReader.read(body, companion.declaration().recordPointer(),
+                    companion.declaration().childPointer(), companion.fields(), companion.valueKinds(), observedAt,
+                    windowFrom, windowTo, java.util.Set.of(), false);
+            int[] counts = transactions.execute(status -> recordAll(job, observation, companion, read));
+            if (counts[1] == 0) {
+                return counts;
+            }
+            refusal = "REQUIRED_FIELD_MISSING";
+            rejected = counts[1];
+        } catch (PayloadReader.PayloadUnreadableException unreadable) {
+            refusal = "PAYLOAD_UNREADABLE";
+            rejected = 1;
+        } catch (ArithmeticException | FactRecorder.RecordWithoutMeasureException outOfRange) {
+            refusal = "RECORD_OUT_OF_RANGE";
+            rejected = 1;
+        } catch (RuntimeException unexpected) {
+            // Whatever else went wrong stays with the companion: its transaction rolled back, and
+            // the main facts of this observation are already recorded.
+            refusal = unexpected.getClass().getSimpleName();
+            rejected = 1;
+        }
+        log.atWarn().addKeyValue("event", "normalization_companion_skipped")
+                .addKeyValue("observationId", observation.observationId())
+                .addKeyValue("datasetKind", companion.datasetKind())
+                .addKeyValue("reason", refusal)
+                .log("A companion declaration recorded nothing from one observation");
+        return new int[]{0, rejected};
     }
 
     /**

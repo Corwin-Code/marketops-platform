@@ -45,6 +45,12 @@ public interface OperatingFactQuery {
      */
     Optional<SearchTermsSnapshot> topSearchTerms(UUID platformListingVariantId, Instant asOf, int limit);
 
+    /**
+     * What the listing card says and what the content rating finds missing, from the newest
+     * catalog and rating snapshots before an exclusive instant; empty when neither was recorded.
+     */
+    Optional<ListingContentSnapshot> listingContent(UUID platformListingVariantId, Instant asOf);
+
     /** The most recent observed availability, per fulfillment mode. */
     StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf);
 

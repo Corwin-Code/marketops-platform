@@ -1057,6 +1057,122 @@ public class FactQueryRepository {
     public record ContentRow(BigDecimal rating, Instant observedAt, UUID provenanceId, Instant sourceTime) {
     }
 
+    /** The newest catalog snapshot of a listing card before an exclusive instant. */
+    public Optional<CatalogRow> latestCatalogObservation(UUID listingVariantId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT catalog.observed_at, catalog.description_category_key, catalog.type_key,
+                               catalog.image_count, catalog.attribute_keys, catalog.provenance_id,
+                               provenance.source_time
+                          FROM core.listing_catalog_observation AS catalog
+                          JOIN core.fact_provenance AS provenance ON provenance.id = catalog.provenance_id
+                         WHERE catalog.platform_listing_variant_id = :listingVariantId
+                           AND catalog.observed_at < :asOf
+                         ORDER BY catalog.observed_at DESC, catalog.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new CatalogRow(
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("description_category_key"),
+                        rows.getString("type_key"),
+                        (Integer) rows.getObject("image_count"),
+                        textArray(rows, "attribute_keys"),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .optional();
+    }
+
+    /** The newest recorded values of the named attributes of a listing before an exclusive instant. */
+    public List<AttributeRow> latestAttributes(UUID listingVariantId, Instant asOf, List<String> attributeKeys) {
+        if (attributeKeys.isEmpty()) {
+            return List.of();
+        }
+        return jdbc.sql("""
+                        SELECT DISTINCT ON (attribute.attribute_key)
+                               attribute.attribute_key, attribute.content_role, attribute.value_texts,
+                               attribute.value_count, attribute.values_length, attribute.observed_at,
+                               attribute.provenance_id, provenance.source_time
+                          FROM core.listing_attribute_observation AS attribute
+                          JOIN core.fact_provenance AS provenance ON provenance.id = attribute.provenance_id
+                         WHERE attribute.platform_listing_variant_id = :listingVariantId
+                           AND attribute.observed_at < :asOf
+                           AND attribute.attribute_key = ANY(CAST(:attributeKeys AS text[]))
+                         ORDER BY attribute.attribute_key, attribute.observed_at DESC, attribute.id DESC
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .param("attributeKeys", attributeKeys.toArray(String[]::new))
+                .query((rows, rowNumber) -> new AttributeRow(
+                        rows.getString("attribute_key"),
+                        rows.getString("content_role"),
+                        textArray(rows, "value_texts"),
+                        rows.getInt("value_count"),
+                        rows.getInt("values_length"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
+    /** The newest recorded groups of a listing's content rating before an exclusive instant. */
+    public List<ContentGroupRow> latestContentGroups(UUID listingVariantId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT DISTINCT ON (grp.group_key)
+                               grp.group_key, grp.group_name, grp.group_rating, grp.group_weight,
+                               grp.improve_at_least, grp.condition_keys, grp.condition_texts, grp.condition_met,
+                               grp.condition_points, grp.improve_attribute_keys, grp.improve_attribute_names,
+                               grp.observed_at, grp.provenance_id, provenance.source_time
+                          FROM core.listing_content_group_observation AS grp
+                          JOIN core.fact_provenance AS provenance ON provenance.id = grp.provenance_id
+                         WHERE grp.platform_listing_variant_id = :listingVariantId
+                           AND grp.observed_at < :asOf
+                         ORDER BY grp.group_key, grp.observed_at DESC, grp.id DESC
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new ContentGroupRow(
+                        rows.getString("group_key"),
+                        rows.getString("group_name"),
+                        rows.getBigDecimal("group_rating"),
+                        rows.getBigDecimal("group_weight"),
+                        (Integer) rows.getObject("improve_at_least"),
+                        textArray(rows, "condition_keys"),
+                        textArray(rows, "condition_texts"),
+                        java.util.Arrays.asList((Boolean[]) rows.getArray("condition_met").getArray()),
+                        java.util.Arrays.asList((BigDecimal[]) rows.getArray("condition_points").getArray()),
+                        textArray(rows, "improve_attribute_keys"),
+                        textArray(rows, "improve_attribute_names"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
+    /** A text array column, its null elements kept at their positions. */
+    private static List<String> textArray(ResultSet rows, String column) throws SQLException {
+        java.sql.Array array = rows.getArray(column);
+        return array == null ? List.of() : java.util.Arrays.asList((String[]) array.getArray());
+    }
+
+    /** One catalog snapshot of a listing card. */
+    public record CatalogRow(Instant observedAt, String descriptionCategoryKey, String typeKey, Integer imageCount,
+                             List<String> attributeKeys, UUID provenanceId, Instant sourceTime) {
+    }
+
+    /** The newest values of one attribute of a listing. */
+    public record AttributeRow(String attributeKey, String contentRole, List<String> valueTexts, int valueCount,
+                               int valuesLength, Instant observedAt, UUID provenanceId, Instant sourceTime) {
+    }
+
+    /** The newest state of one group of a listing's content rating. */
+    public record ContentGroupRow(String groupKey, String groupName, BigDecimal rating, BigDecimal weight,
+                                  Integer improveAtLeast, List<String> conditionKeys, List<String> conditionTexts,
+                                  List<Boolean> conditionMet, List<BigDecimal> conditionPoints,
+                                  List<String> improveAttributeKeys, List<String> improveAttributeNames,
+                                  Instant observedAt, UUID provenanceId, Instant sourceTime) {
+    }
+
     /** The latest availability of one fulfillment mode. */
     public record StockRow(
             String fulfillmentModeCode, Integer availableQuantity, Integer reservedQuantity,
