@@ -1,5 +1,6 @@
 import {
   AlertOutlined,
+  DashboardOutlined,
   DollarOutlined,
   FundOutlined,
   SettingOutlined,
@@ -12,6 +13,7 @@ import { areas, pages, shortId } from '../i18n/zh/shell';
 /** Every path the signed-in console serves. */
 export const ROUTES = {
   home: '/',
+  storeDiagnosis: '/store/diagnosis',
   pricingQueue: '/pricing/queue',
   subject: '/pricing/subjects/:subjectId',
   review: '/pricing/review',
@@ -62,6 +64,12 @@ export interface NavGroup {
 
 /** The menu, grouped by business area, most important work first. */
 export const NAV_GROUPS: readonly NavGroup[] = [
+  {
+    key: 'store',
+    label: areas.store,
+    icon: <DashboardOutlined />,
+    items: [{ path: ROUTES.storeDiagnosis, label: pages.storeDiagnosis }],
+  },
   {
     key: 'pricing',
     label: areas.pricing,

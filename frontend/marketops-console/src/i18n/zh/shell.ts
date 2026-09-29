@@ -9,11 +9,12 @@
 /** Product identity. */
 export const product = {
   name: 'MarketOps 运营控制台',
-  tagline: '定价与利润、缺货风险、广告效率与 Listing 转化的日常运营工作台。',
+  tagline: '店铺诊断、定价与利润、缺货风险、广告效率与 Listing 转化的日常运营工作台。',
 } as const;
 
 /** Business areas shown as menu groups and first breadcrumb level. */
 export const areas = {
+  store: '店铺概览',
   pricing: '定价与利润',
   availability: '缺货风险',
   advertising: '广告效率',
@@ -23,6 +24,7 @@ export const areas = {
 
 /** Menu entries and page titles. */
 export const pages = {
+  storeDiagnosis: '店铺诊断',
   pricingQueue: '今日工作',
   pricingExport: '诊断导出',
   subject: '商品诊断',
@@ -45,6 +47,8 @@ export const pages = {
 
 /** One sentence per page saying what it is for. */
 export const pageDescriptions = {
+  storeDiagnosis:
+    '按商品汇总平台给出的可见性、库存、价格竞争力、内容评分和近期下单件数，找出卖不动的原因。',
   pricingQueue: '按优先级排列今天最值得处理的商品，点击一行查看诊断证据与调价建议。',
   pricingExport: '导出本店铺的诊断数据文件，用于离线复核或存档。',
   subject: '查看该商品的指标证据、诊断结论与待审核的调价建议。',
