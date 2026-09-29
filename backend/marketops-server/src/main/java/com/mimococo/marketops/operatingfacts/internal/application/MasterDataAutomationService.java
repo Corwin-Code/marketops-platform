@@ -37,6 +37,9 @@ public class MasterDataAutomationService {
 
     static final String POLICY_ENTITY_TYPE = "master-data-automation-policy";
 
+    /** Who the audit journal names for what the policy does. */
+    static final String AUDIT_ACTOR = "master-data-automation";
+
     /** At most this many unmapped listing variants per matcher pass. */
     private static final int MATCHER_LIMIT = 500;
 
@@ -122,7 +125,8 @@ public class MasterDataAutomationService {
     }
 
     private RunResult run(Policy policy) {
-        String auditActor = "automation:master-data-policy:" + policy.id();
+        // The audit journal names an operator by a short code; the policy is named in each reason.
+        String auditActor = AUDIT_ACTOR;
         int examined = 0;
         ListingMappingAutomation.AutoConfirmation confirmation = new ListingMappingAutomation.AutoConfirmation(0, 0);
         if (policy.autoConfirmMapping()) {
