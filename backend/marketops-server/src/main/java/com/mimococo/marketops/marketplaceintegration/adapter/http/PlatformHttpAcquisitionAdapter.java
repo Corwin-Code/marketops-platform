@@ -6,6 +6,7 @@ import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdb
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
+import com.mimococo.marketops.productlisting.ListingKeyDirectory;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
@@ -78,15 +79,18 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
     private final OutboundHttp httpClient;
     private final PlatformCallSpecRepository specs;
     private final SecretResolverPort secrets;
+    private final ListingKeyDirectory keys;
     private final Clock clock;
 
     public PlatformHttpAcquisitionAdapter(OutboundHttp httpClient,
                                           PlatformCallSpecRepository specs,
                                           SecretResolverPort secrets,
+                                          ListingKeyDirectory keys,
                                           Clock clock) {
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
         this.specs = Objects.requireNonNull(specs, "specs");
         this.secrets = Objects.requireNonNull(secrets, "secrets");
+        this.keys = Objects.requireNonNull(keys, "keys");
         this.clock = Objects.requireNonNull(clock, "clock");
     }
 
@@ -119,6 +123,21 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
             // Without a window the source would be asked about nothing in
             // particular; the call does not happen.
             return refused("run_window_required", startedAt);
+        }
+        Optional<ListingKeyDirectory.KeyKind> keyKind = keyKind(spec);
+        if (keyKind.isPresent()) {
+            // A request that names products names the store's recorded keys, one
+            // batch per call; with nothing recorded there is nothing to ask.
+            List<String> batch = specs.jobStoreId(request.jobId())
+                    .map(store -> keys.keys(store, keyKind.get(),
+                            Integer.parseInt(placeholders.get(OFFSET_PLACEHOLDER)),
+                            EndpointCallSpec.REQUESTED_PAGE_SIZE))
+                    .orElse(List.of());
+            if (batch.isEmpty()) {
+                return refused("no_keys_to_request", startedAt);
+            }
+            placeholders.put(keyKind.get() == ListingKeyDirectory.KeyKind.ITEM ? "itemKeyBatch" : "listingKeyBatch",
+                    RequestTemplate.keyBatch(batch));
         }
         OutboundHttp.Request builder;
         List<char[]> resolvedSecrets = new ArrayList<>();
@@ -236,6 +255,14 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         // family of resources that differ only by registry name.
         values.put("endpointCode", spec.endpointCode());
         return values;
+    }
+
+    /** Which recorded keys a template names products by, when it names any. */
+    static Optional<ListingKeyDirectory.KeyKind> keyKind(EndpointCallSpec spec) {
+        String body = spec.bodyTemplate() == null ? "" : spec.bodyTemplate();
+        if (body.contains("{itemKeyBatch}")) return Optional.of(ListingKeyDirectory.KeyKind.ITEM);
+        if (body.contains("{listingKeyBatch}")) return Optional.of(ListingKeyDirectory.KeyKind.LISTING);
+        return Optional.empty();
     }
 
     /** Whether any recorded template names the run's window. */

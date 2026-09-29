@@ -146,6 +146,28 @@ public class FactWriteRepository {
                                        String externalCurrency) {
     }
 
+    /** Record the marketplace's content rating of a listing variant (0 to 100). */
+    public void insertContent(UUID id, UUID organizationId, UUID provenanceId,
+                              UUID listingVariantId, String sourceFactKey, Instant observedAt,
+                              BigDecimal contentRating) {
+        jdbc.sql("""
+                        INSERT INTO core.listing_content_observation (
+                            id, organization_id, provenance_id, platform_listing_variant_id,
+                            source_fact_key, observed_at, content_rating)
+                        VALUES (:id, :organizationId, :provenanceId, :listingVariantId,
+                            :sourceFactKey, :observedAt, :contentRating)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("contentRating", contentRating)
+                .update();
+    }
+
     /** Record observed availability for one fulfillment mode. */
     public void insertStock(UUID id, UUID organizationId, UUID provenanceId,
                             UUID listingVariantId, String fulfillmentModeCode,

@@ -197,6 +197,67 @@ def catalog_skus(pilot: "Pilot") -> dict[str, str]:
     return found
 
 
+def catalog_product_ids(pilot: "Pilot") -> list[str]:
+    """The catalog's product ids in the order the backend batches listing keys (as text)."""
+    return sorted(set(catalog_skus(pilot).values()))
+
+
+AVAILABILITY_SELLABLE = {"AVAILABLE": "true", "HIDDEN": "false", "UNAVAILABLE": "false"}
+
+
+def inspect_status(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    items = [item for answer in answers for item in answer.get("items") or []]
+    availability, statuses, levels = Counter(), Counter(), Counter()
+    multiple, with_reasons, no_price, no_stock, archived = 0, 0, 0, 0, 0
+    for item in items:
+        entries = item.get("availabilities") or []
+        multiple += len(entries) > 1
+        first = entries[0] if entries else {}
+        availability[str(first.get("availability"))] += 1
+        with_reasons += bool(first.get("reasons"))
+        statuses[str((item.get("statuses") or {}).get("status"))] += 1
+        for error in item.get("errors") or []:
+            levels[str(error.get("level"))] += 1
+        details = item.get("visibility_details") or {}
+        no_price += details.get("has_price") is False
+        no_stock += details.get("has_stock") is False
+        archived += bool(item.get("is_archived") or item.get("is_autoarchived"))
+    lines = [f"status: {len(items)} products, availability {dict(sorted(availability.items()))}, "
+             f"with hide reasons {with_reasons}, archived {archived}",
+             f"status words {dict(sorted(statuses.items()))}, error levels {dict(sorted(levels.items()))}, "
+             f"without price {no_price}, without stock {no_stock}"]
+    unknown = sorted(set(availability) - set(AVAILABILITY_SELLABLE) - {"None"})
+    refusal = None
+    if multiple:
+        refusal = f"{multiple} products carry more than one availability; the mapping reads only the first"
+    elif unknown:
+        refusal = f"unknown availability words {unknown}; the value map has to name them first"
+    return lines, refusal
+
+
+def inspect_content(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    products = [product for answer in answers for product in answer.get("products") or []]
+    ratings = [product.get("rating") for product in products]
+    numeric = [float(rating) for rating in ratings if isinstance(rating, (int, float))]
+    buckets = Counter("0-24" if r < 25 else "25-49" if r < 50 else "50-74" if r < 75 else "75-100" for r in numeric)
+    decimals = max((len(str(r).split(".")[1]) if "." in str(r) else 0 for r in numeric), default=0)
+    unmet = Counter()
+    for product in products:
+        for group in product.get("groups") or []:
+            unmet[str(group.get("key"))] += sum(1 for c in group.get("conditions") or [] if not c.get("fulfilled"))
+    known = set(catalog_skus(pilot))
+    unknown = sum(1 for product in products if str(product.get("sku")) not in known)
+    lines = [f"content: {len(products)} products ({unknown} not in the catalog probe), rating buckets "
+             f"{dict(sorted(buckets.items()))}, average {round(sum(numeric) / len(numeric), 1) if numeric else None}",
+             f"unmet conditions by group {dict(sorted(unmet.items()))}"]
+    refusal = None
+    if len(numeric) != len(products):
+        refusal = f"{len(products) - len(numeric)} products carry no numeric rating"
+    elif decimals > 4:
+        refusal = f"ratings carry {decimals} decimals; at most 4 can be stored exactly"
+    return lines, refusal
+
+
 def inspect_traffic(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
     rows = [row for answer in answers for row in ((answer.get("result") or {}).get("data") or [])]
     metrics = TRAFFIC_METRICS[TRAFFIC_METRIC_SET]
@@ -448,6 +509,90 @@ CAPABILITIES = {
             "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
         },
         "inspect": inspect_traffic,
+    },
+    "status": {
+        "code": "ozon-listing-status-read",
+        "display": "Ozon listing status: availability to buyers, hide reasons and product status",
+        "description": "Asks about every product the catalog recorded, 100 per request (POST "
+                       "/v3/product/info/list; official docs checked 2026-09-29).",
+        "manifest": "status-latest.json",
+        "endpoint": {
+            "code": "ozon-product-info-list-v3", "api_version": "v3",
+            "schema_version": "v3GetProductInfoListResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none; up to 1000 ids per request. Our cap: 60/min, "
+                         "100 ids per request. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full snapshot of every recorded product's status on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v3/product/info/list",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"product_id":{listingKeyBatch}}',
+                "response_content_type": "application/json", "continuation_pointer": None,
+                # The request names recorded products: it ends when they have all
+                # been asked, whatever each answer held.
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 60,
+                "continuation_end_rule": "KEYS_EXHAUSTED", "records_pointer": "/items",
+            },
+            "probe_body": lambda cursor, context: {
+                "product_id": context["keys"][int(cursor or "0"):int(cursor or "0") + PAGE_SIZE]},
+            "token_key": None,
+            "records_key": "items",
+            "computed": "KEYS",
+            "keys": "LISTING",
+        },
+        "job": {"suffix": "status", "dataset": "LISTING_HEALTH", "display": "Ozon 试点：商品状态与可见性"},
+        # availability is Ozon's own answer to "can a buyer see and buy it": AVAILABLE,
+        # HIDDEN (with reasons) or UNAVAILABLE (SKU removed). One SKU per product, so
+        # the first availability entry is the product's; the first hide reason is kept.
+        "mapping": {
+            "dataset": "LISTING_HEALTH", "version": 1, "record_pointer": "/items", "child_pointer": None,
+            "fields": {"nativeListingKey": "/id", "nativeVariantKey": "/id", "nativeStatus": "/statuses/status",
+                       "blockedReasonNative": "/availabilities/0/reasons/0/human_text/text"},
+            "sources": {
+                "observedAt": {"kind": "OBSERVATION_TIME"},
+                "sellable": {"kind": "POINTER", "pointer": "/availabilities/0/availability",
+                             "valueMap": AVAILABILITY_SELLABLE},
+            },
+        },
+        "inspect": inspect_status,
+    },
+    "content": {
+        "code": "ozon-content-rating-read",
+        "display": "Ozon content rating: 0-100 per product card, with the groups that make it up",
+        "description": "Asks about every SKU the catalog recorded, 100 per request (POST "
+                       "/v1/product/rating-by-sku; official docs checked 2026-09-29).",
+        "manifest": "content-latest.json",
+        "endpoint": {
+            "code": "ozon-product-rating-by-sku-v1", "api_version": "v1",
+            "schema_version": "v1GetProductRatingBySkuResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, 100 SKUs per request. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full snapshot of every recorded SKU's content rating on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/product/rating-by-sku",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"skus":{itemKeyBatch}}',
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 60,
+                "continuation_end_rule": "KEYS_EXHAUSTED", "records_pointer": "/products",
+            },
+            "probe_body": lambda cursor, context: {
+                "skus": context["keys"][int(cursor or "0"):int(cursor or "0") + PAGE_SIZE]},
+            "token_key": None,
+            "records_key": "products",
+            "computed": "KEYS",
+            "keys": "ITEM",
+        },
+        "job": {"suffix": "content", "dataset": "LISTING_CONTENT", "display": "Ozon 试点：内容评分"},
+        # The rating names the SKU; the catalog resolves it to the product. The groups
+        # and conditions behind it stay in Raw for now.
+        "mapping": {
+            "dataset": "LISTING_CONTENT", "version": 1, "record_pointer": "/products", "child_pointer": None,
+            "fields": {"nativeItemKey": "/sku", "contentRating": "/rating"},
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
+        },
+        "inspect": inspect_content,
     },
 }
 
@@ -822,6 +967,10 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         if computed == "OFFSET":
             # The answer carries no cursor: the next offset is this one plus a page.
             token = str(int(cursor or "0") + PAGE_SIZE)
+        elif computed == "KEYS":
+            # A batch of recorded keys: the next offset, until every key was asked.
+            following = int(cursor or "0") + PAGE_SIZE
+            token = str(following) if following < len(window["keys"]) else None
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -855,6 +1004,12 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         if computed == "OFFSET":
             cursor = token
             continue
+        if computed == "KEYS":
+            if token is None:
+                end_signal = "KEYS_EXHAUSTED"
+                break
+            cursor = token
+            continue
         if endpoint["token_key"] not in answer:
             print(f"page {index + 1} has no {endpoint['token_key']}; nothing recorded")
             return None
@@ -876,7 +1031,8 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                 *({"EMPTY_RECORDS"} if rule in ("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS") else ()),
                 *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
                 *({"SHORT_PAGE"} if short_rule else ()),
-                *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ())}
+                *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ()),
+                *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ())}
     if end_signal not in accepted:
         print(f"the listing ended with {end_signal}, which the registered rule {rule} does not accept")
         return None
@@ -923,6 +1079,14 @@ def command_probe(args: argparse.Namespace) -> int:
             day = args.date or (utc_now() - timedelta(days=1)).strftime("%Y-%m-%d")
             window = {"from": day, "to": day}
             print(f"probing the UTC day {day}")
+        if capability["endpoint"].get("keys") in ("LISTING", "ITEM"):
+            # The backend batches the keys in their text order; the probe asks the same way.
+            keys = catalog_product_ids(pilot) if capability["endpoint"]["keys"] == "LISTING" \
+                else sorted(catalog_skus(pilot))
+            if not keys:
+                sys.exit("no catalog probe evidence; probe the catalog first so products can be named")
+            window = dict(window or {}, keys=keys)
+            print(f"asking about the {len(keys)} products of the catalog probe")
         probed = probe_pages(pilot, capability, key, client_id, api_key, context, window)
         if probed is None:
             return 1

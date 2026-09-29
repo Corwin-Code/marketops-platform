@@ -136,6 +136,14 @@ public class PlatformCallSpecRepository {
                 .optional();
     }
 
+    /** The store a job reads for, when it reads for one. */
+    public Optional<UUID> jobStoreId(UUID jobId) {
+        return jdbc.sql("SELECT store_id FROM platform.ingestion_job WHERE id = :jobId AND store_id IS NOT NULL")
+                .param("jobId", jobId)
+                .query((rows, rowNumber) -> rows.getObject("store_id", UUID.class))
+                .optional();
+    }
+
     /** The window a run asked its source for, when it asked for one. */
     public Optional<com.mimococo.marketops.marketplaceintegration.IngestionJobDirectory.RunWindow> runWindow(
             UUID runId) {

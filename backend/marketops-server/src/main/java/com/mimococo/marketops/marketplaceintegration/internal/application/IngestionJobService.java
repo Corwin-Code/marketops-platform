@@ -57,7 +57,7 @@ public class IngestionJobService {
     static final String RUN_ENTITY_TYPE = "ingestion-run";
 
     private static final Set<String> DATASET_KINDS = Set.of(
-            "LISTING", "LISTING_HEALTH", "PRICE", "STOCK", "TRAFFIC", "SALES",
+            "LISTING", "LISTING_HEALTH", "LISTING_CONTENT", "PRICE", "STOCK", "TRAFFIC", "SALES",
             "RETURNS", "FINANCE", "ADVERTISING", "UNKNOWN");
 
     /** Job status moves a maintenance operator may make; RETIRED is final. */

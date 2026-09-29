@@ -7,6 +7,7 @@ import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdb
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PlatformCallSpecRepository;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.RawEvidenceRepository;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
+import com.mimococo.marketops.productlisting.ListingKeyDirectory;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.ErrorCode;
@@ -58,6 +59,7 @@ public class AcquisitionPageWorker {
     private final ObjectMapper objectMapper;
     private final IdGenerator idGenerator;
     private final TransactionTemplate transactions;
+    private final ListingKeyDirectory listingKeys;
 
     AcquisitionPageWorker(IngestionRunRepository runs,
                           RawEvidenceRepository evidence,
@@ -66,7 +68,9 @@ public class AcquisitionPageWorker {
                           JdbcAuthorizedAcquisitionGateway gateway,
                           ObjectMapper objectMapper,
                           IdGenerator idGenerator,
-                          PlatformTransactionManager transactionManager) {
+                          PlatformTransactionManager transactionManager,
+                          ListingKeyDirectory listingKeys) {
+        this.listingKeys = listingKeys;
         this.runs = runs;
         this.evidence = evidence;
         this.callSpecs = callSpecs;
@@ -95,7 +99,7 @@ public class AcquisitionPageWorker {
                 context.scopeGrantId(), CALL_AUTHORITY, CorrelationId.current());
         RawContentRef content = custody.store(custodyNamespace(context), result.body());
         Continuation continuation = continuationToken(result, specification.get(), continuationCall,
-                position);
+                position, keysRecorded(context.jobId(), specification.get()));
         return transactions.execute(status -> {
             UUID observationId = storeEvidence(runId, context, result, content,continuation.kind());
             if (continuation.kind() == Kind.END || continuation.kind() == Kind.NEXT) {
@@ -104,6 +108,17 @@ public class AcquisitionPageWorker {
             }
             return new PageOutcome(continuation.kind(), observationId);
         });
+    }
+
+    /** How many keys a key-batch endpoint has to ask about; zero for any other endpoint. */
+    private long keysRecorded(UUID jobId, EndpointCallSpec spec) {
+        if (!"KEYS_EXHAUSTED".equals(spec.continuationEndRule())) {
+            return 0;
+        }
+        String body = spec.bodyTemplate() == null ? "" : spec.bodyTemplate();
+        ListingKeyDirectory.KeyKind kind = body.contains("{itemKeyBatch}")
+                ? ListingKeyDirectory.KeyKind.ITEM : ListingKeyDirectory.KeyKind.LISTING;
+        return callSpecs.jobStoreId(jobId).map(store -> (long) listingKeys.keyCount(store, kind)).orElse(0L);
     }
 
     /**
@@ -157,12 +172,14 @@ public class AcquisitionPageWorker {
      */
     static boolean computedContinuation(EndpointCallSpec spec) {
         return spec.continuationPointer() == null
-                && List.of("OFFSET", "PAGE").contains(spec.paginationModel())
-                && List.of("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND").contains(spec.continuationEndRule());
+                && ((List.of("OFFSET", "PAGE").contains(spec.paginationModel())
+                        && List.of("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND").contains(spec.continuationEndRule()))
+                    || ("OFFSET".equals(spec.paginationModel())
+                        && "KEYS_EXHAUSTED".equals(spec.continuationEndRule())));
     }
 
     Continuation continuationToken(AcquisitionResult result, EndpointCallSpec spec,
-                                   boolean continuationCall, String position) {
+                                   boolean continuationCall, String position, long keysRecorded) {
         if (!validPagination(spec)) return new Continuation(Kind.CONFIG_INVALID, null);
         String endRule = spec.continuationEndRule() == null ? "JSON_NULL" : spec.continuationEndRule();
         // A source that answers "not found" to a cursor past its last item ends
@@ -205,6 +222,10 @@ public class AcquisitionPageWorker {
                     return new Continuation(Kind.CONFIG_INVALID, null);
                 }
                 long next = paged ? current + 1 : current + EndpointCallSpec.REQUESTED_PAGE_SIZE;
+                if ("KEYS_EXHAUSTED".equals(endRule) && next >= keysRecorded) {
+                    // Every recorded key has been asked, whatever the answer held.
+                    return new Continuation(Kind.END, null);
+                }
                 return new Continuation(Kind.NEXT, Long.toString(next));
             }
             JsonNode token = document.at(spec.continuationPointer());

@@ -2,6 +2,7 @@ package com.mimococo.marketops.marketplaceintegration.adapter.http;
 
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PlatformCallSpecRepository;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
+import com.mimococo.marketops.productlisting.ListingKeyDirectory;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.time.Clock;
@@ -29,8 +30,9 @@ public class AcquisitionConfiguration {
     public AcquisitionPort acquisitionPort(OutboundHttp acquisitionHttpClient,
                                            PlatformCallSpecRepository callSpecs,
                                            SecretResolverPort secretResolverPort,
+                                           ListingKeyDirectory listingKeys,
                                            Clock clock) {
         return new PlatformHttpAcquisitionAdapter(
-                acquisitionHttpClient, callSpecs, secretResolverPort, clock);
+                acquisitionHttpClient, callSpecs, secretResolverPort, listingKeys, clock);
     }
 }
