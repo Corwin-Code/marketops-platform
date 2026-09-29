@@ -95,17 +95,27 @@ public class FactWriteRepository {
                             UUID listingVariantId, String sourceFactKey, Instant observedAt,
                             String currencyCode, BigDecimal listPrice, BigDecimal sellingPrice,
                             BigDecimal discountPrice, String promotionActive,
-                            String nativePriceKind) {
+                            String nativePriceKind, PriceCompetitiveness competitiveness) {
         jdbc.sql("""
                         INSERT INTO core.listing_price_observation (
                             id, organization_id, provenance_id, platform_listing_variant_id,
                             source_fact_key, observed_at, currency_code, list_price,
-                            selling_price, discount_price, promotion_active, native_price_kind)
+                            selling_price, discount_price, promotion_active, native_price_kind,
+                            price_index_native, platform_competitor_min_price,
+                            platform_competitor_currency_code, external_competitor_min_price,
+                            external_competitor_currency_code)
                         VALUES (:id, :organizationId, :provenanceId, :listingVariantId,
                             :sourceFactKey, :observedAt, :currencyCode, :listPrice,
-                            :sellingPrice, :discountPrice, :promotionActive, :nativePriceKind)
+                            :sellingPrice, :discountPrice, :promotionActive, :nativePriceKind,
+                            :indexNative, :platformMinPrice, :platformCurrency,
+                            :externalMinPrice, :externalCurrency)
                         ON CONFLICT (organization_id, source_fact_key) DO NOTHING
                         """)
+                .param("indexNative", competitiveness.indexNative())
+                .param("platformMinPrice", competitiveness.platformMinPrice())
+                .param("platformCurrency", competitiveness.platformCurrency())
+                .param("externalMinPrice", competitiveness.externalMinPrice())
+                .param("externalCurrency", competitiveness.externalCurrency())
                 .param("id", id)
                 .param("organizationId", organizationId)
                 .param("provenanceId", provenanceId)
@@ -119,6 +129,21 @@ public class FactWriteRepository {
                 .param("promotionActive", promotionActive)
                 .param("nativePriceKind", nativePriceKind)
                 .update();
+    }
+
+    /**
+     * How competitive the marketplace says a price is. Platform analytics: it
+     * explains a diagnosis and never drives an automatic price change.
+     *
+     * @param indexNative the marketplace's own word for the class, or {@code null}
+     * @param platformMinPrice lowest competitor price on the same marketplace, or {@code null}
+     * @param platformCurrency currency of that price, or {@code null}
+     * @param externalMinPrice lowest competitor price on other marketplaces, or {@code null}
+     * @param externalCurrency currency of that price, or {@code null}
+     */
+    public record PriceCompetitiveness(String indexNative, BigDecimal platformMinPrice,
+                                       String platformCurrency, BigDecimal externalMinPrice,
+                                       String externalCurrency) {
     }
 
     /** Record observed availability for one fulfillment mode. */

@@ -284,3 +284,34 @@ make ozon-normalize CAPABILITY=traffic
 - **限流**：官方文档写的是每分钟 1 次。但 2026-09-29 补数时，两次调用间隔约 62 秒，仍然收到 HTTP 429 `{"code":8,"message":"You have reached request rate limit per second"}`；隔了 3.5 分钟重试，又收到一次同样的 429；第三次才成功。原因可能是同一个 Client-Id 的配额也被别的调用方占用了。所以调用间隔放宽到 90 秒。运行被限流后会进入 `RETRY_WAIT`，脚本会在原地最多重试 3 次。任务里有没跑完的运行时，下一次 `ozon-run` 会先把它跑完，再开新的运行；新接口 `GET /api/v1/admin/metadata/ingestion-jobs/{id}/live-run` 用来查这个运行。
 - 同一天重新采集时，新的 Raw 会被保存，但事实按"任务 + 商品 + 周期"去重，已有事实不会被更新，所以 Ozon 事后修正的数字不会进来。这是现有事实写入的通用规则。
 - verify 核验成功后，脚本会在证据目录记下这次核验。之后用同一份证据再运行 verify 会直接跳过；确实需要重新提交时，加 `AGAIN=1`。
+
+## Ozon 第 4a 步：价格竞争力（价格指数）
+
+目标：把 Ozon 对每个商品价格竞争力的判断保存下来，用来诊断"为什么没有订单"。这一步不新增接口调用，数据就在每次价格采集的响应里（`price_indexes`）。依赖迁移 `V0012`。
+
+- **映射**：价格映射升级到 v2，新增以下字段：
+  - `price_indexes/color_index` → `priceIndexNative`：原样保存 Ozon 的等级词，取值 `WITHOUT_INDEX`、`SUPER`、`GREEN`、`YELLOW`、`RED`；
+  - `ozon_index_data/min_price` 和 `min_price_currency` → Ozon 站内竞品的最低价和币种；
+  - `external_index_data` → 其他平台竞品的最低价和币种。
+
+  没有竞品价时，Ozon 返回的是 0 加空币种，这种情况按"没有竞品价"保存，不会当成价格 0。
+- **可信度**：这些是平台分析数据，按需求基线属于 C 级，只用于诊断和趋势，不会驱动自动调价或利润计算（HR-07）。竞品是 Ozon 自己匹配的，可能包含相似但不完全相同的商品。
+- **结果**：2026-09-29 试点店铺 41 个商品，`RED` 13 个、`YELLOW` 1 个、`WITHOUT_INDEX` 27 个，其他平台的竞品价格全部没有提供。RED 商品含卖家促销的价格，平均比 Ozon 站内竞品最低价贵 186%。
+
+步骤（端点没有变化，不需要重新做两人核验；映射升级只需一次）：
+
+```bash
+make ozon-probe CAPABILITY=prices OFFICIAL_SOURCE=~/Downloads/swagger.json
+```
+
+```bash
+make ozon-setup CAPABILITY=prices SUPERSEDE=1
+```
+
+```bash
+make ozon-run CAPABILITY=prices
+```
+
+```bash
+make ozon-normalize CAPABILITY=prices
+```

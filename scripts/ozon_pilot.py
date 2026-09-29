@@ -38,6 +38,7 @@ The key files are expected at <mount>/ozon/<pilot>/seller-api-key and
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import base64
 import getpass
 import hashlib
@@ -134,9 +135,16 @@ def inspect_prices(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str 
     zero_old = sum(1 for price in prices if not price.get("old_price"))
     zero_marketing = sum(1 for price in prices if not price.get("marketing_seller_price"))
     zero_price = sum(1 for price in prices if not price.get("price"))
+    indexes = [item.get("price_indexes") or {} for item in items]
+    classes = dict(sorted(Counter(str(index.get("color_index")) for index in indexes).items()))
+    with_platform = sum(1 for index in indexes if ((index.get("ozon_index_data") or {}).get("min_price") or 0) > 0)
+    with_external = sum(1 for index in indexes
+                        if ((index.get("external_index_data") or {}).get("min_price") or 0) > 0)
     lines = [f"prices: {len(items)} products, currencies {currencies}, "
              f"price 0/missing {zero_price}, old_price 0/missing {zero_old}, "
-             f"marketing_seller_price 0/missing {zero_marketing}"]
+             f"marketing_seller_price 0/missing {zero_marketing}",
+             f"price index: classes {classes}, competitor price on Ozon for {with_platform}, "
+             f"on other marketplaces for {with_external}"]
     refusal = None
     if zero_price:
         refusal = f"{zero_price} products have no selling price; review before mapping prices"
@@ -337,11 +345,18 @@ CAPABILITIES = {
         # promotions (what a price change sets), old_price the crossed-out price,
         # marketing_seller_price the ceiling with the seller's promotions. None is
         # what a buyer finally pays; Ozon's own co-funded discount is not in it.
+        # Version 2 adds Ozon's price index (color_index, and the lowest competitor
+        # price on Ozon and elsewhere): platform analytics for diagnosis only.
         "mapping": {
-            "dataset": "PRICE", "version": 1, "record_pointer": "/items", "child_pointer": None,
+            "dataset": "PRICE", "version": 2, "record_pointer": "/items", "child_pointer": None,
             "fields": {"nativeListingKey": "/product_id", "nativeVariantKey": "/product_id",
                        "currencyCode": "/price/currency_code", "sellingPrice": "/price/price",
-                       "listPrice": "/price/old_price", "discountPrice": "/price/marketing_seller_price"},
+                       "listPrice": "/price/old_price", "discountPrice": "/price/marketing_seller_price",
+                       "priceIndexNative": "/price_indexes/color_index",
+                       "platformCompetitorMinPrice": "/price_indexes/ozon_index_data/min_price",
+                       "platformCompetitorCurrencyCode": "/price_indexes/ozon_index_data/min_price_currency",
+                       "externalCompetitorMinPrice": "/price_indexes/external_index_data/min_price",
+                       "externalCompetitorCurrencyCode": "/price_indexes/external_index_data/min_price_currency"},
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
         "inspect": inspect_prices,
