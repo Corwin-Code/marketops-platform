@@ -123,4 +123,11 @@ export const REASON_LABELS: Readonly<Record<string, string>> = {
   EXECUTION_FAILED: '执行出错',
   NORMALIZATION_FAILED: '标准化出错',
   NOTHING_TO_PROCESS: '已全部标准化',
+  READ_RETRY: '读取被限流或中断，稍后重试',
+  PAGE_FAILED: '读取出错，稍后重试',
+  CALL_CEILING_REACHED: '单次运行的调用数已到上限，下一轮继续',
+  NOT_CLAIMABLE: '运行暂时不能认领，下一轮再试',
+  RETRY_BUDGET_EXHAUSTED: '重试次数用完',
+  JOB_NOT_EXECUTABLE: '采集任务不可执行（任务、授权或服务账号已失效）',
+  BLOCKED: '运行被卡住，需要人处理',
 };
