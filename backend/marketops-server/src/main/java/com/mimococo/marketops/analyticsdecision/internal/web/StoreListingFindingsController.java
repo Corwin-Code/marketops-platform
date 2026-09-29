@@ -50,7 +50,8 @@ class StoreListingFindingsController {
             MetricCode.PLATFORM_COMPETITOR_MIN_PRICE.name(), MetricCode.PROJECTED_UNIT_PROFIT.name(),
             MetricCode.PROJECTED_UNIT_MARGIN.name(), MetricCode.PROJECTED_BREAK_EVEN_PRICE.name(),
             MetricCode.TARGET_MARGIN_PRICE.name(), MetricCode.SEARCH_USERS.name(),
-            MetricCode.ORDERED_UNITS.name(), MetricCode.CONTENT_RATING.name());
+            MetricCode.ORDERED_UNITS.name(), MetricCode.CONTENT_RATING.name(),
+            MetricCode.PLATFORM_AVAILABLE_UNITS.name(), MetricCode.LISTING_SELLABLE.name());
 
     private final StoreListingFindingsRepository findings;
     private final BusinessAuthorization authorization;
@@ -83,7 +84,7 @@ class StoreListingFindingsController {
         Map<UUID, Map<String, MetricView>> metrics = new LinkedHashMap<>();
         for (MetricRow row : findings.metricValues(run.get().id(), METRICS)) {
             metrics.computeIfAbsent(row.subjectId(), subject -> new LinkedHashMap<>())
-                    .put(row.metricCode(), new MetricView(row.valueState(),
+                    .put(row.metricCode(), new MetricView(row.valueId(), row.valueState(),
                             row.numericValue() == null ? null : row.numericValue().stripTrailingZeros().toPlainString(),
                             row.currencyCode(), row.confidenceState()));
         }
@@ -138,7 +139,11 @@ class StoreListingFindingsController {
     record Finding(UUID findingId, String ruleCode, String severity, Map<String, Object> detail) {
     }
 
-    /** One metric value as decimal text, with its state and confidence. */
-    record MetricView(String valueState, String value, String currencyCode, String confidenceState) {
+    /**
+     * One metric value as decimal text, with its state and confidence.
+     *
+     * @param valueId the value's identifier, which an explanation cites
+     */
+    record MetricView(UUID valueId, String valueState, String value, String currencyCode, String confidenceState) {
     }
 }

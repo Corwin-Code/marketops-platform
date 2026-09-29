@@ -151,6 +151,31 @@ export const storeDiagnosisText = {
   economicsNote:
     '按 Ozon 当前公布的费率和已采用的成本估算：物流取最高档，扣除售价中所含的增值税，不计其他税。出现真实结算后会校准。',
   targetMarginHint: (rate: string): string => `保住 ${rate} 单件利润率所需的最低售价`,
+
+  aiSummaryTitle: 'AI 周诊断',
+  aiSummaryHint:
+    'AI 只根据上面的诊断结论和商品数据写解读，不会计算价格或利润，也不能批准任何操作。数字都照抄自数据；每周一采集完成后会自动生成一次，数据没变时沿用上次的解读。',
+  aiGenerate: '生成解读',
+  aiRegenerate: '重新生成',
+  aiNone:
+    '还没有生成过解读。点“生成解读”，AI 会基于诊断结论写出一句话结论、最多 3 个优先动作和不确定项。',
+  aiWaiting: (seconds: number): string => `通常约 30 秒 · 已等待 ${String(seconds)} 秒`,
+  aiHeadline: '结论',
+  aiActions: '优先动作',
+  aiFacts: '依据',
+  aiUnknowns: '不确定项',
+  aiExpectedEffect: '预期效果：',
+  aiGeneratedAt: '生成于',
+  aiReused: '数据没有变化，沿用此前的解读',
+  aiInFlight: '已有一个生成请求正在进行，稍后点“重新加载”查看结果。',
+  aiUnavailable: '暂时没有可用的解读：',
+  aiUnaffected: '诊断结论和指标不受影响。',
+  aiRejected: (count: number): string => `另有 ${String(count)} 条 AI 陈述未通过校验，已隐藏`,
+  aiOlderEvidence: (count: number): string => `另引用 ${String(count)} 条证据`,
+  aiReload: '重新加载',
+  aiDrawerTitle: 'AI 解读',
+  aiDrawerNone: '还没有生成过这个商品的解读。',
+  aiReference: (conclusion: string, product: string): string => `${conclusion} · ${product}`,
 } as const;
 
 /** What each conclusion means and what to do next, in the order the page shows them. */

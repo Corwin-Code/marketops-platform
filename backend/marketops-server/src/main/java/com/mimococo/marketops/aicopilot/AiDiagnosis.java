@@ -23,6 +23,8 @@ import java.util.UUID;
  * @param claims the validated statements, accepted and rejected alike
  * @param startedAt when the invocation began
  * @param completedAt when it ended, or {@code null} while in flight
+ * @param reused whether this answer was recorded earlier and handed out again because nothing it
+ *        was based on changed, without calling a model
  */
 public record AiDiagnosis(
         UUID invocationId,
@@ -35,7 +37,8 @@ public record AiDiagnosis(
         String modelCode,
         List<AiClaim> claims,
         Instant startedAt,
-        Instant completedAt) {
+        Instant completedAt,
+        boolean reused) {
 
     public AiDiagnosis {
         Objects.requireNonNull(invocationId, "invocationId");
@@ -44,6 +47,15 @@ public record AiDiagnosis(
     }
 
     /** The claims validation accepted, in the order the model produced them. */
+    /**
+     * The same recorded answer, handed out again because nothing it was based on changed; no model
+     * was called for it.
+     */
+    public AiDiagnosis asReused() {
+        return new AiDiagnosis(invocationId, subjectId, outputSchemaVersion, state, failureCode, degraded, providerCode,
+                modelCode, claims, startedAt, completedAt, true);
+    }
+
     public List<AiClaim> acceptedClaims() {
         return claims.stream().filter(AiClaim::accepted).toList();
     }
@@ -62,7 +74,7 @@ public record AiDiagnosis(
                     claim.metricValueRefs(),claim.findingRefs(),payload,claim.accepted(),claim.rejectionCode());
         }).toList();
         return new AiDiagnosis(invocationId,subjectId,outputSchemaVersion,state,failureCode,degraded,providerCode,modelCode,
-                wireClaims,startedAt,completedAt);
+                wireClaims,startedAt,completedAt,reused);
     }
 
     private static Object consoleValue(Object value) {

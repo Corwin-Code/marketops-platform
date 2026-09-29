@@ -43,6 +43,24 @@ public class OutputValidator {
     static final String CAPABILITY_NOT_RECOGNISED = "CAPABILITY_NOT_RECOGNISED";
     static final String STATEMENT_TOO_LONG = "STATEMENT_TOO_LONG";
     static final String INSTRUCTION_LIKE_CONTENT = "INSTRUCTION_LIKE_CONTENT";
+    static final String DERIVED_CALCULATION_NOT_PRODUCTIZED = "DERIVED_CALCULATION_NOT_PRODUCTIZED";
+
+    /**
+     * A number as text writes it: digits with optional thousands separators and decimals. Digits
+     * glued to Latin letters (a window code such as D7) are part of an identifier, not a number;
+     * digits after Chinese characters are numbers, because Chinese has no spaces.
+     */
+    private static final Pattern NUMBER = Pattern.compile(
+            "(?<![A-Za-z\\p{N}._])(\\d{1,3}(?:[,\\u00A0\\u202F ]\\d{3})+|\\d+)(?:\\.(\\d+))?(?![\\p{N}])");
+
+    /** Numbers any text may use without the data giving them: small counts and window lengths. */
+    private static final Set<String> ALWAYS_QUOTABLE = Set.of(
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "14", "30", "100");
+
+    /** Members whose value is chosen, not stated: references, enumerations, the validation window. */
+    private static final Set<String> UNQUOTED_MEMBERS = Set.of(
+            "evidenceRefs", "findingRefs", "confidence", "actionCapability", "validationWindowDays",
+            "currencyCode", "direction", "level");
 
     /** Longest statement this product will store or display. */
     private static final int MAXIMUM_STATEMENT_LENGTH = 2000;
@@ -108,6 +126,16 @@ public class OutputValidator {
      *         rejection when the answer is not readable as the contract
      */
     public List<ValidatedClaim> validate(String answer, SubjectProjection projection) {
+        return validate(answer, projection, false);
+    }
+
+    /**
+     * Validate one model answer; with {@code numbersFromData}, every number a claim writes must
+     * appear in the projection, as given or rounded to at most two decimals, so a model can restate
+     * the platform's numbers but never compute its own.
+     */
+    public List<ValidatedClaim> validate(String answer, SubjectProjection projection, boolean numbersFromData) {
+        Set<String> quotable = numbersFromData ? quotableNumbers(projection) : null;
         if (answer == null || answer.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > MAXIMUM_OUTPUT_BYTES) {
             return List.of(ValidatedClaim.rejected(AiClaimKind.UNKNOWN, 1, "answer outside the output bound", SCHEMA_INVALID));
         }
@@ -134,18 +162,19 @@ public class OutputValidator {
         }
 
         List<ValidatedClaim> claims = new ArrayList<>();
-        claims.addAll(readKind(document, "facts", AiClaimKind.FACT, projection));
-        claims.addAll(readKind(document, "inferences", AiClaimKind.INFERENCE, projection));
+        claims.addAll(readKind(document, "facts", AiClaimKind.FACT, projection, quotable));
+        claims.addAll(readKind(document, "inferences", AiClaimKind.INFERENCE, projection, quotable));
         claims.addAll(readKind(document, "recommendations", AiClaimKind.RECOMMENDATION,
-                projection));
-        claims.addAll(readKind(document, "unknowns", AiClaimKind.UNKNOWN, projection));
+                projection, quotable));
+        claims.addAll(readKind(document, "unknowns", AiClaimKind.UNKNOWN, projection, quotable));
         return List.copyOf(claims);
     }
 
     private List<ValidatedClaim> readKind(JsonNode document,
                                           String member,
                                           AiClaimKind kind,
-                                          SubjectProjection projection) {
+                                          SubjectProjection projection,
+                                          Set<String> quotable) {
         JsonNode array = document.get(member);
         if (array == null) {
             return List.of();
@@ -158,7 +187,7 @@ public class OutputValidator {
         int ordinal = 0;
         for (JsonNode node : array) {
             ordinal++;
-            claims.add(readClaim(node, kind, ordinal, projection));
+            claims.add(readClaim(node, kind, ordinal, projection, quotable));
         }
         return claims;
     }
@@ -166,7 +195,8 @@ public class OutputValidator {
     private ValidatedClaim readClaim(JsonNode node,
                                      AiClaimKind kind,
                                      int ordinal,
-                                     SubjectProjection projection) {
+                                     SubjectProjection projection,
+                                     Set<String> quotable) {
         if (!node.isObject()) {
             return ValidatedClaim.rejected(kind, ordinal, "the claim was not an object",
                     SCHEMA_INVALID);
@@ -199,6 +229,9 @@ public class OutputValidator {
         if (containsInstruction(node)) {
             return ValidatedClaim.rejected(kind, ordinal, statement,
                     INSTRUCTION_LIKE_CONTENT);
+        }
+        if (quotable != null && !numbersQuoted(node, null, quotable)) {
+            return ValidatedClaim.rejected(kind, ordinal, statement, DERIVED_CALCULATION_NOT_PRODUCTIZED);
         }
 
         List<UUID> metricRefs;
@@ -240,6 +273,69 @@ public class OutputValidator {
             return ValidatedClaim.rejected(kind, ordinal, statement, SCHEMA_INVALID);
         }
         return ValidatedClaim.accepted(kind, ordinal, statement, metricRefs, findingRefs, payload);
+    }
+
+    /**
+     * The numbers the projection gives, as a claim may write them: every number in every value
+     * except references, as given and rounded to zero, one and two decimals, without sign.
+     */
+    private static Set<String> quotableNumbers(SubjectProjection projection) {
+        Set<String> quotable = new java.util.HashSet<>(ALWAYS_QUOTABLE);
+        for (SubjectProjection.Field field : projection.fields()) {
+            String last = field.path().substring(field.path().lastIndexOf('.') + 1);
+            if (last.endsWith("Ref")) {
+                continue;
+            }
+            for (java.math.BigDecimal number : numbersIn(field.value())) {
+                quotable.add(numberKey(number));
+                for (int scale = 0; scale < 3 && scale < number.scale(); scale++) {
+                    quotable.add(numberKey(number.setScale(scale, java.math.RoundingMode.HALF_UP)));
+                }
+            }
+        }
+        return quotable;
+    }
+
+    /** Whether every number written anywhere in a claim, except chosen members, is quotable. */
+    private static boolean numbersQuoted(JsonNode node, String member, Set<String> quotable) {
+        if (member != null && UNQUOTED_MEMBERS.contains(member)) {
+            return true;
+        }
+        if (node.isString()) {
+            return numbersIn(node.asString()).stream().allMatch(number -> quotable.contains(numberKey(number)));
+        }
+        if (node.isNumber()) {
+            // Only a proposed price is a stated number; other numeric members are chosen settings.
+            return !"targetPrice".equals(member) || quotable.contains(numberKey(node.decimalValue()));
+        }
+        if (node.isArray()) {
+            for (JsonNode item : node) {
+                if (!numbersQuoted(item, member, quotable)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        if (node.isObject()) {
+            return node.propertyStream().allMatch(entry -> numbersQuoted(entry.getValue(), entry.getKey(), quotable));
+        }
+        return true;
+    }
+
+    private static List<java.math.BigDecimal> numbersIn(String text) {
+        List<java.math.BigDecimal> numbers = new ArrayList<>();
+        java.util.regex.Matcher matcher = NUMBER.matcher(text);
+        while (matcher.find()) {
+            String digits = matcher.group(1).replaceAll("[,\\u00A0\\u202F ]", "");
+            String fraction = matcher.group(2);
+            numbers.add(new java.math.BigDecimal(fraction == null ? digits : digits + "." + fraction));
+        }
+        return numbers;
+    }
+
+    private static String numberKey(java.math.BigDecimal number) {
+        java.math.BigDecimal stripped = number.abs().stripTrailingZeros();
+        return stripped.signum() == 0 ? "0" : stripped.toPlainString();
     }
 
     /**

@@ -57,6 +57,34 @@ class AiConsoleController {
                 window, lifecycleObjective));
     }
 
+    /**
+     * Ask a model to summarize one store from its newest calculation over the window. An unchanged
+     * situation hands out the recorded summary again without calling the model.
+     */
+    @PostMapping(value = "/stores/{storeId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ExplanationResponse explainStore(AuthenticatedActor actor, @PathVariable UUID storeId,
+                                     @RequestParam(required = false, defaultValue = "D7") MetricWindow window) {
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                ResourceScope.store(storeId));
+        return response(copilot.explainStore(actor.userId(), actor.organizationId(), storeId, window));
+    }
+
+    /** The newest recorded summary of one store for a window, in any state; 204 when none. */
+    @GetMapping(value = "/stores/{storeId}/latest", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ExplanationResponse> latestStore(AuthenticatedActor actor, @PathVariable UUID storeId,
+                                                    @RequestParam(required = false, defaultValue = "D7")
+                                                    MetricWindow window) {
+        authorization.require(actor, ActionScopeCode.EVIDENCE_VIEW,
+                ResourceScope.store(storeId));
+        Optional<AiDiagnosis> latest = copilot.latestStoreInvocation(actor.organizationId(), storeId, window);
+        if (latest.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.AI_INVOCATION, latest.get().invocationId()));
+        return ResponseEntity.ok(response(latest.get()));
+    }
+
     /** One recorded explanation and its claims, accepted and rejected alike. */
     @GetMapping(value = "/{invocationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ExplanationResponse invocation(AuthenticatedActor actor, @PathVariable UUID invocationId) {
@@ -114,12 +142,12 @@ class AiConsoleController {
         }).toList();
         return new ExplanationResponse(diagnosis.invocationId(),diagnosis.subjectId(),diagnosis.outputSchemaVersion(),
                 diagnosis.state(),diagnosis.failureCode(),diagnosis.degraded(),diagnosis.providerCode(),diagnosis.modelCode(),
-                claims,diagnosis.startedAt(),diagnosis.completedAt());
+                claims,diagnosis.startedAt(),diagnosis.completedAt(),diagnosis.reused());
     }
 
     record ExplanationResponse(UUID invocationId,UUID subjectId,int outputSchemaVersion,String state,String failureCode,
             boolean degraded,String providerCode,String modelCode,java.util.List<ClaimResponse> claims,
-            java.time.Instant startedAt,java.time.Instant completedAt) { }
+            java.time.Instant startedAt,java.time.Instant completedAt,boolean reused) { }
 
     record ClaimResponse(UUID claimId,String kind,int ordinal,String statement,String confidenceLabel,
             java.util.List<UUID> metricValueRefs,java.util.List<UUID> findingRefs,java.util.Map<String,Object> payload,

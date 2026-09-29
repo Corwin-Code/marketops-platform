@@ -10,6 +10,8 @@ import { CALCULATION_REQUEST_TIMEOUT_MS, request } from './console';
 
 /** One metric value of a run. */
 export interface FindingMetric {
+  /** The value's identifier, which an explanation cites. */
+  readonly valueId: string | null;
   /** `AVAILABLE`, `NOT_AVAILABLE` or `UNDEFINED`. */
   readonly valueState: string;
   readonly value: string | null;
@@ -176,6 +178,7 @@ function parseMetric(value: unknown): FindingMetric | undefined {
   const confidenceState = text(value.confidenceState);
   if (valueState === undefined || confidenceState === undefined) return undefined;
   return {
+    valueId: text(value.valueId) ?? null,
     valueState,
     value: typeof value.value === 'string' ? value.value : null,
     currencyCode: text(value.currencyCode) ?? null,

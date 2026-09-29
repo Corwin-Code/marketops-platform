@@ -112,7 +112,7 @@ public class StoreListingFindingsRepository {
     /** The values of the named metrics the run evaluated for every listing, new or unchanged. */
     public List<MetricRow> metricValues(UUID runId, Collection<String> metricCodes) {
         return jdbc.sql("""
-                        SELECT value.subject_id, value.metric_code, value.value_state,
+                        SELECT value.id, value.subject_id, value.metric_code, value.value_state,
                                value.numeric_value, value.currency_code, value.confidence_state
                           FROM mart.metric_value_evaluation AS evaluation
                           JOIN mart.metric_value AS value ON value.id = evaluation.metric_value_id
@@ -123,6 +123,7 @@ public class StoreListingFindingsRepository {
                 .param("runId", runId)
                 .param("metricCodes", metricCodes)
                 .query((rows, rowNumber) -> new MetricRow(
+                        rows.getObject("id", UUID.class),
                         rows.getObject("subject_id", UUID.class),
                         rows.getString("metric_code"),
                         rows.getString("value_state"),
@@ -146,7 +147,7 @@ public class StoreListingFindingsRepository {
     }
 
     /** One metric value. */
-    public record MetricRow(UUID subjectId, String metricCode, String valueState, BigDecimal numericValue,
-                            String currencyCode, String confidenceState) {
+    public record MetricRow(UUID valueId, UUID subjectId, String metricCode, String valueState,
+                            BigDecimal numericValue, String currencyCode, String confidenceState) {
     }
 }

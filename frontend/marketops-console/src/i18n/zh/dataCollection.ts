@@ -75,6 +75,8 @@ export const dataCollectionText = {
     `${subjects} 个商品，${findings} 条规则结论`,
   masterData: '已运行主数据自动规则',
   masterDataFailed: '主数据自动规则运行失败',
+  weeklySummary: 'AI 周诊断',
+  summaryReused: '数据未变，沿用此前的解读',
 } as const;
 
 /** What each scheduled dataset is, in the order the scheduler reads them. */
@@ -114,6 +116,8 @@ export const EVENT_LABELS: Readonly<Record<string, string>> = {
   NORMALIZATION_STOPPED: '标准化停止',
   RECALCULATED: '已重算诊断',
   RECALCULATION_FAILED: '重算失败',
+  INTERPRETED: '已生成周诊断',
+  INTERPRETATION_FAILED: '周诊断失败',
 };
 
 /** Why a step stopped or was skipped. */

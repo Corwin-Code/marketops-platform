@@ -5,6 +5,8 @@ import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
 import com.mimococo.marketops.adminobservability.audit.FieldChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
+import com.mimococo.marketops.aicopilot.AiCopilot;
+import com.mimococo.marketops.aicopilot.AiDiagnosis;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.StoreRecalculation;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
@@ -79,6 +81,9 @@ public class ScheduledCollectionService {
     /** Least time between two runs of one dataset: the analytics method allows one call a minute. */
     private static final Map<String, Duration> SPACING = Map.of("TRAFFIC", Duration.ofSeconds(90));
 
+    /** How long after a failed weekly store summary the scheduler asks again. */
+    private static final Duration INTERPRETATION_BACKOFF = Duration.ofHours(3);
+
     /** How many records the console shows. */
     private static final int RECENT_EVENTS = 30;
 
@@ -91,6 +96,7 @@ public class ScheduledCollectionService {
     private final ScheduledAcquisition acquisition;
     private final FactNormalization normalization;
     private final StoreRecalculation recalculation;
+    private final AiCopilot copilot;
     private final MetadataAuditRecorder auditRecorder;
     private final ScheduledCollectionProperties properties;
     private final ObjectMapper objectMapper;
@@ -102,6 +108,7 @@ public class ScheduledCollectionService {
                                ScheduledAcquisition acquisition,
                                FactNormalization normalization,
                                StoreRecalculation recalculation,
+                               AiCopilot copilot,
                                MetadataAuditRecorder auditRecorder,
                                ScheduledCollectionProperties properties,
                                ObjectMapper objectMapper,
@@ -112,6 +119,7 @@ public class ScheduledCollectionService {
         this.acquisition = acquisition;
         this.normalization = normalization;
         this.recalculation = recalculation;
+        this.copilot = copilot;
         this.auditRecorder = auditRecorder;
         this.properties = properties;
         this.objectMapper = objectMapper;
@@ -258,7 +266,11 @@ public class ScheduledCollectionService {
             execute(policy, job, queued, target.key());
             executed++;
         }
-        int recalculated = executed == 0 && settled ? recalculate(policy, lastCollected, now) : 0;
+        int recalculated = 0;
+        if (executed == 0 && settled) {
+            recalculated = recalculate(policy, lastCollected, now);
+            interpretWeekly(policy, now);
+        }
         return new StoreOutcome(executed, recalculated);
     }
 
@@ -375,6 +387,48 @@ public class ScheduledCollectionService {
             }
         }
         return recalculated;
+    }
+
+    /**
+     * The weekly store summary (Owner decision 2026-09-29): on Mondays (UTC), once the seven-day
+     * calculation covers the day's collection, the model summarizes the store once. Whether this
+     * week's is done is read from the records rather than from the summary's own time, because an
+     * unchanged store hands out last week's summary again. A failed attempt is retried after a pause.
+     */
+    private void interpretWeekly(Policy policy, Instant now) {
+        LocalDate today = LocalDate.ofInstant(now, ZoneOffset.UTC);
+        Instant slot = CollectionPlanner.slotStart(now, properties.getDailyAt());
+        if (today.getDayOfWeek() != java.time.DayOfWeek.MONDAY
+                || !LocalDate.ofInstant(slot, ZoneOffset.UTC).equals(today)) {
+            return;
+        }
+        Optional<Instant> calculated = recalculation.latestPeriodEnd(policy.storeId(), MetricWindow.D7);
+        if (calculated.isEmpty() || calculated.get().isBefore(slot)) {
+            return;
+        }
+        Optional<Event> done = repository.latestStoreEvent(policy.storeId(), "INTERPRETED", MetricWindow.D7.name());
+        if (done.isPresent() && !done.get().occurredAt().isBefore(slot)) {
+            return;
+        }
+        Optional<Event> failed = repository.latestStoreEvent(policy.storeId(), "INTERPRETATION_FAILED",
+                MetricWindow.D7.name());
+        if (failed.isPresent() && failed.get().occurredAt().isAfter(now.minus(INTERPRETATION_BACKOFF))) {
+            return;
+        }
+        try {
+            AiDiagnosis summary = copilot.explainStore(null, policy.organizationId(), policy.storeId(), MetricWindow.D7);
+            boolean usable = "SUCCEEDED".equals(summary.state()) || "PARTIAL_OUTPUT_REJECTED".equals(summary.state());
+            record(policy, null, usable ? "INTERPRETED" : "INTERPRETATION_FAILED", MetricWindow.D7.name(), null, null,
+                    detail("state", summary.state(), "reused", summary.reused(),
+                            "invocationId", summary.invocationId().toString(), "failureCode", summary.failureCode()));
+        } catch (RuntimeException failure) {
+            log.atWarn().addKeyValue("event", "scheduled_store_interpretation_failed")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("failureType", failure.getClass().getSimpleName())
+                    .log("The weekly store summary failed");
+            record(policy, null, "INTERPRETATION_FAILED", MetricWindow.D7.name(), null, null,
+                    detail("failureType", failure.getClass().getSimpleName()));
+        }
     }
 
     /** The target a live run was made for, named like the planner names it. */

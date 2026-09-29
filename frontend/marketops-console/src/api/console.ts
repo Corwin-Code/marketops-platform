@@ -186,6 +186,8 @@ export interface AiExplanation {
   /** When the request was recorded, and when it finished; absent on older responses. */
   readonly startedAt?: string | undefined;
   readonly completedAt?: string | null | undefined;
+  /** The answer was recorded earlier and handed out again because nothing it rests on changed. */
+  readonly reused?: boolean | undefined;
 }
 
 function boundedClaimValue(value: unknown, depth = 0): value is ClaimValue {
@@ -313,6 +315,7 @@ export function parseAiExplanation(body: unknown): AiExplanation | undefined {
     claims: validated,
     ...(typeof body.startedAt === 'string' ? { startedAt: body.startedAt } : {}),
     ...(typeof body.completedAt === 'string' ? { completedAt: body.completedAt } : {}),
+    ...(typeof body.reused === 'boolean' ? { reused: body.reused } : {}),
   };
 }
 
@@ -1138,10 +1141,39 @@ export function requestExplanation(
   context: ConsoleRequest,
   subjectId: string,
   storeId: string,
+  window = 'D30',
 ): Promise<ConsoleOutcome<AiExplanation>> {
   return request(
     context,
-    `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}?storeId=${encodeURIComponent(storeId)}&window=D30`,
+    `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}?storeId=${encodeURIComponent(storeId)}&window=${encodeURIComponent(window)}`,
+    parseAiExplanation,
+    { method: 'POST' },
+    AI_REQUEST_TIMEOUT_MS,
+  );
+}
+
+/** The newest recorded store summary for a window, or `null` when none was ever asked for. */
+export function fetchLatestStoreExplanation(
+  context: ConsoleRequest,
+  storeId: string,
+  window = 'D7',
+): Promise<ConsoleOutcome<AiExplanation | null>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/stores/${encodeURIComponent(storeId)}/latest?window=${encodeURIComponent(window)}`,
+    (body) => (body === undefined || body === null ? null : parseAiExplanation(body)),
+  );
+}
+
+/** An explicit request for a store summary; an unchanged store is answered from the record. */
+export function requestStoreExplanation(
+  context: ConsoleRequest,
+  storeId: string,
+  window = 'D7',
+): Promise<ConsoleOutcome<AiExplanation>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/stores/${encodeURIComponent(storeId)}?window=${encodeURIComponent(window)}`,
     parseAiExplanation,
     { method: 'POST' },
     AI_REQUEST_TIMEOUT_MS,
