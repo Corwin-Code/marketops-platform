@@ -157,7 +157,7 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list` 和 `/v1/product/rating-by-sku`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list`、`/v1/product/rating-by-sku` 和 `/v1/analytics/product-queries`（这条同时覆盖 `/details`，因为一个调用只能命中一条规则，前缀不能重叠）。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。漏加规则时，运行会以 `request_could_not_be_built` 停在 `BLOCKED`。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
@@ -281,7 +281,14 @@ make ozon-normalize CAPABILITY=traffic
 ```
 
 - `ozon-run` 每天发起一次运行，两次运行之间间隔 90 秒。默认只跑昨天（1 天）；`DATE=YYYY-MM-DD` 指定最后一天，最多 30 天。探测时，短页之后的确认请求也会等 90 秒再发。
-- **限流**：官方文档写的是每分钟 1 次。但 2026-09-29 补数时，两次调用间隔约 62 秒，仍然收到 HTTP 429 `{"code":8,"message":"You have reached request rate limit per second"}`；隔了 3.5 分钟重试，又收到一次同样的 429；第三次才成功。原因可能是同一个 Client-Id 的配额也被别的调用方占用了。所以调用间隔放宽到 90 秒。运行被限流后会进入 `RETRY_WAIT`，脚本会在原地最多重试 3 次。任务里有没跑完的运行时，下一次 `ozon-run` 会先把它跑完，再开新的运行；新接口 `GET /api/v1/admin/metadata/ingestion-jobs/{id}/live-run` 用来查这个运行。
+- **限流**：官方文档写的是每分钟 1 次。但 2026-09-29 补数时，两次调用间隔约 62 秒，仍然收到 HTTP 429 `{"code":8,"message":"You have reached request rate limit per second"}`；隔了 3.5 分钟重试，又收到一次同样的 429；第三次才成功。原因可能是同一个 Client-Id 的配额也被别的调用方占用了。所以调用间隔放宽到 90 秒。运行被限流后会进入 `RETRY_WAIT`，脚本会在原地最多重试 3 次。任务里有没跑完的运行时，下一次 `ozon-run` 会先把它跑完，再开新的运行；新接口 `GET /api/v1/admin/metadata/ingestion-jobs/{id}/live-run` 用来查这个运行；已经补完的窗口不会再重跑。
+- **卡住的运行（`BLOCKED`）**：某一页无法判定结果时（未知状态、结构漂移、读不懂、配置无效），运行停在 `BLOCKED`，同一任务不能再开新的运行。查明原因后用 `make ozon-resolve` 处置（迁移 `V0016`，维护接口 `POST /api/v1/admin/metadata/ingestion-runs/{runId}/resolution`，原因写进审计）：
+  - `RESOLUTION=retry`：原因已修复，运行转为 `RETRY_WAIT`，下一次 `ozon-run` 会先把它跑完；
+  - `RESOLUTION=close`：放弃这次运行，转为 `FAILED_TERMINAL`（`CLOSED_BY_OPERATOR`）。
+
+  ```bash
+  make ozon-resolve CAPABILITY=queries RESOLUTION=retry REASON='补上了出站规则'
+  ```
 - 同一天重新采集时，新的 Raw 会被保存，但事实按"任务 + 商品 + 周期"去重，已有事实不会被更新，所以 Ozon 事后修正的数字不会进来。这是现有事实写入的通用规则。
 - verify 核验成功后，脚本会在证据目录记下这次核验。之后用同一份证据再运行 verify 会直接跳过；确实需要重新提交时，加 `AGAIN=1`。
 

@@ -23,7 +23,7 @@ OPERATOR ?= owner-local
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider ozon-probe ozon-setup ozon-reviewer ozon-verify ozon-run ozon-normalize
+        ai-provider ozon-probe ozon-setup ozon-reviewer ozon-verify ozon-run ozon-resolve ozon-normalize
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -101,6 +101,11 @@ ozon-verify: require-repo-root ## Ozon pilot: submit and approve CAPABILITY's pr
 ozon-run: require-repo-root ## Ozon pilot: run CAPABILITY's job (windowed: DAYS=<n> DATE=<last UTC day>)
 	@python3 scripts/ozon_pilot.py run --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
 	  --capability "$(CAPABILITY)" $(if $(DATE),--date "$(DATE)") $(if $(DAYS),--days "$(DAYS)")
+
+ozon-resolve: require-repo-root ## Ozon pilot: retry or close CAPABILITY's BLOCKED run (RESOLUTION=retry|close REASON=...)
+	@test -n "$(RESOLUTION)" -a -n "$(REASON)" || { echo "usage: make ozon-resolve CAPABILITY=<c> RESOLUTION=retry|close REASON='<what was found>'" >&2; exit 2; }
+	@python3 scripts/ozon_pilot.py resolve --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  --capability "$(CAPABILITY)" --resolution "$(RESOLUTION)" --reason "$(REASON)"
 
 ozon-normalize: require-repo-root ## Ozon pilot: normalize what CAPABILITY's job stored (backend running)
 	@python3 scripts/ozon_pilot.py normalize --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \

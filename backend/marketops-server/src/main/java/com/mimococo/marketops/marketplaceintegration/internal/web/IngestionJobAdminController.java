@@ -82,6 +82,16 @@ class IngestionJobAdminController {
         return new ExecutionView(RunView.of(result.run()), result.pagesStored(), result.reason());
     }
 
+    /** Retry or close a run that came to rest BLOCKED; the reason goes to the audit. */
+    @PostMapping(value = "/ingestion-runs/{runId}/resolution",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    RunView resolve(@RequestAttribute(OperatorAttribution.REQUEST_ATTRIBUTE) String operator,
+                    @PathVariable UUID runId,
+                    @Valid @RequestBody ResolutionRequest request) {
+        return RunView.of(jobService.resolveBlockedRun(operator, runId, request.resolution(),
+                request.reason()));
+    }
+
     /** Load one job. */
     @GetMapping(value = "/ingestion-jobs/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     JobView get(@PathVariable UUID id) {
@@ -118,6 +128,10 @@ class IngestionJobAdminController {
     }
 
     record RunRequest(Instant windowFrom, Instant windowTo) {
+    }
+
+    /** {@code RETRY} or {@code CLOSE}, and why. */
+    record ResolutionRequest(@NotBlank String resolution, @NotBlank String reason) {
     }
 
     record StatusChangeRequest(

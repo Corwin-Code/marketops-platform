@@ -1821,6 +1821,9 @@ def command_run(args: argparse.Namespace) -> int:
     # A run an earlier attempt left unfinished blocks every new one: finish it first.
     status, live = admin.call("GET", f"/ingestion-jobs/{job['id']}/live-run")
     if status == 200 and live:
+        if live.get("state") == "BLOCKED":
+            sys.exit(f"run {live['id']} is BLOCKED; find the cause, then retry or close it: make ozon-resolve "
+                     f"CAPABILITY={args.capability} RESOLUTION=retry|close REASON='<what was found>'")
         if live.get("state") not in ("QUEUED", "RETRY_WAIT"):
             sys.exit(f"run {live['id']} is {live.get('state')}; wait for it or resolve it first")
         print(f"finishing the unfinished run {live['id']} first")
@@ -1829,6 +1832,13 @@ def command_run(args: argparse.Namespace) -> int:
         if outcome.get("run", {}).get("state") != "SUCCEEDED":
             print("stopped: the unfinished run did not succeed; no new run was started")
             return 1
+        # A window the finished run already read is not read again.
+        finished = (live.get("windowFrom"), live.get("windowTo"))
+        windows = [window for window in windows if window is None or finished[0] is None
+                   or (parse_instant(window["windowFrom"]), parse_instant(window["windowTo"]))
+                   != (parse_instant(finished[0]), parse_instant(finished[1]))]
+        if not windows or windows == [None]:
+            return 0
         time.sleep(pause)
     for index, window in enumerate(windows):
         if index:
@@ -1842,6 +1852,21 @@ def command_run(args: argparse.Namespace) -> int:
             if index + 1 < len(windows):
                 print(f"stopped: run {run['id']} is {state}; the remaining days were not read")
             return 1
+    return 0
+
+
+def command_resolve(args: argparse.Namespace) -> int:
+    """Retry or close the job's BLOCKED run, so the job can run again."""
+    admin, _, _, job = pilot_job(args)
+    status, live = admin.call("GET", f"/ingestion-jobs/{job['id']}/live-run")
+    if status != 200 or not live or live.get("state") != "BLOCKED":
+        sys.exit(f"job {job['jobCode']} has no BLOCKED run to resolve")
+    if not args.reason.strip():
+        sys.exit("--reason must say what was found")
+    run = admin.require("POST", f"/ingestion-runs/{live['id']}/resolution",
+                        {"resolution": args.resolution.upper(), "reason": args.reason.strip()}, 200)
+    print(f"run {run['id']}: BLOCKED -> {run.get('state')}"
+          + ("; the next ozon-run finishes it first" if run.get("state") == "RETRY_WAIT" else ""))
     return 0
 
 
@@ -1917,6 +1942,13 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--days", type=int, default=1,
                      help=f"how many UTC days, one run each, ending at --date (1-{MAXIMUM_RUN_DAYS})")
     run.set_defaults(handler=command_run)
+
+    resolve = commands.add_parser("resolve", help="retry or close the capability job's BLOCKED run")
+    common(resolve)
+    resolve.add_argument("--resolution", choices=["retry", "close"], required=True,
+                         help="retry after fixing the cause, or close the run")
+    resolve.add_argument("--reason", required=True, help="what was found; kept in the audit")
+    resolve.set_defaults(handler=command_resolve)
 
     normalize = commands.add_parser("normalize", help="normalize what the capability's job stored")
     common(normalize)
