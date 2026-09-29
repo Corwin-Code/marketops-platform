@@ -75,6 +75,8 @@ export const masterDataText = {
   observedAt: '采集于',
   confidence: (value: string): string => `置信度 ${value}`,
   moreProposals: (count: number): string => `另有 ${String(count)} 个提议`,
+  conflictBesideProposal: (kinds: string): string =>
+    `另有未关闭的冲突：${kinds}（多为较早一次生成提议时留下，确认映射后会一并关闭）`,
   noInternal: '—',
   noCost: '—',
 
@@ -88,6 +90,34 @@ export const masterDataText = {
   sourceManual: '手工录入',
   sourceImport: '表格导入',
 
+  automationTitle: '自动规则',
+  automationEnabledTag: '已启用',
+  automationOff:
+    '未启用。启用后，采集完商品目录和价格时会自动完成无歧义的映射，并自动采用变化不大的 Ozon 成本价；其余情况留在这里等人处理。',
+  automationOn: (limit: string): string =>
+    `已启用：条码或货号唯一匹配的映射自动确认；Ozon 成本价变化在 ±${limit}% 以内时自动采用。`,
+  automationAuthorizedAt: '授权时间',
+  automationRules:
+    '自动确认只针对：条码或货号完全一致、该商品只有唯一提议、没有其他类型的冲突、内部商品正常且没有映射给本店其他商品。成本在以下情况会留给人确认：变动超过阈值、成本不低于售价、币种变化。确认人和采用人都记为授权人，并写审计，注明是按规则自动完成。',
+  enableAutomation: '启用自动规则',
+  enableTitle: '启用主数据自动规则',
+  enableConsequence:
+    '启用后立即运行一次：为未映射的商品生成提议，自动确认无歧义的，并自动采用符合条件的 Ozon 成本价。之后每次采集完商品目录或价格都会自动运行。你可以随时停用，停用不会撤销已经完成的映射和成本。',
+  limitLabel: '成本变动阈值（%）',
+  limitHelp: '与当前成本相比，变动在这个百分比以内才自动采用；默认 30。',
+  limitRequired: '请填写 1–100 之间的数',
+  retireAutomation: '停用',
+  retireTitle: '停用自动规则',
+  retireConsequence: '停用后不再自动确认映射、不再自动采用成本；已经完成的映射和成本保持不变。',
+  automationRunDone: (
+    confirmed: number,
+    adopted: number,
+    waiting: number,
+    awaiting: number,
+  ): string =>
+    `已自动确认 ${String(confirmed)} 个映射、采用 ${String(adopted)} 个成本价；仍有 ${String(awaiting)} 个商品的映射和 ${String(waiting)} 个成本等人处理`,
+  automationRetired: '自动规则已停用',
+  anomalyPrefix: '需人工确认：',
   note: '平台商品来自 Ozon 官方接口；内部商品由“生成内部商品”步骤按款式创建，编码取自货号。映射和成本的每次确认都会记入审计。',
 } as const;
 
@@ -98,6 +128,13 @@ export const MATCH_METHOD_LABELS: Readonly<Record<string, string>> = {
   NORMALIZED_TITLE: '标题相近',
   MANUAL: '人工指定',
   IMPORTED: '导入',
+};
+
+/** Why a changed seller cost waits for a person. */
+export const COST_ANOMALY_LABELS: Readonly<Record<string, string>> = {
+  CHANGE_OVER_LIMIT: '变动超过阈值',
+  COST_NOT_BELOW_PRICE: '成本不低于售价',
+  CURRENCY_CHANGED: '币种变化',
 };
 
 /** Why a listing is in conflict. */

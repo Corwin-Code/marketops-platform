@@ -54,6 +54,7 @@ public class StoreMasterDataRepository {
                                price.id AS price_observation_id, price.seller_cost_price,
                                price.currency_code AS price_currency_code,
                                price.observed_at AS price_observed_at,
+                               coalesce(price.discount_price, price.selling_price) AS buyer_price,
                                cost.unit_cost, cost.currency_code AS cost_currency_code,
                                cost.effective_from AS cost_effective_from,
                                provenance.source_kind AS cost_source_kind
@@ -66,7 +67,8 @@ public class StoreMasterDataRepository {
                           LEFT JOIN core.product AS product
                             ON product.id = internal_variant.product_id
                           LEFT JOIN LATERAL (
-                               SELECT p.id, p.seller_cost_price, p.currency_code, p.observed_at
+                               SELECT p.id, p.seller_cost_price, p.currency_code, p.observed_at,
+                                      p.selling_price, p.discount_price
                                  FROM core.listing_price_observation AS p
                                 WHERE p.platform_listing_variant_id = store_variant.variant_id
                                   AND NOT EXISTS (SELECT 1 FROM core.listing_price_observation AS newer
@@ -212,6 +214,60 @@ public class StoreMasterDataRepository {
                 .optional();
     }
 
+    /**
+     * For every mapped listing variant of the store without an open conflict,
+     * the newest price observation that carries a seller cost: what automatic
+     * adoption works from.
+     */
+    public List<CostInput> automationCostInputs(UUID organizationId, UUID storeId) {
+        return jdbc.sql("""
+                        SELECT variant.id AS listing_variant_id, mapping.product_variant_id,
+                               internal_variant.sku_code, internal_variant.status AS variant_status,
+                               price.id AS price_observation_id, price.seller_cost_price, price.currency_code,
+                               price.observed_at, coalesce(price.discount_price, price.selling_price) AS buyer_price,
+                               provenance.raw_observation_id
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                          JOIN core.listing_mapping AS mapping
+                            ON mapping.platform_listing_variant_id = variant.id
+                           AND mapping.status = 'ACTIVE' AND mapping.effective_to IS NULL
+                          JOIN core.product_variant AS internal_variant
+                            ON internal_variant.id = mapping.product_variant_id
+                          JOIN LATERAL (
+                               SELECT p.* FROM core.listing_price_observation AS p
+                                WHERE p.platform_listing_variant_id = variant.id
+                                  AND NOT EXISTS (SELECT 1 FROM core.listing_price_observation AS newer
+                                                   WHERE newer.supersedes_fact_id = p.id)
+                                ORDER BY p.observed_at DESC, p.id DESC LIMIT 1
+                          ) AS price ON true
+                          JOIN core.fact_provenance AS provenance
+                            ON provenance.id = price.provenance_id
+                         WHERE variant.organization_id = :organizationId
+                           AND listing.store_id = :storeId
+                           AND listing.status = 'OBSERVED' AND variant.status = 'OBSERVED'
+                           AND price.seller_cost_price IS NOT NULL
+                           AND NOT EXISTS (SELECT 1 FROM core.mapping_conflict AS conflict
+                                            WHERE conflict.platform_listing_variant_id = variant.id
+                                              AND conflict.state = 'OPEN')
+                         ORDER BY mapping.product_variant_id, price.observed_at DESC, variant.id
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .query((rows, rowNumber) -> new CostInput(
+                        rows.getObject("listing_variant_id", UUID.class),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getString("sku_code"),
+                        rows.getString("variant_status"),
+                        rows.getObject("price_observation_id", UUID.class),
+                        rows.getBigDecimal("seller_cost_price"),
+                        rows.getString("currency_code"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getBigDecimal("buyer_price"),
+                        rows.getObject("raw_observation_id", UUID.class)))
+                .list();
+    }
+
     /** The purchase cost in force for an internal variant, locked for succession. */
     public Optional<CurrentCost> currentPurchaseCost(UUID productVariantId) {
         return jdbc.sql("""
@@ -248,6 +304,7 @@ public class StoreMasterDataRepository {
                 rows.getBigDecimal("seller_cost_price"),
                 rows.getString("price_currency_code"),
                 instant(rows, "price_observed_at"),
+                rows.getBigDecimal("buyer_price"),
                 rows.getBigDecimal("unit_cost"),
                 rows.getString("cost_currency_code"),
                 instant(rows, "cost_effective_from"),
@@ -266,7 +323,7 @@ public class StoreMasterDataRepository {
             UUID mappedVariantId, Instant mappedFrom, String mappedSkuCode, String mappedVariantName,
             String mappedVariantStatus, String mappedProductName,
             UUID priceObservationId, BigDecimal sellerCostPrice, String priceCurrencyCode,
-            Instant priceObservedAt,
+            Instant priceObservedAt, BigDecimal buyerPrice,
             BigDecimal unitCost, String costCurrencyCode, Instant costEffectiveFrom,
             String costSourceKind) {
     }
@@ -295,5 +352,11 @@ public class StoreMasterDataRepository {
 
     /** The purchase cost in force. */
     public record CurrentCost(BigDecimal unitCost, String currencyCode, Instant effectiveFrom) {
+    }
+
+    /** One mapped listing variant's newest seller cost statement. */
+    public record CostInput(UUID listingVariantId, UUID productVariantId, String skuCode, String variantStatus,
+                            UUID priceObservationId, BigDecimal sellerCostPrice, String currencyCode,
+                            Instant observedAt, BigDecimal buyerPrice, UUID rawObservationId) {
     }
 }

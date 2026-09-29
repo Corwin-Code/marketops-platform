@@ -7,6 +7,7 @@ import {
   Flex,
   Form,
   Input,
+  InputNumber,
   Row,
   Segmented,
   Space,
@@ -23,12 +24,15 @@ import type { MasterData, MasterDataRow } from '../api/masterData';
 import {
   adoptMarketplaceCosts,
   confirmProposal,
+  enableAutomation,
   fetchMasterData,
+  retireAutomation,
   runProposals,
 } from '../api/masterData';
 import { actions } from '../i18n';
 import {
   CONFLICT_LABELS,
+  COST_ANOMALY_LABELS,
   MATCH_METHOD_LABELS,
   masterDataText as text,
 } from '../i18n/zh/masterData';
@@ -63,6 +67,17 @@ type Loaded =
 
 interface ReasonValues {
   readonly reason?: string;
+}
+
+interface EnableValues {
+  readonly limitPercent?: number;
+  readonly reason?: string;
+}
+
+/** A decimal ratio as a percentage for display: 0.30 -> "30". */
+function percent(ratio: string): string {
+  const value = Number(ratio) * 100;
+  return Number.isFinite(value) ? String(Math.round(value * 100) / 100) : ratio;
 }
 
 function readFilter(raw: string | undefined): Filter {
@@ -120,6 +135,15 @@ function Internal({ row }: { readonly row: MasterDataRow }): React.JSX.Element {
             : `${method} · ${text.confidence(proposal.confidence)}`}
           {row.proposals.length > 1 ? ` · ${text.moreProposals(row.proposals.length - 1)}` : ''}
         </Typography.Text>
+        {row.conflicts.length > 0 && (
+          <Typography.Text type="warning" style={{ fontSize: 12 }}>
+            {text.conflictBesideProposal(
+              row.conflicts
+                .map((conflict) => CONFLICT_LABELS[conflict.kind] ?? conflict.kind)
+                .join('、'),
+            )}
+          </Typography.Text>
+        )}
       </Flex>
     );
   }
@@ -305,7 +329,17 @@ export function MasterDataView({ context, storeId }: MasterDataViewProps): React
             render: (_, row) => {
               if (row.costState === 'ADOPTED') return <Tag color="success">{text.costAdopted}</Tag>;
               if (row.costState === 'TO_ADOPT') {
-                return <Tag color="warning">{text.costToAdopt}</Tag>;
+                return row.costAnomaly === null ? (
+                  <Tag color="warning">{text.costToAdopt}</Tag>
+                ) : (
+                  <Tooltip
+                    title={`${text.anomalyPrefix}${COST_ANOMALY_LABELS[row.costAnomaly] ?? row.costAnomaly}`}
+                  >
+                    <Tag color="error">
+                      {COST_ANOMALY_LABELS[row.costAnomaly] ?? row.costAnomaly}
+                    </Tag>
+                  </Tooltip>
+                );
               }
               return <Typography.Text type="secondary">{text.noCost}</Typography.Text>;
             },
@@ -426,6 +460,102 @@ export function MasterDataView({ context, storeId }: MasterDataViewProps): React
           ))}
         </Row>
       </SectionCard>
+
+      {data.costsVisible && (
+        <SectionCard title={text.automationTitle}>
+          <Flex vertical gap={8}>
+            {data.automation === null ? (
+              <Typography.Text>{text.automationOff}</Typography.Text>
+            ) : (
+              <Flex vertical gap={2}>
+                <Typography.Text>
+                  <Tag color="success">{text.automationEnabledTag}</Tag>
+                  {text.automationOn(percent(data.automation.costChangeLimit))}
+                </Typography.Text>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  {text.automationAuthorizedAt} <DateTime value={data.automation.authorizedAt} />
+                  {data.automation.reason === '' ? '' : ` · ${data.automation.reason}`}
+                </Typography.Text>
+              </Flex>
+            )}
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {text.automationRules}
+            </Typography.Text>
+            <Flex gap={8} wrap>
+              <ActionModal<EnableValues>
+                trigger={{
+                  label: text.enableAutomation,
+                  type: data.automation === null ? 'primary' : 'default',
+                }}
+                title={text.enableTitle}
+                consequence={text.enableConsequence}
+                okText={actions.confirm}
+                width={560}
+                initialValues={{ limitPercent: 30 }}
+                onSubmit={async (values) => {
+                  const limit = (values.limitPercent ?? 30) / 100;
+                  const outcome = await enableAutomation(
+                    context,
+                    storeId,
+                    limit.toFixed(4),
+                    (values.reason ?? '').trim(),
+                  );
+                  if (!outcome.ok) return outcome.failure;
+                  void message.success(
+                    text.automationRunDone(
+                      outcome.value.mappingsConfirmed,
+                      outcome.value.costsAdopted,
+                      outcome.value.costsWaiting,
+                      outcome.value.listingsAwaitingReview,
+                    ),
+                  );
+                  setSelected([]);
+                  reload();
+                  return undefined;
+                }}
+              >
+                <Form.Item
+                  name="limitPercent"
+                  label={text.limitLabel}
+                  extra={text.limitHelp}
+                  rules={[
+                    { required: true, message: text.limitRequired },
+                    { type: 'number', min: 1, max: 100, message: text.limitRequired },
+                  ]}
+                >
+                  <InputNumber min={1} max={100} step={5} precision={2} />
+                </Form.Item>
+                {reasonField}
+              </ActionModal>
+              {data.automation !== null && (
+                <ActionModal<ReasonValues>
+                  trigger={{ label: text.retireAutomation, danger: true }}
+                  title={text.retireTitle}
+                  consequence={text.retireConsequence}
+                  okText={actions.confirm}
+                  danger
+                  width={520}
+                  onSubmit={async (values) => {
+                    if (data.automation === null) return undefined;
+                    const outcome = await retireAutomation(
+                      context,
+                      storeId,
+                      (values.reason ?? '').trim(),
+                      data.automation.version,
+                    );
+                    if (!outcome.ok) return outcome.failure;
+                    void message.success(text.automationRetired);
+                    reload();
+                    return undefined;
+                  }}
+                >
+                  {reasonField}
+                </ActionModal>
+              )}
+            </Flex>
+          </Flex>
+        </SectionCard>
+      )}
 
       <SectionCard title={text.listTitle}>
         <Flex vertical gap={12}>

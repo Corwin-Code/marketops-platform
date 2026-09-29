@@ -1916,7 +1916,19 @@ def command_internal_catalog(args: argparse.Namespace) -> int:
             created["barcodes"] += 1
     print(f"created {created['products']} products, {created['variants']} variants, "
           f"{created['barcodes']} barcodes; the rest already existed")
-    print("next: in the console, 商品映射与成本 -> 生成映射提议, review and confirm")
+    # New internal variants can map new listings: the store's master-data policy, when one is in
+    # force, takes them in at once.
+    store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
+    if store is None:
+        print("the pilot store is not registered yet; map the listings once it is")
+        return 0
+    run = admin.require("POST", f"/stores/{store['id']}/master-data-automation/runs", {}, 200).get("result")
+    if run is None:
+        print("no master-data policy in force: in the console, 商品映射与成本 -> 启用自动规则, "
+              "or generate proposals and confirm them there")
+    else:
+        print(f"master-data policy: {run['mappingsConfirmed']} mappings confirmed, {run['costsAdopted']} costs "
+              f"adopted; {run['listingsAwaitingReview']} listings and {run['costsWaiting']} costs wait for review")
     return 0
 
 

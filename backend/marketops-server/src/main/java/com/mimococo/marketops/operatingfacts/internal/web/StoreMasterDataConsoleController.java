@@ -5,6 +5,9 @@ import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.operatingfacts.internal.application.MarketplaceCostAdoptionService;
+import com.mimococo.marketops.operatingfacts.internal.application.MasterDataAutomationService;
+import com.mimococo.marketops.operatingfacts.internal.application.SellerCostCheck;
+import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.MasterDataPolicyRepository.Policy;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.StoreMasterDataRepository;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.StoreMasterDataRepository.Candidate;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.StoreMasterDataRepository.Conflict;
@@ -13,6 +16,7 @@ import com.mimococo.marketops.shared.ConsoleApi;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -21,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -47,15 +53,18 @@ class StoreMasterDataConsoleController {
 
     private final StoreMasterDataRepository masterData;
     private final MarketplaceCostAdoptionService adoption;
+    private final MasterDataAutomationService automation;
     private final BusinessAuthorization authorization;
     private final Clock clock;
 
     StoreMasterDataConsoleController(StoreMasterDataRepository masterData,
                                      MarketplaceCostAdoptionService adoption,
+                                     MasterDataAutomationService automation,
                                      BusinessAuthorization authorization,
                                      Clock clock) {
         this.masterData = masterData;
         this.adoption = adoption;
+        this.automation = automation;
         this.authorization = authorization;
         this.clock = clock;
     }
@@ -77,11 +86,51 @@ class StoreMasterDataConsoleController {
                         Collectors.mapping(conflict -> new OpenConflict(conflict.id(), conflict.version(),
                                 conflict.kind(), conflict.detail(), conflict.detectedAt()),
                                 Collectors.toList())));
+        Policy policy = automation.active(actor.organizationId(), storeId).orElse(null);
+        BigDecimal limit = policy == null ? SellerCostCheck.DEFAULT_CHANGE_LIMIT : policy.costChangeLimit();
         List<ListingRow> rows = masterData.rows(actor.organizationId(), storeId).stream()
                 .map(row -> listing(row, candidates.getOrDefault(row.listingVariantId(), List.of()),
-                        conflicts.getOrDefault(row.listingVariantId(), List.of()), costsVisible))
+                        conflicts.getOrDefault(row.listingVariantId(), List.of()), costsVisible, limit))
                 .toList();
-        return new MasterData(storeId, clock.instant(), costsVisible, summary(rows), rows);
+        return new MasterData(storeId, clock.instant(), costsVisible, summary(rows),
+                policy == null ? null : policyView(policy), rows);
+    }
+
+    /**
+     * Put the store's master-data policy in force (replacing the one in force)
+     * and run it once. It acts on mappings and costs alike, so it needs both
+     * authorities.
+     */
+    @PostMapping(value = "/{storeId}/master-data-automation", produces = MediaType.APPLICATION_JSON_VALUE)
+    EnabledView enableAutomation(AuthenticatedActor actor, @PathVariable UUID storeId,
+                                 @Valid @RequestBody EnableRequest request) {
+        authorization.require(actor, ActionScopeCode.MAPPING_RESOLVE, ResourceScope.store(storeId));
+        authorization.require(actor, ActionScopeCode.INTERNAL_FACT_INTAKE, ResourceScope.store(storeId));
+        BigDecimal limit;
+        try {
+            limit = request.costChangeLimit() == null ? null : new BigDecimal(request.costChangeLimit());
+        } catch (NumberFormatException notADecimal) {
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        }
+        MasterDataAutomationService.Enabled enabled = automation.enable(actor, storeId, limit, request.reason());
+        return new EnabledView(policyView(enabled.policy()), enabled.run());
+    }
+
+    /** Take the store's master-data policy out of force; what it decided stays in place. */
+    @PostMapping(value = "/{storeId}/master-data-automation/retirement")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void retireAutomation(AuthenticatedActor actor, @PathVariable UUID storeId,
+                          @Valid @RequestBody RetireRequest request) {
+        authorization.require(actor, ActionScopeCode.MAPPING_RESOLVE, ResourceScope.store(storeId));
+        authorization.require(actor, ActionScopeCode.INTERNAL_FACT_INTAKE, ResourceScope.store(storeId));
+        automation.retire(actor, storeId, request.reason(), request.expectedVersion());
+    }
+
+    private static AutomationPolicy policyView(Policy policy) {
+        return new AutomationPolicy(policy.id(), policy.version(), policy.autoConfirmMapping(),
+                policy.autoAdoptSellerCost(), policy.costChangeLimit().toPlainString(),
+                policy.authorizedByUserId(), policy.authorizedAt(), policy.reason());
     }
 
     /** Adopt the seller's marketplace cost of the given listings as internal purchase cost. */
@@ -104,7 +153,7 @@ class StoreMasterDataConsoleController {
     }
 
     private static ListingRow listing(Row row, List<ProposedMapping> proposals, List<OpenConflict> conflicts,
-                                      boolean costsVisible) {
+                                      boolean costsVisible, BigDecimal limit) {
         Mapping mapping = row.mappedVariantId() == null ? null
                 : new Mapping(row.mappedVariantId(), row.mappedSkuCode(), row.mappedVariantName(),
                         row.mappedProductName(), row.mappedVariantStatus(), row.mappedFrom());
@@ -114,17 +163,29 @@ class StoreMasterDataConsoleController {
         PurchaseCost cost = !costsVisible || row.unitCost() == null ? null
                 : new PurchaseCost(text(row.unitCost()), row.costCurrencyCode(), row.costEffectiveFrom(),
                         row.costSourceKind());
+        String costState = costState(mapping, sellerCost, cost);
+        String costAnomaly = !"TO_ADOPT".equals(costState) ? null
+                : SellerCostCheck.anomaly(row.sellerCostPrice(), row.priceCurrencyCode(), row.buyerPrice(),
+                        row.unitCost(), row.costCurrencyCode(), limit).orElse(null);
         return new ListingRow(row.listingId(), row.listingVariantId(), row.nativeListingKey(),
                 row.nativeSkuKey(), row.nativeItemKey(), row.nativeBarcode(), row.title(),
                 state(mapping, proposals, conflicts), mapping, proposals, conflicts, sellerCost, cost,
-                costState(mapping, sellerCost, cost));
+                costState, costAnomaly);
     }
 
-    /** Where the listing stands in the mapping work: conflicts first, because they block. */
+    /**
+     * Where the listing stands in the mapping work.
+     *
+     * <p>A mapping with an open conflict is a conflict: analytics treats the
+     * listing as unmapped until it is resolved. An open proposal is something a
+     * person can act on, so it comes before a conflict without one: a conflict
+     * left open by an earlier matcher run (no internal variant existed yet) is
+     * closed by confirming the proposal.
+     */
     private static String state(Mapping mapping, List<ProposedMapping> proposals, List<OpenConflict> conflicts) {
-        if (!conflicts.isEmpty()) return "CONFLICT";
-        if (mapping != null) return "MAPPED";
+        if (mapping != null) return conflicts.isEmpty() ? "MAPPED" : "CONFLICT";
         if (!proposals.isEmpty()) return "PROPOSED";
+        if (!conflicts.isEmpty()) return "CONFLICT";
         return "UNMATCHED";
     }
 
@@ -175,7 +236,29 @@ class StoreMasterDataConsoleController {
      * @param costsVisible whether the viewer may see and adopt costs for this store
      */
     record MasterData(UUID storeId, Instant generatedAt, boolean costsVisible, Summary summary,
-                      List<ListingRow> rows) {
+                      AutomationPolicy automation, List<ListingRow> rows) {
+    }
+
+    /**
+     * The store's master-data policy in force.
+     *
+     * @param costChangeLimit decimal text; 0.30 = a change of up to ±30 % is adopted without a person
+     */
+    record AutomationPolicy(UUID policyId, long version, boolean autoConfirmMapping, boolean autoAdoptSellerCost,
+                            String costChangeLimit, UUID authorizedByUserId, Instant authorizedAt,
+                            String reason) {
+    }
+
+    /** A policy put in force and what its first run did. */
+    record EnabledView(AutomationPolicy policy, MasterDataAutomationService.RunResult run) {
+    }
+
+    /** Why the policy is put in force, and its cost change limit (decimal text; default 0.30). */
+    record EnableRequest(String costChangeLimit, @NotBlank String reason) {
+    }
+
+    /** Why the policy is taken out of force, against the version read. */
+    record RetireRequest(@NotBlank String reason, @NotNull Long expectedVersion) {
     }
 
     /** Counts across the store's listings. */
@@ -188,11 +271,12 @@ class StoreMasterDataConsoleController {
      *
      * @param state {@code MAPPED}, {@code PROPOSED}, {@code CONFLICT} or {@code UNMATCHED}
      * @param costState {@code ADOPTED}, {@code TO_ADOPT} or {@code null}
+     * @param costAnomaly why a cost to adopt waits for a person under the policy's rules, or {@code null}
      */
     record ListingRow(UUID listingId, UUID listingVariantId, String nativeListingKey, String nativeSkuKey,
                       String nativeItemKey, String nativeBarcode, String title, String state, Mapping mapping,
                       List<ProposedMapping> proposals, List<OpenConflict> conflicts, SellerCost sellerCost,
-                      PurchaseCost purchaseCost, String costState) {
+                      PurchaseCost purchaseCost, String costState, String costAnomaly) {
     }
 
     /** The mapping in force. */

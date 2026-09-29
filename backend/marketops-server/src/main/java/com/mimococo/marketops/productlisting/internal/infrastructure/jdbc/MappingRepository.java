@@ -116,6 +116,88 @@ public class MappingRepository {
     }
 
     /** The organization's open review queue, strongest proposals first. */
+    /**
+     * The open proposals of one store nobody would have to judge: matched by
+     * barcode or by the seller's article with confidence of at least 0.90, the
+     * only open proposal of their listing variant, no open conflict and no
+     * mapping in force for it, and an active internal variant that no other
+     * listing variant of the store is mapped to or proposed for.
+     *
+     * <p>A NO_CANDIDATE conflict does not count: an earlier matcher run opened
+     * it before an internal variant existed, the proposal now in front of it
+     * contradicts it, and confirming closes it. Every other kind still blocks.
+     */
+    public List<MappingCandidate> unambiguousProposals(UUID organizationId, UUID storeId) {
+        return jdbc.sql("""
+                        SELECT candidate.*
+                          FROM core.listing_mapping_candidate AS candidate
+                          JOIN core.platform_listing_variant AS variant
+                            ON variant.id = candidate.platform_listing_variant_id
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                          JOIN core.product_variant AS internal_variant
+                            ON internal_variant.id = candidate.product_variant_id
+                         WHERE candidate.organization_id = :organizationId
+                           AND listing.store_id = :storeId
+                           AND candidate.state = 'PROPOSED'
+                           AND candidate.match_method IN ('BARCODE', 'NATIVE_SKU_KEY')
+                           AND candidate.confidence >= 0.90
+                           AND internal_variant.status = 'ACTIVE'
+                           AND NOT EXISTS (SELECT 1 FROM core.listing_mapping_candidate AS other
+                                            WHERE other.platform_listing_variant_id = candidate.platform_listing_variant_id
+                                              AND other.state = 'PROPOSED' AND other.id <> candidate.id)
+                           AND NOT EXISTS (SELECT 1 FROM core.mapping_conflict AS conflict
+                                            WHERE conflict.platform_listing_variant_id = candidate.platform_listing_variant_id
+                                              AND conflict.state = 'OPEN' AND conflict.conflict_kind <> 'NO_CANDIDATE')
+                           AND NOT EXISTS (SELECT 1 FROM core.listing_mapping AS mapping
+                                            WHERE mapping.platform_listing_variant_id = candidate.platform_listing_variant_id
+                                              AND mapping.status = 'ACTIVE' AND mapping.effective_to IS NULL)
+                           AND NOT EXISTS (SELECT 1 FROM core.listing_mapping AS mapping
+                                             JOIN core.platform_listing_variant AS mapped
+                                               ON mapped.id = mapping.platform_listing_variant_id
+                                             JOIN core.platform_listing AS mapped_listing
+                                               ON mapped_listing.id = mapped.platform_listing_id
+                                            WHERE mapping.product_variant_id = candidate.product_variant_id
+                                              AND mapping.status = 'ACTIVE' AND mapping.effective_to IS NULL
+                                              AND mapped_listing.store_id = :storeId)
+                           AND NOT EXISTS (SELECT 1 FROM core.listing_mapping_candidate AS rival
+                                             JOIN core.platform_listing_variant AS rival_variant
+                                               ON rival_variant.id = rival.platform_listing_variant_id
+                                             JOIN core.platform_listing AS rival_listing
+                                               ON rival_listing.id = rival_variant.platform_listing_id
+                                            WHERE rival.product_variant_id = candidate.product_variant_id
+                                              AND rival.state = 'PROPOSED' AND rival.id <> candidate.id
+                                              AND rival_listing.store_id = :storeId)
+                         ORDER BY candidate.created_at, candidate.id
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .query(MappingRepository::mapCandidate)
+                .list();
+    }
+
+    /** How many listing variants of one store still have an open proposal or an open conflict. */
+    public int listingsAwaitingReview(UUID organizationId, UUID storeId) {
+        return jdbc.sql("""
+                        SELECT count(DISTINCT variant.id)
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE variant.organization_id = :organizationId
+                           AND listing.store_id = :storeId
+                           AND (EXISTS (SELECT 1 FROM core.listing_mapping_candidate AS candidate
+                                         WHERE candidate.platform_listing_variant_id = variant.id
+                                           AND candidate.state = 'PROPOSED')
+                                OR EXISTS (SELECT 1 FROM core.mapping_conflict AS conflict
+                                            WHERE conflict.platform_listing_variant_id = variant.id
+                                              AND conflict.state = 'OPEN'))
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .query(Integer.class)
+                .single();
+    }
+
     public List<MappingCandidate> openCandidateQueue(UUID organizationId, int limit) {
         return jdbc.sql("""
                         SELECT * FROM core.listing_mapping_candidate

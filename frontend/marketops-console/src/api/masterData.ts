@@ -83,6 +83,8 @@ export interface MasterDataRow {
   readonly sellerCost: SellerCost | null;
   readonly purchaseCost: PurchaseCost | null;
   readonly costState: CostState | null;
+  /** Why a cost to adopt waits for a person under the policy's rules. */
+  readonly costAnomaly: string | null;
 }
 
 /** Counts across the store's listings. */
@@ -97,6 +99,28 @@ export interface MasterDataSummary {
   readonly costToAdopt: number;
 }
 
+/** The store's master-data policy in force. */
+export interface AutomationPolicy {
+  readonly policyId: string;
+  readonly version: number;
+  readonly autoConfirmMapping: boolean;
+  readonly autoAdoptSellerCost: boolean;
+  /** Decimal text: 0.30 means a change of up to ±30 % is adopted without a person. */
+  readonly costChangeLimit: string;
+  readonly authorizedAt: string;
+  readonly reason: string;
+}
+
+/** What one run of the policy did. */
+export interface AutomationRun {
+  readonly listingsExamined: number;
+  readonly mappingsConfirmed: number;
+  readonly listingsAwaitingReview: number;
+  readonly costsAdopted: number;
+  readonly costsUnchanged: number;
+  readonly costsWaiting: number;
+}
+
 /** The whole review. */
 export interface MasterData {
   readonly storeId: string;
@@ -104,6 +128,7 @@ export interface MasterData {
   /** Whether the viewer may see and adopt costs for this store. */
   readonly costsVisible: boolean;
   readonly summary: MasterDataSummary;
+  readonly automation: AutomationPolicy | null;
   readonly rows: readonly MasterDataRow[];
 }
 
@@ -181,6 +206,80 @@ export function adoptMarketplaceCosts(
   );
 }
 
+/** Put the store's master-data policy in force and run it once. */
+export function enableAutomation(
+  context: ConsoleRequest,
+  storeId: string,
+  costChangeLimit: string,
+  reason: string,
+): Promise<ConsoleOutcome<AutomationRun>> {
+  return request(
+    context,
+    `/api/v1/console/stores/${encodeURIComponent(storeId)}/master-data-automation`,
+    (body) => (isRecord(body) ? parseRun(body.run) : undefined),
+    { method: 'POST', body: JSON.stringify({ costChangeLimit, reason }) },
+  );
+}
+
+/** Take the store's master-data policy out of force. */
+export function retireAutomation(
+  context: ConsoleRequest,
+  storeId: string,
+  reason: string,
+  expectedVersion: number,
+): Promise<ConsoleOutcome<true>> {
+  return request(
+    context,
+    `/api/v1/console/stores/${encodeURIComponent(storeId)}/master-data-automation/retirement`,
+    () => true,
+    { method: 'POST', body: JSON.stringify({ reason, expectedVersion }) },
+  );
+}
+
+function parseRun(value: unknown): AutomationRun | undefined {
+  if (!isRecord(value)) return undefined;
+  const keys = [
+    'listingsExamined',
+    'mappingsConfirmed',
+    'listingsAwaitingReview',
+    'costsAdopted',
+    'costsUnchanged',
+    'costsWaiting',
+  ] as const;
+  const read: Partial<Record<(typeof keys)[number], number>> = {};
+  for (const key of keys) {
+    const count = integer(value[key]);
+    if (count === undefined) return undefined;
+    read[key] = count;
+  }
+  return read as AutomationRun;
+}
+
+function parsePolicy(value: unknown): AutomationPolicy | null {
+  if (!isRecord(value)) return null;
+  const policyId = text(value.policyId);
+  const version = integer(value.version);
+  const costChangeLimit = decimal(value.costChangeLimit);
+  const authorizedAt = text(value.authorizedAt);
+  if (
+    policyId === undefined ||
+    version === undefined ||
+    costChangeLimit === null ||
+    authorizedAt === undefined
+  ) {
+    return null;
+  }
+  return {
+    policyId,
+    version,
+    autoConfirmMapping: value.autoConfirmMapping === true,
+    autoAdoptSellerCost: value.autoAdoptSellerCost === true,
+    costChangeLimit,
+    authorizedAt,
+    reason: text(value.reason) ?? '',
+  };
+}
+
 /** Validate an answer; anything that does not match the contract is `undefined`. */
 export function parseMasterData(body: unknown): MasterData | undefined {
   if (!isRecord(body)) return undefined;
@@ -196,6 +295,7 @@ export function parseMasterData(body: unknown): MasterData | undefined {
     generatedAt,
     costsVisible: body.costsVisible,
     summary,
+    automation: parsePolicy(body.automation),
     rows: rows as MasterDataRow[],
   };
 }
@@ -262,6 +362,7 @@ function parseRow(value: unknown): MasterDataRow | undefined {
     sellerCost: parseSellerCost(value.sellerCost),
     purchaseCost: parsePurchaseCost(value.purchaseCost),
     costState,
+    costAnomaly: optionalText(value.costAnomaly),
   };
 }
 
