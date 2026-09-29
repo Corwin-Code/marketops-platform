@@ -481,7 +481,15 @@ public class MetricEngine {
                 distinct(metricInputs), append(states, "unitsPositive=true"));
     }
 
-    /** A versioned company-owned amount; no default is permitted. */
+    /**
+     * A versioned company-owned amount; no default is permitted.
+     *
+     * <p>Same convention as unit cost: the owning fact authority resolves only
+     * an ACTIVE version inside its effective interval, and effectiveFrom is
+     * validity, not an observation's source update time. Ageing it would expire
+     * an unchanged version still in force, so it is kept as identity and no
+     * source update time is fabricated.
+     */
     private static ComputedMetric financeAmount(MetricCode metricCode,
                                                 Optional<FinanceInputSnapshot> input) {
         if (input.isEmpty() || input.get().amountValue() == null) {
@@ -491,10 +499,11 @@ public class MetricEngine {
         FinanceInputSnapshot value = input.get();
         return new ComputedMetric(metricCode, ValueState.AVAILABLE,
                 value.amountValue().amount(), value.amountValue().currencyCode(),
-                ConfidenceState.CANONICAL_CONFIRMED, value.effectiveFrom(),
+                ConfidenceState.CANONICAL_CONFIRMED, null,
                 List.of(MetricInput.financeInput(value.financeInputVersionId()),
                         MetricInput.provenance(value.provenanceId())),
-                List.of("amountInput=true"));
+                List.of("amountInput=true",
+                        "financeInputEffectiveFrom=" + value.effectiveFrom()));
     }
 
     /** Solve current profile economics without substituting historical averages. */
@@ -543,19 +552,24 @@ public class MetricEngine {
                 metricInputs.add(MetricInput.economicsComponent(id)));
         states.add("profileId=" + profile.profileId());
         states.add("profileVersion=" + profile.profileVersion());
+        states.add("profileVerifiedAt=" + profile.verifiedAt());
         states.add("fulfillmentMode=" + profile.fulfillmentModeCode());
         projection.familyCoverage().entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> states.add("projectedFamily:" + entry.getKey()
                         + '=' + entry.getValue()));
+        // Resolution already enforced the profile's validity: ACTIVE, inside
+        // its effective interval, verified, and before verificationExpiresAt.
+        // verifiedAt is kept as identity, not aged: against the profit target
+        // (24h by default) it would expire a still-valid profile a day after
+        // verification. Genuine source times of the solved inputs propagate.
         Instant sourceTime = List.of(
                         metrics.get(MetricCode.UNIT_COST),
                         metrics.get(MetricCode.REQUIRED_PROFIT_PER_UNIT),
                         metrics.get(MetricCode.SAFETY_BUFFER_PER_UNIT))
                 .stream().map(ComputedMetric::oldestSourceTime)
                 .filter(java.util.Objects::nonNull)
-                .reduce(profile.verifiedAt(), (left, right) ->
-                        left.isBefore(right) ? left : right);
+                .min(Instant::compareTo).orElse(null);
         return new ComputedMetric(metricCode, ValueState.AVAILABLE, value,
                 profile.currencyCode(), ConfidenceState.CANONICAL_CONFIRMED,
                 sourceTime, distinct(metricInputs), states);
