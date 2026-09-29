@@ -13,6 +13,11 @@ marketops:
   web:
     cors:
       allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
+  # The workstation runs the Ozon pilot, whose Owner consented to scheduled read-only
+  # collection (2026-09-29): the timer runs here, and a store is collected only once
+  # its Owner puts scheduled collection in force in the console.
+  data-collection:
+    enabled: ${MARKETOPS_DATA_COLLECTION_ENABLED:true}
   # Secrets are read from a directory outside the repository. The model key
   # lives at <mount>/ai/dashscope-api-key; `make ai-provider` installs it.
   secrets:

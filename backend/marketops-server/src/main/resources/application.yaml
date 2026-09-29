@@ -95,6 +95,19 @@ marketops:
     retry-budget: 3
     retry-delay: 2m
     runs-per-scheduler-pass: 5
+  data-collection:
+    # Scheduled read-only collection (P4). Off unless an environment switches the
+    # timer on, and even then only stores whose Owner put scheduled collection in
+    # force are collected: catalogue, prices, stock, status and content rating once
+    # a day, ordered units once a day, search demand once a week, then the store
+    # diagnosis is recalculated after the next full hour. Every call is still
+    # authorised by the database like a manual run's.
+    enabled: ${MARKETOPS_DATA_COLLECTION_ENABLED:false}
+    # When each UTC day's collection slot starts (03:10 Moscow, 08:10 Beijing).
+    daily-at: "00:10"
+    initial-delay: PT1M
+    interval: PT1M
+    runs-per-pass: 4
 
   price-write:
     # Off, and for a stronger reason than acquisition: a worker that started

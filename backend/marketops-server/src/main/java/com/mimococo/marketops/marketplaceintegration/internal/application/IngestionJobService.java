@@ -48,7 +48,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * <p>Runs started here are MANUAL and are executed in the request that asks for
  * it, so an operator can take one acquisition from queue to resting state while
  * the scheduler stays off. The run is claimed and fenced exactly as a scheduled
- * worker would claim it; the operator only chooses when.
+ * worker would claim it; the operator only chooses when. The collection scheduler queues
+ * SCHEDULED runs through the same checks and audit.
  */
 @Service
 public class IngestionJobService {
@@ -195,6 +196,21 @@ public class IngestionJobService {
     @Transactional
     public RunState enqueueManualRun(String operator, UUID jobId, Instant windowFrom,
                                      Instant windowTo) {
+        return enqueueRun(operator, jobId, windowFrom, windowTo, "MANUAL");
+    }
+
+    /**
+     * Queue one SCHEDULED run for the collection scheduler; the same checks and audit as a manual
+     * run, only nobody asked for this one by hand.
+     */
+    @Transactional
+    public RunState enqueueScheduledRun(String operator, UUID jobId, Instant windowFrom,
+                                        Instant windowTo) {
+        return enqueueRun(operator, jobId, windowFrom, windowTo, "SCHEDULED");
+    }
+
+    private RunState enqueueRun(String operator, UUID jobId, Instant windowFrom, Instant windowTo,
+                                String runKind) {
         JobRow job = require(jobId);
         if (!"ACTIVE".equals(job.status())) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
@@ -205,7 +221,7 @@ public class IngestionJobService {
         }
         UUID runId;
         try {
-            runId = runner.enqueue(jobId, "MANUAL", windowFrom, windowTo);
+            runId = runner.enqueue(jobId, runKind, windowFrom, windowTo);
         } catch (DataAccessException refused) {
             if (LIVE_RUN_EXISTS.equals(sqlState(refused))) {
                 throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
@@ -216,9 +232,9 @@ public class IngestionJobService {
                 AuditSourceDomain.MARKETPLACE_INTEGRATION, operator, AuditAction.CREATE,
                 RUN_ENTITY_TYPE, runId, job.jobCode(),
                 windowFrom == null
-                        ? Map.of("runKind", new FieldChange(null, "MANUAL"),
+                        ? Map.of("runKind", new FieldChange(null, runKind),
                                 "jobId", new FieldChange(null, jobId.toString()))
-                        : Map.of("runKind", new FieldChange(null, "MANUAL"),
+                        : Map.of("runKind", new FieldChange(null, runKind),
                                 "jobId", new FieldChange(null, jobId.toString()),
                                 "window", new FieldChange(null, windowFrom + "/" + windowTo)),
                 null, null));

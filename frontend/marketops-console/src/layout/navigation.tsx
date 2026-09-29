@@ -15,6 +15,7 @@ export const ROUTES = {
   home: '/',
   storeDiagnosis: '/store/diagnosis',
   masterData: '/store/master-data',
+  dataCollection: '/store/collection',
   pricingQueue: '/pricing/queue',
   subject: '/pricing/subjects/:subjectId',
   review: '/pricing/review',
@@ -72,6 +73,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     items: [
       { path: ROUTES.storeDiagnosis, label: pages.storeDiagnosis },
       { path: ROUTES.masterData, label: pages.masterData },
+      { path: ROUTES.dataCollection, label: pages.dataCollection },
     ],
   },
   {
