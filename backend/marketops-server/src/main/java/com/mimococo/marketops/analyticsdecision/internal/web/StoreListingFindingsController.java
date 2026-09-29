@@ -74,7 +74,7 @@ class StoreListingFindingsController {
         if (run.isEmpty()) {
             return new StoreFindings(storeId, window.name(), null, List.of(), List.of());
         }
-        List<FindingRow> triggered = findings.triggeredFindings(run.get().id());
+        List<FindingRow> triggered = findings.triggeredFindings(run.get(), window.name());
         Map<UUID, List<Finding>> bySubject = new LinkedHashMap<>();
         for (FindingRow row : triggered) {
             bySubject.computeIfAbsent(row.subjectId(), subject -> new ArrayList<>())

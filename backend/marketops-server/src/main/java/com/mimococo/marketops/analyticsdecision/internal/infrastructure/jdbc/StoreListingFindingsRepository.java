@@ -13,6 +13,11 @@ import org.springframework.stereotype.Repository;
 /**
  * What the newest completed calculation run said about a store's listings: the
  * findings it triggered and selected metric values, for the store diagnosis.
+ *
+ * <p>Values and findings are stored once per distinct input, so a run that
+ * re-evaluates an unchanged listing writes nothing new: a run's values are
+ * found through the evaluations it recorded, and its findings as the newest
+ * finding of every rule over the run's period for the listings it evaluated.
  */
 @Repository
 public class StoreListingFindingsRepository {
@@ -46,20 +51,39 @@ public class StoreListingFindingsRepository {
                 .optional();
     }
 
-    /** Every finding the run triggered, in rule order. */
-    public List<FindingRow> triggeredFindings(UUID runId) {
+    /** Every finding that stands after the run and triggered, in rule order. */
+    public List<FindingRow> triggeredFindings(RunRow run, String windowCode) {
         return jdbc.sql("""
-                        SELECT finding.id, finding.subject_id, finding.rule_code, finding.severity,
-                               finding.detail::text AS detail
-                          FROM mart.diagnosis_finding AS finding
-                          JOIN mart.diagnosis_rule AS rule
-                            ON rule.rule_code = finding.rule_code AND rule.rule_version = finding.rule_version
-                         WHERE finding.calculation_run_id = :runId
-                           AND finding.subject_kind = 'PLATFORM_LISTING_VARIANT'
-                           AND finding.outcome = 'TRIGGERED'
-                         ORDER BY finding.subject_id, rule.ordinal
+                        SELECT current.id, current.subject_id, current.rule_code, current.severity,
+                               current.detail
+                          FROM (SELECT DISTINCT ON (finding.subject_id, finding.rule_code)
+                                       finding.id, finding.subject_id, finding.rule_code,
+                                       finding.outcome, finding.severity,
+                                       finding.detail::text AS detail, rule.ordinal
+                                  FROM mart.diagnosis_finding AS finding
+                                  JOIN mart.diagnosis_rule AS rule
+                                    ON rule.rule_code = finding.rule_code
+                                   AND rule.rule_version = finding.rule_version
+                                 WHERE finding.subject_kind = 'PLATFORM_LISTING_VARIANT'
+                                   AND finding.window_code = :windowCode
+                                   AND finding.period_start = :periodStart
+                                   AND finding.period_end = :periodEnd
+                                   AND finding.subject_id IN (
+                                       SELECT value.subject_id
+                                         FROM mart.metric_value_evaluation AS evaluation
+                                         JOIN mart.metric_value AS value
+                                           ON value.id = evaluation.metric_value_id
+                                        WHERE evaluation.calculation_run_id = :runId
+                                          AND value.subject_kind = 'PLATFORM_LISTING_VARIANT')
+                                 ORDER BY finding.subject_id, finding.rule_code,
+                                          finding.evaluated_at DESC, finding.id DESC) AS current
+                         WHERE current.outcome = 'TRIGGERED'
+                         ORDER BY current.subject_id, current.ordinal
                         """)
-                .param("runId", runId)
+                .param("runId", run.id())
+                .param("windowCode", windowCode)
+                .param("periodStart", Timestamp.from(run.periodStart()))
+                .param("periodEnd", Timestamp.from(run.periodEnd()))
                 .query((rows, rowNumber) -> new FindingRow(
                         rows.getObject("id", UUID.class),
                         rows.getObject("subject_id", UUID.class),
@@ -69,15 +93,16 @@ public class StoreListingFindingsRepository {
                 .list();
     }
 
-    /** The run's values of the named metrics for every listing it computed. */
+    /** The values of the named metrics the run evaluated for every listing, new or unchanged. */
     public List<MetricRow> metricValues(UUID runId, Collection<String> metricCodes) {
         return jdbc.sql("""
-                        SELECT subject_id, metric_code, value_state, numeric_value, currency_code,
-                               confidence_state
-                          FROM mart.metric_value
-                         WHERE calculation_run_id = :runId
-                           AND subject_kind = 'PLATFORM_LISTING_VARIANT'
-                           AND metric_code IN (:metricCodes)
+                        SELECT value.subject_id, value.metric_code, value.value_state,
+                               value.numeric_value, value.currency_code, value.confidence_state
+                          FROM mart.metric_value_evaluation AS evaluation
+                          JOIN mart.metric_value AS value ON value.id = evaluation.metric_value_id
+                         WHERE evaluation.calculation_run_id = :runId
+                           AND value.subject_kind = 'PLATFORM_LISTING_VARIANT'
+                           AND value.metric_code IN (:metricCodes)
                         """)
                 .param("runId", runId)
                 .param("metricCodes", metricCodes)

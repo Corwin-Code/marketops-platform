@@ -198,7 +198,7 @@ public class DiagnosisEngine {
         boolean gap = comparable && price.numericValue().compareTo(competitor.numericValue()) > 0;
         if (comparable && competitor.numericValue().signum() > 0) {
             detail.put("premiumOverCompetitor", price.numericValue()
-                    .divide(competitor.numericValue(), 6, java.math.RoundingMode.HALF_UP)
+                    .divide(competitor.numericValue(), 4, java.math.RoundingMode.HALF_UP)
                     .subtract(BigDecimal.ONE).toPlainString());
         }
         Map<String, String> shared = Map.copyOf(detail);

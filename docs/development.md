@@ -490,7 +490,7 @@ make pilot-catalog APPLY=1
   - 售价含增值税，按商品税率扣除 `P·v/(1+v)`，不计其他营业额税；
   - 成本取当前生效的采购成本（P2 由 Ozon 成本价采用而来，含所有杂费）。
 
-  公式：`利润(P) = P − P·c − F − P·v/(1+v) − C`；保本价 `(F+C) / (1 − c − v/(1+v))`；目标利润价 `(F+C) / (1 − c − v/(1+v) − m)`，其中 `m` 是单件利润率下限。任何价格都覆盖不了成本时，保本价或目标利润价记为"无解"，不给数字。售价用买家价（有卖家促销价时用促销价）。
+  公式：`利润(P) = P − P·c − F − P·v/(1+v) − C`；保本价 `(F+C) / (1 − c − v/(1+v))`；目标利润价 `(F+C) / (1 − c − v/(1+v) − m)`，其中 `m` 是单件利润率下限。任何价格都覆盖不了成本时，保本价或目标利润价记为"无解"，不给数字。售价用买家价（有卖家促销价时用促销价）。金额精确到分：利润四舍五入，保本价和目标利润价向上取整，保证按显示的价格卖确实能达到；利润率保留四位小数。
 - **新指标（指标定义 v2）**：`ORDERED_UNITS`、`SEARCH_USERS`（近 7 天内最新的一个统计期）、`LISTING_SELLABLE`、`CONTENT_RATING`、`PLATFORM_COMPETITOR_MIN_PRICE`，以及预估的 `PROJECTED_UNIT_PROFIT`、`PROJECTED_UNIT_MARGIN`、`PROJECTED_BREAK_EVEN_PRICE`、`TARGET_MARGIN_PRICE`。预估指标的置信度是 `ESTIMATED_EXPLAINED`，指标身份里记下履约方式、物流档位、税率、佣金率和利润率下限；缺售价、履约方式、费率或成本时为"不可用"，并记下缺的是哪一项，不按 0 计算。
 - **新规则（诊断规则 v1）**：不依赖已实现利润，所以不受 `DATA_BLOCKED` 影响。
 
@@ -507,8 +507,9 @@ make pilot-catalog APPLY=1
   价差三条只在买家价和竞品价币种相同时判断，有价差时恰好触发其中一条。竞品价是 C 级平台分析，只用于诊断，不驱动调价。
 - **阈值**（`application.yaml` 的 `marketops.analytics.thresholds`，Owner 2026-09-29 决定）：`minimum-unit-margin-rate: 0.15`、`demand-search-users-floor: 1000`、`low-exposure-search-users: 200`、`content-rating-floor: 0.90`。搜索数据每周统计、晚一两天出，所以单独设 `search-freshness: 9d`。
 - **接口**：
-  - `GET /api/v1/console/diagnosis/stores/{storeId}/listing-findings?window=D7`（`DIAGNOSTIC_VIEW`）：最近一次成功计算的各商品结论（带规则比较的数值）和单件经济指标，按规则汇总商品数；数字都是那次计算存下的，接口不重新计算。
-  - `POST /api/v1/console/diagnosis/stores/{storeId}/recalculation?window=D7`：重新计算，记录操作人。
+  - `GET /api/v1/console/diagnosis/stores/{storeId}/listing-findings?window=D7`（`DIAGNOSTIC_VIEW`）：最近一次成功计算的各商品结论（带规则比较的数值）和单件经济指标，按规则汇总商品数；数字都是计算时存下的，接口不重新计算。
+  - `POST /api/v1/console/diagnosis/stores/{storeId}/recalculation?window=D7`：重新计算，记录操作人；控制台为它单独设 60 秒超时（刚启动的后端算一次要十几秒）。
+  - 存储语义：指标值和结论按输入去重，同一计算期内重复计算时，没有变化的值不写新行（`mart.metric_value.calculation_run_id` 是第一次写入它的那次计算）。所以一次计算的指标要经由 `mart.metric_value_evaluation` 读，结论取该计算期内每个商品每条规则最新的一行，不能按 `calculation_run_id` 过滤。
   - 店铺诊断接口的价格信号新增 `tariffs`（FBS 佣金、FBS 物流最高档合计、收单费、税率）。
 - **页面（控制台首页）**：
   - 新增"诊断结论"：每条结论一张卡片，写明影响几个商品、是什么意思、下一步做什么；"查看商品"按该结论筛选下面的表格；右上角是计算所依据的数据区间和"重新计算诊断"按钮。

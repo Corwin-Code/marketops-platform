@@ -24,16 +24,20 @@ import java.util.Optional;
  *
  * <p>A price that no rate structure can cover (a denominator at or below zero)
  * has no break-even or target price; that is reported as absent, not as a
- * number. Everything is exact decimal arithmetic; money is rounded to four
- * decimals only at the end.
+ * number. Everything is exact decimal arithmetic, rounded only at the end:
+ * money to the minor unit, with break-even and target prices rounded up so the
+ * price shown really reaches its bound, and the margin to four decimals.
  */
 public final class ListingUnitEconomics {
 
     /** Internal precision before the final rounding. */
     private static final int SCALE = 12;
 
-    /** Money and ratios are stored with four decimals. */
-    private static final int RESULT_SCALE = 4;
+    /** Money is quoted in minor units; every currency the marketplaces price in here has two. */
+    private static final int MONEY_SCALE = 2;
+
+    /** A margin to a hundredth of a percent. */
+    private static final int RATIO_SCALE = 4;
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
@@ -117,12 +121,14 @@ public final class ListingUnitEconomics {
                 : priceFor(fixed.add(unitCost), cover.subtract(minimumMarginRate));
         return new Estimate(money(price), money(commission), money(terms.logistics()),
                 money(terms.acquiring()), money(vat), money(unitCost), money(profit),
-                margin == null ? null : margin.setScale(RESULT_SCALE, RoundingMode.HALF_UP),
+                margin == null ? null : margin.setScale(RATIO_SCALE, RoundingMode.HALF_UP),
                 breakEven, target);
     }
 
+    /** The lowest price, in minor units, at which {@code share} of it covers {@code costs}. */
     private static BigDecimal priceFor(BigDecimal costs, BigDecimal share) {
-        return share.signum() <= 0 ? null : money(costs.divide(share, SCALE, RoundingMode.HALF_UP));
+        return share.signum() <= 0 ? null
+                : costs.divide(share, SCALE, RoundingMode.HALF_UP).setScale(MONEY_SCALE, RoundingMode.CEILING);
     }
 
     private static BigDecimal sum(BigDecimal... amounts) {
@@ -137,6 +143,6 @@ public final class ListingUnitEconomics {
     }
 
     private static BigDecimal money(BigDecimal amount) {
-        return amount.setScale(RESULT_SCALE, RoundingMode.HALF_UP);
+        return amount.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
     }
 }

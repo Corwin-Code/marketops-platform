@@ -6,7 +6,7 @@
  */
 
 import type { ConsoleOutcome, ConsoleRequest } from './console';
-import { request } from './console';
+import { CALCULATION_REQUEST_TIMEOUT_MS, request } from './console';
 
 /** One metric value of a run. */
 export interface FindingMetric {
@@ -85,6 +85,7 @@ export function recalculateStore(
       return typeof subjects === 'number' && Number.isInteger(subjects) ? subjects : 0;
     },
     { method: 'POST' },
+    CALCULATION_REQUEST_TIMEOUT_MS,
   );
 }
 
