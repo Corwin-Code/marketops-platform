@@ -48,6 +48,9 @@ public class FactRecorder {
     /** The settlement state a source that does not publish one is recorded under. */
     private static final String UNKNOWN_SETTLEMENT = "UNKNOWN";
 
+    /** The longest search term core.listing_search_term_observation stores, in characters. */
+    private static final int MAXIMUM_SEARCH_TERM_LENGTH = 512;
+
     /** The canonical fields that name a listing variant. */
     static final Set<String> VARIANT_KEYS = Set.of("nativeListingKey", "nativeVariantKey");
 
@@ -118,6 +121,8 @@ public class FactRecorder {
             case "LISTING" -> 1;
             case "LISTING_HEALTH" -> recordHealth(job, canonical, variantId, provenanceId);
             case "LISTING_CONTENT" -> recordContent(job, canonical, variantId, provenanceId);
+            case "LISTING_SEARCH" -> recordSearch(job, canonical, variantId, provenanceId);
+            case "LISTING_SEARCH_TERM" -> recordSearchTerm(job, canonical, variantId, provenanceId);
             case "PRICE" -> recordPrice(job, canonical, variantId, provenanceId);
             case "STOCK" -> recordStock(job, canonical, variantId, provenanceId);
             case "TRAFFIC" -> recordTraffic(job, canonical, variantId, provenanceId);
@@ -191,6 +196,60 @@ public class FactRecorder {
                 canonical.requiredInstant("observedAt"),
                 canonical.requiredDecimal("contentRating"));
         return 1;
+    }
+
+    private int recordSearch(IngestionJobView job, CanonicalRecord canonical,
+                             UUID variantId, UUID provenanceId) {
+        Instant periodStart = canonical.requiredInstant("periodStart");
+        Instant periodEnd = canonical.requiredInstant("periodEnd");
+        Optional<java.math.BigDecimal> revenue = searchRevenue(canonical);
+        facts.insertSearch(idGenerator.newId(), job.organizationId(), provenanceId, variantId,
+                sourceFactKey(job, canonical, periodStart + "|" + periodEnd),
+                periodStart, periodEnd,
+                canonical.requiredInteger("searchUsers"),
+                revenue.isPresent() ? currency(canonical, "currencyCode") : null,
+                revenue.orElse(null));
+        return 1;
+    }
+
+    /**
+     * One search term of a listing for a period.
+     *
+     * <p>The term is part of the fact's identity: the same listing and period
+     * carry several terms, and the same term arriving twice resolves to one row.
+     */
+    private int recordSearchTerm(IngestionJobView job, CanonicalRecord canonical,
+                                 UUID variantId, UUID provenanceId) {
+        Instant periodStart = canonical.requiredInstant("periodStart");
+        Instant periodEnd = canonical.requiredInstant("periodEnd");
+        String term = canonical.requiredText("searchTerm");
+        if (term.isBlank()) {
+            // A term row without a term says nothing about what buyers searched for.
+            return 0;
+        }
+        if (term.codePointCount(0, term.length()) > MAXIMUM_SEARCH_TERM_LENGTH) {
+            // Stored whole or not at all: a cut term is a different search.
+            throw new ArithmeticException("search term is longer than can be stored");
+        }
+        Optional<java.math.BigDecimal> revenue = searchRevenue(canonical);
+        facts.insertSearchTerm(idGenerator.newId(), job.organizationId(), provenanceId, variantId,
+                sourceFactKey(job, canonical, periodStart + "|" + periodEnd + "|" + term),
+                periodStart, periodEnd, term,
+                canonical.requiredInteger("searchUsers"),
+                canonical.integer("orderedCount").orElse(null),
+                revenue.isPresent() ? currency(canonical, "currencyCode") : null,
+                revenue.orElse(null));
+        return 1;
+    }
+
+    /**
+     * Sales attributed to searches, kept only as an amount with a currency code:
+     * an amount without one cannot be compared with anything.
+     */
+    private static Optional<java.math.BigDecimal> searchRevenue(CanonicalRecord canonical) {
+        return canonical.decimal("searchRevenue")
+                .filter(amount -> amount.signum() >= 0)
+                .filter(amount -> currency(canonical, "currencyCode") != null);
     }
 
     private int recordPrice(IngestionJobView job, CanonicalRecord canonical,

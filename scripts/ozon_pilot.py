@@ -40,6 +40,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import base64
+import decimal
 import getpass
 import hashlib
 import html
@@ -276,10 +277,30 @@ def inspect_queries(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str
     refusal = None
     if any(item.get("sku") is None for item in items):
         refusal = "some answers carry no sku"
+    elif any(not isinstance(item.get("unique_search_users"), int) for item in items):
+        refusal = "some answers carry no whole number of searchers"
+    else:
+        refusal = search_money_refusal(items)
     return lines, refusal
 
 
+def search_money_refusal(rows: list[dict]) -> str | None:
+    """Why the mapping could not keep the search sales exactly, or None."""
+    for row in rows:
+        gmv = row.get("gmv")
+        if gmv is None:
+            continue
+        if not isinstance(gmv, (int, float)) or gmv < 0:
+            return "search sales that are not a non-negative number"
+        if gmv and not re.fullmatch(r"[A-Z]{3}", str(row.get("currency") or "").strip().upper()):
+            return "search sales without a currency code"
+        if abs(decimal.Decimal(str(gmv)).as_tuple().exponent) > 4:
+            return "search sales with more than 4 decimals, which cannot be stored exactly"
+    return None
+
+
 QUERY_DETAILS_PER_SKU = 5
+MAXIMUM_SEARCH_TERM_LENGTH = 512
 
 
 def inspect_query_details(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
@@ -288,15 +309,31 @@ def inspect_query_details(answers: list[dict], pilot: "Pilot") -> tuple[list[str
     skus = {str(query.get("sku")) for query in queries}
     orders = sum(query.get("order_count") or 0 for query in queries if isinstance(query.get("order_count"), int))
     top = max((query.get("unique_search_users") or 0 for query in queries), default=0)
+    pairs = [(str(query.get("sku")), str(query.get("query"))) for query in queries]
     lines = [f"query details: {len(queries)} rows, {len(texts)} distinct search terms over {len(skus)} SKUs, "
-             f"orders {orders}, most searchers on one term {top}"]
-    return lines, None
+             f"orders {orders}, most searchers on one term {top}, "
+             f"longest term {max((len(text) for text in texts), default=0)} characters"]
+    refusal = None
+    if any(query.get("sku") is None for query in queries):
+        refusal = "some rows carry no sku"
+    elif any(not isinstance(query.get("query"), str) or not query["query"].strip()
+             or len(query["query"]) > MAXIMUM_SEARCH_TERM_LENGTH for query in queries):
+        refusal = f"some rows carry no search term or one longer than {MAXIMUM_SEARCH_TERM_LENGTH} characters"
+    elif any(not isinstance(query.get("unique_search_users"), int) for query in queries):
+        refusal = "some rows carry no whole number of searchers"
+    elif len(set(pairs)) != len(pairs):
+        refusal = "the same SKU and term appear twice in one window"
+    else:
+        refusal = search_money_refusal(queries)
+    return lines, refusal
 
 
-def query_details_body(date_from: str, date_to: str, page: str, skus: list[str]) -> dict:
-    return {"date_from": f"{date_from}T00:00:00Z", "date_to": f"{date_to}T00:00:00Z",
-            "limit_by_sku": QUERY_DETAILS_PER_SKU, "page": int(page), "page_size": PAGE_SIZE, "skus": skus,
-            "sort_by": "BY_SEARCHES", "sort_dir": "DESCENDING"}
+def query_details_body(date_from: str, date_to: str, page: str, limit: str, skus: str) -> str:
+    """The search-term request exactly as the registered template renders it: every SKU at
+    once, pages counted from 0."""
+    return (f'{{"date_from":"{date_from}T00:00:00Z","date_to":"{date_to}T00:00:00Z",'
+            f'"limit_by_sku":{QUERY_DETAILS_PER_SKU},"page":{page},"page_size":{limit},"skus":{skus},'
+            f'"sort_by":"BY_SEARCHES","sort_dir":"DESCENDING"}}')
 
 
 def queries_body(date_from: str, date_to: str, limit: str, skus: str) -> str:
@@ -673,44 +710,61 @@ CAPABILITIES = {
             "keys": "ITEM",
             "window": "WEEK",
         },
-        "job": {"suffix": "queries", "dataset": "UNKNOWN", "display": "Ozon 试点：搜索需求"},
-        # Probed before a mapping exists: what the store may see without a Premium
-        # subscription decides which facts this becomes.
-        "mapping": None,
+        "job": {"suffix": "queries", "dataset": "LISTING_SEARCH", "display": "Ozon 试点：搜索需求"},
+        # One row per SKU for the run's seven days. Without a Premium subscription
+        # position, unique_view_users and view_conversion answer null and are not
+        # read; a SKU nobody searched for is absent from the answer, not zero.
+        "mapping": {
+            "dataset": "LISTING_SEARCH", "version": 1, "record_pointer": "/items", "child_pointer": None,
+            "fields": {"nativeItemKey": "/sku", "searchUsers": "/unique_search_users",
+                       "searchRevenue": "/gmv", "currencyCode": "/currency"},
+            "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
+        },
         "inspect": inspect_queries,
     },
     "query-details": {
         "code": "ozon-search-query-details-read",
-        "display": "Ozon search terms behind each product (probe only)",
-        "description": "The top search terms per SKU over one seven-day window (POST "
-                       "/v1/analytics/product-queries/details; official docs checked 2026-09-29).",
+        "display": "Ozon search terms behind each product",
+        "description": "The top search terms per SKU over one seven-day window, every SKU in one "
+                       "request, pages counted from 0 (POST /v1/analytics/product-queries/details; "
+                       "official docs checked 2026-09-29).",
         "manifest": "query-details-latest.json",
-        # Paged by page number over every SKU at once, which the backend's key
-        # batches do not combine with: probed to decide what to keep, not registered.
-        "probe_only": True,
         "endpoint": {
             "code": "ozon-analytics-product-query-details-v1", "api_version": "v1",
             "schema_version": "v1GetProductQueriesDetailsResponse",
             "rate_note": "Ozon: at most 50 requests/s per Client-Id; this method states none. Up to 15 "
-                         "terms per SKU, 100 rows per page. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
-            "freshness": "One seven-day window per probe.",
+                         "terms per SKU (we ask 5), up to 1000 SKUs per request, 100 rows per page, pages "
+                         "from 0. Our cap: 10/min. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "One seven-day window per run; Ozon computes a day within 1-2 days.",
             "definition": {
                 "http_method": "POST", "path_template": "/v1/analytics/product-queries/details",
-                "operation_function": "READ_DATA", "query_template": None, "body_template": None,
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": query_details_body("{windowStartUtcDate}", "{windowEndUtcDate}",
+                                                    "{pageIndex}", "{limit}", "{itemKeysAll}"),
                 "response_content_type": "application/json", "continuation_pointer": None,
                 "pagination_model": "PAGE", "rate_limit_per_minute": 10,
-                "continuation_end_rule": "PAGE_COUNT", "records_pointer": "/queries",
+                # A page shorter than 100 rows is the last; the request after it
+                # answers 200 with no rows (checked by the probe).
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/queries",
             },
-            "probe_body": lambda cursor, context: query_details_body(
-                context["from"], context["to"], cursor or "0", context["keys"]),
+            "probe_body": lambda cursor, context: json.loads(query_details_body(
+                context["from"], context["to"], cursor or "0", str(PAGE_SIZE), json.dumps(context["keys"]))),
             "token_key": None,
             "records_key": "queries",
-            "computed": "PAGE_COUNT",
+            "computed": "PAGE_INDEX",
             "keys": "ITEM",
             "window": "WEEK",
         },
-        "job": {"suffix": "query-details", "dataset": "UNKNOWN", "display": "Ozon 试点：搜索词（仅探测）"},
-        "mapping": None,
+        "job": {"suffix": "query-details", "dataset": "LISTING_SEARCH_TERM", "display": "Ozon 试点：搜索词"},
+        # One row per SKU and term for the run's seven days; query_index is only a
+        # position in the answer and is not kept.
+        "mapping": {
+            "dataset": "LISTING_SEARCH_TERM", "version": 1, "record_pointer": "/queries",
+            "child_pointer": None,
+            "fields": {"nativeItemKey": "/sku", "searchTerm": "/query", "searchUsers": "/unique_search_users",
+                       "orderedCount": "/order_count", "searchRevenue": "/gmv", "currencyCode": "/currency"},
+            "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
+        },
         "inspect": inspect_query_details,
     },
 }
@@ -1090,11 +1144,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             # A batch of recorded keys: the next offset, until every key was asked.
             following = int(cursor or "0") + PAGE_SIZE
             token = str(following) if following < len(window["keys"]) else None
-        elif computed == "PAGE_COUNT":
-            # Pages numbered from 0 until the answer's own page count.
-            following = int(cursor or "0") + 1
-            pages_total = answer.get("page_count")
-            token = str(following) if isinstance(pages_total, int) and following < pages_total else None
+        elif computed == "PAGE_INDEX":
+            # Pages numbered from 0; the short page ends the listing.
+            token = str(int(cursor or "0") + 1)
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1125,12 +1177,12 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                           f"which the registered rule {rule} does not read as the end; nothing recorded")
                     return None
             break
-        if computed == "OFFSET":
+        if computed in ("OFFSET", "PAGE_INDEX"):
             cursor = token
             continue
-        if computed in ("KEYS", "PAGE_COUNT"):
+        if computed == "KEYS":
             if token is None:
-                end_signal = "KEYS_EXHAUSTED" if computed == "KEYS" else "PAGE_COUNT"
+                end_signal = "KEYS_EXHAUSTED"
                 break
             cursor = token
             continue
@@ -1156,8 +1208,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                 *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
                 *({"SHORT_PAGE"} if short_rule else ()),
                 *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ()),
-                *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ()),
-                *({"PAGE_COUNT"} if rule == "PAGE_COUNT" and capability.get("probe_only") else ())}
+                *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ())}
     if end_signal not in accepted:
         print(f"the listing ended with {end_signal}, which the registered rule {rule} does not accept")
         return None

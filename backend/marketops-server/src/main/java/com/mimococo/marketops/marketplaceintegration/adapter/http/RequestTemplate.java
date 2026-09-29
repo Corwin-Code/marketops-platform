@@ -35,16 +35,17 @@ final class RequestTemplate {
      * the renderer would give it two places to drift from.
      */
     private static final java.util.Set<String> ALLOWED = java.util.Set.of(
-            "cursor", "limit", "accountKey", "endpointCode", "offset", "page",
+            "cursor", "limit", "accountKey", "endpointCode", "offset", "page", "pageIndex",
             "windowFrom", "windowTo", "windowStartUtcDate", "windowEndUtcDate",
-            "listingKeyBatch", "itemKeyBatch",
+            "listingKeyBatch", "itemKeyBatch", "itemKeysAll",
             "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
             "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",
             "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared");
 
     /** Placeholders whose value is a JSON array rendered by {@link #keyBatch}. */
-    static final java.util.Set<String> KEY_BATCHES = java.util.Set.of("listingKeyBatch", "itemKeyBatch");
+    static final java.util.Set<String> KEY_BATCHES =
+            java.util.Set.of("listingKeyBatch", "itemKeyBatch", "itemKeysAll");
 
     /** Render recorded keys as a JSON array of strings, each escaped for JSON. */
     static String keyBatch(java.util.List<String> keys) {

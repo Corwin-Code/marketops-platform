@@ -168,6 +168,67 @@ public class FactWriteRepository {
                 .update();
     }
 
+    /**
+     * Record how many buyers searched for a listing variant over a period.
+     * Platform analytics: it explains and ranks a diagnosis only.
+     */
+    public void insertSearch(UUID id, UUID organizationId, UUID provenanceId,
+                             UUID listingVariantId, String sourceFactKey, Instant periodStart,
+                             Instant periodEnd, long searchUsers, String currencyCode,
+                             BigDecimal searchRevenue) {
+        jdbc.sql("""
+                        INSERT INTO core.listing_search_observation (
+                            id, organization_id, provenance_id, platform_listing_variant_id,
+                            source_fact_key, period_start, period_end, search_users,
+                            currency_code, search_revenue)
+                        VALUES (:id, :organizationId, :provenanceId, :listingVariantId,
+                            :sourceFactKey, :periodStart, :periodEnd, :searchUsers,
+                            :currencyCode, :searchRevenue)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("periodStart", Timestamp.from(periodStart))
+                .param("periodEnd", Timestamp.from(periodEnd))
+                .param("searchUsers", searchUsers)
+                .param("currencyCode", currencyCode)
+                .param("searchRevenue", searchRevenue)
+                .update();
+    }
+
+    /** Record one search term buyers used to find a listing variant over a period. */
+    public void insertSearchTerm(UUID id, UUID organizationId, UUID provenanceId,
+                                 UUID listingVariantId, String sourceFactKey, Instant periodStart,
+                                 Instant periodEnd, String searchTerm, long searchUsers,
+                                 Long orderedCount, String currencyCode, BigDecimal searchRevenue) {
+        jdbc.sql("""
+                        INSERT INTO core.listing_search_term_observation (
+                            id, organization_id, provenance_id, platform_listing_variant_id,
+                            source_fact_key, period_start, period_end, search_term, search_users,
+                            ordered_count, currency_code, search_revenue)
+                        VALUES (:id, :organizationId, :provenanceId, :listingVariantId,
+                            :sourceFactKey, :periodStart, :periodEnd, :searchTerm, :searchUsers,
+                            :orderedCount, :currencyCode, :searchRevenue)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("periodStart", Timestamp.from(periodStart))
+                .param("periodEnd", Timestamp.from(periodEnd))
+                .param("searchTerm", searchTerm)
+                .param("searchUsers", searchUsers)
+                .param("orderedCount", orderedCount)
+                .param("currencyCode", currencyCode)
+                .param("searchRevenue", searchRevenue)
+                .update();
+    }
+
     /** Record observed availability for one fulfillment mode. */
     public void insertStock(UUID id, UUID organizationId, UUID provenanceId,
                             UUID listingVariantId, String fulfillmentModeCode,
