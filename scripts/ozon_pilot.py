@@ -258,6 +258,53 @@ def inspect_content(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str
     return lines, refusal
 
 
+def inspect_queries(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    items = [item for answer in answers for item in answer.get("items") or []]
+    periods = sorted({json.dumps(answer.get("analytics_period"), sort_keys=True) for answer in answers})
+    known = set(catalog_skus(pilot))
+
+    def positive(key: str) -> int:
+        return sum(1 for item in items if isinstance(item.get(key), (int, float)) and item[key] > 0)
+
+    searchers = sum(item.get("unique_search_users") or 0 for item in items
+                    if isinstance(item.get("unique_search_users"), (int, float)))
+    lines = [f"queries: {len(items)} products answered ({sum(1 for i in items if str(i.get('sku')) not in known)} "
+             f"not in the catalog probe), analytics period {periods}",
+             f"with searchers {positive('unique_search_users')} (sum {searchers}), with search sales "
+             f"{positive('gmv')}; Premium-only fields present: position {positive('position')}, "
+             f"unique_view_users {positive('unique_view_users')}, view_conversion {positive('view_conversion')}"]
+    refusal = None
+    if any(item.get("sku") is None for item in items):
+        refusal = "some answers carry no sku"
+    return lines, refusal
+
+
+QUERY_DETAILS_PER_SKU = 5
+
+
+def inspect_query_details(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    queries = [query for answer in answers for query in answer.get("queries") or []]
+    texts = {str(query.get("query")) for query in queries}
+    skus = {str(query.get("sku")) for query in queries}
+    orders = sum(query.get("order_count") or 0 for query in queries if isinstance(query.get("order_count"), int))
+    top = max((query.get("unique_search_users") or 0 for query in queries), default=0)
+    lines = [f"query details: {len(queries)} rows, {len(texts)} distinct search terms over {len(skus)} SKUs, "
+             f"orders {orders}, most searchers on one term {top}"]
+    return lines, None
+
+
+def query_details_body(date_from: str, date_to: str, page: str, skus: list[str]) -> dict:
+    return {"date_from": f"{date_from}T00:00:00Z", "date_to": f"{date_to}T00:00:00Z",
+            "limit_by_sku": QUERY_DETAILS_PER_SKU, "page": int(page), "page_size": PAGE_SIZE, "skus": skus,
+            "sort_by": "BY_SEARCHES", "sort_dir": "DESCENDING"}
+
+
+def queries_body(date_from: str, date_to: str, limit: str, skus: str) -> str:
+    """The search-query request exactly as the registered template renders it."""
+    return (f'{{"date_from":"{date_from}T00:00:00Z","date_to":"{date_to}T00:00:00Z","page":0,'
+            f'"page_size":{limit},"skus":{skus},"sort_by":"BY_SEARCHES","sort_dir":"DESCENDING"}}')
+
+
 def inspect_traffic(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
     rows = [row for answer in answers for row in ((answer.get("result") or {}).get("data") or [])]
     metrics = TRAFFIC_METRICS[TRAFFIC_METRIC_SET]
@@ -593,6 +640,78 @@ CAPABILITIES = {
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
         "inspect": inspect_content,
+    },
+    "queries": {
+        "code": "ozon-search-queries-read",
+        "display": "Ozon search demand: buyers who searched each product over a week",
+        "description": "Asks about every SKU the catalog recorded, 100 per request, for one seven-day "
+                       "window (POST /v1/analytics/product-queries; official docs checked 2026-09-29).",
+        "manifest": "queries-latest.json",
+        "endpoint": {
+            "code": "ozon-analytics-product-queries-v1", "api_version": "v1",
+            "schema_version": "v1GetProductQueriesResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Without a Premium subscription only part of the "
+                         "metrics and only the last month (not today). Our cap: 10/min, 100 SKUs per "
+                         "request. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "One seven-day window per run; Ozon computes a day within 1-2 days.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/analytics/product-queries",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": queries_body("{windowStartUtcDate}", "{windowEndUtcDate}", "{limit}",
+                                              "{itemKeyBatch}"),
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "KEYS_EXHAUSTED", "records_pointer": "/items",
+            },
+            "probe_body": lambda cursor, context: json.loads(queries_body(
+                context["from"], context["to"], str(PAGE_SIZE),
+                json.dumps(context["keys"][int(cursor or "0"):int(cursor or "0") + PAGE_SIZE]))),
+            "token_key": None,
+            "records_key": "items",
+            "computed": "KEYS",
+            "keys": "ITEM",
+            "window": "WEEK",
+        },
+        "job": {"suffix": "queries", "dataset": "UNKNOWN", "display": "Ozon 试点：搜索需求"},
+        # Probed before a mapping exists: what the store may see without a Premium
+        # subscription decides which facts this becomes.
+        "mapping": None,
+        "inspect": inspect_queries,
+    },
+    "query-details": {
+        "code": "ozon-search-query-details-read",
+        "display": "Ozon search terms behind each product (probe only)",
+        "description": "The top search terms per SKU over one seven-day window (POST "
+                       "/v1/analytics/product-queries/details; official docs checked 2026-09-29).",
+        "manifest": "query-details-latest.json",
+        # Paged by page number over every SKU at once, which the backend's key
+        # batches do not combine with: probed to decide what to keep, not registered.
+        "probe_only": True,
+        "endpoint": {
+            "code": "ozon-analytics-product-query-details-v1", "api_version": "v1",
+            "schema_version": "v1GetProductQueriesDetailsResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id; this method states none. Up to 15 "
+                         "terms per SKU, 100 rows per page. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "One seven-day window per probe.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/analytics/product-queries/details",
+                "operation_function": "READ_DATA", "query_template": None, "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "PAGE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "PAGE_COUNT", "records_pointer": "/queries",
+            },
+            "probe_body": lambda cursor, context: query_details_body(
+                context["from"], context["to"], cursor or "0", context["keys"]),
+            "token_key": None,
+            "records_key": "queries",
+            "computed": "PAGE_COUNT",
+            "keys": "ITEM",
+            "window": "WEEK",
+        },
+        "job": {"suffix": "query-details", "dataset": "UNKNOWN", "display": "Ozon 试点：搜索词（仅探测）"},
+        "mapping": None,
+        "inspect": inspect_query_details,
     },
 }
 
@@ -971,6 +1090,11 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             # A batch of recorded keys: the next offset, until every key was asked.
             following = int(cursor or "0") + PAGE_SIZE
             token = str(following) if following < len(window["keys"]) else None
+        elif computed == "PAGE_COUNT":
+            # Pages numbered from 0 until the answer's own page count.
+            following = int(cursor or "0") + 1
+            pages_total = answer.get("page_count")
+            token = str(following) if isinstance(pages_total, int) and following < pages_total else None
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1004,9 +1128,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         if computed == "OFFSET":
             cursor = token
             continue
-        if computed == "KEYS":
+        if computed in ("KEYS", "PAGE_COUNT"):
             if token is None:
-                end_signal = "KEYS_EXHAUSTED"
+                end_signal = "KEYS_EXHAUSTED" if computed == "KEYS" else "PAGE_COUNT"
                 break
             cursor = token
             continue
@@ -1032,7 +1156,8 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                 *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
                 *({"SHORT_PAGE"} if short_rule else ()),
                 *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ()),
-                *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ())}
+                *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ()),
+                *({"PAGE_COUNT"} if rule == "PAGE_COUNT" and capability.get("probe_only") else ())}
     if end_signal not in accepted:
         print(f"the listing ended with {end_signal}, which the registered rule {rule} does not accept")
         return None
@@ -1079,6 +1204,10 @@ def command_probe(args: argparse.Namespace) -> int:
             day = args.date or (utc_now() - timedelta(days=1)).strftime("%Y-%m-%d")
             window = {"from": day, "to": day}
             print(f"probing the UTC day {day}")
+        elif capability["endpoint"].get("window") == "WEEK":
+            last = datetime.strptime(args.date, "%Y-%m-%d") if args.date else utc_now() - timedelta(days=1)
+            window = {"from": (last - timedelta(days=6)).strftime("%Y-%m-%d"), "to": last.strftime("%Y-%m-%d")}
+            print(f"probing the UTC days {window['from']} to {window['to']}")
         if capability["endpoint"].get("keys") in ("LISTING", "ITEM"):
             # The backend batches the keys in their text order; the probe asks the same way.
             keys = catalog_product_ids(pilot) if capability["endpoint"]["keys"] == "LISTING" \
@@ -1219,6 +1348,8 @@ def find_job(admin: Admin, pilot: Pilot, capability: dict, account_id: str) -> d
 def command_setup(args: argparse.Namespace) -> int:
     pilot = pilot_from(args)
     capability = capability_from(args)
+    if capability.get("probe_only"):
+        sys.exit(f"{args.capability} is probed only; nothing of it is registered yet")
     manifest = load_manifest(pilot, capability)
     client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
     if not (pilot.api_key_file.is_file() and pilot.api_key_file.stat().st_size > 0):
@@ -1583,8 +1714,17 @@ MAXIMUM_RUN_DAYS = 30
 
 
 def run_windows(capability: dict, args: argparse.Namespace) -> list[dict | None]:
-    """One window per run: whole UTC days, oldest first, for a windowed capability."""
-    if capability["endpoint"].get("window") != "DAY":
+    """One window per run: whole UTC days, oldest first, for a windowed capability.
+
+    A weekly capability reads one seven-day window ending at --date: its measures
+    count unique buyers, which do not add up day by day.
+    """
+    kind = capability["endpoint"].get("window")
+    if kind == "WEEK":
+        last = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc) if args.date \
+            else utc_now().replace(hour=0, minute=0, second=0) - timedelta(days=1)
+        return [{"windowFrom": iso(last - timedelta(days=6)), "windowTo": iso(last + timedelta(days=1))}]
+    if kind != "DAY":
         return [None]
     last = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc) if args.date \
         else utc_now().replace(hour=0, minute=0, second=0) - timedelta(days=1)
