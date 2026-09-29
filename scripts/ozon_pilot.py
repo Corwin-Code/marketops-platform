@@ -501,8 +501,11 @@ CAPABILITIES = {
         # price on Ozon and elsewhere): platform analytics for diagnosis only.
         # Version 3 adds net_price, the unit cost the seller entered in the cabinet
         # (the Owner's accepted cost source, 2026-09-29); 0 reads as not entered.
+        # Version 4 adds the tariffs stated with the price (commission percent per
+        # scheme, FBS/FBO logistics min/max, returns, acquiring) and the VAT rate,
+        # which the unit economics estimate reads (V0019).
         "mapping": {
-            "dataset": "PRICE", "version": 3, "record_pointer": "/items", "child_pointer": None,
+            "dataset": "PRICE", "version": 4, "record_pointer": "/items", "child_pointer": None,
             "fields": {"nativeListingKey": "/product_id", "nativeVariantKey": "/product_id",
                        "currencyCode": "/price/currency_code", "sellingPrice": "/price/price",
                        "listPrice": "/price/old_price", "discountPrice": "/price/marketing_seller_price",
@@ -511,7 +514,21 @@ CAPABILITIES = {
                        "platformCompetitorCurrencyCode": "/price_indexes/ozon_index_data/min_price_currency",
                        "externalCompetitorMinPrice": "/price_indexes/external_index_data/min_price",
                        "externalCompetitorCurrencyCode": "/price_indexes/external_index_data/min_price_currency",
-                       "sellerCostPrice": "/price/net_price"},
+                       "sellerCostPrice": "/price/net_price",
+                       "salesCommissionPercentFbs": "/commissions/sales_percent_fbs",
+                       "salesCommissionPercentFbo": "/commissions/sales_percent_fbo",
+                       "fbsFirstMileMin": "/commissions/fbs_first_mile_min_amount",
+                       "fbsFirstMileMax": "/commissions/fbs_first_mile_max_amount",
+                       "fbsDirectFlowMin": "/commissions/fbs_direct_flow_trans_min_amount",
+                       "fbsDirectFlowMax": "/commissions/fbs_direct_flow_trans_max_amount",
+                       "fbsLastMile": "/commissions/fbs_deliv_to_customer_amount",
+                       "fbsReturnFlow": "/commissions/fbs_return_flow_amount",
+                       "fboDirectFlowMin": "/commissions/fbo_direct_flow_trans_min_amount",
+                       "fboDirectFlowMax": "/commissions/fbo_direct_flow_trans_max_amount",
+                       "fboLastMile": "/commissions/fbo_deliv_to_customer_amount",
+                       "fboReturnFlow": "/commissions/fbo_return_flow_amount",
+                       "acquiringMax": "/acquiring",
+                       "vatRate": "/price/vat"},
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
         "inspect": inspect_prices,

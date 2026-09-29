@@ -48,6 +48,15 @@ export const METRIC_LABELS: CodeLabels = {
   BREAK_EVEN_PRICE: '保本价',
   MINIMUM_PRICE: '最低价',
   DATA_COMPLETENESS: '数据完整度',
+  ORDERED_UNITS: '下单件数',
+  SEARCH_USERS: '搜索人数',
+  LISTING_SELLABLE: '是否可售',
+  CONTENT_RATING: '内容评分',
+  PLATFORM_COMPETITOR_MIN_PRICE: 'Ozon 竞品最低价',
+  PROJECTED_UNIT_PROFIT: '预估单件利润',
+  PROJECTED_UNIT_MARGIN: '预估单件利润率',
+  PROJECTED_BREAK_EVEN_PRICE: '预估保本价',
+  TARGET_MARGIN_PRICE: '目标利润价',
 };
 
 /** Deterministic diagnosis rule codes (DiagnosisEngine, rule version 1). */
@@ -61,6 +70,13 @@ export const RULE_LABELS: CodeLabels = {
   LOW_CONVERSION: '转化率偏低',
   ADVERTISING_INEFFICIENT: '广告效率低',
   PRICE_BELOW_MINIMUM: '售价低于最低价',
+  LISTING_NOT_SELLABLE: '买家不可购买',
+  DEMAND_NOT_CONVERTING: '有需求不成交',
+  PRICE_GAP_REDUCIBLE: '价格偏高（可降）',
+  PRICE_GAP_PARTIAL: '价格偏高（只能部分下调）',
+  PRICE_GAP_STRUCTURAL: '价格偏高（结构性）',
+  LOW_SEARCH_EXPOSURE: '搜索曝光不足',
+  CONTENT_BELOW_TARGET: '内容待提升',
 };
 
 /** What a rule concluded. */

@@ -102,7 +102,10 @@ class StoreDiagnosisConsoleController {
                         text(row.discountPrice()), row.priceIndexNative(),
                         text(row.platformCompetitorMinPrice()), row.platformCompetitorCurrencyCode(),
                         text(row.externalCompetitorMinPrice()), row.externalCompetitorCurrencyCode(),
-                        premium(row), row.priceAt());
+                        premium(row),
+                        new Tariffs(text(row.salesCommissionPercentFbs()), text(row.fbsLogisticsMax()),
+                                text(row.acquiringMax()), text(row.vatRate())),
+                        row.priceAt());
         Content content = row.contentAt() == null ? null
                 : new Content(text(row.contentRating()), row.contentAt());
         Orders orders = row.orderedUnits() == null ? null
@@ -234,7 +237,19 @@ class StoreDiagnosisConsoleController {
                  String indexNative, String platformCompetitorMinPrice,
                  String platformCompetitorCurrencyCode, String externalCompetitorMinPrice,
                  String externalCompetitorCurrencyCode, String premiumOverPlatformCompetitor,
-                 Instant observedAt) {
+                 Tariffs tariffs, Instant observedAt) {
+    }
+
+    /**
+     * The tariffs the marketplace stated with the price, in its currency; each
+     * {@code null} when not stated.
+     *
+     * @param salesCommissionPercentFbs the FBS sales commission in percent
+     * @param fbsLogisticsMax the highest stated FBS processing, trunk and last-mile tariffs summed
+     * @param vatRate the VAT rate contained in the price (0.05 = 5 %)
+     */
+    record Tariffs(String salesCommissionPercentFbs, String fbsLogisticsMax, String acquiringMax,
+                   String vatRate) {
     }
 
     /** The marketplace's content rating, 0 to 100. */

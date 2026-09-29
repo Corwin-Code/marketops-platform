@@ -1,5 +1,6 @@
 import { ReloadOutlined } from '@ant-design/icons';
 import {
+  App,
   Button,
   Card,
   Col,
@@ -26,6 +27,8 @@ import type {
   StoreDiagnosis,
 } from '../api/storeDiagnosis';
 import { fetchStoreDiagnosis } from '../api/storeDiagnosis';
+import type { ListingFindings } from '../api/storeFindings';
+import { fetchStoreFindings, recalculateStore } from '../api/storeFindings';
 import { formatDecimal, formatPercent } from '../format';
 import { actions } from '../i18n';
 import {
@@ -39,6 +42,7 @@ import {
   DetailDrawer,
   EmptyState,
   FailureAlert,
+  failureMessage,
   InfoTip,
   LoadingState,
   Money,
@@ -47,6 +51,14 @@ import {
   useSearchParamsPatch,
 } from '../ui';
 import type { TagColor } from '../ui';
+import type { FindingsLoad } from './DiagnosisConclusions';
+import {
+  ConclusionsSection,
+  conclusionTitle,
+  FindingTags,
+  ListingConclusions,
+  WITHOUT_STOCK,
+} from './DiagnosisConclusions';
 
 /** What the store diagnosis needs in order to load itself. */
 export interface StoreDiagnosisViewProps {
@@ -69,6 +81,7 @@ type Filter = (typeof FILTERS)[number];
 const FILTER_PARAM = 'f';
 const QUERY_PARAM = 'q';
 const LISTING_PARAM = 'listing';
+const RULE_PARAM = 'rule';
 
 const PRICE_INDEX_COLORS: Readonly<Record<string, TagColor>> = {
   SUPER: 'success',
@@ -140,6 +153,12 @@ function buyerPrice(product: DiagnosisProduct): string | null {
   return product.price?.discountPrice ?? product.price?.sellingPrice ?? null;
 }
 
+/** The run's estimated unit margin of a listing, when it had one. */
+function marginOf(listing: ListingFindings | undefined): string | null {
+  const metric = listing?.metrics.PROJECTED_UNIT_MARGIN;
+  return metric?.valueState === 'AVAILABLE' ? metric.value : null;
+}
+
 function Visibility({ product }: { readonly product: DiagnosisProduct }): React.JSX.Element {
   const visibility = product.visibility;
   if (visibility === null) {
@@ -206,7 +225,11 @@ export function StoreDiagnosisView({
   const [rawFilter] = useSearchParam(FILTER_PARAM);
   const [query] = useSearchParam(QUERY_PARAM);
   const [openListing] = useSearchParam(LISTING_PARAM);
+  const [activeRule] = useSearchParam(RULE_PARAM);
   const patch = useSearchParamsPatch();
+  const { message } = App.useApp();
+  const [findingsLoad, setFindingsLoad] = useState<FindingsLoad>({ kind: 'loading' });
+  const [recalculating, setRecalculating] = useState(false);
   const filter = readFilter(rawFilter);
   const [search, setSearch] = useState(query ?? '');
   const [loaded, setLoaded] = useState<Loaded>({ kind: 'loading' });
@@ -234,13 +257,45 @@ export function StoreDiagnosisView({
     };
   }, [context, storeId, generation]);
 
+  useEffect(() => {
+    if (storeId === '') return undefined;
+    let live = true;
+    void fetchStoreFindings(context, storeId).then((outcome) => {
+      if (!live) return;
+      setFindingsLoad(
+        outcome.ok
+          ? { kind: 'loaded', findings: outcome.value }
+          : { kind: 'failed', failure: outcome.failure },
+      );
+    });
+    return () => {
+      live = false;
+    };
+  }, [context, storeId, generation]);
+
   const diagnosis = loaded.kind === 'loaded' ? loaded.diagnosis : undefined;
+  const findingsByVariant = useMemo(() => {
+    const byVariant = new Map<string, ListingFindings>();
+    if (findingsLoad.kind === 'loaded') {
+      for (const listing of findingsLoad.findings.listings) {
+        byVariant.set(listing.listingVariantId, listing);
+      }
+    }
+    return byVariant;
+  }, [findingsLoad]);
   const rows = useMemo(
     () =>
-      (diagnosis?.products ?? []).filter((product) =>
-        matches(product, filter, (query ?? '').trim()),
+      (diagnosis?.products ?? []).filter(
+        (product) =>
+          matches(product, filter, (query ?? '').trim()) &&
+          (activeRule === undefined ||
+            (activeRule === WITHOUT_STOCK
+              ? withoutStock(product)
+              : (findingsByVariant.get(product.variantId)?.findings ?? []).some(
+                  (finding) => finding.ruleCode === activeRule,
+                ))),
       ),
-    [diagnosis, filter, query],
+    [diagnosis, filter, query, activeRule, findingsByVariant],
   );
   const selected = diagnosis?.products.find((product) => product.listingId === openListing);
 
@@ -290,6 +345,34 @@ export function StoreDiagnosisView({
           </Typography.Text>
         </Flex>
       ),
+    },
+    {
+      key: 'findings',
+      title: text.columnFindings,
+      width: 200,
+      render: (_, product) => (
+        <FindingTags
+          findings={findingsByVariant.get(product.variantId)?.findings ?? []}
+          withoutStock={withoutStock(product)}
+        />
+      ),
+    },
+    {
+      key: 'margin',
+      title: text.columnMargin,
+      width: 110,
+      align: 'right',
+      sorter: (a, b) =>
+        sortable(marginOf(findingsByVariant.get(a.variantId))) -
+        sortable(marginOf(findingsByVariant.get(b.variantId))),
+      render: (_, product) => {
+        const margin = marginOf(findingsByVariant.get(product.variantId));
+        return margin === null ? (
+          <Typography.Text type="secondary">—</Typography.Text>
+        ) : (
+          formatPercent(margin)
+        );
+      },
     },
     {
       key: 'visibility',
@@ -530,6 +613,28 @@ export function StoreDiagnosisView({
         </Row>
       </SectionCard>
 
+      <ConclusionsSection
+        load={findingsLoad}
+        withoutStockCount={summary.withoutStock}
+        activeRule={activeRule}
+        onSelectRule={(code) => {
+          patch({ [RULE_PARAM]: code });
+        }}
+        recalculating={recalculating}
+        onRecalculate={() => {
+          setRecalculating(true);
+          void recalculateStore(context, storeId).then((outcome) => {
+            setRecalculating(false);
+            if (outcome.ok) {
+              void message.success(text.recalculateDone(outcome.value));
+              setGeneration((value) => value + 1);
+            } else {
+              void message.error(failureMessage(outcome.failure));
+            }
+          });
+        }}
+      />
+
       <SectionCard title={text.productsTitle}>
         {/* The filters sit above the table, not in the header, so a narrow pane keeps the title. */}
         <Flex vertical gap={12}>
@@ -550,6 +655,17 @@ export function StoreDiagnosisView({
                 patch({ [FILTER_PARAM]: value === 'all' ? undefined : value });
               }}
             />
+            {activeRule !== undefined && (
+              <Tag
+                closable
+                color="processing"
+                onClose={() => {
+                  patch({ [RULE_PARAM]: undefined });
+                }}
+              >
+                {text.ruleFilterActive(conclusionTitle(activeRule))}
+              </Tag>
+            )}
             <Input.Search
               aria-label={text.searchLabel}
               placeholder={text.searchPlaceholder}
@@ -575,7 +691,7 @@ export function StoreDiagnosisView({
               columns={columns}
               dataSource={rows}
               pagination={{ pageSize: 50, hideOnSinglePage: true, showSizeChanger: false }}
-              scroll={{ x: 1170 }}
+              scroll={{ x: 1480 }}
               locale={{ emptyText: text.emptyFiltered }}
               onRow={(product) => ({
                 onClick: () => {
@@ -590,6 +706,7 @@ export function StoreDiagnosisView({
 
       <ProductDrawer
         product={selected}
+        listing={selected === undefined ? undefined : findingsByVariant.get(selected.variantId)}
         searchPeriod={searchPeriod}
         onClose={() => {
           patch({ [LISTING_PARAM]: undefined });
@@ -620,10 +737,12 @@ const TERM_COLUMNS: TableColumnsType<DiagnosisSearchTerm> = [
 
 function ProductDrawer({
   product,
+  listing,
   searchPeriod,
   onClose,
 }: {
   readonly product: DiagnosisProduct | undefined;
+  readonly listing: ListingFindings | undefined;
   readonly searchPeriod: DiagnosisSearchPeriod | null;
   readonly onClose: () => void;
 }): React.JSX.Element {
@@ -636,6 +755,12 @@ function ProductDrawer({
     >
       {product === undefined ? null : (
         <Flex vertical gap={16}>
+          <ListingConclusions
+            listing={listing}
+            product={product}
+            withoutStock={withoutStock(product)}
+          />
+
           <Descriptions size="small" column={1} bordered title={text.sectionIdentity}>
             <Descriptions.Item label={text.productId}>{product.nativeListingKey}</Descriptions.Item>
             <Descriptions.Item label={text.offerId}>

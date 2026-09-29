@@ -265,8 +265,25 @@ public class FactRecorder {
                 canonical.text("nativePriceKind").orElse(null),
                 competitiveness(canonical),
                 // Zero is how an unfilled cost field reads, not a cost.
-                canonical.decimal("sellerCostPrice").filter(cost -> cost.signum() > 0).orElse(null));
+                canonical.decimal("sellerCostPrice").filter(cost -> cost.signum() > 0).orElse(null),
+                tariffs(canonical));
         return 1;
+    }
+
+    /** The tariffs the marketplace states with the price; a negative amount is not a tariff. */
+    private static FactWriteRepository.PriceTariffs tariffs(CanonicalRecord canonical) {
+        java.util.function.Function<String, java.math.BigDecimal> read = field ->
+                canonical.decimal(field).filter(amount -> amount.signum() >= 0).orElse(null);
+        java.math.BigDecimal vat = read.apply("vatRate");
+        return new FactWriteRepository.PriceTariffs(
+                read.apply("salesCommissionPercentFbs"), read.apply("salesCommissionPercentFbo"),
+                read.apply("fbsFirstMileMin"), read.apply("fbsFirstMileMax"),
+                read.apply("fbsDirectFlowMin"), read.apply("fbsDirectFlowMax"),
+                read.apply("fbsLastMile"), read.apply("fbsReturnFlow"),
+                read.apply("fboDirectFlowMin"), read.apply("fboDirectFlowMax"),
+                read.apply("fboLastMile"), read.apply("fboReturnFlow"),
+                read.apply("acquiringMax"),
+                vat != null && vat.compareTo(java.math.BigDecimal.ONE) < 0 ? vat : null);
     }
 
     /**

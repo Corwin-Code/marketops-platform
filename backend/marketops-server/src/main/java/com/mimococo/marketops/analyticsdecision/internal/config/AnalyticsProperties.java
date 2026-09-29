@@ -41,6 +41,9 @@ public final class AnalyticsProperties {
     @NotNull
     private Duration costFreshness = Duration.ofDays(7);
 
+    /** Search analytics arrives weekly and one to two days late. */
+    private Duration searchFreshness = Duration.ofDays(9);
+
     @NotNull
     private Thresholds thresholds = new Thresholds();
 
@@ -105,6 +108,16 @@ public final class AnalyticsProperties {
     }
 
     /** The numbers the deterministic rules compare against. */
+    /** How old a weekly search period may be before its value is stale. */
+    public Duration getSearchFreshness() {
+        return searchFreshness;
+    }
+
+    /** Bind the search freshness target. */
+    public void setSearchFreshness(Duration searchFreshness) {
+        this.searchFreshness = searchFreshness;
+    }
+
     public Thresholds getThresholds() {
         return thresholds;
     }
@@ -142,6 +155,14 @@ public final class AnalyticsProperties {
         private Long lowClickThroughMinimumImpressions = 500L;
 
         private Long lowConversionMinimumReach = 200L;
+
+        private BigDecimal minimumUnitMarginRate;
+
+        private Long demandSearchUsersFloor;
+
+        private Long lowExposureSearchUsers;
+
+        private BigDecimal contentRatingFloor;
 
         /** Least share of profit inputs that must resolve canonically. */
         public BigDecimal getMinimumDataCompleteness() {
@@ -241,6 +262,46 @@ public final class AnalyticsProperties {
         /** Bind the conversion sample floor. */
         public void setLowConversionMinimumReach(Long value) {
             this.lowConversionMinimumReach = value;
+        }
+
+        /** The least estimated unit margin the target margin price keeps (0.15 = 15 %); no default. */
+        public BigDecimal getMinimumUnitMarginRate() {
+            return minimumUnitMarginRate;
+        }
+
+        /** Bind the minimum unit margin rate. */
+        public void setMinimumUnitMarginRate(BigDecimal value) {
+            this.minimumUnitMarginRate = value;
+        }
+
+        /** Weekly search users from which a listing has demand; no default. */
+        public Long getDemandSearchUsersFloor() {
+            return demandSearchUsersFloor;
+        }
+
+        /** Bind the demand floor. */
+        public void setDemandSearchUsersFloor(Long value) {
+            this.demandSearchUsersFloor = value;
+        }
+
+        /** Weekly search users below which an in-stock listing is barely exposed; no default. */
+        public Long getLowExposureSearchUsers() {
+            return lowExposureSearchUsers;
+        }
+
+        /** Bind the exposure floor. */
+        public void setLowExposureSearchUsers(Long value) {
+            this.lowExposureSearchUsers = value;
+        }
+
+        /** Content rating, as a ratio of 100, below which content needs work; no default. */
+        public BigDecimal getContentRatingFloor() {
+            return contentRatingFloor;
+        }
+
+        /** Bind the content rating floor. */
+        public void setContentRatingFloor(BigDecimal value) {
+            this.contentRatingFloor = value;
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.mimococo.marketops.analyticsdecision.internal.application;
 
 import com.mimococo.marketops.analyticsdecision.ConfidenceState;
+import com.mimococo.marketops.analyticsdecision.ListingUnitEconomics;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculator;
@@ -18,6 +19,7 @@ import com.mimococo.marketops.operatingfacts.FactWindow;
 import com.mimococo.marketops.operatingfacts.FeeTotals;
 import com.mimococo.marketops.operatingfacts.FinanceInputSnapshot;
 import com.mimococo.marketops.operatingfacts.InternalStockSnapshot;
+import com.mimococo.marketops.operatingfacts.ListingPriceTerms;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.ReturnTotals;
 import com.mimococo.marketops.operatingfacts.SaleStage;
@@ -35,6 +37,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -281,7 +284,152 @@ public class MetricEngine {
         metrics.put(MetricCode.DATA_COMPLETENESS,
                 dataCompleteness(metrics, mappingId));
 
+        listingSignals(metrics, listingVariantId, periodEnd, traffic, stock, fulfillmentModes, unitCost);
+
         return applyFreshness(metrics, periodEnd);
+    }
+
+    /** How far back a weekly search period may end and still describe the window. */
+    private static final Duration SEARCH_LOOKBACK = Duration.ofDays(7);
+
+    /**
+     * The listing-level signals that explain a listing nobody buys: ordered
+     * units, search demand, sellability, content rating, the lowest competitor
+     * price, and the estimated unit economics at the observed buyer price.
+     *
+     * <p>They do not depend on realized sales. The unit economics are estimates
+     * from the tariffs the marketplace states with the price and the unit cost
+     * in force (the Owner's terms of 2026-09-29, see {@link ListingUnitEconomics});
+     * they stay {@code ESTIMATED_EXPLAINED} until a settlement confirms them.
+     */
+    private void listingSignals(Map<MetricCode, ComputedMetric> metrics, UUID listingVariantId,
+                                Instant periodEnd, TrafficTotals traffic, StockSnapshot stock,
+                                List<String> storeFulfillmentModes, Optional<CostSnapshot> unitCost) {
+        putCount(metrics, MetricCode.ORDERED_UNITS, traffic.orderedUnits(), traffic.evidence());
+
+        facts.latestSearchDemand(listingVariantId, periodEnd, SEARCH_LOOKBACK).ifPresentOrElse(
+                search -> putCount(metrics, MetricCode.SEARCH_USERS, search.searchUsers(), search.evidence()),
+                () -> metrics.put(MetricCode.SEARCH_USERS,
+                        absent(MetricCode.SEARCH_USERS, ConfidenceState.INCOMPLETE)));
+
+        var sellability = facts.latestSellability(listingVariantId, periodEnd)
+                .filter(snapshot -> snapshot.present() && !"UNKNOWN".equals(snapshot.sellable()));
+        putCount(metrics, MetricCode.LISTING_SELLABLE,
+                sellability.map(snapshot -> "YES".equals(snapshot.sellable()) ? 1L : 0L).orElse(null),
+                sellability.map(snapshot -> FactEvidence.of(List.of(snapshot.provenanceId()), snapshot.observedAt()))
+                        .orElseGet(FactEvidence::none));
+
+        facts.latestContentRating(listingVariantId, periodEnd).ifPresentOrElse(
+                content -> metrics.put(MetricCode.CONTENT_RATING, new ComputedMetric(MetricCode.CONTENT_RATING,
+                        ValueState.AVAILABLE,
+                        content.rating().divide(BigDecimal.valueOf(100), RATIO_SCALE, RoundingMode.HALF_UP),
+                        null, confidenceFor(content.evidence()), content.evidence().oldestSourceTime(),
+                        inputs(content.evidence()))),
+                () -> metrics.put(MetricCode.CONTENT_RATING,
+                        absent(MetricCode.CONTENT_RATING, ConfidenceState.INCOMPLETE)));
+
+        Optional<ListingPriceTerms> terms =
+                facts.latestPriceTerms(listingVariantId, periodEnd);
+        putMoney(metrics, MetricCode.PLATFORM_COMPETITOR_MIN_PRICE,
+                terms.filter(stated -> stated.platformCompetitorMinPrice() != null)
+                        .map(stated -> Money.of(stated.platformCompetitorMinPrice(), stated.currencyCode()))
+                        .orElse(null),
+                terms.map(ListingPriceTerms::evidence)
+                        .orElseGet(FactEvidence::none));
+
+        unitEconomics(metrics, terms, scheme(storeFulfillmentModes, stock), unitCost);
+    }
+
+    /**
+     * Who ships this listing's orders: the store's single declared fulfilment
+     * mode, or else the one mode its newest stock is held under.
+     */
+    private static Optional<ListingUnitEconomics.Scheme> scheme(
+            List<String> storeFulfillmentModes, StockSnapshot stock) {
+        Set<String> modes = storeFulfillmentModes.size() == 1
+                ? Set.copyOf(storeFulfillmentModes) : stock.availableByMode().keySet();
+        if (modes.size() != 1) {
+            return Optional.empty();
+        }
+        return switch (modes.iterator().next()) {
+            case "SELLER_FULFILLED" -> Optional.of(
+                    ListingUnitEconomics.Scheme.SELLER_FULFILLED);
+            case "MARKETPLACE_FULFILLED" -> Optional.of(
+                    ListingUnitEconomics.Scheme.MARKETPLACE_FULFILLED);
+            default -> Optional.empty();
+        };
+    }
+
+    private void unitEconomics(Map<MetricCode, ComputedMetric> metrics,
+                               Optional<ListingPriceTerms> stated,
+                               Optional<ListingUnitEconomics.Scheme> scheme,
+                               Optional<CostSnapshot> unitCost) {
+        List<MetricCode> estimates = List.of(MetricCode.PROJECTED_UNIT_PROFIT, MetricCode.PROJECTED_UNIT_MARGIN,
+                MetricCode.PROJECTED_BREAK_EVEN_PRICE, MetricCode.TARGET_MARGIN_PRICE);
+        List<String> missing = new ArrayList<>();
+        if (stated.isEmpty() || stated.get().buyerPrice() == null || stated.get().buyerPrice().signum() <= 0) {
+            missing.add("BUYER_PRICE");
+        }
+        if (scheme.isEmpty()) {
+            missing.add("FULFILLMENT_SCHEME");
+        }
+        Optional<ListingUnitEconomics.Terms> terms = stated.isEmpty()
+                || scheme.isEmpty() ? Optional.empty()
+                : ListingUnitEconomics.terms(stated.get(), scheme.get());
+        if (terms.isEmpty()) {
+            missing.add("MARKETPLACE_TARIFFS");
+        }
+        if (unitCost.isEmpty()) {
+            missing.add("UNIT_COST");
+        } else if (stated.isPresent()
+                && !unitCost.get().unitCost().currencyCode().equals(stated.get().currencyCode())) {
+            missing.add("UNIT_COST_CURRENCY");
+        }
+        if (!missing.isEmpty()) {
+            List<String> identity = List.of("missing=" + String.join(",", missing));
+            estimates.forEach(code -> metrics.put(code,
+                    absent(code, ConfidenceState.INCOMPLETE, List.of(), identity)));
+            return;
+        }
+        ListingPriceTerms price = stated.get();
+        CostSnapshot cost = unitCost.get();
+        BigDecimal marginRate = properties.getThresholds().getMinimumUnitMarginRate();
+        ListingUnitEconomics.Estimate estimate =
+                ListingUnitEconomics.estimate(price.buyerPrice(),
+                        terms.get(), cost.unitCost().amount(), marginRate);
+        List<MetricInput> read = new ArrayList<>(inputs(price.evidence()));
+        read.add(MetricInput.costVersion(cost.costVersionId()));
+        read.add(MetricInput.provenance(cost.provenanceId()));
+        List<String> identity = List.of("scheme=" + scheme.get(), "logistics=HIGHEST_TARIFF",
+                "vatRate=" + terms.get().vatRate().toPlainString(),
+                "commissionRate=" + terms.get().commissionRate().stripTrailingZeros().toPlainString(),
+                "minimumUnitMarginRate=" + (marginRate == null ? "UNSET" : marginRate.toPlainString()));
+        Instant sourceTime = price.evidence().oldestSourceTime();
+        String currency = price.currencyCode();
+        metrics.put(MetricCode.PROJECTED_UNIT_PROFIT, estimated(MetricCode.PROJECTED_UNIT_PROFIT,
+                estimate.profit(), currency, sourceTime, read, identity));
+        metrics.put(MetricCode.PROJECTED_UNIT_MARGIN, estimated(MetricCode.PROJECTED_UNIT_MARGIN,
+                estimate.margin(), null, sourceTime, read, identity));
+        metrics.put(MetricCode.PROJECTED_BREAK_EVEN_PRICE, estimated(MetricCode.PROJECTED_BREAK_EVEN_PRICE,
+                estimate.breakEvenPrice(), currency, sourceTime, read, identity));
+        metrics.put(MetricCode.TARGET_MARGIN_PRICE, marginRate == null
+                ? absent(MetricCode.TARGET_MARGIN_PRICE, ConfidenceState.INCOMPLETE, read,
+                        List.of("missing=MINIMUM_UNIT_MARGIN_RATE"))
+                : estimated(MetricCode.TARGET_MARGIN_PRICE, estimate.targetMarginPrice(), currency, sourceTime,
+                        read, identity));
+    }
+
+    /**
+     * An estimate: available with its value, or undefined when no price makes
+     * it (a rate structure that consumes the whole price).
+     */
+    private static ComputedMetric estimated(MetricCode code, BigDecimal value, String currencyCode,
+                                            Instant sourceTime, List<MetricInput> read, List<String> identity) {
+        return value == null
+                ? new ComputedMetric(code, ValueState.UNDEFINED, null, null,
+                        ConfidenceState.ESTIMATED_EXPLAINED, sourceTime, distinct(read), identity)
+                : new ComputedMetric(code, ValueState.AVAILABLE, value, currencyCode,
+                        ConfidenceState.ESTIMATED_EXPLAINED, sourceTime, distinct(read), identity);
     }
 
     // -----------------------------------------------------------------------
@@ -771,6 +919,11 @@ public class MetricEngine {
     }
 
     private Duration freshnessTarget(MetricCode metricCode) {
+        if (metricCode == MetricCode.SEARCH_USERS) {
+            // Weekly analytics, computed a day or two late: a funnel target would call it stale
+            // for most of every week.
+            return properties.getSearchFreshness();
+        }
         return switch (metricCode.domain()) {
             case FUNNEL -> properties.getFunnelFreshness();
             case SALES, PROFIT -> properties.getSalesFreshness();

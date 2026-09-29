@@ -43,7 +43,19 @@ export interface DiagnosisPrice {
   readonly externalCompetitorCurrencyCode: string | null;
   /** Ratio above the lowest competitor price on the same marketplace (0.5 = 50 % dearer). */
   readonly premiumOverPlatformCompetitor: string | null;
+  readonly tariffs: DiagnosisTariffs;
   readonly observedAt: string;
+}
+
+/** The tariffs the marketplace stated with the price, as decimal text; each `null` when not stated. */
+export interface DiagnosisTariffs {
+  /** FBS sales commission in percent. */
+  readonly salesCommissionPercentFbs: string | null;
+  /** The highest stated FBS processing, trunk and last-mile tariffs summed. */
+  readonly fbsLogisticsMax: string | null;
+  readonly acquiringMax: string | null;
+  /** VAT rate contained in the price (0.05 = 5 %). */
+  readonly vatRate: string | null;
 }
 
 /** The marketplace's content rating, 0 to 100. */
@@ -275,7 +287,18 @@ function parsePrice(value: unknown): DiagnosisPrice | null {
     externalCompetitorMinPrice: decimal(value.externalCompetitorMinPrice),
     externalCompetitorCurrencyCode: optionalText(value.externalCompetitorCurrencyCode),
     premiumOverPlatformCompetitor: decimal(value.premiumOverPlatformCompetitor),
+    tariffs: parseTariffs(value.tariffs),
     observedAt,
+  };
+}
+
+function parseTariffs(value: unknown): DiagnosisTariffs {
+  const tariffs = isRecord(value) ? value : {};
+  return {
+    salesCommissionPercentFbs: decimal(tariffs.salesCommissionPercentFbs),
+    fbsLogisticsMax: decimal(tariffs.fbsLogisticsMax),
+    acquiringMax: decimal(tariffs.acquiringMax),
+    vatRate: decimal(tariffs.vatRate),
   };
 }
 

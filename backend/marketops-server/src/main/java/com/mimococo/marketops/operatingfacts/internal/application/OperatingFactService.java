@@ -79,6 +79,42 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<com.mimococo.marketops.operatingfacts.ListingPriceTerms> latestPriceTerms(
+            UUID platformListingVariantId, Instant asOf) {
+        return facts.latestPriceTerms(platformListingVariantId, asOf).map(row ->
+                new com.mimococo.marketops.operatingfacts.ListingPriceTerms(
+                        row.id(), row.observedAt(), row.currencyCode(), row.buyerPrice(),
+                        // A competitor price in another currency cannot be compared with ours.
+                        java.util.Objects.equals(row.platformCompetitorCurrencyCode(), row.currencyCode())
+                                ? row.platformCompetitorMinPrice() : null,
+                        row.priceIndexNative(), row.sellerCostPrice(),
+                        row.salesCommissionPercentFbs(), row.salesCommissionPercentFbo(),
+                        row.fbsFirstMileMax(), row.fbsDirectFlowMax(), row.fbsLastMile(),
+                        row.fboDirectFlowMax(), row.fboLastMile(), row.acquiringMax(), row.vatRate(),
+                        FactEvidence.of(List.of(row.provenanceId()), row.sourceTime())));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<com.mimococo.marketops.operatingfacts.SearchDemandSnapshot> latestSearchDemand(
+            UUID platformListingVariantId, Instant asOf, java.time.Duration maximumAge) {
+        return facts.latestSearchDemand(platformListingVariantId, asOf, asOf.minus(maximumAge)).map(row ->
+                new com.mimococo.marketops.operatingfacts.SearchDemandSnapshot(row.searchUsers(),
+                        row.periodStart(), row.periodEnd(),
+                        FactEvidence.of(List.of(row.provenanceId()), row.sourceTime())));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<com.mimococo.marketops.operatingfacts.ContentRatingSnapshot> latestContentRating(
+            UUID platformListingVariantId, Instant asOf) {
+        return facts.latestContentRating(platformListingVariantId, asOf).map(row ->
+                new com.mimococo.marketops.operatingfacts.ContentRatingSnapshot(row.rating(), row.observedAt(),
+                        FactEvidence.of(List.of(row.provenanceId()), row.sourceTime())));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf) {
         List<FactQueryRepository.StockRow> rows =
                 facts.latestStockByMode(platformListingVariantId, asOf);

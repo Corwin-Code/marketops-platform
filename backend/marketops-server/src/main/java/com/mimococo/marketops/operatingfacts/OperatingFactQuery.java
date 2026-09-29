@@ -23,6 +23,22 @@ public interface OperatingFactQuery {
     /** The most recent observed price of one listing variant at an instant. */
     Optional<PriceSnapshot> latestPrice(UUID platformListingVariantId, Instant asOf);
 
+    /**
+     * The newest price before an exclusive instant with the competitor price,
+     * the seller's unit cost and the tariffs the marketplace stated with it.
+     */
+    Optional<ListingPriceTerms> latestPriceTerms(UUID platformListingVariantId, Instant asOf);
+
+    /**
+     * The newest search period that ended at or before an instant and no more
+     * than {@code maximumAge} before it; empty when none did, which is not zero.
+     */
+    Optional<SearchDemandSnapshot> latestSearchDemand(UUID platformListingVariantId, Instant asOf,
+                                                      java.time.Duration maximumAge);
+
+    /** The newest content rating observed before an exclusive instant. */
+    Optional<ContentRatingSnapshot> latestContentRating(UUID platformListingVariantId, Instant asOf);
+
     /** The most recent observed availability, per fulfillment mode. */
     StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf);
 

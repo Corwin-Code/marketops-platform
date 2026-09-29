@@ -123,6 +123,24 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
     }
 
     @Override
+    public Optional<com.mimococo.marketops.operatingfacts.ListingPriceTerms> latestPriceTerms(
+            UUID platformListingVariantId, Instant asOf) {
+        return delegate.latestPriceTerms(platformListingVariantId, asOf);
+    }
+
+    @Override
+    public Optional<com.mimococo.marketops.operatingfacts.SearchDemandSnapshot> latestSearchDemand(
+            UUID platformListingVariantId, Instant asOf, java.time.Duration maximumAge) {
+        return delegate.latestSearchDemand(platformListingVariantId, asOf, maximumAge);
+    }
+
+    @Override
+    public Optional<com.mimococo.marketops.operatingfacts.ContentRatingSnapshot> latestContentRating(
+            UUID platformListingVariantId, Instant asOf) {
+        return delegate.latestContentRating(platformListingVariantId, asOf);
+    }
+
+    @Override
     public StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf) {
         return delegate.latestStock(platformListingVariantId, asOf);
     }

@@ -162,6 +162,7 @@ marketops:
     inventory-freshness: 6h
     advertising-freshness: 24h
     cost-freshness: 7d
+    search-freshness: 9d
     thresholds:
       # Operating configuration the deterministic rules compare against. Every
       # triggered finding records the value and the threshold it compared, so a
@@ -176,6 +177,13 @@ marketops:
       high-return-minimum-units: 10
       stock-cover-days-floor: 7
       advertising-cost-of-sale-ceiling: 0.3000
+      # The Owner's operating thresholds (2026-09-29): the target margin price keeps a 15 %
+      # estimated unit margin; 1,000 weekly searchers mean demand, fewer than 200 mean an
+      # in-stock listing is barely exposed; a content rating below 90 of 100 needs work.
+      minimum-unit-margin-rate: 0.15
+      demand-search-users-floor: 1000
+      low-exposure-search-users: 200
+      content-rating-floor: 0.90
   metadata-maintenance:
     # Fail closed: an environment accepts maintenance writes only when its
     # profile explicitly turns them on. Queries are not gated.

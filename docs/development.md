@@ -473,6 +473,67 @@ make pilot-catalog APPLY=1
 
 然后在控制台打开"店铺概览 → 商品映射与成本"，点"启用自动规则"（一次授权，之后自动运行）；也可以手动操作：先点"生成映射提议"，全选后点"确认选中的映射"，再筛选"成本待采用"，全选后点"采用选中的 Ozon 成本价"。
 
+## P3：单件经济与诊断结论
+
+目标：用确定性规则回答"为什么卖不动"，并算出每个商品按当前价卖一件能赚多少、价格降到多少会亏。
+
+- **费率入库（V0019）**：价格映射升到 v4，`/v5/product/info/prices` 的以下字段存入价格事实：
+  - 销售佣金百分比：`commissions.sales_percent_fbs`、`commissions.sales_percent_fbo`；
+  - FBS 物流：`fbs_first_mile_min_amount` / `max_amount`、`fbs_direct_flow_trans_min_amount` / `max_amount`、`fbs_deliv_to_customer_amount`、`fbs_return_flow_amount`；
+  - FBO 物流：`fbo_direct_flow_trans_min_amount` / `max_amount`、`fbo_deliv_to_customer_amount`、`fbo_return_flow_amount`；
+  - 收单费 `acquiring`，税率 `price.vat`（小数，例如 `0.05`）。
+
+  负数不保存；税率必须小于 1。
+- **单件经济（`ListingUnitEconomics`，Owner 2026-09-29 定的口径）**：
+  - 佣金取店铺履约方式对应的比例（店铺只有一种履约方式时用它，否则看该商品库存所在的履约方式）；
+  - 物流费取最高档：FBS 为首公里、干线、末公里三项之和，FBO 为干线加末公里；收单费取接口给的上限；
+  - 售价含增值税，按商品税率扣除 `P·v/(1+v)`，不计其他营业额税；
+  - 成本取当前生效的采购成本（P2 由 Ozon 成本价采用而来，含所有杂费）。
+
+  公式：`利润(P) = P − P·c − F − P·v/(1+v) − C`；保本价 `(F+C) / (1 − c − v/(1+v))`；目标利润价 `(F+C) / (1 − c − v/(1+v) − m)`，其中 `m` 是单件利润率下限。任何价格都覆盖不了成本时，保本价或目标利润价记为"无解"，不给数字。售价用买家价（有卖家促销价时用促销价）。
+- **新指标（指标定义 v2）**：`ORDERED_UNITS`、`SEARCH_USERS`（近 7 天内最新的一个统计期）、`LISTING_SELLABLE`、`CONTENT_RATING`、`PLATFORM_COMPETITOR_MIN_PRICE`，以及预估的 `PROJECTED_UNIT_PROFIT`、`PROJECTED_UNIT_MARGIN`、`PROJECTED_BREAK_EVEN_PRICE`、`TARGET_MARGIN_PRICE`。预估指标的置信度是 `ESTIMATED_EXPLAINED`，指标身份里记下履约方式、物流档位、税率、佣金率和利润率下限；缺售价、履约方式、费率或成本时为"不可用"，并记下缺的是哪一项，不按 0 计算。
+- **新规则（诊断规则 v1）**：不依赖已实现利润，所以不受 `DATA_BLOCKED` 影响。
+
+  | 规则 | 判断 |
+  | --- | --- |
+  | `LISTING_NOT_SELLABLE`（严重） | Ozon 状态为不可售 |
+  | `DEMAND_NOT_CONVERTING` | 搜索人数 ≥ 需求下限，有库存，计算窗口内下单 0 |
+  | `PRICE_GAP_REDUCIBLE` | 买家价高于 Ozon 竞品最低价，且目标利润价 ≤ 竞品最低价：降到竞品价仍能保住利润率下限 |
+  | `PRICE_GAP_PARTIAL` | 买家价高于竞品最低价，保本价 ≤ 竞品最低价 < 目标利润价：能追平但守不住利润率下限 |
+  | `PRICE_GAP_STRUCTURAL` | 买家价高于竞品最低价，保本价高于竞品最低价（或无解）：降价追平就会亏 |
+  | `LOW_SEARCH_EXPOSURE` | 有库存、不是不可售，搜索人数低于曝光下限 |
+  | `CONTENT_BELOW_TARGET` | 内容评分低于评分下限 |
+
+  价差三条只在买家价和竞品价币种相同时判断，有价差时恰好触发其中一条。竞品价是 C 级平台分析，只用于诊断，不驱动调价。
+- **阈值**（`application.yaml` 的 `marketops.analytics.thresholds`，Owner 2026-09-29 决定）：`minimum-unit-margin-rate: 0.15`、`demand-search-users-floor: 1000`、`low-exposure-search-users: 200`、`content-rating-floor: 0.90`。搜索数据每周统计、晚一两天出，所以单独设 `search-freshness: 9d`。
+- **接口**：
+  - `GET /api/v1/console/diagnosis/stores/{storeId}/listing-findings?window=D7`（`DIAGNOSTIC_VIEW`）：最近一次成功计算的各商品结论（带规则比较的数值）和单件经济指标，按规则汇总商品数；数字都是那次计算存下的，接口不重新计算。
+  - `POST /api/v1/console/diagnosis/stores/{storeId}/recalculation?window=D7`：重新计算，记录操作人。
+  - 店铺诊断接口的价格信号新增 `tariffs`（FBS 佣金、FBS 物流最高档合计、收单费、税率）。
+- **页面（控制台首页）**：
+  - 新增"诊断结论"：每条结论一张卡片，写明影响几个商品、是什么意思、下一步做什么；"查看商品"按该结论筛选下面的表格；右上角是计算所依据的数据区间和"重新计算诊断"按钮。
+  - 商品表格新增"诊断"和"预估利润率"两列。
+  - 详情抽屉顶部显示该商品的结论和单件经济（预估）：买家价、单件成本、预估单件利润和利润率、保本价、目标利润价、Ozon 竞品最低价和计算条件。
+  - "无库存"直接由库存事实判断，因为 `STOCKOUT_RISK` 需要已实现利润数据，零销量商品会被 `DATA_BLOCKED` 挡住。
+- **生效时间**：计算窗口截至上一个整点，刚采集的事实要到下一个整点之后的重算才会纳入。
+- **不做**：不自动调价；结论不按影响大小排序（首页按固定顺序：先是阻止成交的，再是买家不买的原因）；搜索汇总里没出现的商品，搜索人数记为"不可用"，不当作 0。
+
+步骤：
+
+```bash
+make ozon-setup CAPABILITY=prices SUPERSEDE=1
+```
+
+```bash
+make ozon-run CAPABILITY=prices
+```
+
+```bash
+make ozon-normalize CAPABILITY=prices
+```
+
+然后在控制台首页点"重新计算诊断"。
+
 ## 控制台：店铺诊断
 
 控制台首页（导航里的"店铺概览 → 店铺诊断"，路径 `/store/diagnosis`）按商品汇总平台给出的各项信号，用来回答"为什么卖不动"。
@@ -491,5 +552,6 @@ make pilot-catalog APPLY=1
   - 商品表格：可以筛选（只看有问题的、不可见、无库存、价格 RED、有搜索无下单、有下单）和搜索，库存、价格竞争力、评分、搜索人数、下单这几列可以排序；
   - 点击一行打开详情抽屉，其中"搜索需求"一节列出搜索人数、统计期间和主要搜索词（俄语原文，不翻译）。
 - **价格竞争力**：是 Ozon 自己匹配竞品得出的判断，页面上标注"C 级 · 平台分析"，只用于诊断，不驱动调价。"比 Ozon 最低竞品价贵 x%"用含卖家促销价（没有时用不含促销价）计算，而且只在两个价格币种相同时才算。
-- **不做**：内容评分不设"偏低"阈值（阈值属于策略，需要 Owner 决定）；也暂不跳转到其他区域，因为试点商品还没有映射到内部 SKU。
+- **诊断结论**：规则结论、预估利润率和内容评分下限见上面的 P3。
+- **不做**：暂不跳转到其他区域。
 - **本地查看**：控制台固定操作 `frontend/marketops-console/.env.local` 里 `VITE_MARKETOPS_STORE_ID` 指定的店铺，要看 Ozon 试点店铺就填它的店铺 ID，然后重启 `make frontend-dev`。控制台的登录状态只保存在内存里，刷新页面或直接改地址栏都需要重新登录。
