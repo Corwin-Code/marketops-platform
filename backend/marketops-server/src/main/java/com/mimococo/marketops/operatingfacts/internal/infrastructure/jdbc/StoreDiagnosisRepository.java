@@ -15,7 +15,8 @@ import org.springframework.stereotype.Repository;
 /**
  * The latest marketplace signal of each kind for every observed listing of a
  * store: whether a buyer can see it, what is in stock, what it costs next to
- * the competition, how its content is rated and how many units were ordered.
+ * the competition, how its content is rated, how many buyers searched for it
+ * and how many units were ordered.
  *
  * <p>Every signal is the newest fact of its kind that no later fact superseded,
  * and carries the time the marketplace considered it true. A signal nobody has
@@ -33,8 +34,12 @@ public class StoreDiagnosisRepository {
         this.jdbc = jdbc;
     }
 
-    /** One row per observed listing variant of the store, ordered by title. */
-    public List<Row> rows(UUID organizationId, UUID storeId) {
+    /**
+     * One row per observed listing variant of the store, ordered by title.
+     *
+     * @param searchWindow the search period every row reports, or {@code null} for none
+     */
+    public List<Row> rows(UUID organizationId, UUID storeId, SearchWindow searchWindow) {
         return jdbc.sql("""
                         WITH store_variant AS (
                             SELECT listing.id AS listing_id, variant.id AS variant_id,
@@ -61,6 +66,8 @@ public class StoreDiagnosisRepository {
                                price.external_competitor_min_price, price.external_competitor_currency_code,
                                price.observed_at AS price_at,
                                content.content_rating, content.observed_at AS content_at,
+                               search.search_users, search.search_revenue,
+                               search.currency_code AS search_currency_code,
                                orders.ordered_units, orders.days_with_records
                           FROM store_variant
                           LEFT JOIN LATERAL (
@@ -100,6 +107,13 @@ public class StoreDiagnosisRepository {
                                 ORDER BY c.observed_at DESC, c.id DESC LIMIT 1
                           ) AS content ON true
                           LEFT JOIN LATERAL (
+                               SELECT q.search_users, q.search_revenue, q.currency_code
+                                 FROM core.listing_search_observation AS q
+                                WHERE q.platform_listing_variant_id = store_variant.variant_id
+                                  AND q.period_start = :searchFrom AND q.period_end = :searchTo
+                                ORDER BY q.id DESC LIMIT 1
+                          ) AS search ON true
+                          LEFT JOIN LATERAL (
                                SELECT sum(t.ordered_units)::bigint AS ordered_units,
                                       count(DISTINCT t.period_start) AS days_with_records
                                  FROM core.listing_traffic_observation AS t, traffic_end
@@ -115,7 +129,73 @@ public class StoreDiagnosisRepository {
                 .param("organizationId", organizationId)
                 .param("storeId", storeId)
                 .param("orderDays", ORDER_DAYS)
+                .param("searchFrom", searchWindow == null ? null : Timestamp.from(searchWindow.from()))
+                .param("searchTo", searchWindow == null ? null : Timestamp.from(searchWindow.to()))
                 .query(StoreDiagnosisRepository::map)
+                .list();
+    }
+
+    /**
+     * The newest search period the store has any search fact for: the period
+     * every row's search demand and terms are read from, so rows compare.
+     */
+    public Optional<SearchWindow> searchWindow(UUID organizationId, UUID storeId) {
+        return jdbc.sql("""
+                        SELECT search.period_start, search.period_end
+                          FROM core.listing_search_observation AS search
+                          JOIN core.platform_listing_variant AS variant
+                            ON variant.id = search.platform_listing_variant_id
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE listing.organization_id = :organizationId
+                           AND listing.store_id = :storeId
+                         ORDER BY search.period_end DESC, search.period_start DESC
+                         LIMIT 1
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .query((rows, rowNumber) -> new SearchWindow(
+                        rows.getTimestamp("period_start").toInstant(),
+                        rows.getTimestamp("period_end").toInstant()))
+                .optional();
+    }
+
+    /**
+     * The search terms buyers used for each listing variant of the store in one
+     * period, at most {@code perVariant} per variant, the most searched first.
+     */
+    public List<SearchTerm> searchTerms(UUID organizationId, UUID storeId, SearchWindow window,
+                                        int perVariant) {
+        return jdbc.sql("""
+                        SELECT ranked.variant_id, ranked.search_term, ranked.search_users,
+                               ranked.ordered_count
+                          FROM (
+                               SELECT term.platform_listing_variant_id AS variant_id, term.search_term,
+                                      term.search_users, term.ordered_count,
+                                      row_number() OVER (PARTITION BY term.platform_listing_variant_id
+                                                         ORDER BY term.search_users DESC, term.search_term) AS position
+                                 FROM core.listing_search_term_observation AS term
+                                 JOIN core.platform_listing_variant AS variant
+                                   ON variant.id = term.platform_listing_variant_id
+                                 JOIN core.platform_listing AS listing
+                                   ON listing.id = variant.platform_listing_id
+                                WHERE listing.organization_id = :organizationId
+                                  AND listing.store_id = :storeId
+                                  AND term.period_start = :searchFrom AND term.period_end = :searchTo
+                          ) AS ranked
+                         WHERE ranked.position <= :perVariant
+                         ORDER BY ranked.variant_id, ranked.position
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .param("searchFrom", Timestamp.from(window.from()))
+                .param("searchTo", Timestamp.from(window.to()))
+                .param("perVariant", perVariant)
+                .query((rows, rowNumber) -> new SearchTerm(
+                        rows.getObject("variant_id", UUID.class),
+                        rows.getString("search_term"),
+                        rows.getLong("search_users"),
+                        (Long) rows.getObject("ordered_count")))
                 .list();
     }
 
@@ -185,6 +265,9 @@ public class StoreDiagnosisRepository {
                 instant(rows, "price_at"),
                 rows.getBigDecimal("content_rating"),
                 instant(rows, "content_at"),
+                (Long) rows.getObject("search_users"),
+                rows.getBigDecimal("search_revenue"),
+                rows.getString("search_currency_code"),
                 (Long) rows.getObject("ordered_units"),
                 (Long) rows.getObject("days_with_records"));
     }
@@ -204,7 +287,21 @@ public class StoreDiagnosisRepository {
             String platformCompetitorCurrencyCode, BigDecimal externalCompetitorMinPrice,
             String externalCompetitorCurrencyCode, Instant priceAt,
             BigDecimal contentRating, Instant contentAt,
+            Long searchUsers, BigDecimal searchRevenue, String searchCurrencyCode,
             Long orderedUnits, Long daysWithRecords) {
+    }
+
+    /**
+     * The period search demand is reported for.
+     *
+     * @param from inclusive start
+     * @param to exclusive end
+     */
+    public record SearchWindow(Instant from, Instant to) {
+    }
+
+    /** One search term of one listing variant; {@code orderedCount} is {@code null} when not stated. */
+    public record SearchTerm(UUID variantId, String term, long searchUsers, Long orderedCount) {
     }
 
     /**

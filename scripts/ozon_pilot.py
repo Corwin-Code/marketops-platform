@@ -40,6 +40,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import base64
+import decimal
 import getpass
 import hashlib
 import html
@@ -256,6 +257,89 @@ def inspect_content(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str
     elif decimals > 4:
         refusal = f"ratings carry {decimals} decimals; at most 4 can be stored exactly"
     return lines, refusal
+
+
+def inspect_queries(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    items = [item for answer in answers for item in answer.get("items") or []]
+    periods = sorted({json.dumps(answer.get("analytics_period"), sort_keys=True) for answer in answers})
+    known = set(catalog_skus(pilot))
+
+    def positive(key: str) -> int:
+        return sum(1 for item in items if isinstance(item.get(key), (int, float)) and item[key] > 0)
+
+    searchers = sum(item.get("unique_search_users") or 0 for item in items
+                    if isinstance(item.get("unique_search_users"), (int, float)))
+    lines = [f"queries: {len(items)} products answered ({sum(1 for i in items if str(i.get('sku')) not in known)} "
+             f"not in the catalog probe), analytics period {periods}",
+             f"with searchers {positive('unique_search_users')} (sum {searchers}), with search sales "
+             f"{positive('gmv')}; Premium-only fields present: position {positive('position')}, "
+             f"unique_view_users {positive('unique_view_users')}, view_conversion {positive('view_conversion')}"]
+    refusal = None
+    if any(item.get("sku") is None for item in items):
+        refusal = "some answers carry no sku"
+    elif any(not isinstance(item.get("unique_search_users"), int) for item in items):
+        refusal = "some answers carry no whole number of searchers"
+    else:
+        refusal = search_money_refusal(items)
+    return lines, refusal
+
+
+def search_money_refusal(rows: list[dict]) -> str | None:
+    """Why the mapping could not keep the search sales exactly, or None."""
+    for row in rows:
+        gmv = row.get("gmv")
+        if gmv is None:
+            continue
+        if not isinstance(gmv, (int, float)) or gmv < 0:
+            return "search sales that are not a non-negative number"
+        if gmv and not re.fullmatch(r"[A-Z]{3}", str(row.get("currency") or "").strip().upper()):
+            return "search sales without a currency code"
+        if abs(decimal.Decimal(str(gmv)).as_tuple().exponent) > 4:
+            return "search sales with more than 4 decimals, which cannot be stored exactly"
+    return None
+
+
+QUERY_DETAILS_PER_SKU = 5
+MAXIMUM_SEARCH_TERM_LENGTH = 512
+
+
+def inspect_query_details(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    queries = [query for answer in answers for query in answer.get("queries") or []]
+    texts = {str(query.get("query")) for query in queries}
+    skus = {str(query.get("sku")) for query in queries}
+    orders = sum(query.get("order_count") or 0 for query in queries if isinstance(query.get("order_count"), int))
+    top = max((query.get("unique_search_users") or 0 for query in queries), default=0)
+    pairs = [(str(query.get("sku")), str(query.get("query"))) for query in queries]
+    lines = [f"query details: {len(queries)} rows, {len(texts)} distinct search terms over {len(skus)} SKUs, "
+             f"orders {orders}, most searchers on one term {top}, "
+             f"longest term {max((len(text) for text in texts), default=0)} characters"]
+    refusal = None
+    if any(query.get("sku") is None for query in queries):
+        refusal = "some rows carry no sku"
+    elif any(not isinstance(query.get("query"), str) or not query["query"].strip()
+             or len(query["query"]) > MAXIMUM_SEARCH_TERM_LENGTH for query in queries):
+        refusal = f"some rows carry no search term or one longer than {MAXIMUM_SEARCH_TERM_LENGTH} characters"
+    elif any(not isinstance(query.get("unique_search_users"), int) for query in queries):
+        refusal = "some rows carry no whole number of searchers"
+    elif len(set(pairs)) != len(pairs):
+        refusal = "the same SKU and term appear twice in one window"
+    else:
+        refusal = search_money_refusal(queries)
+    return lines, refusal
+
+
+def query_details_body(date_from: str, date_to: str, page: str, limit: str, skus: str) -> str:
+    """The search-term request exactly as the registered template renders it: every SKU at
+    once, pages counted from 0."""
+    return (f'{{"date_from":"{date_from}T00:00:00Z","date_to":"{date_to}T00:00:00Z",'
+            f'"limit_by_sku":{QUERY_DETAILS_PER_SKU},"page":{page},"page_size":{limit},"skus":{skus},'
+            f'"sort_by":"BY_SEARCHES","sort_dir":"DESCENDING"}}')
+
+
+def queries_body(date_from: str, date_to: str, limit: str, skus: str) -> str:
+    """The search-query request exactly as the registered template renders it."""
+    return (f'{{"date_from":"{date_from}T00:00:00Z","date_to":"{date_to}T00:00:00Z","page":0,'
+            f'"page_size":{limit},"skus":{skus},"sort_by":"BY_SEARCHES","sort_dir":"DESCENDING"}}')
 
 
 def inspect_traffic(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
@@ -593,6 +677,95 @@ CAPABILITIES = {
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
         "inspect": inspect_content,
+    },
+    "queries": {
+        "code": "ozon-search-queries-read",
+        "display": "Ozon search demand: buyers who searched each product over a week",
+        "description": "Asks about every SKU the catalog recorded, 100 per request, for one seven-day "
+                       "window (POST /v1/analytics/product-queries; official docs checked 2026-09-29).",
+        "manifest": "queries-latest.json",
+        "endpoint": {
+            "code": "ozon-analytics-product-queries-v1", "api_version": "v1",
+            "schema_version": "v1GetProductQueriesResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Without a Premium subscription only part of the "
+                         "metrics and only the last month (not today). Our cap: 10/min, 100 SKUs per "
+                         "request. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "One seven-day window per run; Ozon computes a day within 1-2 days.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/analytics/product-queries",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": queries_body("{windowStartUtcDate}", "{windowEndUtcDate}", "{limit}",
+                                              "{itemKeyBatch}"),
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "KEYS_EXHAUSTED", "records_pointer": "/items",
+            },
+            "probe_body": lambda cursor, context: json.loads(queries_body(
+                context["from"], context["to"], str(PAGE_SIZE),
+                json.dumps(context["keys"][int(cursor or "0"):int(cursor or "0") + PAGE_SIZE]))),
+            "token_key": None,
+            "records_key": "items",
+            "computed": "KEYS",
+            "keys": "ITEM",
+            "window": "WEEK",
+        },
+        "job": {"suffix": "queries", "dataset": "LISTING_SEARCH", "display": "Ozon 试点：搜索需求"},
+        # One row per SKU for the run's seven days. Without a Premium subscription
+        # position, unique_view_users and view_conversion answer null and are not
+        # read; a SKU nobody searched for is absent from the answer, not zero.
+        "mapping": {
+            "dataset": "LISTING_SEARCH", "version": 1, "record_pointer": "/items", "child_pointer": None,
+            "fields": {"nativeItemKey": "/sku", "searchUsers": "/unique_search_users",
+                       "searchRevenue": "/gmv", "currencyCode": "/currency"},
+            "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
+        },
+        "inspect": inspect_queries,
+    },
+    "query-details": {
+        "code": "ozon-search-query-details-read",
+        "display": "Ozon search terms behind each product",
+        "description": "The top search terms per SKU over one seven-day window, every SKU in one "
+                       "request, pages counted from 0 (POST /v1/analytics/product-queries/details; "
+                       "official docs checked 2026-09-29).",
+        "manifest": "query-details-latest.json",
+        "endpoint": {
+            "code": "ozon-analytics-product-query-details-v1", "api_version": "v1",
+            "schema_version": "v1GetProductQueriesDetailsResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id; this method states none. Up to 15 "
+                         "terms per SKU (we ask 5), up to 1000 SKUs per request, 100 rows per page, pages "
+                         "from 0. Our cap: 10/min. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "One seven-day window per run; Ozon computes a day within 1-2 days.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/analytics/product-queries/details",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": query_details_body("{windowStartUtcDate}", "{windowEndUtcDate}",
+                                                    "{pageIndex}", "{limit}", "{itemKeysAll}"),
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "PAGE", "rate_limit_per_minute": 10,
+                # A page shorter than 100 rows is the last; the request after it
+                # answers 200 with no rows (checked by the probe).
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/queries",
+            },
+            "probe_body": lambda cursor, context: json.loads(query_details_body(
+                context["from"], context["to"], cursor or "0", str(PAGE_SIZE), json.dumps(context["keys"]))),
+            "token_key": None,
+            "records_key": "queries",
+            "computed": "PAGE_INDEX",
+            "keys": "ITEM",
+            "window": "WEEK",
+        },
+        "job": {"suffix": "query-details", "dataset": "LISTING_SEARCH_TERM", "display": "Ozon 试点：搜索词"},
+        # One row per SKU and term for the run's seven days; query_index is only a
+        # position in the answer and is not kept.
+        "mapping": {
+            "dataset": "LISTING_SEARCH_TERM", "version": 1, "record_pointer": "/queries",
+            "child_pointer": None,
+            "fields": {"nativeItemKey": "/sku", "searchTerm": "/query", "searchUsers": "/unique_search_users",
+                       "orderedCount": "/order_count", "searchRevenue": "/gmv", "currencyCode": "/currency"},
+            "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
+        },
+        "inspect": inspect_query_details,
     },
 }
 
@@ -971,6 +1144,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             # A batch of recorded keys: the next offset, until every key was asked.
             following = int(cursor or "0") + PAGE_SIZE
             token = str(following) if following < len(window["keys"]) else None
+        elif computed == "PAGE_INDEX":
+            # Pages numbered from 0; the short page ends the listing.
+            token = str(int(cursor or "0") + 1)
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1001,7 +1177,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                           f"which the registered rule {rule} does not read as the end; nothing recorded")
                     return None
             break
-        if computed == "OFFSET":
+        if computed in ("OFFSET", "PAGE_INDEX"):
             cursor = token
             continue
         if computed == "KEYS":
@@ -1079,6 +1255,10 @@ def command_probe(args: argparse.Namespace) -> int:
             day = args.date or (utc_now() - timedelta(days=1)).strftime("%Y-%m-%d")
             window = {"from": day, "to": day}
             print(f"probing the UTC day {day}")
+        elif capability["endpoint"].get("window") == "WEEK":
+            last = datetime.strptime(args.date, "%Y-%m-%d") if args.date else utc_now() - timedelta(days=1)
+            window = {"from": (last - timedelta(days=6)).strftime("%Y-%m-%d"), "to": last.strftime("%Y-%m-%d")}
+            print(f"probing the UTC days {window['from']} to {window['to']}")
         if capability["endpoint"].get("keys") in ("LISTING", "ITEM"):
             # The backend batches the keys in their text order; the probe asks the same way.
             keys = catalog_product_ids(pilot) if capability["endpoint"]["keys"] == "LISTING" \
@@ -1219,6 +1399,8 @@ def find_job(admin: Admin, pilot: Pilot, capability: dict, account_id: str) -> d
 def command_setup(args: argparse.Namespace) -> int:
     pilot = pilot_from(args)
     capability = capability_from(args)
+    if capability.get("probe_only"):
+        sys.exit(f"{args.capability} is probed only; nothing of it is registered yet")
     manifest = load_manifest(pilot, capability)
     client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
     if not (pilot.api_key_file.is_file() and pilot.api_key_file.stat().st_size > 0):
@@ -1583,8 +1765,17 @@ MAXIMUM_RUN_DAYS = 30
 
 
 def run_windows(capability: dict, args: argparse.Namespace) -> list[dict | None]:
-    """One window per run: whole UTC days, oldest first, for a windowed capability."""
-    if capability["endpoint"].get("window") != "DAY":
+    """One window per run: whole UTC days, oldest first, for a windowed capability.
+
+    A weekly capability reads one seven-day window ending at --date: its measures
+    count unique buyers, which do not add up day by day.
+    """
+    kind = capability["endpoint"].get("window")
+    if kind == "WEEK":
+        last = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc) if args.date \
+            else utc_now().replace(hour=0, minute=0, second=0) - timedelta(days=1)
+        return [{"windowFrom": iso(last - timedelta(days=6)), "windowTo": iso(last + timedelta(days=1))}]
+    if kind != "DAY":
         return [None]
     last = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc) if args.date \
         else utc_now().replace(hour=0, minute=0, second=0) - timedelta(days=1)
@@ -1630,6 +1821,9 @@ def command_run(args: argparse.Namespace) -> int:
     # A run an earlier attempt left unfinished blocks every new one: finish it first.
     status, live = admin.call("GET", f"/ingestion-jobs/{job['id']}/live-run")
     if status == 200 and live:
+        if live.get("state") == "BLOCKED":
+            sys.exit(f"run {live['id']} is BLOCKED; find the cause, then retry or close it: make ozon-resolve "
+                     f"CAPABILITY={args.capability} RESOLUTION=retry|close REASON='<what was found>'")
         if live.get("state") not in ("QUEUED", "RETRY_WAIT"):
             sys.exit(f"run {live['id']} is {live.get('state')}; wait for it or resolve it first")
         print(f"finishing the unfinished run {live['id']} first")
@@ -1638,6 +1832,13 @@ def command_run(args: argparse.Namespace) -> int:
         if outcome.get("run", {}).get("state") != "SUCCEEDED":
             print("stopped: the unfinished run did not succeed; no new run was started")
             return 1
+        # A window the finished run already read is not read again.
+        finished = (live.get("windowFrom"), live.get("windowTo"))
+        windows = [window for window in windows if window is None or finished[0] is None
+                   or (parse_instant(window["windowFrom"]), parse_instant(window["windowTo"]))
+                   != (parse_instant(finished[0]), parse_instant(finished[1]))]
+        if not windows or windows == [None]:
+            return 0
         time.sleep(pause)
     for index, window in enumerate(windows):
         if index:
@@ -1651,6 +1852,21 @@ def command_run(args: argparse.Namespace) -> int:
             if index + 1 < len(windows):
                 print(f"stopped: run {run['id']} is {state}; the remaining days were not read")
             return 1
+    return 0
+
+
+def command_resolve(args: argparse.Namespace) -> int:
+    """Retry or close the job's BLOCKED run, so the job can run again."""
+    admin, _, _, job = pilot_job(args)
+    status, live = admin.call("GET", f"/ingestion-jobs/{job['id']}/live-run")
+    if status != 200 or not live or live.get("state") != "BLOCKED":
+        sys.exit(f"job {job['jobCode']} has no BLOCKED run to resolve")
+    if not args.reason.strip():
+        sys.exit("--reason must say what was found")
+    run = admin.require("POST", f"/ingestion-runs/{live['id']}/resolution",
+                        {"resolution": args.resolution.upper(), "reason": args.reason.strip()}, 200)
+    print(f"run {run['id']}: BLOCKED -> {run.get('state')}"
+          + ("; the next ozon-run finishes it first" if run.get("state") == "RETRY_WAIT" else ""))
     return 0
 
 
@@ -1726,6 +1942,13 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--days", type=int, default=1,
                      help=f"how many UTC days, one run each, ending at --date (1-{MAXIMUM_RUN_DAYS})")
     run.set_defaults(handler=command_run)
+
+    resolve = commands.add_parser("resolve", help="retry or close the capability job's BLOCKED run")
+    common(resolve)
+    resolve.add_argument("--resolution", choices=["retry", "close"], required=True,
+                         help="retry after fixing the cause, or close the run")
+    resolve.add_argument("--reason", required=True, help="what was found; kept in the audit")
+    resolve.set_defaults(handler=command_resolve)
 
     normalize = commands.add_parser("normalize", help="normalize what the capability's job stored")
     common(normalize)

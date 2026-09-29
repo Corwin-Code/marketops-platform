@@ -157,7 +157,7 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list` 和 `/v1/product/rating-by-sku`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list`、`/v1/product/rating-by-sku` 和 `/v1/analytics/product-queries`（这条同时覆盖 `/details`，因为一个调用只能命中一条规则，前缀不能重叠）。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。漏加规则时，运行会以 `request_could_not_be_built` 停在 `BLOCKED`。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
@@ -281,7 +281,14 @@ make ozon-normalize CAPABILITY=traffic
 ```
 
 - `ozon-run` 每天发起一次运行，两次运行之间间隔 90 秒。默认只跑昨天（1 天）；`DATE=YYYY-MM-DD` 指定最后一天，最多 30 天。探测时，短页之后的确认请求也会等 90 秒再发。
-- **限流**：官方文档写的是每分钟 1 次。但 2026-09-29 补数时，两次调用间隔约 62 秒，仍然收到 HTTP 429 `{"code":8,"message":"You have reached request rate limit per second"}`；隔了 3.5 分钟重试，又收到一次同样的 429；第三次才成功。原因可能是同一个 Client-Id 的配额也被别的调用方占用了。所以调用间隔放宽到 90 秒。运行被限流后会进入 `RETRY_WAIT`，脚本会在原地最多重试 3 次。任务里有没跑完的运行时，下一次 `ozon-run` 会先把它跑完，再开新的运行；新接口 `GET /api/v1/admin/metadata/ingestion-jobs/{id}/live-run` 用来查这个运行。
+- **限流**：官方文档写的是每分钟 1 次。但 2026-09-29 补数时，两次调用间隔约 62 秒，仍然收到 HTTP 429 `{"code":8,"message":"You have reached request rate limit per second"}`；隔了 3.5 分钟重试，又收到一次同样的 429；第三次才成功。原因可能是同一个 Client-Id 的配额也被别的调用方占用了。所以调用间隔放宽到 90 秒。运行被限流后会进入 `RETRY_WAIT`，脚本会在原地最多重试 3 次。任务里有没跑完的运行时，下一次 `ozon-run` 会先把它跑完，再开新的运行；新接口 `GET /api/v1/admin/metadata/ingestion-jobs/{id}/live-run` 用来查这个运行；已经补完的窗口不会再重跑。
+- **卡住的运行（`BLOCKED`）**：某一页无法判定结果时（未知状态、结构漂移、读不懂、配置无效），运行停在 `BLOCKED`，同一任务不能再开新的运行。查明原因后用 `make ozon-resolve` 处置（迁移 `V0016`，维护接口 `POST /api/v1/admin/metadata/ingestion-runs/{runId}/resolution`，原因写进审计）：
+  - `RESOLUTION=retry`：原因已修复，运行转为 `RETRY_WAIT`，下一次 `ozon-run` 会先把它跑完；
+  - `RESOLUTION=close`：放弃这次运行，转为 `FAILED_TERMINAL`（`CLOSED_BY_OPERATOR`）。
+
+  ```bash
+  make ozon-resolve CAPABILITY=queries RESOLUTION=retry REASON='补上了出站规则'
+  ```
 - 同一天重新采集时，新的 Raw 会被保存，但事实按"任务 + 商品 + 周期"去重，已有事实不会被更新，所以 Ozon 事后修正的数字不会进来。这是现有事实写入的通用规则。
 - verify 核验成功后，脚本会在证据目录记下这次核验。之后用同一份证据再运行 verify 会直接跳过；确实需要重新提交时，加 `AGAIN=1`。
 
@@ -356,6 +363,54 @@ make ozon-normalize CAPABILITY=status
 
 内容评分把上面的 `CAPABILITY=status` 换成 `CAPABILITY=content`，步骤相同。
 
+## Ozon 第 5 步：搜索需求与搜索词
+
+目标：回答"有没有买家在找这些商品、用什么词找"。有搜索却没有下单，是店铺诊断要解释的核心问题。依赖迁移 `V0015`。
+
+- **搜索汇总（`queries`）**：`/v1/analytics/product-queries` → 新数据集 `LISTING_SEARCH`，写入 `core.listing_search_observation`。
+  - 每个 SKU 一行：统计期间内搜索过该商品的买家人数（`unique_search_users`），以及 Ozon 归到搜索的销售额（`gmv`，只和币种一起保存）。
+  - 请求沿用 `{itemKeyBatch}`：每次 100 个 SKU，`KEYS_EXHAUSTED` 结束。
+- **搜索词明细（`query-details`）**：`/v1/analytics/product-queries/details` → 新数据集 `LISTING_SEARCH_TERM`，写入 `core.listing_search_term_observation`。
+  - 每个 SKU 取搜索人数最多的 5 个搜索词。每行保存搜索词原文、搜索人数、下单数和销售额；搜索词是事实键的一部分。
+  - 这个接口一次接受全店 SKU（最多 1000 个），按从 0 开始的页码翻页，每页 100 行。所以新增两个请求占位符：
+    - `{itemKeysAll}`：店铺全部 SKU，超过 1000 个时拒绝（`too_many_keys_to_request`），不会截断；
+    - `{pageIndex}`：从 0 开始的页码。
+  - 端点登记为 `PAGE` 加 `SHORT_PAGE`：不满 100 行的页就是最后一页。探测时已确认，最后一页之后再请求会返回 200 和 0 行。
+- **窗口**：两个能力都按周运行（`window: WEEK`）。默认统计昨天往前 7 个 UTC 日；`DATE=<最后一天>` 可以指定。
+  - 买家人数是去重统计，不能按天相加，所以不拆成按天的运行。
+  - Ozon 免费版只能查最近一个月，不含当天。
+- **Premium 字段**：排名位置、曝光人数和转化率需要 Premium 订阅，未订阅时返回 null，这些字段不映射。
+- **证据等级**：搜索数据属于平台分析（C 级），只用于诊断和排序，不驱动调价。
+- **key 的角色**：需要 `Report`。
+- **2026-09-29 试点店铺探测结果**（2026-09-22 至 2026-09-28）：
+  - 41 个 SKU 中有 30 个出现在搜索分析结果里，都有搜索人数；
+  - 其余 11 个就是无库存、在搜索中不可见的商品；
+  - 共有 55 个不同的搜索词，全部为 0 下单、0 销售额。
+
+步骤（先完成商品目录那一步）：
+
+```bash
+make ozon-probe CAPABILITY=queries OFFICIAL_SOURCE=~/Downloads/swagger.json
+```
+
+```bash
+make ozon-setup CAPABILITY=queries
+```
+
+```bash
+make ozon-verify CAPABILITY=queries
+```
+
+```bash
+make ozon-run CAPABILITY=queries
+```
+
+```bash
+make ozon-normalize CAPABILITY=queries
+```
+
+搜索词把上面的 `CAPABILITY=queries` 换成 `CAPABILITY=query-details`，步骤相同。
+
 ## 控制台：店铺诊断
 
 控制台首页（导航里的"店铺概览 → 店铺诊断"，路径 `/store/diagnosis`）按商品汇总平台给出的各项信号，用来回答"为什么卖不动"。
@@ -365,13 +420,14 @@ make ozon-normalize CAPABILITY=status
   - 库存：最新快照，按履约方式合计；
   - 价格和价格指数：来自 PRICE；
   - 内容评分：来自 LISTING_CONTENT；
+  - 搜索人数和前 5 个搜索词：来自 LISTING_SEARCH / LISTING_SEARCH_TERM，所有商品都取店铺最近的同一个统计期间，便于横向比较；
   - 近 7 天下单件数：以店铺最近一个有流量数据的 UTC 日为终点，往前算 7 天。
 
   每个信号都带数据时间；没有采集到的信号显示"未采集"或"无记录"，不会显示成 0。
 - **页面**：
-  - 顶部汇总：不可见、无库存、价格指数 RED/YELLOW、近期有下单的商品数，以及内容评分均值；
-  - 商品表格：可以筛选（只看有问题的、不可见、无库存、价格 RED、有下单）和搜索，库存、价格竞争力、评分、下单这几列可以排序；
-  - 点击一行打开详情抽屉。
+  - 顶部汇总：不可见、无库存、价格指数 RED/YELLOW、有搜索需求、有搜索无下单、近期有下单的商品数，以及内容评分均值；
+  - 商品表格：可以筛选（只看有问题的、不可见、无库存、价格 RED、有搜索无下单、有下单）和搜索，库存、价格竞争力、评分、搜索人数、下单这几列可以排序；
+  - 点击一行打开详情抽屉，其中"搜索需求"一节列出搜索人数、统计期间和主要搜索词（俄语原文，不翻译）。
 - **价格竞争力**：是 Ozon 自己匹配竞品得出的判断，页面上标注"C 级 · 平台分析"，只用于诊断，不驱动调价。"比 Ozon 最低竞品价贵 x%"用含卖家促销价（没有时用不含促销价）计算，而且只在两个价格币种相同时才算。
 - **不做**：内容评分不设"偏低"阈值（阈值属于策略，需要 Owner 决定）；也暂不跳转到其他区域，因为试点商品还没有映射到内部 SKU。
 - **本地查看**：控制台固定操作 `frontend/marketops-console/.env.local` 里 `VITE_MARKETOPS_STORE_ID` 指定的店铺，要看 Ozon 试点店铺就填它的店铺 ID，然后重启 `make frontend-dev`。控制台的登录状态只保存在内存里，刷新页面或直接改地址栏都需要重新登录。

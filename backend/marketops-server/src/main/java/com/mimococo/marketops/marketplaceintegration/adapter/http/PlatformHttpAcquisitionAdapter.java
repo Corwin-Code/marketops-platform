@@ -67,6 +67,19 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
     private static final String OFFSET_PLACEHOLDER = "offset";
     private static final String PAGE_PLACEHOLDER = "page";
 
+    /** The page position counted from zero, for a source whose pages start at 0. */
+    private static final String PAGE_INDEX_PLACEHOLDER = "pageIndex";
+
+    /** Placeholder carrying every recorded item key of the store in one request. */
+    private static final String ALL_ITEM_KEYS_PLACEHOLDER = "itemKeysAll";
+
+    /**
+     * The most keys one request carries when it names all of them. Both Ozon
+     * search analytics methods accept up to 1000 SKUs (official OpenAPI checked
+     * 2026-09-29); a store with more is refused rather than silently truncated.
+     */
+    static final int ALL_KEYS_LIMIT = 1000;
+
     /** Placeholder carrying the start of the run's window; the others follow it. */
     private static final String WINDOW_FROM_PLACEHOLDER = "windowFrom";
 
@@ -138,6 +151,19 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
             }
             placeholders.put(keyKind.get() == ListingKeyDirectory.KeyKind.ITEM ? "itemKeyBatch" : "listingKeyBatch",
                     RequestTemplate.keyBatch(batch));
+        } else if (asksForAllItemKeys(spec)) {
+            // Every page of such a request names the same keys, in the same
+            // order; the pages move through the answer, not through the keys.
+            List<String> all = specs.jobStoreId(request.jobId())
+                    .map(store -> keys.keys(store, ListingKeyDirectory.KeyKind.ITEM, 0, ALL_KEYS_LIMIT + 1))
+                    .orElse(List.of());
+            if (all.isEmpty()) {
+                return refused("no_keys_to_request", startedAt);
+            }
+            if (all.size() > ALL_KEYS_LIMIT) {
+                return refused("too_many_keys_to_request", startedAt);
+            }
+            placeholders.put(ALL_ITEM_KEYS_PLACEHOLDER, RequestTemplate.keyBatch(all));
         }
         OutboundHttp.Request builder;
         List<char[]> resolvedSecrets = new ArrayList<>();
@@ -240,6 +266,7 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         // A computed position starts where the source's own numbering starts.
         values.put(OFFSET_PLACEHOLDER, position.isEmpty() ? "0" : position);
         values.put(PAGE_PLACEHOLDER, position.isEmpty() ? "1" : position);
+        pageIndex(position).ifPresent(index -> values.put(PAGE_INDEX_PLACEHOLDER, index));
         values.put(LIMIT_PLACEHOLDER, DEFAULT_PAGE_SIZE);
         specs.runWindow(request.runId()).ifPresent(window -> {
             values.put(WINDOW_FROM_PLACEHOLDER, window.from().toString());
@@ -255,6 +282,29 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         // family of resources that differ only by registry name.
         values.put("endpointCode", spec.endpointCode());
         return values;
+    }
+
+    /**
+     * The zero-based page for a page position, which counts from one.
+     *
+     * <p>A position that is not a page number (a cursor) has no page index, so a
+     * template naming one is refused rather than sent with a guess.
+     */
+    static Optional<String> pageIndex(String position) {
+        if (position.isEmpty()) {
+            return Optional.of("0");
+        }
+        try {
+            long page = Long.parseLong(position);
+            return page >= 1 ? Optional.of(Long.toString(page - 1)) : Optional.empty();
+        } catch (NumberFormatException notAPage) {
+            return Optional.empty();
+        }
+    }
+
+    /** Whether a template names every recorded item key of the store at once. */
+    static boolean asksForAllItemKeys(EndpointCallSpec spec) {
+        return spec.bodyTemplate() != null && spec.bodyTemplate().contains("{" + ALL_ITEM_KEYS_PLACEHOLDER + "}");
     }
 
     /** Which recorded keys a template names products by, when it names any. */

@@ -4,8 +4,9 @@
  *
  * Signals nobody observed are `null`, never zero. Amounts and ratings are
  * decimal text, exactly as stored, so nothing is rounded on the way to the
- * screen. The price competitiveness is the marketplace's own analytics
- * (confidence C): it explains a diagnosis and never drives a price change.
+ * screen. Price competitiveness and search demand are the marketplace's own
+ * analytics (confidence C): they explain a diagnosis and never drive a price
+ * change.
  */
 
 import type { ConsoleOutcome, ConsoleRequest } from './console';
@@ -51,6 +52,25 @@ export interface DiagnosisContent {
   readonly observedAt: string;
 }
 
+/** One search term buyers used to find the listing. */
+export interface DiagnosisSearchTerm {
+  readonly term: string;
+  readonly searchUsers: number;
+  /** Orders the marketplace attributes to the term; `null` when not stated. */
+  readonly orderedCount: number | null;
+}
+
+/** Buyers who searched for the listing in the search period, and the terms they used. */
+export interface DiagnosisSearch {
+  /** `null` when only terms were observed. */
+  readonly searchUsers: number | null;
+  /** Sales the marketplace attributes to searches, decimal text. */
+  readonly revenue: string | null;
+  readonly revenueCurrencyCode: string | null;
+  /** The most searched first. */
+  readonly terms: readonly DiagnosisSearchTerm[];
+}
+
 /** Units ordered on the days of the window this listing has a record for. */
 export interface DiagnosisOrders {
   readonly orderedUnits: number;
@@ -68,6 +88,7 @@ export interface DiagnosisProduct {
   readonly stock: DiagnosisStock | null;
   readonly price: DiagnosisPrice | null;
   readonly content: DiagnosisContent | null;
+  readonly search: DiagnosisSearch | null;
   readonly orders: DiagnosisOrders | null;
 }
 
@@ -80,6 +101,10 @@ export interface DiagnosisSummary {
   readonly priceIndexRed: number;
   readonly priceIndexYellow: number;
   readonly withOrders: number;
+  /** Listings buyers searched for in the search period. */
+  readonly withSearchDemand: number;
+  /** Of those, the ones with no ordered unit in the order window. */
+  readonly searchDemandWithoutOrders: number;
   readonly rated: number;
   readonly averageContentRating: string | null;
 }
@@ -92,12 +117,19 @@ export interface DiagnosisOrdersWindow {
   readonly days: number;
 }
 
+/** The period search demand is reported for: inclusive start, exclusive end. */
+export interface DiagnosisSearchPeriod {
+  readonly from: string;
+  readonly to: string;
+}
+
 /** The whole diagnosis of one store. */
 export interface StoreDiagnosis {
   readonly storeId: string;
   readonly generatedAt: string;
   readonly summary: DiagnosisSummary;
   readonly ordersWindow: DiagnosisOrdersWindow | null;
+  readonly searchPeriod: DiagnosisSearchPeriod | null;
   readonly products: readonly DiagnosisProduct[];
 }
 
@@ -128,6 +160,7 @@ export function parseStoreDiagnosis(body: unknown): StoreDiagnosis | undefined {
     generatedAt,
     summary,
     ordersWindow: parseOrdersWindow(body.ordersWindow) ?? null,
+    searchPeriod: parseSearchPeriod(body.searchPeriod),
     products: products as DiagnosisProduct[],
   };
 }
@@ -142,6 +175,8 @@ function parseSummary(value: unknown): DiagnosisSummary | undefined {
     'priceIndexRed',
     'priceIndexYellow',
     'withOrders',
+    'withSearchDemand',
+    'searchDemandWithoutOrders',
     'rated',
   ] as const;
   const read: Partial<Record<(typeof counts)[number], number>> = {};
@@ -168,6 +203,13 @@ function parseOrdersWindow(value: unknown): DiagnosisOrdersWindow | undefined {
   return { from, to, daysCovered, days };
 }
 
+function parseSearchPeriod(value: unknown): DiagnosisSearchPeriod | null {
+  if (!isRecord(value)) return null;
+  const from = text(value.from);
+  const to = text(value.to);
+  return from === undefined || to === undefined ? null : { from, to };
+}
+
 function parseProduct(value: unknown): DiagnosisProduct | undefined {
   if (!isRecord(value)) return undefined;
   const listingId = text(value.listingId);
@@ -186,6 +228,7 @@ function parseProduct(value: unknown): DiagnosisProduct | undefined {
     stock: parseStock(value.stock),
     price: parsePrice(value.price),
     content: parseContent(value.content),
+    search: parseSearch(value.search),
     orders: parseOrders(value.orders),
   };
 }
@@ -241,6 +284,27 @@ function parseContent(value: unknown): DiagnosisContent | null {
   const observedAt = text(value.observedAt);
   if (observedAt === undefined) return null;
   return { rating: decimal(value.rating), observedAt };
+}
+
+function parseSearch(value: unknown): DiagnosisSearch | null {
+  if (!isRecord(value)) return null;
+  const terms = Array.isArray(value.terms)
+    ? value.terms.map(parseSearchTerm).filter((term): term is DiagnosisSearchTerm => term !== null)
+    : [];
+  return {
+    searchUsers: integer(value.searchUsers) ?? null,
+    revenue: decimal(value.revenue),
+    revenueCurrencyCode: optionalText(value.revenueCurrencyCode),
+    terms,
+  };
+}
+
+function parseSearchTerm(value: unknown): DiagnosisSearchTerm | null {
+  if (!isRecord(value)) return null;
+  const term = text(value.term);
+  const searchUsers = integer(value.searchUsers);
+  if (term === undefined || searchUsers === undefined) return null;
+  return { term, searchUsers, orderedCount: integer(value.orderedCount) ?? null };
 }
 
 function parseOrders(value: unknown): DiagnosisOrders | null {

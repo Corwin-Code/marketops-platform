@@ -14,11 +14,17 @@ import {
   Tag,
   Tooltip,
   Typography,
+  theme,
 } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
-import type { DiagnosisProduct, StoreDiagnosis } from '../api/storeDiagnosis';
+import type {
+  DiagnosisProduct,
+  DiagnosisSearchPeriod,
+  DiagnosisSearchTerm,
+  StoreDiagnosis,
+} from '../api/storeDiagnosis';
 import { fetchStoreDiagnosis } from '../api/storeDiagnosis';
 import { formatDecimal, formatPercent } from '../format';
 import { actions } from '../i18n';
@@ -54,6 +60,7 @@ const FILTERS = [
   'notSellable',
   'withoutStock',
   'priceRed',
+  'searchNoOrders',
   'withOrders',
 ] as const;
 type Filter = (typeof FILTERS)[number];
@@ -91,6 +98,15 @@ function priceRed(product: DiagnosisProduct): boolean {
   return product.price?.indexNative === 'RED';
 }
 
+function ordered(product: DiagnosisProduct): boolean {
+  return (product.orders?.orderedUnits ?? 0) > 0;
+}
+
+/** Buyers searched for it in the search period and the order window shows no order. */
+function searchedWithoutOrders(product: DiagnosisProduct): boolean {
+  return (product.search?.searchUsers ?? 0) > 0 && !ordered(product);
+}
+
 /** A problem is something the marketplace itself stated: hidden, empty shelf or a RED price. */
 function hasProblem(product: DiagnosisProduct): boolean {
   return notSellable(product) || withoutStock(product) || priceRed(product);
@@ -103,7 +119,8 @@ function matches(product: DiagnosisProduct, filter: Filter, query: string): bool
     (filter === 'notSellable' && notSellable(product)) ||
     (filter === 'withoutStock' && withoutStock(product)) ||
     (filter === 'priceRed' && priceRed(product)) ||
-    (filter === 'withOrders' && (product.orders?.orderedUnits ?? 0) > 0);
+    (filter === 'searchNoOrders' && searchedWithoutOrders(product)) ||
+    (filter === 'withOrders' && ordered(product));
   if (!byFilter) return false;
   if (query === '') return true;
   const needle = query.toLowerCase();
@@ -156,6 +173,15 @@ function Premium({ product }: { readonly product: DiagnosisProduct }): React.JSX
   );
 }
 
+/**
+ * The UTC days a search period covers. The period's end is exclusive, so the
+ * last day shown is the one before it.
+ */
+function searchDays(period: DiagnosisSearchPeriod): string {
+  const lastDay = new Date(Date.parse(period.to) - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return text.searchPeriod(period.from.slice(0, 10), lastDay);
+}
+
 function ConfidenceC(): React.JSX.Element {
   return (
     <Space size={4}>
@@ -185,6 +211,7 @@ export function StoreDiagnosisView({
   const [search, setSearch] = useState(query ?? '');
   const [loaded, setLoaded] = useState<Loaded>({ kind: 'loading' });
   const [generation, setGeneration] = useState(0);
+  const { token } = theme.useToken();
 
   useEffect(() => {
     setSearch(query ?? '');
@@ -246,6 +273,7 @@ export function StoreDiagnosisView({
 
   const summary = diagnosis.summary;
   const window = diagnosis.ordersWindow;
+  const searchPeriod = diagnosis.searchPeriod;
   const columns: TableColumnsType<DiagnosisProduct> = [
     {
       key: 'product',
@@ -335,6 +363,26 @@ export function StoreDiagnosisView({
         ),
     },
     {
+      key: 'search',
+      title: (
+        <Space size={4}>
+          {text.columnSearch}
+          <InfoTip title={text.columnSearchHint} long />
+        </Space>
+      ),
+      width: 110,
+      align: 'right',
+      sorter: (a, b) => (a.search?.searchUsers ?? -1) - (b.search?.searchUsers ?? -1),
+      render: (_, product) => {
+        const users = product.search?.searchUsers ?? null;
+        return users === null ? (
+          <Typography.Text type="secondary">{text.noRecord}</Typography.Text>
+        ) : (
+          users.toLocaleString('zh-CN')
+        );
+      },
+    },
+    {
       key: 'orders',
       title: text.columnOrders,
       width: 100,
@@ -362,12 +410,12 @@ export function StoreDiagnosisView({
         }
       >
         <Row gutter={[12, 12]}>
-          <Col xs={12} md={8} xl={4}>
+          <Col xs={12} md={6}>
             <Card size="small">
               <Statistic title={text.tileProducts} value={summary.products} />
             </Card>
           </Col>
-          <Col xs={12} md={8} xl={4}>
+          <Col xs={12} md={6}>
             <Card size="small">
               <Statistic
                 title={
@@ -385,7 +433,7 @@ export function StoreDiagnosisView({
               )}
             </Card>
           </Col>
-          <Col xs={12} md={8} xl={4}>
+          <Col xs={12} md={6}>
             <Card size="small">
               <Statistic
                 title={
@@ -398,7 +446,7 @@ export function StoreDiagnosisView({
               />
             </Card>
           </Col>
-          <Col xs={12} md={8} xl={4}>
+          <Col xs={12} md={6}>
             <Card size="small">
               <Statistic
                 title={
@@ -416,7 +464,44 @@ export function StoreDiagnosisView({
               )}
             </Card>
           </Col>
-          <Col xs={12} md={8} xl={4}>
+          <Col xs={12} md={6}>
+            <Card size="small">
+              <Statistic
+                title={
+                  <Space size={4}>
+                    {text.tileSearchDemand}
+                    <InfoTip title={text.tileSearchDemandHint} />
+                  </Space>
+                }
+                value={summary.withSearchDemand}
+              />
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {searchPeriod === null ? text.searchNoPeriod : searchDays(searchPeriod)}
+              </Typography.Text>
+            </Card>
+          </Col>
+          <Col xs={12} md={6}>
+            <Card size="small">
+              <Statistic
+                title={
+                  <Space size={4}>
+                    {text.tileSearchNoOrders}
+                    <InfoTip title={text.tileSearchNoOrdersHint} />
+                  </Space>
+                }
+                value={summary.searchDemandWithoutOrders}
+                {...(summary.searchDemandWithoutOrders > 0
+                  ? { styles: { content: { color: token.colorError } } }
+                  : {})}
+              />
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {window === null
+                  ? text.ordersNoWindow
+                  : text.ordersWindow(window.days, window.daysCovered)}
+              </Typography.Text>
+            </Card>
+          </Col>
+          <Col xs={12} md={6}>
             <Card size="small">
               <Statistic title={text.tileWithOrders} value={summary.withOrders} />
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
@@ -426,7 +511,7 @@ export function StoreDiagnosisView({
               </Typography.Text>
             </Card>
           </Col>
-          <Col xs={12} md={8} xl={4}>
+          <Col xs={12} md={6}>
             <Card size="small">
               <Statistic
                 title={
@@ -458,6 +543,7 @@ export function StoreDiagnosisView({
                 { value: 'notSellable', label: text.filterNotSellable },
                 { value: 'withoutStock', label: text.filterWithoutStock },
                 { value: 'priceRed', label: text.filterPriceRed },
+                { value: 'searchNoOrders', label: text.filterSearchNoOrders },
                 { value: 'withOrders', label: text.filterWithOrders },
               ]}
               onChange={(value) => {
@@ -489,7 +575,7 @@ export function StoreDiagnosisView({
               columns={columns}
               dataSource={rows}
               pagination={{ pageSize: 50, hideOnSinglePage: true, showSizeChanger: false }}
-              scroll={{ x: 1060 }}
+              scroll={{ x: 1170 }}
               locale={{ emptyText: text.emptyFiltered }}
               onRow={(product) => ({
                 onClick: () => {
@@ -504,6 +590,7 @@ export function StoreDiagnosisView({
 
       <ProductDrawer
         product={selected}
+        searchPeriod={searchPeriod}
         onClose={() => {
           patch({ [LISTING_PARAM]: undefined });
         }}
@@ -513,11 +600,31 @@ export function StoreDiagnosisView({
 }
 
 /** Every signal of one listing with its time and source. */
+const TERM_COLUMNS: TableColumnsType<DiagnosisSearchTerm> = [
+  { key: 'term', title: text.searchTerm, dataIndex: 'term' },
+  {
+    key: 'users',
+    title: text.termSearchUsers,
+    align: 'right',
+    width: 96,
+    render: (_, term) => term.searchUsers.toLocaleString('zh-CN'),
+  },
+  {
+    key: 'orders',
+    title: text.termOrders,
+    align: 'right',
+    width: 80,
+    render: (_, term) => term.orderedCount ?? '—',
+  },
+];
+
 function ProductDrawer({
   product,
+  searchPeriod,
   onClose,
 }: {
   readonly product: DiagnosisProduct | undefined;
+  readonly searchPeriod: DiagnosisSearchPeriod | null;
   readonly onClose: () => void;
 }): React.JSX.Element {
   return (
@@ -655,6 +762,47 @@ function ProductDrawer({
               </>
             )}
           </Descriptions>
+
+          <Descriptions
+            size="small"
+            column={1}
+            bordered
+            title={text.sectionSearch}
+            extra={product.search === null ? null : <ConfidenceC />}
+          >
+            <Descriptions.Item label={text.searchUsers}>
+              {product.search?.searchUsers === null || product.search?.searchUsers === undefined
+                ? text.noRecord
+                : product.search.searchUsers.toLocaleString('zh-CN')}
+            </Descriptions.Item>
+            <Descriptions.Item label={text.searchRevenue}>
+              {product.search?.revenue === null || product.search?.revenue === undefined ? (
+                '—'
+              ) : (
+                <Money
+                  value={product.search.revenue}
+                  currency={product.search.revenueCurrencyCode}
+                />
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label={text.searchPeriodLabel}>
+              {searchPeriod === null ? '—' : searchDays(searchPeriod)}
+            </Descriptions.Item>
+          </Descriptions>
+          <Flex vertical gap={8}>
+            <Typography.Text strong>{text.searchTerms}</Typography.Text>
+            <Table<DiagnosisSearchTerm>
+              rowKey="term"
+              size="small"
+              columns={TERM_COLUMNS}
+              dataSource={[...(product.search?.terms ?? [])]}
+              pagination={false}
+              locale={{ emptyText: text.noTerms }}
+            />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {text.searchHint}
+            </Typography.Text>
+          </Flex>
 
           <Descriptions size="small" column={1} bordered title={text.sectionOrders}>
             <Descriptions.Item label={text.orderedUnits}>

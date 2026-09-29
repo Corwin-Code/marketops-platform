@@ -57,8 +57,14 @@ public class IngestionJobService {
     static final String RUN_ENTITY_TYPE = "ingestion-run";
 
     private static final Set<String> DATASET_KINDS = Set.of(
-            "LISTING", "LISTING_HEALTH", "LISTING_CONTENT", "PRICE", "STOCK", "TRAFFIC", "SALES",
-            "RETURNS", "FINANCE", "ADVERTISING", "UNKNOWN");
+            "LISTING", "LISTING_HEALTH", "LISTING_CONTENT", "LISTING_SEARCH", "LISTING_SEARCH_TERM",
+            "PRICE", "STOCK", "TRAFFIC", "SALES", "RETURNS", "FINANCE", "ADVERTISING", "UNKNOWN");
+
+    /** How an operator may resolve a BLOCKED run. */
+    private static final Set<String> BLOCKED_RESOLUTIONS = Set.of("RETRY", "CLOSE");
+
+    /** The database's answers when a run is missing or no longer blocked. */
+    private static final Set<String> RUN_NOT_MOVABLE = Set.of("MO040", "MO041");
 
     /** Job status moves a maintenance operator may make; RETIRED is final. */
     private static final Map<String, Set<String>> STATUS_MOVES = Map.of(
@@ -237,6 +243,39 @@ public class IngestionJobService {
                 Map.of("state", new FieldChange(before.state(), after.state())),
                 outcome.reason(), null)));
         return new ExecutionResult(after, outcome.pagesStored(), outcome.reason());
+    }
+
+    /**
+     * Retry or close a run that came to rest BLOCKED.
+     *
+     * <p>A blocked run keeps the job's only live-run slot and holds no lease, so
+     * no worker can move it: without an operator nothing of the job could ever
+     * run again. RETRY is for a cause somebody fixed; CLOSE gives the run up.
+     * Either way the reason is kept in the audit.
+     */
+    @Transactional
+    public RunState resolveBlockedRun(String operator, UUID runId, String resolution, String reason) {
+        RunState before = requireRun(runId);
+        String validReason = MetadataFieldPolicy.requireText("reason", reason);
+        if (!"BLOCKED".equals(before.state()) || !BLOCKED_RESOLUTIONS.contains(resolution)) {
+            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
+        String after;
+        try {
+            after = runs.resolveBlocked(runId, resolution);
+        } catch (DataAccessException refused) {
+            if (RUN_NOT_MOVABLE.contains(sqlState(refused))) {
+                throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+            }
+            throw refused;
+        }
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.MARKETPLACE_INTEGRATION, operator, AuditAction.STATUS_CHANGE,
+                RUN_ENTITY_TYPE, runId, null,
+                Map.of("state", new FieldChange(before.state(), after),
+                        "resolution", new FieldChange(null, resolution)),
+                validReason, null));
+        return requireRun(runId);
     }
 
     /** Load one job. */

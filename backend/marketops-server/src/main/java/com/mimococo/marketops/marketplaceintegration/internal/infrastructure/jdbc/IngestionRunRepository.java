@@ -84,6 +84,18 @@ public class IngestionRunRepository {
                 .single();
     }
 
+    /**
+     * Retry or close a run that came to rest BLOCKED, which holds no lease any
+     * more; answers the state it moved to.
+     */
+    public String resolveBlocked(UUID runId, String resolution) {
+        return jdbc.sql("SELECT ops.resolve_blocked_ingestion_run(:runId, :resolution)")
+                .param("runId", runId)
+                .param("resolution", resolution)
+                .query(String.class)
+                .single();
+    }
+
     /** Extend a live lease without changing state. */
     public Instant renewLease(UUID runId, long fenceToken, String leaseOwner, int leaseSeconds) {
         Timestamp renewed = jdbc.sql("""

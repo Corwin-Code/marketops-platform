@@ -19,6 +19,12 @@ export const storeDiagnosisText = {
   tilePriceRed: '价格指数 RED',
   tilePriceRedHint: 'Ozon 判定价格明显高于竞品（невыгодный）。YELLOW 为一般。',
   tileWithOrders: '近期有下单',
+  tileSearchDemand: '有搜索需求',
+  tileSearchDemandHint:
+    '统计期间内有买家搜索过的商品。数据来自 Ozon 搜索分析（C 级 · 平台分析）：免费版只能查最近一个月，不含当天。',
+  tileSearchNoOrders: '有搜索无下单',
+  tileSearchNoOrdersHint:
+    '统计期间内有买家搜索、但近期下单窗口里没有下单记录的商品：需求存在，却没有成交。',
   tileContent: '内容评分均值',
   tileContentHint: 'Ozon 给出的商品卡内容评分（0–100）。这里只展示分数，不设“偏低”阈值。',
   unknownSellability: (count: number): string => `另有 ${String(count)} 个未采集到可见性`,
@@ -26,6 +32,8 @@ export const storeDiagnosisText = {
   ordersWindow: (days: number, covered: number): string =>
     `近 ${String(days)} 天（有记录 ${String(covered)} 天）`,
   ordersNoWindow: '尚无下单数据',
+  searchPeriod: (from: string, to: string): string => `${from} 至 ${to}`,
+  searchNoPeriod: '尚无搜索数据',
   ratedCount: (count: number): string => `${String(count)} 个商品有评分`,
 
   filterLabel: '筛选',
@@ -35,6 +43,7 @@ export const storeDiagnosisText = {
   filterWithoutStock: '无库存',
   filterPriceRed: '价格 RED',
   filterWithOrders: '有下单',
+  filterSearchNoOrders: '有搜索无下单',
   searchLabel: '按名称或货号搜索',
   searchPlaceholder: '名称 / 货号 / 商品 ID',
   refreshLabel: '重新加载诊断',
@@ -45,6 +54,9 @@ export const storeDiagnosisText = {
   columnPrice: '价格（含促销）',
   columnCompetitiveness: '价格竞争力',
   columnContent: '内容评分',
+  columnSearch: '搜索人数',
+  columnSearchHint:
+    '统计期间内搜索过该商品的买家人数（Ozon 去重统计，C 级 · 平台分析）。商品没有出现在 Ozon 的搜索分析结果里时显示“无记录”，不等于 0。',
   columnOrders: '近期下单',
   offerId: '货号',
   productId: 'Ozon 商品 ID',
@@ -69,6 +81,7 @@ export const storeDiagnosisText = {
   sectionStock: '库存',
   sectionPrice: '价格与竞争力',
   sectionContent: '内容评分',
+  sectionSearch: '搜索需求',
   sectionOrders: '下单',
   observedAt: '数据时间',
   nativeStatus: 'Ozon 状态',
@@ -84,6 +97,16 @@ export const storeDiagnosisText = {
   priceIndex: 'Ozon 价格指数',
   premiumBasis: '比较基准：含卖家促销价（没有时用不含促销价），且与竞品价币种相同时才计算。',
   rating: '评分',
+  searchUsers: '搜索人数',
+  searchRevenue: '搜索带来的销售额',
+  searchPeriodLabel: '统计期间（UTC）',
+  searchTerms: '主要搜索词',
+  searchTerm: '搜索词',
+  termSearchUsers: '搜索人数',
+  termOrders: '下单数',
+  noTerms: '没有搜索词记录',
+  searchHint:
+    '搜索词是 Ozon 返回的原文（俄语），不做翻译；每个商品列出搜索人数最多的 5 个。排名位置、曝光和转化需要 Premium 订阅，目前拿不到。',
   orderedUnits: '下单件数',
   daysWithRecords: '有记录的天数',
   ordersHint:
