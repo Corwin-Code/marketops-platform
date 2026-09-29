@@ -639,22 +639,25 @@ export function StoreDiagnosisView({
         {/* The filters sit above the table, not in the header, so a narrow pane keeps the title. */}
         <Flex vertical gap={12}>
           <Flex gap={8} wrap align="center">
-            <Segmented<string>
-              aria-label={text.filterLabel}
-              value={filter}
-              options={[
-                { value: 'all', label: text.filterAll },
-                { value: 'problems', label: text.filterProblems },
-                { value: 'notSellable', label: text.filterNotSellable },
-                { value: 'withoutStock', label: text.filterWithoutStock },
-                { value: 'priceRed', label: text.filterPriceRed },
-                { value: 'searchNoOrders', label: text.filterSearchNoOrders },
-                { value: 'withOrders', label: text.filterWithOrders },
-              ]}
-              onChange={(value) => {
-                patch({ [FILTER_PARAM]: value === 'all' ? undefined : value });
-              }}
-            />
+            {/* Seven options outgrow a phone: the control scrolls inside its own box, not the page. */}
+            <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+              <Segmented<string>
+                aria-label={text.filterLabel}
+                value={filter}
+                options={[
+                  { value: 'all', label: text.filterAll },
+                  { value: 'problems', label: text.filterProblems },
+                  { value: 'notSellable', label: text.filterNotSellable },
+                  { value: 'withoutStock', label: text.filterWithoutStock },
+                  { value: 'priceRed', label: text.filterPriceRed },
+                  { value: 'searchNoOrders', label: text.filterSearchNoOrders },
+                  { value: 'withOrders', label: text.filterWithOrders },
+                ]}
+                onChange={(value) => {
+                  patch({ [FILTER_PARAM]: value === 'all' ? undefined : value });
+                }}
+              />
+            </div>
             {activeRule !== undefined && (
               <Tag
                 closable

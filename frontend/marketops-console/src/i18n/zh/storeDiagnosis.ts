@@ -113,7 +113,7 @@ export const storeDiagnosisText = {
     'Ozon 只为有动静的商品返回分析数据；某天没有记录不等于下单 0，所以没有任何记录时显示“无记录”。',
   sourceNote: '所有数据来自 Ozon 官方接口，按采集时间取每类信号的最新一条事实。',
   conclusionsTitle: '诊断结论',
-  conclusionsBasis: (from: string, to: string): string => `基于 ${from} 至 ${to} 的数据`,
+  conclusionsBasis: '近 7 天数据，截至',
   conclusionsCalculatedAt: '计算于',
   conclusionsNone: '还没有诊断计算结果，点“重新计算诊断”生成。',
   conclusionsEmpty: '最近一次计算没有发现问题。',

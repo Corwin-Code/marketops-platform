@@ -4,6 +4,7 @@ import type { ConsoleFailure } from '../api/console';
 import type { DiagnosisProduct } from '../api/storeDiagnosis';
 import type { ListingFinding, ListingFindings, StoreFindings } from '../api/storeFindings';
 import { formatDecimal, formatMoney, formatPercent, shiftDecimal } from '../format';
+import { RULE_LABELS } from '../i18n/zh/pricing';
 import {
   CONCLUSION_TEXT,
   FINDING_DETAIL_LABELS,
@@ -27,6 +28,17 @@ export const CONCLUSION_ORDER: readonly string[] = [
   'CONTENT_BELOW_TARGET',
 ];
 
+/**
+ * Findings the page does not show per product: without sales every listing is
+ * data-blocked for the realized-profit rules, which the section note explains once.
+ */
+const HIDDEN_RULES: ReadonlySet<string> = new Set(['DATA_BLOCKED']);
+
+/** The findings worth showing on a product. */
+function shownFindings(findings: readonly ListingFinding[]): readonly ListingFinding[] {
+  return findings.filter((finding) => !HIDDEN_RULES.has(finding.ruleCode));
+}
+
 const SEVERITY_COLORS: Readonly<Record<string, TagColor>> = {
   CRITICAL: 'error',
   WARNING: 'warning',
@@ -39,9 +51,9 @@ export type FindingsLoad =
   | { readonly kind: 'loaded'; readonly findings: StoreFindings }
   | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
 
-/** A conclusion's title, falling back on its code. */
+/** A conclusion's title, falling back on the rule's label and then its code. */
 export function conclusionTitle(code: string): string {
-  return CONCLUSION_TEXT[code]?.title ?? code;
+  return CONCLUSION_TEXT[code]?.title ?? RULE_LABELS[code] ?? code;
 }
 
 /**
@@ -75,7 +87,7 @@ export function ConclusionsSection({
     <Space size={8} wrap>
       {run !== null && (
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {text.conclusionsBasis(run.periodStart.slice(0, 10), run.periodEnd.slice(0, 10))} ·{' '}
+          {text.conclusionsBasis} <DateTime value={run.periodEnd} /> ·{' '}
           {text.conclusionsCalculatedAt} <DateTime value={run.completedAt ?? run.periodEnd} />
         </Typography.Text>
       )}
@@ -161,7 +173,10 @@ export function FindingTags({
 }): React.JSX.Element {
   const tags = [
     ...(withoutStock ? [{ key: WITHOUT_STOCK, severity: 'CRITICAL' }] : []),
-    ...findings.map((finding) => ({ key: finding.ruleCode, severity: finding.severity })),
+    ...shownFindings(findings).map((finding) => ({
+      key: finding.ruleCode,
+      severity: finding.severity,
+    })),
   ];
   if (tags.length === 0) {
     return <Typography.Text type="secondary">{text.noFindings}</Typography.Text>;
@@ -219,7 +234,7 @@ export function ListingConclusions({
   readonly product: DiagnosisProduct;
   readonly withoutStock: boolean;
 }): React.JSX.Element {
-  const findings = listing?.findings ?? [];
+  const findings = shownFindings(listing?.findings ?? []);
   const currency =
     listing?.metrics.OBSERVED_SELLING_PRICE?.currencyCode ?? product.price?.currencyCode ?? null;
   const profit = metricValue(listing, 'PROJECTED_UNIT_PROFIT');
