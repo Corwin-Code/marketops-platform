@@ -1297,8 +1297,10 @@ CAPABILITIES = {
                 "operation_function": "READ_DATA", "query_template": None,
                 "body_template": '{"status":"ALL","limit":50}',
                 "response_content_type": "application/json", "continuation_pointer": None,
+                # A page shorter than the 50 asked for is the last one (pilot 2026-10-01: 331
+                # requests on six full pages and one of 31, the request after it empty).
                 "pagination_model": "NONE", "rate_limit_per_minute": 10,
-                "continuation_end_rule": "JSON_NULL", "records_pointer": "/tasks",
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/tasks",
             },
             # The backend registration pages nothing yet: paging after the last record's id is built
             # in the probe only, until the dataset is mapped.
@@ -1892,10 +1894,11 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             last = answer.get("last_id")
             token = str(last) if answer.get("has_next") and last not in (None, "", 0, "0") else None
         elif computed == "LAST_RECORD_ID":
-            # The answer carries no position: a full page continues after its last record's id.
+            # The answer carries no position: the next page asks after its last record's id, and the
+            # short-page rule decides where the list ends.
             last = records[-1].get("id") if isinstance(records, list) and records \
                 and isinstance(records[-1], dict) else None
-            token = str(last) if last is not None and len(records) >= endpoint.get("page", PAGE_SIZE) else None
+            token = str(last) if last is not None else None
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1906,7 +1909,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         page["token"] = "null" if token is None else ("empty" if token == "" else "present")
         total_records += len(records)
         answers.append(answer)
-        if short_rule and len(records) < PAGE_SIZE:
+        if short_rule and len(records) < endpoint.get("page", PAGE_SIZE):
             end_signal = "SHORT_PAGE"
             # Evidence that the short page really was the last one: the next
             # request must answer "not found" or no records at all.

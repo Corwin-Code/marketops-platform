@@ -816,9 +816,9 @@ make owner-grant ACTION=DATA_COLLECTION_MANAGE
 | `seller-rating` | 无 Premium / Premium Plus，罚分未超限，本地化指数计算于 2026-09-23；4 组 10 项评级全部为 0（6 项 `OK`、4 项 `UNKNOWN_STATUS`），因为还没有订单 | 接入（本节） |
 | `warehouses` | 1 个 FBS 仓库，状态 `created`（启用），自送到投放点，每周 7 天，无订单上限 | 接入（本节） |
 | `delivery-methods` | 0 条。官方说明 `/v2/delivery-method/list` 只列 rFBS 仓库的发货方式，列 FBS 的 v1 已于 2026-04-07 停用；FBS 由 Ozon 从投放点配送 | 不接入，探测入口保留给 rFBS |
-| `discount-requests` | 第一页 50 条（批准 48、拒绝 2，涉及 26 个 SKU，其中 8 条对得上当前商品目录），整页返回说明还有更多 | 探测改为按最后一条的 id 翻页，待重跑；接入需要引擎支持"按最后一条记录翻页"，放到后续 PR |
+| `discount-requests` | 按最后一条的 id 翻页后共 331 条（2026-04-16 至 09-27，批准 329、拒绝 2），6 个整页加 1 个 31 条的短页，无重复。买家要的折扣中位数 5%；按月 4 月 22、5 月 97、6 月 161、7 月 31、8 月 16、9 月 4。涉及 64 个 SKU，只有 8 个在当前商品目录里（共 11 条申请），已批准的优惠截至 2026-10-01 全部过期 | 探测按短页结束（50 条一页，短页后再问一次确认为空），待重跑记录证据；接入需要引擎支持"按最后一条记录翻页"，是否现在做待 Owner 决定 |
 
-另外在官方文档里找到两个与"为什么卖不动"直接相关的只读接口，已加探测入口（待 Owner 运行）：
+另外在官方文档里找到两个与"为什么卖不动"直接相关的只读接口，已加探测入口。Owner 2026-10-01 运行：`warehouse-restrictions` 三次都答 `{"warehouse_ids":[]}`，没有仓库存在 Ozon 无法配送的商品，所以 `restricted-products` 无需查询，配送限制可以排除：
 
 - `warehouse-restrictions`：`POST /v1/warehouse/warehouses-with-invalid-products`，哪些仓库里有 Ozon 无法从该仓库配送的商品（不接受请求体）；
 - `restricted-products`：`POST /v1/warehouse/invalid-products/get`，按仓库列出无法配送的商品和超限项（长、宽、高、重量、尺寸和、体积重、体积、价格、最长边，以及低于下限还是高于上限），按 `last_id` 翻页。探测只问上一条探测点名的那一个仓库；没有被点名的仓库时直接提示无需查询。
