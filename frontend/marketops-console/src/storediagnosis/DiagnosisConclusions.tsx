@@ -69,6 +69,7 @@ export function conclusionTitle(code: string): string {
 export function ConclusionsSection({
   load,
   withoutStockCount,
+  premiumPlus,
   activeRule,
   onSelectRule,
   onRecalculate,
@@ -76,6 +77,8 @@ export function ConclusionsSection({
 }: {
   readonly load: FindingsLoad;
   readonly withoutStockCount: number;
+  /** Whether the store has Premium Plus, `null` until the rating summary is collected. */
+  readonly premiumPlus: boolean | null;
   readonly activeRule: string | undefined;
   readonly onSelectRule: (code: string | undefined) => void;
   readonly onRecalculate: () => void;
@@ -162,7 +165,7 @@ export function ConclusionsSection({
       <Flex vertical gap={12}>
         {body}
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {text.conclusionsNote}
+          {text.conclusionsNote(premiumPlus)}
         </Typography.Text>
       </Flex>
     </SectionCard>

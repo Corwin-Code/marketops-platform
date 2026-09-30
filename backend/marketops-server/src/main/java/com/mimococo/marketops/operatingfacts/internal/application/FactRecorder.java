@@ -111,6 +111,10 @@ public class FactRecorder {
             // A promotion names no listing: it is recorded under its own identity.
             return recordPromotion(job, observation, canonical);
         }
+        if (STANDING_DATASETS.contains(datasetKind)) {
+            // The store's own standing names no listing: it is recorded against the job's store.
+            return recordStanding(job, datasetKind, observation, canonical);
+        }
         if (!"LISTING".equals(datasetKind) && canonical.text("nativeListingKey").isEmpty()
                 && canonical.text(ITEM_KEY).isPresent()) {
             // The record names its variant by the marketplace item identifier:
@@ -198,6 +202,80 @@ public class FactRecorder {
         return 1;
     }
 
+    /** The datasets that describe the store itself rather than one of its listings. */
+    private static final Set<String> STANDING_DATASETS = Set.of("SELLER_RATING", "SELLER_RATING_ITEM",
+            "FBS_WAREHOUSE");
+
+    /**
+     * The store's standing as one answer stated it: its rating summary, one rating, or one
+     * warehouse. Each is keyed by the job, the dataset, what it describes and when, so a pass that
+     * reads the same answer again records nothing new.
+     */
+    private int recordStanding(IngestionJobView job, String datasetKind, RawObservationView observation,
+                               CanonicalRecord canonical) {
+        Instant observedAt = canonical.requiredInstant("observedAt");
+        String subject = switch (datasetKind) {
+            case "SELLER_RATING_ITEM" -> bounded(canonical.text("ratingKey"), 128);
+            case "FBS_WAREHOUSE" -> bounded(canonical.text("nativeWarehouseKey"), 64);
+            default -> "SUMMARY";
+        };
+        if (subject == null) {
+            return 0;
+        }
+        String sourceFactKey = Digest.ofComponents(java.util.Arrays.asList(job.jobCode(), datasetKind, subject,
+                observedAt.toString()));
+        UUID provenanceId = facts.recordProvenance(idGenerator.newId(), job.organizationId(), "MARKETPLACE_RAW",
+                observation.observationId(), null, null, observation.sourceTime(), clock.instant(), null);
+        switch (datasetKind) {
+            case "SELLER_RATING" -> facts.insertRatingSummary(idGenerator.newId(), job.organizationId(),
+                    provenanceId, job.storeId(), sourceFactKey, observedAt,
+                    new FactWriteRepository.RatingSummary(canonical.flag("premium"), canonical.flag("premiumPlus"),
+                            canonical.flag("penaltyScoreExceeded"),
+                            canonical.instant("localizationCalculatedAt").orElse(null),
+                            canonical.decimal("localizationPercentage")
+                                    .map(value -> value.setScale(4, java.math.RoundingMode.HALF_UP))
+                                    .filter(value -> value.signum() >= 0
+                                            && value.compareTo(java.math.BigDecimal.valueOf(100)) <= 0)
+                                    .orElse(null)));
+            case "SELLER_RATING_ITEM" -> facts.insertRatingItem(idGenerator.newId(), job.organizationId(),
+                    provenanceId, job.storeId(), sourceFactKey, observedAt,
+                    new FactWriteRepository.RatingItem(subject, bounded(canonical.text("groupName"), 256),
+                            bounded(canonical.text("ratingName"), 256), bounded(canonical.text("valueType"), 64),
+                            bounded(canonical.text("direction"), 64), bounded(canonical.text("status"), 64),
+                            ratingValue(canonical.decimal("currentValue")),
+                            ratingValue(canonical.decimal("pastValue")),
+                            bounded(canonical.text("changeDirection"), 64),
+                            bounded(canonical.text("changeMeaning"), 64)));
+            default -> facts.insertWarehouse(idGenerator.newId(), job.organizationId(), provenanceId,
+                    job.storeId(), sourceFactKey, observedAt,
+                    new FactWriteRepository.Warehouse(subject, bounded(canonical.text("warehouseType"), 64),
+                            bounded(canonical.text("status"), 64), canonical.flag("rfbs"),
+                            canonical.flag("express"), canonical.flag("largeGoods"),
+                            canonical.flag("autoAssembly"), bounded(canonical.text("firstMileKind"), 64),
+                            canonical.integer("workingDayCount").filter(days -> days >= 0 && days <= 7)
+                                    .map(Math::toIntExact).orElse(null),
+                            count(canonical.integer("handoverMinutes")),
+                            count(canonical.integer("assemblyMinutes")),
+                            // Ozon states -1 for a warehouse without an orders limit.
+                            canonical.integer("postingsLimit")
+                                    .filter(limit -> limit >= -1 && limit <= Integer.MAX_VALUE)
+                                    .map(Math::toIntExact).orElse(null),
+                            count(canonical.integer("minPostingsLimit")),
+                            canonical.flag("hasPostingsLimit"),
+                            canonical.instant("pausedAt").orElse(null),
+                            canonical.instant("sourceCreatedAt").orElse(null),
+                            canonical.instant("sourceUpdatedAt").orElse(null),
+                            bounded(canonical.text("timeZone"), 32)));
+        }
+        return 1;
+    }
+
+    /** A rating value as core.seller_rating_item_observation keeps it, or absent. */
+    private static java.math.BigDecimal ratingValue(Optional<java.math.BigDecimal> value) {
+        return value.map(number -> number.setScale(6, java.math.RoundingMode.HALF_UP))
+                .filter(number -> number.abs().compareTo(new java.math.BigDecimal("1000000000000")) < 0).orElse(null);
+    }
+
     /**
      * One product of one promotion as the answer about that promotion described it. The answer
      * does not name the promotion; the request it answered did, and a promotion no snapshot
@@ -268,9 +346,13 @@ public class FactRecorder {
                 .filter(number -> number.abs().compareTo(new java.math.BigDecimal("100000")) < 0).orElse(null);
     }
 
-    /** DECIMAL fields that are percentages or sizes rather than money: recorded at four decimals. */
+    /**
+     * DECIMAL fields that are percentages, sizes or scores rather than money: the promotion
+     * percentages are recorded at four decimals, the rating values at six and the localization
+     * index at four.
+     */
     private static final java.util.Set<String> NOT_MONEY = java.util.Set.of("currentBoost", "minBoost",
-            "maxBoost", "discountValue");
+            "maxBoost", "discountValue", "currentValue", "pastValue", "localizationPercentage");
 
     /** The source fact key of one record, from the discriminator its dataset adds to the keys. */
     @FunctionalInterface

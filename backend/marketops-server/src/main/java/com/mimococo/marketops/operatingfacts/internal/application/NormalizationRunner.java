@@ -112,7 +112,7 @@ public class NormalizationRunner {
                 .stream().map(this::reading).toList();
         // What the companions read is theirs: it is not drift of the main declaration.
         java.util.Set<String> covered = companions.stream()
-                .map(companion -> companion.declaration().childPointer())
+                .map(companion -> coveredBy(main.declaration(), companion.declaration()))
                 .collect(java.util.stream.Collectors.toUnmodifiableSet());
 
         int factsRecorded = 0;
@@ -197,6 +197,19 @@ public class NormalizationRunner {
         }
         return new PassOutcome(jobId, observations.size(), factsRecorded, recordsRejected,
                 "PROCESSED");
+    }
+
+    /**
+     * The pointer inside a main record that a companion reads: its child records when both read
+     * the same records, or its own records when those sit inside the main record — a main
+     * declaration that reads the whole answer, with a companion reading a list in it.
+     */
+    static String coveredBy(NormalizationDeclarationRepository.MappingDeclaration main,
+                            NormalizationDeclarationRepository.MappingDeclaration companion) {
+        String records = main.recordPointer() == null ? "" : main.recordPointer();
+        String companionRecords = companion.recordPointer() == null ? "" : companion.recordPointer();
+        return companionRecords.startsWith(records + "/")
+                ? companionRecords.substring(records.length()) : companion.childPointer();
     }
 
     /** One declaration with everything a pass needs to read and check its records. */
