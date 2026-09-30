@@ -20,21 +20,22 @@ public class NormalizationRegistrationRepository {
     }
 
     /** Register a declaration in its unverified, inactive state. */
-    public void insertMapping(UUID id, String platformCode, String datasetKind,
+    public void insertMapping(UUID id, String platformCode, String datasetKind, String sourceDatasetKind,
                               int mappingVersion, String recordPointer, String childPointer,
                               String ownerLabel, Instant now) {
         jdbc.sql("""
                         INSERT INTO staging.normalization_mapping (
-                            id, platform_code, dataset_kind, mapping_version, record_pointer,
-                            child_pointer, verification_state, owner_label, status, created_at,
-                            updated_at, version)
-                        VALUES (:id, :platformCode, :datasetKind, :mappingVersion,
+                            id, platform_code, dataset_kind, source_dataset_kind, mapping_version,
+                            record_pointer, child_pointer, verification_state, owner_label, status,
+                            created_at, updated_at, version)
+                        VALUES (:id, :platformCode, :datasetKind, :sourceDatasetKind, :mappingVersion,
                             :recordPointer, :childPointer, 'UNVERIFIED', :ownerLabel, 'RETIRED',
                             :now, :now, 0)
                         """)
                 .param("id", id)
                 .param("platformCode", platformCode)
                 .param("datasetKind", datasetKind)
+                .param("sourceDatasetKind", sourceDatasetKind)
                 .param("mappingVersion", mappingVersion)
                 .param("recordPointer", recordPointer)
                 .param("childPointer", childPointer)
@@ -46,13 +47,13 @@ public class NormalizationRegistrationRepository {
     /** Declare where one canonical field comes from. */
     public void insertField(UUID mappingId, String datasetKind, String fieldName,
                             String sourceKind, String sourcePointer, String constantValue,
-                            String valueMapJson) {
+                            String valueMapJson, String elementPointer) {
         jdbc.sql("""
                         INSERT INTO staging.normalization_field (
                             mapping_id, dataset_kind, field_name, source_kind, source_pointer,
-                            constant_value, value_map)
+                            constant_value, value_map, element_pointer)
                         VALUES (:mappingId, :datasetKind, :fieldName, :sourceKind,
-                            :sourcePointer, :constantValue, CAST(:valueMap AS jsonb))
+                            :sourcePointer, :constantValue, CAST(:valueMap AS jsonb), :elementPointer)
                         """)
                 .param("mappingId", mappingId)
                 .param("datasetKind", datasetKind)
@@ -61,6 +62,7 @@ public class NormalizationRegistrationRepository {
                 .param("sourcePointer", sourcePointer)
                 .param("constantValue", constantValue)
                 .param("valueMap", valueMapJson)
+                .param("elementPointer", elementPointer)
                 .update();
     }
 
@@ -101,7 +103,7 @@ public class NormalizationRegistrationRepository {
     /** Every registered declaration, ordered by platform and dataset. */
     public List<MappingRow> list() {
         return jdbc.sql("""
-                        SELECT id, platform_code, dataset_kind, mapping_version,
+                        SELECT id, platform_code, dataset_kind, source_dataset_kind, mapping_version,
                                record_pointer, child_pointer, verification_state, status,
                                owner_label, version
                           FROM staging.normalization_mapping
@@ -116,6 +118,7 @@ public class NormalizationRegistrationRepository {
                 rows.getObject("id", UUID.class),
                 rows.getString("platform_code"),
                 rows.getString("dataset_kind"),
+                rows.getString("source_dataset_kind"),
                 rows.getInt("mapping_version"),
                 rows.getString("record_pointer"),
                 rows.getString("child_pointer"),
@@ -131,6 +134,7 @@ public class NormalizationRegistrationRepository {
      * @param id identifier
      * @param platformCode marketplace whose payload it describes
      * @param datasetKind dataset it describes
+     * @param sourceDatasetKind for a companion, the dataset whose jobs' evidence it reads; otherwise {@code null}
      * @param mappingVersion which recorded version this is
      * @param recordPointer where the repeated records live
      * @param childPointer where each record's child records live, or {@code null}
@@ -140,7 +144,7 @@ public class NormalizationRegistrationRepository {
      * @param version optimistic-lock version
      */
     public record MappingRow(
-            UUID id, String platformCode, String datasetKind, int mappingVersion,
+            UUID id, String platformCode, String datasetKind, String sourceDatasetKind, int mappingVersion,
             String recordPointer, String childPointer, String verificationState, String status,
             String ownerLabel, long version) {
     }

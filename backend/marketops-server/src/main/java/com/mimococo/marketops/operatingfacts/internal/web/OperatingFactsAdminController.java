@@ -103,10 +103,10 @@ class OperatingFactsAdminController {
         if (request.fieldSources() != null) {
             request.fieldSources().forEach((field, source) -> sources.put(field, source == null ? null
                     : new NormalizationDeclarationService.SourceDeclaration(source.kind(),
-                            source.pointer(), source.value(), source.valueMap())));
+                            source.pointer(), source.value(), source.valueMap(), source.elementPointer())));
         }
         return new MappingCreated(declarations.register(operator, request.platformCode(),
-                request.datasetKind(), request.mappingVersion(), request.recordPointer(),
+                request.datasetKind(), request.sourceDatasetKind(), request.mappingVersion(), request.recordPointer(),
                 request.childPointer(), request.fieldPointers(), sources, request.ownerLabel()));
     }
 
@@ -168,6 +168,7 @@ class OperatingFactsAdminController {
     record RegisterMappingRequest(
             @NotBlank String platformCode,
             @NotBlank String datasetKind,
+            String sourceDatasetKind,
             int mappingVersion,
             @NotNull String recordPointer,
             String childPointer,
@@ -179,10 +180,11 @@ class OperatingFactsAdminController {
     /**
      * One non-pointer field source: {@code PARENT_POINTER} with a pointer,
      * {@code OBSERVATION_TIME}, {@code WINDOW_START}, {@code WINDOW_END}, {@code CONSTANT}
-     * with a value, or {@code POINTER}
-     * with a value map.
+     * with a value, {@code POINTER} with a value map, {@code EACH_POINTER} with an array
+     * pointer and an element pointer, or {@code ARRAY_LENGTH} with an array pointer.
      */
-    record FieldSourceRequest(String kind, String pointer, String value, Map<String, String> valueMap) {
+    record FieldSourceRequest(String kind, String pointer, String value, Map<String, String> valueMap,
+                              String elementPointer) {
     }
 
     record VerifyMappingRequest(

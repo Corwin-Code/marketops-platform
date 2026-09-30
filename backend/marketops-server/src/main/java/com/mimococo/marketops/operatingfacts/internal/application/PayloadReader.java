@@ -51,6 +51,10 @@ public class PayloadReader {
     /**
      * Read every record a payload contains, according to one declaration.
      *
+     * @param coveredPointers pointers inside a record that other declarations read (a companion's
+     *        child records), so they are not drift of this one
+     * @param recordDrift whether pointers of the records themselves count as drift; a companion
+     *        leaves the records to their own declaration and watches only its children
      * @throws PayloadUnreadableException when the bytes are not JSON, or the
      *         record pointer does not address anything a record could live in
      */
@@ -61,7 +65,9 @@ public class PayloadReader {
                            Map<String, String> valueKinds,
                            Instant observationTime,
                            Instant windowFrom,
-                           Instant windowTo) {
+                           Instant windowTo,
+                           Set<String> coveredPointers,
+                           boolean recordDrift) {
         JsonNode document;
         try {
             document = com.mimococo.marketops.shared.JsonValues.read(objectMapper,payload);
@@ -97,9 +103,10 @@ public class PayloadReader {
         Set<String> recordPointers = new LinkedHashSet<>();
         Set<String> childPointers = new LinkedHashSet<>();
         Map<String, Map<String, String>> valueMaps = new LinkedHashMap<>();
+        recordPointers.addAll(coveredPointers);
         fields.forEach((field, source) -> {
             switch (source.kind()) {
-                case "POINTER" -> (childPointer == null ? recordPointers : childPointers)
+                case "POINTER", "EACH_POINTER", "ARRAY_LENGTH" -> (childPointer == null ? recordPointers : childPointers)
                         .add(childPointer == null ? source.pointer() : childPointer + source.pointer());
                 case "PARENT_POINTER" -> recordPointers.add(source.pointer());
                 default -> { }
@@ -116,7 +123,9 @@ public class PayloadReader {
         Set<String> unmapped = new LinkedHashSet<>();
         for (JsonNode record : records) {
             if (!record.isObject()) throw new PayloadUnreadableException("every record must be an object");
-            collectUnmapped(record, "", recordPointers, unmapped, DRIFT_DEPTH);
+            if (recordDrift) {
+                collectUnmapped(record, "", recordPointers, unmapped, DRIFT_DEPTH);
+            }
             if (childPointer == null) {
                 canonical.add(readRecord(record, null, fields, valueMaps, valueKinds,
                         new Times(observationTime, windowFrom, windowTo)));
@@ -164,6 +173,11 @@ public class PayloadReader {
                 case "CONSTANT" -> convertText(source.constant(), valueKind);
                 case "PARENT_POINTER" -> parent == null
                         ? null : resolve(parent.at(source.pointer()), valueKind, valueMaps.get(field));
+                case "EACH_POINTER" -> every(node.at(source.pointer()), source.elementPointer(), valueKind);
+                case "ARRAY_LENGTH" -> {
+                    JsonNode array = node.at(source.pointer());
+                    yield array.isArray() ? Long.valueOf(array.size()) : null;
+                }
                 default -> resolve(node.at(source.pointer()), valueKind, valueMaps.get(field));
             };
             if (converted != null) {
@@ -171,6 +185,26 @@ public class PayloadReader {
             }
         });
         return new CanonicalRecord(values);
+    }
+
+    /**
+     * The value inside every element of an array, in the array's order.
+     *
+     * <p>An element without the value keeps its position as a null, so lists read from the same
+     * array line up element by element. A missing array is absent; an empty one is an empty list.
+     */
+    private static List<Object> every(JsonNode array, String elementPointer, String valueKind) {
+        if (!array.isArray()) {
+            return null;
+        }
+        if (array.size() > MAXIMUM_RECORDS) {
+            throw new PayloadUnreadableException("list limit exceeded");
+        }
+        List<Object> values = new ArrayList<>(array.size());
+        for (JsonNode element : array) {
+            values.add(resolve(element.at(elementPointer), valueKind, null));
+        }
+        return java.util.Collections.unmodifiableList(values);
     }
 
     /**

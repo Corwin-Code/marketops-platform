@@ -157,6 +157,160 @@ export function fetchStoreDiagnosis(
   );
 }
 
+/** The card's description, seller-written Russian text. */
+export interface ListingDescription {
+  /** `null` when it was too long to keep. */
+  readonly text: string | null;
+  readonly length: number;
+  /** When it was first seen as it is. */
+  readonly since: string;
+}
+
+/** One condition of a content rating group. */
+export interface RatingCondition {
+  /** Ozon's own key, e.g. `text_annotation_500_chars`. */
+  readonly conditionKey: string;
+  /** Ozon's description, Russian. */
+  readonly text: string | null;
+  /** `null` when Ozon did not say. */
+  readonly met: boolean | null;
+  readonly points: string | null;
+}
+
+/** An attribute Ozon names to fill to raise a group, and whether the card now carries it. */
+export interface ImproveAttribute {
+  readonly attributeKey: string;
+  /** Ozon's name, Russian. */
+  readonly name: string | null;
+  readonly filled: boolean;
+}
+
+/** One group of the content rating; rating and weight are decimal text. */
+export interface RatingGroup {
+  readonly groupKey: string;
+  readonly groupName: string | null;
+  readonly rating: string | null;
+  /** Share of the content rating in percent. */
+  readonly weight: string | null;
+  readonly improveAtLeast: number | null;
+  readonly conditions: readonly RatingCondition[];
+  readonly improveAttributes: readonly ImproveAttribute[];
+  readonly since: string;
+}
+
+/** What a listing card says and what its content rating finds missing. */
+export interface ListingContent {
+  readonly variantId: string;
+  /** `null` when no catalog snapshot recorded the card yet. */
+  readonly catalogObservedAt: string | null;
+  readonly imageCount: number | null;
+  readonly attributeCount: number;
+  readonly description: ListingDescription | null;
+  /** The rich content, by length only. */
+  readonly richContent: { readonly length: number; readonly since: string } | null;
+  readonly ratingGroups: readonly RatingGroup[];
+}
+
+/** Load what one listing card says and what its content rating finds missing. */
+export function fetchListingContent(
+  context: ConsoleRequest,
+  storeId: string,
+  variantId: string,
+): Promise<ConsoleOutcome<ListingContent>> {
+  return request(
+    context,
+    `/api/v1/console/stores/${encodeURIComponent(storeId)}/listing-variants/${encodeURIComponent(variantId)}/content`,
+    parseListingContent,
+  );
+}
+
+/** Validate a listing content answer; anything that does not match the contract is `undefined`. */
+export function parseListingContent(body: unknown): ListingContent | undefined {
+  if (!isRecord(body)) return undefined;
+  const variantId = text(body.variantId);
+  const attributeCount = integer(body.attributeCount);
+  if (
+    variantId === undefined ||
+    attributeCount === undefined ||
+    !Array.isArray(body.ratingGroups)
+  ) {
+    return undefined;
+  }
+  const groups = body.ratingGroups.map(parseRatingGroup);
+  if (groups.some((group) => group === undefined)) return undefined;
+  const description = isRecord(body.description) ? body.description : undefined;
+  const descriptionLength = description === undefined ? undefined : integer(description.length);
+  const descriptionSince = description === undefined ? undefined : text(description.since);
+  const rich = isRecord(body.richContent) ? body.richContent : undefined;
+  const richLength = rich === undefined ? undefined : integer(rich.length);
+  const richSince = rich === undefined ? undefined : text(rich.since);
+  return {
+    variantId,
+    catalogObservedAt: optionalText(body.catalogObservedAt),
+    imageCount: integer(body.imageCount) ?? null,
+    attributeCount,
+    description:
+      description === undefined || descriptionLength === undefined || descriptionSince === undefined
+        ? null
+        : {
+            text: optionalText(description.text),
+            length: descriptionLength,
+            since: descriptionSince,
+          },
+    richContent:
+      richLength === undefined || richSince === undefined
+        ? null
+        : { length: richLength, since: richSince },
+    ratingGroups: groups as RatingGroup[],
+  };
+}
+
+function parseRatingGroup(value: unknown): RatingGroup | undefined {
+  if (!isRecord(value)) return undefined;
+  const groupKey = text(value.groupKey);
+  const since = text(value.since);
+  if (groupKey === undefined || since === undefined) return undefined;
+  const conditions = Array.isArray(value.conditions)
+    ? value.conditions.flatMap((condition: unknown): RatingCondition[] => {
+        if (!isRecord(condition)) return [];
+        const conditionKey = text(condition.conditionKey);
+        if (conditionKey === undefined) return [];
+        return [
+          {
+            conditionKey,
+            text: optionalText(condition.text),
+            met: typeof condition.met === 'boolean' ? condition.met : null,
+            points: decimal(condition.points),
+          },
+        ];
+      })
+    : [];
+  const improveAttributes = Array.isArray(value.improveAttributes)
+    ? value.improveAttributes.flatMap((attribute: unknown): ImproveAttribute[] => {
+        if (!isRecord(attribute)) return [];
+        const attributeKey = text(attribute.attributeKey);
+        if (attributeKey === undefined) return [];
+        return [
+          {
+            attributeKey,
+            name: optionalText(attribute.name),
+            filled: attribute.filled === true,
+          },
+        ];
+      })
+    : [];
+  return {
+    groupKey,
+    groupName: optionalText(value.groupName),
+    rating: decimal(value.rating),
+    weight: decimal(value.weight),
+    improveAtLeast: integer(value.improveAtLeast) ?? null,
+    conditions,
+    improveAttributes,
+    since,
+  };
+}
+
 /** Validate an answer; anything that does not match the contract is `undefined`. */
 export function parseStoreDiagnosis(body: unknown): StoreDiagnosis | undefined {
   if (!isRecord(body)) return undefined;

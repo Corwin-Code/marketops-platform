@@ -30,21 +30,47 @@ public class NormalizationDeclarationRepository {
     /** The live declaration for one platform and dataset, when one is verified. */
     public Optional<MappingDeclaration> liveMapping(String platformCode, String datasetKind) {
         return jdbc.sql("""
-                        SELECT id, record_pointer, child_pointer, mapping_version
+                        SELECT id, dataset_kind, record_pointer, child_pointer, mapping_version
                           FROM staging.normalization_mapping
                          WHERE platform_code = :platformCode
                            AND dataset_kind = :datasetKind
+                           AND source_dataset_kind IS NULL
                            AND status = 'ACTIVE'
                            AND verification_state = 'VERIFIED'
                         """)
                 .param("platformCode", platformCode)
                 .param("datasetKind", datasetKind)
-                .query((rows, rowNumber) -> new MappingDeclaration(
-                        rows.getObject("id", UUID.class),
-                        rows.getString("record_pointer"),
-                        rows.getString("child_pointer"),
-                        rows.getInt("mapping_version")))
+                .query((rows, rowNumber) -> mappingDeclaration(rows))
                 .optional();
+    }
+
+    /**
+     * The live companion declarations that read the evidence of another dataset's jobs beside
+     * that dataset's own declaration, each writing facts of its own dataset.
+     */
+    public List<MappingDeclaration> companionMappings(String platformCode, String sourceDatasetKind) {
+        return jdbc.sql("""
+                        SELECT id, dataset_kind, record_pointer, child_pointer, mapping_version
+                          FROM staging.normalization_mapping
+                         WHERE platform_code = :platformCode
+                           AND source_dataset_kind = :sourceDatasetKind
+                           AND status = 'ACTIVE'
+                           AND verification_state = 'VERIFIED'
+                         ORDER BY dataset_kind
+                        """)
+                .param("platformCode", platformCode)
+                .param("sourceDatasetKind", sourceDatasetKind)
+                .query((rows, rowNumber) -> mappingDeclaration(rows))
+                .list();
+    }
+
+    private static MappingDeclaration mappingDeclaration(java.sql.ResultSet rows) throws java.sql.SQLException {
+        return new MappingDeclaration(
+                rows.getObject("id", UUID.class),
+                rows.getString("dataset_kind"),
+                rows.getString("record_pointer"),
+                rows.getString("child_pointer"),
+                rows.getInt("mapping_version"));
     }
 
     /** Where each canonical field of one mapping comes from, keyed by canonical field. */
@@ -52,14 +78,15 @@ public class NormalizationDeclarationRepository {
         Map<String, FieldSource> sources = new LinkedHashMap<>();
         jdbc.sql("""
                         SELECT field_name, source_kind, source_pointer, constant_value,
-                               value_map::text AS value_map
+                               value_map::text AS value_map, element_pointer
                           FROM staging.normalization_field
                          WHERE mapping_id = :mappingId ORDER BY field_name
                         """)
                 .param("mappingId", mappingId)
                 .query((rows, rowNumber) -> sources.put(rows.getString("field_name"), new FieldSource(
                         rows.getString("source_kind"), rows.getString("source_pointer"),
-                        rows.getString("constant_value"), rows.getString("value_map"))))
+                        rows.getString("constant_value"), rows.getString("value_map"),
+                        rows.getString("element_pointer"))))
                 .list();
         return Map.copyOf(sources);
     }
@@ -88,6 +115,17 @@ public class NormalizationDeclarationRepository {
                         rows.getString("field_name"), rows.getString("value_kind")))
                 .list();
         return Map.copyOf(kinds);
+    }
+
+    /** The canonical fields of one dataset that hold a list of values rather than one value. */
+    public java.util.Set<String> repeatedFields(String datasetKind) {
+        return java.util.Set.copyOf(jdbc.sql("""
+                        SELECT field_name FROM staging.canonical_field
+                         WHERE dataset_kind = :datasetKind AND repeated
+                        """)
+                .param("datasetKind", datasetKind)
+                .query(String.class)
+                .list());
     }
 
     /** How far normalization has read one job's evidence. */
@@ -227,12 +265,13 @@ public class NormalizationDeclarationRepository {
      * One declared payload shape.
      *
      * @param id identifier
+     * @param datasetKind the dataset whose facts it writes
      * @param recordPointer where the repeated records live inside the payload
      * @param childPointer where each record's own array of child records lives, when
      *        the children rather than the records are the facts; otherwise {@code null}
      * @param mappingVersion which recorded version this is
      */
-    public record MappingDeclaration(UUID id, String recordPointer, String childPointer,
+    public record MappingDeclaration(UUID id, String datasetKind, String recordPointer, String childPointer,
                                      int mappingVersion) {
     }
 
@@ -242,12 +281,15 @@ public class NormalizationDeclarationRepository {
      * @param kind {@code POINTER} (the record, or the child record when the mapping
      *        has children), {@code PARENT_POINTER} (the record above a child),
      *        {@code OBSERVATION_TIME}, {@code WINDOW_START} / {@code WINDOW_END} (the run's
-     *        window) or {@code CONSTANT}
-     * @param pointer the JSON pointer for the two pointer kinds, otherwise {@code null}
+     *        window), {@code CONSTANT}, {@code EACH_POINTER} (every element of an array in the
+     *        record) or {@code ARRAY_LENGTH} (how many elements an array holds)
+     * @param pointer the JSON pointer for the pointer kinds, otherwise {@code null}
      * @param constant the text of a constant, otherwise {@code null}
      * @param valueMapJson a JSON object translating native words, or {@code null}
+     * @param elementPointer for {@code EACH_POINTER}, the value inside each element, otherwise {@code null}
      */
-    public record FieldSource(String kind, String pointer, String constant, String valueMapJson) {
+    public record FieldSource(String kind, String pointer, String constant, String valueMapJson,
+                              String elementPointer) {
     }
 
     /**

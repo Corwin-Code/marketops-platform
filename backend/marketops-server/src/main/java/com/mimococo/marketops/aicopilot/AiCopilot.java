@@ -57,6 +57,18 @@ public interface AiCopilot {
     Optional<AiDiagnosis> latestInvocation(UUID organizationId, UUID listingVariantId,
                                            MetricWindow window);
 
+    /**
+     * Ask a model for Russian drafts of one listing's title, description and the attributes the
+     * content rating names to fill, from its card, content rating, content and search values and
+     * findings, and top search terms. The drafts are for a person to review and copy into the
+     * seller back office; they change nothing. An unchanged card reuses the recorded drafts.
+     */
+    AiDiagnosis draftListingContent(UUID requestedByUserId, UUID organizationId, UUID listingVariantId,
+                                    MetricWindow window);
+
+    /** The newest recorded content drafts of one listing variant for a window; never calls a model. */
+    Optional<AiDiagnosis> latestContentDraft(UUID organizationId, UUID listingVariantId, MetricWindow window);
+
     /** Listing membership and current disclosure permission are supplied by the listing authority. */
     AiDiagnosis assistListing(UUID requestedByUserId, UUID organizationId, UUID listingId, UUID authorizedStoreId,
                               java.util.List<UUID> listingVariantIds, java.util.List<UUID> authorizedProductVariantIds, MetricWindow window,

@@ -201,6 +201,8 @@ export const AI_REJECTION_LABELS: CodeLabels = {
   INSTRUCTION_LIKE_CONTENT: '包含类似指令的内容',
   SECRET_LIKE_CONTENT: '包含疑似密钥的内容',
   LISTING_ASSISTANCE_ACTION_OUT_OF_SCOPE: '超出商品辅助的操作范围',
+  DRAFT_ATTRIBUTE_NOT_NAMED: '草稿填写的属性不在 Ozon 点名的属性里',
+  CONTENT_DRAFT_ACTION_OUT_OF_SCOPE: '超出内容草稿的范围',
 };
 
 /** Why an AI explanation is unavailable: before, during or after the model call. */

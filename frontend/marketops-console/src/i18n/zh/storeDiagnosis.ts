@@ -220,7 +220,7 @@ export const CONCLUSION_TEXT: Readonly<
   CONTENT_BELOW_TARGET: {
     title: '内容待提升',
     meaning: 'Ozon 内容评分低于 90。',
-    next: '按评分组补齐图片、属性和描述；下一阶段会给出俄语草稿。',
+    next: '打开商品详情的“内容优化”：看 Ozon 评分组缺什么、点名要补哪些属性，并生成俄语草稿。',
   },
 };
 

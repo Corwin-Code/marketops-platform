@@ -349,6 +349,48 @@ def queries_body(date_from: str, date_to: str, limit: str, skus: str) -> str:
             f'"page_size":{limit},"skus":{skus},"sort_by":"BY_SEARCHES","sort_dir":"DESCENDING"}}')
 
 
+# Attribute names in Chinese, the language the Owner reads and can find in the Ozon seller back
+# office; the official languageLanguage enum (checked 2026-09-29) is DEFAULT (Russian), RU, EN, TR
+# and ZH_HANS.
+CATEGORY_LANGUAGE = "ZH_HANS"
+
+
+def catalog_category(pilot: "Pilot") -> tuple[str, str] | None:
+    """The one (description_category_id, type_id) pair of the newest catalog probe, or None when
+    the catalog holds none or several: Ozon answers attributes per category and product type, and
+    the registered request names exactly one pair."""
+    pairs = {(str(item.get("description_category_id")), str(item.get("type_id")))
+             for item in catalog_products(pilot)}
+    return next(iter(pairs)) if len(pairs) == 1 else None
+
+
+def category_attributes_body(category: str, type_id: str) -> str:
+    """The category attribute request exactly as the registered template carries it."""
+    return (f'{{"description_category_id":{int(category)},"language":"{CATEGORY_LANGUAGE}",'
+            f'"type_id":{int(type_id)}}}')
+
+
+def inspect_category_attributes(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    attributes = [attribute for answer in answers for attribute in answer.get("result") or []]
+    keys = [(attribute.get("id"), attribute.get("attribute_complex_id") or 0) for attribute in attributes]
+    catalog_ids = {attribute.get("id") for item in catalog_products(pilot)
+                   for attribute in item.get("attributes") or []}
+    defined = catalog_ids & {attribute.get("id") for attribute in attributes}
+    lines = [f"category attributes: {len(attributes)} ({sum(bool(a.get('is_required')) for a in attributes)} "
+             f"required, {sum(bool(a.get('is_collection')) for a in attributes)} multi-valued, "
+             f"{sum(bool(a.get('dictionary_id')) for a in attributes)} with a dictionary, "
+             f"{sum(bool(a.get('attribute_complex_id')) for a in attributes)} in complex groups), "
+             f"{len({str(a.get('group_name') or '') for a in attributes})} groups",
+             f"catalog attribute ids defined here: {len(defined)} of {len(catalog_ids)}; without a name: "
+             f"{sum(1 for a in attributes if not str(a.get('name') or '').strip())}"]
+    refusal = None
+    if not attributes:
+        refusal = "the category answered no attributes"
+    elif len(set(keys)) != len(keys):
+        refusal = "an attribute appears twice in one complex group; the fact key would merge them"
+    return lines, refusal
+
+
 def inspect_traffic(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
     rows = [row for answer in answers for row in ((answer.get("result") or {}).get("data") or [])]
     metrics = TRAFFIC_METRICS[TRAFFIC_METRIC_SET]
@@ -459,11 +501,37 @@ CAPABILITIES = {
         # Ozon's product id is both the listing and its only variant; the seller's
         # offer id is the stock-keeping unit a company matches on. Version 2 also
         # records the Ozon SKU, which analytics and finance answers name products by.
+        # Version 3 (P6) records the card's content snapshot with every run: its
+        # description category and product type, how many images it shows and which
+        # attributes it carries.
         "mapping": {
-            "dataset": "LISTING", "version": 2, "record_pointer": "/result",
+            "dataset": "LISTING", "version": 3, "record_pointer": "/result",
             "fields": {"nativeListingKey": "/id", "nativeVariantKey": "/id", "nativeSkuKey": "/offer_id",
-                       "title": "/name", "nativeBarcode": "/barcode", "nativeItemKey": "/sku"},
+                       "title": "/name", "nativeBarcode": "/barcode", "nativeItemKey": "/sku",
+                       "descriptionCategoryKey": "/description_category_id", "typeKey": "/type_id"},
+            "sources": {
+                "observedAt": {"kind": "OBSERVATION_TIME"},
+                "imageCount": {"kind": "ARRAY_LENGTH", "pointer": "/images"},
+                "attributeKeys": {"kind": "EACH_POINTER", "pointer": "/attributes", "elementPointer": "/id"},
+            },
         },
+        # Every attribute of a card, with all its values. Ozon writes the description
+        # (Аннотация) as attribute 4191 and the rich content as attribute 11254
+        # (catalog probe 2026-09-28: both on all 41 products). Attributes of complex
+        # groups (such as a video) come in complex_attributes and are not read.
+        "companions": [{
+            "dataset": "LISTING_ATTRIBUTE", "version": 1, "record_pointer": "/result",
+            "child_pointer": "/attributes",
+            "fields": {"attributeKey": "/id"},
+            "sources": {
+                "nativeListingKey": {"kind": "PARENT_POINTER", "pointer": "/id"},
+                "nativeVariantKey": {"kind": "PARENT_POINTER", "pointer": "/id"},
+                "observedAt": {"kind": "OBSERVATION_TIME"},
+                "attributeValues": {"kind": "EACH_POINTER", "pointer": "/values", "elementPointer": "/value"},
+                "contentRole": {"kind": "POINTER", "pointer": "/id",
+                                "valueMap": {"4191": "DESCRIPTION", "11254": "RICH_CONTENT"}},
+            },
+        }],
     },
     "prices": {
         "code": "ozon-price-read",
@@ -696,13 +764,36 @@ CAPABILITIES = {
             "keys": "ITEM",
         },
         "job": {"suffix": "content", "dataset": "LISTING_CONTENT", "display": "Ozon 试点：内容评分"},
-        # The rating names the SKU; the catalog resolves it to the product. The groups
-        # and conditions behind it stay in Raw for now.
+        # The rating names the SKU; the catalog resolves it to the product.
         "mapping": {
             "dataset": "LISTING_CONTENT", "version": 1, "record_pointer": "/products", "child_pointer": None,
             "fields": {"nativeItemKey": "/sku", "contentRating": "/rating"},
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
+        # The groups behind the rating (P6): each with its rating and weight, every
+        # condition (key, Ozon's description, fulfilled, what it contributes) and the
+        # attributes Ozon names to fill, at least improve_at_least of them. Pilot
+        # (2026-09-28): media, text and other_attributes; 20 cards score 50 on
+        # other_attributes and are named three attributes to fill.
+        "companions": [{
+            "dataset": "LISTING_CONTENT_GROUP", "version": 1, "record_pointer": "/products",
+            "child_pointer": "/groups",
+            "fields": {"groupKey": "/key", "groupName": "/name", "groupRating": "/rating",
+                       "groupWeight": "/weight", "improveAtLeast": "/improve_at_least"},
+            "sources": {
+                "nativeItemKey": {"kind": "PARENT_POINTER", "pointer": "/sku"},
+                "observedAt": {"kind": "OBSERVATION_TIME"},
+                "conditionKeys": {"kind": "EACH_POINTER", "pointer": "/conditions", "elementPointer": "/key"},
+                "conditionTexts": {"kind": "EACH_POINTER", "pointer": "/conditions",
+                                   "elementPointer": "/description"},
+                "conditionMet": {"kind": "EACH_POINTER", "pointer": "/conditions", "elementPointer": "/fulfilled"},
+                "conditionPoints": {"kind": "EACH_POINTER", "pointer": "/conditions", "elementPointer": "/cost"},
+                "improveAttributeKeys": {"kind": "EACH_POINTER", "pointer": "/improve_attributes",
+                                         "elementPointer": "/id"},
+                "improveAttributeNames": {"kind": "EACH_POINTER", "pointer": "/improve_attributes",
+                                          "elementPointer": "/name"},
+            },
+        }],
         "inspect": inspect_content,
     },
     "queries": {
@@ -793,6 +884,44 @@ CAPABILITIES = {
             "sources": {"periodStart": {"kind": "WINDOW_START"}, "periodEnd": {"kind": "WINDOW_END"}},
         },
         "inspect": inspect_query_details,
+    },
+    "category-attributes": {
+        "code": "ozon-category-attributes-read",
+        "display": "Ozon category attributes: names, groups and which are required",
+        "description": "Reads the attributes Ozon defines for the category and product type of the pilot's "
+                       "products, named in Chinese (POST /v1/description-category/attribute; official docs "
+                       "checked 2026-09-29).",
+        "manifest": "category-attributes-latest.json",
+        "endpoint": {
+            "code": "ozon-description-category-attribute-v1", "api_version": "v1",
+            "schema_version": "v1GetAttributesResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. One request per category and product type. "
+                         "Our cap: 10/min. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full snapshot of the category's attributes on every run; Ozon changes them rarely.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/description-category/attribute",
+                "operation_function": "READ_DATA", "query_template": None,
+                # Filled in from the catalog probe: the pilot's one category and product type.
+                "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": "/result",
+            },
+            "probe_body": lambda cursor, context: json.loads(
+                category_attributes_body(context["category"], context["type"])),
+            "token_key": None,
+            "records_key": "result",
+            "computed": "SINGLE",
+            "keys": "CATEGORY",
+            # No read-only role lists a CategoryAPI method (roles checked 2026-09-29); the
+            # probe's own call decides whether the key may use it.
+            "roles_unlisted": True,
+        },
+        "job": {"suffix": "category-attributes", "dataset": "CATEGORY_ATTRIBUTE", "display": "Ozon 试点：类目属性"},
+        "probe_only": True,
+        "mapping": None,
+        "inspect": inspect_category_attributes,
     },
 }
 
@@ -1124,8 +1253,11 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     endpoint = capability["endpoint"]
     path = endpoint["definition"]["path_template"]
     if not any(path in methods for methods in key["granted"].values()):
-        print(f"the key has no role that allows {path}; generate one with the needed read-only role")
-        return None
+        if not endpoint.get("roles_unlisted"):
+            print(f"the key has no role that allows {path}; generate one with the needed read-only role")
+            return None
+        print(f"no role on the key lists {path}; Ozon lists this method under no read-only role, so the "
+              "call itself decides")
     operation = key["document"].get("paths", {}).get(path, {}).get("post")
     if not isinstance(operation, dict) or "requestBody" not in operation:
         print(f"the official document no longer describes POST {path} with a body; review before recording")
@@ -1174,6 +1306,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         elif computed == "PAGE_INDEX":
             # Pages numbered from 0; the short page ends the listing.
             token = str(int(cursor or "0") + 1)
+        elif computed == "SINGLE":
+            # One request answers everything; there is nothing to continue with.
+            token = None
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1213,6 +1348,9 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
                 break
             cursor = token
             continue
+        if computed == "SINGLE":
+            end_signal = "JSON_NULL"
+            break
         if endpoint["token_key"] not in answer:
             print(f"page {index + 1} has no {endpoint['token_key']}; nothing recorded")
             return None
@@ -1294,6 +1432,13 @@ def command_probe(args: argparse.Namespace) -> int:
                 sys.exit("no catalog probe evidence; probe the catalog first so products can be named")
             window = dict(window or {}, keys=keys)
             print(f"asking about the {len(keys)} products of the catalog probe")
+        elif capability["endpoint"].get("keys") == "CATEGORY":
+            pair = catalog_category(pilot)
+            if pair is None:
+                sys.exit("the catalog probe holds no single category and product type; probe the catalog "
+                         "first (several categories need one request per category, which is not built)")
+            window = dict(window or {}, category=pair[0], type=pair[1])
+            print("asking about the one category and product type of the catalog probe")
         probed = probe_pages(pilot, capability, key, client_id, api_key, context, window)
         if probed is None:
             return 1
@@ -1423,6 +1568,43 @@ def find_job(admin: Admin, pilot: Pilot, capability: dict, account_id: str) -> d
     return next((j for j in jobs if j.get("jobCode") == pilot.job_code(capability)), None)
 
 
+def register_mapping(admin: "Admin", manifest: dict, spec: dict, mapping: dict, source_dataset: str | None,
+                     supersede: bool, result: dict) -> str:
+    """Register one normalization declaration (a companion when source_dataset is given) and verify
+    it against the probe evidence; returns what was done."""
+    existing = [m for m in admin.require("GET", "/normalization-mappings", None, 200)
+                if m.get("platformCode") == PLATFORM and m.get("datasetKind") == mapping["dataset"]]
+    same = next((m for m in existing if m.get("mappingVersion") == mapping["version"]), None)
+    if same is None:
+        live = [m for m in existing if m.get("status") == "ACTIVE"]
+        if live and not supersede:
+            sys.exit(f"another live {PLATFORM}/{mapping['dataset']} mapping exists "
+                     f"(version {live[0].get('mappingVersion')}); pass --supersede-mapping to retire it "
+                     f"in favour of version {mapping['version']}")
+        for old in live:
+            admin.require("POST", f"/normalization-mappings/{old['id']}/retirement", {
+                "reason": f"superseded by version {mapping['version']}",
+                "expectedVersion": old.get("version", 0)}, 204)
+            result[f"retired {mapping['dataset']}"] = f"{PLATFORM}/{mapping['dataset']} v{old.get('mappingVersion')}"
+        created = admin.require("POST", "/normalization-mappings", {
+            "platformCode": PLATFORM, "datasetKind": mapping["dataset"], "sourceDatasetKind": source_dataset,
+            "mappingVersion": mapping["version"], "recordPointer": mapping["record_pointer"],
+            "childPointer": mapping.get("child_pointer"), "fieldPointers": mapping["fields"],
+            "fieldSources": mapping.get("sources") or {}, "ownerLabel": OWNER_LABEL}, 201)
+        same = {"id": created["id"], "verificationState": "UNVERIFIED", "version": 0}
+        done = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} registered"
+    else:
+        done = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} already registered"
+    if same.get("verificationState") != "VERIFIED":
+        admin.require("POST", f"/normalization-mappings/{same['id']}/verification", {
+            "evidenceRef": manifest["accountEvidenceRef"],
+            "verifiedSourceTitle": f"Ozon Seller API {spec['definition']['path_template']} answers "
+                                   f"of the pilot account, {manifest['testedAt']}",
+            "expectedVersion": same.get("version", 0)}, 204)
+        done += ", verified against the probe answers"
+    return done
+
+
 def command_setup(args: argparse.Namespace) -> int:
     pilot = pilot_from(args)
     capability = capability_from(args)
@@ -1542,36 +1724,10 @@ def command_setup(args: argparse.Namespace) -> int:
 
     mapping = capability["mapping"]
     if mapping is not None:
-        existing = [m for m in admin.require("GET", "/normalization-mappings", None, 200)
-                    if m.get("platformCode") == PLATFORM and m.get("datasetKind") == mapping["dataset"]]
-        same = next((m for m in existing if m.get("mappingVersion") == mapping["version"]), None)
-        if same is None:
-            live = [m for m in existing if m.get("status") == "ACTIVE"]
-            if live and not args.supersede_mapping:
-                sys.exit(f"another live {PLATFORM}/{mapping['dataset']} mapping exists "
-                         f"(version {live[0].get('mappingVersion')}); pass --supersede-mapping to retire it "
-                         f"in favour of version {mapping['version']}")
-            for old in live:
-                admin.require("POST", f"/normalization-mappings/{old['id']}/retirement", {
-                    "reason": f"superseded by version {mapping['version']}",
-                    "expectedVersion": old.get("version", 0)}, 204)
-                result["retiredMapping"] = f"{PLATFORM}/{mapping['dataset']} v{old.get('mappingVersion')}"
-            created = admin.require("POST", "/normalization-mappings", {
-                "platformCode": PLATFORM, "datasetKind": mapping["dataset"],
-                "mappingVersion": mapping["version"], "recordPointer": mapping["record_pointer"],
-                "childPointer": mapping.get("child_pointer"), "fieldPointers": mapping["fields"],
-                "fieldSources": mapping.get("sources") or {}, "ownerLabel": OWNER_LABEL}, 201)
-            same = {"id": created["id"], "verificationState": "UNVERIFIED", "version": 0}
-            result["mapping"] = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} registered"
-        else:
-            result["mapping"] = f"{PLATFORM}/{mapping['dataset']} v{mapping['version']} already registered"
-        if same.get("verificationState") != "VERIFIED":
-            admin.require("POST", f"/normalization-mappings/{same['id']}/verification", {
-                "evidenceRef": manifest["accountEvidenceRef"],
-                "verifiedSourceTitle": f"Ozon Seller API {spec['definition']['path_template']} answers "
-                                       f"of the pilot account, {manifest['testedAt']}",
-                "expectedVersion": same.get("version", 0)}, 204)
-            result["mapping"] += ", verified against the probe answers"
+        result["mapping"] = register_mapping(admin, manifest, spec, mapping, None, args.supersede_mapping, result)
+        for companion in capability.get("companions") or []:
+            result[f"companion {companion['dataset']}"] = register_mapping(
+                admin, manifest, spec, companion, mapping["dataset"], args.supersede_mapping, result)
 
     result.update({"organizationId": org["id"], "marketplaceAccountId": account["id"],
                    "storeId": store["id"], "capabilityId": registered["id"],
