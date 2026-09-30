@@ -1180,6 +1180,34 @@ export function requestStoreExplanation(
   );
 }
 
+/** The newest recorded promotion review of a store for a window, or `null` when none was asked for. */
+export function fetchLatestPromotionReview(
+  context: ConsoleRequest,
+  storeId: string,
+  window = 'D7',
+): Promise<ConsoleOutcome<AiExplanation | null>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/stores/${encodeURIComponent(storeId)}/promotions/latest?window=${encodeURIComponent(window)}`,
+    (body) => (body === undefined || body === null ? null : parseAiExplanation(body)),
+  );
+}
+
+/** An explicit request for a promotion review; an unchanged situation is answered from the record. */
+export function requestPromotionReview(
+  context: ConsoleRequest,
+  storeId: string,
+  window = 'D7',
+): Promise<ConsoleOutcome<AiExplanation>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/stores/${encodeURIComponent(storeId)}/promotions?window=${encodeURIComponent(window)}`,
+    parseAiExplanation,
+    { method: 'POST' },
+    AI_REQUEST_TIMEOUT_MS,
+  );
+}
+
 /** The newest recorded content drafts of one listing for a window, or `null` when none was asked for. */
 export function fetchLatestContentDraft(
   context: ConsoleRequest,

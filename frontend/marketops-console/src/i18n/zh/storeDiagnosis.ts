@@ -172,6 +172,7 @@ export const storeDiagnosisText = {
   aiUnaffected: '诊断结论和指标不受影响。',
   aiRejected: (count: number): string => `另有 ${String(count)} 条 AI 陈述未通过校验，已隐藏`,
   aiOlderEvidence: (count: number): string => `另引用 ${String(count)} 条证据`,
+  aiEvidenceCount: (count: number): string => `引用 ${String(count)} 条证据`,
   aiReload: '重新加载',
   aiDrawerTitle: 'AI 解读',
   aiDrawerNone: '还没有生成过这个商品的解读。',
@@ -222,6 +223,11 @@ export const CONCLUSION_TEXT: Readonly<
     meaning: 'Ozon 内容评分低于 90。',
     next: '打开商品详情的“内容优化”：看 Ozon 评分组缺什么、点名要补哪些属性，并生成俄语草稿。',
   },
+  PROMOTION_OPPORTUNITY: {
+    title: '可参加活动',
+    meaning: '有 Ozon 活动可以参加，按活动允许的最高价仍能保住 15% 利润率。',
+    next: '打开“促销活动”页查看活动、逐个商品的测算和 AI 建议；在卖家后台参加后回来记录决定。',
+  },
 };
 
 /** Names of the values a finding compared. */
@@ -232,6 +238,7 @@ export const FINDING_DETAIL_LABELS: Readonly<Record<string, string>> = {
   targetMarginPrice: '目标利润价',
   premiumOverCompetitor: '比竞品贵',
   minimumUnitMarginRate: '利润率下限',
+  promotionMargin: '按最高活动价的利润率',
   searchUsers: '近 7 天搜索人数',
   orderedUnits: '下单件数',
   platformAvailableUnits: '可售库存',

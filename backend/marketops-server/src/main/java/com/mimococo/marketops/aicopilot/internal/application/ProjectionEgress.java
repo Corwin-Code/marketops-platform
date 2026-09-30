@@ -169,7 +169,8 @@ final class ProjectionEgress {
             "LOW_SEARCH_EXPOSURE", keys("searchUsers", Kind.COUNT, "platformAvailableUnits", Kind.COUNT,
                     "lowExposureSearchUsers", Kind.COUNT),
             "CONTENT_BELOW_TARGET", keys("contentRating", Kind.SCORE, "contentRatingFloor", Kind.SCORE),
-            "LISTING_NOT_SELLABLE", keys("listingSellable", Kind.YES_NO));
+            "LISTING_NOT_SELLABLE", keys("listingSellable", Kind.YES_NO),
+            "PROMOTION_OPPORTUNITY", keys("promotionMargin", Kind.RATIO, "minimumUnitMarginRate", Kind.RATIO));
 
     private enum Kind { COUNT, RATIO, SIGNED_RATIO, SCORE, YES_NO, PRICE }
 

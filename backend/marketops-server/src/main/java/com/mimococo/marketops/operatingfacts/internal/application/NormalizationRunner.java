@@ -150,7 +150,7 @@ public class NormalizationRunner {
             try {
                 read = payloadReader.read(body.get(), main.declaration().recordPointer(),
                         main.declaration().childPointer(), main.fields(), main.valueKinds(), observedAt,
-                        windowFrom, windowTo, covered, true);
+                        windowFrom, windowTo, observation.requestKey(), covered, true);
             } catch (PayloadReader.PayloadUnreadableException unreadable) {
                 log.atWarn().addKeyValue("event","normalization_payload_unreadable")
                         .addKeyValue("observationId",observation.observationId())
@@ -252,7 +252,7 @@ public class NormalizationRunner {
         try {
             PayloadReader.ReadResult read = payloadReader.read(body, companion.declaration().recordPointer(),
                     companion.declaration().childPointer(), companion.fields(), companion.valueKinds(), observedAt,
-                    windowFrom, windowTo, java.util.Set.of(), false);
+                    windowFrom, windowTo, observation.requestKey(), java.util.Set.of(), false);
             int[] counts = transactions.execute(status -> recordAll(job, observation, companion, read));
             if (counts[1] == 0) {
                 return counts;

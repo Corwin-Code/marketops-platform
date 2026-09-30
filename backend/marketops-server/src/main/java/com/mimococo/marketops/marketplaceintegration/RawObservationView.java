@@ -22,6 +22,8 @@ import java.util.UUID;
  * @param ingestionTime when this system learned it
  * @param sha256 digest of the stored bytes
  * @param byteLength length of the stored bytes
+ * @param requestKey the one key the request asked about when it named one at a time (Ozon: the
+ *        action id), which the answer itself does not repeat; otherwise {@code null}
  */
 public record RawObservationView(
         UUID observationId,
@@ -34,7 +36,8 @@ public record RawObservationView(
         String outcomeClass,
         Instant ingestionTime,
         String sha256,
-        long byteLength) {
+        long byteLength,
+        String requestKey) {
 
     /** Whether this answer carried a source payload worth normalizing. */
     public boolean carriesPayload() {

@@ -87,7 +87,8 @@ public record SubjectProjection(
 
     /** Fields that start a repeated group; a blank line before each keeps the groups apart. */
     private static final Set<String> GROUP_STARTS = Set.of("conclusions.code", "listings.listingRef",
-            "listing.memberRef", "findings.findingRef", "searchTerms.term", "rating.groupKey");
+            "listing.memberRef", "findings.findingRef", "searchTerms.term", "rating.groupKey",
+            "promotions.promotionRef", "items.listingRef");
 
     /** Render the projection as the lines a prompt carries. */
     public String render() {

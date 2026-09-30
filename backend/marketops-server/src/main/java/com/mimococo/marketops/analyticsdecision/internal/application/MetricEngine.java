@@ -21,6 +21,7 @@ import com.mimococo.marketops.operatingfacts.FinanceInputSnapshot;
 import com.mimococo.marketops.operatingfacts.InternalStockSnapshot;
 import com.mimococo.marketops.operatingfacts.ListingPriceTerms;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
+import com.mimococo.marketops.operatingfacts.PromotionSnapshot;
 import com.mimococo.marketops.operatingfacts.ReturnTotals;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.SalesTotals;
@@ -284,7 +285,7 @@ public class MetricEngine {
         metrics.put(MetricCode.DATA_COMPLETENESS,
                 dataCompleteness(metrics, mappingId));
 
-        listingSignals(metrics, listingVariantId, periodEnd, traffic, stock, fulfillmentModes, unitCost);
+        listingSignals(metrics, storeId, listingVariantId, periodEnd, traffic, stock, fulfillmentModes, unitCost);
 
         return applyFreshness(metrics, periodEnd);
     }
@@ -302,7 +303,7 @@ public class MetricEngine {
      * in force (the Owner's terms of 2026-09-29, see {@link ListingUnitEconomics});
      * they stay {@code ESTIMATED_EXPLAINED} until a settlement confirms them.
      */
-    private void listingSignals(Map<MetricCode, ComputedMetric> metrics, UUID listingVariantId,
+    private void listingSignals(Map<MetricCode, ComputedMetric> metrics, UUID storeId, UUID listingVariantId,
                                 Instant periodEnd, TrafficTotals traffic, StockSnapshot stock,
                                 List<String> storeFulfillmentModes, Optional<CostSnapshot> unitCost) {
         putCount(metrics, MetricCode.ORDERED_UNITS, traffic.orderedUnits(), traffic.evidence());
@@ -337,14 +338,99 @@ public class MetricEngine {
                 terms.map(ListingPriceTerms::evidence)
                         .orElseGet(FactEvidence::none));
 
-        unitEconomics(metrics, terms, scheme(storeFulfillmentModes, stock), unitCost);
+        Optional<ListingUnitEconomics.Scheme> scheme = scheme(storeFulfillmentModes, stock);
+        unitEconomics(metrics, terms, scheme, unitCost);
+        promotionMargin(metrics, storeId, listingVariantId, periodEnd, terms, scheme, unitCost);
+    }
+
+    /**
+     * The best estimated unit margin at the highest price of a current marketplace promotion the
+     * listing can join, under the same terms as PROJECTED_UNIT_MARGIN. The logistics amounts are
+     * the ones stated at today's price, which a lower promotion price may reduce, so the estimate
+     * errs low. Not available when the listing can join no promotion or an input is missing.
+     */
+    private void promotionMargin(Map<MetricCode, ComputedMetric> metrics, UUID storeId, UUID listingVariantId,
+                                 Instant periodEnd, Optional<ListingPriceTerms> stated,
+                                 Optional<ListingUnitEconomics.Scheme> scheme, Optional<CostSnapshot> unitCost) {
+        MetricCode code = MetricCode.PROMOTION_BEST_MARGIN;
+        List<PromotionOffer> offers = new ArrayList<>();
+        for (PromotionSnapshot promotion : facts.currentPromotions(storeId, periodEnd)) {
+            for (PromotionSnapshot.Item item : promotion.items()) {
+                if (item.listingVariantId().equals(listingVariantId) && "CANDIDATE".equals(item.membership())
+                        && item.maxActionPrice() != null && item.maxActionPrice().signum() > 0) {
+                    offers.add(new PromotionOffer(promotion, item));
+                }
+            }
+        }
+        if (offers.isEmpty()) {
+            metrics.put(code, absent(code, ConfidenceState.INCOMPLETE, List.of(), List.of("candidateIn=NONE")));
+            return;
+        }
+        Optional<ListingUnitEconomics.Terms> terms = stated.isEmpty() || scheme.isEmpty()
+                ? Optional.empty() : ListingUnitEconomics.terms(stated.get(), scheme.get());
+        List<String> missing = new ArrayList<>();
+        if (terms.isEmpty()) {
+            missing.add("MARKETPLACE_TARIFFS");
+        }
+        if (unitCost.isEmpty()) {
+            missing.add("UNIT_COST");
+        } else if (stated.isPresent()
+                && !unitCost.get().unitCost().currencyCode().equals(stated.get().currencyCode())) {
+            missing.add("UNIT_COST_CURRENCY");
+        }
+        if (!missing.isEmpty()) {
+            metrics.put(code, absent(code, ConfidenceState.INCOMPLETE, List.of(),
+                    List.of("missing=" + String.join(",", missing))));
+            return;
+        }
+        ListingPriceTerms price = stated.get();
+        CostSnapshot cost = unitCost.get();
+        BigDecimal marginRate = properties.getThresholds().getMinimumUnitMarginRate();
+        PromotionOffer best = null;
+        BigDecimal bestMargin = null;
+        for (PromotionOffer offer : offers) {
+            if (!price.currencyCode().equals(offer.item().currencyCode())) {
+                continue;
+            }
+            BigDecimal margin = ListingUnitEconomics.estimate(offer.item().maxActionPrice(), terms.get(),
+                    cost.unitCost().amount(), marginRate).margin();
+            if (margin != null && (bestMargin == null || margin.compareTo(bestMargin) > 0)) {
+                best = offer;
+                bestMargin = margin;
+            }
+        }
+        if (best == null) {
+            metrics.put(code, absent(code, ConfidenceState.INCOMPLETE, List.of(),
+                    List.of("missing=PROMOTION_PRICE_IN_LISTING_CURRENCY")));
+            return;
+        }
+        List<MetricInput> read = new ArrayList<>(inputs(price.evidence()));
+        read.add(MetricInput.costVersion(cost.costVersionId()));
+        read.add(MetricInput.provenance(cost.provenanceId()));
+        if (best.item().provenanceId() != null) {
+            read.add(MetricInput.provenance(best.item().provenanceId()));
+        }
+        List<String> identity = List.of("promotion=" + best.promotion().nativePromotionKey(),
+                "maxActionPrice=" + best.item().maxActionPrice().toPlainString() + " " + price.currencyCode(),
+                "scheme=" + scheme.get(), "logistics=HIGHEST_TARIFF_AT_CURRENT_PRICE",
+                "vatRate=" + terms.get().vatRate().toPlainString(),
+                "commissionRate=" + terms.get().commissionRate().stripTrailingZeros().toPlainString());
+        Instant priceTime = price.evidence().oldestSourceTime();
+        Instant offerTime = best.item().observedAt();
+        Instant sourceTime = priceTime == null ? offerTime
+                : offerTime == null || priceTime.isBefore(offerTime) ? priceTime : offerTime;
+        metrics.put(code, estimated(code, bestMargin, null, sourceTime, read, identity));
+    }
+
+    /** One promotion the listing can join, with the listing's terms in it. */
+    private record PromotionOffer(PromotionSnapshot promotion, PromotionSnapshot.Item item) {
     }
 
     /**
      * Who ships this listing's orders: the store's single declared fulfilment
      * mode, or else the one mode its newest stock is held under.
      */
-    private static Optional<ListingUnitEconomics.Scheme> scheme(
+    static Optional<ListingUnitEconomics.Scheme> scheme(
             List<String> storeFulfillmentModes, StockSnapshot stock) {
         Set<String> modes = storeFulfillmentModes.size() == 1
                 ? Set.copyOf(storeFulfillmentModes) : stock.availableByMode().keySet();

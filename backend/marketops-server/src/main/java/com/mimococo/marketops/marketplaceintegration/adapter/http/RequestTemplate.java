@@ -37,7 +37,7 @@ final class RequestTemplate {
     private static final java.util.Set<String> ALLOWED = java.util.Set.of(
             "cursor", "limit", "accountKey", "endpointCode", "offset", "page", "pageIndex",
             "windowFrom", "windowTo", "windowStartUtcDate", "windowEndUtcDate",
-            "listingKeyBatch", "itemKeyBatch", "itemKeysAll",
+            "listingKeyBatch", "itemKeyBatch", "itemKeysAll", "promotionKey",
             "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
             "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",

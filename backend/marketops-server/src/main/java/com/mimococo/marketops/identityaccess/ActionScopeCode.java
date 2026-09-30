@@ -169,7 +169,13 @@ public enum ActionScopeCode {
      * <p>Step-up is required because from then on the platform calls the marketplace without
      * anybody asking each time.
      */
-    DATA_COLLECTION_MANAGE(true);
+    DATA_COLLECTION_MANAGE(true),
+
+    /**
+     * Record that a promotion was joined, skipped or left by hand in the marketplace back office.
+     * No step-up: the record changes nothing on the marketplace.
+     */
+    PROMOTION_DECISION_RECORD(false);
 
     private final boolean stepUpRequired;
 

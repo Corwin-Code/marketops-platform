@@ -117,6 +117,39 @@ marketops:
         max-request-bytes: 32768
         max-response-bytes: 8388608
         timeout-millis: 30000
+      # Promotions (official OpenAPI checked 2026-09-29, "Actions read-only" role):
+      # the actions open to the store (GET /v1/actions) and, one action per
+      # request, the products that can join and the ones taking part
+      # (POST /v2/actions/candidates, POST /v2/actions/products). Exact paths:
+      # write methods live beneath them (/v1/actions/products/activate,
+      # /v2/actions/products/deactivate and more), and a prefix would match those.
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v1/actions
+        exact-path: true
+        methods: [GET]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v2/actions/candidates
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v2/actions/products
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
       # Stock per warehouse type, paged with cursor (official OpenAPI,
       # POST /v4/product/info/stocks, limit 1–1000).
       - key: platform:OZON:read

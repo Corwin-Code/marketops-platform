@@ -51,6 +51,13 @@ public interface OperatingFactQuery {
      */
     Optional<ListingContentSnapshot> listingContent(UUID platformListingVariantId, Instant asOf);
 
+    /**
+     * The store's promotions as its newest promotion snapshot before an exclusive instant described
+     * them, each with the candidates and participants read after that snapshot; empty when no
+     * snapshot was recorded.
+     */
+    List<PromotionSnapshot> currentPromotions(UUID storeId, Instant asOf);
+
     /** The most recent observed availability, per fulfillment mode. */
     StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf);
 

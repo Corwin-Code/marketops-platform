@@ -1149,6 +1149,147 @@ public class FactQueryRepository {
                 .list();
     }
 
+    /** The promotions the store's newest promotion snapshot before an exclusive instant described. */
+    /**
+     * How long the newest promotion snapshot stays current. It is taken daily; an answer with no
+     * promotion writes nothing, so an older snapshot is not taken for today's promotions.
+     */
+    private static final java.time.Duration PROMOTION_SNAPSHOT_LIFETIME = java.time.Duration.ofHours(48);
+
+    public List<PromotionRow> currentPromotions(UUID storeId, Instant asOf) {
+        return jdbc.sql("""
+                        WITH newest AS (
+                            SELECT max(observation.observed_at) AS observed_at
+                              FROM core.promotion_observation AS observation
+                              JOIN core.platform_promotion AS promotion
+                                ON promotion.id = observation.platform_promotion_id
+                             WHERE promotion.store_id = :storeId AND observation.observed_at < :asOf
+                        )
+                        SELECT observation.platform_promotion_id, promotion.native_promotion_key,
+                               observation.observed_at, observation.title, observation.promotion_kind,
+                               observation.description, observation.starts_at, observation.ends_at,
+                               observation.freezes_at, observation.candidate_count, observation.participant_count,
+                               observation.banned_count, observation.participating, observation.voucher,
+                               observation.targeted, observation.discount_kind, observation.discount_value,
+                               observation.provenance_id, provenance.source_time
+                          FROM core.promotion_observation AS observation
+                          JOIN core.platform_promotion AS promotion
+                            ON promotion.id = observation.platform_promotion_id
+                          JOIN newest ON newest.observed_at = observation.observed_at
+                          JOIN core.fact_provenance AS provenance ON provenance.id = observation.provenance_id
+                         WHERE promotion.store_id = :storeId
+                           AND newest.observed_at >= :freshFrom
+                           AND (observation.ends_at IS NULL OR observation.ends_at > :asOf)
+                         ORDER BY observation.starts_at NULLS LAST, promotion.native_promotion_key
+                        """)
+                .param("storeId", storeId)
+                .param("asOf", Timestamp.from(asOf))
+                .param("freshFrom", Timestamp.from(asOf.minus(PROMOTION_SNAPSHOT_LIFETIME)))
+                .query((rows, rowNumber) -> new PromotionRow(
+                        rows.getObject("platform_promotion_id", UUID.class),
+                        rows.getString("native_promotion_key"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("title"),
+                        rows.getString("promotion_kind"),
+                        rows.getString("description"),
+                        instantOrNull(rows, "starts_at"),
+                        instantOrNull(rows, "ends_at"),
+                        instantOrNull(rows, "freezes_at"),
+                        (Integer) rows.getObject("candidate_count"),
+                        (Integer) rows.getObject("participant_count"),
+                        (Integer) rows.getObject("banned_count"),
+                        (Boolean) rows.getObject("participating"),
+                        (Boolean) rows.getObject("voucher"),
+                        (Boolean) rows.getObject("targeted"),
+                        rows.getString("discount_kind"),
+                        rows.getBigDecimal("discount_value"),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
+    /**
+     * The candidates and participants of the store's promotions, from the newest answer of each
+     * promotion and membership read after the promotion's own snapshot. An answer read before it
+     * describes a list that may have changed, and an empty answer leaves no rows, so an older
+     * row is never taken for a current one.
+     */
+    public List<PromotionItemRow> currentPromotionItems(UUID storeId, Instant asOf) {
+        return jdbc.sql("""
+                        WITH snapshot AS (
+                            SELECT observation.platform_promotion_id, max(observation.observed_at) AS observed_at
+                              FROM core.promotion_observation AS observation
+                              JOIN core.platform_promotion AS promotion
+                                ON promotion.id = observation.platform_promotion_id
+                             WHERE promotion.store_id = :storeId AND observation.observed_at < :asOf
+                             GROUP BY observation.platform_promotion_id
+                        ), newest AS (
+                            SELECT item.platform_promotion_id, item.membership, max(item.observed_at) AS observed_at
+                              FROM core.promotion_item_observation AS item
+                              JOIN snapshot ON snapshot.platform_promotion_id = item.platform_promotion_id
+                             WHERE item.observed_at >= snapshot.observed_at AND item.observed_at < :asOf
+                             GROUP BY item.platform_promotion_id, item.membership
+                        )
+                        SELECT item.platform_promotion_id, item.platform_listing_variant_id, item.membership,
+                               item.observed_at, item.currency_code, item.price, item.action_price,
+                               item.max_action_price, item.recommended_action_price, item.above_recommended,
+                               item.current_boost, item.min_boost, item.max_boost, item.price_for_min_boost,
+                               item.price_for_max_boost, item.min_stock, item.recommended_stock, item.stock,
+                               item.add_mode, item.quarantined, item.provenance_id, provenance.source_time
+                          FROM core.promotion_item_observation AS item
+                          JOIN newest
+                            ON newest.platform_promotion_id = item.platform_promotion_id
+                           AND newest.membership = item.membership
+                           AND newest.observed_at = item.observed_at
+                          JOIN core.fact_provenance AS provenance ON provenance.id = item.provenance_id
+                         ORDER BY item.platform_promotion_id, item.membership, item.platform_listing_variant_id
+                        """)
+                .param("storeId", storeId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new PromotionItemRow(
+                        rows.getObject("platform_promotion_id", UUID.class),
+                        rows.getObject("platform_listing_variant_id", UUID.class),
+                        rows.getString("membership"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("currency_code"),
+                        rows.getBigDecimal("price"),
+                        rows.getBigDecimal("action_price"),
+                        rows.getBigDecimal("max_action_price"),
+                        rows.getBigDecimal("recommended_action_price"),
+                        (Boolean) rows.getObject("above_recommended"),
+                        rows.getBigDecimal("current_boost"),
+                        rows.getBigDecimal("min_boost"),
+                        rows.getBigDecimal("max_boost"),
+                        rows.getBigDecimal("price_for_min_boost"),
+                        rows.getBigDecimal("price_for_max_boost"),
+                        (Integer) rows.getObject("min_stock"),
+                        (Integer) rows.getObject("recommended_stock"),
+                        (Integer) rows.getObject("stock"),
+                        rows.getString("add_mode"),
+                        (Boolean) rows.getObject("quarantined"),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
+    /** One promotion as the newest snapshot described it. */
+    public record PromotionRow(UUID promotionId, String nativePromotionKey, Instant observedAt, String title,
+                               String promotionKind, String description, Instant startsAt, Instant endsAt,
+                               Instant freezesAt, Integer candidateCount, Integer participantCount,
+                               Integer bannedCount, Boolean participating, Boolean voucher, Boolean targeted,
+                               String discountKind, BigDecimal discountValue, UUID provenanceId, Instant sourceTime) {
+    }
+
+    /** One product of a promotion from the newest answer of its membership. */
+    public record PromotionItemRow(UUID promotionId, UUID listingVariantId, String membership, Instant observedAt,
+                                   String currencyCode, BigDecimal price, BigDecimal actionPrice,
+                                   BigDecimal maxActionPrice, BigDecimal recommendedActionPrice,
+                                   Boolean aboveRecommended, BigDecimal currentBoost, BigDecimal minBoost,
+                                   BigDecimal maxBoost, BigDecimal priceForMinBoost, BigDecimal priceForMaxBoost,
+                                   Integer minStock, Integer recommendedStock, Integer stock, String addMode,
+                                   Boolean quarantined, UUID provenanceId, Instant sourceTime) {
+    }
+
     /** A text array column, its null elements kept at their positions. */
     private static List<String> textArray(ResultSet rows, String column) throws SQLException {
         java.sql.Array array = rows.getArray(column);

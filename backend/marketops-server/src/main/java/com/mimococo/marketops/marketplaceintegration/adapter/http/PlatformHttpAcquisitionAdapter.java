@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,12 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
 
     /** Placeholder carrying every recorded item key of the store in one request. */
     private static final String ALL_ITEM_KEYS_PLACEHOLDER = "itemKeysAll";
+
+    /**
+     * A promotion key as a request may carry it: a whole number, because the template places it
+     * in the body as a bare JSON number and the key is source data recorded from an earlier answer.
+     */
+    private static final java.util.regex.Pattern PROMOTION_KEY = java.util.regex.Pattern.compile("[0-9]{1,20}");
 
     /**
      * The most keys one request carries when it names all of them. Both Ozon
@@ -137,20 +144,36 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
             // particular; the call does not happen.
             return refused("run_window_required", startedAt);
         }
-        Optional<ListingKeyDirectory.KeyKind> keyKind = keyKind(spec);
+        Optional<ListingKeyDirectory.KeyKind> keyKind = spec.keyKind();
+        String requestKey = null;
         if (keyKind.isPresent()) {
             // A request that names products names the store's recorded keys, one
             // batch per call; with nothing recorded there is nothing to ask.
-            List<String> batch = specs.jobStoreId(request.jobId())
-                    .map(store -> keys.keys(store, keyKind.get(),
-                            Integer.parseInt(placeholders.get(OFFSET_PLACEHOLDER)),
-                            EndpointCallSpec.REQUESTED_PAGE_SIZE))
+            Optional<UUID> store = specs.jobStoreId(request.jobId());
+            String position = placeholders.get(OFFSET_PLACEHOLDER);
+            if (store.isPresent() && spec.asksOneKeyAtATime()) {
+                // The same start the page worker uses: a position past today's keys starts again.
+                position = EndpointCallSpec.keyPosition(position, keys.keyCount(store.get(), keyKind.get()));
+            }
+            int offset = position.isEmpty() ? 0 : Integer.parseInt(position);
+            List<String> batch = store
+                    .map(id -> keys.keys(id, keyKind.get(), offset, spec.keyBatchSize()))
                     .orElse(List.of());
             if (batch.isEmpty()) {
                 return refused("no_keys_to_request", startedAt);
             }
-            placeholders.put(keyKind.get() == ListingKeyDirectory.KeyKind.ITEM ? "itemKeyBatch" : "listingKeyBatch",
-                    RequestTemplate.keyBatch(batch));
+            if (keyKind.get() == ListingKeyDirectory.KeyKind.PROMOTION) {
+                // One promotion per request: the answer does not repeat which one, so the key
+                // travels with the answer into the evidence.
+                requestKey = batch.getFirst();
+                if (!PROMOTION_KEY.matcher(requestKey).matches()) {
+                    return refused("promotion_key_not_a_number", startedAt);
+                }
+                placeholders.put(EndpointCallSpec.PROMOTION_KEY_PLACEHOLDER, requestKey);
+            } else {
+                placeholders.put(keyKind.get() == ListingKeyDirectory.KeyKind.ITEM ? "itemKeyBatch" : "listingKeyBatch",
+                        RequestTemplate.keyBatch(batch));
+            }
         } else if (asksForAllItemKeys(spec)) {
             // Every page of such a request names the same keys, in the same
             // order; the pages move through the answer, not through the keys.
@@ -183,7 +206,7 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         try {
             OutboundHttp.Response response =
                     httpClient.exchange(builder.plan(), builder.headers());
-            return classify(response, spec, startedAt);
+            return classify(response, spec, startedAt).withRequestKey(requestKey);
         } catch (IOException transportFailure) {
             // The call may or may not have reached the source. That is exactly
             // what UNKNOWN_STATE means, and treating it as a failure would let a
@@ -307,13 +330,7 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         return spec.bodyTemplate() != null && spec.bodyTemplate().contains("{" + ALL_ITEM_KEYS_PLACEHOLDER + "}");
     }
 
-    /** Which recorded keys a template names products by, when it names any. */
-    static Optional<ListingKeyDirectory.KeyKind> keyKind(EndpointCallSpec spec) {
-        String body = spec.bodyTemplate() == null ? "" : spec.bodyTemplate();
-        if (body.contains("{itemKeyBatch}")) return Optional.of(ListingKeyDirectory.KeyKind.ITEM);
-        if (body.contains("{listingKeyBatch}")) return Optional.of(ListingKeyDirectory.KeyKind.LISTING);
-        return Optional.empty();
-    }
+
 
     /** Whether any recorded template names the run's window. */
     private static boolean asksForWindow(EndpointCallSpec spec) {

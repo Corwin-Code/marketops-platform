@@ -157,7 +157,7 @@ AI 解释与 Listing 辅助通过阿里云百炼的 OpenAI 兼容接口调用 `q
 
 说明：
 
-- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list`、`/v1/product/rating-by-sku` 和 `/v1/analytics/product-queries`（这条同时覆盖 `/details`，因为一个调用只能命中一条规则，前缀不能重叠）。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。漏加规则时，运行会以 `request_could_not_be_built` 停在 `BLOCKED`。
+- 出站白名单（`application-local.yaml` 的 `platform:OZON:read`）每个读取接口单独一条规则，目前放行 `/v1/roles`、`/v4/product/info/attributes`、`/v5/product/info/prices`、`/v4/product/info/stocks`、`/v1/analytics/data`、`/v3/product/info/list`、`/v1/product/rating-by-sku`、`/v1/analytics/product-queries`（这条同时覆盖 `/details`，因为一个调用只能命中一条规则，前缀不能重叠），以及 P7 的 `GET /v1/actions`、`POST /v2/actions/candidates`、`POST /v2/actions/products`。规则默认按路径段匹配前缀（`/a` 也匹配 `/a/b`）；下面挂着写方法的读取路径必须加 `exact-path: true` 只匹配路径本身，例如 `/v2/actions/products` 下面有写方法 `/v2/actions/products/deactivate`。后续每接入一个读取接口，就单独加一条规则，并完成该接口的核验。漏加规则时，运行会以 `request_could_not_be_built` 停在 `BLOCKED`。
 - 要立即停止读取，就用维护接口停用 READ 凭证（`POST /api/v1/admin/metadata/credentials/{id}/status`），或者暂停采集任务。
 - 轮换 key：把新 key 存成新文件名，登记一个替换旧凭证的新凭证（`replacesCredentialId`），再停用旧凭证。
 - 迁移 `V0007` 修复了采集链路此前对任何平台都无法成功的问题：调用授权只接受 `LEASED` 状态，而运行在第一次调用前已进入 `RUNNING`。
@@ -709,6 +709,66 @@ make owner-grant ACTION=DATA_COLLECTION_MANAGE
   - 商品卡现状：描述、富内容、图片、已填属性；描述全文可展开、可复制；
   - AI 俄语草稿：每条草稿可一键复制，显示字符数、现有内容与草稿各覆盖了几个搜索词（按词干近似匹配），以及修改理由、预期效果、风险；不确定项写明去哪里找。
 - **不做**：不写 Ozon（描述修改属于 W2，需要带商品写权限的 key 和逐项同意）；不读类目属性和属性字典。
+
+## P7：促销算账
+
+目标：回答"Ozon 的哪些活动值得参加、哪些商品参加会亏"。平台读取活动、候选商品和已参加商品，按活动价测算单件利润率，Qwen 解读取舍，人在卖家后台操作后回到平台记下决定。平台不参加、不退出任何活动，写入保持关闭。
+
+- **接口**（官方 OpenAPI 2026-09-29 核验，都在 key 的 "Actions read-only" 角色内）：
+  - `GET /v1/actions`：店铺可参加的活动，含类型、起止时间、冻结时间（之后只能降价、不能退出）、可参加和已参加的商品数、是否已参加、折扣；
+  - `POST /v2/actions/candidates`、`POST /v2/actions/products`（v1 于 2026-10-13 停用）：每个活动的候选商品和已参加商品，含现价、活动价、最高活动价、推荐活动价、是否高于推荐价（可能被移出），以及加成区间和对应价格。两者每次只接受一个 `action_id`，按 `last_id` 翻页，每页最多 100 个商品。
+- **按键请求（V0023）**：
+  - 请求模板可以写 `{promotionKey}`：键是店铺最新一次活动快照里还没结束的活动，按文本顺序每次问一个，全部问完结束（`KEYS_EXHAUSTED`），键必须是纯数字；
+  - 应答里不重复活动编号，所以原始观测记下这次请求问的键（`raw.raw_acquisition_observation.request_key`），标准化用新来源 `REQUEST_KEY` 把它写进事实；
+  - 活动内翻页没有做：一页满 100 个商品时停下来交给人处理（`SCHEMA_DRIFT`），不静默截断；
+  - 某个活动被答 404（读完列表后活动结束了）时保留这次应答，继续问下一个；其他拒绝（包括 400）照旧停下，免得系统性错误被逐个跳过；
+  - 为此 `ops.acknowledge_checkpoint` 现在也接受完整的 404 应答推进检查点。V0009 的 `SHORT_PAGE_OR_NOT_FOUND`（最后一页之后答 404 即结束）原本就依赖这一点，此前会抛 MO009 回滚；其他拒绝仍不能推进检查点；
+  - 没有当前活动时不调用 Ozon，运行直接成功（零页）；上次中断留下的位置超过今天的活动数时从头开始。
+- **新表**：
+  - `core.platform_promotion`：活动身份，属于商品与 Listing 模块，与商品身份放在一起；活动快照写它，采集从它读键；
+  - `core.promotion_observation`：每次快照每个活动一行；
+  - `core.promotion_item_observation`：每次应答每个商品每种身份（`CANDIDATE` 可参加、`PARTICIPANT` 已参加）一行。只有在最新活动快照之后读到的候选和已参加商品才算当前，这样空应答（商品都退出了）不会被旧数据顶替；
+  - 什么算当前活动：最新快照不超过 48 小时（活动列表为空时不写行，更早的快照不能当作今天的活动），且活动还没结束。请求用的活动键和测算、页面、AI 用同一规则；
+  - 加成和折扣是 Ozon 给的 double，按 4 位小数取整记录，不套用金额的精度规则（否则浮点尾数会让整条记录被拒）；
+  - `ops.promotion_decision`：人工决定记录，只追加。
+- **测算**（`PromotionEconomicsQuery`，与 P3 同一口径）：最新价格条款、履约方式、Ozon 佣金和物流、按商品税率扣增值税、映射的单件成本，复用 `ListingUnitEconomics`。每个商品给出：
+  - 现价、最高活动价、推荐活动价、最大加成价下的预估利润率，以及保本价；
+  - 按最高活动价判断（参加不可能比这个价更赚钱）：`JOIN_KEEPS_FLOOR` 保住利润率下限、`JOIN_BELOW_FLOOR` 盈利但低于下限、`JOIN_LOSES` 亏损、`UNKNOWN` 缺输入（缺什么写在 `missing` 里）。
+  - 假设：物流沿用 Ozon 按现价给出的金额，活动价更低时部分物流可能更低，所以按活动价的估算偏保守（实际利润率可能略高）。
+- **出站白名单**：三条精确路径规则（`exact-path: true`，出站规则新增的选项）。这些路径下面挂着写方法（`/v1/actions/products/activate`、`/v2/actions/products/deactivate` 等），按前缀放行会把写方法一起放出去。
+- **定时采集**：三个数据集都按每日快照排在内容评分之后，活动列表先于候选和已参加商品。
+- **诊断规则 `PROMOTION_OPPORTUNITY`**（规则 v1，严重度 INFO）：
+  - 新指标 `PROMOTION_BEST_MARGIN`：商品作为候选能参加的当前活动里，按最高活动价估算的最佳单件利润率，口径同 `PROJECTED_UNIT_MARGIN`；不能参加任何活动或缺输入时为不可用；
+  - 最佳利润率 ≥ 利润率下限时触发，店铺诊断里显示为"可参加活动"，提示去"促销活动"页查看并在卖家后台人工参加；
+  - 商品解读和店铺周诊断的提示词都加了这条规则的含义和 `PROMOTION_REVIEW` 建议类型（商品提示词 v7、店铺提示词 v5、Listing 辅助提示词 v6），规则细节 `promotionMargin`、`minimumUnitMarginRate` 可以出境。
+- **AI 促销取舍建议**：
+  - **投影** `PROMOTION_REVIEW` v1：最多 3 个活动（已参加的优先，其次按商品数），每个活动的条款、四种判断各有几个商品（数量完整）；每个活动最多 5 个商品（先放亏损或低于下限的已参加商品，再按搜索人数），每个商品的现价、最高活动价、推荐活动价及各自的预估利润率、判断、最高活动价比最低竞品价高或低多少，以及近 7 天搜索人数和下单件数。只发比率和平台自己的价格，不发成本、利润、保本价金额。
+  - **提示词** `promotion-review` v1：一句结论、最多 3 条建议（每条针对一个活动，说明哪些商品参加或保留、哪些不参加或退出、可接受的最低活动价）、最多 3 条依据（只能引用商品的搜索人数和下单件数）、最多 2 个不确定项。亏损商品不许建议参加或保留；低于下限的商品只能在有搜索需求时作为"用利润换销量"的明确取舍；要退出的必须在冻结日前退出。
+  - **校验**：数字只能照抄；建议只能是 `PROMOTION_REVIEW`（或缺成本时的 `COST_DATA_REVIEW`），其他以 `PROMOTION_REVIEW_ACTION_OUT_OF_SCOPE` 拒绝。
+  - **缓存**：活动、测算和需求都没变时直接返回上次的建议。
+- **人工决定**：新动作权限 `PROMOTION_DECISION_RECORD`（不需要第二重验证，OWNER 和 OPS_LEAD 角色默认带）。现有 Owner 要补一条授权：
+
+  ```bash
+  make owner-grant ACTION=PROMOTION_DECISION_RECORD API=http://127.0.0.1:9999
+  ```
+
+  决定是 `JOINED`（已在后台参加或保留，可记设置的活动价）、`SKIPPED`（不参加）、`LEFT`（已在后台退出），可附原因，写入审计。
+- **控制台接口**：
+  - `GET /api/v1/console/diagnosis/stores/{storeId}/promotions`，需要 `DIAGNOSTIC_VIEW`：当前活动和每个商品的测算；
+  - `GET /api/v1/console/stores/{storeId}/promotion-decisions`，需要 `DIAGNOSTIC_VIEW`：每个活动每个商品最新的决定；
+  - `POST /api/v1/console/stores/{storeId}/promotions/{promotionId}/decisions`，需要 `PROMOTION_DECISION_RECORD`：记一条决定；
+  - `POST /api/v1/console/explanations/stores/{storeId}/promotions?window=D7`，需要 `DIAGNOSTIC_VIEW`：生成或沿用 AI 建议；`GET …/promotions/latest`，需要 `EVIDENCE_VIEW`：最近一次，不调用模型。
+- **页面**：侧边栏"店铺诊断"下方新增"促销活动"：AI 促销取舍建议；每个活动一张卡片（是否已参加、时间、冻结日、折扣、可参加/已参加数、按最高活动价的判断汇总），卡片里是商品表（身份、现价/最高活动价/推荐活动价及利润率、加成、判断和保本价、人工决定）。
+- **接入步骤**（等新 key）：
+
+  ```bash
+  make ozon-probe CAPABILITY=actions OFFICIAL_SOURCE=~/Downloads/swagger.json
+  make ozon-probe CAPABILITY=action-candidates OFFICIAL_SOURCE=~/Downloads/swagger.json
+  make ozon-probe CAPABILITY=action-products OFFICIAL_SOURCE=~/Downloads/swagger.json
+  ```
+
+  按真实应答核对映射后去掉 `probe_only`，再对三个能力各执行 `make ozon-setup … OPERATOR=claude-for-owner`，由 Owner 执行 `make ozon-verify`，然后 `make ozon-run` 加 `make ozon-normalize` 各跑一次（先 `actions`）。
+- **不做**：不自动参加或退出活动（`/v1/actions/products/activate`、`deactivate` 属于写入，需要带写权限的 key 和逐项同意）；不做活动内翻页（试点店铺 41 个商品，一页足够）。
 
 ## 控制台：店铺诊断
 

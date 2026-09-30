@@ -205,6 +205,13 @@ public class NormalizationDeclarationService {
                     throw invalid();
                 }
             }
+            case "REQUEST_KEY" -> {
+                // The key a one-key-at-a-time request asked about, which the answer does not repeat.
+                if (!"TEXT".equals(valueKind) || source.pointer() != null
+                        || source.value() != null || source.valueMap() != null) {
+                    throw invalid();
+                }
+            }
             case "CONSTANT" -> {
                 if (source.value() == null || source.value().isEmpty() || source.value().length() > 256
                         || source.pointer() != null || source.valueMap() != null
@@ -239,8 +246,8 @@ public class NormalizationDeclarationService {
      * Where one declared field comes from.
      *
      * @param kind {@code POINTER}, {@code PARENT_POINTER}, {@code OBSERVATION_TIME},
-     *        {@code WINDOW_START}, {@code WINDOW_END}, {@code CONSTANT}, {@code EACH_POINTER}
-     *        or {@code ARRAY_LENGTH}
+     *        {@code WINDOW_START}, {@code WINDOW_END}, {@code CONSTANT}, {@code EACH_POINTER},
+     *        {@code ARRAY_LENGTH} or {@code REQUEST_KEY}
      * @param pointer the JSON pointer for the pointer kinds (the array for the last two)
      * @param value the constant's text
      * @param valueMap native words translated into the canonical text, for the pointer kinds

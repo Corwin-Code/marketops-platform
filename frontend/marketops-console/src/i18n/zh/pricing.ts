@@ -57,6 +57,7 @@ export const METRIC_LABELS: CodeLabels = {
   PROJECTED_UNIT_MARGIN: '预估单件利润率',
   PROJECTED_BREAK_EVEN_PRICE: '预估保本价',
   TARGET_MARGIN_PRICE: '目标利润价',
+  PROMOTION_BEST_MARGIN: '可参加活动的最佳利润率',
 };
 
 /** Deterministic diagnosis rule codes (DiagnosisEngine, rule version 1). */
@@ -77,6 +78,7 @@ export const RULE_LABELS: CodeLabels = {
   PRICE_GAP_STRUCTURAL: '价格偏高（结构性）',
   LOW_SEARCH_EXPOSURE: '搜索曝光不足',
   CONTENT_BELOW_TARGET: '内容待提升',
+  PROMOTION_OPPORTUNITY: '可参加活动',
 };
 
 /** What a rule concluded. */
@@ -203,6 +205,7 @@ export const AI_REJECTION_LABELS: CodeLabels = {
   LISTING_ASSISTANCE_ACTION_OUT_OF_SCOPE: '超出商品辅助的操作范围',
   DRAFT_ATTRIBUTE_NOT_NAMED: '草稿填写的属性不在 Ozon 点名的属性里',
   CONTENT_DRAFT_ACTION_OUT_OF_SCOPE: '超出内容草稿的范围',
+  PROMOTION_REVIEW_ACTION_OUT_OF_SCOPE: '超出促销建议的范围',
 };
 
 /** Why an AI explanation is unavailable: before, during or after the model call. */
@@ -320,6 +323,7 @@ export const ACTION_KIND_LABELS: CodeLabels = {
   COST_DATA_REVIEW: '成本数据核对',
   LISTING_DESCRIPTION_CHANGE: '修改商品描述',
   LISTING_PROMOTION_ACTION: '商品促销操作',
+  PROMOTION_REVIEW: '促销活动评估',
 };
 
 export const ORIGIN_LABELS: CodeLabels = {

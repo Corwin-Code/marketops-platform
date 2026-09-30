@@ -76,10 +76,7 @@ public class BoundedOutboundHttp implements OutboundHttp {
                 || names.stream().anyMatch(name -> !safeHeaderName(name))) throw refused();
         var rules = properties.destinations().stream().filter(rule ->
                 destination.policyKey().equals(rule.key()) && host.equals(rule.host())
-                        && rule.pathPrefix() != null && rule.pathPrefix().startsWith("/")
-                        && (uri.getRawPath().equals(rule.pathPrefix())
-                            || uri.getRawPath().startsWith(rule.pathPrefix().endsWith("/")
-                                ? rule.pathPrefix() : rule.pathPrefix() + "/"))
+                        && rule.matchesPath(uri.getRawPath())
                         && rule.methods() != null && rule.methods().contains(destination.method())
                         && rule.headers() != null && rule.headers().containsAll(names)).toList();
         if (rules.size() != 1) throw refused();

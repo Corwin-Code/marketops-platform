@@ -26,6 +26,7 @@ export const CONCLUSION_ORDER: readonly string[] = [
   'PRICE_GAP_REDUCIBLE',
   'LOW_SEARCH_EXPOSURE',
   'CONTENT_BELOW_TARGET',
+  'PROMOTION_OPPORTUNITY',
 ];
 
 /**
@@ -206,6 +207,7 @@ function detailValue(key: string, value: string, currency: string | null): strin
       return formatMoney(value, currency);
     case 'premiumOverCompetitor':
     case 'minimumUnitMarginRate':
+    case 'promotionMargin':
       return formatPercent(value);
     case 'contentRating':
     case 'contentRatingFloor':
