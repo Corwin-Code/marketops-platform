@@ -57,6 +57,9 @@ final class CollectionPlanner {
         cadences.put("PROMOTION", Cadence.DAILY_SNAPSHOT);
         cadences.put("PROMOTION_CANDIDATE", Cadence.DAILY_SNAPSHOT);
         cadences.put("PROMOTION_PARTICIPANT", Cadence.DAILY_SNAPSHOT);
+        // The store's own standing: its ratings and its warehouses.
+        cadences.put("SELLER_RATING", Cadence.DAILY_SNAPSHOT);
+        cadences.put("FBS_WAREHOUSE", Cadence.DAILY_SNAPSHOT);
         cadences.put("TRAFFIC", Cadence.DAILY_WINDOW);
         cadences.put("LISTING_SEARCH", Cadence.WEEKLY_WINDOW);
         cadences.put("LISTING_SEARCH_TERM", Cadence.WEEKLY_WINDOW);

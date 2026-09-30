@@ -388,6 +388,28 @@ def action_key(value: object) -> str | None:
     return str(int(number)) if number == number.to_integral_value() and number > 0 else None
 
 
+def newest_bundle_answers(pilot: "Pilot", suffix: str) -> list[dict]:
+    """Every answer of the newest bundle a capability's probe kept, empty when there is none."""
+    bundles = sorted(pilot.evidence_dir.glob(f"{suffix}-*-bundle.json"))
+    if not bundles:
+        return []
+    bundle = json.loads(bundles[-1].read_text(encoding="utf-8"))
+    return [json.loads((pilot.evidence_dir / page["file"]).read_text(encoding="utf-8"))
+            for page in bundle["pages"] if page.get("records")]
+
+
+def probed_warehouse_ids(pilot: "Pilot") -> list[str]:
+    """The warehouse ids of the newest warehouses probe (POST /v2/warehouse/list)."""
+    return sorted({str(warehouse.get("warehouse_id")) for answer in newest_bundle_answers(pilot, "warehouses")
+                   for warehouse in answer.get("warehouses") or [] if warehouse.get("warehouse_id")})
+
+
+def restricted_warehouse_ids(pilot: "Pilot") -> list[str]:
+    """The warehouses the newest restrictions probe named as holding products Ozon cannot deliver."""
+    return sorted({str(item) for answer in newest_bundle_answers(pilot, "warehouse-restrictions")
+                   for item in answer.get("warehouse_ids") or []})
+
+
 def probed_action_ids(pilot: "Pilot") -> list[str]:
     """The ids of the newest actions probe, in text order, as the backend batches keys."""
     return sorted({key for key in (action_key(action.get("id")) for action in probed_actions(pilot)) if key})
@@ -464,8 +486,8 @@ def inspect_seller_rating(answers: list[dict], pilot: "Pilot") -> tuple[list[str
              f"rating keys {len({str(item.get('rating')) for item in items})} distinct, "
              f"with current value {sum(1 for item in items if item.get('current_value') is not None)}",
              f"premium {answer.get('premium')}, premium plus {answer.get('premium_plus')}, "
-             f"penalty score exceeded {answer.get('penalty_score_exceeded')}, "
-             f"localization index entries {len(answer.get('localization_index') or [])}"]
+             f"penalty score exceeded {answer.get('penalty_score_exceeded')}, localization index "
+             f"{'with a calculation date' if (answer.get('localization_index') or {}).get('calculation_date') else 'empty (no sales in 14 days)'}"]
     return lines, None
 
 
@@ -473,17 +495,47 @@ def inspect_discount_tasks(answers: list[dict], pilot: "Pilot") -> tuple[list[st
     """Buyer requests for a discount: how many, in which states, for known products (no prices printed)."""
     tasks = [task for answer in answers for task in answer.get("tasks") or []]
     known = set(catalog_skus(pilot))
-    lines = [f"discount requests {len(tasks)}, states "
+    created = sorted(str(task.get("created_at"))[:10] for task in tasks if task.get("created_at"))
+    ids = [task.get("id") for task in tasks]
+    lines = [f"discount requests {len(tasks)} on {len(answers)} pages, states "
              f"{dict(sorted(Counter(str(task.get('status')) for task in tasks).items()))}",
              f"for SKUs in the catalog probe {sum(1 for task in tasks if str(task.get('sku')) in known)}, "
              f"distinct SKUs {len({str(task.get('sku')) for task in tasks})}",
              f"with requested price {sum(1 for task in tasks if task.get('requested_price'))}, "
              f"original price {sum(1 for task in tasks if task.get('original_price'))}, "
-             f"auto-moderated {sum(1 for task in tasks if task.get('is_auto_moderated'))}"]
+             f"approved price {sum(1 for task in tasks if task.get('approved_price'))}, "
+             f"auto-moderated {sum(1 for task in tasks if task.get('is_auto_moderated'))}",
+             f"created from {created[0] if created else None} to {created[-1] if created else None}, "
+             f"ids {'descending' if ids == sorted(ids, reverse=True) else 'ascending' if ids == sorted(ids) else 'unordered'}"]
     refusal = None
-    if len(tasks) >= DISCOUNT_TASK_PAGE:
-        refusal = f"a whole page of {DISCOUNT_TASK_PAGE} requests came back; paging by last id is not built"
+    if len(ids) != len(set(ids)):
+        refusal = "a request came back on two pages; paging by the last request's id would repeat records"
     return lines, refusal
+
+
+def inspect_warehouse_restrictions(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """Which warehouses hold products Ozon cannot deliver from them."""
+    ids = [str(item) for answer in answers for item in answer.get("warehouse_ids") or []]
+    probed = set(probed_warehouse_ids(pilot))
+    return [f"warehouses with restricted products {len(ids)}, of them in the warehouses probe "
+            f"{sum(1 for item in ids if item in probed)} (the warehouses probe holds {len(probed)})"], None
+
+
+def inspect_restricted_products(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """Products that failed Ozon's delivery check, and on which characteristic (no values printed)."""
+    results = [result for answer in answers for result in answer.get("validation_results") or []]
+    errors = [error for result in results for error in result.get("validation_errors") or []]
+    known = set(catalog_skus(pilot))
+    skus = {str((result.get("item") or {}).get("sku")) for result in results}
+    return [f"restricted products {len(results)} on {len(answers)} pages, states "
+            f"{dict(sorted(Counter(str(result.get('state')) for result in results).items()))}, "
+            f"distinct SKUs {len(skus)}, in the catalog probe {len(skus & known)}",
+            f"errors {len(errors)}: characteristics "
+            f"{dict(sorted(Counter(str(error.get('characteristic')) for error in errors).items()))}, "
+            f"types {dict(sorted(Counter(str(error.get('type')) for error in errors).items()))}",
+            f"with a price restriction {sum(1 for error in errors if error.get('restriction_price'))}, "
+            f"with a size or weight restriction {sum(1 for error in errors if error.get('restriction_vwc'))}, "
+            f"delivery services named {len({error.get('template_id') for error in errors})}"], None
 
 
 def inspect_warehouses(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
@@ -1200,22 +1252,44 @@ CAPABILITIES = {
             "computed": "SINGLE",
         },
         "job": {"suffix": "seller-rating", "dataset": "SELLER_RATING", "display": "Ozon 试点：卖家评级"},
-        "probe_only": True,
-        "mapping": None,
+        # The summary is one record at the root of the answer: the subscriptions, the penalty
+        # balance and the localization index (empty without sales in the last 14 days). Pilot
+        # (2026-10-01): no Premium, no Premium Plus, penalty balance not exceeded, localization
+        # computed 2026-09-23.
+        "mapping": {
+            "dataset": "SELLER_RATING", "version": 1, "record_pointer": "", "child_pointer": None,
+            "fields": {"premium": "/premium", "premiumPlus": "/premium_plus",
+                       "penaltyScoreExceeded": "/penalty_score_exceeded",
+                       "localizationCalculatedAt": "/localization_index/calculation_date",
+                       "localizationPercentage": "/localization_index/localization_percentage"},
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
+        },
+        # One record per rating (groups[].items[]) with its group's name. Pilot: ten ratings in
+        # four groups, all at zero with six OK and four UNKNOWN_STATUS, because nothing sold yet.
+        "companions": [{
+            "dataset": "SELLER_RATING_ITEM", "version": 1, "record_pointer": "/groups", "child_pointer": "/items",
+            "fields": {"ratingKey": "/rating", "ratingName": "/name", "valueType": "/value_type",
+                       "direction": "/rating_direction", "status": "/status", "currentValue": "/current_value",
+                       "pastValue": "/past_value", "changeDirection": "/change/direction",
+                       "changeMeaning": "/change/meaning"},
+            "sources": {"groupName": {"kind": "PARENT_POINTER", "pointer": "/group_name"},
+                        "observedAt": {"kind": "OBSERVATION_TIME"}},
+        }],
         "inspect": inspect_seller_rating,
     },
     "discount-requests": {
         "code": "ozon-discount-requests-read",
         "display": "Ozon buyer discount requests: the price buyers asked for, per product",
         "description": "Reads buyers' requests to buy a product at a lower price, in every state (POST "
-                       "/v2/actions/discounts-task/list; official docs checked 2026-10-01). The seller "
+                       "/v2/actions/discounts-task/list; official docs checked 2026-10-01). The answer "
+                       "carries no position: the next page asks after the last request's id. The seller "
                        "employee who handled a request is not read.",
         "manifest": "discount-requests-latest.json",
         "endpoint": {
             "code": "ozon-discount-tasks-v2", "api_version": "v2",
             "schema_version": "seller_apiGetDiscountTaskListV2Response",
             "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
-                         "limit; this method states none. One page of 50 per run. Our cap: 10/min. "
+                         "limit; this method states none. Pages of 50 at most. Our cap: 10/min. "
                          "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
             "freshness": "Every buyer discount request the list returns on every run.",
             "definition": {
@@ -1223,13 +1297,19 @@ CAPABILITIES = {
                 "operation_function": "READ_DATA", "query_template": None,
                 "body_template": '{"status":"ALL","limit":50}',
                 "response_content_type": "application/json", "continuation_pointer": None,
+                # A page shorter than the 50 asked for is the last one (pilot 2026-10-01: 331
+                # requests on six full pages and one of 31, the request after it empty).
                 "pagination_model": "NONE", "rate_limit_per_minute": 10,
-                "continuation_end_rule": "JSON_NULL", "records_pointer": "/tasks",
+                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/tasks",
             },
-            "probe_body": lambda cursor, context: {"status": "ALL", "limit": DISCOUNT_TASK_PAGE},
+            # The backend registration pages nothing yet: paging after the last record's id is built
+            # in the probe only, until the dataset is mapped.
+            "probe_body": lambda cursor, context: dict({"status": "ALL", "limit": DISCOUNT_TASK_PAGE},
+                                                       **({"last_id": int(cursor)} if cursor else {})),
             "token_key": None,
             "records_key": "tasks",
-            "computed": "SINGLE",
+            "computed": "LAST_RECORD_ID",
+            "page": DISCOUNT_TASK_PAGE,
         },
         "job": {"suffix": "discount-requests", "dataset": "DISCOUNT_REQUEST", "display": "Ozon 试点：买家求降价"},
         "probe_only": True,
@@ -1261,15 +1341,101 @@ CAPABILITIES = {
             "records_key": "warehouses",
         },
         "job": {"suffix": "warehouses", "dataset": "FBS_WAREHOUSE", "display": "Ozon 试点：FBS 仓库"},
+        # One record per warehouse. Its name, address, coordinates, phones, courier notes, drop-off
+        # point and time slots are not read. Pilot (2026-10-01): one FBS warehouse, status created
+        # (active), drop-off, seven working days, no orders limit.
+        "mapping": {
+            "dataset": "FBS_WAREHOUSE", "version": 1, "record_pointer": "/warehouses", "child_pointer": None,
+            "fields": {"nativeWarehouseKey": "/warehouse_id", "warehouseType": "/warehouse_type",
+                       "status": "/status", "rfbs": "/is_rfbs", "express": "/is_express", "largeGoods": "/is_kgt",
+                       "autoAssembly": "/is_auto_assembly", "firstMileKind": "/first_mile/type",
+                       "handoverMinutes": "/cut_in_time", "assemblyMinutes": "/sla_cut_in",
+                       "postingsLimit": "/postings_limit", "minPostingsLimit": "/min_postings_limit",
+                       "hasPostingsLimit": "/has_postings_limit", "pausedAt": "/pause_at",
+                       "sourceCreatedAt": "/created_at", "sourceUpdatedAt": "/updated_at",
+                       "timeZone": "/address_info/utc"},
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"},
+                        "workingDayCount": {"kind": "ARRAY_LENGTH", "pointer": "/working_days"}},
+        },
+        "inspect": inspect_warehouses,
+    },
+    "warehouse-restrictions": {
+        "code": "ozon-warehouse-restrictions-read",
+        "display": "Ozon warehouses holding products that cannot be delivered from them",
+        "description": "Reads which of the seller's warehouses hold at least one product Ozon cannot deliver "
+                       "from the warehouse (POST /v1/warehouse/warehouses-with-invalid-products; official "
+                       "docs checked 2026-10-01). The method takes no request body.",
+        "manifest": "warehouse-restrictions-latest.json",
+        "endpoint": {
+            "code": "ozon-warehouses-with-invalid-products-v1", "api_version": "v1",
+            "schema_version": "v1WarehousesWithInvalidProductsResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. One request per run. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "The warehouses with restricted products as they stand on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/warehouse/warehouses-with-invalid-products",
+                "operation_function": "READ_DATA", "query_template": None, "body_template": "{}",
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": "/warehouse_ids",
+            },
+            "probe_body": lambda cursor, context: {},
+            "token_key": None,
+            "records_key": "warehouse_ids",
+            "computed": "SINGLE",
+            "body_undocumented": True,
+        },
+        "job": {"suffix": "warehouse-restrictions", "dataset": "WAREHOUSE_RESTRICTION",
+                "display": "Ozon 试点：有配送限制商品的仓库"},
         "probe_only": True,
         "mapping": None,
-        "inspect": inspect_warehouses,
+        "inspect": inspect_warehouse_restrictions,
+    },
+    "restricted-products": {
+        "code": "ozon-restricted-products-read",
+        "display": "Ozon products that cannot be delivered from a warehouse, and which limit they break",
+        "description": "Reads, for the warehouse the restrictions probe named, every product that failed "
+                       "Ozon's delivery check and the characteristic that failed: dimensions, weight, "
+                       "volume or price against the delivery service's limits (POST "
+                       "/v1/warehouse/invalid-products/get, paged by last_id; official docs checked "
+                       "2026-10-01).",
+        "manifest": "restricted-products-latest.json",
+        "endpoint": {
+            "code": "ozon-warehouse-invalid-products-v1", "api_version": "v1",
+            "schema_version": "v1InvalidProductsGetResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. One warehouse per request. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "Every restricted product of every restricted warehouse on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/warehouse/invalid-products/get",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"warehouse_id":{warehouseKey},"last_id":{cursor}}',
+                "response_content_type": "application/json", "continuation_pointer": "/last_id",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": "/validation_results",
+            },
+            "probe_body": lambda cursor, context: dict({"warehouse_id": int(context["warehouse"])},
+                                                       **({"last_id": int(cursor)} if cursor else {})),
+            "token_key": None,
+            "records_key": "validation_results",
+            "computed": "LAST_ID",
+            "keys": "RESTRICTED_WAREHOUSE",
+        },
+        "job": {"suffix": "restricted-products", "dataset": "RESTRICTED_PRODUCT",
+                "display": "Ozon 试点：无法配送的商品"},
+        "probe_only": True,
+        "mapping": None,
+        "inspect": inspect_restricted_products,
     },
     "delivery-methods": {
         "code": "ozon-delivery-methods-read",
         "display": "Ozon delivery methods of the seller's warehouses: state, cutoff, assembly time",
-        "description": "Reads the delivery methods of the seller's FBS and rFBS warehouses (POST "
-                       "/v2/delivery-method/list, paged by cursor; official docs checked 2026-10-01). "
+        "description": "Reads the delivery methods of the seller's rFBS warehouses (POST "
+                       "/v2/delivery-method/list, paged by cursor; official docs checked 2026-10-01: the "
+                       "method lists realFBS warehouses only, and v1, which listed FBS ones, was switched "
+                       "off 2026-04-07). An FBS store gets none: Ozon delivers from the drop-off point. "
                        "Drop-off addresses are not read.",
         "manifest": "delivery-methods-latest.json",
         "endpoint": {
@@ -1672,7 +1838,8 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
               "call itself decides")
     method = endpoint["definition"]["http_method"]
     operation = key["document"].get("paths", {}).get(path, {}).get(method.lower())
-    if not isinstance(operation, dict) or (method == "POST" and "requestBody" not in operation):
+    if not isinstance(operation, dict) or (method == "POST" and "requestBody" not in operation
+                                           and not endpoint.get("body_undocumented")):
         print(f"the official document no longer describes {method} {path} as registered; review before recording")
         return None
 
@@ -1722,6 +1889,16 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         elif computed == "SINGLE":
             # One request answers everything; there is nothing to continue with.
             token = None
+        elif computed == "LAST_ID":
+            # The answer names its last record and whether more follow.
+            last = answer.get("last_id")
+            token = str(last) if answer.get("has_next") and last not in (None, "", 0, "0") else None
+        elif computed == "LAST_RECORD_ID":
+            # The answer carries no position: the next page asks after its last record's id, and the
+            # short-page rule decides where the list ends.
+            last = records[-1].get("id") if isinstance(records, list) and records \
+                and isinstance(records[-1], dict) else None
+            token = str(last) if last is not None else None
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1732,7 +1909,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         page["token"] = "null" if token is None else ("empty" if token == "" else "present")
         total_records += len(records)
         answers.append(answer)
-        if short_rule and len(records) < PAGE_SIZE:
+        if short_rule and len(records) < endpoint.get("page", PAGE_SIZE):
             end_signal = "SHORT_PAGE"
             # Evidence that the short page really was the last one: the next
             # request must answer "not found" or no records at all.
@@ -1764,6 +1941,12 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         if computed == "SINGLE":
             end_signal = "JSON_NULL"
             break
+        if computed in ("LAST_ID", "LAST_RECORD_ID"):
+            if token is None:
+                end_signal = "HAS_NEXT_FALSE" if computed == "LAST_ID" else "SHORT_PAGE"
+                break
+            cursor = token
+            continue
         if endpoint["token_key"] not in answer:
             print(f"page {index + 1} has no {endpoint['token_key']}; nothing recorded")
             return None
@@ -1853,6 +2036,18 @@ def command_probe(args: argparse.Namespace) -> int:
                          "CAPABILITY=actions), or there is nothing to ask about")
             window = dict(window or {}, keys=keys)
             print(f"asking about the {len(keys)} actions of the actions probe, one request each")
+        elif capability["endpoint"].get("keys") == "RESTRICTED_WAREHOUSE":
+            restricted = restricted_warehouse_ids(pilot)
+            if not restricted:
+                print("the newest restrictions probe names no warehouse with products Ozon cannot deliver "
+                      "(or it was not run: make it first with --capability warehouse-restrictions); "
+                      "nothing to ask")
+                return 0
+            if len(restricted) > 1:
+                sys.exit(f"{len(restricted)} warehouses hold restricted products; one warehouse per probe is "
+                         "built")
+            window = dict(window or {}, warehouse=restricted[0])
+            print("asking about the one warehouse the restrictions probe named")
         elif capability["endpoint"].get("keys") == "CATEGORY":
             pair = catalog_category(pilot)
             if pair is None:

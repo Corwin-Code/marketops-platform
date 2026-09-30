@@ -29,6 +29,7 @@ import type {
 import { fetchStoreDiagnosis } from '../api/storeDiagnosis';
 import type { ListingFindings } from '../api/storeFindings';
 import { fetchStoreFindings, recalculateStore } from '../api/storeFindings';
+import { fetchStoreStanding } from '../api/storeStanding';
 import { formatDecimal, formatPercent } from '../format';
 import { actions } from '../i18n';
 import {
@@ -55,6 +56,8 @@ import { METRIC_LABELS } from '../i18n/zh/pricing';
 import type { ReferenceLabel } from './AiInterpretation';
 import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
 import { CollectionHealth } from './CollectionHealth';
+import type { StandingLoad } from './StoreStanding';
+import { StandingAlerts, StoreStandingSection } from './StoreStanding';
 import { ListingContentOptimization } from './ContentOptimization';
 import type { FindingsLoad } from './DiagnosisConclusions';
 import {
@@ -234,6 +237,7 @@ export function StoreDiagnosisView({
   const patch = useSearchParamsPatch();
   const { message } = App.useApp();
   const [findingsLoad, setFindingsLoad] = useState<FindingsLoad>({ kind: 'loading' });
+  const [standingLoad, setStandingLoad] = useState<StandingLoad>({ kind: 'loading' });
   const [recalculating, setRecalculating] = useState(false);
   const filter = readFilter(rawFilter);
   const [search, setSearch] = useState(query ?? '');
@@ -270,6 +274,22 @@ export function StoreDiagnosisView({
       setFindingsLoad(
         outcome.ok
           ? { kind: 'loaded', findings: outcome.value }
+          : { kind: 'failed', failure: outcome.failure },
+      );
+    });
+    return () => {
+      live = false;
+    };
+  }, [context, storeId, generation]);
+
+  useEffect(() => {
+    if (storeId === '') return undefined;
+    let live = true;
+    void fetchStoreStanding(context, storeId).then((outcome) => {
+      if (!live) return;
+      setStandingLoad(
+        outcome.ok
+          ? { kind: 'loaded', standing: outcome.value }
           : { kind: 'failed', failure: outcome.failure },
       );
     });
@@ -507,7 +527,9 @@ export function StoreDiagnosisView({
 
   return (
     <Flex vertical gap={16}>
-      <CollectionHealth context={context} storeId={storeId} />
+      {/* Keyed by the refresh generation, so a refresh asks again. */}
+      <CollectionHealth key={generation} context={context} storeId={storeId} />
+      <StandingAlerts load={standingLoad} />
       <SectionCard
         title={text.summaryTitle}
         extra={
@@ -644,6 +666,11 @@ export function StoreDiagnosisView({
       <ConclusionsSection
         load={findingsLoad}
         withoutStockCount={summary.withoutStock}
+        premiumPlus={
+          standingLoad.kind === 'loaded'
+            ? (standingLoad.standing.summary?.premiumPlus ?? null)
+            : null
+        }
         activeRule={activeRule}
         onSelectRule={(code) => {
           patch({ [RULE_PARAM]: code });
@@ -734,6 +761,8 @@ export function StoreDiagnosisView({
           )}
         </Flex>
       </SectionCard>
+
+      <StoreStandingSection load={standingLoad} />
 
       <ProductDrawer
         context={context}

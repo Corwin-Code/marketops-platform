@@ -150,6 +150,28 @@ marketops:
         max-request-bytes: 16384
         max-response-bytes: 8388608
         timeout-millis: 30000
+      # The store's standing (official OpenAPI 2026-10-01): its rating summary
+      # (POST /v1/rating/summary) and its FBS/rFBS warehouses (POST
+      # /v2/warehouse/list). Exact paths: /v2/warehouse/list sits beside write
+      # methods such as /v1/warehouse/archive, and a prefix never widens a read.
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v1/rating/summary
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v2/warehouse/list
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
       # Stock per warehouse type, paged with cursor (official OpenAPI,
       # POST /v4/product/info/stocks, limit 1–1000).
       - key: platform:OZON:read

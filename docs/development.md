@@ -805,7 +805,57 @@ make owner-grant ACTION=DATA_COLLECTION_MANAGE
   python3 scripts/ozon_pilot.py probe --pilot pilot --capability delivery-methods --official-source-file ~/Downloads/swagger.json --allow-write-roles
   ```
 
-  按真实应答确定数据集、事实表和映射后，在后续 PR 里接入（新迁移、定时采集、店铺诊断的评级与发货信息、按商品的折扣申请）。
+  按真实应答确定数据集、事实表和映射后，在后续 PR 里接入（新迁移、定时采集、店铺诊断的评级与发货信息、按商品的折扣申请）。探测结果和接入情况见下一节。
+
+## 店铺状态：卖家评级与仓库（V0025）
+
+四条补数探测（Owner 2026-10-01 运行）的结论：
+
+| 能力 | 真实应答 | 处理 |
+| --- | --- | --- |
+| `seller-rating` | 无 Premium / Premium Plus，罚分未超限，本地化指数计算于 2026-09-23；4 组 10 项评级全部为 0（6 项 `OK`、4 项 `UNKNOWN_STATUS`），因为还没有订单 | 接入（本节） |
+| `warehouses` | 1 个 FBS 仓库，状态 `created`（启用），自送到投放点，每周 7 天，无订单上限 | 接入（本节） |
+| `delivery-methods` | 0 条。官方说明 `/v2/delivery-method/list` 只列 rFBS 仓库的发货方式，列 FBS 的 v1 已于 2026-04-07 停用；FBS 由 Ozon 从投放点配送 | 不接入，探测入口保留给 rFBS |
+| `discount-requests` | 按最后一条的 id 翻页后共 331 条（2026-04-16 至 09-27，批准 329、拒绝 2），6 个整页加 1 个 31 条的短页，无重复。买家要的折扣中位数 5%；按月 4 月 22、5 月 97、6 月 161、7 月 31、8 月 16、9 月 4。涉及 64 个 SKU，只有 8 个在当前商品目录里（共 11 条申请），已批准的优惠截至 2026-10-01 全部过期 | 探测按短页结束（50 条一页，短页后再问一次确认为空），待重跑记录证据；接入需要引擎支持"按最后一条记录翻页"，是否现在做待 Owner 决定 |
+
+另外在官方文档里找到两个与"为什么卖不动"直接相关的只读接口，已加探测入口。Owner 2026-10-01 运行：`warehouse-restrictions` 三次都答 `{"warehouse_ids":[]}`，没有仓库存在 Ozon 无法配送的商品，所以 `restricted-products` 无需查询，配送限制可以排除：
+
+- `warehouse-restrictions`：`POST /v1/warehouse/warehouses-with-invalid-products`，哪些仓库里有 Ozon 无法从该仓库配送的商品（不接受请求体）；
+- `restricted-products`：`POST /v1/warehouse/invalid-products/get`，按仓库列出无法配送的商品和超限项（长、宽、高、重量、尺寸和、体积重、体积、价格、最长边，以及低于下限还是高于上限），按 `last_id` 翻页。探测只问上一条探测点名的那一个仓库；没有被点名的仓库时直接提示无需查询。
+
+```bash
+python3 scripts/ozon_pilot.py probe --pilot pilot --capability warehouse-restrictions --official-source-file ~/Downloads/swagger.json --allow-write-roles
+python3 scripts/ozon_pilot.py probe --pilot pilot --capability restricted-products --official-source-file ~/Downloads/swagger.json --allow-write-roles
+python3 scripts/ozon_pilot.py probe --pilot pilot --capability discount-requests --official-source-file ~/Downloads/swagger.json --allow-write-roles
+```
+
+**接入内容（V0025）**：
+
+- **数据集**：
+  - `SELLER_RATING`：评级概况，一次应答一条记录，读应答根上的 `premium`、`premium_plus`、`penalty_score_exceeded` 和 `localization_index`（主映射的记录指针为空，即整份应答）；
+  - `SELLER_RATING_ITEM`（伴随映射）：每项评级一条，读 `groups[].items[]` 的键、名称、值类型、方向、Ozon 判定（`OK` / `WARNING` / `CRITICAL` / `UNKNOWN_STATUS`）、当前值、上期值和变化，以及所在组名；
+  - `FBS_WAREHOUSE`：每个仓库一条，读状态、类型、rFBS、快递、大件、自动组装、首公里、工作日数、交接和最短组装时间（分钟）、订单上限（`-1` 为无上限）、暂停时间、创建和更新时间、时区。**不读**仓库名称、地址、坐标、电话、快递员备注、投放点和时段。
+- **新表**（只追加，按店铺归属）：`core.seller_rating_summary_observation`、`core.seller_rating_item_observation`、`core.warehouse_observation`。店铺最新一次观测就是当前状态，Ozon 不再列出的评级或仓库不会被当成当前的。
+- **评级数值**：`RATIO` 类评级是 0 到 1 的比例（试点"价格指数红色区商品占比"为 1，而有价格指数的 14 个商品全是 RED），页面按百分比显示；`PERCENT` 已是百分比；其余按原样显示。
+- **漂移记录**：仓库里有意不读的字段（名称、地址、电话等）会以字段路径记为 `staging.schema_drift_observation`（只有路径，没有取值），和其他数据集不读的字段一样。主映射读整份应答、伴随映射读其中的列表时，伴随映射读的列表不再算主映射的漂移（`NormalizationRunner.coveredBy`）。
+- **仓库状态含义**（官方 `/v1/warehouse/list` 的对照表）：`created` 启用、`new` 启用中、`disabled` 已归档、`blocked` 已封禁、`disabled_due_to_limit` 暂停（达到订单上限）、`error` 出错。
+- **定时采集**：两个数据集都按每日快照，排在促销之后。
+- **出站白名单**：`/v1/rating/summary`、`/v2/warehouse/list` 两条精确路径规则（`/v2/warehouse/list` 旁边有 `/v1/warehouse/archive` 等写方法）。
+- **控制台接口**：`GET /api/v1/console/stores/{storeId}/standing`，需要 `DIAGNOSTIC_VIEW`，读取记审计。返回评级概况、最新一次评级和仓库，各自带数据时间；尚未采集的部分为空。
+- **页面**：
+  - 店铺诊断页底部新增"店铺状态"：账户（Premium、Premium Plus、罚分、本地化指数）、卖家评级表（中文名、Ozon 判定、当前值和上期值；没有判定的评级显示"暂无数据"，不显示成 0；数值按 Ozon 原样显示）、仓库（状态、类型、首公里、工作日、订单上限、暂停）；
+  - 页面顶部在罚分超限、仓库不是"启用"、评级被判为严重或需注意时提示；一切正常时不显示；
+  - "诊断结论"下方的说明按采集到的订阅状态写"本店未订阅"或"本店已订阅，但这些数据还没有接入"，没采集到时不写。
+- **接入步骤**：
+
+  ```bash
+  make ozon-setup CAPABILITY=seller-rating API=http://127.0.0.1:9999 OPERATOR=claude-for-owner
+  make ozon-setup CAPABILITY=warehouses API=http://127.0.0.1:9999 OPERATOR=claude-for-owner
+  make ozon-verify CAPABILITY=seller-rating API=http://127.0.0.1:9999
+  make ozon-verify CAPABILITY=warehouses API=http://127.0.0.1:9999
+  ```
+
+  然后两个能力各跑一次 `make ozon-run` 和 `make ozon-normalize`，之后由定时采集每天更新。
 
 ## 控制台：店铺诊断
 

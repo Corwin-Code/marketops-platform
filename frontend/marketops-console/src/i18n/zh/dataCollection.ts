@@ -90,6 +90,8 @@ export const DATASET_LABELS: Readonly<Record<string, string>> = {
   PROMOTION: '促销活动',
   PROMOTION_CANDIDATE: '活动候选商品',
   PROMOTION_PARTICIPANT: '已参加活动的商品',
+  SELLER_RATING: '卖家评级',
+  FBS_WAREHOUSE: 'FBS 仓库',
   TRAFFIC: '下单件数',
   LISTING_SEARCH: '搜索汇总',
   LISTING_SEARCH_TERM: '搜索词',

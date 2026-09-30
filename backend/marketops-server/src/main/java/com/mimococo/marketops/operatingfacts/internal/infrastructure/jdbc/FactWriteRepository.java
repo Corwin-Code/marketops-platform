@@ -739,7 +739,6 @@ public class FactWriteRepository {
                 .update();
     }
 
-    /** Record what the answer about one promotion said about one of its products. */
     /**
      * The currency of a listing variant's newest price observation at or before a moment, or empty.
      * Ozon states the amounts of a promotion's products in the product's price currency, and its
@@ -760,6 +759,7 @@ public class FactWriteRepository {
                 .optional();
     }
 
+    /** Record what the answer about one promotion said about one of its products. */
     public void insertPromotionItem(UUID id, UUID organizationId, UUID provenanceId, UUID promotionId,
                                     UUID listingVariantId, String sourceFactKey, Instant observedAt, String membership,
                                     PromotionItemTerms terms) {
@@ -809,6 +809,128 @@ public class FactWriteRepository {
     }
 
     /** What a promotion snapshot said about one promotion; every part {@code null} when unsaid. */
+    /** Record the store's rating summary as one answer stated it. */
+    public void insertRatingSummary(UUID id, UUID organizationId, UUID provenanceId, UUID storeId,
+                                    String sourceFactKey, Instant observedAt, RatingSummary summary) {
+        jdbc.sql("""
+                        INSERT INTO core.seller_rating_summary_observation (
+                            id, organization_id, provenance_id, store_id, source_fact_key, observed_at,
+                            premium, premium_plus, penalty_score_exceeded, localization_calculated_at,
+                            localization_percentage)
+                        VALUES (:id, :organizationId, :provenanceId, :storeId, :sourceFactKey, :observedAt,
+                            :premium, :premiumPlus, :penaltyScoreExceeded, :localizationCalculatedAt,
+                            :localizationPercentage)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("storeId", storeId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("premium", summary.premium())
+                .param("premiumPlus", summary.premiumPlus())
+                .param("penaltyScoreExceeded", summary.penaltyScoreExceeded())
+                .param("localizationCalculatedAt", timestamp(summary.localizationCalculatedAt()))
+                .param("localizationPercentage", summary.localizationPercentage())
+                .update();
+    }
+
+    /** Record one of the store's ratings as one answer stated it. */
+    public void insertRatingItem(UUID id, UUID organizationId, UUID provenanceId, UUID storeId,
+                                 String sourceFactKey, Instant observedAt, RatingItem item) {
+        jdbc.sql("""
+                        INSERT INTO core.seller_rating_item_observation (
+                            id, organization_id, provenance_id, store_id, source_fact_key, observed_at,
+                            rating_key, group_name, rating_name, value_type, direction, status, current_value,
+                            past_value, change_direction, change_meaning)
+                        VALUES (:id, :organizationId, :provenanceId, :storeId, :sourceFactKey, :observedAt,
+                            :ratingKey, :groupName, :ratingName, :valueType, :direction, :status, :currentValue,
+                            :pastValue, :changeDirection, :changeMeaning)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("storeId", storeId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("ratingKey", item.ratingKey())
+                .param("groupName", item.groupName())
+                .param("ratingName", item.ratingName())
+                .param("valueType", item.valueType())
+                .param("direction", item.direction())
+                .param("status", item.status())
+                .param("currentValue", item.currentValue())
+                .param("pastValue", item.pastValue())
+                .param("changeDirection", item.changeDirection())
+                .param("changeMeaning", item.changeMeaning())
+                .update();
+    }
+
+    /** Record one of the store's warehouses as one answer stated it. */
+    public void insertWarehouse(UUID id, UUID organizationId, UUID provenanceId, UUID storeId,
+                                String sourceFactKey, Instant observedAt, Warehouse warehouse) {
+        jdbc.sql("""
+                        INSERT INTO core.warehouse_observation (
+                            id, organization_id, provenance_id, store_id, source_fact_key, observed_at,
+                            native_warehouse_key, warehouse_type, status, rfbs, express, large_goods, auto_assembly,
+                            first_mile_kind, working_day_count, handover_minutes, assembly_minutes, postings_limit,
+                            min_postings_limit, has_postings_limit, paused_at, source_created_at, source_updated_at,
+                            time_zone)
+                        VALUES (:id, :organizationId, :provenanceId, :storeId, :sourceFactKey, :observedAt,
+                            :warehouseKey, :warehouseType, :status, :rfbs, :express, :largeGoods, :autoAssembly,
+                            :firstMileKind, :workingDayCount, :handoverMinutes, :assemblyMinutes, :postingsLimit,
+                            :minPostingsLimit, :hasPostingsLimit, :pausedAt, :sourceCreatedAt, :sourceUpdatedAt,
+                            :timeZone)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("storeId", storeId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("warehouseKey", warehouse.nativeWarehouseKey())
+                .param("warehouseType", warehouse.warehouseType())
+                .param("status", warehouse.status())
+                .param("rfbs", warehouse.rfbs())
+                .param("express", warehouse.express())
+                .param("largeGoods", warehouse.largeGoods())
+                .param("autoAssembly", warehouse.autoAssembly())
+                .param("firstMileKind", warehouse.firstMileKind())
+                .param("workingDayCount", warehouse.workingDayCount())
+                .param("handoverMinutes", warehouse.handoverMinutes())
+                .param("assemblyMinutes", warehouse.assemblyMinutes())
+                .param("postingsLimit", warehouse.postingsLimit())
+                .param("minPostingsLimit", warehouse.minPostingsLimit())
+                .param("hasPostingsLimit", warehouse.hasPostingsLimit())
+                .param("pausedAt", timestamp(warehouse.pausedAt()))
+                .param("sourceCreatedAt", timestamp(warehouse.sourceCreatedAt()))
+                .param("sourceUpdatedAt", timestamp(warehouse.sourceUpdatedAt()))
+                .param("timeZone", warehouse.timeZone())
+                .update();
+    }
+
+    /** What a rating summary states about the store. */
+    public record RatingSummary(Boolean premium, Boolean premiumPlus, Boolean penaltyScoreExceeded,
+                                Instant localizationCalculatedAt, BigDecimal localizationPercentage) {
+    }
+
+    /** What one rating states. */
+    public record RatingItem(String ratingKey, String groupName, String ratingName, String valueType,
+                             String direction, String status, BigDecimal currentValue, BigDecimal pastValue,
+                             String changeDirection, String changeMeaning) {
+    }
+
+    /** What one warehouse description states; no name, address or phone. */
+    public record Warehouse(String nativeWarehouseKey, String warehouseType, String status, Boolean rfbs,
+                            Boolean express, Boolean largeGoods, Boolean autoAssembly, String firstMileKind,
+                            Integer workingDayCount, Integer handoverMinutes, Integer assemblyMinutes,
+                            Integer postingsLimit, Integer minPostingsLimit, Boolean hasPostingsLimit,
+                            Instant pausedAt, Instant sourceCreatedAt, Instant sourceUpdatedAt, String timeZone) {
+    }
+
     public record PromotionTerms(String title, String promotionKind, String description, Instant startsAt,
                                  Instant endsAt, Instant freezesAt, Integer candidateCount, Integer participantCount,
                                  Integer bannedCount, Boolean participating, Boolean voucher, Boolean targeted,

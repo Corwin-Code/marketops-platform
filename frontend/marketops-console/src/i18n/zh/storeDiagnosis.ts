@@ -117,8 +117,15 @@ export const storeDiagnosisText = {
   conclusionsCalculatedAt: '计算于',
   conclusionsNone: '还没有诊断计算结果，点“重新计算诊断”生成。',
   conclusionsEmpty: '最近一次计算没有发现问题。',
-  conclusionsNote:
-    '有两类结论暂时无法判断：曝光低、点击率低、转化率低需要 Ozon 的曝光、点击和加购数据，只对 Premium Plus 订阅开放（本店未订阅）；负利润、退货率、库存可售天数、广告效率需要实际订单和结算数据（本店还没有订单）。下面的结论依据预估单件经济、搜索、价格、内容和活动这些不依赖销售的数据。价格竞争力和搜索属于平台分析（C 级），只用于诊断，不会自动改价。',
+  /** @param premiumPlus whether the store has Premium Plus, `null` until the rating summary is collected */
+  conclusionsNote: (premiumPlus: boolean | null): string =>
+    `有两类结论暂时无法判断：曝光低、点击率低、转化率低需要 Ozon 的曝光、点击和加购数据，只对 Premium Plus 订阅开放${
+      premiumPlus === null
+        ? ''
+        : premiumPlus
+          ? '（本店已订阅，但这些数据还没有接入）'
+          : '（本店未订阅）'
+    }；负利润、退货率、库存可售天数、广告效率需要实际订单和结算数据（本店还没有订单）。下面的结论依据预估单件经济、搜索、价格、内容和活动这些不依赖销售的数据。价格竞争力和搜索属于平台分析（C 级），只用于诊断，不会自动改价。`,
   recalculate: '重新计算诊断',
   recalculateDone: (count: number): string => `已重新计算 ${String(count)} 个商品`,
   recalculateHint: '按最近 7 天的数据重新计算指标和诊断结论；计算窗口截至上一个整点。',
@@ -188,11 +195,93 @@ export const collectionHealthText = {
     `Ozon 拒绝了当前的 key（${status}）：${jobs}已停止更新。key 可能已被停用或缺少权限，请在 Ozon 卖家后台检查并换上新 key，然后在数据采集页恢复任务。`,
   blocked: (jobs: string): string => `这些任务被卡住，需要人处理后才会继续：${jobs}。`,
   evidenceLapsed: (jobs: string): string =>
-    `这些数据的核验证据已过期，已停止采集：${jobs}。需要重新探测，并由两位 Owner 核验。`,
+    `这些数据没有有效的核验证据（尚未核验或已过期），不会采集：${jobs}。需要探测，并由两位 Owner 核验。`,
   evidenceExpiring: (count: number): string => `${String(count)} 项数据的核验证据即将到期，最早于 `,
   credentialMissing: '没有生效的 Ozon 只读凭证，无法采集。',
   credentialExpiring: 'Ozon 只读凭证即将到期，到期时间：',
 } as const;
+
+/** The store's own standing on Ozon: subscription, penalty balance, ratings and warehouses. */
+export const storeStandingText = {
+  title: '店铺状态',
+  hint: '来自 Ozon 卖家评级和仓库列表，每天采集一次。评级按 Ozon 自己的判定显示；没有订单时多数评级还没有数据。',
+  notCollected: '还没有采集到店铺状态。',
+  collectedAt: '数据时间',
+  account: '账户',
+  premium: 'Premium 订阅',
+  premiumPlus: 'Premium Plus 订阅',
+  subscribed: '已订阅',
+  notSubscribed: '未订阅',
+  penalty: '罚分',
+  penaltyExceeded: '已超限',
+  penaltyOk: '未超限',
+  localization: '本地化指数',
+  localizationEmpty: '近 14 天没有销售，Ozon 未计算',
+  localizationValue: (percent: string): string => `${percent}%`,
+  localizationAt: '计算于',
+  unknown: '未知',
+  ratings: '卖家评级',
+  ratingColumn: '评级',
+  statusColumn: 'Ozon 判定',
+  valueColumn: '当前值',
+  pastColumn: '上期值',
+  noRatingData: '暂无数据',
+  valueAsStated: '比例类评级按百分比显示（Ozon 以 0 到 1 的比例给出），其余按 Ozon 原样显示。',
+  warehouses: '仓库',
+  warehouseColumn: '仓库',
+  firstMile: '首公里',
+  workingDays: (days: number): string => `每周 ${String(days)} 天`,
+  noPostingsLimit: '无订单上限',
+  postingsLimit: (limit: number): string => `订单上限 ${String(limit)}`,
+  paused: '已暂停，自',
+  alertTitle: '店铺状态需要处理',
+  alertPenalty: 'Ozon 罚分已超限，店铺可能被限制销售。请到 Ozon 卖家后台“评级”查看原因。',
+  alertWarehouse: (key: string, status: string): string =>
+    `仓库 ${key} 当前状态为“${status}”，从这个仓库发货的商品可能无法下单。`,
+  alertRating: (names: string): string => `这些评级被 Ozon 判为严重：${names}。`,
+  warningRating: (names: string): string => `这些评级需要注意：${names}。`,
+} as const;
+
+/** Ozon's verdict on a rating. */
+export const RATING_STATUS_LABELS: Readonly<Record<string, string>> = {
+  OK: '正常',
+  WARNING: '需注意',
+  CRITICAL: '严重',
+  UNKNOWN_STATUS: '暂无数据',
+};
+
+/** The ratings Ozon returned for the pilot (2026-10-01), in Chinese; others show Ozon's own name. */
+export const RATING_LABELS: Readonly<Record<string, string>> = {
+  rating_review_avg_score_total: '商品评价均分',
+  rating_shipment_delay_cb: '发货逾期率',
+  rating_general_indicator_fbs_rfbs: 'FBS/rFBS 累进制评分',
+  rating_delivery_complaints_fbo: 'FBO 投诉率',
+  rating_delivery_complaints_fbs: 'FBS 投诉率',
+  rating_delivery_complaints_rfbs_sd: 'rFBS 投诉率',
+  rating_price_green: '价格指数绿色区商品占比',
+  rating_price_yellow: '价格指数黄色区商品占比',
+  rating_price_red: '价格指数红色区商品占比',
+  rating_price_super: '价格指数超值区商品占比',
+};
+
+/** The order ratings are listed in: the seller's score, delivery, complaints, then prices. */
+export const RATING_ORDER: readonly string[] = Object.keys(RATING_LABELS);
+
+/** A warehouse's state as the seller back office names it (official mapping, /v1/warehouse/list). */
+export const WAREHOUSE_STATUS_LABELS: Readonly<Record<string, string>> = {
+  created: '启用',
+  new: '启用中',
+  disabled: '已归档',
+  blocked: '已封禁',
+  disabled_due_to_limit: '暂停（达到订单上限）',
+  error: '出错',
+};
+
+/** How orders leave a warehouse for Ozon. */
+export const FIRST_MILE_LABELS: Readonly<Record<string, string>> = {
+  DROP_OFF: '自送到投放点',
+  PICK_UP: 'Ozon 上门取件',
+};
 
 /** What each conclusion means and what to do next, in the order the page shows them. */
 export const CONCLUSION_TEXT: Readonly<
