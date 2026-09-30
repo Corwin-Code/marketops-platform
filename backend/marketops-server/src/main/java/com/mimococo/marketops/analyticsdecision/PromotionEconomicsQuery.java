@@ -40,15 +40,18 @@ public interface PromotionEconomicsQuery {
      *
      * @param item the product as the promotion answer described it
      * @param marginNow the margin at today's buyer price
+     * @param marginAtActionPrice the margin at the price a participant has in the promotion
      * @param marginAtMaxActionPrice the margin at the highest price the promotion allows
      * @param marginAtRecommendedPrice the margin at the price the marketplace recommends
      * @param marginAtMaxBoostPrice the margin at the price that earns the largest boost
      * @param breakEvenPrice the lowest price that covers the unit's costs, or {@code null}
-     * @param verdict JOIN_KEEPS_FLOOR, JOIN_BELOW_FLOOR, JOIN_LOSES or UNKNOWN, judged at the highest
-     *        price the promotion allows (joining never earns more than that)
+     * @param verdict JOIN_KEEPS_FLOOR, JOIN_BELOW_FLOOR, JOIN_LOSES or UNKNOWN: for a participant judged
+     *        at its action price, the price it sells at in the promotion; for a candidate at the
+     *        highest price the promotion allows (joining never earns more than that)
      */
     record ItemEconomics(PromotionSnapshot.Item item, BigDecimal buyerPriceNow, BigDecimal marginNow,
-                         BigDecimal marginAtMaxActionPrice, BigDecimal marginAtRecommendedPrice,
+                         BigDecimal marginAtActionPrice, BigDecimal marginAtMaxActionPrice,
+                         BigDecimal marginAtRecommendedPrice,
                          BigDecimal marginAtMaxBoostPrice, BigDecimal breakEvenPrice, String verdict,
                          List<String> missing) {
 

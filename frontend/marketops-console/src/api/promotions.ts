@@ -37,11 +37,16 @@ export interface PromotionItem {
   readonly quarantined: boolean | null;
   readonly buyerPriceNow: string | null;
   readonly marginNow: string | null;
+  /** The margin at the price a participant has in the promotion. */
+  readonly marginAtActionPrice: string | null;
   readonly marginAtMaxActionPrice: string | null;
   readonly marginAtRecommendedPrice: string | null;
   readonly marginAtMaxBoostPrice: string | null;
   readonly breakEvenPrice: string | null;
-  /** `JOIN_KEEPS_FLOOR`, `JOIN_BELOW_FLOOR`, `JOIN_LOSES` or `UNKNOWN`. */
+  /**
+   * `JOIN_KEEPS_FLOOR`, `JOIN_BELOW_FLOOR`, `JOIN_LOSES` or `UNKNOWN`: a participant judged at its
+   * action price, a candidate at the highest price the promotion allows.
+   */
   readonly verdict: string;
   readonly missing: readonly string[];
 }
@@ -177,6 +182,7 @@ function parseItem(value: unknown): PromotionItem | undefined {
     quarantined: flag(value.quarantined),
     buyerPriceNow: decimal(value.buyerPriceNow),
     marginNow: decimal(value.marginNow),
+    marginAtActionPrice: decimal(value.marginAtActionPrice),
     marginAtMaxActionPrice: decimal(value.marginAtMaxActionPrice),
     marginAtRecommendedPrice: decimal(value.marginAtRecommendedPrice),
     marginAtMaxBoostPrice: decimal(value.marginAtMaxBoostPrice),

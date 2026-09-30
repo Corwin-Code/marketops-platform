@@ -28,16 +28,19 @@ export const promotionsText = {
   itemsNone: '这个活动还没有读到候选或已参加的商品。',
   itemsStale: '候选和已参加商品还没有随这次活动快照更新。',
   summary: (keeps: number, below: number, loses: number, unknown: number): string =>
-    `按最高活动价：保住下限 ${String(keeps)} 个 · 低于下限 ${String(below)} 个 · 亏损 ${String(loses)} 个` +
+    `判断：保住下限 ${String(keeps)} 个 · 低于下限 ${String(below)} 个 · 亏损 ${String(loses)} 个` +
     (unknown > 0 ? ` · 无法测算 ${String(unknown)} 个` : ''),
 
   columnProduct: '商品',
   columnMembership: '状态',
   columnNow: '现价 / 利润率',
+  columnAction: '活动价 / 利润率',
   columnMaxAction: '最高活动价 / 利润率',
   columnRecommended: '推荐活动价 / 利润率',
   columnBoost: '加成',
-  columnVerdict: '按最高活动价',
+  columnVerdict: '判断',
+  verdictHint:
+    '已参加的商品按它在活动里的价格判断；可参加的商品按活动允许的最高价判断，参加后不可能比这个价更赚钱。',
   boostRange: (min: string, max: string): string => `${min}–${max}%`,
   boostCurrent: (current: string): string => `当前 ${current}%`,
   maxBoostPrice: '最大加成价',
@@ -68,6 +71,9 @@ export const promotionsText = {
   summaryMaxAction: '最高活动价',
   summaryRecommended: '推荐活动价',
   summaryNow: '现价',
+  summaryAction: '活动价',
+  descriptionExpand: '展开活动说明',
+  descriptionCollapse: '收起',
 
   aiTitle: 'AI 促销取舍建议',
   aiHint:

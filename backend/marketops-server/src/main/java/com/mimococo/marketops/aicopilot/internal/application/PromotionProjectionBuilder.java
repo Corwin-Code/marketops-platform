@@ -169,6 +169,10 @@ class PromotionProjectionBuilder {
                 addText(fields, "items.addMode", terms.addMode());
                 addText(fields, "items.priceNow", money(item.buyerPriceNow(), terms.currencyCode()));
                 addText(fields, "items.marginNow", ratio(item.marginNow()));
+                if ("PARTICIPANT".equals(terms.membership())) {
+                    addText(fields, "items.actionPrice", money(terms.actionPrice(), terms.currencyCode()));
+                    addText(fields, "items.marginAtActionPrice", ratio(item.marginAtActionPrice()));
+                }
                 addText(fields, "items.maxActionPrice", money(terms.maxActionPrice(), terms.currencyCode()));
                 addText(fields, "items.marginAtMaxActionPrice", ratio(item.marginAtMaxActionPrice()));
                 addText(fields, "items.recommendedActionPrice",
@@ -177,8 +181,12 @@ class PromotionProjectionBuilder {
                 fields.add(field("items.verdict", item.verdict()));
                 item.missing().forEach(code -> fields.add(field("items.missingInput", code)));
                 Map<MetricCode, ProjectionEgress.Value> own = values.getOrDefault(variant, Map.of());
-                addText(fields, "items.maxActionVsCompetitor",
-                        versusCompetitor(terms.maxActionPrice(), terms.currencyCode(), own.get(COMPETITOR)));
+                // The price the verdict is judged at: a participant's own action price, which the
+                // highest allowed price can exceed, or a candidate's highest allowed price.
+                BigDecimal judgedPrice = "PARTICIPANT".equals(terms.membership()) && terms.actionPrice() != null
+                        ? terms.actionPrice() : terms.maxActionPrice();
+                addText(fields, "items.promotionPriceVsCompetitor",
+                        versusCompetitor(judgedPrice, terms.currencyCode(), own.get(COMPETITOR)));
                 for (MetricCode code : SHOWN) {
                     ProjectionEgress.Value value = own.get(code);
                     if (value == null || !value.available()) {
@@ -229,7 +237,7 @@ class PromotionProjectionBuilder {
         return value != null && value.available() ? value.number() : BigDecimal.valueOf(-1);
     }
 
-    /** The highest promotion price against the lowest competitor price, signed; empty when not comparable. */
+    /** A promotion price against the lowest competitor price, signed; empty when not comparable. */
     private static String versusCompetitor(BigDecimal price, String currencyCode, ProjectionEgress.Value competitor) {
         if (price == null || competitor == null || !competitor.available() || competitor.number().signum() <= 0
                 || !Objects.equals(currencyCode, competitor.currencyCode())) {

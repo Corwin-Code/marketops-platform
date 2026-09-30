@@ -93,31 +93,37 @@ class PromotionEconomicsService implements PromotionEconomicsQuery {
                 && !inputs.cost().unitCost().currencyCode().equals(currency)) {
             missing.add("UNIT_COST_CURRENCY");
         }
-        if (item.maxActionPrice() == null) {
+        // A participant sells at its own action price, which the highest allowed price can exceed
+        // (21 of 28 on 2026-10-01); a candidate can earn no more than the highest allowed price.
+        boolean participant = "PARTICIPANT".equals(item.membership());
+        BigDecimal judgedPrice = participant && item.actionPrice() != null ? item.actionPrice() : item.maxActionPrice();
+        if (judgedPrice == null) {
             missing.add("MAX_ACTION_PRICE");
         }
         boolean computable = inputs.terms() != null && inputs.cost() != null && !missing.contains("UNIT_COST_CURRENCY");
         BigDecimal buyerNow = inputs.stated() == null ? null : inputs.stated().buyerPrice();
         BigDecimal marginNow = computable ? margin(buyerNow, inputs, floor) : null;
+        BigDecimal atAction = computable ? margin(item.actionPrice(), inputs, floor) : null;
         BigDecimal atMax = computable ? margin(item.maxActionPrice(), inputs, floor) : null;
         BigDecimal atRecommended = computable ? margin(item.recommendedActionPrice(), inputs, floor) : null;
         BigDecimal atMaxBoost = computable ? margin(item.priceForMaxBoost(), inputs, floor) : null;
-        BigDecimal breakEven = computable && item.maxActionPrice() != null
-                ? ListingUnitEconomics.estimate(item.maxActionPrice(), inputs.terms(),
+        BigDecimal judged = computable ? margin(judgedPrice, inputs, floor) : null;
+        BigDecimal breakEven = computable && judgedPrice != null
+                ? ListingUnitEconomics.estimate(judgedPrice, inputs.terms(),
                         inputs.cost().unitCost().amount(), floor).breakEvenPrice()
                 : null;
         String verdict;
-        if (atMax == null) {
+        if (judged == null) {
             verdict = "UNKNOWN";
-        } else if (atMax.signum() < 0) {
+        } else if (judged.signum() < 0) {
             verdict = "JOIN_LOSES";
-        } else if (floor != null && atMax.compareTo(floor) < 0) {
+        } else if (floor != null && judged.compareTo(floor) < 0) {
             verdict = "JOIN_BELOW_FLOOR";
         } else {
             verdict = "JOIN_KEEPS_FLOOR";
         }
-        return new ItemEconomics(item, buyerNow, marginNow, atMax, atRecommended, atMaxBoost, breakEven, verdict,
-                missing);
+        return new ItemEconomics(item, buyerNow, marginNow, atAction, atMax, atRecommended, atMaxBoost, breakEven,
+                verdict, missing);
     }
 
     private static BigDecimal margin(BigDecimal price, Inputs inputs, BigDecimal floor) {

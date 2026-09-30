@@ -128,6 +128,15 @@ function PriceMargin({
   );
 }
 
+/**
+ * A marketplace description as text. Ozon writes it with HTML markup; it is parsed only to read its
+ * text and is never rendered as HTML.
+ */
+function plainText(html: string): string {
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+  return parsed.body.textContent.replace(/\s+/g, ' ').trim();
+}
+
 function productName(item: PromotionItem): string {
   return (
     [item.title, item.size, item.color]
@@ -192,6 +201,20 @@ function itemColumns(
       ),
     },
     {
+      title: text.columnAction,
+      key: 'action',
+      render: (_, item) =>
+        item.membership === 'PARTICIPANT' ? (
+          <PriceMargin
+            price={item.actionPrice}
+            margin={item.marginAtActionPrice}
+            currency={item.currencyCode}
+          />
+        ) : (
+          <Typography.Text type="secondary">—</Typography.Text>
+        ),
+    },
+    {
       title: text.columnMaxAction,
       key: 'maxAction',
       render: (_, item) => (
@@ -223,37 +246,51 @@ function itemColumns(
     {
       title: text.columnBoost,
       key: 'boost',
-      render: (_, item) => (
-        <Flex vertical gap={2}>
-          {item.minBoost !== null && item.maxBoost !== null ? (
-            <Typography.Text style={{ fontVariantNumeric: 'tabular-nums' }}>
-              {text.boostRange(item.minBoost, item.maxBoost)}
-            </Typography.Text>
-          ) : (
-            <Typography.Text type="secondary">—</Typography.Text>
-          )}
-          {item.currentBoost !== null && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {text.boostCurrent(item.currentBoost)}
-            </Typography.Text>
-          )}
-          {item.priceForMaxBoost !== null && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {text.maxBoostPrice}：
-              <Money value={item.priceForMaxBoost} currency={item.currencyCode} /> ·{' '}
-              {formatPercent(item.marginAtMaxBoostPrice)}
-            </Typography.Text>
-          )}
-          {item.minStock !== null && item.recommendedStock !== null && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {text.stockRule(String(item.minStock), String(item.recommendedStock))}
-            </Typography.Text>
-          )}
-        </Flex>
-      ),
+      render: (_, item) => {
+        // Ozon states 0 for a boost range or a stock rule a promotion does not have.
+        const boosted =
+          item.minBoost !== null && item.maxBoost !== null && Number(item.maxBoost) > 0;
+        const stockRule = (item.minStock ?? 0) > 0 || (item.recommendedStock ?? 0) > 0;
+        if (!boosted && !stockRule) {
+          return <Typography.Text type="secondary">—</Typography.Text>;
+        }
+        return (
+          <Flex vertical gap={2}>
+            {boosted && (
+              <>
+                <Typography.Text style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {text.boostRange(item.minBoost, item.maxBoost)}
+                </Typography.Text>
+                {item.currentBoost !== null && (
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {text.boostCurrent(item.currentBoost)}
+                  </Typography.Text>
+                )}
+                {item.priceForMaxBoost !== null && (
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {text.maxBoostPrice}：
+                    <Money value={item.priceForMaxBoost} currency={item.currencyCode} /> ·{' '}
+                    {formatPercent(item.marginAtMaxBoostPrice)}
+                  </Typography.Text>
+                )}
+              </>
+            )}
+            {stockRule && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {text.stockRule(String(item.minStock ?? 0), String(item.recommendedStock ?? 0))}
+              </Typography.Text>
+            )}
+          </Flex>
+        );
+      },
     },
     {
-      title: text.columnVerdict,
+      title: (
+        <Space size={4}>
+          {text.columnVerdict}
+          <InfoTip title={text.verdictHint} />
+        </Space>
+      ),
       key: 'verdict',
       render: (_, item) => (
         <Flex vertical gap={2} align="flex-start">
@@ -362,6 +399,21 @@ function DecisionSummary({ item }: { readonly item: PromotionItem }): React.JSX.
             />
           ),
         },
+        ...(item.membership === 'PARTICIPANT'
+          ? [
+              {
+                key: 'action',
+                label: text.summaryAction,
+                children: (
+                  <PriceMargin
+                    price={item.actionPrice}
+                    margin={item.marginAtActionPrice}
+                    currency={item.currencyCode}
+                  />
+                ),
+              },
+            ]
+          : []),
         {
           key: 'maxAction',
           label: text.summaryMaxAction,
@@ -484,8 +536,13 @@ function PromotionCard({
             type="secondary"
             lang="ru"
             style={{ fontSize: 12, marginBottom: 0 }}
+            ellipsis={{
+              rows: 2,
+              expandable: 'collapsible',
+              symbol: (expanded) => (expanded ? text.descriptionCollapse : text.descriptionExpand),
+            }}
           >
-            {promotion.description}
+            {plainText(promotion.description)}
           </Typography.Paragraph>
         )}
         {items.length === 0 ? (

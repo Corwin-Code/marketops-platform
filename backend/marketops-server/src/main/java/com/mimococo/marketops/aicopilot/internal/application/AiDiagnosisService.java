@@ -66,7 +66,7 @@ public class AiDiagnosisService implements AiCopilot {
 
     /** The promotion review's prompt template and version. */
     private static final String PROMOTION_PROMPT_CODE = "promotion-review";
-    private static final int PROMOTION_PROMPT_VERSION = 1;
+    private static final int PROMOTION_PROMPT_VERSION = 4;
 
     /** What a promotion review may recommend: reviewing a promotion, or the costs its estimates lack. */
     private static final java.util.Set<String> PROMOTION_CAPABILITIES = java.util.Set.of("PROMOTION_REVIEW",
@@ -379,19 +379,24 @@ public class AiDiagnosisService implements AiCopilot {
             promotions.discount, and how many of its promotions.productCount products keep the \
             margin floor (promotions.keepsFloorCount), earn a profit below it \
             (promotions.belowFloorCount), lose money (promotions.losesCount) or cannot be estimated \
-            (promotions.unknownCount) at the promotion's highest price. items.* describes one product \
+            (promotions.unknownCount) by items.verdict. items.* describes one product \
             of the promotion named by items.promotionRef, at most five per promotion: \
             items.membership is CANDIDATE (can join) or PARTICIPANT (takes part; items.addMode \
             AUTOMATIC means the marketplace added it, SELLER that the seller did). items.priceNow is \
-            today's buyer price and items.marginNow the estimated unit margin at it; \
-            items.maxActionPrice is the highest price the product may have in the promotion and \
-            items.marginAtMaxActionPrice the margin there; items.recommendedActionPrice is the price \
-            the marketplace recommends and items.marginAtRecommendedPrice the margin there. \
-            items.verdict is the platform's judgement at the highest price: JOIN_KEEPS_FLOOR keeps \
-            the margin floor, JOIN_BELOW_FLOOR earns a profit below it, JOIN_LOSES loses money on \
-            every unit, UNKNOWN cannot be estimated for want of items.missingInput. \
-            items.maxActionVsCompetitor compares the highest promotion price with the lowest Ozon \
-            competitor price, signed, so +12.5% means 12.5% higher. items.metricCode with \
+            today's buyer price and items.marginNow the estimated unit margin at it; for a \
+            participant, items.actionPrice is the price it has in the promotion and \
+            items.marginAtActionPrice the margin there; items.maxActionPrice is the highest price the \
+            product may have in the promotion and items.marginAtMaxActionPrice the margin there; \
+            items.recommendedActionPrice is the price the marketplace recommends and \
+            items.marginAtRecommendedPrice the margin there. items.verdict is the platform's \
+            judgement, for a participant at its action price and for a candidate at the highest \
+            price: JOIN_KEEPS_FLOOR keeps the margin floor, JOIN_BELOW_FLOOR earns a profit below it, \
+            JOIN_LOSES loses money on every unit, UNKNOWN cannot be estimated for want of \
+            items.missingInput. \
+            items.promotionPriceVsCompetitor compares the price the verdict is judged at (a \
+            participant's action price, a candidate's highest price) with the lowest Ozon competitor \
+            price, signed, so +12.5% means 12.5% higher. A ratio describes only the price its field \
+            names: never attach it to another price. items.metricCode with \
             items.displayValue and items.valueRef are the product's values from window.periodStart \
             to window.periodEnd: SEARCH_USERS how many buyers searched for it and ORDERED_UNITS how \
             many units were ordered. The margins keep the logistics amounts the marketplace stated \
@@ -401,17 +406,17 @@ public class AiDiagnosisService implements AiCopilot {
             brings.
 
             Answer with one JSON object and nothing else. It may contain only these members: \
-            facts, inferences, recommendations, unknowns. Each is a list of objects, and every \
-            object has a non-empty statement member.
-            inferences holds exactly one claim: the single most important conclusion about the \
-            store's promotions, in one sentence a store owner understands, with confidence of LOW, \
+            facts, inferences, recommendations, unknowns. Every member is a JSON array of objects, \
+            even when it holds a single claim, and every object has a non-empty statement member.
+            inferences is an array holding exactly one claim: the single most important conclusion \
+            about the store's promotions, in one sentence a store owner understands, with confidence of LOW, \
             MEDIUM or HIGH and a nonempty counterEvidence list.
             recommendations holds at most three claims, most important first, each about one \
             promotion named by its title: which products, by title, size and colour, to join or keep \
             and which to skip or leave, and the lowest promotion price worth accepting where the \
             data gives one. actionCapability is PROMOTION_REVIEW, or COST_DATA_REVIEW when missing \
             costs stop an estimate; include expectedEffect, risk and validationWindowDays. A \
-            JOIN_LOSES product loses money on every unit at the promotion's highest price: never \
+            JOIN_LOSES product loses money on every unit at the price it is judged at: never \
             recommend joining or keeping it. A JOIN_BELOW_FLOOR product may be joined only as a \
             deliberate trade of margin for sales where it has search demand, and the recommendation \
             says so. A participant to leave has to leave before promotions.freezesOn. The platform \
@@ -442,7 +447,10 @@ public class AiDiagnosisService implements AiCopilot {
             Write statement, counterEvidence, expectedEffect, risk, missingFact, whyItMatters and
             nextEvidence in Simplified Chinese. Every enumerated value stays exactly as specified in
             English. Describe verdicts, memberships and metrics in Chinese words inside statements
-            instead of their codes, and put identifiers only in evidenceRefs.
+            instead of their codes, and put identifiers only in evidenceRefs. When you say how many
+            products of a promotion keep the floor, earn less or lose money, use
+            promotions.keepsFloorCount, promotions.belowFloorCount and promotions.losesCount as
+            given; never say that all products keep the floor unless the other counts are 0.
             The answer must stay short, or it is cut off and lost: keep each statement under 150
             characters; expectedEffect, risk, missingFact, whyItMatters and nextEvidence are one
             short sentence each, under 60 characters; counterEvidence is a list with one short item.

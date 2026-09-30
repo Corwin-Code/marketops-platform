@@ -81,17 +81,23 @@ class PromotionConsoleController {
                 identity == null ? null : identity.platformSkuKey(), identity == null ? null : identity.sizeLabel(),
                 identity == null ? null : identity.colorLabel(), item.membership(), item.observedAt(),
                 item.currencyCode(), text(item.price()), text(item.actionPrice()), text(item.maxActionPrice()),
-                text(item.recommendedActionPrice()), item.aboveRecommended(), text(item.currentBoost()),
-                text(item.minBoost()), text(item.maxBoost()), text(item.priceForMinBoost()),
+                text(item.recommendedActionPrice()), item.aboveRecommended(), percent(item.currentBoost()),
+                percent(item.minBoost()), percent(item.maxBoost()), text(item.priceForMinBoost()),
                 text(item.priceForMaxBoost()), item.minStock(), item.recommendedStock(), item.stock(),
                 item.addMode(), item.quarantined(), text(economics.buyerPriceNow()), text(economics.marginNow()),
-                text(economics.marginAtMaxActionPrice()), text(economics.marginAtRecommendedPrice()),
+                text(economics.marginAtActionPrice()), text(economics.marginAtMaxActionPrice()),
+                text(economics.marginAtRecommendedPrice()),
                 text(economics.marginAtMaxBoostPrice()), text(economics.breakEvenPrice()), economics.verdict(),
                 economics.missing());
     }
 
     private static String text(BigDecimal value) {
         return value == null ? null : value.toPlainString();
+    }
+
+    /** A boost in percent as the marketplace stated it, without the zeros recording added. */
+    private static String percent(BigDecimal value) {
+        return value == null ? null : value.stripTrailingZeros().toPlainString();
     }
 
     /**
@@ -119,7 +125,8 @@ class PromotionConsoleController {
                 String recommendedActionPrice, Boolean aboveRecommended, String currentBoost, String minBoost,
                 String maxBoost, String priceForMinBoost, String priceForMaxBoost, Integer minStock,
                 Integer recommendedStock, Integer stock, String addMode, Boolean quarantined, String buyerPriceNow,
-                String marginNow, String marginAtMaxActionPrice, String marginAtRecommendedPrice,
+                String marginNow, String marginAtActionPrice, String marginAtMaxActionPrice,
+                String marginAtRecommendedPrice,
                 String marginAtMaxBoostPrice, String breakEvenPrice, String verdict, List<String> missing) {
     }
 }
