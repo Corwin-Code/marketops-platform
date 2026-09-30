@@ -85,6 +85,32 @@ class AiConsoleController {
         return ResponseEntity.ok(response(latest.get()));
     }
 
+    /**
+     * Ask a model which products to join, keep, skip or leave in the store's current promotions.
+     * The answer authorises nothing; an unchanged situation hands out the recorded one again.
+     */
+    @PostMapping(value = "/stores/{storeId}/promotions", produces = MediaType.APPLICATION_JSON_VALUE)
+    ExplanationResponse reviewPromotions(AuthenticatedActor actor, @PathVariable UUID storeId,
+                                         @RequestParam(required = false, defaultValue = "D7") MetricWindow window) {
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(storeId));
+        return response(copilot.reviewPromotions(actor.userId(), actor.organizationId(), storeId, window));
+    }
+
+    /** The newest recorded promotion review of one store for a window, in any state; 204 when none. */
+    @GetMapping(value = "/stores/{storeId}/promotions/latest", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ExplanationResponse> latestPromotionReview(AuthenticatedActor actor, @PathVariable UUID storeId,
+                                                              @RequestParam(required = false, defaultValue = "D7")
+                                                              MetricWindow window) {
+        authorization.require(actor, ActionScopeCode.EVIDENCE_VIEW, ResourceScope.store(storeId));
+        Optional<AiDiagnosis> latest = copilot.latestPromotionReview(actor.organizationId(), storeId, window);
+        if (latest.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.AI_INVOCATION, latest.get().invocationId()));
+        return ResponseEntity.ok(response(latest.get()));
+    }
+
     /** One recorded explanation and its claims, accepted and rejected alike. */
     @GetMapping(value = "/{invocationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ExplanationResponse invocation(AuthenticatedActor actor, @PathVariable UUID invocationId) {

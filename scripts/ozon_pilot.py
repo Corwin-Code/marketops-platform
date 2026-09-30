@@ -4,9 +4,18 @@
 Run from the repository root. Every step except ``probe`` needs the local backend
 (``--api``, default http://127.0.0.1:8080). Every step takes ``--capability``:
 ``connectivity`` (POST /v1/roles, the default), ``catalog`` (product identity,
-names and barcodes from POST /v4/product/info/attributes), ``prices`` (POST
-/v5/product/info/prices), ``stocks`` (POST /v4/product/info/stocks) or ``traffic``
-(units ordered per SKU and UTC day from POST /v1/analytics/data; one run per day).
+names, barcodes and attributes from POST /v4/product/info/attributes), ``prices``
+(POST /v5/product/info/prices), ``stocks`` (POST /v4/product/info/stocks),
+``traffic`` (units ordered per SKU and UTC day from POST /v1/analytics/data; one run
+per day), ``status`` (POST /v3/product/info/list), ``content`` (the content rating
+from POST /v1/product/rating-by-sku), ``queries`` and ``query-details`` (search
+demand and search terms from POST /v1/analytics/product-queries[/details]),
+``actions`` (GET /v1/actions), ``action-candidates`` and ``action-products`` (POST
+/v2/actions/candidates and /v2/actions/products, one request per action). A
+capability marked ``probe_only`` can be probed but not set up until its real answers
+were checked: the promotion capabilities until their first probe, and
+``category-attributes`` (POST /v1/description-category/attribute), which the
+read-only key may not call.
 
   probe      Call /v1/roles to check the key (read-only roles, expiry), then make
              the capability's real calls and keep every answer, together with the
@@ -353,6 +362,92 @@ def queries_body(date_from: str, date_to: str, limit: str, skus: str) -> str:
 # office; the official languageLanguage enum (checked 2026-09-29) is DEFAULT (Russian), RU, EN, TR
 # and ZH_HANS.
 CATEGORY_LANGUAGE = "ZH_HANS"
+
+
+def probed_actions(pilot: "Pilot") -> list[dict]:
+    """Every action of the newest actions probe kept as evidence (GET /v1/actions)."""
+    bundles = sorted(pilot.evidence_dir.glob("actions-*-bundle.json"))
+    if not bundles:
+        return []
+    bundle = json.loads(bundles[-1].read_text(encoding="utf-8"))
+    found = []
+    for page in bundle["pages"]:
+        if not page.get("records"):
+            continue
+        answer = json.loads((pilot.evidence_dir / page["file"]).read_text(encoding="utf-8"))
+        found.extend(answer.get("result") or [])
+    return found
+
+
+def action_key(value: object) -> str | None:
+    """An action id as the backend renders it: a whole number as text (the schema calls it a double)."""
+    try:
+        number = decimal.Decimal(str(value))
+    except (decimal.InvalidOperation, ValueError):
+        return None
+    return str(int(number)) if number == number.to_integral_value() and number > 0 else None
+
+
+def probed_action_ids(pilot: "Pilot") -> list[str]:
+    """The ids of the newest actions probe, in text order, as the backend batches keys."""
+    return sorted({key for key in (action_key(action.get("id")) for action in probed_actions(pilot)) if key})
+
+
+def inspect_actions(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    actions = [action for answer in answers for action in answer.get("result") or []]
+    kinds = Counter(str(action.get("action_type")) for action in actions)
+    discounts = Counter(str(action.get("discount_type")) for action in actions)
+    participating = sum(1 for action in actions if action.get("is_participating"))
+    vouchers = sum(1 for action in actions if action.get("is_voucher_action"))
+    potential = sum(int(action.get("potential_products_count") or 0) for action in actions)
+    joined = sum(int(action.get("participating_products_count") or 0) for action in actions)
+    frozen = sum(1 for action in actions if action.get("freeze_date"))
+    probed_keys = [action_key(action.get("id")) for action in actions]
+    lines = [f"actions: {len(actions)} open to the store, participating in {participating}, voucher {vouchers}, "
+             f"frozen {frozen}",
+             f"action types {dict(sorted(kinds.items()))}, discount types {dict(sorted(discounts.items()))}",
+             f"products: {potential} candidate places, {joined} participating places across all actions",
+             f"keys: {len(probed_keys)} ids, {sum(1 for key in probed_keys if key is None)} not whole numbers"]
+    refusal = None
+    if any(key is None for key in probed_keys):
+        refusal = "an action id is not a whole number; the request template renders whole numbers only"
+    return lines, refusal
+
+
+def inspect_action_items(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    per_action = [answer.get("products") or [] for answer in answers]
+    products = [product for items in per_action for product in items]
+    known = set(catalog_skus(pilot).values())
+    unknown = sum(1 for product in products if str(product.get("id")) not in known)
+    def has(field: str) -> int:
+        return sum(1 for product in products if isinstance(product.get(field), dict)
+                   and str(product[field].get("amount") or "").strip() not in ("", "0"))
+    currencies = Counter(str((product.get("price") or {}).get("currency")) for product in products)
+    full = sum(1 for items in per_action if len(items) >= PAGE_SIZE)
+    lines = [f"items: {len(products)} across {len(per_action)} actions ({unknown} not in the catalog probe), "
+             f"currencies {dict(sorted(currencies.items()))}",
+             f"with price {has('price')}, action price {has('action_price')}, max action price "
+             f"{has('max_action_price')}, recommended {has('alert_max_action_price')}, "
+             f"above recommended {sum(1 for p in products if p.get('alert_max_action_price_failed'))}, "
+             f"boost range present {sum(1 for p in products if p.get('max_boost'))}",
+             f"actions whose page was full ({PAGE_SIZE}): {full}"]
+    refusal = None
+    if full:
+        refusal = f"{full} actions filled a whole page; paging inside one action is not built"
+    return lines, refusal
+
+
+# What a product of an action says, the same for candidates and participants (official schema
+# checked 2026-09-29): amounts are {amount (text), currency}; the product id is the listing.
+PROMOTION_ITEM_FIELDS = {
+    "nativeListingKey": "/id", "nativeVariantKey": "/id", "currencyCode": "/price/currency",
+    "price": "/price/amount", "actionPrice": "/action_price/amount",
+    "maxActionPrice": "/max_action_price/amount", "recommendedActionPrice": "/alert_max_action_price/amount",
+    "aboveRecommended": "/alert_max_action_price_failed", "currentBoost": "/current_boost",
+    "minBoost": "/min_boost", "maxBoost": "/max_boost", "priceForMinBoost": "/price_min_elastic/amount",
+    "priceForMaxBoost": "/price_max_elastic/amount", "minStock": "/min_stock",
+    "recommendedStock": "/recommended_stock", "quarantined": "/is_quarantined",
+}
 
 
 def catalog_category(pilot: "Pilot") -> tuple[str, str] | None:
@@ -885,6 +980,130 @@ CAPABILITIES = {
         },
         "inspect": inspect_query_details,
     },
+    "actions": {
+        "code": "ozon-actions-read",
+        "display": "Ozon promotions: the actions the store can join",
+        "description": "Lists the Ozon actions open to the store, with dates, discount and product counts "
+                       "(GET /v1/actions; official docs checked 2026-09-29).",
+        "manifest": "actions-latest.json",
+        "endpoint": {
+            "code": "ozon-actions-v1", "api_version": "v1",
+            "schema_version": "seller_apiGetSellerActionsV1Response",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. One request per run. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "A full list of the actions open to the store on every run.",
+            "definition": {
+                "http_method": "GET", "path_template": "/v1/actions", "operation_function": "READ_DATA",
+                "query_template": None, "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": "/result",
+            },
+            "probe_body": lambda cursor, context: None,
+            "token_key": None,
+            "records_key": "result",
+            "computed": "SINGLE",
+        },
+        "job": {"suffix": "actions", "dataset": "PROMOTION", "display": "Ozon 试点：促销活动"},
+        # One record per action open to the store; the action id is the promotion key the
+        # candidate and participant requests are asked with.
+        "mapping": {
+            "dataset": "PROMOTION", "version": 1, "record_pointer": "/result", "child_pointer": None,
+            "fields": {"nativePromotionKey": "/id", "title": "/title", "promotionKind": "/action_type",
+                       "description": "/description", "startsAt": "/date_start", "endsAt": "/date_end",
+                       "freezesAt": "/freeze_date", "candidateCount": "/potential_products_count",
+                       "participantCount": "/participating_products_count",
+                       "bannedCount": "/banned_products_count", "participating": "/is_participating",
+                       "voucher": "/is_voucher_action", "targeted": "/with_targeting",
+                       "discountKind": "/discount_type", "discountValue": "/discount_value",
+                       "orderAmount": "/order_amount"},
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
+        },
+        "inspect": inspect_actions,
+    },
+    "action-candidates": {
+        "code": "ozon-action-candidates-read",
+        "display": "Ozon promotions: the products that can join each action, with action prices and boost",
+        "description": "Asks about every action of the store, one request per action (POST "
+                       "/v2/actions/candidates; official docs checked 2026-09-29; v1 is switched off "
+                       "2026-10-13).",
+        "manifest": "action-candidates-latest.json",
+        "endpoint": {
+            "code": "ozon-actions-candidates-v2", "api_version": "v2",
+            "schema_version": "actions.v2.ActionsCandidatesResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none; up to 100 products per page. Our cap: 30/min, "
+                         "one action per request. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "Every action's candidates on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v2/actions/candidates",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"action_id":{promotionKey},"last_id":"","limit":{limit}}',
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 30,
+                "continuation_end_rule": "KEYS_EXHAUSTED", "records_pointer": "/products",
+            },
+            "probe_body": lambda cursor, context: {
+                "action_id": int(context["keys"][int(cursor or "0")]), "last_id": "", "limit": PAGE_SIZE},
+            "token_key": None,
+            "records_key": "products",
+            "computed": "KEYS",
+            "keys": "ACTION",
+            "batch": 1,
+        },
+        "job": {"suffix": "action-candidates", "dataset": "PROMOTION_CANDIDATE",
+                "display": "Ozon 试点：活动候选商品"},
+        # One record per product that can join the action the request asked about; the answer
+        # does not repeat the action, the request key does.
+        "mapping": {
+            "dataset": "PROMOTION_CANDIDATE", "version": 1, "record_pointer": "/products", "child_pointer": None,
+            "fields": PROMOTION_ITEM_FIELDS,
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}, "nativePromotionKey": {"kind": "REQUEST_KEY"}},
+        },
+        "inspect": inspect_action_items,
+    },
+    "action-products": {
+        "code": "ozon-action-products-read",
+        "display": "Ozon promotions: the products taking part in each action",
+        "description": "Asks about every action of the store, one request per action (POST "
+                       "/v2/actions/products; official docs checked 2026-09-29; v1 is switched off "
+                       "2026-10-13).",
+        "manifest": "action-products-latest.json",
+        "endpoint": {
+            "code": "ozon-actions-products-v2", "api_version": "v2",
+            "schema_version": "actions.v2.ActionsProductsResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none; up to 100 products per page. Our cap: 30/min, "
+                         "one action per request. https://docs.ozon.ru/api/seller/ checked 2026-09-29",
+            "freshness": "Every action's participating products on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v2/actions/products",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"action_id":{promotionKey},"last_id":"","limit":{limit}}',
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "OFFSET", "rate_limit_per_minute": 30,
+                "continuation_end_rule": "KEYS_EXHAUSTED", "records_pointer": "/products",
+            },
+            "probe_body": lambda cursor, context: {
+                "action_id": int(context["keys"][int(cursor or "0")]), "last_id": "", "limit": PAGE_SIZE},
+            "token_key": None,
+            "records_key": "products",
+            "computed": "KEYS",
+            "keys": "ACTION",
+            "batch": 1,
+        },
+        "job": {"suffix": "action-products", "dataset": "PROMOTION_PARTICIPANT",
+                "display": "Ozon 试点：已参加活动的商品"},
+        "mapping": {
+            "dataset": "PROMOTION_PARTICIPANT", "version": 1, "record_pointer": "/products", "child_pointer": None,
+            "fields": dict(PROMOTION_ITEM_FIELDS, stock="/stock"),
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}, "nativePromotionKey": {"kind": "REQUEST_KEY"},
+                        "addMode": {"kind": "POINTER", "pointer": "/add_mode",
+                                    "valueMap": {"AUTO": "AUTOMATIC", "SELLER": "SELLER"}}},
+        },
+        "inspect": inspect_action_items,
+    },
     "category-attributes": {
         "code": "ozon-category-attributes-read",
         "display": "Ozon category attributes: names, groups and which are required",
@@ -1093,8 +1312,8 @@ def tls_context(ca_file: str | None) -> ssl.SSLContext:
 # --- probe ------------------------------------------------------------------------
 
 def post_ozon(path: str, body: dict | None, client_id: str, api_key: str,
-              context: ssl.SSLContext) -> tuple[int, str, bytes]:
-    """One Seller API call exactly as the registered endpoint sends it."""
+              context: ssl.SSLContext, method: str = "POST") -> tuple[int, str, bytes]:
+    """One Seller API call exactly as the registered endpoint sends it (POST, or GET without a body)."""
     headers = {"Client-Id": client_id, "Api-Key": api_key, "Accept": "application/json"}
     payload = None
     if body is not None:
@@ -1103,7 +1322,7 @@ def post_ozon(path: str, body: dict | None, client_id: str, api_key: str,
     connection = http.client.HTTPSConnection(OZON_HOST, 443, timeout=REQUEST_TIMEOUT_SECONDS,
                                              context=context)
     try:
-        connection.request("POST", path, body=payload, headers=headers)
+        connection.request(method, path, body=payload, headers=headers)
         response = connection.getresponse()
         answer = response.read(MAXIMUM_RESPONSE_BYTES + 1)
         if len(answer) > MAXIMUM_RESPONSE_BYTES:
@@ -1258,9 +1477,10 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             return None
         print(f"no role on the key lists {path}; Ozon lists this method under no read-only role, so the "
               "call itself decides")
-    operation = key["document"].get("paths", {}).get(path, {}).get("post")
-    if not isinstance(operation, dict) or "requestBody" not in operation:
-        print(f"the official document no longer describes POST {path} with a body; review before recording")
+    method = endpoint["definition"]["http_method"]
+    operation = key["document"].get("paths", {}).get(path, {}).get(method.lower())
+    if not isinstance(operation, dict) or (method == "POST" and "requestBody" not in operation):
+        print(f"the official document no longer describes {method} {path} as registered; review before recording")
         return None
 
     rule = endpoint["definition"]["continuation_end_rule"]
@@ -1273,7 +1493,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
 
     def call(cursor: str, file_name: str) -> tuple[dict, dict | None]:
         status, content_type, body = post_ozon(path, endpoint["probe_body"](cursor, window), client_id,
-                                               api_key, context)
+                                               api_key, context, method)
         private_write(pilot.evidence_dir / file_name, body)
         try:
             answer = json.loads(body) if content_type == "application/json" else None
@@ -1301,7 +1521,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             token = str(int(cursor or "0") + PAGE_SIZE)
         elif computed == "KEYS":
             # A batch of recorded keys: the next offset, until every key was asked.
-            following = int(cursor or "0") + PAGE_SIZE
+            following = int(cursor or "0") + endpoint.get("batch", PAGE_SIZE)
             token = str(following) if following < len(window["keys"]) else None
         elif computed == "PAGE_INDEX":
             # Pages numbered from 0; the short page ends the listing.
@@ -1380,7 +1600,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     after_note = ""
     if follow_up is not None:
         after_note = f"; the next request was answered HTTP {follow_up['status']}"
-    print(f"POST {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
+    print(f"{method} {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
 
     # Whether the registered mapping can read these answers as they are.
     inspection = []
@@ -1432,6 +1652,14 @@ def command_probe(args: argparse.Namespace) -> int:
                 sys.exit("no catalog probe evidence; probe the catalog first so products can be named")
             window = dict(window or {}, keys=keys)
             print(f"asking about the {len(keys)} products of the catalog probe")
+        elif capability["endpoint"].get("keys") == "ACTION":
+            # One request per action, in the order the backend asks: the action ids as text.
+            keys = probed_action_ids(pilot)
+            if not keys:
+                sys.exit("no action in the newest actions probe; probe the actions first (make ozon-probe "
+                         "CAPABILITY=actions), or there is nothing to ask about")
+            window = dict(window or {}, keys=keys)
+            print(f"asking about the {len(keys)} actions of the actions probe, one request each")
         elif capability["endpoint"].get("keys") == "CATEGORY":
             pair = catalog_category(pilot)
             if pair is None:

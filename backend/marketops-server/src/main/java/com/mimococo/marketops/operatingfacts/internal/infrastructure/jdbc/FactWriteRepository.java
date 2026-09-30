@@ -699,4 +699,131 @@ public class FactWriteRepository {
             return com.mimococo.marketops.shared.Digest.ofComponents(components);
         }
     }
+
+    /** Record what one promotion snapshot said about one promotion. */
+    public void insertPromotion(UUID id, UUID organizationId, UUID provenanceId, UUID promotionId,
+                                String sourceFactKey, Instant observedAt, PromotionTerms terms) {
+        jdbc.sql("""
+                        INSERT INTO core.promotion_observation (
+                            id, organization_id, provenance_id, platform_promotion_id, source_fact_key, observed_at,
+                            title, promotion_kind, description, starts_at, ends_at, freezes_at, candidate_count,
+                            participant_count, banned_count, participating, voucher, targeted, discount_kind,
+                            discount_value, order_amount)
+                        VALUES (:id, :organizationId, :provenanceId, :promotionId, :sourceFactKey, :observedAt,
+                            :title, :promotionKind, :description, :startsAt, :endsAt, :freezesAt, :candidateCount,
+                            :participantCount, :bannedCount, :participating, :voucher, :targeted, :discountKind,
+                            :discountValue, :orderAmount)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("promotionId", promotionId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("title", terms.title())
+                .param("promotionKind", terms.promotionKind())
+                .param("description", terms.description())
+                .param("startsAt", timestamp(terms.startsAt()))
+                .param("endsAt", timestamp(terms.endsAt()))
+                .param("freezesAt", timestamp(terms.freezesAt()))
+                .param("candidateCount", terms.candidateCount())
+                .param("participantCount", terms.participantCount())
+                .param("bannedCount", terms.bannedCount())
+                .param("participating", terms.participating())
+                .param("voucher", terms.voucher())
+                .param("targeted", terms.targeted())
+                .param("discountKind", terms.discountKind())
+                .param("discountValue", terms.discountValue())
+                .param("orderAmount", terms.orderAmount())
+                .update();
+    }
+
+    /** Record what the answer about one promotion said about one of its products. */
+    /**
+     * The currency of a listing variant's newest price observation at or before a moment, or empty.
+     * Ozon states the amounts of a promotion's products in the product's price currency, and its
+     * answers leave the currency itself empty (observed 2026-10-01).
+     */
+    public java.util.Optional<String> priceCurrency(UUID variantId, java.time.Instant at) {
+        return jdbc.sql("""
+                        SELECT observation.currency_code
+                          FROM core.listing_price_observation AS observation
+                         WHERE observation.platform_listing_variant_id = :variantId
+                           AND observation.observed_at <= :at
+                         ORDER BY observation.observed_at DESC
+                         LIMIT 1
+                        """)
+                .param("variantId", variantId)
+                .param("at", java.sql.Timestamp.from(at))
+                .query(String.class)
+                .optional();
+    }
+
+    public void insertPromotionItem(UUID id, UUID organizationId, UUID provenanceId, UUID promotionId,
+                                    UUID listingVariantId, String sourceFactKey, Instant observedAt, String membership,
+                                    PromotionItemTerms terms) {
+        jdbc.sql("""
+                        INSERT INTO core.promotion_item_observation (
+                            id, organization_id, provenance_id, platform_promotion_id, platform_listing_variant_id,
+                            source_fact_key, observed_at, membership, currency_code, price, action_price,
+                            max_action_price, recommended_action_price, above_recommended, current_boost, min_boost,
+                            max_boost, price_for_min_boost, price_for_max_boost, min_stock, recommended_stock, stock,
+                            add_mode, quarantined)
+                        VALUES (:id, :organizationId, :provenanceId, :promotionId, :listingVariantId,
+                            :sourceFactKey, :observedAt, :membership, :currencyCode, :price, :actionPrice,
+                            :maxActionPrice, :recommendedActionPrice, :aboveRecommended, :currentBoost, :minBoost,
+                            :maxBoost, :priceForMinBoost, :priceForMaxBoost, :minStock, :recommendedStock, :stock,
+                            :addMode, :quarantined)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("promotionId", promotionId)
+                .param("listingVariantId", listingVariantId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("membership", membership)
+                .param("currencyCode", terms.currencyCode())
+                .param("price", terms.price())
+                .param("actionPrice", terms.actionPrice())
+                .param("maxActionPrice", terms.maxActionPrice())
+                .param("recommendedActionPrice", terms.recommendedActionPrice())
+                .param("aboveRecommended", terms.aboveRecommended())
+                .param("currentBoost", terms.currentBoost())
+                .param("minBoost", terms.minBoost())
+                .param("maxBoost", terms.maxBoost())
+                .param("priceForMinBoost", terms.priceForMinBoost())
+                .param("priceForMaxBoost", terms.priceForMaxBoost())
+                .param("minStock", terms.minStock())
+                .param("recommendedStock", terms.recommendedStock())
+                .param("stock", terms.stock())
+                .param("addMode", terms.addMode())
+                .param("quarantined", terms.quarantined())
+                .update();
+    }
+
+    private static Timestamp timestamp(Instant instant) {
+        return instant == null ? null : Timestamp.from(instant);
+    }
+
+    /** What a promotion snapshot said about one promotion; every part {@code null} when unsaid. */
+    public record PromotionTerms(String title, String promotionKind, String description, Instant startsAt,
+                                 Instant endsAt, Instant freezesAt, Integer candidateCount, Integer participantCount,
+                                 Integer bannedCount, Boolean participating, Boolean voucher, Boolean targeted,
+                                 String discountKind, BigDecimal discountValue, BigDecimal orderAmount) {
+    }
+
+    /**
+     * What the answer about one promotion said about one product; amounts in {@code currencyCode},
+     * every part {@code null} when unsaid.
+     */
+    public record PromotionItemTerms(String currencyCode, BigDecimal price, BigDecimal actionPrice,
+                                     BigDecimal maxActionPrice, BigDecimal recommendedActionPrice,
+                                     Boolean aboveRecommended, BigDecimal currentBoost, BigDecimal minBoost,
+                                     BigDecimal maxBoost, BigDecimal priceForMinBoost, BigDecimal priceForMaxBoost,
+                                     Integer minStock, Integer recommendedStock, Integer stock, String addMode,
+                                     Boolean quarantined) {
+    }
 }

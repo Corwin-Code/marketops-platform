@@ -10,9 +10,11 @@ import type {
 import {
   fetchLatestContentDraft,
   fetchLatestExplanation,
+  fetchLatestPromotionReview,
   fetchLatestStoreExplanation,
   requestContentDraft,
   requestExplanation,
+  requestPromotionReview,
   requestStoreExplanation,
 } from '../api/console';
 import { AI_CLAIM_LABELS_ZH, AiClaimGroups } from '../diagnosis/AiExplanationPanel';
@@ -35,7 +37,7 @@ type Loaded =
   | { readonly kind: 'loaded'; readonly explanation: AiExplanation | null }
   | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
 
-type Source = 'store' | 'listing' | 'content';
+type Source = 'store' | 'listing' | 'content' | 'promotion';
 
 /** Read the newest recorded answer of a source. */
 function latest(
@@ -51,6 +53,8 @@ function latest(
       return fetchLatestExplanation(context, listingVariantId ?? '', storeId, 'D7');
     case 'content':
       return fetchLatestContentDraft(context, listingVariantId ?? '', storeId, 'D7');
+    case 'promotion':
+      return fetchLatestPromotionReview(context, storeId, 'D7');
   }
 }
 
@@ -68,6 +72,8 @@ function ask(
       return requestExplanation(context, listingVariantId ?? '', storeId, 'D7');
     case 'content':
       return requestContentDraft(context, listingVariantId ?? '', storeId, 'D7');
+    case 'promotion':
+      return requestPromotionReview(context, storeId, 'D7');
   }
 }
 
@@ -169,7 +175,7 @@ export function References({
       ))}
       {unnamed > 0 && (
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {text.aiOlderEvidence(unnamed)}
+          {named.length === 0 ? text.aiEvidenceCount(unnamed) : text.aiOlderEvidence(unnamed)}
         </Typography.Text>
       )}
     </Flex>
@@ -262,6 +268,14 @@ export function Rejected({
   );
 }
 
+/** What a summary card says around the model's answer. */
+export interface AiSummaryLabels {
+  readonly title: string;
+  readonly hint: string;
+  readonly none: string;
+  readonly actions: string;
+}
+
 /**
  * The model's summary of the store above its conclusions: one sentence, at most three actions,
  * the facts they rest on and what the data cannot tell. Advisory only; the deterministic
@@ -276,9 +290,42 @@ export function StoreAiSummary({
   readonly storeId: string;
   readonly referenceLabel: ReferenceLabel;
 }): React.JSX.Element {
+  return (
+    <AiSummaryCard
+      context={context}
+      storeId={storeId}
+      source="store"
+      labels={{
+        title: text.aiSummaryTitle,
+        hint: text.aiSummaryHint,
+        none: text.aiNone,
+        actions: text.aiActions,
+      }}
+      referenceLabel={referenceLabel}
+    />
+  );
+}
+
+/**
+ * A store-level answer as one card: the conclusion, at most three actions, the facts they rest on
+ * and what the data cannot tell, with the explicit request for a new answer.
+ */
+export function AiSummaryCard({
+  context,
+  storeId,
+  source,
+  labels,
+  referenceLabel,
+}: {
+  readonly context: ConsoleRequest;
+  readonly storeId: string;
+  readonly source: 'store' | 'promotion';
+  readonly labels: AiSummaryLabels;
+  readonly referenceLabel: ReferenceLabel;
+}): React.JSX.Element {
   const { loaded, waitedSeconds, generate, reload, requestFailure } = useExplanation(
     context,
-    'store',
+    source,
     storeId,
     undefined,
   );
@@ -311,7 +358,7 @@ export function StoreAiSummary({
       >
         {explanation === null ? text.aiGenerate : text.aiRegenerate}
       </Button>
-      <InfoTip title={text.aiSummaryHint} />
+      <InfoTip title={labels.hint} />
     </Space>
   );
 
@@ -321,7 +368,7 @@ export function StoreAiSummary({
   } else if (loaded.kind === 'failed') {
     body = <FailureAlert failure={loaded.failure} />;
   } else if (explanation === null) {
-    body = <EmptyState description={text.aiNone} />;
+    body = <EmptyState description={labels.none} />;
   } else if (accepted.length === 0) {
     body = <Unavailable explanation={explanation} />;
   } else {
@@ -341,7 +388,7 @@ export function StoreAiSummary({
         )}
         {actions.length > 0 && (
           <Flex vertical gap={6}>
-            <Typography.Text strong>{text.aiActions}</Typography.Text>
+            <Typography.Text strong>{labels.actions}</Typography.Text>
             {actions.map((action, index) => {
               const capability = action.payload.actionCapability;
               const effect = payloadText(action.payload.expectedEffect);
@@ -398,7 +445,7 @@ export function StoreAiSummary({
   }
 
   return (
-    <SectionCard title={text.aiSummaryTitle} extra={extra}>
+    <SectionCard title={labels.title} extra={extra}>
       <Flex vertical gap={10}>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {aiText.notice}

@@ -26,11 +26,12 @@ public record AcquisitionResult(
         boolean retryable,
         java.util.UUID authorityDecisionId,
         Integer callSeq,
-        java.util.Map<String,String> responseHeaders) {
+        java.util.Map<String,String> responseHeaders,
+        String requestKey) {
 
     public AcquisitionResult(byte[] body, String nativeStatus, AcquisitionOutcome outcome, Instant sourceTime,
             boolean responseComplete, String failureCode, boolean retryable, java.util.UUID authorityDecisionId, Integer callSeq) {
-        this(body,nativeStatus,outcome,sourceTime,responseComplete,failureCode,retryable,authorityDecisionId,callSeq,java.util.Map.of());
+        this(body,nativeStatus,outcome,sourceTime,responseComplete,failureCode,retryable,authorityDecisionId,callSeq,java.util.Map.of(),null);
     }
 
     public AcquisitionResult(byte[] body, String nativeStatus, AcquisitionOutcome outcome, Instant sourceTime) {
@@ -40,12 +41,21 @@ public record AcquisitionResult(
     /** The gateway, not the adapter, binds the result to the consumed authority. */
     public AcquisitionResult withAuthority(java.util.UUID decision, int sequence) {
         return new AcquisitionResult(body, nativeStatus, outcome, sourceTime, responseComplete,
-                failureCode, retryable, decision, sequence, responseHeaders);
+                failureCode, retryable, decision, sequence, responseHeaders, requestKey);
     }
 
     public AcquisitionResult withResponseHeaders(java.util.Map<String,String> headers) {
         return new AcquisitionResult(body,nativeStatus,outcome,sourceTime,responseComplete,failureCode,
-                retryable,authorityDecisionId,callSeq,headers);
+                retryable,authorityDecisionId,callSeq,headers,requestKey);
+    }
+
+    /**
+     * The key a request that names one key at a time asked about (Ozon: the action id), kept
+     * with the answer because the answer itself does not repeat it.
+     */
+    public AcquisitionResult withRequestKey(String key) {
+        return new AcquisitionResult(body,nativeStatus,outcome,sourceTime,responseComplete,failureCode,
+                retryable,authorityDecisionId,callSeq,responseHeaders,key);
     }
 
     /** The closed classification of an acquisition answer. */

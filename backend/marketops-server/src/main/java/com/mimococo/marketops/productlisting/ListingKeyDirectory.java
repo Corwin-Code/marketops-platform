@@ -21,7 +21,13 @@ public interface ListingKeyDirectory {
         LISTING,
 
         /** The marketplace item key (Ozon: SKU). */
-        ITEM
+        ITEM,
+
+        /**
+         * The marketplace promotion key (Ozon: action id) of every promotion the store's newest
+         * promotion snapshot listed and that has not ended; asked about one per request.
+         */
+        PROMOTION
     }
 
     /** One batch of a store's recorded keys of one kind, in a stable order. */

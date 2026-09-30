@@ -277,10 +277,11 @@ public class AiRepository {
     }
 
     /**
-     * The newest invocation with a usable answer (all or some claims accepted) that asked the same
-     * question about the same content: the same projection and prompt versions, subject and
-     * window, and a projection whose content digest is equal. Its answer can be reused instead of
-     * calling the model again; rejected claims stay hidden either way.
+     * The newest invocation whose every claim was accepted that asked the same question about the
+     * same content: the same projection and prompt versions, subject and window, and a projection
+     * whose content digest is equal. Its answer can be reused instead of calling the model again.
+     * An answer with rejected claims is incomplete (a whole list can be lost to one malformed
+     * member), so asking again calls the model rather than handing the gap out a second time.
      */
     public Optional<UUID> reusableInvocation(UUID organizationId, String projectionCode, int projectionVersion,
                                              String promptTemplateCode, int promptVersion, String subjectKind,
@@ -290,7 +291,7 @@ public class AiRepository {
                          WHERE subject_kind = :subjectKind AND subject_id = :subjectId
                            AND projection_code = :projectionCode AND projection_version = :projectionVersion
                            AND window_code = :windowCode AND content_digest = :contentDigest
-                           AND state IN ('SUCCEEDED', 'PARTIAL_OUTPUT_REJECTED')
+                           AND state = 'SUCCEEDED'
                            AND organization_id = :organizationId
                            AND prompt_template_code = :promptTemplateCode AND prompt_version = :promptVersion
                          ORDER BY started_at DESC, id DESC

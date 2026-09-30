@@ -74,18 +74,26 @@ public class RawEvidenceRepository {
     public void recordObservation(UUID id, UUID runId, UUID logicalUnitId, UUID contentId,
                                   int callSeq, String nativeStatus, String outcomeClass,
                                   boolean complete, String failure, UUID decision) {
-        recordObservation(id,runId,logicalUnitId,contentId,callSeq,nativeStatus,outcomeClass,complete,failure,decision,java.util.Map.of(),"UNASSESSED");
+        recordObservation(id,runId,logicalUnitId,contentId,callSeq,nativeStatus,outcomeClass,complete,failure,decision,java.util.Map.of(),"UNASSESSED",null);
     }
 
+    /**
+     * Record one acquisition answer exactly as it arrived.
+     *
+     * @param requestKey the one key the request asked about (a promotion), or {@code null}
+     */
     public void recordObservation(UUID id, UUID runId, UUID logicalUnitId, UUID contentId,
                                   int callSeq, String nativeStatus, String outcomeClass,
-                                  boolean complete, String failure, UUID decision, java.util.Map<String,String> headers, String paginationOutcome) {
+                                  boolean complete, String failure, UUID decision, java.util.Map<String,String> headers,
+                                  String paginationOutcome, String requestKey) {
         jdbc.sql("""
                         INSERT INTO raw.raw_acquisition_observation (
                             id, run_id, logical_unit_id, content_id, call_seq,
-                            native_status, outcome_class, response_complete, transport_failure_code, authority_decision_id,response_headers,pagination_outcome)
+                            native_status, outcome_class, response_complete, transport_failure_code, authority_decision_id,response_headers,pagination_outcome,
+                            request_key)
                         VALUES (:id, :runId, :unitId, :contentId, :callSeq,
-                            :nativeStatus, :outcomeClass, :complete, :failure, :decision,CAST(:headers AS jsonb),:pagination)
+                            :nativeStatus, :outcomeClass, :complete, :failure, :decision,CAST(:headers AS jsonb),:pagination,
+                            :requestKey)
                         """)
                 .param("id", id)
                 .param("runId", runId)
@@ -97,6 +105,7 @@ public class RawEvidenceRepository {
                 .param("complete", complete).param("failure", failure).param("decision", decision)
                 .param("headers",mapper.writeValueAsString(headers))
                 .param("pagination",paginationOutcome)
+                .param("requestKey", requestKey)
                 .update();
     }
 
@@ -114,7 +123,7 @@ public class RawEvidenceRepository {
         return jdbc.sql("""
                         SELECT observation.id, observation.run_id, observation.call_seq,
                                observation.native_status, observation.outcome_class,
-                               observation.ingestion_time, unit.id AS unit_id, unit.job_id,
+                               observation.ingestion_time, observation.request_key, unit.id AS unit_id, unit.job_id,
                                unit.unit_kind, unit.source_unit_key, unit.source_time,
                                content.id AS content_id, content.hash_value,
                                content.byte_length, content.object_ref
@@ -145,7 +154,7 @@ public class RawEvidenceRepository {
         return jdbc.sql("""
                         SELECT observation.id, observation.run_id, observation.call_seq,
                                observation.native_status, observation.outcome_class,
-                               observation.ingestion_time, unit.id AS unit_id, unit.job_id,
+                               observation.ingestion_time, observation.request_key, unit.id AS unit_id, unit.job_id,
                                unit.unit_kind, unit.source_unit_key, unit.source_time,
                                content.id AS content_id, content.hash_value,
                                content.byte_length, content.object_ref
@@ -193,7 +202,8 @@ public class RawEvidenceRepository {
                 rows.getObject("content_id", UUID.class),
                 rows.getString("hash_value"),
                 rows.getLong("byte_length"),
-                rows.getString("object_ref"));
+                rows.getString("object_ref"),
+                rows.getString("request_key"));
     }
 
     /**
@@ -214,6 +224,7 @@ public class RawEvidenceRepository {
      * @param sha256 digest of the bytes
      * @param byteLength length of the bytes
      * @param objectRef opaque custody locator
+     * @param requestKey the one key the request asked about (a promotion), or {@code null}
      */
     public record StoredObservation(
             UUID id,
@@ -230,6 +241,7 @@ public class RawEvidenceRepository {
             UUID contentId,
             String sha256,
             long byteLength,
-            String objectRef) {
+            String objectRef,
+            String requestKey) {
     }
 }

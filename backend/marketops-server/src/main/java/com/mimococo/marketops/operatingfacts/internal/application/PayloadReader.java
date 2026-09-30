@@ -51,6 +51,7 @@ public class PayloadReader {
     /**
      * Read every record a payload contains, according to one declaration.
      *
+     * @param requestKey the one key the request asked about (a promotion), or {@code null}
      * @param coveredPointers pointers inside a record that other declarations read (a companion's
      *        child records), so they are not drift of this one
      * @param recordDrift whether pointers of the records themselves count as drift; a companion
@@ -66,6 +67,7 @@ public class PayloadReader {
                            Instant observationTime,
                            Instant windowFrom,
                            Instant windowTo,
+                           String requestKey,
                            Set<String> coveredPointers,
                            boolean recordDrift) {
         JsonNode document;
@@ -128,7 +130,7 @@ public class PayloadReader {
             }
             if (childPointer == null) {
                 canonical.add(readRecord(record, null, fields, valueMaps, valueKinds,
-                        new Times(observationTime, windowFrom, windowTo)));
+                        new Times(observationTime, windowFrom, windowTo, requestKey)));
                 continue;
             }
             JsonNode children = record.at(childPointer);
@@ -143,7 +145,7 @@ public class PayloadReader {
                 if (!child.isObject()) throw new PayloadUnreadableException("every child record must be an object");
                 if (canonical.size() >= MAXIMUM_RECORDS) throw new PayloadUnreadableException("record limit exceeded");
                 canonical.add(readRecord(child, record, fields, valueMaps, valueKinds,
-                        new Times(observationTime, windowFrom, windowTo)));
+                        new Times(observationTime, windowFrom, windowTo, requestKey)));
                 collectUnmapped(child, childPointer, childPointers, unmapped, DRIFT_DEPTH);
             }
         }
@@ -168,6 +170,7 @@ public class PayloadReader {
             boolean instant = "INSTANT".equals(valueKind);
             Object converted = switch (source.kind()) {
                 case "OBSERVATION_TIME" -> instant ? times.observation() : null;
+                case "REQUEST_KEY" -> "TEXT".equals(valueKind) ? times.requestKey() : null;
                 case "WINDOW_START" -> instant ? times.windowFrom() : null;
                 case "WINDOW_END" -> instant ? times.windowTo() : null;
                 case "CONSTANT" -> convertText(source.constant(), valueKind);
@@ -366,8 +369,9 @@ public class PayloadReader {
      * @param observation when the answer was true, or stored when the source gave no time
      * @param windowFrom start of the window the run asked for, or {@code null}
      * @param windowTo end of the window the run asked for, or {@code null}
+     * @param requestKey the one key the request asked about, or {@code null}
      */
-    private record Times(Instant observation, Instant windowFrom, Instant windowTo) {
+    private record Times(Instant observation, Instant windowFrom, Instant windowTo, String requestKey) {
     }
 
     /**

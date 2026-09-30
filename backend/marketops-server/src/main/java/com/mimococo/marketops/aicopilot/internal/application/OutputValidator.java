@@ -87,7 +87,7 @@ public class OutputValidator {
     /** The actions this product has a gate for. */
     private static final Set<String> KNOWN_CAPABILITIES = Set.of(
             "PRICE_CHANGE", "RESOLVE_MAPPING", "RESTOCK_REVIEW",
-            "LISTING_CONTENT_REVIEW", "ADVERTISING_REVIEW", "COST_DATA_REVIEW");
+            "LISTING_CONTENT_REVIEW", "ADVERTISING_REVIEW", "COST_DATA_REVIEW", "PROMOTION_REVIEW");
 
     /**
      * Text shaped like an instruction to a system rather than a statement about

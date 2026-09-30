@@ -93,6 +93,11 @@ public record CanonicalRecord(Map<String, Object> values) {
         return Optional.of(java.util.Collections.unmodifiableList(typed));
     }
 
+    /** A flag as the source stated it, or {@code null} when it did not state one. */
+    public Boolean flag(String field) {
+        return value(field, Boolean.class).orElse(null);
+    }
+
     private <T> Optional<T> value(String field, Class<T> type) {
         Object raw = values.get(field);
         return type.isInstance(raw) ? Optional.of(type.cast(raw)) : Optional.empty();

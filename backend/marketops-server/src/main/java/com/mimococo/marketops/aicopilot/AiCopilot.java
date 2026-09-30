@@ -47,6 +47,16 @@ public interface AiCopilot {
     Optional<AiDiagnosis> latestStoreInvocation(UUID organizationId, UUID storeId, MetricWindow window);
 
     /**
+     * Ask a model which products to join, keep, skip or leave in a store's current promotions, from
+     * the estimated margins at the promotions' prices and the products' demand over the window. The
+     * platform joins and leaves nothing; an unchanged situation reuses the recorded answer.
+     */
+    AiDiagnosis reviewPromotions(UUID requestedByUserId, UUID organizationId, UUID storeId, MetricWindow window);
+
+    /** The newest recorded promotion review of one store for a window, in any state; never calls a model. */
+    Optional<AiDiagnosis> latestPromotionReview(UUID organizationId, UUID storeId, MetricWindow window);
+
+    /**
      * The most recent recorded explanation of one listing variant for a window,
      * in whatever state it ended, or empty when nobody has asked yet.
      *

@@ -52,6 +52,11 @@ final class CollectionPlanner {
         cadences.put("STOCK", Cadence.DAILY_SNAPSHOT);
         cadences.put("LISTING_HEALTH", Cadence.DAILY_SNAPSHOT);
         cadences.put("LISTING_CONTENT", Cadence.DAILY_SNAPSHOT);
+        // The promotion snapshot first: the candidates and participants are asked about the
+        // promotions it names, one request each (P7).
+        cadences.put("PROMOTION", Cadence.DAILY_SNAPSHOT);
+        cadences.put("PROMOTION_CANDIDATE", Cadence.DAILY_SNAPSHOT);
+        cadences.put("PROMOTION_PARTICIPANT", Cadence.DAILY_SNAPSHOT);
         cadences.put("TRAFFIC", Cadence.DAILY_WINDOW);
         cadences.put("LISTING_SEARCH", Cadence.WEEKLY_WINDOW);
         cadences.put("LISTING_SEARCH_TERM", Cadence.WEEKLY_WINDOW);

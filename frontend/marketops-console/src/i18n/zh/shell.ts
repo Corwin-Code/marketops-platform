@@ -25,6 +25,7 @@ export const areas = {
 /** Menu entries and page titles. */
 export const pages = {
   storeDiagnosis: '店铺诊断',
+  promotions: '促销活动',
   masterData: '商品映射与成本',
   dataCollection: '数据采集',
   pricingQueue: '今日工作',
@@ -51,6 +52,8 @@ export const pages = {
 export const pageDescriptions = {
   storeDiagnosis:
     '按商品汇总平台给出的可见性、库存、价格竞争力、内容评分和近期下单件数，找出卖不动的原因。',
+  promotions:
+    'Ozon 当前开放给本店的活动，以及每个商品按活动价的预估利润率；参加与否由你在 Ozon 卖家后台操作，这里记录你的决定。',
   masterData:
     '把平台商品对应到内部商品，并采用卖家在 Ozon 填写的成本价作为采购成本；映射和成本是 SKU 诊断、缺货风险和利润计算的前提。',
   dataCollection:

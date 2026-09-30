@@ -41,6 +41,9 @@ const ListingPage = lazy(async () => ({ default: (await import('./pages/listing'
 const StoreDiagnosisPage = lazy(async () => ({
   default: (await import('./pages/storeDiagnosis')).StoreDiagnosisPage,
 }));
+const PromotionsPage = lazy(async () => ({
+  default: (await import('./pages/promotions')).PromotionsPage,
+}));
 const MasterDataPage = lazy(async () => ({
   default: (await import('./pages/masterData')).MasterDataPage,
 }));
@@ -117,6 +120,7 @@ export function ConsoleShell({
       >
         <Route index element={<Navigate to={ROUTES.storeDiagnosis} replace />} />
         <Route path={ROUTES.storeDiagnosis} element={<StoreDiagnosisPage {...page} />} />
+        <Route path={ROUTES.promotions} element={<PromotionsPage {...page} />} />
         <Route path={ROUTES.masterData} element={<MasterDataPage {...page} />} />
         <Route path={ROUTES.dataCollection} element={<DataCollectionPage {...page} />} />
         <Route path={ROUTES.pricingQueue} element={<PricingQueuePage {...page} />} />

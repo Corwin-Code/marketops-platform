@@ -56,6 +56,51 @@ public record EndpointCallSpec(
      */
     public static final int REQUESTED_PAGE_SIZE = 100;
 
+    /** The placeholder naming the one promotion a request asks about. */
+    public static final String PROMOTION_KEY_PLACEHOLDER = "promotionKey";
+
+    /** Which recorded keys the request names products or promotions by, when it names any. */
+    public java.util.Optional<com.mimococo.marketops.productlisting.ListingKeyDirectory.KeyKind> keyKind() {
+        String body = bodyTemplate == null ? "" : bodyTemplate;
+        if (body.contains("{itemKeyBatch}")) {
+            return java.util.Optional.of(com.mimococo.marketops.productlisting.ListingKeyDirectory.KeyKind.ITEM);
+        }
+        if (body.contains("{listingKeyBatch}")) {
+            return java.util.Optional.of(com.mimococo.marketops.productlisting.ListingKeyDirectory.KeyKind.LISTING);
+        }
+        if (body.contains("{" + PROMOTION_KEY_PLACEHOLDER + "}")) {
+            return java.util.Optional.of(com.mimococo.marketops.productlisting.ListingKeyDirectory.KeyKind.PROMOTION);
+        }
+        return java.util.Optional.empty();
+    }
+
+    /** Whether each request asks about exactly one key (a promotion) rather than a batch. */
+    /**
+     * The key position to ask from. The keys asked one at a time change with every snapshot
+     * (promotions start and end), so a position an interrupted run left past the end of today's
+     * keys starts them again instead of asking about nothing.
+     */
+    public static String keyPosition(String position, long keyCount) {
+        if (position == null || position.isEmpty()) {
+            return "";
+        }
+        try {
+            return Long.parseLong(position) >= keyCount ? "" : position;
+        } catch (NumberFormatException notAPosition) {
+            return position;
+        }
+    }
+
+    public boolean asksOneKeyAtATime() {
+        return keyKind().filter(kind ->
+                kind == com.mimococo.marketops.productlisting.ListingKeyDirectory.KeyKind.PROMOTION).isPresent();
+    }
+
+    /** How many keys one request carries: a batch of products, or one promotion. */
+    public int keyBatchSize() {
+        return asksOneKeyAtATime() ? 1 : REQUESTED_PAGE_SIZE;
+    }
+
     /** A specification whose pages end only on a JSON null token, as write operations never page. */
     public EndpointCallSpec(UUID endpointId, String platformCode, String endpointCode, String baseUrl,
                             String httpMethod, String pathTemplate, String queryTemplate,

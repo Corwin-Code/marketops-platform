@@ -53,6 +53,7 @@ public class DiagnosisEngine {
     private static final String PRICE_GAP_STRUCTURAL = "PRICE_GAP_STRUCTURAL";
     private static final String LOW_SEARCH_EXPOSURE = "LOW_SEARCH_EXPOSURE";
     private static final String CONTENT_BELOW_TARGET = "CONTENT_BELOW_TARGET";
+    private static final String PROMOTION_OPPORTUNITY = "PROMOTION_OPPORTUNITY";
 
     /** The version of every rule this release evaluates. */
     public static final int RULE_VERSION = 1;
@@ -101,6 +102,7 @@ public class DiagnosisEngine {
         outcomes.addAll(evaluatePriceGap(metrics));
         outcomes.add(evaluateLowSearchExposure(metrics));
         outcomes.add(evaluateContentBelowTarget(metrics));
+        outcomes.add(evaluatePromotionOpportunity(metrics));
         return List.copyOf(outcomes);
     }
 
@@ -271,6 +273,30 @@ public class DiagnosisEngine {
                 ? RuleOutcome.triggered(CONTENT_BELOW_TARGET, DiagnosisFindingView.Severity.WARNING, detail,
                         List.of(rating))
                 : RuleOutcome.clear(CONTENT_BELOW_TARGET, detail, List.of(rating));
+    }
+
+    /**
+     * A marketplace promotion the listing can join keeps the minimum unit margin at its highest
+     * price. An opportunity rather than a problem, so it is informational; joining is done by a
+     * person in the seller back office.
+     */
+    private RuleOutcome evaluatePromotionOpportunity(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric margin = metrics.get(MetricCode.PROMOTION_BEST_MARGIN);
+        Optional<RuleOutcome> unavailable = requireAvailable(PROMOTION_OPPORTUNITY, margin);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        BigDecimal floor = properties.getThresholds().getMinimumUnitMarginRate();
+        if (floor == null) {
+            return RuleOutcome.declined(PROMOTION_OPPORTUNITY, THRESHOLD_NOT_CONFIGURED, Map.of());
+        }
+        Map<String, String> detail = detail(
+                "promotionMargin", margin.numericValue().toPlainString(),
+                "minimumUnitMarginRate", floor.toPlainString());
+        return margin.numericValue().compareTo(floor) >= 0
+                ? RuleOutcome.triggered(PROMOTION_OPPORTUNITY, DiagnosisFindingView.Severity.INFO, detail,
+                        List.of(margin))
+                : RuleOutcome.clear(PROMOTION_OPPORTUNITY, detail, List.of(margin));
     }
 
     /**

@@ -83,6 +83,6 @@ public class RawEvidenceService implements RawEvidenceQuery {
         return new RawObservationView(
                 stored.id(), stored.jobId(), stored.runId(), stored.unitKind(), stored.sourceUnitKey(),
                 stored.sourceTime(), stored.nativeStatus(), stored.outcomeClass(),
-                stored.ingestionTime(), stored.sha256(), stored.byteLength());
+                stored.ingestionTime(), stored.sha256(), stored.byteLength(), stored.requestKey());
     }
 }

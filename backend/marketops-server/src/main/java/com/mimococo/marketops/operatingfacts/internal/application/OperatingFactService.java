@@ -179,6 +179,37 @@ public class OperatingFactService implements OperatingFactQuery {
                         .filter(java.util.Objects::nonNull).min(Instant::compareTo).orElse(null))));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<com.mimococo.marketops.operatingfacts.PromotionSnapshot> currentPromotions(UUID storeId, Instant asOf) {
+        if (storeId == null) {
+            return List.of();
+        }
+        Map<UUID, List<com.mimococo.marketops.operatingfacts.PromotionSnapshot.Item>> items = new LinkedHashMap<>();
+        Map<UUID, List<UUID>> itemProvenance = new LinkedHashMap<>();
+        for (FactQueryRepository.PromotionItemRow row : facts.currentPromotionItems(storeId, asOf)) {
+            items.computeIfAbsent(row.promotionId(), key -> new java.util.ArrayList<>())
+                    .add(new com.mimococo.marketops.operatingfacts.PromotionSnapshot.Item(row.listingVariantId(),
+                            row.membership(), row.observedAt(), row.currencyCode(), row.price(), row.actionPrice(),
+                            row.maxActionPrice(), row.recommendedActionPrice(), row.aboveRecommended(),
+                            row.currentBoost(), row.minBoost(), row.maxBoost(), row.priceForMinBoost(),
+                            row.priceForMaxBoost(), row.minStock(), row.recommendedStock(), row.stock(),
+                            row.addMode(), row.quarantined(), row.provenanceId()));
+            itemProvenance.computeIfAbsent(row.promotionId(), key -> new java.util.ArrayList<>()).add(row.provenanceId());
+        }
+        return facts.currentPromotions(storeId, asOf).stream().map(row -> {
+            List<UUID> provenance = new java.util.ArrayList<>();
+            provenance.add(row.provenanceId());
+            provenance.addAll(itemProvenance.getOrDefault(row.promotionId(), List.of()));
+            return new com.mimococo.marketops.operatingfacts.PromotionSnapshot(row.promotionId(),
+                    row.nativePromotionKey(), row.observedAt(), row.title(), row.promotionKind(), row.description(),
+                    row.startsAt(), row.endsAt(), row.freezesAt(), row.candidateCount(), row.participantCount(),
+                    row.bannedCount(), row.participating(), row.voucher(), row.targeted(), row.discountKind(),
+                    row.discountValue(), items.getOrDefault(row.promotionId(), List.of()),
+                    FactEvidence.of(provenance.stream().distinct().toList(), row.sourceTime()));
+        }).toList();
+    }
+
     private static com.mimococo.marketops.operatingfacts.ListingContentSnapshot.RatingGroup ratingGroup(
             FactQueryRepository.ContentGroupRow row) {
         List<com.mimococo.marketops.operatingfacts.ListingContentSnapshot.Condition> conditions =
