@@ -469,14 +469,21 @@ public class ScheduledCollectionService {
         Instant now = clock.instant();
         Optional<Policy> policy = repository.findActivePolicy(organizationId, storeId);
         List<JobStatus> jobStatuses = new ArrayList<>();
+        Instant credentialExpiresAt = null;
         for (IngestionJobView job : scheduledJobs(organizationId, storeId)) {
+            Optional<Instant> expiry = acquisition.credentialExpiresAt(job.jobId());
+            if (expiry.isPresent() && (credentialExpiresAt == null || expiry.get().isBefore(credentialExpiresAt))) {
+                credentialExpiresAt = expiry.get();
+            }
+            Optional<RunRecord> live = acquisition.liveRun(job.jobId());
             Cadence cadence = CollectionPlanner.CADENCES.get(job.datasetKind());
             List<RunRecord> runs = acquisition.runsSince(job.jobId(), now.minus(CollectionPlanner.HISTORY));
             Optional<Target> due = CollectionPlanner.due(cadence, now, properties.getDailyAt(), runs);
             Optional<Target> upcoming = CollectionPlanner.upcoming(cadence, now, properties.getDailyAt(), runs);
             jobStatuses.add(new JobStatus(job.jobId(), job.datasetKind(), job.jobCode(), cadence.name(),
                     runs.stream().filter(RunRecord::succeeded).findFirst().map(RunView::of).orElse(null),
-                    acquisition.liveRun(job.jobId()).map(RunView::of).orElse(null),
+                    live.map(RunView::of).orElse(null),
+                    live.flatMap(run -> acquisition.lastAnswerStatus(run.runId())).orElse(null),
                     acquisition.evidenceValidUntil(job.jobId()).orElse(null),
                     due.map(TargetView::of).orElse(null),
                     due.map(target -> CollectionPlanner.attempts(target, runs).size()).orElse(0),
@@ -488,7 +495,7 @@ public class ScheduledCollectionService {
                         recalculation.latestPeriodEnd(storeId, window).orElse(null)))
                 .toList();
         return new Status(storeId, properties.isEnabled(), properties.getDailyAt().toString(),
-                policy.map(PolicyView::of).orElse(null), jobStatuses, calculations,
+                policy.map(PolicyView::of).orElse(null), credentialExpiresAt, jobStatuses, calculations,
                 repository.recentEvents(storeId, RECENT_EVENTS).stream().map(this::view).toList());
     }
 
@@ -537,9 +544,11 @@ public class ScheduledCollectionService {
      * @param schedulerEnabled whether this backend's timer is switched on at all
      * @param dailyAtUtc when each UTC day's collection slot starts
      * @param policy {@code null} when scheduled collection is not in force
+     * @param credentialExpiresAt until when the read credential is in force, or {@code null} when none is
      */
     public record Status(UUID storeId, boolean schedulerEnabled, String dailyAtUtc, PolicyView policy,
-                         List<JobStatus> jobs, List<CalculationStatus> calculations, List<EventView> events) {
+                         Instant credentialExpiresAt, List<JobStatus> jobs, List<CalculationStatus> calculations,
+                         List<EventView> events) {
     }
 
     /** The policy in force. */
@@ -558,13 +567,16 @@ public class ScheduledCollectionService {
      * @param cadence DAILY_SNAPSHOT, DAILY_WINDOW or WEEKLY_WINDOW
      * @param lastSucceeded the newest run that succeeded, of any kind, or {@code null}
      * @param liveRun the run that has not come to rest, or {@code null}
+     * @param liveRunLastAnswer the native status of the live run's newest answer ("HTTP 403"), or
+     *        {@code null}; it says why a blocked run stopped
      * @param evidenceValidUntil {@code null} when no evidence is current: nothing is collected then
      * @param due what the current slot still asks for, or {@code null}
      * @param attempts how many scheduled runs were made for {@code due}
      * @param upcoming what a later slot asks for next, or {@code null}
      */
     public record JobStatus(UUID jobId, String datasetKind, String jobCode, String cadence, RunView lastSucceeded,
-                            RunView liveRun, Instant evidenceValidUntil, TargetView due, int attempts,
+                            RunView liveRun, String liveRunLastAnswer, Instant evidenceValidUntil, TargetView due,
+                            int attempts,
                             TargetView upcoming, EventView lastEvent) {
     }
 

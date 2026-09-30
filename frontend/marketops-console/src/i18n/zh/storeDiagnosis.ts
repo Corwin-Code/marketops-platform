@@ -118,7 +118,7 @@ export const storeDiagnosisText = {
   conclusionsNone: '还没有诊断计算结果，点“重新计算诊断”生成。',
   conclusionsEmpty: '最近一次计算没有发现问题。',
   conclusionsNote:
-    '店铺还没有销售和结算数据，按已实现利润判断的规则（负利润、库存可售天数、转化率等）暂不适用；下面的结论依据预估单件经济、搜索、价格和内容这些不依赖销售的数据。价格竞争力和搜索属于平台分析（C 级），只用于诊断，不会自动改价。',
+    '有两类结论暂时无法判断：曝光低、点击率低、转化率低需要 Ozon 的曝光、点击和加购数据，只对 Premium Plus 订阅开放（本店未订阅）；负利润、退货率、库存可售天数、广告效率需要实际订单和结算数据（本店还没有订单）。下面的结论依据预估单件经济、搜索、价格、内容和活动这些不依赖销售的数据。价格竞争力和搜索属于平台分析（C 级），只用于诊断，不会自动改价。',
   recalculate: '重新计算诊断',
   recalculateDone: (count: number): string => `已重新计算 ${String(count)} 个商品`,
   recalculateHint: '按最近 7 天的数据重新计算指标和诊断结论；计算窗口截至上一个整点。',
@@ -177,6 +177,21 @@ export const storeDiagnosisText = {
   aiDrawerTitle: 'AI 解读',
   aiDrawerNone: '还没有生成过这个商品的解读。',
   aiReference: (conclusion: string, product: string): string => `${conclusion} · ${product}`,
+} as const;
+
+/** The home page's warning when scheduled collection has stopped or will soon stop. */
+export const collectionHealthText = {
+  titleStopped: '数据采集已停止',
+  titleAttention: '数据采集需要处理',
+  open: '查看数据采集',
+  keyRefused: (jobs: string, status: string): string =>
+    `Ozon 拒绝了当前的 key（${status}）：${jobs}已停止更新。key 可能已被停用或缺少权限，请在 Ozon 卖家后台检查并换上新 key，然后在数据采集页恢复任务。`,
+  blocked: (jobs: string): string => `这些任务被卡住，需要人处理后才会继续：${jobs}。`,
+  evidenceLapsed: (jobs: string): string =>
+    `这些数据的核验证据已过期，已停止采集：${jobs}。需要重新探测，并由两位 Owner 核验。`,
+  evidenceExpiring: (count: number): string => `${String(count)} 项数据的核验证据即将到期，最早于 `,
+  credentialMissing: '没有生效的 Ozon 只读凭证，无法采集。',
+  credentialExpiring: 'Ozon 只读凭证即将到期，到期时间：',
 } as const;
 
 /** What each conclusion means and what to do next, in the order the page shows them. */

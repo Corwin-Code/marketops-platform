@@ -54,15 +54,15 @@ public class AiDiagnosisService implements AiCopilot {
 
     /** The prompt template this release sends, and its version. */
     private static final String PROMPT_TEMPLATE_CODE = "sku-growth-profit-diagnosis";
-    private static final int PROMPT_VERSION = 7;
+    private static final int PROMPT_VERSION = 9;
 
     /** The store summary's prompt template and version. */
     private static final String STORE_PROMPT_CODE = "store-diagnosis";
-    private static final int STORE_PROMPT_VERSION = 5;
+    private static final int STORE_PROMPT_VERSION = 6;
 
     /** The content drafts' prompt template and version. */
     private static final String CONTENT_PROMPT_CODE = "listing-content-draft";
-    private static final int CONTENT_PROMPT_VERSION = 3;
+    private static final int CONTENT_PROMPT_VERSION = 4;
 
     /** The promotion review's prompt template and version. */
     private static final String PROMOTION_PROMPT_CODE = "promotion-review";
@@ -75,7 +75,7 @@ public class AiDiagnosisService implements AiCopilot {
     /** The listing assistance projection and prompt, which build on the listing projection. */
     private static final String LISTING_ASSISTANCE_CODE = "LISTING_ASSISTANCE";
     private static final int LISTING_ASSISTANCE_VERSION = 2;
-    private static final int LISTING_ASSISTANCE_PROMPT_VERSION = 6;
+    private static final int LISTING_ASSISTANCE_PROMPT_VERSION = 8;
 
     /** Longest rendered projection sent; the gateway bounds a request body and a call to 60 seconds. */
     private static final int MAXIMUM_PROJECTION_CHARACTERS = 64_000;
@@ -122,20 +122,28 @@ public class AiDiagnosisService implements AiCopilot {
             estimated break-even price with that competitor price, BREAK_EVEN_VS_PRICE the estimated \
             break-even price with the buyer price, TARGET_MARGIN_VS_PRICE the price that keeps the \
             minimum unit margin with the buyer price; derived.displayValue is signed, so +73.21% \
-            means 73.21% higher. Cost and profit amounts are deliberately not given: never guess or \
+            means 73.21% higher. A ratio describes only the values its derivedCode names: never \
+            attach it to another price. Cost and profit amounts are deliberately not given: never guess or \
             reconstruct them. findings.* are the platform's rule conclusions and findings.detailKey \
-            with findings.detailValue the values a rule compared; PROMOTION_OPPORTUNITY means the \
-            listing can join a marketplace promotion and keep the minimum unit margin at its highest \
-            price. searchTerms.* are the terms buyers \
+            with findings.detailValue the values a rule compared. findings.outcome TRIGGERED means \
+            the rule found what it looks for and CLEAR that it did not; DECLINED means it could not \
+            judge, for the reason in findings.declineReason: REQUIRED_METRIC_UNAVAILABLE (the data it \
+            needs does not exist yet), INSUFFICIENT_SAMPLE (too little activity) or \
+            BLOCKED_BY_EARLIER_RULE. A declined rule says nothing about the listing: mention it at \
+            most as an unknown. DATA_BLOCKED declined for INSUFFICIENT_SAMPLE means nothing sold in \
+            the window, so realized profit cannot be judged yet. STOCKOUT_RISK means the listing has \
+            no platform stock or will run out within the safety horizon; PROMOTION_OPPORTUNITY means \
+            the listing can join a marketplace promotion and keep the minimum unit margin at its \
+            highest price. searchTerms.* are the terms buyers \
             searched from search.periodStart to search.lastDay, with how many searched and ordered. \
             Competitor prices and search data are platform analytics: evidence for a diagnosis, not \
             proof of a cause.
 
             Answer with one JSON object and nothing else. It may contain only \
             these members: facts, inferences, recommendations, unknowns. Each is \
-            a list of objects, and every object in every list, recommendations and \
-            unknowns included, has a non-empty statement member saying the claim \
-            in one or two sentences.
+            a JSON array of objects, even when it holds a single claim, and every object in every \
+            array, recommendations and unknowns included, has a non-empty statement member saying \
+            the claim in one or two sentences.
 
             A fact restates a value you were given and must cite it. evidenceRefs \
             may hold only metrics.valueRef or derived.valueRef identifiers and findingRefs \
@@ -215,17 +223,18 @@ public class AiDiagnosisService implements AiCopilot {
             platform computed (listings.derivedCode with listings.derivedValue from the values in \
             listings.derivedRef: PRICE_VS_COMPETITOR compares the buyer price and \
             BREAK_EVEN_VS_COMPETITOR the estimated break-even price with the lowest competitor \
-            price; signed, so +73.21% means 73.21% higher). Only the most important listings are \
+            price; signed, so +73.21% means 73.21% higher; a ratio describes only the values its \
+            derivedCode names, never another price). Only the most important listings are \
             described and only a few references are listed per conclusion; the counts are complete. \
             Cost and profit amounts are deliberately not given: never guess or reconstruct them. \
             Competitor prices and search data are platform analytics: evidence for a diagnosis, not \
             proof of a cause.
 
             Answer with one JSON object and nothing else. It may contain only these members: \
-            facts, inferences, recommendations, unknowns. Each is a list of objects, and every \
-            object has a non-empty statement member.
-            inferences holds exactly one claim: the single most important conclusion about the \
-            store, in one sentence a store owner understands, with confidence of LOW, MEDIUM or HIGH \
+            facts, inferences, recommendations, unknowns. Every member is a JSON array of objects, \
+            even when it holds a single claim, and every object has a non-empty statement member.
+            inferences is an array holding exactly one claim: the single most important conclusion \
+            about the store, in one sentence a store owner understands, with confidence of LOW, MEDIUM or HIGH \
             and a nonempty counterEvidence list.
             recommendations holds at most three claims, most important first, each saying which \
             conclusion or listings it addresses; actionCapability is one of RESTOCK_REVIEW, \
@@ -304,7 +313,8 @@ public class AiDiagnosisService implements AiCopilot {
             searchTerms.searchUsers and searchTerms.orderedUnits.
 
             Answer with one JSON object and nothing else. It may contain only these members: facts, \
-            recommendations, unknowns.
+            recommendations, unknowns. Every member is a JSON array of objects, even when it holds a \
+            single claim.
             recommendations holds the drafts, most useful first: at most one TITLE, one DESCRIPTION and \
             two ATTRIBUTE drafts. Each has actionCapability LISTING_CONTENT_REVIEW and \
             proposedParameters with exactly contentField and draftText, plus attributeName for an \

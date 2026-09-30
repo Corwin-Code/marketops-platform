@@ -54,6 +54,7 @@ import type { TagColor } from '../ui';
 import { METRIC_LABELS } from '../i18n/zh/pricing';
 import type { ReferenceLabel } from './AiInterpretation';
 import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
+import { CollectionHealth } from './CollectionHealth';
 import { ListingContentOptimization } from './ContentOptimization';
 import type { FindingsLoad } from './DiagnosisConclusions';
 import {
@@ -506,6 +507,7 @@ export function StoreDiagnosisView({
 
   return (
     <Flex vertical gap={16}>
+      <CollectionHealth context={context} storeId={storeId} />
       <SectionCard
         title={text.summaryTitle}
         extra={

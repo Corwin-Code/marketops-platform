@@ -7,7 +7,6 @@ import static com.mimococo.marketops.analyticsdecision.MetricCode.COMPLETED_UNIT
 import static com.mimococo.marketops.analyticsdecision.MetricCode.CONTENT_RATING;
 import static com.mimococo.marketops.analyticsdecision.MetricCode.CONTRIBUTION_MARGIN;
 import static com.mimococo.marketops.analyticsdecision.MetricCode.CONVERSION_RATE;
-import static com.mimococo.marketops.analyticsdecision.MetricCode.DATA_COMPLETENESS;
 import static com.mimococo.marketops.analyticsdecision.MetricCode.IMPRESSIONS;
 import static com.mimococo.marketops.analyticsdecision.MetricCode.INTERNAL_AVAILABLE_UNITS;
 import static com.mimococo.marketops.analyticsdecision.MetricCode.LISTING_SELLABLE;
@@ -51,16 +50,20 @@ import java.util.UUID;
  */
 final class ProjectionEgress {
 
-    /** Metrics sent with their value. */
+    /**
+     * Metrics sent with their value. Data completeness is not among them: it is the share of
+     * realized profit inputs, which stays low on every listing that has not sold, and a model given
+     * it reports the share instead of the listing. A block it causes arrives as the finding.
+     */
     static final Set<MetricCode> SENT = EnumSet.of(IMPRESSIONS, CLICKS, CLICK_THROUGH_RATE, CONVERSION_RATE,
             COMPLETED_UNITS, RETAINED_UNITS, SETTLED_UNITS, RETURN_UNITS, RETURN_RATE, PLATFORM_AVAILABLE_UNITS,
             INTERNAL_AVAILABLE_UNITS, STOCK_COVER_DAYS, AD_COST_OF_SALE, CONTRIBUTION_MARGIN, OBSERVED_SELLING_PRICE,
-            DATA_COMPLETENESS, ORDERED_UNITS, SEARCH_USERS, LISTING_SELLABLE, CONTENT_RATING,
+            ORDERED_UNITS, SEARCH_USERS, LISTING_SELLABLE, CONTENT_RATING,
             PLATFORM_COMPETITOR_MIN_PRICE, PROJECTED_UNIT_MARGIN);
 
     /** Ratios, written as percentages. */
     private static final Set<MetricCode> RATIOS = EnumSet.of(CLICK_THROUGH_RATE, CONVERSION_RATE, RETURN_RATE,
-            AD_COST_OF_SALE, CONTRIBUTION_MARGIN, DATA_COMPLETENESS, PROJECTED_UNIT_MARGIN);
+            AD_COST_OF_SALE, CONTRIBUTION_MARGIN, PROJECTED_UNIT_MARGIN);
 
     /** Prices, written with their currency. */
     private static final Set<MetricCode> PRICES = EnumSet.of(OBSERVED_SELLING_PRICE, PLATFORM_COMPETITOR_MIN_PRICE);
@@ -170,6 +173,8 @@ final class ProjectionEgress {
                     "lowExposureSearchUsers", Kind.COUNT),
             "CONTENT_BELOW_TARGET", keys("contentRating", Kind.SCORE, "contentRatingFloor", Kind.SCORE),
             "LISTING_NOT_SELLABLE", keys("listingSellable", Kind.YES_NO),
+            "STOCKOUT_RISK", keys("platformAvailableUnits", Kind.COUNT, "stockCoverDays", Kind.COUNT,
+                    "stockCoverDaysFloor", Kind.COUNT),
             "PROMOTION_OPPORTUNITY", keys("promotionMargin", Kind.RATIO, "minimumUnitMarginRate", Kind.RATIO));
 
     private enum Kind { COUNT, RATIO, SIGNED_RATIO, SCORE, YES_NO, PRICE }

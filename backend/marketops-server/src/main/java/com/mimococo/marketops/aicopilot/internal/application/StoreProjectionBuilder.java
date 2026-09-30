@@ -64,6 +64,9 @@ class StoreProjectionBuilder {
     /** A rule that concludes on every listing without sales; it explains nothing about this store. */
     private static final String DATA_BLOCKED = "DATA_BLOCKED";
 
+    /** The stock rule, whose no-stock condition is the WITHOUT_STOCK conclusion counted from values. */
+    private static final String STOCKOUT_RISK = "STOCKOUT_RISK";
+
     /** The values shown per listing, in order. */
     private static final List<MetricCode> SHOWN = List.of(MetricCode.SEARCH_USERS, MetricCode.ORDERED_UNITS,
             MetricCode.PLATFORM_AVAILABLE_UNITS, MetricCode.LISTING_SELLABLE, MetricCode.CONTENT_RATING,
@@ -169,7 +172,7 @@ class StoreProjectionBuilder {
                 addText(fields, "listings.size", identity.sizeLabel());
                 addText(fields, "listings.color", identity.colorLabel());
             }
-            listing.findings().stream().filter(finding -> !DATA_BLOCKED.equals(finding.ruleCode()))
+            listing.findings().stream().filter(StoreProjectionBuilder::shown)
                     .forEach(finding -> {
                         findingIds.add(finding.findingId());
                         fields.add(field("listings.ruleCode", finding.ruleCode()));
@@ -201,20 +204,27 @@ class StoreProjectionBuilder {
         return projection;
     }
 
-    /** The conclusions in display order, then any other triggered rule except DATA_BLOCKED. */
+    /** The conclusions in display order, then any other shown triggered rule. */
     private static List<String> conclusionCodes(StoreRun run) {
         Set<String> codes = new LinkedHashSet<>(CONCLUSION_ORDER);
-        run.listings().forEach(listing -> listing.findings().forEach(finding -> {
-            if (!DATA_BLOCKED.equals(finding.ruleCode())) {
-                codes.add(finding.ruleCode());
-            }
-        }));
+        run.listings().forEach(listing -> listing.findings().stream().filter(StoreProjectionBuilder::shown)
+                .forEach(finding -> codes.add(finding.ruleCode())));
         return List.copyOf(codes);
     }
 
+    /**
+     * Whether a finding is shown as a rule conclusion: DATA_BLOCKED explains nothing about the
+     * store, and a stock-out for want of any stock is already WITHOUT_STOCK, counted from values.
+     */
+    private static boolean shown(StoreFindingsQuery.Finding finding) {
+        return !DATA_BLOCKED.equals(finding.ruleCode())
+                && !(STOCKOUT_RISK.equals(finding.ruleCode())
+                        && "NO_PLATFORM_STOCK".equals(finding.detail().get("condition")));
+    }
+
     private static boolean critical(ListingResult listing) {
-        return listing.findings().stream().anyMatch(finding -> "CRITICAL".equals(finding.severity())
-                && !DATA_BLOCKED.equals(finding.ruleCode()));
+        return listing.findings().stream().filter(StoreProjectionBuilder::shown)
+                .anyMatch(finding -> "CRITICAL".equals(finding.severity()));
     }
 
     private static BigDecimal searchUsers(Map<MetricCode, ProjectionEgress.Value> own) {

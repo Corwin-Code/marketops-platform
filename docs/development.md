@@ -515,7 +515,7 @@ make pilot-catalog APPLY=1
   - 新增"诊断结论"：每条结论一张卡片，写明影响几个商品、是什么意思、下一步做什么；"查看商品"按该结论筛选下面的表格；右上角是计算所依据的数据区间和"重新计算诊断"按钮。
   - 商品表格新增"诊断"和"预估利润率"两列。
   - 详情抽屉顶部显示该商品的结论和单件经济（预估）：买家价、单件成本、预估单件利润和利润率、保本价、目标利润价、Ozon 竞品最低价和计算条件。
-  - "无库存"直接由库存事实判断，因为 `STOCKOUT_RISK` 需要已实现利润数据，零销量商品会被 `DATA_BLOCKED` 挡住。
+  - "无库存"直接由库存事实判断。V0024 起零销量商品不再被 `DATA_BLOCKED` 挡住，`STOCKOUT_RISK` 对零库存同样触发（`NO_PLATFORM_STOCK`），页面只显示一次（见下面"调校"）。
 - **生效时间**：计算窗口截至上一个整点，刚采集的事实要到下一个整点之后的重算才会纳入。
 - **不做**：不自动调价；结论不按影响大小排序（首页按固定顺序：先是阻止成交的，再是买家不买的原因）；搜索汇总里没出现的商品，搜索人数记为"不可用"，不当作 0。
 
@@ -770,6 +770,42 @@ make owner-grant ACTION=DATA_COLLECTION_MANAGE
 
   按真实应答核对映射后去掉 `probe_only`，再对三个能力各执行 `make ozon-setup … OPERATOR=claude-for-owner`，由 Owner 执行 `make ozon-verify`，然后 `make ozon-run` 加 `make ozon-normalize` 各跑一次（先 `actions`）。
 - **不做**：不自动参加或退出活动（`/v1/actions/products/activate`、`deactivate` 属于写入，需要带写权限的 key 和逐项同意）；不做活动内翻页（试点店铺 41 个商品，一页足够）。
+
+## 调校：按真实数据复核已完成的能力
+
+接入真实的 Ozon 和 Qwen 之后，回头复核 P1–P7 里在合成数据上设计的规则、提示词和采集行为。阈值没有改动（Owner 尚未决定），真实分布写在 PR 里。
+
+- **`DATA_BLOCKED` 在零销量时不再阻断（V0024）**：
+  - 问题：完整度是"已实现利润输入"的占比，其中销售额、佣金、退货、广告、税费都要有成交才会有。试点店铺没有订单，占比只有单件成本这一项（12.5%），于是 41 个商品全部判为 CRITICAL，排在它后面的 8 条规则都记成"被前置规则阻断"——包括 11 个零库存商品的断货风险。商品解读把"数据完整度 12.5%、严重级别阻断"当成第一条事实。
+  - 现在：窗口内既没有完成件数、也没有下单件数（为 0 或没有记录）时，规则以 `INSUFFICIENT_SAMPLE` 拒答（细节 `condition=NOTHING_SOLD`），后面的规则按各自的输入回答。映射未解决、输入过期或冲突、有成交但缺利润输入，仍然阻断。规则版本仍是 1，V0024 更新了规则说明并登记 `COMPLETED_UNITS`、`ORDERED_UNITS` 两个可选输入。
+  - 试点结果（2026-10-01 重算）：`DATA_BLOCKED` 41 个拒答；`STOCKOUT_RISK` 11 个触发（`NO_PLATFORM_STOCK`）、30 个通过（没有销量，算不出可售天数）；负利润、退货、曝光、点击、转化、广告、低于最低价各自以"缺少所需指标"拒答，并写明缺的是哪个指标。
+  - 写入不受影响：真实写入由 `marketops.production-writes.enabled: false` 全局关闭。P8 做调价时要重新设计零销量商品的写入护栏（按预估单件经济，而不是已实现利润）。
+- **不重复计数零库存**：店铺诊断页和店铺 AI 投影本来就按库存值统计"无库存"（`WITHOUT_STOCK`）。`STOCKOUT_RISK` 的 `NO_PLATFORM_STOCK` 结论和它重复，所以页面标签、店铺结论和店铺投影都不再单独显示它，也不参与"严重商品优先"的排序；将来有销量后"可售天数不足"的结论照常显示。
+- **AI 提示词与投影**：
+  - 商品解读提示词 v9（Listing 辅助 v8 沿用同一段）：讲清规则结论的 `TRIGGERED`、`CLEAR`、`DECLINED` 和拒答原因，拒答的规则只能作为不确定项提；说明 `DATA_BLOCKED` 以样本不足拒答表示窗口内没有成交，以及 `STOCKOUT_RISK` 的含义。
+  - 商品投影不再发送 `DATA_COMPLETENESS`（零销量时它永远很低，模型会照抄占比而不是讲商品）；`STOCKOUT_RISK` 的 `platformAvailableUnits`、`stockCoverDays`、`stockCoverDaysFloor` 可以出境。
+  - 自商品解读 v8、店铺周诊断 v6、内容草稿 v4 起：每个成员都必须是 JSON 数组（单条也一样）；比率只描述它名字里的两个价格，不能挪到别的价格上。
+  - 两条诊断日志：`ai_claim_unknown_members`（只记多出来的成员名）、`ai_claim_reference_unresolved`（只记计数：引用放错了列表、引用了没给过的编号，或列表格式不对）。
+  - 实测（试点，2026-10-01）：同一个零库存商品，v8 的 12 条陈述里 3 条（都是库存为 0）因引用无法解析被拒，首条事实是"数据完整度 12.5%"；v9 的 12 条全部通过，首要建议是补货并引用断货风险结论。内容草稿 v4 7 条全部通过；店铺周诊断 v6 完整（1 条把店铺合计写成事实的常规拒绝）。
+- **采集**：
+  - 失败重试的等待时间每次翻倍（默认重试 3 次，等 2、4、8 分钟），最长 30 分钟，减少 Ozon 按分钟限流（429）时的连续失败；
+  - 店铺诊断页顶部的采集健康提示：key 被 Ozon 拒绝（受阻运行的最后应答是 HTTP 401/403）、其他受阻运行、证据已过期或 7 天内到期、读取凭据缺失或 14 天内到期时提示，并链接到"数据采集"页；一切正常时不显示；
+  - "数据采集"页的受阻运行显示最后一次应答状态（例如 HTTP 403）；
+  - `GET /api/v1/console/stores/{storeId}/data-collection` 新增 `credentialExpiresAt` 和 `jobs[].liveRunLastAnswer`。
+- **补数的探测入口（待 Owner 运行）**：`scripts/ozon_pilot.py` 新增四个只探测能力（`probe_only`，暂无映射）：
+  - `seller-rating`：`POST /v1/rating/summary`，卖家评级各组指标；
+  - `discount-requests`：`POST /v2/actions/discounts-task/list`，买家申请的折扣（映射时不取经办人姓名和邮箱）；
+  - `warehouses`：`POST /v2/warehouse/list`，FBS 仓库（映射时不取地址和电话）；
+  - `delivery-methods`：`POST /v2/delivery-method/list`，发货方式。
+
+  ```bash
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability seller-rating --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability discount-requests --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability warehouses --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability delivery-methods --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  ```
+
+  按真实应答确定数据集、事实表和映射后，在后续 PR 里接入（新迁移、定时采集、店铺诊断的评级与发货信息、按商品的折扣申请）。
 
 ## 控制台：店铺诊断
 

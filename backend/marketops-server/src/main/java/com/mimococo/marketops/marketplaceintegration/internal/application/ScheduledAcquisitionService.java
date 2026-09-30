@@ -43,6 +43,18 @@ class ScheduledAcquisitionService implements ScheduledAcquisition {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Instant> credentialExpiresAt(UUID jobId) {
+        return runs.credentialExpiresAt(jobId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<String> lastAnswerStatus(UUID runId) {
+        return runs.lastAnswerStatus(runId);
+    }
+
+    @Override
     public RunRecord enqueueScheduled(UUID jobId, Instant windowFrom, Instant windowTo, String actorId) {
         UUID runId = jobs.enqueueScheduledRun(actorId, jobId, windowFrom, windowTo).id();
         return runs.run(runId).orElseThrow();

@@ -30,14 +30,19 @@ export const CONCLUSION_ORDER: readonly string[] = [
 ];
 
 /**
- * Findings the page does not show per product: without sales every listing is
- * data-blocked for the realized-profit rules, which the section note explains once.
+ * Findings the page does not show per product: a block on the realized-profit
+ * rules, which the section note explains once.
  */
 const HIDDEN_RULES: ReadonlySet<string> = new Set(['DATA_BLOCKED']);
 
 /** The findings worth showing on a product. */
 function shownFindings(findings: readonly ListingFinding[]): readonly ListingFinding[] {
-  return findings.filter((finding) => !HIDDEN_RULES.has(finding.ruleCode));
+  return findings.filter(
+    (finding) =>
+      !HIDDEN_RULES.has(finding.ruleCode) &&
+      // No stock at all is the WITHOUT_STOCK conclusion, counted from stock facts.
+      !(finding.ruleCode === 'STOCKOUT_RISK' && finding.detail.condition === 'NO_PLATFORM_STOCK'),
+  );
 }
 
 const SEVERITY_COLORS: Readonly<Record<string, TagColor>> = {

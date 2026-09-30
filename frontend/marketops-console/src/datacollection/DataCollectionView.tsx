@@ -290,7 +290,16 @@ export function DataCollectionView({
       key: 'now',
       title: text.columnNow,
       width: 150,
-      render: (_, job) => <RunState run={job.liveRun} />,
+      render: (_, job) => (
+        <Flex vertical gap={2}>
+          <RunState run={job.liveRun} />
+          {job.liveRunLastAnswer !== null && job.liveRun?.state === 'BLOCKED' && (
+            <Typography.Text type="danger" style={{ fontSize: 12 }}>
+              {text.lastAnswer(job.liveRunLastAnswer)}
+            </Typography.Text>
+          )}
+        </Flex>
+      ),
     },
     {
       key: 'next',

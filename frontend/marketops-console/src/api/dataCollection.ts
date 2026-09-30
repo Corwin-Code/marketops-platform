@@ -52,6 +52,8 @@ export interface CollectionJob {
   readonly cadence: string;
   readonly lastSucceeded: CollectionRun | null;
   readonly liveRun: CollectionRun | null;
+  /** The native status of the live run's newest answer (`HTTP 403` for a withdrawn key), or `null`. */
+  readonly liveRunLastAnswer: string | null;
   /** `null` when no evidence is current: nothing is collected then. */
   readonly evidenceValidUntil: string | null;
   /** What the current slot still asks for. */
@@ -79,6 +81,8 @@ export interface DataCollection {
   /** When each UTC day's collection slot starts, `HH:mm`. */
   readonly dailyAtUtc: string;
   readonly policy: CollectionPolicy | null;
+  /** Until when the read credential is in force, or `null` when none is. */
+  readonly credentialExpiresAt: string | null;
   readonly jobs: readonly CollectionJob[];
   readonly calculations: readonly {
     readonly window: string;
@@ -148,6 +152,7 @@ export function parseDataCollection(body: unknown): DataCollection | undefined {
     schedulerEnabled: body.schedulerEnabled,
     dailyAtUtc,
     policy: parsePolicy(body.policy),
+    credentialExpiresAt: text(body.credentialExpiresAt) ?? null,
     jobs: body.jobs.map(parseJob).filter((job): job is CollectionJob => job !== undefined),
     calculations: body.calculations.flatMap((value: unknown) => {
       if (!isRecord(value)) return [];
@@ -185,6 +190,7 @@ function parseJob(value: unknown): CollectionJob | undefined {
     cadence,
     lastSucceeded: parseRun(value.lastSucceeded),
     liveRun: parseRun(value.liveRun),
+    liveRunLastAnswer: text(value.liveRunLastAnswer) ?? null,
     evidenceValidUntil: text(value.evidenceValidUntil) ?? null,
     due: parseTarget(value.due),
     attempts: typeof value.attempts === 'number' ? value.attempts : 0,

@@ -145,16 +145,30 @@ public class AcquisitionRunner {
      */
     private RunOutcome rest(UUID runId, long fence, String workerName,
                             int pagesStored, String reason) {
-        boolean budgetLeft = runs.findRun(runId)
-                .map(state -> state.attemptNo() <= properties.getRetryBudget())
-                .orElse(false);
-        if (budgetLeft) {
+        int attempt = runs.findRun(runId).map(IngestionRunRepository.RunState::attemptNo).orElse(Integer.MAX_VALUE);
+        if (attempt <= properties.getRetryBudget()) {
             String state = runs.transition(runId, fence, workerName, "RETRY_WAIT", null, null,
-                    Math.toIntExact(properties.getRetryDelay().toSeconds()));
+                    retryDelaySeconds(properties.getRetryDelay(), attempt));
             return new RunOutcome(runId, pagesStored, "FAILED_TERMINAL".equals(state) ? state : reason);
         }
         runs.transition(runId, fence, workerName, "FAILED_TERMINAL", null, reason);
         return new RunOutcome(runId, pagesStored, "FAILED_TERMINAL");
+    }
+
+    /** The longest wait before a retry, however many attempts came before it. */
+    private static final java.time.Duration LONGEST_RETRY_DELAY = java.time.Duration.ofMinutes(30);
+
+    /**
+     * How long a run waits before its next attempt: the configured delay, doubled after every
+     * attempt, at most thirty minutes. A marketplace that limits requests per minute (Ozon's
+     * analytics answer 429) is asked again later each time rather than at the same short interval.
+     */
+    static int retryDelaySeconds(java.time.Duration base, int attempt) {
+        long seconds = base.toSeconds();
+        for (int doubling = 1; doubling < attempt && seconds < LONGEST_RETRY_DELAY.toSeconds(); doubling++) {
+            seconds *= 2;
+        }
+        return Math.toIntExact(Math.min(seconds, LONGEST_RETRY_DELAY.toSeconds()));
     }
 
     private int leaseSeconds() {
