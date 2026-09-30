@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
@@ -34,6 +36,8 @@ import tools.jackson.databind.ObjectMapper;
  */
 @Component
 public class OutputValidator {
+
+    private static final Logger log = LoggerFactory.getLogger(OutputValidator.class);
 
     /** Rejections this validator can produce. */
     static final String SCHEMA_INVALID = "SCHEMA_INVALID";
@@ -224,6 +228,13 @@ public class OutputValidator {
                     SCHEMA_INVALID);
         }
         if (!unexpected.isEmpty()) {
+            // Member names only: they say which part of the contract a model keeps missing, and they
+            // carry none of the answer's content.
+            log.atInfo().addKeyValue("event", "ai_claim_unknown_members")
+                    .addKeyValue("claimKind", kind.name())
+                    .addKeyValue("members", String.join(",", unexpected.stream()
+                            .map(name -> name.length() > 40 ? name.substring(0, 40) : name).toList()))
+                    .log("A model answer carried claim members the contract does not define");
             return ValidatedClaim.rejected(kind, ordinal, statement, UNKNOWN_FIELD);
         }
         if (statement.length() > MAXIMUM_STATEMENT_LENGTH) {
@@ -244,6 +255,7 @@ public class OutputValidator {
             metricRefs = readReferences(node.get("evidenceRefs"));
             findingRefs = readReferences(node.get("findingRefs"));
         } catch (IllegalArgumentException malformed) {
+            logUnresolved(kind, malformed.getMessage(), 0, 0, 0);
             return ValidatedClaim.rejected(kind, ordinal, statement, EVIDENCE_REFERENCE_UNRESOLVED);
         }
         Map<String, Object> payload = readPayload(node);
@@ -261,6 +273,15 @@ public class OutputValidator {
                         .anyMatch(reference -> !projection.projectedFindingIds()
                                 .contains(reference));
         if (unresolved) {
+            logUnresolved(kind, "not shown",
+                    metricRefs.stream().filter(projection.projectedFindingIds()::contains).count()
+                            + findingRefs.stream().filter(projection.projectedMetricValueIds()::contains).count(),
+                    metricRefs.stream().filter(reference -> !projection.projectedMetricValueIds().contains(reference)
+                            && !projection.projectedFindingIds().contains(reference)).count()
+                            + findingRefs.stream().filter(reference -> !projection.projectedFindingIds()
+                                    .contains(reference) && !projection.projectedMetricValueIds()
+                                    .contains(reference)).count(),
+                    metricRefs.size() + findingRefs.size());
             return ValidatedClaim.rejected(kind, ordinal, statement,
                     EVIDENCE_REFERENCE_UNRESOLVED);
         }
@@ -351,6 +372,21 @@ public class OutputValidator {
      * Read a list of references. Every member must be a unique identifier;
      * malformed members reject the complete claim.
      */
+    /**
+     * Why a claim's references did not resolve, as counts only: whether the model put a shown
+     * identifier in the other list, cited one it was never shown, or wrote a malformed list.
+     */
+    private static void logUnresolved(AiClaimKind kind, String cause, long inOtherList, long neverShown,
+                                      long cited) {
+        log.atInfo().addKeyValue("event", "ai_claim_reference_unresolved")
+                .addKeyValue("claimKind", kind.name())
+                .addKeyValue("cause", cause)
+                .addKeyValue("inOtherList", inOtherList)
+                .addKeyValue("neverShown", neverShown)
+                .addKeyValue("cited", cited)
+                .log("A model answer cited references the projection does not resolve");
+    }
+
     private static List<UUID> readReferences(JsonNode node) {
         if (node == null) return List.of();
         if (!node.isArray() || node.size() > 20) throw new IllegalArgumentException("reference shape");

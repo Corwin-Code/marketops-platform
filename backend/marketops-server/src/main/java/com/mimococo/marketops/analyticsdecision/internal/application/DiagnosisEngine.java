@@ -306,6 +306,12 @@ public class DiagnosisEngine {
      * would fix them: an unresolved mapping first, because nothing downstream is
      * attributable without it; then missing profit inputs; then staleness or a
      * conflict in what did arrive.
+     *
+     * <p>Missing profit inputs block only a listing that sold in the window. Sales, fees,
+     * returns, advertising and tax per unit exist only once something sold, so on a listing
+     * nobody bought their absence is the business situation rather than a coverage gap: the
+     * rule declines for want of a sample, and the later rules answer from their own inputs —
+     * a listing without stock is flagged instead of declined behind a block.
      */
     private RuleOutcome evaluateDataBlocked(Map<MetricCode, ComputedMetric> metrics) {
         ComputedMetric completeness = metrics.get(MetricCode.DATA_COMPLETENESS);
@@ -335,6 +341,12 @@ public class DiagnosisEngine {
                 .sorted()
                 .toList();
         boolean belowFloor = completeness.numericValue().compareTo(floor) < 0;
+        if (belowFloor && conflicted.isEmpty() && stale.isEmpty() && nothingSold(metrics)) {
+            return RuleOutcome.declined(DATA_BLOCKED, INSUFFICIENT_SAMPLE,
+                    detail("condition", "NOTHING_SOLD",
+                            "dataCompleteness", completeness.numericValue().toPlainString(),
+                            "threshold", floor.toPlainString()));
+        }
         if (belowFloor || !conflicted.isEmpty() || !stale.isEmpty()) {
             Map<String, String> detail = new LinkedHashMap<>();
             detail.put("dataCompleteness", completeness.numericValue().toPlainString());
@@ -348,6 +360,22 @@ public class DiagnosisEngine {
                 detail("dataCompleteness", completeness.numericValue().toPlainString(),
                         "threshold", floor.toPlainString()),
                 List.of(completeness));
+    }
+
+    /**
+     * Whether nothing sold in the window: no completed units and no ordered units, each either
+     * reported as zero or not reported at all. Ozon reports analytics only for listings with
+     * activity, and a sale that did happen shows up as ordered units even when its postings or
+     * settlement have not arrived — so a gap in those still blocks.
+     */
+    private static boolean nothingSold(Map<MetricCode, ComputedMetric> metrics) {
+        return noneReported(metrics.get(MetricCode.COMPLETED_UNITS))
+                && noneReported(metrics.get(MetricCode.ORDERED_UNITS));
+    }
+
+    private static boolean noneReported(ComputedMetric count) {
+        return count == null || count.valueState() != ValueState.AVAILABLE
+                || count.numericValue().signum() == 0;
     }
 
     private RuleOutcome evaluateNegativeMargin(Map<MetricCode, ComputedMetric> metrics) {

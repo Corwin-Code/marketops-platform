@@ -116,6 +116,7 @@ export const DIAGNOSIS_CODE_LABELS: CodeLabels = {
   MAPPING_UNRESOLVED: '商品映射未解决',
   THRESHOLD_NOT_CONFIGURED: '未配置阈值',
   INSUFFICIENT_SAMPLE: '样本量不足',
+  NOTHING_SOLD: '窗口内没有成交',
   NO_PLATFORM_STOCK: '平台无库存',
   COVER_NOT_COMPUTABLE: '无法计算可售天数',
 };

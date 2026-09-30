@@ -56,7 +56,7 @@ Minimum    = 单位成本 + Required Profit/单位 + Safety Buffer/单位 + 费�
 - 历史费用按 `FeeFamily` 覆盖：`PRESENT_NONZERO`、`PRESENT_EXPLICIT_ZERO`、`VERIFIED_NOT_APPLICABLE`、`MISSING_OR_INCOMPLETE`；必需族缺失则不出精确利润。
 - 目标价由 `PriceEconomicsCalculator` 按 `PriceEconomicsProfile`（平台 / 店铺 / 履约模式 / 币种 / 有效期；固定、比例、阶梯组件）求解，不平均历史费用。
 
-**诊断**：`DiagnosisEngine` 纯函数，9 条规则固定顺序：`DATA_BLOCKED`（映射未决 / 输入缺失 / 过期，阻断后续）、`NEGATIVE_MARGIN`、`STOCKOUT_RISK`、`HIGH_RETURN`、`LOW_IMPRESSION`、`LOW_CLICK_THROUGH`、`LOW_CONVERSION`、`ADVERTISING_INEFFICIENT`、`PRICE_BELOW_MINIMUM`。缺输入时明确拒绝判断。
+**诊断**：`DiagnosisEngine` 纯函数，9 条规则固定顺序：`DATA_BLOCKED`（映射未决 / 输入缺失 / 过期，阻断后续；窗口内没有成交时以样本不足拒答，不阻断，V0024）、`NEGATIVE_MARGIN`、`STOCKOUT_RISK`、`HIGH_RETURN`、`LOW_IMPRESSION`、`LOW_CLICK_THROUGH`、`LOW_CONVERSION`、`ADVERTISING_INEFFICIENT`、`PRICE_BELOW_MINIMUM`。缺输入时明确拒绝判断。
 
 **建议**
 

@@ -4,6 +4,7 @@
  */
 
 export const dataCollectionText = {
+  lastAnswer: (status: string): string => `Ozon 最后应答：${status}`,
   noStore: '当前控制台没有配置店铺，无法查看数据采集。',
   refreshLabel: '重新加载',
 

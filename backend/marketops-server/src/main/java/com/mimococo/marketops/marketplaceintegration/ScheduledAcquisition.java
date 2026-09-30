@@ -27,6 +27,19 @@ public interface ScheduledAcquisition {
     Optional<Instant> evidenceValidUntil(UUID jobId);
 
     /**
+     * Until when the active read credential of the job's marketplace account is in force; empty when
+     * it has none. The marketplace may withdraw a key earlier; a refused call then shows in
+     * {@link #lastAnswerStatus}.
+     */
+    Optional<Instant> credentialExpiresAt(UUID jobId);
+
+    /**
+     * The native status of the newest answer a run stored (Ozon: "HTTP 403" for a key that was
+     * deactivated), or empty when it stored none. It says why a run came to rest blocked.
+     */
+    Optional<String> lastAnswerStatus(UUID runId);
+
+    /**
      * Queue one SCHEDULED run.
      *
      * @param windowFrom start of the run's window, or {@code null} for a snapshot

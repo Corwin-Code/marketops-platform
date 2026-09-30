@@ -86,6 +86,39 @@ public class ScheduledAcquisitionRepository {
         return Optional.ofNullable(validUntil).map(Timestamp::toInstant);
     }
 
+    /** Until when the active read credential of the job's account is in force, or empty. */
+    public Optional<Instant> credentialExpiresAt(UUID jobId) {
+        Timestamp expiresAt = jdbc.sql("""
+                        SELECT min(credential.expires_at)
+                          FROM platform.ingestion_job AS job
+                          JOIN platform.credential_metadata AS credential
+                            ON credential.marketplace_account_id = job.marketplace_account_id
+                         WHERE job.id = :jobId AND credential.purpose_code = 'READ'
+                           AND credential.status = 'ACTIVE'
+                           AND credential.effective_from <= statement_timestamp()
+                           AND credential.expires_at > statement_timestamp()
+                        """)
+                .param("jobId", jobId)
+                .query(Timestamp.class)
+                .optional()
+                .orElse(null);
+        return Optional.ofNullable(expiresAt).map(Timestamp::toInstant);
+    }
+
+    /** The native status of the newest answer the run stored, or empty when it stored none. */
+    public Optional<String> lastAnswerStatus(UUID runId) {
+        return jdbc.sql("""
+                        SELECT observation.native_status
+                          FROM raw.raw_acquisition_observation AS observation
+                         WHERE observation.run_id = :runId
+                         ORDER BY observation.ingestion_time DESC, observation.call_seq DESC
+                         LIMIT 1
+                        """)
+                .param("runId", runId)
+                .query(String.class)
+                .optional();
+    }
+
     private static RunRecord mapRun(ResultSet rows, int rowNumber) throws SQLException {
         return new RunRecord(
                 rows.getObject("id", UUID.class),

@@ -450,6 +450,75 @@ PROMOTION_ITEM_FIELDS = {
 }
 
 
+def inspect_seller_rating(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """The seller's ratings by group: how many, in which states and value types (no values printed)."""
+    answer = answers[0] if answers else {}
+    groups = answer.get("groups")
+    if not isinstance(groups, list):
+        return [], "the answer has no groups list"
+    items = [item for group in groups for item in (group.get("items") or [])]
+    lines = [f"rating groups {len(groups)}, ratings {len(items)}, "
+             f"states {dict(sorted(Counter(str(item.get('status')) for item in items).items()))}",
+             f"value types {dict(sorted(Counter(str(item.get('value_type')) for item in items).items()))}, "
+             f"directions {dict(sorted(Counter(str(item.get('rating_direction')) for item in items).items()))}",
+             f"rating keys {len({str(item.get('rating')) for item in items})} distinct, "
+             f"with current value {sum(1 for item in items if item.get('current_value') is not None)}",
+             f"premium {answer.get('premium')}, premium plus {answer.get('premium_plus')}, "
+             f"penalty score exceeded {answer.get('penalty_score_exceeded')}, "
+             f"localization index entries {len(answer.get('localization_index') or [])}"]
+    return lines, None
+
+
+def inspect_discount_tasks(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """Buyer requests for a discount: how many, in which states, for known products (no prices printed)."""
+    tasks = [task for answer in answers for task in answer.get("tasks") or []]
+    known = set(catalog_skus(pilot))
+    lines = [f"discount requests {len(tasks)}, states "
+             f"{dict(sorted(Counter(str(task.get('status')) for task in tasks).items()))}",
+             f"for SKUs in the catalog probe {sum(1 for task in tasks if str(task.get('sku')) in known)}, "
+             f"distinct SKUs {len({str(task.get('sku')) for task in tasks})}",
+             f"with requested price {sum(1 for task in tasks if task.get('requested_price'))}, "
+             f"original price {sum(1 for task in tasks if task.get('original_price'))}, "
+             f"auto-moderated {sum(1 for task in tasks if task.get('is_auto_moderated'))}"]
+    refusal = None
+    if len(tasks) >= DISCOUNT_TASK_PAGE:
+        refusal = f"a whole page of {DISCOUNT_TASK_PAGE} requests came back; paging by last id is not built"
+    return lines, refusal
+
+
+def inspect_warehouses(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """The seller's FBS and rFBS warehouses: states and shipping settings (no addresses or phones printed)."""
+    warehouses = [warehouse for answer in answers for warehouse in answer.get("warehouses") or []]
+    lines = [f"warehouses {len(warehouses)}, states "
+             f"{dict(sorted(Counter(str(w.get('status')) for w in warehouses).items()))}, "
+             f"rFBS {sum(1 for w in warehouses if w.get('is_rfbs'))}, paused "
+             f"{sum(1 for w in warehouses if w.get('pause_at'))}",
+             f"working days per warehouse {[len(w.get('working_days') or []) for w in warehouses]}, "
+             f"with cut-in time {sum(1 for w in warehouses if w.get('cut_in_time') is not None)}, "
+             f"with minimum assembly time {sum(1 for w in warehouses if w.get('sla_cut_in') is not None)}, "
+             f"time zones {sorted({str((w.get('address_info') or {}).get('utc')) for w in warehouses})}",
+             f"first mile types {dict(Counter(str((w.get('first_mile') or {}).get('type')) for w in warehouses))}, "
+             f"postings limit set {sum(1 for w in warehouses if w.get('has_postings_limit'))}"]
+    return lines, None
+
+
+def inspect_delivery_methods(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """Delivery methods of the seller's warehouses: states and assembly settings."""
+    methods = [method for answer in answers for method in answer.get("delivery_methods") or []]
+    lines = [f"delivery methods {len(methods)}, states "
+             f"{dict(sorted(Counter(str(m.get('status')) for m in methods).items()))}, "
+             f"warehouses {len({str(m.get('warehouse_id')) for m in methods})}, express "
+             f"{sum(1 for m in methods if m.get('is_express'))}",
+             f"with cutoff {sum(1 for m in methods if m.get('cutoff'))}, with minimum assembly time "
+             f"{sum(1 for m in methods if m.get('sla_cut_in') is not None)}, integration types "
+             f"{dict(Counter(str(m.get('tpl_integration_type')) for m in methods))}"]
+    return lines, None
+
+
+# The largest page the discount request list allows (official enum 5–50, checked 2026-10-01).
+DISCOUNT_TASK_PAGE = 50
+
+
 def catalog_category(pilot: "Pilot") -> tuple[str, str] | None:
     """The one (description_category_id, type_id) pair of the newest catalog probe, or None when
     the catalog holds none or several: Ozon answers attributes per category and product type, and
@@ -1103,6 +1172,130 @@ CAPABILITIES = {
                                     "valueMap": {"AUTO": "AUTOMATIC", "SELLER": "SELLER"}}},
         },
         "inspect": inspect_action_items,
+    },
+    "seller-rating": {
+        "code": "ozon-seller-rating-read",
+        "display": "Ozon seller ratings: price index, on-time delivery, cancellations, complaints",
+        "description": "Reads the seller's current ratings by group, the localization index and whether the "
+                       "penalty balance is exceeded (POST /v1/rating/summary; official docs checked "
+                       "2026-10-01).",
+        "manifest": "seller-rating-latest.json",
+        "endpoint": {
+            "code": "ozon-rating-summary-v1", "api_version": "v1",
+            "schema_version": "v1RatingSummaryV1Response",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. One request per run. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "The seller's ratings as they stand on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/rating/summary", "operation_function": "READ_DATA",
+                "query_template": None, "body_template": "{}",
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": "/groups",
+            },
+            "probe_body": lambda cursor, context: {},
+            "token_key": None,
+            "records_key": "groups",
+            "computed": "SINGLE",
+        },
+        "job": {"suffix": "seller-rating", "dataset": "SELLER_RATING", "display": "Ozon 试点：卖家评级"},
+        "probe_only": True,
+        "mapping": None,
+        "inspect": inspect_seller_rating,
+    },
+    "discount-requests": {
+        "code": "ozon-discount-requests-read",
+        "display": "Ozon buyer discount requests: the price buyers asked for, per product",
+        "description": "Reads buyers' requests to buy a product at a lower price, in every state (POST "
+                       "/v2/actions/discounts-task/list; official docs checked 2026-10-01). The seller "
+                       "employee who handled a request is not read.",
+        "manifest": "discount-requests-latest.json",
+        "endpoint": {
+            "code": "ozon-discount-tasks-v2", "api_version": "v2",
+            "schema_version": "seller_apiGetDiscountTaskListV2Response",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. One page of 50 per run. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "Every buyer discount request the list returns on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v2/actions/discounts-task/list",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"status":"ALL","limit":50}',
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": "/tasks",
+            },
+            "probe_body": lambda cursor, context: {"status": "ALL", "limit": DISCOUNT_TASK_PAGE},
+            "token_key": None,
+            "records_key": "tasks",
+            "computed": "SINGLE",
+        },
+        "job": {"suffix": "discount-requests", "dataset": "DISCOUNT_REQUEST", "display": "Ozon 试点：买家求降价"},
+        "probe_only": True,
+        "mapping": None,
+        "inspect": inspect_discount_tasks,
+    },
+    "warehouses": {
+        "code": "ozon-fbs-warehouses-read",
+        "display": "Ozon FBS warehouses: state, pause, working days, assembly and cut-in times",
+        "description": "Reads the seller's FBS and rFBS warehouses (POST /v2/warehouse/list, paged by cursor; "
+                       "official docs checked 2026-10-01). Addresses and phone numbers are not read.",
+        "manifest": "warehouses-latest.json",
+        "endpoint": {
+            "code": "ozon-warehouses-v2", "api_version": "v2",
+            "schema_version": "v2WarehouseListResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "Every warehouse of the seller on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v2/warehouse/list", "operation_function": "READ_DATA",
+                "query_template": None, "body_template": '{"limit":{limit},"cursor":"{cursor}"}',
+                "response_content_type": "application/json", "continuation_pointer": "/cursor",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "EMPTY_TOKEN_OR_RECORDS", "records_pointer": "/warehouses",
+            },
+            "probe_body": lambda cursor, context: {"limit": PAGE_SIZE, "cursor": cursor},
+            "token_key": "cursor",
+            "records_key": "warehouses",
+        },
+        "job": {"suffix": "warehouses", "dataset": "FBS_WAREHOUSE", "display": "Ozon 试点：FBS 仓库"},
+        "probe_only": True,
+        "mapping": None,
+        "inspect": inspect_warehouses,
+    },
+    "delivery-methods": {
+        "code": "ozon-delivery-methods-read",
+        "display": "Ozon delivery methods of the seller's warehouses: state, cutoff, assembly time",
+        "description": "Reads the delivery methods of the seller's FBS and rFBS warehouses (POST "
+                       "/v2/delivery-method/list, paged by cursor; official docs checked 2026-10-01). "
+                       "Drop-off addresses are not read.",
+        "manifest": "delivery-methods-latest.json",
+        "endpoint": {
+            "code": "ozon-delivery-methods-v2", "api_version": "v2",
+            "schema_version": "v2DeliveryMethodListResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 10/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "Every delivery method of the seller's warehouses on every run.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v2/delivery-method/list",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": '{"cursor":"{cursor}","filter":{},"limit":{limit},"sort_dir":"ASC"}',
+                "response_content_type": "application/json", "continuation_pointer": "/cursor",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "EMPTY_TOKEN_OR_RECORDS", "records_pointer": "/delivery_methods",
+            },
+            "probe_body": lambda cursor, context: {"cursor": cursor, "filter": {}, "limit": PAGE_SIZE,
+                                                   "sort_dir": "ASC"},
+            "token_key": "cursor",
+            "records_key": "delivery_methods",
+        },
+        "job": {"suffix": "delivery-methods", "dataset": "DELIVERY_METHOD", "display": "Ozon 试点：配送方式"},
+        "probe_only": True,
+        "mapping": None,
+        "inspect": inspect_delivery_methods,
     },
     "category-attributes": {
         "code": "ozon-category-attributes-read",
