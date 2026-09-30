@@ -371,7 +371,9 @@ public class AiDiagnosisService implements AiCopilot {
             How to read the data. store.minimumMargin is the store's margin floor (absent when unset) \
             and store.promotionCount how many current promotions name at least one of its products; \
             only the most important are described. promotions.* describes one promotion: its title, \
-            promotions.kind (the marketplace's promotion type), promotions.startsOn, promotions.endsOn \
+            promotions.kind (the marketplace's promotion type: STOCK_DISCOUNT is a discount on the \
+            product's stock, ELASTIC_BOOSTING gives a product more search visibility, a boost, the \
+            lower its promotion price), promotions.startsOn, promotions.endsOn \
             and promotions.freezesOn (from that day prices can only go down and products can no \
             longer leave), promotions.participating (YES when the store already takes part), \
             promotions.discount, and how many of its promotions.productCount products keep the \

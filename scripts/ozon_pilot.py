@@ -1006,7 +1006,6 @@ CAPABILITIES = {
             "computed": "SINGLE",
         },
         "job": {"suffix": "actions", "dataset": "PROMOTION", "display": "Ozon 试点：促销活动"},
-        "probe_only": True,
         # One record per action open to the store; the action id is the promotion key the
         # candidate and participant requests are asked with.
         "mapping": {
@@ -1055,7 +1054,6 @@ CAPABILITIES = {
         },
         "job": {"suffix": "action-candidates", "dataset": "PROMOTION_CANDIDATE",
                 "display": "Ozon 试点：活动候选商品"},
-        "probe_only": True,
         # One record per product that can join the action the request asked about; the answer
         # does not repeat the action, the request key does.
         "mapping": {
@@ -1097,7 +1095,6 @@ CAPABILITIES = {
         },
         "job": {"suffix": "action-products", "dataset": "PROMOTION_PARTICIPANT",
                 "display": "Ozon 试点：已参加活动的商品"},
-        "probe_only": True,
         "mapping": {
             "dataset": "PROMOTION_PARTICIPANT", "version": 1, "record_pointer": "/products", "child_pointer": None,
             "fields": dict(PROMOTION_ITEM_FIELDS, stock="/stock"),
@@ -1603,7 +1600,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     after_note = ""
     if follow_up is not None:
         after_note = f"; the next request was answered HTTP {follow_up['status']}"
-    print(f"POST {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
+    print(f"{method} {path}: {len(pages)} pages, {total_records} records, ended with {end_signal}{after_note}")
 
     # Whether the registered mapping can read these answers as they are.
     inspection = []

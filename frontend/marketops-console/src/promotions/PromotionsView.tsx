@@ -35,6 +35,7 @@ import {
   DISCOUNT_KIND_LABELS,
   MEMBERSHIP_LABELS,
   MISSING_LABELS,
+  PROMOTION_KIND_LABELS,
   promotionsText as text,
   VERDICT_LABELS,
 } from '../i18n/zh/promotions';
@@ -434,6 +435,11 @@ function PromotionCard({
       title={
         <Space size={8} wrap>
           <span lang="ru">{title}</span>
+          {promotion.promotionKind !== null && (
+            <Tag style={{ marginInlineEnd: 0 }}>
+              {codeLabel(PROMOTION_KIND_LABELS, promotion.promotionKind)}
+            </Tag>
+          )}
           <Tag
             color={promotion.participating === true ? 'processing' : 'default'}
             style={{ marginInlineEnd: 0 }}

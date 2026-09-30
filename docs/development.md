@@ -759,12 +759,13 @@ make owner-grant ACTION=DATA_COLLECTION_MANAGE
   - `POST /api/v1/console/stores/{storeId}/promotions/{promotionId}/decisions`，需要 `PROMOTION_DECISION_RECORD`：记一条决定；
   - `POST /api/v1/console/explanations/stores/{storeId}/promotions?window=D7`，需要 `DIAGNOSTIC_VIEW`：生成或沿用 AI 建议；`GET …/promotions/latest`，需要 `EVIDENCE_VIEW`：最近一次，不调用模型。
 - **页面**：侧边栏"店铺诊断"下方新增"促销活动"：AI 促销取舍建议；每个活动一张卡片（是否已参加、时间、冻结日、折扣、可参加/已参加数、按最高活动价的判断汇总），卡片里是商品表（身份、现价/最高活动价/推荐活动价及利润率、加成、判断和保本价、人工决定）。
-- **接入步骤**（等新 key）：
+- **试点 key（2026-10-01）**：旧 key 被 Ozon 停用后换了新 key。Owner 决定新 key 保留全部 41 个角色（含可改数据的角色），由 Owner 亲自用 `--allow-write-roles` 探测（证据有效期到 2026-10-30，key 到期 2026-12-29）。平台本身仍只读：本地 Ozon 出站白名单只有读取路径，写入能力关闭。每次能力探测都会核对 key 角色，所以促销能力的探测也要带这个开关。
+- **接入步骤**：
 
   ```bash
-  make ozon-probe CAPABILITY=actions OFFICIAL_SOURCE=~/Downloads/swagger.json
-  make ozon-probe CAPABILITY=action-candidates OFFICIAL_SOURCE=~/Downloads/swagger.json
-  make ozon-probe CAPABILITY=action-products OFFICIAL_SOURCE=~/Downloads/swagger.json
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability actions --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability action-candidates --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability action-products --official-source-file ~/Downloads/swagger.json --allow-write-roles
   ```
 
   按真实应答核对映射后去掉 `probe_only`，再对三个能力各执行 `make ozon-setup … OPERATOR=claude-for-owner`，由 Owner 执行 `make ozon-verify`，然后 `make ozon-run` 加 `make ozon-normalize` 各跑一次（先 `actions`）。

@@ -740,6 +740,26 @@ public class FactWriteRepository {
     }
 
     /** Record what the answer about one promotion said about one of its products. */
+    /**
+     * The currency of a listing variant's newest price observation at or before a moment, or empty.
+     * Ozon states the amounts of a promotion's products in the product's price currency, and its
+     * answers leave the currency itself empty (observed 2026-10-01).
+     */
+    public java.util.Optional<String> priceCurrency(UUID variantId, java.time.Instant at) {
+        return jdbc.sql("""
+                        SELECT observation.currency_code
+                          FROM core.listing_price_observation AS observation
+                         WHERE observation.platform_listing_variant_id = :variantId
+                           AND observation.observed_at <= :at
+                         ORDER BY observation.observed_at DESC
+                         LIMIT 1
+                        """)
+                .param("variantId", variantId)
+                .param("at", java.sql.Timestamp.from(at))
+                .query(String.class)
+                .optional();
+    }
+
     public void insertPromotionItem(UUID id, UUID organizationId, UUID provenanceId, UUID promotionId,
                                     UUID listingVariantId, String sourceFactKey, Instant observedAt, String membership,
                                     PromotionItemTerms terms) {

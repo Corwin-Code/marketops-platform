@@ -109,6 +109,13 @@ export const MISSING_LABELS: Readonly<Record<string, string>> = {
 export const DISCOUNT_KIND_LABELS: Readonly<Record<string, string>> = {
   PERCENT: '按百分比',
   AMOUNT: '按金额',
+  CURRENCY: '按金额',
+};
+
+/** Ozon's promotion types, with the Russian name the seller back office uses. */
+export const PROMOTION_KIND_LABELS: Readonly<Record<string, string>> = {
+  STOCK_DISCOUNT: '库存折扣 · Скидка на сток',
+  ELASTIC_BOOSTING: '弹性加成 · Эластичный бустинг',
 };
 
 /** A recorded decision as the table shows it. */

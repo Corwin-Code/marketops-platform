@@ -187,11 +187,14 @@ public class FactRecorder {
                         count(canonical.integer("bannedCount")),
                         canonical.flag("participating"), canonical.flag("voucher"),
                         canonical.flag("targeted"), bounded(canonical.text("discountKind"), 64),
+                        // Ozon states 0 for a promotion whose discount is set per product (stock
+                        // discounts, elastic boosting): a zero says nothing and is left out.
                         canonical.decimal("discountValue")
                                 .map(value -> value.setScale(4, java.math.RoundingMode.HALF_UP))
-                                .filter(value -> value.abs().compareTo(new java.math.BigDecimal("100000000000000")) < 0)
+                                .filter(value -> value.signum() > 0
+                                        && value.compareTo(new java.math.BigDecimal("100000000000000")) < 0)
                                 .orElse(null),
-                        canonical.decimal("orderAmount").orElse(null)));
+                        canonical.decimal("orderAmount").filter(value -> value.signum() > 0).orElse(null)));
         return 1;
     }
 
@@ -208,7 +211,11 @@ public class FactRecorder {
             return 0;
         }
         Instant observedAt = canonical.requiredInstant("observedAt");
-        String currencyCode = currency(canonical, "currencyCode");
+        // Ozon leaves the currency of these amounts empty; they are in the product's price currency
+        // (its candidates' price equals the price the prices method states, 65 of 65 on 2026-10-01).
+        String currencyCode = Optional.ofNullable(currency(canonical, "currencyCode"))
+                .or(() -> facts.priceCurrency(variantId, observedAt))
+                .orElse(null);
         // An amount is kept only with its currency, and Ozon writes an amount it has not set as 0.
         java.util.function.Function<String, java.math.BigDecimal> amount = field -> currencyCode == null ? null
                 : canonical.decimal(field).filter(value -> value.signum() > 0).orElse(null);
