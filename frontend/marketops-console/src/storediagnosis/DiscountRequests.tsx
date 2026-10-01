@@ -28,9 +28,9 @@ const STATUS_COLORS: Readonly<Record<string, TagColor>> = {
   DECLINED: 'default',
 };
 
-/** A percentage Ozon states in percent, e.g. `5.2632` → `5.3%`. */
+/** A percentage stated in percent, e.g. `4.97` → `4.97%`. */
 function percent(value: string | null): string {
-  const shown = formatDecimal(value, { maxFractionDigits: 1 });
+  const shown = formatDecimal(value, { maxFractionDigits: 2 });
   return shown === '—' ? shown : `${shown}%`;
 }
 
@@ -313,7 +313,10 @@ export function StoreDiscountRequestsSection({
           </Flex>
         )}
         <Flex vertical gap={8}>
-          <Typography.Text strong>{text.topItems}</Typography.Text>
+          <Space size={4}>
+            <Typography.Text strong>{text.topItems}</Typography.Text>
+            <InfoTip title={text.topItemsHint} />
+          </Space>
           <Table<DiscountRequestItem>
             rowKey="nativeItemKey"
             size="small"

@@ -780,7 +780,9 @@ export function StoreDiagnosisView({
         </Flex>
       </SectionCard>
 
+      {/* Keyed by the refresh generation, so a refresh asks again. */}
       <StoreDiscountRequestsSection
+        key={generation}
         context={context}
         storeId={storeId}
         onOpenListing={(subjectId) => {

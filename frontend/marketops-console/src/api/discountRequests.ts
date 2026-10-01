@@ -77,7 +77,7 @@ export interface DiscountRequests {
   readonly observedAt: string | null;
   readonly summary: DiscountRequestSummary;
   readonly months: readonly DiscountRequestMonth[];
-  /** The SKUs asked about most, store-wide only. */
+  /** The SKUs asked about, the catalogue's own first, store-wide only. */
   readonly items: readonly DiscountRequestItem[];
   /** The newest requests first. */
   readonly requests: readonly DiscountRequest[];

@@ -121,7 +121,10 @@ public class DiscountRequestRepository {
                 .list();
     }
 
-    /** The SKUs buyers asked about most, with the listing variant carrying each when the catalogue has one. */
+    /**
+     * The SKUs buyers asked about, those the catalogue lists today first and then by how often, with
+     * the listing variant carrying each when the catalogue has one.
+     */
     public List<Item> items(UUID organizationId, UUID storeId, int limit) {
         return jdbc.sql(SCOPED + """
                         SELECT scoped.native_item_key, scoped.variant_id, count(*) AS requests,
@@ -135,7 +138,8 @@ public class DiscountRequestRepository {
                           FROM scoped
                          WHERE scoped.native_item_key IS NOT NULL
                          GROUP BY scoped.native_item_key, scoped.variant_id
-                         ORDER BY count(*) DESC, max(scoped.requested_at) DESC NULLS LAST, scoped.native_item_key
+                         ORDER BY scoped.variant_id IS NULL, count(*) DESC, max(scoped.requested_at) DESC NULLS LAST,
+                                  scoped.native_item_key
                          LIMIT :limit
                         """)
                 .param("organizationId", organizationId)

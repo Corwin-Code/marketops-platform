@@ -36,7 +36,7 @@ class DiscountRequestConsoleController {
     /** The most requests or SKUs one answer lists. */
     private static final int MAXIMUM_LIMIT = 100;
 
-    /** How many of the most requested SKUs the store-wide answer lists. */
+    /** How many SKUs the store-wide answer lists, the catalogue's own first. */
     private static final int ITEM_LIMIT = 10;
 
     private final DiscountRequestRepository requests;
@@ -76,7 +76,7 @@ class DiscountRequestConsoleController {
                 .map(row -> new Request(row.nativeRequestKey(), row.listingVariantId(), row.nativeItemKey(),
                         row.productName(), row.status(), row.requestedAt(), row.moderatedAt(), row.expiresAt(),
                         row.currencyCode(), text(row.originalPrice()), text(row.requestedPrice()),
-                        text(row.requestedDiscountPercent()), row.requestedQuantity(), text(row.approvedPrice()),
+                        percent(row.requestedDiscountPercent()), row.requestedQuantity(), text(row.approvedPrice()),
                         row.approvedQuantity(), row.autoModerated())).toList();
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATING_FACTS,
                 actor.userId().toString(), AuditAction.READ, "discount_requests", storeId, null,
@@ -93,12 +93,17 @@ class DiscountRequestConsoleController {
         return value == null ? null : value.stripTrailingZeros().toPlainString();
     }
 
+    /** A percentage at two decimals, as the medians are, without trailing zeros; or {@code null}. */
+    private static String percent(BigDecimal value) {
+        return value == null ? null : text(value.setScale(2, java.math.RoundingMode.HALF_UP));
+    }
+
     /**
      * The requests of a store or of one listing variant.
      *
      * @param subjectId the listing variant asked about, or {@code null} for the whole store
      * @param observedAt when the store's newest answer was observed; {@code null} before the first
-     * @param items the SKUs asked about most, store-wide only
+     * @param items the SKUs asked about, the catalogue's own first, store-wide only
      * @param requests the newest requests first
      */
     record DiscountRequests(UUID storeId, UUID subjectId, Instant observedAt, Summary summary, List<Month> months,
