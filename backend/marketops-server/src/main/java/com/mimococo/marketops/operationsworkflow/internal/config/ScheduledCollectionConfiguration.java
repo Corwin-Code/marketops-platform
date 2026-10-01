@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
-@EnableConfigurationProperties(ScheduledCollectionProperties.class)
+@EnableConfigurationProperties({ScheduledCollectionProperties.class, PriceSuggestionProperties.class})
 public class ScheduledCollectionConfiguration {
 
     /** Scheduled execution exists only where the collection timer is switched on. */

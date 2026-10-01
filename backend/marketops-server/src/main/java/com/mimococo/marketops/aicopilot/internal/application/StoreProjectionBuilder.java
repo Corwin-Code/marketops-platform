@@ -59,7 +59,7 @@ class StoreProjectionBuilder {
     /** The conclusions in the order the store diagnosis shows them: what stops a sale first. */
     private static final List<String> CONCLUSION_ORDER = List.of(WITHOUT_STOCK, "LISTING_NOT_SELLABLE",
             "DEMAND_NOT_CONVERTING", "PRICE_GAP_STRUCTURAL", "PRICE_GAP_PARTIAL", "PRICE_GAP_REDUCIBLE",
-            "LOW_SEARCH_EXPOSURE", "CONTENT_BELOW_TARGET", "PROMOTION_OPPORTUNITY");
+            "PRICE_HEADROOM", "LOW_SEARCH_EXPOSURE", "CONTENT_BELOW_TARGET", "PROMOTION_OPPORTUNITY");
 
     /** A rule that concludes on every listing without sales; it explains nothing about this store. */
     private static final String DATA_BLOCKED = "DATA_BLOCKED";

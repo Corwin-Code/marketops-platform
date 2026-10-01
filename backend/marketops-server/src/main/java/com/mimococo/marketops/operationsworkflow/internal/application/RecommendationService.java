@@ -199,6 +199,13 @@ public class RecommendationService
         return recommendations.queue(storeId, subjectId, states, limit);
     }
 
+    /** The proposal of this kind about the listing variant that has not come to rest yet, if any. */
+    @Transactional(readOnly = true)
+    public Optional<RecommendationView> live(UUID subjectId, ActionKind actionKind) {
+        return recommendations.liveFor(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId, actionKind).stream()
+                .findFirst().flatMap(recommendations::find);
+    }
+
     /** How many proposals of one store stand in each state. */
     @Transactional(readOnly = true)
     public Map<RecommendationState, Integer> stateCounts(UUID storeId) {

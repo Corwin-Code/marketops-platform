@@ -175,7 +175,9 @@ final class ProjectionEgress {
             "LISTING_NOT_SELLABLE", keys("listingSellable", Kind.YES_NO),
             "STOCKOUT_RISK", keys("platformAvailableUnits", Kind.COUNT, "stockCoverDays", Kind.COUNT,
                     "stockCoverDaysFloor", Kind.COUNT),
-            "PROMOTION_OPPORTUNITY", keys("promotionMargin", Kind.RATIO, "minimumUnitMarginRate", Kind.RATIO));
+            "PROMOTION_OPPORTUNITY", keys("promotionMargin", Kind.RATIO, "minimumUnitMarginRate", Kind.RATIO),
+            "PRICE_HEADROOM", keys("searchUsers", Kind.COUNT, "projectedUnitMargin", Kind.RATIO,
+                    "minimumUnitMarginRate", Kind.RATIO, "priceRoom", Kind.RATIO));
 
     private enum Kind { COUNT, RATIO, SIGNED_RATIO, SCORE, YES_NO, PRICE }
 
