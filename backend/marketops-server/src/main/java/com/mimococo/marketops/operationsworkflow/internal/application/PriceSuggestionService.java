@@ -48,7 +48,10 @@ import org.springframework.transaction.support.TransactionTemplate;
  * PRICE_GAP_PARTIAL (matching the competitor keeps a profit but not the minimum margin, so the
  * suggestion stops at the target margin price) and PRICE_HEADROOM (buyers look and nobody orders, and
  * the price can come down before the margin reaches the minimum). A listing with a structural price
- * gap, no stock or no sellable status gets none.
+ * gap, no stock or no sellable status gets none. A listing whose buyer price has just jumped
+ * (BUYER_PRICE_JUMP) waits: the searches and the missing orders a suggestion rests on were observed
+ * at a much lower price, so a step down from the new one has no ground; its undecided suggestion is
+ * withdrawn as paused, and a new one comes once the price has held for the rule's lookback.
  *
  * <p>The price comes from the deterministic layer alone: never below the target margin price (rounded
  * up to a whole unit, so the margin really holds), never more than one configured step below today's
@@ -80,6 +83,12 @@ public class PriceSuggestionService {
 
     /** Conclusions under which no price change is suggested. */
     private static final Set<String> BLOCKERS = Set.of("PRICE_GAP_STRUCTURAL", "STOCKOUT_RISK", "LISTING_NOT_SELLABLE");
+
+    /** The conclusion under which a suggestion waits for the buyer price to settle. */
+    private static final String PAUSE = "BUYER_PRICE_JUMP";
+
+    /** Why an undecided suggestion was withdrawn while the buyer price settles. */
+    static final String PAUSED_REASON = "PAUSED_BY_BUYER_PRICE_JUMP";
 
     /** The values a suggestion reads and cites. */
     private static final Set<MetricCode> READ = EnumSet.of(OBSERVED_SELLING_PRICE, TARGET_MARGIN_PRICE,
@@ -130,7 +139,7 @@ public class PriceSuggestionService {
         int expired = recommendations.expireElapsed();
         Optional<StoreFindingsQuery.StoreRun> run = findings.latest(organizationId, storeId, MetricWindow.D7, READ);
         if (run.isEmpty()) {
-            return new Result(null, expired, 0, 0, 0, 0, 0, 0);
+            return new Result(null, expired, 0, 0, 0, 0, 0, 0, 0);
         }
         Instant asOf = run.get().periodEnd();
         Instant now = clock.instant();
@@ -139,10 +148,14 @@ public class PriceSuggestionService {
         int withdrawn = 0;
         int standing = 0;
         int cooling = 0;
+        int paused = 0;
         int failed = 0;
         for (ListingResult listing : run.get().listings()) {
             UUID variantId = listing.listingVariantId();
-            Optional<Suggestion> suggestion = suggest(storeId, listing, asOf);
+            boolean jumped = listing.findings().stream().anyMatch(finding -> PAUSE.equals(finding.ruleCode()));
+            Optional<Suggestion> called = suggest(storeId, listing, asOf);
+            Optional<Suggestion> suggestion = jumped ? Optional.empty() : called;
+            paused += jumped && called.isPresent() ? 1 : 0;
             Optional<RecommendationView> live = recommendations.live(variantId, ActionKind.PRICE_CHANGE);
             if (live.isPresent() && (!ours(live.get())
                     || (suggestion.isPresent() && same(live.get(), suggestion.get())))) {
@@ -157,7 +170,8 @@ public class PriceSuggestionService {
                 transactions.executeWithoutResult(status -> {
                     live.ifPresent(outdated -> recommendations.transition(OPERATOR, outdated.id(),
                             RecommendationState.CANCELLED,
-                            suggestion.isPresent() ? "SUPERSEDED_BY_NEWER_CALCULATION" : "NO_LONGER_SUGGESTED",
+                            suggestion.isPresent() ? "SUPERSEDED_BY_NEWER_CALCULATION"
+                                    : jumped ? PAUSED_REASON : "NO_LONGER_SUGGESTED",
                             outdated.version()));
                     suggestion.ifPresent(next -> propose(organizationId, storeId, run.get().runId(), variantId, next));
                 });
@@ -176,7 +190,8 @@ public class PriceSuggestionService {
                         .log("A price suggestion could not be proposed or withdrawn");
             }
         }
-        return new Result(run.get().runId(), expired, proposed, refreshed, withdrawn, standing, cooling, failed);
+        return new Result(run.get().runId(), expired, proposed, refreshed, withdrawn, standing, cooling, paused,
+                failed);
     }
 
     /** Whether a live price proposal is one of this service's that nobody has decided on yet. */
@@ -324,12 +339,15 @@ public class PriceSuggestionService {
      * @param expired proposals of any store whose validity elapsed and were expired first
      * @param proposed suggestions that entered the review for listings without one
      * @param refreshed undecided suggestions replaced by one with another price
-     * @param withdrawn undecided suggestions withdrawn because the findings no longer call for them
+     * @param withdrawn undecided suggestions withdrawn because the findings no longer call for them, or
+     *        because the buyer price has just jumped
      * @param standing listings whose suggestion still stands, or whose price proposal is not this service's
      * @param cooling listings left alone because a decision about them is younger than the horizon
+     * @param paused listings the findings call for a price for, waiting because their buyer price has just
+     *        jumped
      * @param failed listings whose suggestion could not be proposed or withdrawn
      */
     public record Result(UUID calculationRunId, int expired, int proposed, int refreshed, int withdrawn,
-                         int standing, int cooling, int failed) {
+                         int standing, int cooling, int paused, int failed) {
     }
 }

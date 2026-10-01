@@ -708,6 +708,7 @@ export function StoreDiagnosisView({
                       suggested.value.proposed,
                       suggested.value.refreshed,
                       suggested.value.withdrawn,
+                      suggested.value.paused,
                     )
                   : ''),
             );
@@ -873,6 +874,9 @@ function ProductDrawer({
             context={context}
             storeId={storeId}
             subjectId={product.variantId}
+            pausedByPriceJump={
+              listing?.findings.some((finding) => finding.ruleCode === 'BUYER_PRICE_JUMP') ?? false
+            }
           />
 
           <ListingDiscountRequests

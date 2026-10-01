@@ -383,7 +383,8 @@ public class ScheduledCollectionService {
                                 "findingCount", result.findingCount(),
                                 "priceSuggestions", suggested == null ? null : suggested.proposed(),
                                 "priceSuggestionsRefreshed", suggested == null ? null : suggested.refreshed(),
-                                "priceSuggestionsWithdrawn", suggested == null ? null : suggested.withdrawn()));
+                                "priceSuggestionsWithdrawn", suggested == null ? null : suggested.withdrawn(),
+                                "priceSuggestionsPaused", suggested == null ? null : suggested.paused()));
                 recalculated++;
             } catch (RuntimeException failedRun) {
                 log.atWarn().addKeyValue("event", "scheduled_recalculation_failed")
