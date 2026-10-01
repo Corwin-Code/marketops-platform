@@ -1083,6 +1083,42 @@ Owner 2026-10-01 的四项决定：
 - 04:04 UTC，`make economics-profile`：`owner` 提交，`owner-reviewer` 批准（批准前先给 `owner-reviewer` 授权了 `COMMERCIAL_POLICY_MANAGE`）。生效的是 v1：`REAL_ACCOUNT_VERIFIED`，核验到 10-31；4 个成本族要求计入，共 6 个成本项，另 4 个成本族不适用。草稿的创建和批准都有审计记录；
 - 7 条在审建议的护栏快照都解析到这份 profile，并选中 6 个成本项。在第三部分录入单件目标利润和安全缓冲之前，护栏仍会以 `PROJECTED_ECONOMICS_UNAVAILABLE`（`SOLVER_INPUT_UNAVAILABLE`）拦下。
 
+## 写入前的护栏前提（第三部分：商业策略与财务输入）
+
+补齐护栏最后两项前提：生效的商业策略，以及单件目标利润和单件安全缓冲两项指标。两者都在“价格护栏”页上录入。
+
+### 商业策略
+
+- 后端早已有发布接口（`POST /api/v1/console/policy/policies`），但控制台没有入口，而且不检查限额值写在哪一列：比如把利润率写进金额列，护栏读不到它，就会悄悄跳过这项检查；
+- `CommercialPolicyService.publish` 现在逐项校验：
+  - 限额必须是词表（`ops.policy_limit_kind`）里有的；
+  - 不能重复；
+  - 值只能写在词表的 `value_kind` 指定的那一列：比例在 0 到 1 之间，金额、件数、时长不能为负；
+  - 生命周期目标必须是 HERO、GROWTH、MATURE、REPAIR、EXIT 之一；
+- 店铺策略接口：
+  - `GET /api/v1/console/stores/{storeId}/commercial-policy`（`DIAGNOSTIC_VIEW`）返回限额词表、店铺当前适用的策略（店铺自己的优先，其次平台、组织）及其限额，以及店铺自己的版本记录；
+  - `POST` 同一路径发布新版本，需要 `COMMERCIAL_POLICY_MANAGE` 和近期登录；
+  - 策略编码固定为 `store-<店铺 ID>`，因此发布一个店铺的新版本不会结束别的店铺的策略；版本号接着上一版；金额按店铺币种；
+- 页面“商业策略”一节：
+  - 显示生效的策略、8 项限额及超出时的拦截原因、版本记录；
+  - “发布新版本”按限额类型给出输入框：比例按百分比填，时长按小时填，金额按店铺币种填，库存按件填；
+  - 没有店铺策略时，初始值是 Owner 2026-10-01 的决定：数据完整度 ≥ 37.5%、输入数据时效 ≤ 72 小时、贡献利润率 ≥ 15%、单件贡献利润 ≥ 0、单次和单日调价 ≤ 15%、冷却期 72 小时、可售 ≥ 1 件；生命周期目标默认“增长”。
+
+### 单件目标利润与安全缓冲
+
+- 这两项是财务输入（`core.finance_input_version`），以前只能通过文件导入；
+- 现在可以单条录入：`POST /api/v1/console/intake/commercial-inputs`（`INTERNAL_FACT_INTAKE`，限店铺范围）。按店铺币种、店铺范围记录，立即生效，并结束店铺原来的值；provenance 为 `MANUAL_ENTRY`，记审计；
+- `GET` 同一路径（`?storeId=`，`DIAGNOSTIC_VIEW`）返回两项当前生效的值（店铺自己的优先于组织的，与指标引擎一致）和录入记录；
+- 两项都生效后，下一轮定时采集（每分钟一轮）写入 `COMMERCIAL_INPUTS` 水位，8 个数据源就齐了；
+- 指标按整点窗口取值，只认窗口截止前已生效的输入。所以录入后要等过了下一个整点，再在“店铺诊断”页点“重新计算诊断”：
+  - 定时任务只在采集到新数据，或距上次重算满一天时才会自动重算；
+  - 重算后，两项指标变为 `CANONICAL_CONFIRMED`，零订单商品的数据完整度从 0.125 升到 0.375；
+  - 在审建议因指标输入摘要变化作废重提，新建议带着新的护栏预览。
+
+### 审批
+
+审批（`ApprovalService.approve`）只记录决定，并把建议转为 `APPROVED`，不生成指令，也不改动 Ozon 上的价格。真实写入仍属于 W1。
+
 ## 控制台：店铺诊断
 
 控制台首页（导航里的"店铺概览 → 店铺诊断"，路径 `/store/diagnosis`）按商品汇总平台给出的各项信号，用来回答"为什么卖不动"。

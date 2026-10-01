@@ -338,6 +338,116 @@ public class PolicyRepository {
                 .list();
     }
 
+    /** A store's currency and marketplace, when the store belongs to the organization. */
+    public Optional<StoreScope> storeScope(UUID organizationId, UUID storeId) {
+        return jdbc.sql("""
+                        SELECT store.currency_code, account.platform_code
+                          FROM core.store AS store
+                          JOIN core.marketplace_account AS account
+                            ON account.id = store.marketplace_account_id
+                         WHERE store.id = :storeId AND store.organization_id = :organizationId
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .query((rows, rowNumber) -> new StoreScope(rows.getString("currency_code"),
+                        rows.getString("platform_code")))
+                .optional();
+    }
+
+    /** The highest version a policy code has reached; 0 when it has none. */
+    public int latestVersion(UUID organizationId, String policyCode) {
+        Integer latest = jdbc.sql("""
+                        SELECT max(policy_version) FROM ops.commercial_policy
+                         WHERE organization_id = :organizationId AND policy_code = :policyCode
+                        """)
+                .param("organizationId", organizationId)
+                .param("policyCode", policyCode)
+                .query(Integer.class)
+                .optional()
+                .orElse(null);
+        return latest == null ? 0 : latest;
+    }
+
+    /**
+     * The policy a store's listings are checked against at an instant: the store's own, else its
+     * marketplace's, else the organization's. A variant's own policy overrides it for that variant
+     * only, so it is not the store's.
+     */
+    public Optional<PolicyDetail> inForceForStore(UUID organizationId, String platformCode, UUID storeId,
+                                                  Instant at) {
+        return jdbc.sql("""
+                        SELECT policy.id, policy.policy_code, policy.policy_version, policy.scope_kind,
+                               policy.lifecycle_objective, policy.currency_code, policy.effective_from,
+                               policy.effective_to, policy.status, policy.reason, policy.published_by_user_id
+                          FROM ops.commercial_policy AS policy
+                         WHERE policy.organization_id = :organizationId
+                           AND policy.status = 'ACTIVE'
+                           AND policy.effective_from <= :at
+                           AND (policy.effective_to IS NULL OR policy.effective_to > :at)
+                           AND ((policy.scope_kind = 'ORGANIZATION')
+                             OR (policy.scope_kind = 'PLATFORM' AND policy.platform_code = :platformCode)
+                             OR (policy.scope_kind = 'STORE' AND policy.store_ref_id = :storeId))
+                         ORDER BY %s, policy.effective_from DESC
+                         LIMIT 1
+                        """.formatted(SCOPE_RANK))
+                .param("organizationId", organizationId)
+                .param("platformCode", platformCode)
+                .param("storeId", storeId)
+                .param("at", Timestamp.from(at))
+                .query(PolicyRepository::mapDetail)
+                .optional();
+    }
+
+    /** Every version of one policy code, newest first. */
+    public List<PolicyDetail> versions(UUID organizationId, String policyCode) {
+        return jdbc.sql("""
+                        SELECT policy.id, policy.policy_code, policy.policy_version, policy.scope_kind,
+                               policy.lifecycle_objective, policy.currency_code, policy.effective_from,
+                               policy.effective_to, policy.status, policy.reason, policy.published_by_user_id
+                          FROM ops.commercial_policy AS policy
+                         WHERE policy.organization_id = :organizationId AND policy.policy_code = :policyCode
+                         ORDER BY policy.policy_version DESC
+                        """)
+                .param("organizationId", organizationId)
+                .param("policyCode", policyCode)
+                .query(PolicyRepository::mapDetail)
+                .list();
+    }
+
+    /** The configured limits of one policy version, in the vocabulary's order. */
+    public List<LimitRow> limits(UUID policyId) {
+        return jdbc.sql("""
+                        SELECT configured.limit_code, configured.rate_value, configured.amount_value,
+                               configured.count_value, configured.duration_seconds
+                          FROM ops.commercial_policy_limit AS configured
+                          JOIN ops.policy_limit_kind AS kind ON kind.code = configured.limit_code
+                         WHERE configured.policy_id = :policyId
+                         ORDER BY kind.ordinal
+                        """)
+                .param("policyId", policyId)
+                .query((rows, rowNumber) -> new LimitRow(rows.getString("limit_code"),
+                        rows.getBigDecimal("rate_value"), rows.getBigDecimal("amount_value"),
+                        rows.getObject("count_value", Integer.class),
+                        rows.getObject("duration_seconds", Long.class)))
+                .list();
+    }
+
+    private static PolicyDetail mapDetail(ResultSet rows, int rowNumber) throws SQLException {
+        Timestamp effectiveTo = rows.getTimestamp("effective_to");
+        return new PolicyDetail(
+                rows.getObject("id", UUID.class),
+                rows.getString("policy_code"),
+                rows.getInt("policy_version"),
+                rows.getString("scope_kind"),
+                rows.getString("lifecycle_objective"),
+                rows.getString("currency_code"),
+                rows.getTimestamp("effective_from").toInstant(),
+                effectiveTo == null ? null : effectiveTo.toInstant(),
+                rows.getString("status"),
+                rows.getString("reason"),
+                rows.getObject("published_by_user_id", UUID.class));
+    }
+
     private static LimitKind mapLimitKind(ResultSet rows, int rowNumber) throws SQLException {
         return new LimitKind(
                 rows.getString("code"),
@@ -386,6 +496,30 @@ public class PolicyRepository {
     /** Identity of one policy version, before its limits are read. */
     private record PolicyHeader(UUID id, int policyVersion, String currencyCode,
                                 String lifecycleObjective) {
+    }
+
+    /**
+     * What a store-scoped policy is published with.
+     *
+     * @param currencyCode the store's currency, or {@code null} when it has none
+     * @param platformCode its marketplace
+     */
+    public record StoreScope(String currencyCode, String platformCode) {
+    }
+
+    /**
+     * One policy version as a person reads it.
+     *
+     * @param publishedByUserId who published it
+     */
+    public record PolicyDetail(UUID id, String policyCode, int policyVersion, String scopeKind,
+                               String lifecycleObjective, String currencyCode, Instant effectiveFrom,
+                               Instant effectiveTo, String status, String reason, UUID publishedByUserId) {
+    }
+
+    /** One configured limit; exactly one of the typed values is set. */
+    public record LimitRow(String limitCode, BigDecimal rateValue, BigDecimal amountValue,
+                           Integer countValue, Long durationSeconds) {
     }
 
     /**

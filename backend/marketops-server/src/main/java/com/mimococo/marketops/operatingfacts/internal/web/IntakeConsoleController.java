@@ -9,6 +9,7 @@ import com.mimococo.marketops.operatingfacts.internal.application.ImportIntakeSe
 import com.mimococo.marketops.operatingfacts.internal.application.ManualFactEntryService;
 import com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.ImportRepository;
+import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.InternalReferenceRepository;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import jakarta.validation.Valid;
@@ -18,7 +19,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -160,6 +163,34 @@ class IntakeConsoleController {
                 request.observedAt(), request.reason()));
     }
 
+    /**
+     * Record a store's required profit or safety buffer per unit, in the store's currency, from now on
+     * (Owner decision 2026-10-01).
+     */
+    @PostMapping(value = "/commercial-inputs", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    EntryCreated enterCommercialInput(AuthenticatedActor actor,
+                                      @Valid @RequestBody CommercialInputRequest request) {
+        authorization.require(actor, ActionScopeCode.INTERNAL_FACT_INTAKE,
+                ResourceScope.store(request.storeId()));
+        return new EntryCreated(manualEntry.enterCommercialInput(actor, request.storeId(),
+                request.inputCode(), request.amount(), request.reason()));
+    }
+
+    /** The commercial inputs that apply to a store, with the one of each code in force now. */
+    @GetMapping(value = "/commercial-inputs", produces = MediaType.APPLICATION_JSON_VALUE)
+    CommercialInputsView commercialInputs(AuthenticatedActor actor, @RequestParam UUID storeId) {
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(storeId));
+        ManualFactEntryService.CommercialInputs inputs =
+                manualEntry.commercialInputs(actor.organizationId(), storeId);
+        return new CommercialInputsView(inputs.storeId(), inputs.generatedAt(), inputs.currencyCode(),
+                ManualFactEntryService.COMMERCIAL_INPUT_CODES,
+                inputs.inForce().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> CommercialInputView.of(entry.getValue(), actor.userId()))),
+                inputs.versions().stream().map(version -> CommercialInputView.of(version, actor.userId()))
+                        .toList());
+    }
+
     private void requireIntake(AuthenticatedActor actor) {
         authorization.require(actor, ActionScopeCode.INTERNAL_FACT_INTAKE,
                 ResourceScope.organization(actor.organizationId()));
@@ -181,6 +212,41 @@ class IntakeConsoleController {
             @NotBlank String currencyCode,
             Instant effectiveFrom,
             @NotBlank String reason) {
+    }
+
+    record CommercialInputRequest(@NotNull UUID storeId, @NotBlank String inputCode,
+                                  @NotNull BigDecimal amount, @NotBlank String reason) {
+    }
+
+    /**
+     * A store's commercial inputs.
+     *
+     * @param currencyCode the store's currency, the one an entry is recorded in
+     * @param inputCodes the codes the store needs, in order
+     * @param inForce the version of each code in force now, by code
+     * @param versions the versions that apply to the store, newest first
+     */
+    record CommercialInputsView(UUID storeId, Instant generatedAt, String currencyCode, List<String> inputCodes,
+                                Map<String, CommercialInputView> inForce, List<CommercialInputView> versions) {
+    }
+
+    /**
+     * One commercial input version; the amount as decimal text.
+     *
+     * @param scopeKind STORE for the store's own, ORGANIZATION for the organization-wide one
+     * @param note what the person who entered it said
+     * @param enteredByViewer whether the person asking entered it
+     */
+    record CommercialInputView(UUID inputId, String inputCode, String scopeKind, String amount,
+                               String currencyCode, Instant effectiveFrom, Instant effectiveTo, String status,
+                               String note, boolean enteredByViewer) {
+
+        static CommercialInputView of(InternalReferenceRepository.FinanceInputVersion version, UUID viewerId) {
+            return new CommercialInputView(version.id(), version.inputCode(), version.scopeKind(),
+                    version.amountValue() == null ? null : version.amountValue().stripTrailingZeros().toPlainString(),
+                    version.currencyCode(), version.effectiveFrom(), version.effectiveTo(), version.status(),
+                    version.evidenceNote(), viewerId.equals(version.recordedByUserId()));
+        }
     }
 
     record StockEntryRequest(

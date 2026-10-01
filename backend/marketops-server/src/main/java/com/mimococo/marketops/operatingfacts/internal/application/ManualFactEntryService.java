@@ -41,6 +41,14 @@ public class ManualFactEntryService {
 
     static final String COST_ENTITY_TYPE = "cost-version";
     static final String STOCK_ENTITY_TYPE = "internal-stock-snapshot";
+    static final String FINANCE_INPUT_ENTITY_TYPE = "finance-input-version";
+
+    /** The per-unit amounts a store's price guardrail needs besides costs, entered for the store. */
+    public static final List<String> COMMERCIAL_INPUT_CODES =
+            List.of("REQUIRED_PROFIT_PER_UNIT", "SAFETY_BUFFER_PER_UNIT");
+
+    /** How many versions the commercial inputs read returns. */
+    private static final int COMMERCIAL_INPUT_HISTORY = 20;
 
     private final InternalReferenceRepository references;
     private final FactWriteRepository facts;
@@ -161,6 +169,91 @@ public class ManualFactEntryService {
                         "observedAt", new FieldChange(null, observed.toString())),
                 validReason, null));
         return snapshotId;
+    }
+
+    /**
+     * Record a store's required profit or safety buffer per unit from now on, in the store's currency
+     * (Owner decision 2026-10-01: both 0 for now, the minimum margin being the binding rule).
+     *
+     * <p>The store's version in force ends where the new one begins, as with costs. Metrics read it from
+     * the first window ending after it: windows end at a full hour, so a recalculation after the next
+     * full hour picks it up.
+     */
+    @Transactional
+    public UUID enterCommercialInput(AuthenticatedActor actor, UUID storeId, String inputCode,
+                                     BigDecimal amount, String reason) {
+        String validReason = MetadataFieldPolicy.requireText("reason", reason);
+        if (!COMMERCIAL_INPUT_CODES.contains(inputCode) || amount == null || amount.signum() < 0
+                || amount.stripTrailingZeros().scale() > 4) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        String currencyCode = references.storeCurrency(actor.organizationId(), storeId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND))
+                .currencyCode();
+        if (currencyCode == null) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        Money value = Money.of(amount, currencyCode);
+
+        Instant now = clock.instant();
+        UUID provenanceId = facts.recordProvenance(idGenerator.newId(), actor.organizationId(),
+                "MANUAL_ENTRY", null, null, actor.userId(), now, now, validReason);
+        references.endOpenFinanceInput(actor.organizationId(), inputCode, "STORE", storeId, now, validReason);
+        UUID inputId = idGenerator.newId();
+        references.insertFinanceInput(inputId, actor.organizationId(), inputCode, "STORE", storeId, null,
+                "AMOUNT", null, value.amount(), value.currencyCode(), provenanceId, now, now);
+
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.OPERATING_FACTS, actor.userId().toString(),
+                AuditAction.CREATE, FINANCE_INPUT_ENTITY_TYPE, inputId, inputCode,
+                Map.of(
+                        "storeId", new FieldChange(null, storeId.toString()),
+                        "amount", new FieldChange(null, value.amount().toPlainString()),
+                        "currencyCode", new FieldChange(null, value.currencyCode()),
+                        "effectiveFrom", new FieldChange(null, now.toString())),
+                validReason, null));
+        return inputId;
+    }
+
+    /**
+     * The commercial inputs that apply to a store, its own and the organization's, newest first, with
+     * the version of each code in force now: the store's own before the organization's, as the metric
+     * engine resolves them.
+     */
+    @Transactional(readOnly = true)
+    public CommercialInputs commercialInputs(UUID organizationId, UUID storeId) {
+        Instant now = clock.instant();
+        String currencyCode = references.storeCurrency(organizationId, storeId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND))
+                .currencyCode();
+        List<InternalReferenceRepository.FinanceInputVersion> versions = references.financeInputVersions(
+                organizationId, storeId, COMMERCIAL_INPUT_CODES, COMMERCIAL_INPUT_HISTORY);
+        Map<String, InternalReferenceRepository.FinanceInputVersion> inForce = new java.util.LinkedHashMap<>();
+        for (String code : COMMERCIAL_INPUT_CODES) {
+            versions.stream()
+                    .filter(version -> version.inputCode().equals(code) && "ACTIVE".equals(version.status())
+                            && version.effectiveFrom().isBefore(now)
+                            && (version.effectiveTo() == null || version.effectiveTo().isAfter(now)))
+                    .min(java.util.Comparator.comparing(
+                            (InternalReferenceRepository.FinanceInputVersion version) ->
+                                    "STORE".equals(version.scopeKind()) ? 0 : 1)
+                            .thenComparing(InternalReferenceRepository.FinanceInputVersion::effectiveFrom,
+                                    java.util.Comparator.reverseOrder()))
+                    .ifPresent(version -> inForce.put(code, version));
+        }
+        return new CommercialInputs(storeId, now, currencyCode, inForce, versions);
+    }
+
+    /**
+     * A store's commercial inputs.
+     *
+     * @param currencyCode the store's currency, the one an entry is recorded in ({@code null} when none)
+     * @param inForce the version of each code in force now, by code; a code without one is absent
+     * @param versions the versions that apply to the store, newest first
+     */
+    public record CommercialInputs(UUID storeId, Instant generatedAt, String currencyCode,
+                                   Map<String, InternalReferenceRepository.FinanceInputVersion> inForce,
+                                   List<InternalReferenceRepository.FinanceInputVersion> versions) {
     }
 
     private static boolean negative(Integer value) {
