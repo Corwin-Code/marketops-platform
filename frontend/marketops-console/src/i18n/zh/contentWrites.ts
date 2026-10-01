@@ -35,6 +35,7 @@ export const contentEditorText = {
   reasonPlaceholder: '可不填，默认为“Owner 确认修改描述”',
   submitted: '已确认，等待写入',
   liveCommand: '这张商品卡还有一个未完成的修改，完成或关闭后才能再提交。',
+  justWritten: '这段描述刚刚已写入 Ozon，不用再确认；下次目录采集后，“当前文本”会更新为它。',
   latest: '最近一次修改',
 } as const;
 

@@ -84,6 +84,14 @@ export function ContentWriteEditor({
   const descriptionChanged =
     current.description !== null && !sameContent(description, current.description);
   const live = latest !== null && !TERMINAL_CONTENT_STATES.has(latest.state);
+  // The catalog snapshot the editor starts from changes only with the next collection run, so right
+  // after a successful write the text just written still looks changed: confirming it again would
+  // only open a command that finds the card already says it.
+  const justWritten =
+    latest !== null &&
+    latest.state === 'SUCCEEDED' &&
+    sameContent(description, latest.targetDescription) &&
+    (!titleWritable || sameContent(title, latest.targetTitle));
   const titleLength = characterCount(title.trim());
   const descriptionLength = characterCount(description.trim());
   const problems: string[] = [];
@@ -95,6 +103,7 @@ export function ContentWriteEditor({
   }
   if (haveCurrent && !titleChanged && !descriptionChanged) problems.push(text.nothingChanged);
   if (live) problems.push(text.liveCommand);
+  if (justWritten) problems.push(text.justWritten);
 
   return (
     <Flex vertical gap={10}>
@@ -192,6 +201,11 @@ export function ContentWriteEditor({
               </Typography.Text>
             )}
           </Flex>
+          {justWritten && (
+            <Typography.Text type="success" style={{ fontSize: 12 }}>
+              {text.justWritten}
+            </Typography.Text>
+          )}
           <div>
             <WriteConfirmModal
               trigger={{
