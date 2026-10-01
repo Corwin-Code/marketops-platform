@@ -39,6 +39,8 @@ export interface WriteSwitch {
 /** One allowlist entry: a whole store, or one listing variant of it. */
 export interface AllowlistEntry {
   readonly id: string;
+  /** PRICE_CHANGE, or LISTING_CONTENT_CHANGE for title and description writes (W2). */
+  readonly actionKind: string;
   readonly platformCode: string;
   readonly storeId: string;
   readonly platformListingVariantId: string | null;
@@ -108,6 +110,8 @@ export function grantAllowlist(
     readonly validFrom: string;
     readonly validUntil: string;
     readonly reason: string;
+    /** PRICE_CHANGE when absent. */
+    readonly actionKind?: string;
   },
 ): Promise<ConsoleOutcome<true>> {
   return request(context, '/api/v1/console/policy/pilot-allowlist', () => true, {
@@ -215,6 +219,7 @@ function parseAllowlistEntry(value: unknown): AllowlistEntry | undefined {
   }
   return {
     id,
+    actionKind: text(value.actionKind) ?? 'PRICE_CHANGE',
     platformCode,
     storeId,
     platformListingVariantId: text(value.platformListingVariantId) ?? null,

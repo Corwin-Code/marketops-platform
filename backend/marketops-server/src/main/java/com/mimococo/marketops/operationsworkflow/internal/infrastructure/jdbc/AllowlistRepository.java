@@ -30,8 +30,8 @@ public class AllowlistRepository {
         this.jdbc = jdbc;
     }
 
-    /** Put one store, or one listing variant within it, on the list. */
-    public void insert(UUID id, UUID organizationId, String platformCode, UUID storeId,
+    /** Put one store, or one listing variant within it, on the list for one kind of write. */
+    public void insert(UUID id, UUID organizationId, String actionKind, String platformCode, UUID storeId,
                        UUID platformListingVariantId, Instant validFrom, Instant validUntil,
                        UUID grantedByUserId, String reason, Instant now) {
         jdbc.sql("""
@@ -39,12 +39,13 @@ public class AllowlistRepository {
                             id, organization_id, action_kind, platform_code, store_id,
                             platform_listing_variant_id, valid_from, valid_until, status,
                             granted_by_user_id, reason, created_at, updated_at, version)
-                        VALUES (:id, :organizationId, 'PRICE_CHANGE', :platformCode, :storeId,
+                        VALUES (:id, :organizationId, :actionKind, :platformCode, :storeId,
                             :platformListingVariantId, :validFrom, :validUntil, 'ACTIVE',
                             :grantedByUserId, :reason, :now, :now, 0)
                         """)
                 .param("id", id)
                 .param("organizationId", organizationId)
+                .param("actionKind", actionKind)
                 .param("platformCode", platformCode)
                 .param("storeId", storeId)
                 .param("platformListingVariantId", platformListingVariantId)
@@ -94,7 +95,7 @@ public class AllowlistRepository {
     /** Every entry of one organization, newest first. */
     public List<AllowlistRow> list(UUID organizationId) {
         return jdbc.sql("""
-                        SELECT id, platform_code, store_id, platform_listing_variant_id,
+                        SELECT id, action_kind, platform_code, store_id, platform_listing_variant_id,
                                valid_from, valid_until, status, reason, revoked_reason, version
                           FROM ops.pilot_allowlist_entry
                          WHERE organization_id = :organizationId
@@ -108,6 +109,7 @@ public class AllowlistRepository {
     private static AllowlistRow map(ResultSet rows, int rowNumber) throws SQLException {
         return new AllowlistRow(
                 rows.getObject("id", UUID.class),
+                rows.getString("action_kind"),
                 rows.getString("platform_code"),
                 rows.getObject("store_id", UUID.class),
                 rows.getObject("platform_listing_variant_id", UUID.class),
@@ -123,6 +125,7 @@ public class AllowlistRepository {
      * One allowlist entry.
      *
      * @param id the entry
+     * @param actionKind the kind of write it allows: PRICE_CHANGE or LISTING_CONTENT_CHANGE
      * @param platformCode marketplace it covers
      * @param storeId store it covers
      * @param platformListingVariantId listing variant it covers, or {@code null} for the store
@@ -133,7 +136,7 @@ public class AllowlistRepository {
      * @param revokedReason why it was withdrawn, or {@code null}
      * @param version optimistic-lock version
      */
-    public record AllowlistRow(UUID id, String platformCode, UUID storeId,
+    public record AllowlistRow(UUID id, String actionKind, String platformCode, UUID storeId,
                                UUID platformListingVariantId, Instant validFrom,
                                Instant validUntil, String status, String reason,
                                String revokedReason, long version) {

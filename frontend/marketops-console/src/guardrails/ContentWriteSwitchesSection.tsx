@@ -15,20 +15,21 @@ import {
 import type { TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
-import type { AllowlistEntry, WriteStatus, WriteSwitch } from '../api/priceWrites';
+import type { ContentCommand, ContentWriteStatus } from '../api/contentWrites';
 import {
-  fetchAllowlist,
-  fetchWriteStatus,
-  fetchWriteSwitches,
-  grantAllowlist,
-  moveWriteSwitch,
-  revokeAllowlist,
-} from '../api/priceWrites';
+  fetchContentCommands,
+  fetchContentSwitches,
+  fetchContentWriteStatus,
+  moveContentSwitch,
+} from '../api/contentWrites';
+import type { AllowlistEntry, WriteSwitch } from '../api/priceWrites';
+import { fetchAllowlist, grantAllowlist, revokeAllowlist } from '../api/priceWrites';
 import type { DiagnosisProduct } from '../api/storeDiagnosis';
 import { fetchStoreDiagnosis } from '../api/storeDiagnosis';
+import { ContentStateTag } from '../content/ContentCommandCard';
 import { codeLabel } from '../i18n';
-import { writeSwitchesText as text } from '../i18n/zh/guardrails';
-import { GATE_REASON_LABELS } from '../i18n/zh/pricing';
+import { CONTENT_GATE_LABELS, contentSwitchesText as text } from '../i18n/zh/contentWrites';
+import { writeSwitchesText as shared } from '../i18n/zh/guardrails';
 import { ActionModal, DateTime, FailureAlert, InfoTip, SectionCard } from '../ui';
 import type { TagColor } from '../ui';
 
@@ -37,9 +38,10 @@ type Load =
   | { readonly kind: 'failed'; readonly failure: ConsoleFailure }
   | {
       readonly kind: 'loaded';
-      readonly status: WriteStatus;
+      readonly status: ContentWriteStatus;
       readonly switches: readonly WriteSwitch[];
       readonly allowlist: readonly AllowlistEntry[];
+      readonly recent: readonly ContentCommand[];
     };
 
 interface ReasonValues {
@@ -56,38 +58,18 @@ interface GrantValues {
 const DEFAULT_HOURS = 24;
 const MAXIMUM_HOURS = 720;
 const MILLIS_PER_HOUR = 3_600_000;
+const RECENT = 10;
 
-/** Whether a listing is in a seller promotion: its buyer price differs from the price ceiling. */
-function inPromotion(product: DiagnosisProduct): boolean {
-  const discount = product.price?.discountPrice ?? null;
-  const selling = product.price?.sellingPrice ?? null;
-  return discount !== null && selling !== null && Number(discount) !== Number(selling);
-}
-
-function switchState(
-  switches: readonly WriteSwitch[],
-  scopeKind: string,
-  capabilityId?: string | null,
-) {
-  const found = switches.find(
-    (item) =>
-      item.scopeKind === scopeKind &&
-      item.status === 'ACTIVE' &&
-      (scopeKind !== 'CAPABILITY' || item.capabilityId === capabilityId),
-  );
-  if (found === undefined) return <Tag>{text.switchUnset}</Tag>;
-  return found.state === 'ENABLED' ? (
-    <Tag color="success">{text.switchEnabled}</Tag>
-  ) : (
-    <Tag color="error">{text.switchDisabled}</Tag>
-  );
+function onOff(on: boolean): React.JSX.Element {
+  return on ? <Tag color="success">{text.on}</Tag> : <Tag>{text.off}</Tag>;
 }
 
 /**
- * Whether the platform may change prices on the marketplace itself, and where: the deployment's
- * production-write switch, the price-write switches and the pilot allowlist (W1, 2026-10-01).
+ * Whether the platform may write listing titles and descriptions to Ozon, and where (W2): the
+ * deployment's production-write switch, the content-write switches, the allowlist for content
+ * writes, and the store's newest content changes.
  */
-export function WriteSwitchesSection({
+export function ContentWriteSwitchesSection({
   context,
   storeId,
 }: {
@@ -103,25 +85,27 @@ export function WriteSwitchesSection({
   useEffect(() => {
     let live = true;
     void Promise.all([
-      fetchWriteStatus(context, storeId),
-      fetchWriteSwitches(context),
+      fetchContentWriteStatus(context, storeId),
+      fetchContentSwitches(context),
       fetchAllowlist(context),
-    ]).then(([status, switches, allowlist]) => {
+      fetchContentCommands(context, storeId),
+    ]).then(([status, switches, allowlist, recent]) => {
       if (!live) return;
       if (!status.ok) setLoad({ kind: 'failed', failure: status.failure });
       else if (!switches.ok) setLoad({ kind: 'failed', failure: switches.failure });
       else if (!allowlist.ok) setLoad({ kind: 'failed', failure: allowlist.failure });
+      else if (!recent.ok) setLoad({ kind: 'failed', failure: recent.failure });
       else {
         const entries = allowlist.value.filter(
-          (entry) => entry.storeId === storeId && entry.actionKind === 'PRICE_CHANGE',
+          (entry) => entry.storeId === storeId && entry.actionKind === 'LISTING_CONTENT_CHANGE',
         );
         setLoad({
           kind: 'loaded',
           status: status.value,
           switches: switches.value,
           allowlist: entries,
+          recent: recent.value.slice(0, RECENT),
         });
-        // Single-listing entries are labelled by their SKU, which the store's listings carry.
         if (entries.some((entry) => entry.platformListingVariantId !== null)) {
           void fetchStoreDiagnosis(context, storeId).then((outcome) => {
             if (live && outcome.ok) setProducts(outcome.value.products);
@@ -139,10 +123,10 @@ export function WriteSwitchesSection({
   };
 
   const productLabel = (variantId: string | null): string => {
-    if (variantId === null) return text.wholeStore;
+    if (variantId === null) return shared.wholeStore;
     const product = products.find((item) => item.variantId === variantId);
     return product === undefined
-      ? `${text.oneListing} · ${variantId.slice(0, 8)}`
+      ? `${shared.oneListing} · ${variantId.slice(0, 8)}`
       : `${product.nativeSkuKey ?? product.nativeListingKey}${product.title === null ? '' : ` · ${product.title}`}`;
   };
 
@@ -152,18 +136,18 @@ export function WriteSwitchesSection({
   } else if (load.kind === 'failed') {
     body = <FailureAlert failure={load.failure} />;
   } else {
-    const { status, switches, allowlist } = load;
+    const { status, allowlist, recent } = load;
     const canEnable = status.productionWritesEnabled && status.capabilityId !== null;
     const now = Date.now();
     const allowlistColumns: TableColumnsType<AllowlistEntry> = [
       {
         key: 'scope',
-        title: text.scope,
+        title: shared.scope,
         render: (_, entry) => productLabel(entry.platformListingVariantId),
       },
       {
         key: 'validity',
-        title: text.validity,
+        title: shared.validity,
         render: (_, entry) => (
           <Space size={4} wrap>
             <DateTime value={entry.validFrom} />~<DateTime value={entry.validUntil} />
@@ -172,18 +156,18 @@ export function WriteSwitchesSection({
       },
       {
         key: 'status',
-        title: text.status,
+        title: shared.status,
         render: (_, entry) => {
           const expired = entry.status === 'ACTIVE' && Date.parse(entry.validUntil) <= now;
           const label =
-            entry.status !== 'ACTIVE' ? text.revoked : expired ? text.expired : text.active;
+            entry.status !== 'ACTIVE' ? shared.revoked : expired ? shared.expired : shared.active;
           const color: TagColor = entry.status !== 'ACTIVE' || expired ? 'default' : 'success';
           return <Tag color={color}>{label}</Tag>;
         },
       },
       {
         key: 'reason',
-        title: text.reason,
+        title: shared.reason,
         render: (_, entry) => <Typography.Text type="secondary">{entry.reason}</Typography.Text>,
       },
       {
@@ -197,9 +181,26 @@ export function WriteSwitchesSection({
                 setRevoking(entry);
               }}
             >
-              {text.revoke}
+              {shared.revoke}
             </Typography.Link>
           ) : null,
+      },
+    ];
+    const recentColumns: TableColumnsType<ContentCommand> = [
+      {
+        key: 'offer',
+        title: '',
+        render: (_, command) => command.offerKey,
+      },
+      {
+        key: 'state',
+        title: '',
+        render: (_, command) => <ContentStateTag state={command.state} />,
+      },
+      {
+        key: 'when',
+        title: '',
+        render: (_, command) => <DateTime value={command.approvedAt} />,
       },
     ];
 
@@ -207,36 +208,38 @@ export function WriteSwitchesSection({
       <Flex vertical gap={16}>
         <Descriptions size="small" column={{ xs: 1, md: 2 }} bordered>
           <Descriptions.Item label={text.productionWrites}>
-            {status.productionWritesEnabled ? (
-              <Tag color="success">{text.on}</Tag>
-            ) : (
-              <Tag>{text.off}</Tag>
-            )}
+            {onOff(status.productionWritesEnabled)}
           </Descriptions.Item>
+          <Descriptions.Item label={text.worker}>{onOff(status.workerEnabled)}</Descriptions.Item>
           <Descriptions.Item label={text.capability}>
             {status.capabilityId === null
               ? text.capabilityNone
               : (status.capabilityVerification ?? '—')}
           </Descriptions.Item>
+          <Descriptions.Item label={text.evidenceUntil}>
+            {status.evidenceValidUntil === null ? (
+              '—'
+            ) : (
+              <DateTime value={status.evidenceValidUntil} />
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label={text.storeAvailability}>
+            {status.storeAvailability ?? '—'}
+          </Descriptions.Item>
           <Descriptions.Item label={text.globalSwitch}>
-            {switchState(switches, 'GLOBAL')}
+            {onOff(status.globalSwitchEnabled)}
           </Descriptions.Item>
           <Descriptions.Item label={text.capabilitySwitch}>
-            {switchState(switches, 'CAPABILITY', status.capabilityId)}
+            {onOff(status.capabilitySwitchEnabled)}
           </Descriptions.Item>
           <Descriptions.Item label={text.readiness} span="filled">
-            {status.reasons.length === 0 && status.productionWritesEnabled ? (
+            {status.reasons.length === 0 ? (
               <Typography.Text type="success">{text.ready}</Typography.Text>
             ) : (
               <Space size={[4, 4]} wrap>
-                {!status.productionWritesEnabled && (
-                  <Tag color="warning">
-                    {codeLabel(GATE_REASON_LABELS, 'PRODUCTION_WRITES_DISABLED')}
-                  </Tag>
-                )}
                 {status.reasons.map((reason) => (
                   <Tag key={reason} color="warning">
-                    {codeLabel(GATE_REASON_LABELS, reason)}
+                    {codeLabel(CONTENT_GATE_LABELS, reason)}
                   </Tag>
                 ))}
               </Space>
@@ -251,7 +254,7 @@ export function WriteSwitchesSection({
             danger
             width={520}
             onSubmit={async (values) => {
-              const outcome = await moveWriteSwitch(context, 'disable', {
+              const outcome = await moveContentSwitch(context, 'disable', {
                 scopeKind: 'GLOBAL',
                 scopeReference: null,
                 storeId: null,
@@ -265,8 +268,8 @@ export function WriteSwitchesSection({
           >
             <Form.Item<ReasonValues>
               name="reason"
-              label={text.reason}
-              rules={[{ required: true, whitespace: true, message: text.reasonRequired }]}
+              label={shared.reason}
+              rules={[{ required: true, whitespace: true, message: shared.reasonRequired }]}
             >
               <Input.TextArea rows={2} maxLength={500} showCount />
             </Form.Item>
@@ -284,14 +287,14 @@ export function WriteSwitchesSection({
             onSubmit={async (values) => {
               const reason = (values.reason ?? '').trim();
               if (status.capabilityId === null) return undefined;
-              const capability = await moveWriteSwitch(context, 'enable', {
+              const capability = await moveContentSwitch(context, 'enable', {
                 scopeKind: 'CAPABILITY',
                 scopeReference: status.capabilityId,
                 storeId: null,
                 reason,
               });
               if (!capability.ok) return capability.failure;
-              const global = await moveWriteSwitch(context, 'enable', {
+              const global = await moveContentSwitch(context, 'enable', {
                 scopeKind: 'GLOBAL',
                 scopeReference: null,
                 storeId: null,
@@ -305,8 +308,8 @@ export function WriteSwitchesSection({
           >
             <Form.Item<ReasonValues>
               name="reason"
-              label={text.reason}
-              rules={[{ required: true, whitespace: true, message: text.reasonRequired }]}
+              label={shared.reason}
+              rules={[{ required: true, whitespace: true, message: shared.reasonRequired }]}
             >
               <Input.TextArea rows={2} maxLength={500} showCount />
             </Form.Item>
@@ -333,6 +336,7 @@ export function WriteSwitchesSection({
                   from.getTime() + (values.hours ?? DEFAULT_HOURS) * MILLIS_PER_HOUR,
                 );
                 const outcome = await grantAllowlist(context, {
+                  actionKind: 'LISTING_CONTENT_CHANGE',
                   platformCode: status.platformCode,
                   storeId,
                   platformListingVariantId:
@@ -349,11 +353,11 @@ export function WriteSwitchesSection({
             >
               {(form) => (
                 <>
-                  <Form.Item<GrantValues> name="scope" label={text.scope}>
+                  <Form.Item<GrantValues> name="scope" label={shared.scope}>
                     <Radio.Group
                       options={[
-                        { value: 'LISTING', label: text.oneListing },
-                        { value: 'STORE', label: text.wholeStore },
+                        { value: 'LISTING', label: shared.oneListing },
+                        { value: 'STORE', label: shared.wholeStore },
                       ]}
                     />
                   </Form.Item>
@@ -362,30 +366,27 @@ export function WriteSwitchesSection({
                       form.getFieldValue('scope') === 'STORE' ? null : (
                         <Form.Item<GrantValues>
                           name="variantId"
-                          label={text.listing}
-                          rules={[{ required: true, message: text.listingRequired }]}
+                          label={shared.listing}
+                          rules={[{ required: true, message: shared.listingRequired }]}
                         >
                           <Select
                             showSearch={{ optionFilterProp: 'label' }}
                             options={products.map((product) => ({
                               value: product.variantId,
-                              label: `${product.nativeSkuKey ?? product.nativeListingKey}${
-                                inPromotion(product) ? `（${text.inPromotion}）` : ''
-                              }`,
-                              disabled: inPromotion(product),
+                              label: product.nativeSkuKey ?? product.nativeListingKey,
                             }))}
                           />
                         </Form.Item>
                       )
                     }
                   </Form.Item>
-                  <Form.Item<GrantValues> name="hours" label={text.hours}>
+                  <Form.Item<GrantValues> name="hours" label={shared.hours}>
                     <InputNumber min={1} max={MAXIMUM_HOURS} precision={0} />
                   </Form.Item>
                   <Form.Item<GrantValues>
                     name="reason"
-                    label={text.reason}
-                    rules={[{ required: true, whitespace: true, message: text.reasonRequired }]}
+                    label={shared.reason}
+                    rules={[{ required: true, whitespace: true, message: shared.reasonRequired }]}
                   >
                     <Input.TextArea rows={2} maxLength={500} showCount />
                   </Form.Item>
@@ -400,7 +401,20 @@ export function WriteSwitchesSection({
             dataSource={[...allowlist]}
             pagination={false}
             scroll={{ x: 'max-content' }}
-            locale={{ emptyText: text.noAllowlist }}
+            locale={{ emptyText: shared.noAllowlist }}
+          />
+        </Flex>
+        <Flex vertical gap={8}>
+          <Typography.Text strong>{text.recent}</Typography.Text>
+          <Table<ContentCommand>
+            rowKey="id"
+            size="small"
+            showHeader={false}
+            columns={recentColumns}
+            dataSource={[...recent]}
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+            locale={{ emptyText: text.noRecent }}
           />
         </Flex>
       </Flex>
@@ -422,7 +436,7 @@ export function WriteSwitchesSection({
         onClose={() => {
           setRevoking(undefined);
         }}
-        title={text.revokeTitle}
+        title={shared.revokeTitle}
         consequence={text.revokeConsequence}
         danger
         width={520}
@@ -433,15 +447,15 @@ export function WriteSwitchesSection({
             expectedVersion: revoking.version,
           });
           if (!outcome.ok) return outcome.failure;
-          void message.success(text.revokedDone);
+          void message.success(shared.revokedDone);
           reload();
           return undefined;
         }}
       >
         <Form.Item<ReasonValues>
           name="reason"
-          label={text.reason}
-          rules={[{ required: true, whitespace: true, message: text.reasonRequired }]}
+          label={shared.reason}
+          rules={[{ required: true, whitespace: true, message: shared.reasonRequired }]}
         >
           <Input.TextArea rows={2} maxLength={500} showCount />
         </Form.Item>

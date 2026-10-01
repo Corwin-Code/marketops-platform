@@ -41,6 +41,7 @@ export const ACTION_LABELS: Record<string, string> = {
   PRICE_CHANGE: '调价',
   PROMOTION_JOINED: '参加促销',
   PROMOTION_LEFT: '退出促销',
+  CONTENT_CHANGE: '改标题与描述',
 };
 
 /** Who did it. */
@@ -48,6 +49,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   PRICE_COMMAND: '平台改价',
   PRICE_DECISION: '后台手工改价',
   PROMOTION_DECISION: '促销决定',
+  CONTENT_COMMAND: '平台内容写入',
 };
 
 /** Ozon's price index classes. */

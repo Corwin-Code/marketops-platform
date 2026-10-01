@@ -41,7 +41,9 @@ final class RequestTemplate {
             "nativeListingKey", "nativeVariantKey",
             "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
             "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode",
-            "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared");
+            "descriptionText", "descriptionAttributeKey", "kizMarkedDeclared",
+            // W2 (V0035): the seller article a content write addresses, and the title it writes.
+            "offerKey", "titleText");
 
     /** Placeholders whose value is a JSON array rendered by {@link #keyBatch}. */
     static final java.util.Set<String> KEY_BATCHES =

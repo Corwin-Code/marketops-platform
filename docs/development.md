@@ -1216,6 +1216,53 @@ Owner 2026-10-01 授权了所有写入能力，并定了三件事：W1 只改不
 - 写入能力证据和凭据：证据 2026-10-31 到期，到期前要重新探测并核验，否则写入闸门不再放行；写入凭据有效期跟随 key，到 2026-12-29。
 - 自动模式下，安全分类器拒绝 Claude 启动同价写入探测（真实交易），这一步只能由 Owner 自己启动。
 
+## W2 内容写入（第一部分：引擎与控制台）
+
+Owner 2026-10-02 决定：
+- 审批从简：Owner 改定最终的标题和描述后确认一次（需重新认证），这一次确认就是审批，不走 Slice 004 的校准包、独立审核和额度；
+- 内容修改一律按重大处理，只有 Owner 能确认（权限 `LISTING_ACTION_APPROVE_MATERIAL`）；
+- 标题和描述一起写；
+- 灰度先改一个尺码，回读一致后再改同款其它尺码。
+
+**Ozon 接口**（官方 OpenAPI，2026-10-01 保存版）：
+- `POST /v1/product/attributes/update`：按卖家货号 `offer_id` 提交属性（标题 4180、描述 4191），只改提交的属性，返回 `task_id`；有每分钟和每日限额，超限返回 429 和 `Item-Retry-After`（分钟）；
+- `POST /v1/product/import/info`：任务状态 `pending` / `imported` / `failed` / `skipped`（`skipped` 是请求没有带来变化）；
+- `POST /v1/product/info/description`：回读 `name` 和 `description`；
+- 标题最多 255 字符（错误码 `name_too_long`）；文档没有给描述上限，本系统自定 6000 字符。
+
+**能力登记**（V0035）：能力代码 `listing-content-change`，和改价一样走登记、同值写入探测和两位 Owner 核验（探测与核验在第二部分）。
+- 登记表不加列。核验保存的配置快照覆盖整行，加列会让已核验的改价证据失效。
+- 回读的标题指针放在 `description_response_binding.titlePointer`，描述指针放在 `description_observed_text_pointer`；
+- 写入以返回的任务号作为受理依据；
+- 查询任务状态时，`noChangeValues`（如 `skipped`）算完成，`errorsPointer` 指向任务错误。
+
+**执行链**（`ops.content_change`、`ops.content_command`、`ops.content_command_event`）：
+1. Owner 在店铺诊断抽屉「内容优化」里点「编辑并写入」，以 Qwen 草稿或当前文本为底稿改定，在「确认写入」弹窗里确认。确认时记下当时目录快照里的标题和描述；没改的字段按卡片现有文本原样提交。批准 24 小时内有效。
+2. worker（`marketops.content-write.worker-enabled`，本机默认开启）每 10 秒一轮，每一步都先记录再调用：
+   - 闸门 `ops.evaluate_content_write_gate`：能力已核验、证据有效、对本店开放；`listing-content-write` 的能力开关和总开关都已打开，且没有更窄的范围被关闭；商品在白名单（`LISTING_CONTENT_CHANGE`，整店或单商品）；批准未过期。另外还要部署级生产写入开关打开，并有可用的内容写入凭证；
+   - 写入前回读：标题和描述都必须仍是 Owner 当时看到的文本，否则不写（`prior_text_moved`）；已经是新文本就不重复写；
+   - 写入后：先查任务状态（10、20、30 秒，之后每分钟），再回读核对。卡片未显示新文本时，分别在 10 秒、30 秒、2 分钟、10 分钟、30 分钟、2 小时后再回读，之后转为「回读不一致」；
+   - 写入请求没有收到完整答复（超时、5xx、进程中断）一律记为「结果未知」，之后只回读、不重写；
+   - 回读比对时，空白和 `<br>` 换行的差异不算不同，其它任何差异都算。
+3. 「重新回读」和「关闭」由人工处置，都需要重新认证（`COMMAND_RESOLVE`）。
+
+**控制台**：
+- 店铺诊断抽屉「内容优化」：在 Qwen 草稿之后加了编辑器、最近一次修改的状态和执行记录；
+- 「价格护栏」页：新增「内容写入开关与白名单（W2）」，包括就绪情况、开关、白名单和最近的内容修改；
+- 效果复盘：成功的内容修改登记为 `CONTENT_CHANGE`，前后各 14 天比较下单。观察期内买家价变动或有促销，判为无法判断。
+
+**接口**：
+- `GET /api/v1/console/content-changes/listings/{variantId}`
+- `POST /api/v1/console/content-changes`
+- `GET /api/v1/console/content-commands/stores/{storeId}`、`/{commandId}`、`/{commandId}/gate`、`/stores/{storeId}/write-status`、`/kill-switch`
+- `POST /api/v1/console/content-commands/{commandId}/readback`、`/{commandId}/closure`、`/kill-switch/enable|disable`
+- 白名单 `POST /api/v1/console/policy/pilot-allowlist` 新增 `actionKind`（默认 `PRICE_CHANGE`）。
+
+**出站规则**：`platform:OZON:write`，以下三个路径各一条精确规则：
+- `/v1/product/attributes/update`
+- `/v1/product/import/info`
+- `/v1/product/info/description`
+
 ## P10 效果跟踪（第一部分：前后对比）
 
 Owner 2026-10-01 定了四件事：前后各 14 天比较；下单为主，搜索人数与价格指数为辅；观察期满自动记录结论并关闭建议；周复盘每周一自动生成并接 Qwen（第二部分）。
