@@ -292,6 +292,49 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public com.mimococo.marketops.operatingfacts.ListingWindowRecord windowRecord(UUID platformListingVariantId,
+                                                                               FactWindow window) {
+        Instant from = window.periodStart();
+        Instant to = window.periodEnd();
+        return new com.mimococo.marketops.operatingfacts.ListingWindowRecord(
+                facts.dailyOrderedUnits(platformListingVariantId, from, to).stream()
+                        .map(row -> new com.mimococo.marketops.operatingfacts.ListingWindowRecord.DayOrders(
+                                row.day(), row.orderedUnits()))
+                        .toList(),
+                facts.pricePoints(platformListingVariantId, from, to).stream()
+                        .map(row -> new com.mimococo.marketops.operatingfacts.ListingWindowRecord.PricePoint(
+                                row.observedAt(), row.currencyCode(), row.buyerPrice(), row.sellerPromotion(),
+                                row.priceIndexNative()))
+                        .toList(),
+                facts.stockPoints(platformListingVariantId, from, to).stream()
+                        .map(row -> new com.mimococo.marketops.operatingfacts.ListingWindowRecord.StockPoint(
+                                row.observedAt(), row.availableUnits()))
+                        .toList(),
+                facts.sellabilityPoints(platformListingVariantId, from, to).stream()
+                        .map(row -> new com.mimococo.marketops.operatingfacts.ListingWindowRecord.SellablePoint(
+                                row.observedAt(), row.sellable()))
+                        .toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<com.mimococo.marketops.operatingfacts.SearchDemandSnapshot> searchDemandWithin(
+            UUID platformListingVariantId, FactWindow window) {
+        return facts.searchDemandWithin(platformListingVariantId, window.periodStart(), window.periodEnd()).stream()
+                .map(row -> new com.mimococo.marketops.operatingfacts.SearchDemandSnapshot(row.searchUsers(),
+                        row.periodStart(), row.periodEnd(),
+                        FactEvidence.of(List.of(row.provenanceId()), row.sourceTime())))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<java.time.LocalDate> storeOrderDays(UUID storeId, FactWindow window) {
+        return facts.storeOrderDays(storeId, window.periodStart(), window.periodEnd());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public TrafficTotals traffic(UUID platformListingVariantId, FactWindow window) {
         return facts.traffic(platformListingVariantId, window.periodStart(), window.periodEnd())
                 .map(row -> new TrafficTotals(

@@ -44,6 +44,9 @@ const StoreDiagnosisPage = lazy(async () => ({
 const PromotionsPage = lazy(async () => ({
   default: (await import('./pages/promotions')).PromotionsPage,
 }));
+const OutcomesPage = lazy(async () => ({
+  default: (await import('./pages/outcomes')).OutcomesPage,
+}));
 const GuardrailsPage = lazy(async () => ({
   default: (await import('./pages/guardrails')).GuardrailsPage,
 }));
@@ -128,6 +131,7 @@ export function ConsoleShell({
         <Route path={ROUTES.dataCollection} element={<DataCollectionPage {...page} />} />
         <Route path={ROUTES.guardrails} element={<GuardrailsPage {...page} />} />
         <Route path={ROUTES.pricingQueue} element={<PricingQueuePage {...page} />} />
+        <Route path={ROUTES.pricingOutcomes} element={<OutcomesPage {...page} />} />
         <Route path={ROUTES.subject} element={<SubjectPage {...page} />} />
         {/* The review opens beside the diagnosis; the old address redirects there. */}
         <Route path={ROUTES.review} element={<ReviewPage />} />

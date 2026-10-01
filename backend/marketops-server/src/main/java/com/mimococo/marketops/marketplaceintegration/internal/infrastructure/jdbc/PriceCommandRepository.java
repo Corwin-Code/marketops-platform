@@ -394,6 +394,20 @@ public class PriceCommandRepository {
                 .toList();
     }
 
+    /** Succeeded commands of one store, oldest first, without their history (P10). */
+    public List<PriceCommandView> succeeded(UUID storeId, int limit) {
+        return jdbc.sql(SELECT_COMMAND + """
+                         WHERE store_id = :storeId
+                           AND state = 'SUCCEEDED'
+                         ORDER BY terminal_at, id
+                         LIMIT :limit
+                        """)
+                .param("storeId", storeId)
+                .param("limit", limit)
+                .query(PriceCommandRepository::map)
+                .list();
+    }
+
     /**
      * The total proportional movement this product applied since an instant.
      *

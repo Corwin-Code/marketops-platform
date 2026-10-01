@@ -352,6 +352,163 @@ public class FactQueryRepository {
                 .optional();
     }
 
+    /** Units ordered per UTC day of one listing variant inside a window, oldest first (P10). */
+    public List<DayOrdersRow> dailyOrderedUnits(UUID listingVariantId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT CAST(traffic.period_start AT TIME ZONE 'UTC' AS date) AS day,
+                               sum(traffic.ordered_units) AS ordered_units
+                          FROM core.listing_traffic_observation AS traffic
+                         WHERE traffic.platform_listing_variant_id = :listingVariantId
+                           AND traffic.period_start >= :from
+                           AND traffic.period_end <= :to
+                           AND traffic.ordered_units IS NOT NULL
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_traffic_observation", "traffic")
+                        + """
+                         GROUP BY 1
+                         ORDER BY 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new DayOrdersRow(rows.getObject("day", java.time.LocalDate.class),
+                        rows.getLong("ordered_units")))
+                .list();
+    }
+
+    /**
+     * Every price snapshot of one listing variant inside a window, oldest first, with the buyer price
+     * (promotion price, else selling price, else list price) and whether a seller promotion ran: the
+     * promotion price stated and different from the selling price, as the price write gate tests it.
+     */
+    public List<PricePointRow> pricePoints(UUID listingVariantId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT price.observed_at, price.currency_code,
+                               coalesce(price.discount_price, price.selling_price, price.list_price) AS buyer_price,
+                               (price.discount_price IS NOT NULL AND price.selling_price IS NOT NULL
+                                AND price.discount_price <> price.selling_price) AS seller_promotion,
+                               price.price_index_native
+                          FROM core.listing_price_observation AS price
+                         WHERE price.platform_listing_variant_id = :listingVariantId
+                           AND price.observed_at >= :from
+                           AND price.observed_at < :to
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_price_observation", "price")
+                        + """
+                         ORDER BY price.observed_at, price.id
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new PricePointRow(
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("currency_code"),
+                        rows.getBigDecimal("buyer_price"),
+                        rows.getBoolean("seller_promotion"),
+                        rows.getString("price_index_native")))
+                .list();
+    }
+
+    /**
+     * Units available per stock snapshot of one listing variant inside a window, summed over the
+     * fulfillment modes the snapshot reported, oldest first.
+     */
+    public List<StockPointRow> stockPoints(UUID listingVariantId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT stock.observed_at,
+                               CAST(sum(stock.available_quantity) AS integer) AS available_units
+                          FROM core.listing_stock_observation AS stock
+                         WHERE stock.platform_listing_variant_id = :listingVariantId
+                           AND stock.observed_at >= :from
+                           AND stock.observed_at < :to
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_stock_observation", "stock")
+                        + """
+                         GROUP BY stock.observed_at
+                         ORDER BY stock.observed_at
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new StockPointRow(rows.getTimestamp("observed_at").toInstant(),
+                        integerOrNull(rows, "available_units")))
+                .list();
+    }
+
+    /** Every sellability statement about one listing variant inside a window, oldest first. */
+    public List<SellablePointRow> sellabilityPoints(UUID listingVariantId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT health.observed_at, health.sellable
+                          FROM core.listing_health_observation AS health
+                         WHERE health.platform_listing_variant_id = :listingVariantId
+                           AND health.observed_at >= :from
+                           AND health.observed_at < :to
+                           AND health.sellable IS NOT NULL
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_health_observation", "health")
+                        + """
+                         ORDER BY health.observed_at, health.id
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new SellablePointRow(rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("sellable")))
+                .list();
+    }
+
+    /** The search periods of one listing variant lying wholly inside a window, oldest first. */
+    public List<SearchRow> searchDemandWithin(UUID listingVariantId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT search.search_users, search.period_start, search.period_end,
+                               search.provenance_id, provenance.source_time
+                          FROM core.listing_search_observation AS search
+                          JOIN core.fact_provenance AS provenance
+                            ON provenance.id = search.provenance_id
+                         WHERE search.platform_listing_variant_id = :listingVariantId
+                           AND search.period_start >= :from
+                           AND search.period_end <= :to
+                         ORDER BY search.period_end, search.period_start, search.id
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new SearchRow(
+                        rows.getLong("search_users"),
+                        rows.getTimestamp("period_start").toInstant(),
+                        rows.getTimestamp("period_end").toInstant(),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
+    /**
+     * The UTC days inside a window on which any listing of the store has a daily order record, oldest
+     * first; the same notion of coverage the store diagnosis counts its order window by.
+     */
+    public List<java.time.LocalDate> storeOrderDays(UUID storeId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT DISTINCT CAST(traffic.period_start AT TIME ZONE 'UTC' AS date) AS day
+                          FROM core.listing_traffic_observation AS traffic
+                          JOIN core.platform_listing_variant AS variant
+                            ON variant.id = traffic.platform_listing_variant_id
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE listing.store_id = :storeId
+                           AND traffic.period_start >= :from
+                           AND traffic.period_end <= :to
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_traffic_observation", "traffic")
+                        + """
+                         ORDER BY 1
+                        """)
+                .param("storeId", storeId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> rows.getObject("day", java.time.LocalDate.class))
+                .list();
+    }
+
     /** Sales at one stage over a window, one row per currency. */
     public List<MoneyGroupRow> sales(UUID listingVariantId,
                                      String saleStage,
@@ -1475,6 +1632,19 @@ public class FactQueryRepository {
     }
 
     /** Completed units on one day. */
+    public record DayOrdersRow(java.time.LocalDate day, long orderedUnits) {
+    }
+
+    public record PricePointRow(Instant observedAt, String currencyCode, BigDecimal buyerPrice,
+                                boolean sellerPromotion, String priceIndexNative) {
+    }
+
+    public record StockPointRow(Instant observedAt, Integer availableUnits) {
+    }
+
+    public record SellablePointRow(Instant observedAt, String sellable) {
+    }
+
     public record DailySaleRow(java.time.LocalDate day, long completedUnits) {
     }
 

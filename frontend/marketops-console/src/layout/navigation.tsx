@@ -19,6 +19,7 @@ export const ROUTES = {
   dataCollection: '/store/collection',
   guardrails: '/store/guardrails',
   pricingQueue: '/pricing/queue',
+  pricingOutcomes: '/pricing/outcomes',
   subject: '/pricing/subjects/:subjectId',
   review: '/pricing/review',
   command: '/pricing/commands/:commandId',
@@ -86,6 +87,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     icon: <DollarOutlined />,
     items: [
       { path: ROUTES.pricingQueue, label: pages.pricingQueue },
+      { path: ROUTES.pricingOutcomes, label: pages.pricingOutcomes },
       { path: ROUTES.pricingExport, label: pages.pricingExport },
     ],
   },

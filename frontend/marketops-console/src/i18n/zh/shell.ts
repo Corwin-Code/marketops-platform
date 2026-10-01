@@ -30,6 +30,7 @@ export const pages = {
   dataCollection: '数据采集',
   guardrails: '价格护栏',
   pricingQueue: '今日工作',
+  pricingOutcomes: '效果跟踪',
   pricingExport: '诊断导出',
   subject: '商品诊断',
   review: '审核调价建议',
@@ -62,6 +63,8 @@ export const pageDescriptions = {
   guardrails:
     '调价建议在平台内审批前必须通过的护栏前提：经济性 profile、商业策略与财务输入、数据新鲜度。平台不会因此改价。',
   pricingQueue: '按优先级排列今天最值得处理的商品，点击一行查看诊断证据与调价建议。',
+  pricingOutcomes:
+    '已执行的调价与促销动作，按改动前后各 14 天比较下单、搜索人数和价格指数，并给出结论。',
   pricingExport: '导出本店铺的诊断数据文件，用于离线复核或存档。',
   subject: '查看该商品的指标证据、诊断结论与待审核的调价建议。',
   review: '核对建议的影响预估与护栏结果，决定批准或驳回。',

@@ -100,6 +100,7 @@ public class ScheduledCollectionService {
     private final PriceSuggestionService priceSuggestions;
     private final FeedWatermarkKeeper watermarks;
     private final CommandOutcomeReconciler commandOutcomes;
+    private final ActionOutcomeTracker actionOutcomes;
     private final MetadataAuditRecorder auditRecorder;
     private final ScheduledCollectionProperties properties;
     private final ObjectMapper objectMapper;
@@ -115,6 +116,7 @@ public class ScheduledCollectionService {
                                PriceSuggestionService priceSuggestions,
                                FeedWatermarkKeeper watermarks,
                                CommandOutcomeReconciler commandOutcomes,
+                               ActionOutcomeTracker actionOutcomes,
                                MetadataAuditRecorder auditRecorder,
                                ScheduledCollectionProperties properties,
                                ObjectMapper objectMapper,
@@ -129,6 +131,7 @@ public class ScheduledCollectionService {
         this.priceSuggestions = priceSuggestions;
         this.watermarks = watermarks;
         this.commandOutcomes = commandOutcomes;
+        this.actionOutcomes = actionOutcomes;
         this.auditRecorder = auditRecorder;
         this.properties = properties;
         this.objectMapper = objectMapper;
@@ -281,6 +284,7 @@ public class ScheduledCollectionService {
             // against the newest collections.
             refreshWatermarks(policy);
             reconcileCommandOutcomes(policy);
+            trackActionOutcomes(policy);
             recalculated = recalculate(policy, lastCollected, now);
             interpretWeekly(policy, now);
         }
@@ -416,6 +420,31 @@ public class ScheduledCollectionService {
                     .addKeyValue("storeId", policy.storeId())
                     .addKeyValue("failureType", failed.getClass().getSimpleName())
                     .log("Price command outcomes could not be carried back to their proposals");
+        }
+    }
+
+    /**
+     * Follow executed actions for their effect (P10): register new ones, open their observation, read
+     * the stages that are due and close the proposals whose final reading is in. A failure is logged and
+     * holds back nothing else.
+     */
+    private void trackActionOutcomes(Policy policy) {
+        try {
+            ActionOutcomeTracker.Pass pass = actionOutcomes.track(policy.organizationId(), policy.storeId());
+            if (pass.registered() + pass.observing() + pass.readings() + pass.closed() > 0) {
+                log.atInfo().addKeyValue("event", "action_outcomes_tracked")
+                        .addKeyValue("storeId", policy.storeId())
+                        .addKeyValue("registered", pass.registered())
+                        .addKeyValue("observing", pass.observing())
+                        .addKeyValue("readings", pass.readings())
+                        .addKeyValue("closed", pass.closed())
+                        .log("Executed actions were followed one step further");
+            }
+        } catch (RuntimeException failed) {
+            log.atWarn().addKeyValue("event", "action_outcomes_failed")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("failureType", failed.getClass().getSimpleName())
+                    .log("Executed actions could not be followed");
         }
     }
 

@@ -96,6 +96,12 @@ public class PriceCommandService implements PriceCommandGateway, PriceChangeHist
 
     @Override
     @Transactional(readOnly = true)
+    public List<PriceCommandView> succeeded(UUID storeId, int limit) {
+        return commands.succeeded(storeId, limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public BigDecimal cumulativeChangeRate(UUID platformListingVariantId, Instant since) {
         return commands.cumulativeChangeRate(platformListingVariantId, since);
     }
