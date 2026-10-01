@@ -92,7 +92,8 @@ public class ProfitLaneResolver {
         if (projected.isPresent() && projected.get().valueState() == ValueState.AVAILABLE
                 && projected.get().numericValue() != null
                 && projected.get().numericValue().signum() > 0
-                && fresh(projected.get(), asOf) && !blocked(projected.get().confidenceState())) {
+                && freshEstimate(projected.get(), asOf)
+                && !blocked(projected.get().confidenceState())) {
             MetricValueView estimate = projected.get();
             return new ProfitAssessment(ProfitLane.PROVISIONAL, estimate.numericValue(),
                     estimate.currencyCode(), estimate.metricValueId(),
@@ -215,6 +216,17 @@ public class ProfitLaneResolver {
     private boolean fresh(MetricValueView metric, Instant asOf) {
         Instant source = metric.oldestSourceTime();
         return source != null && !source.plus(FRESHNESS_BOUND).isBefore(asOf);
+    }
+
+    /**
+     * Whether an estimate is current. Ozon states no time of its own for a price, so an estimate
+     * priced from it carries no source time; it is then as current as the calculation that produced
+     * it, which reads the newest price snapshot after every scheduled collection. When collection
+     * stops, the calculations stop with it and the estimate ages out under the same bound.
+     */
+    private boolean freshEstimate(MetricValueView metric, Instant asOf) {
+        Instant basis = metric.oldestSourceTime() != null ? metric.oldestSourceTime() : metric.periodEnd();
+        return basis != null && !basis.plus(FRESHNESS_BOUND).isBefore(asOf);
     }
 
     private static boolean blocked(ConfidenceState confidence) {
