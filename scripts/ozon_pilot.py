@@ -2611,6 +2611,75 @@ def command_verify(args: argparse.Namespace) -> int:
     return 0 if approved.get("state") == "APPROVED" else 1
 
 
+# --- economics projection profile (guardrail prerequisites, part two) -----------------------
+
+def console_call(api: str, token: str, method: str, path: str, body: dict | None, *ok: int) -> object:
+    """One call to the console API as a signed-in person."""
+    data = None if body is None else json.dumps(body).encode("utf-8")
+    request = urllib.request.Request(api.rstrip("/") + "/api/v1/console" + path, data=data, method=method)
+    request.add_header("Accept", "application/json")
+    request.add_header("Authorization", "Bearer " + token)
+    if body is not None:
+        request.add_header("Content-Type", "application/json")
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            raw = response.read()
+            status, payload = response.status, (json.loads(raw) if raw else None)
+    except urllib.error.HTTPError as error:
+        raw = error.read()
+        try:
+            status, payload = error.code, (json.loads(raw) if raw else None)
+        except json.JSONDecodeError:
+            status, payload = error.code, None
+    if status not in ok:
+        title = payload.get("title") if isinstance(payload, dict) else None
+        code = payload.get("errorCode") if isinstance(payload, dict) else None
+        sys.exit(f"{method} {path} -> HTTP {status} {code or ''} {title or ''}".rstrip())
+    return payload
+
+
+def command_economics_profile(args: argparse.Namespace) -> int:
+    """Generate the store's economics projection profile from its tariffs; a second Owner approves it.
+
+    The first Owner's draft is printed before the second Owner signs in, so the second sign-in is the
+    confirmation: interrupt it to leave the draft for review in the console instead.
+    """
+    pilot = pilot_from(args)
+    admin = Admin(args.api, args.operator)
+    org = organization(admin, args.organization_code)
+    store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
+    if store is None:
+        sys.exit(f"no store {pilot.store_code}; run the setup step first")
+    print("Two different Owners are needed: one submits the profile, the other approves it.")
+    submitter_name, submitter_token = sign_in(args, "Submitting Owner")
+    draft = console_call(args.api, submitter_token, "POST", f"/stores/{store['id']}/economics-profile-drafts",
+                         None, 200)
+    payload = draft.get("payload") or {}
+    print(f"{submitter_name} submitted draft {draft.get('draftId')} ({draft.get('fulfillmentModeCode')}, "
+          f"{draft.get('currencyCode')}); {draft.get('evidence')}")
+    for component in payload.get("components") or []:
+        amount = component.get("fixedAmount")
+        rate = component.get("rateValue")
+        shown = f"{amount} {draft.get('currencyCode')}" if amount is not None else f"{float(rate) * 100:.4f} %"
+        print(f"  {component.get('familyCode'):<22} {component.get('componentCode'):<22} {shown}")
+    for family in payload.get("families") or []:
+        if family.get("applicability") == "VERIFIED_NOT_APPLICABLE":
+            print(f"  {family.get('familyCode'):<22} not applicable: {family.get('evidence')}")
+    print(f"  supported buyer prices {payload.get('minimumSupportedPrice')} to {payload.get('maximumSupportedPrice')}")
+    print("The second Owner's sign-in approves this draft (Ctrl-C leaves it for review in the console).")
+    reviewer_name, reviewer_token = sign_in(args, "Reviewing Owner")
+    if reviewer_name == submitter_name:
+        sys.exit("the reviewing Owner must be a different person from the submitting Owner")
+    approved = console_call(args.api, reviewer_token, "POST", f"/economics-profile-drafts/{draft['draftId']}/approval",
+                            {"expectedVersion": draft.get("version", 0),
+                             "note": f"reviewed with make economics-profile by {reviewer_name}",
+                             "verificationDays": args.days}, 200)
+    print(json.dumps({"draft": draft.get("draftId"), "profile": approved.get("profileId"),
+                      "submittedBy": submitter_name, "approvedBy": reviewer_name,
+                      "verifiedForDays": args.days}, ensure_ascii=False, indent=2))
+    return 0
+
+
 # --- internal catalogue (plan phase P2) -------------------------------------------------
 
 # The internal catalogue's code rule (core.product.code, core.product_variant.sku_code) and the
@@ -2986,6 +3055,22 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--again", action="store_true",
                         help="submit a new case even though this evidence is already verified")
     verify.set_defaults(handler=command_verify)
+
+    profile = commands.add_parser("economics-profile",
+                                  help="generate the store's economics profile from its tariffs; two Owners verify it")
+    profile.add_argument("--pilot", default="pilot", help="short code of the pilot account (default: pilot)")
+    profile.add_argument("--api", default="http://127.0.0.1:8080", help="backend base URL")
+    profile.add_argument("--operator", default="owner-local", help="operator recorded in the audit")
+    profile.add_argument("--organization-code", help="organization code when there is more than one")
+    profile.add_argument("--secret-mount", help=argparse.SUPPRESS)
+    profile.add_argument("--evidence-root", help=argparse.SUPPRESS)
+    profile.add_argument("--issuer", default=DEFAULT_ISSUER, help="OIDC issuer")
+    profile.add_argument("--client-id", default=DEFAULT_CLIENT_ID, help="console OIDC client")
+    profile.add_argument("--redirect-uri", default=DEFAULT_REDIRECT_URI, help="registered console redirect URI")
+    profile.add_argument("--audience", default=DEFAULT_AUDIENCE, help="API audience")
+    profile.add_argument("--oidc-ca-file", help=f"CA for the issuer; default: {LOCAL_OIDC_CA} when present")
+    profile.add_argument("--days", type=int, default=30, help="how long the profile stays verified (1-90, default 30)")
+    profile.set_defaults(handler=command_economics_profile)
 
     run = commands.add_parser("run", help="queue and execute one manual run of the capability's job")
     common(run)

@@ -17,6 +17,7 @@ export const ROUTES = {
   promotions: '/store/promotions',
   masterData: '/store/master-data',
   dataCollection: '/store/collection',
+  guardrails: '/store/guardrails',
   pricingQueue: '/pricing/queue',
   subject: '/pricing/subjects/:subjectId',
   review: '/pricing/review',
@@ -76,6 +77,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { path: ROUTES.promotions, label: pages.promotions },
       { path: ROUTES.masterData, label: pages.masterData },
       { path: ROUTES.dataCollection, label: pages.dataCollection },
+      { path: ROUTES.guardrails, label: pages.guardrails },
     ],
   },
   {

@@ -1043,6 +1043,46 @@ Owner 2026-10-01 的四项决定：
 - Owner 点“重新计算诊断”后，7 条在审建议因指标输入摘要变化作废重提，新的 7 条带当前摘要；
 - 护栏预览仍只剩原来的三个原因（没有策略、没有 profile、缺两个指标），留给第二、三部分。
 
+## 写入前的护栏前提（第二部分：经济性 profile）
+
+护栏用经济性 profile 估算调价前后的单件利润。之前没有任何接口能创建 profile：应用的数据库角色对 `core.economics_projection_profile` 及其成本族、成本项只有读权限，也没有核验流程。
+
+### 生成规则（Owner 2026-10-01 决定 3）
+
+按店铺 + FBS（`SELLER_FULFILLED`）生成，只有店铺声明的履约方式恰好是 FBS 时才能生成。取最近 7 天内每个商品最新一次价格观测（Ozon `/v5/product/info/prices`），每项费率取全店最高值；每项费率都必须所有商品都有，否则不能生成，因为缺的商品不一定低于最高值。
+
+| 成本族 | 成本项 | 取值 |
+| --- | --- | --- |
+| COMMISSION | `SALES_COMMISSION_FBS` | 比例：最高 `commissions.sales_percent_fbs` ÷ 100 |
+| FULFILLMENT_DELIVERY | `FBS_FIRST_MILE`、`FBS_DIRECT_FLOW`、`FBS_LAST_MILE` | 固定金额：首公里和干线取最高档，末公里取最高值 |
+| OTHER_VARIABLE | `ACQUIRING` | 比例：收单费 ÷ 买家价的最高值。试点 41 个商品的这个比值完全相同，说明 Ozon 按买家价的比例收取，所以随调价后的价格变化，不按固定金额计 |
+| VARIABLE_TAX | `VAT_IN_PRICE` | 比例：价格含增值税，占比 v / (1 + v)，v 取最高税率 |
+| STORAGE、PROMOTION、RETURN_LOSS、ADVERTISING | — | 不适用，各附原因：FBS 不收仓储费；卖家促销已含在买家价里；还没有订单，没有退货记录（有订单后重新生成）；本店不投广告 |
+
+- 比例都向上取到 8 位小数，金额向上取到 4 位小数，宁可多估成本；
+- 买家价与护栏的当前价同口径：`coalesce(discount_price, selling_price, list_price)`；
+- 适用的买家价区间：最低买家价的一半（向下取整）到最高买家价的两倍（向上取整），覆盖调价建议的步长。
+
+### 两位 Owner 核验
+
+- V0030 `ops.economics_profile_draft`：一位 Owner 提交的草稿，每个店铺 + 履约方式最多一份待批准；重新生成会替换旧的待批准草稿（`SUPERSEDED`）；
+- V0030 `ops.publish_economics_profile`（`SECURITY DEFINER`）：另一位 Owner 批准时在同一事务里写入 profile、8 个成本族和成本项，并把该范围原来的 profile 退役。核验状态为 `REAL_ACCOUNT_VERIFIED`，核验默认 30 天后到期，最长 90 天，因为 Ozon 会调整费率。应用角色对 profile 表仍然只有读权限；
+- 接口：
+  - `GET /api/v1/console/stores/{storeId}/economics-profiles`（`DIAGNOSTIC_VIEW`）：查看生效的 profile 和草稿；
+  - `POST /api/v1/console/stores/{storeId}/economics-profile-drafts`：生成并提交；
+  - `POST /api/v1/console/economics-profile-drafts/{draftId}/approval`：批准，提交人不能批准自己的草稿；
+  - `POST /api/v1/console/economics-profile-drafts/{draftId}/closure`：撤回自己的草稿，或驳回别人的草稿；
+  - 这三个写接口都需要 `COMMERCIAL_POLICY_MANAGE` 和近期登录，都记审计；
+- 页面：新增“价格护栏”页（`/store/guardrails`），显示生效的 profile、草稿及其成本项，可以生成、批准、驳回、撤回；
+- 命令行：`make economics-profile API=http://127.0.0.1:9999`。第一位 Owner 登录后提交草稿并打印成本项；第二位 Owner 登录即批准。在第二次登录时按 Ctrl-C，草稿会留在页面上等待审阅。两位 Owner 都需要 `COMMERCIAL_POLICY_MANAGE`（本机第二位 Owner 用 `make owner-grant ACTION=COMMERCIAL_POLICY_MANAGE LOGIN=owner-reviewer API=http://127.0.0.1:9999` 授权）。
+
+### 试点（2026-10-01）
+
+- 预演：41 个商品，每项费率都齐全，币种只有 RUB；
+- 生成前，在数据库里做了一次事务内演练，结束时 ROLLBACK，不留记录：应用角色插入草稿后，发布函数写出 v1 profile（8 个成本族、6 个成本项）；在审建议的护栏快照解析到唯一的 profile，并选中 6 个成本项；
+- 04:04 UTC，`make economics-profile`：`owner` 提交，`owner-reviewer` 批准（批准前先给 `owner-reviewer` 授权了 `COMMERCIAL_POLICY_MANAGE`）。生效的是 v1：`REAL_ACCOUNT_VERIFIED`，核验到 10-31；4 个成本族要求计入，共 6 个成本项，另 4 个成本族不适用。草稿的创建和批准都有审计记录；
+- 7 条在审建议的护栏快照都解析到这份 profile，并选中 6 个成本项。在第三部分录入单件目标利润和安全缓冲之前，护栏仍会以 `PROJECTED_ECONOMICS_UNAVAILABLE`（`SOLVER_INPUT_UNAVAILABLE`）拦下。
+
 ## 控制台：店铺诊断
 
 控制台首页（导航里的"店铺概览 → 店铺诊断"，路径 `/store/diagnosis`）按商品汇总平台给出的各项信号，用来回答"为什么卖不动"。
