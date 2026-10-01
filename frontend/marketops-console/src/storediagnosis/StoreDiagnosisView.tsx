@@ -58,6 +58,7 @@ import { METRIC_LABELS } from '../i18n/zh/pricing';
 import type { ReferenceLabel } from './AiInterpretation';
 import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
 import { CollectionHealth } from './CollectionHealth';
+import { ListingDiscountRequests, StoreDiscountRequestsSection } from './DiscountRequests';
 import { PriceSuggestionSection } from './PriceSuggestion';
 import type { StandingLoad } from './StoreStanding';
 import { StandingAlerts, StoreStandingSection } from './StoreStanding';
@@ -779,6 +780,17 @@ export function StoreDiagnosisView({
         </Flex>
       </SectionCard>
 
+      {/* Keyed by the refresh generation, so a refresh asks again. */}
+      <StoreDiscountRequestsSection
+        key={generation}
+        context={context}
+        storeId={storeId}
+        onOpenListing={(subjectId) => {
+          const product = diagnosis.products.find((item) => item.variantId === subjectId);
+          if (product !== undefined) patch({ [LISTING_PARAM]: product.listingId });
+        }}
+      />
+
       <StoreStandingSection load={standingLoad} />
 
       <ProductDrawer
@@ -849,6 +861,13 @@ function ProductDrawer({
 
           <PriceSuggestionSection
             key={`price-${product.variantId}`}
+            context={context}
+            storeId={storeId}
+            subjectId={product.variantId}
+          />
+
+          <ListingDiscountRequests
+            key={`discount-${product.variantId}`}
             context={context}
             storeId={storeId}
             subjectId={product.variantId}

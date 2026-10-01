@@ -115,6 +115,11 @@ public class FactRecorder {
             // The store's own standing names no listing: it is recorded against the job's store.
             return recordStanding(job, datasetKind, observation, canonical);
         }
+        if ("DISCOUNT_REQUEST".equals(datasetKind)) {
+            // A buyer's discount request is recorded against the store whatever its SKU: most
+            // requested SKUs have left the catalogue, and the read side joins the others by SKU.
+            return recordDiscountRequest(job, observation, canonical);
+        }
         if (!"LISTING".equals(datasetKind) && canonical.text("nativeListingKey").isEmpty()
                 && canonical.text(ITEM_KEY).isPresent()) {
             // The record names its variant by the marketplace item identifier:
@@ -270,6 +275,47 @@ public class FactRecorder {
         return 1;
     }
 
+    /**
+     * One buyer's request to buy a product at a lower price, as one answer stated it, keyed by the
+     * job, the request and when, so a pass that reads the same answer again records nothing new.
+     * The answer states no currency: its amounts are in the store's currency, and a store without
+     * one keeps none of them. Ozon writes an amount it has not set (the approved price of a request
+     * that was not approved) as 0.
+     */
+    private int recordDiscountRequest(IngestionJobView job, RawObservationView observation,
+                                      CanonicalRecord canonical) {
+        String requestKey = shortKey(canonical.text("nativeRequestKey"));
+        if (requestKey == null) {
+            return 0;
+        }
+        Instant observedAt = canonical.requiredInstant("observedAt");
+        String currencyCode = facts.storeCurrency(job.storeId()).orElse(null);
+        java.util.function.Function<String, java.math.BigDecimal> amount = field -> currencyCode == null ? null
+                : canonical.decimal(field).filter(value -> value.signum() > 0).orElse(null);
+        java.math.BigDecimal originalPrice = amount.apply("originalPrice");
+        java.math.BigDecimal requestedPrice = amount.apply("requestedPrice");
+        java.math.BigDecimal approvedPrice = amount.apply("approvedPrice");
+        boolean anyAmount = originalPrice != null || requestedPrice != null || approvedPrice != null;
+        UUID provenanceId = facts.recordProvenance(idGenerator.newId(), job.organizationId(), "MARKETPLACE_RAW",
+                observation.observationId(), null, null, observation.sourceTime(), clock.instant(), null);
+        facts.insertDiscountRequest(idGenerator.newId(), job.organizationId(), provenanceId, job.storeId(),
+                Digest.ofComponents(java.util.Arrays.asList(job.jobCode(), "DISCOUNT_REQUEST", requestKey,
+                        observedAt.toString())),
+                observedAt, new FactWriteRepository.DiscountRequest(requestKey,
+                        shortKey(canonical.text("nativeItemKey")), bounded(canonical.text("productName"), 512),
+                        bounded(canonical.text("status"), 64), canonical.instant("requestedAt").orElse(null),
+                        canonical.instant("moderatedAt").orElse(null), canonical.instant("expiresAt").orElse(null),
+                        anyAmount ? currencyCode : null, originalPrice, requestedPrice,
+                        canonical.decimal("requestedDiscountPercent")
+                                .map(value -> value.setScale(4, java.math.RoundingMode.HALF_UP))
+                                .filter(value -> value.signum() >= 0
+                                        && value.compareTo(java.math.BigDecimal.valueOf(100)) <= 0)
+                                .orElse(null),
+                        count(canonical.integer("requestedQuantity")), approvedPrice,
+                        count(canonical.integer("approvedQuantity")), canonical.flag("autoModerated")));
+        return 1;
+    }
+
     /** A rating value as core.seller_rating_item_observation keeps it, or absent. */
     private static java.math.BigDecimal ratingValue(Optional<java.math.BigDecimal> value) {
         return value.map(number -> number.setScale(6, java.math.RoundingMode.HALF_UP))
@@ -348,11 +394,12 @@ public class FactRecorder {
 
     /**
      * DECIMAL fields that are percentages, sizes or scores rather than money: the promotion
-     * percentages are recorded at four decimals, the rating values at six and the localization
-     * index at four.
+     * percentages are recorded at four decimals, the rating values at six, and the localization
+     * index and a buyer's requested discount at four.
      */
     private static final java.util.Set<String> NOT_MONEY = java.util.Set.of("currentBoost", "minBoost",
-            "maxBoost", "discountValue", "currentValue", "pastValue", "localizationPercentage");
+            "maxBoost", "discountValue", "currentValue", "pastValue", "localizationPercentage",
+            "requestedDiscountPercent");
 
     /** The source fact key of one record, from the discriminator its dataset adds to the keys. */
     @FunctionalInterface

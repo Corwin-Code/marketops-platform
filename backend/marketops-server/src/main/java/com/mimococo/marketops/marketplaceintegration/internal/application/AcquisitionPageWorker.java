@@ -167,7 +167,7 @@ public class AcquisitionPageWorker {
      * ended.
      */
     static boolean validPagination(EndpointCallSpec spec) {
-        return "NONE".equals(spec.paginationModel()) || computedContinuation(spec) ||
+        return "NONE".equals(spec.paginationModel()) || computedContinuation(spec) || spec.pagesAfterLastRecord() ||
                 (List.of("CURSOR", "OFFSET", "PAGE", "DATE_WINDOW").contains(spec.paginationModel())
                         && spec.continuationPointer() != null
                         && spec.continuationPointer().startsWith("/"));
@@ -220,6 +220,7 @@ public class AcquisitionPageWorker {
                 return new Continuation(Kind.UNREADABLE, null);
             }
             if ("NONE".equals(spec.paginationModel())) return new Continuation(Kind.END, null);
+            if (spec.pagesAfterLastRecord()) return afterLastRecord(document, spec, position);
             if (spec.asksOneKeyAtATime()) {
                 // Paging inside one promotion is not built: a full page may hide more records, and
                 // stopping for a person is better than a list that silently stops at the page size.
@@ -286,6 +287,29 @@ public class AcquisitionPageWorker {
         } catch (JacksonException | IllegalArgumentException unreadable) {
             return new Continuation(Kind.UNREADABLE, null);
         }
+    }
+
+    /**
+     * The next position of a source that pages after its last record's key. An empty page ends
+     * the listing; otherwise the next request asks after the key of this page's last record. The
+     * key goes back into a request as a bare JSON number, so only a positive whole number is
+     * taken, and a key equal to the position just asked would ask for the same page again.
+     */
+    static Continuation afterLastRecord(JsonNode document, EndpointCallSpec spec, String position) {
+        JsonNode records = document.at(spec.recordsPointer());
+        if (!records.isArray()) {
+            return new Continuation(Kind.SCHEMA_DRIFT, null);
+        }
+        if (records.isEmpty()) {
+            return new Continuation(Kind.END, null);
+        }
+        JsonNode key = records.get(records.size() - 1).at(spec.continuationPointer());
+        String next = key.isIntegralNumber() ? key.bigIntegerValue().toString()
+                : key.isString() ? key.asString() : "";
+        if (!EndpointCallSpec.RECORD_KEY.matcher(next).matches() || next.equals(position)) {
+            return new Continuation(Kind.SCHEMA_DRIFT, null);
+        }
+        return new Continuation(Kind.NEXT, next);
     }
 
     /** The position after one promotion key, or the end when it was the last recorded one. */

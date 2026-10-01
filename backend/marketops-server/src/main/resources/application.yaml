@@ -197,12 +197,12 @@ marketops:
       demand-search-users-floor: 1000
       low-exposure-search-users: 200
       content-rating-floor: 0.90
-      # P8 (proposed 2026-10-01, the Owner decides in review): a listing buyers look for and
+      # P8 (Owner decision 2026-10-01, PR #69): a listing buyers look for and
       # do not buy has room to lower its price when the buyer price can fall at least 3 %
       # before the estimated unit margin reaches the minimum.
       price-headroom-minimum-rate: 0.03
   price-suggestions:
-    # P8 (proposed 2026-10-01, the Owner decides in review): one suggestion lowers the
+    # P8 (Owner decision 2026-10-01, PR #69): one suggestion lowers the
     # buyer price by at most 10 % and never below the target margin price; after a
     # person recorded a decision about a listing, the next suggestion waits 14 days.
     max-step-rate: 0.10

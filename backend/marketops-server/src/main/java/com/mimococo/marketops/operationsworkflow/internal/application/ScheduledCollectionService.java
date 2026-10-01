@@ -376,11 +376,14 @@ public class ScheduledCollectionService {
             }
             try {
                 StoreRecalculation.Result result = recalculation.recalculate(policy.storeId(), window);
-                Integer suggested = window == MetricWindow.D7 ? suggestPrices(policy) : null;
+                PriceSuggestionService.Result suggested = window == MetricWindow.D7 ? suggestPrices(policy) : null;
                 record(policy, null, "RECALCULATED", window.name(), null, result.calculationRunId(),
                         detail("window", window.name(), "periodEnd", boundary.toString(),
                                 "subjectCount", result.subjectCount(), "valueCount", result.valueCount(),
-                                "findingCount", result.findingCount(), "priceSuggestions", suggested));
+                                "findingCount", result.findingCount(),
+                                "priceSuggestions", suggested == null ? null : suggested.proposed(),
+                                "priceSuggestionsRefreshed", suggested == null ? null : suggested.refreshed(),
+                                "priceSuggestionsWithdrawn", suggested == null ? null : suggested.withdrawn()));
                 recalculated++;
             } catch (RuntimeException failedRun) {
                 log.atWarn().addKeyValue("event", "scheduled_recalculation_failed")
@@ -397,11 +400,11 @@ public class ScheduledCollectionService {
      * Price suggestions from the fresh seven-day findings (P8). A failure here is logged and leaves the
      * recalculation recorded as done: the suggestions are asked for again after the next one.
      *
-     * @return how many suggestions entered the review, or {@code null} when the pass failed
+     * @return what the pass did (new, refreshed and withdrawn suggestions), or {@code null} when it failed
      */
-    private Integer suggestPrices(Policy policy) {
+    private PriceSuggestionService.Result suggestPrices(Policy policy) {
         try {
-            return priceSuggestions.generate(policy.organizationId(), policy.storeId()).proposed();
+            return priceSuggestions.generate(policy.organizationId(), policy.storeId());
         } catch (RuntimeException failed) {
             log.atWarn().addKeyValue("event", "scheduled_price_suggestions_failed")
                     .addKeyValue("storeId", policy.storeId())

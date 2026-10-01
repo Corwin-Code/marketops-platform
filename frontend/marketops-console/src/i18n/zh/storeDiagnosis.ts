@@ -405,6 +405,69 @@ export const priceSuggestionText = {
   suggestionsFailed: '调价建议生成失败，稍后可重新计算再试。',
 } as const;
 
+/** Buyers' requests to buy a product at a lower price (P8). */
+export const discountRequestText = {
+  title: '买家折扣申请',
+  hint: '买家在 Ozon 上申请以更低的价格购买某个商品，Ozon 记录买家要的价格和要求的折扣。申请由卖家在 Ozon 卖家后台批准或拒绝，新申请须在期限前处理；平台只读取，不代为处理。每天采集一次。',
+  notCollected: '还没有采集到买家折扣申请。',
+  noneForStore: '买家还没有申请过折扣。',
+  noneForListing: (date: string): string => `截至 ${date}，买家没有申请过这个商品的折扣。`,
+  collectedAt: '数据时间',
+  total: '申请总数',
+  decisions: '批准 / 拒绝 / 待处理',
+  decisionCounts: (approved: number, declined: number, pending: number): string =>
+    `${String(approved)} / ${String(declined)} / ${String(pending)}`,
+  itemsTile: '涉及 SKU（其中在当前目录）',
+  itemCounts: (items: number, inCatalog: number): string =>
+    `${String(items)}（${String(inCatalog)}）`,
+  requestsInCatalog: '当前目录商品的申请',
+  medianDiscount: '要求折扣中位数',
+  medianHint: '买家要求的折扣，按申请时的原价计算的百分比，取中位数。',
+  latestRequestedAt: '最近一次申请',
+  byMonth: '按月申请数',
+  byMonthHint: '按申请时间所在的月份（UTC）统计。',
+  monthCount: (month: string, requests: number): string => `${month} · ${String(requests)}`,
+  topItems: '申请涉及的商品',
+  topItemsHint: '当前目录里的商品排在前面，其余按申请数排列，最多列 10 个。',
+  product: '商品',
+  notInCatalog: '不在当前目录',
+  sku: 'SKU',
+  requests: '申请数',
+  pendingTitle: (pending: number): string => `有 ${String(pending)} 条新申请待处理`,
+  pendingDeadline: '请在 Ozon 卖家后台批准或拒绝，最早的一条须在此时间前处理：',
+  pendingNoDeadline: '请在 Ozon 卖家后台批准或拒绝。',
+  listingSummary: (
+    total: number,
+    approved: number,
+    declined: number,
+    pending: number,
+    median: string,
+    latest: string,
+  ): string =>
+    `共 ${String(total)} 次申请：批准 ${String(approved)}、拒绝 ${String(declined)}、待处理 ${String(pending)}；` +
+    `买家要求的折扣中位数 ${median}；最近一次 ${latest}。`,
+  requestedAt: '申请时间',
+  status: '状态',
+  originalPrice: '原价',
+  requestedPrice: '买家要价',
+  discountOf: (percent: string): string => `（-${percent}）`,
+  approvedPrice: '批准价',
+  handled: '处理',
+  decideBy: '须在此前处理：',
+  automatic: '自动',
+  byPerson: '人工',
+  priceNote: '原价、要价和批准价按 Ozon 申请记录原样显示，是申请当时的价格，可能与现在的价格不同。',
+  storeNote:
+    '多数申请的商品已不在当前商品目录里；在目录里的商品可以点开查看明细。申请当时的价格可能与现在不同。',
+} as const;
+
+/** What happened to a discount request. */
+export const DISCOUNT_REQUEST_STATUS_LABELS: Readonly<Record<string, string>> = {
+  NEW: '待处理',
+  APPROVED: '已批准',
+  DECLINED: '已拒绝',
+};
+
 /** Ozon's price index classes, as its own documentation names them. */
 export const PRICE_INDEX_LABELS: Readonly<Record<string, string>> = {
   SUPER: 'SUPER · 超值',

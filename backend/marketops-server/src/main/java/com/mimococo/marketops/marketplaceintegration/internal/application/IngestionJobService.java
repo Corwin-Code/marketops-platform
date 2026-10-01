@@ -60,6 +60,7 @@ public class IngestionJobService {
     private static final Set<String> DATASET_KINDS = Set.of(
             "LISTING", "LISTING_HEALTH", "LISTING_CONTENT", "LISTING_SEARCH", "LISTING_SEARCH_TERM",
             "PROMOTION", "PROMOTION_CANDIDATE", "PROMOTION_PARTICIPANT", "SELLER_RATING", "FBS_WAREHOUSE",
+            "DISCOUNT_REQUEST",
             "PRICE", "STOCK", "TRAFFIC", "SALES", "RETURNS", "FINANCE", "ADVERTISING", "UNKNOWN");
 
     /** How an operator may resolve a BLOCKED run. */
