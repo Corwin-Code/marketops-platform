@@ -1117,7 +1117,29 @@ Owner 2026-10-01 的四项决定：
 
 ### 审批
 
-审批（`ApprovalService.approve`）只记录决定，并把建议转为 `APPROVED`，不生成指令，也不改动 Ozon 上的价格。真实写入仍属于 W1。
+- `ApprovalService.approve` 只记录决定，并把建议转为 `APPROVED`；
+- 但控制台的“批准调价”在记录决定后，会立即调用 `POST /api/v1/console/workflow/recommendations/{id}/command` 创建调价指令；
+- `ExecutionService.createCommand` 要求平台登记了已核验的 `price-change` 写入能力（`platform.platform_capability`），目前没有任何平台登记，所以会以 `CAPABILITY_NOT_USABLE` 拒绝，不生成指令，也不调用 Ozon；
+- 抽屉随后显示“决定已记录，但创建指令失败”，并提供“创建已授权指令”重试。在 W1 登记写入能力之前，重试也会被同样拒绝。真实写入仍属于 W1。
+
+### 试点（2026-10-01）
+
+均为 UTC 时间：
+
+- 04:56，按 Owner 同意的清单由 Claude 在控制台代为操作，发布店铺策略 v1：8 项限额为 Owner 决定的值，生命周期目标“增长”；
+- 04:57–04:58，单件目标利润、单件安全缓冲都录为 0 RUB（店铺范围）；
+- 04:59，`COMMERCIAL_INPUTS` 水位写入，8 个数据源齐全，最老的约 29 小时；
+- 05:00 后点“重新计算诊断”（窗口截止 05:00）：
+  - 41 个商品的数据完整度都是 0.375，两项金额指标都是 `CANONICAL_CONFIRMED`；
+  - 7 条在审建议作废重提，新建议的护栏预览全部 PASS，没有拦截原因，调价后利润率都不低于 15%；
+- 05:14，经 Owner 同意批准 659-KASE-S 的建议（目标价下调 10%）：
+  - 记录了 APPROVAL PASS 和批准决定，step-up 满足，建议转为 `APPROVED`；
+  - 随后创建指令被 `CAPABILITY_NOT_USABLE` 拒绝，调价指令仍为 0 条，Ozon 价格没有变化。
+
+### 已知项
+
+- 审核抽屉里的“保本价”是求解器给出的阈值：在 profile 适用区间的下限处已经不亏时，直接显示区间下限，真实保本价更低；
+- 在 W1 之前，控制台批准后总会出现一次“创建指令失败”的提示；是否改为“写入能力未启用时只记录决定，并提示到卖家后台手工调价后记录决定”，待 Owner 决定。
 
 ## 控制台：店铺诊断
 
