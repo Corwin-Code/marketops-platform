@@ -57,15 +57,24 @@
 - 后端：Java/Spring Boot 模块化单体（`analyticsdecision`、`operatingfacts`、`operationsworkflow`、`availabilityrisk`、`advertisingefficiency`、`listingconversion`、`marketplaceintegration`、`aicopilot`、`identityaccess` 等），PostgreSQL + Flyway。
 - 前端：React + TypeScript + Ant Design 控制台，首页为店铺诊断，另含诊断、优先级队列、建议审阅、命令时间线、可用性、广告、Listing 页面与 OIDC 登录。
 - Slice 001–004 的代码均已在 main（004 经 PR #35 合入）。
-- Ozon 只读已接入真实试点店铺（商品目录、价格与价格指数、库存、按天下单件数、商品状态、内容评分），调用规格由登记数据驱动并经两位 Owner 核验；WB 未接入；平台写入全部关闭。
-- LLM 已接入阿里云百炼 `qwen3.8-max`（本地经 `make ai-provider` 登记，见 `docs/development.md`）；AI 仍只做解释与建议。
-- 下一步：按 `docs/product/intelligence-plan.md`（智能化运营方案与接入排期，待 Owner 审批）把 001–004 接上真实数据与 Qwen，并发布 1.0。
+- Ozon 读取已接入真实试点店铺：商品目录、价格与价格指数、库存、按天下单件数、商品状态、内容评分、搜索需求与搜索词、促销活动、店铺评级与仓库、买家折扣申请。调用规格由登记数据驱动，并经两位 Owner 核验。WB 未接入。
+- 定价闭环（001）已接上真实数据：
+  - 规则生成调价建议，价格只来自确定性计算；
+  - 写入前的护栏前提已就绪：数据新鲜度、经济性 profile、商业策略，以及单件目标利润与安全缓冲；
+  - 审批前先做护栏预览。
+- 平台写入：Owner 2026-10-01 授权全部写入能力，按 W1 改价 → W2 描述 → W3 出价逐项灰度。
+  - **W1 Ozon 改价已在本机对试点店铺启用**，走完整安全链：证据化建议 → 规则校验 → 人工审批 → 幂等指令 → 回读 → 审计 → Kill Switch。
+  - 能力证据来自同价写入探测，经两位 Owner 核验。
+  - 首单（2026-10-01）回读一致。
+  - 只改不在卖家促销中的商品。
+  - 其它写能力与 WB 写入仍关闭。
+- LLM 已接入阿里云百炼 `qwen3.8-max`（本地经 `make ai-provider` 登记，见 `docs/development.md`）；AI 仍只做解释与建议，不执行写入。
+- 下一步：按 `docs/product/intelligence-plan.md` 的排期推进，Owner 2026-10-01 确认的顺序是 P10 效果跟踪与周复盘 → P9 缺货与可售；之后是 W2、W3 和 1.0 发布。
 
 ## 待决问题
 
-- 1.0 启用哪些 Ozon 写能力，还是先以读取 + 建议 + 人工执行留痕上线。
-- Qwen 的服务商、地域、模型、数据出境边界与费用。
-- 运营范围：店铺/SKU、代表性样本、验收阈值与首批试点。
-- 初始商业阈值：最低利润、最大调价幅度、冷却期、Confidence。
+- 1.0 的验收阈值：用哪些指标判断平台确实帮助了真实运营。首批试点为 Ozon 试点店铺。
+- 诊断规则阈值：按试点店铺的真实分布复核。
+- Qwen 的费用预算。服务商（阿里云百炼）、模型与出境字段已定。
 - 内部 COGS/库存/财务表格的实际结构与责任人。
 - 部署环境与运行权限；俄罗斯托管与个人数据合规确认。
