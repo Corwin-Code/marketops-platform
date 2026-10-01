@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { Alert, Flex, Space } from 'antd';
 import { CommercialInputsSection } from '../guardrails/CommercialInputsSection';
 import { CommercialPolicySection } from '../guardrails/CommercialPolicySection';
+import { ContentWriteSwitchesSection } from '../guardrails/ContentWriteSwitchesSection';
 import { EconomicsProfileSection } from '../guardrails/EconomicsProfileSection';
 import { WriteSwitchesSection } from '../guardrails/WriteSwitchesSection';
 import { guardrailsText as text } from '../i18n/zh/guardrails';
@@ -27,6 +28,7 @@ export function GuardrailsPage({ context, storeId }: ConsolePageProps): React.JS
       />
       <Flex vertical gap={16} key={storeId}>
         <WriteSwitchesSection context={context} storeId={storeId} />
+        <ContentWriteSwitchesSection context={context} storeId={storeId} />
         <CommercialPolicySection context={context} storeId={storeId} />
         <CommercialInputsSection context={context} storeId={storeId} />
         <EconomicsProfileSection context={context} storeId={storeId} />

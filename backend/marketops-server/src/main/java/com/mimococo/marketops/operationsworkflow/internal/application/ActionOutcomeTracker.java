@@ -74,15 +74,19 @@ public class ActionOutcomeTracker {
 
     private final ActionOutcomeRepository outcomes;
     private final PriceCommandGateway commands;
+    private final com.mimococo.marketops.marketplaceintegration.ContentCommandGateway contentCommands;
     private final OperatingFactQuery facts;
     private final RecommendationService recommendations;
     private final IdGenerator idGenerator;
     private final Clock clock;
 
-    ActionOutcomeTracker(ActionOutcomeRepository outcomes, PriceCommandGateway commands, OperatingFactQuery facts,
-                         RecommendationService recommendations, IdGenerator idGenerator, Clock clock) {
+    ActionOutcomeTracker(ActionOutcomeRepository outcomes, PriceCommandGateway commands,
+                         com.mimococo.marketops.marketplaceintegration.ContentCommandGateway contentCommands,
+                         OperatingFactQuery facts, RecommendationService recommendations, IdGenerator idGenerator,
+                         Clock clock) {
         this.outcomes = outcomes;
         this.commands = commands;
+        this.contentCommands = contentCommands;
         this.facts = facts;
         this.recommendations = recommendations;
         this.idGenerator = idGenerator;
@@ -141,6 +145,20 @@ public class ActionOutcomeTracker {
             if (outcomes.register(idGenerator.newId(), organizationId, storeId, "PRICE_COMMAND", command.id(),
                     command.recommendationId(), command.platformListingVariantId(), "PRICE_CHANGE",
                     command.terminalAt(), command.priorPrice(), command.targetPrice(), command.currencyCode(), now)) {
+                registered++;
+            }
+        }
+        // W2: a title and description change that the card was read back to hold. One that found the
+        // card already saying the new text wrote nothing, so there is no action of this product to follow.
+        for (com.mimococo.marketops.marketplaceintegration.ContentCommandView command
+                : contentCommands.succeeded(storeId, BATCH)) {
+            if (command.terminalAt() == null || "already_applied".equals(command.outcomeCode())
+                    || outcomes.registered("CONTENT_COMMAND", command.id())) {
+                continue;
+            }
+            if (outcomes.register(idGenerator.newId(), organizationId, storeId, "CONTENT_COMMAND", command.id(),
+                    null, command.platformListingVariantId(), "CONTENT_CHANGE", command.terminalAt(), null, null,
+                    null, now)) {
                 registered++;
             }
         }
@@ -230,9 +248,13 @@ public class ActionOutcomeTracker {
                 .min(BigDecimal::compareTo).orElse(null);
         BigDecimal priceMax = prices.stream().map(ListingWindowRecord.PricePoint::buyerPrice)
                 .max(BigDecimal::compareTo).orElse(null);
-        Boolean priceHeld = !priceAction || prices.isEmpty() ? null
-                : prices.stream().allMatch(point -> point.buyerPrice().compareTo(outcome.targetPrice()) == 0);
-        boolean promotion = priceAction && afterRecord.prices().stream()
+        // A content change is judged at a steady price: a buyer price that moved during its window, or a
+        // seller promotion in it, could explain a change in orders as well as the new text could (W2).
+        boolean contentAction = "CONTENT_CHANGE".equals(outcome.actionKind());
+        Boolean priceHeld = prices.isEmpty() || !(priceAction || contentAction) ? null
+                : priceAction ? prices.stream().allMatch(point -> point.buyerPrice().compareTo(outcome.targetPrice()) == 0)
+                : priceMin.compareTo(priceMax) == 0;
+        boolean promotion = (priceAction || contentAction) && afterRecord.prices().stream()
                 .anyMatch(ListingWindowRecord.PricePoint::sellerPromotion);
         boolean stockout = afterRecord.stock().stream()
                         .anyMatch(point -> point.availableUnits() != null && point.availableUnits() <= 0)

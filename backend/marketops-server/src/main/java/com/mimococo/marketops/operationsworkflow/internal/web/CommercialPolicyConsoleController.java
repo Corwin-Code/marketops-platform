@@ -127,7 +127,9 @@ class CommercialPolicyConsoleController {
     @ResponseStatus(HttpStatus.CREATED)
     Created grantAllowlist(AuthenticatedActor actor,
                            @Valid @RequestBody AllowlistRequest request) {
-        return new Created(allowlist.grant(actor, request.platformCode(), request.storeId(),
+        return new Created(allowlist.grant(actor,
+                request.actionKind() == null ? "PRICE_CHANGE" : request.actionKind(),
+                request.platformCode(), request.storeId(),
                 request.platformListingVariantId(), request.validFrom(), request.validUntil(),
                 request.reason()));
     }
@@ -165,7 +167,7 @@ class CommercialPolicyConsoleController {
 
     record AllowlistRequest(@NotBlank String platformCode, @NotNull UUID storeId,
                             UUID platformListingVariantId, @NotNull Instant validFrom,
-                            @NotNull Instant validUntil, @NotBlank String reason) {
+                            @NotNull Instant validUntil, @NotBlank String reason, String actionKind) {
     }
 
     record RevokeRequest(@NotBlank String reason, @NotNull Long expectedVersion) {

@@ -53,11 +53,26 @@ public class PilotAllowlistService {
         this.clock = clock;
     }
 
-    /** Put one store, or one listing variant within it, on the list. */
+    /** The kinds of write an entry may allow: price changes, and title and description changes (W2). */
+    private static final java.util.Set<String> ACTION_KINDS = java.util.Set.of("PRICE_CHANGE", "LISTING_CONTENT_CHANGE");
+
+    /** Put one store, or one listing variant within it, on the list for price changes. */
     @Transactional
     public UUID grant(AuthenticatedActor actor, String platformCode, UUID storeId,
                       UUID platformListingVariantId, Instant validFrom, Instant validUntil,
                       String reason) {
+        return grant(actor, "PRICE_CHANGE", platformCode, storeId, platformListingVariantId, validFrom, validUntil,
+                reason);
+    }
+
+    /** Put one store, or one listing variant within it, on the list for one kind of write. */
+    @Transactional
+    public UUID grant(AuthenticatedActor actor, String actionKind, String platformCode, UUID storeId,
+                      UUID platformListingVariantId, Instant validFrom, Instant validUntil,
+                      String reason) {
+        if (actionKind == null || !ACTION_KINDS.contains(actionKind)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         authorization.require(actor, ActionScopeCode.COMMERCIAL_POLICY_MANAGE,
                 ResourceScope.store(storeId));
         Instant now = clock.instant();
@@ -70,13 +85,14 @@ public class PilotAllowlistService {
         }
 
         UUID id = idGenerator.newId();
-        entries.insert(id, actor.organizationId(), platformCode, storeId,
+        entries.insert(id, actor.organizationId(), actionKind, platformCode, storeId,
                 platformListingVariantId, validFrom, validUntil, actor.userId(), validReason,
                 now);
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATIONS_WORKFLOW, actor.userId().toString(),
                 AuditAction.GRANT, ENTITY_TYPE, id, null,
                 Map.of(
+                        "actionKind", new FieldChange(null, actionKind),
                         "storeId", new FieldChange(null, storeId.toString()),
                         "platformListingVariantId", new FieldChange(null,
                                 platformListingVariantId == null

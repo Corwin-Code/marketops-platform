@@ -9,6 +9,7 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ContentCommandRepository;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.KillSwitchRepository;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ListingDescriptionCommandRepository;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PriceCommandRepository;
@@ -56,9 +57,13 @@ public class KillSwitchService {
     /** The description write's own switch. Absent is off, at every scope. */
     static final String LISTING_DESCRIPTION_WRITE_FLAG = "listing-description-write";
 
+    /** The title and description write's switch (W2, V0035). Absent is off, at every scope. */
+    static final String CONTENT_WRITE_FLAG = ContentCommandService.CONTENT_WRITE_FLAG;
+
     private final KillSwitchRepository switches;
     private final PriceCommandRepository commands;
     private final ListingDescriptionCommandRepository descriptionCommands;
+    private final ContentCommandRepository contentCommands;
     private final BusinessAuthorization authorization;
     private final ProductionWritePolicy productionWrites;
     private final MetadataAuditRecorder auditRecorder;
@@ -68,6 +73,7 @@ public class KillSwitchService {
     KillSwitchService(KillSwitchRepository switches,
                       PriceCommandRepository commands,
                       ListingDescriptionCommandRepository descriptionCommands,
+                      ContentCommandRepository contentCommands,
                       BusinessAuthorization authorization,
                       ProductionWritePolicy productionWrites,
                       MetadataAuditRecorder auditRecorder,
@@ -76,6 +82,7 @@ public class KillSwitchService {
         this.switches = switches;
         this.commands = commands;
         this.descriptionCommands = descriptionCommands;
+        this.contentCommands = contentCommands;
         this.authorization = authorization;
         this.productionWrites = productionWrites;
         this.auditRecorder = auditRecorder;
@@ -136,6 +143,34 @@ public class KillSwitchService {
                 scopeKind, scopeReference, storeId, reason, true);
     }
 
+    /** Disable the title and description write at one scope. Disabling never needs step-up. */
+    @Transactional
+    public UUID disableContentWrite(AuthenticatedActor actor, String scopeKind, String scopeReference,
+                                    UUID storeId, String reason) {
+        return move(actor, CONTENT_WRITE_FLAG, "LISTING_CONTENT_CHANGE", scopeKind, scopeReference, storeId,
+                reason, false);
+    }
+
+    /** Re-enable the title and description write at one scope, with step-up. */
+    @Transactional
+    public UUID enableContentWrite(AuthenticatedActor actor, String scopeKind, String scopeReference,
+                                   UUID storeId, String reason) {
+        if (!actor.stepUpSatisfiedAt(clock.instant())) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+        if (!productionWrites.productionWritesEnabled()) {
+            throw OperationRejectedException.of(ErrorCode.PRODUCTION_WRITE_DISABLED);
+        }
+        return move(actor, CONTENT_WRITE_FLAG, "LISTING_CONTENT_CHANGE", scopeKind, scopeReference, storeId,
+                reason, true);
+    }
+
+    /** Which title and description write switches exist and what state they are in. */
+    @Transactional(readOnly = true)
+    public List<KillSwitchRepository.FlagRow> contentWriteFlags() {
+        return switches.flags(CONTENT_WRITE_FLAG);
+    }
+
     @Transactional(readOnly = true)
     public List<KillSwitchRepository.FlagRow> listingDescriptionFlags() {
         return switches.flags(LISTING_DESCRIPTION_WRITE_FLAG);
@@ -167,9 +202,11 @@ public class KillSwitchService {
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
         Instant now = clock.instant();
 
-        int inFlight = "PRICE_CHANGE".equals(actionKind)
-                ? commands.inFlightCount(actor.organizationId(), storeId)
-                : descriptionCommands.inFlightCount(actor.organizationId(), storeId);
+        int inFlight = switch (actionKind) {
+            case "PRICE_CHANGE" -> commands.inFlightCount(actor.organizationId(), storeId);
+            case "LISTING_CONTENT_CHANGE" -> contentCommands.inFlightCount(actor.organizationId(), storeId);
+            default -> descriptionCommands.inFlightCount(actor.organizationId(), storeId);
+        };
         switches.setFlagState(flagCode, scopeKind, scopeReference,
                 enable ? "ENABLED" : "DISABLED", now);
 
@@ -179,8 +216,11 @@ public class KillSwitchService {
                 inFlight, now, CorrelationId.current());
 
         log.atWarn()
-                .addKeyValue("event", "PRICE_CHANGE".equals(actionKind)
-                        ? "price_write_switch_moved" : "listing_description_write_switch_moved")
+                .addKeyValue("event", switch (actionKind) {
+                    case "PRICE_CHANGE" -> "price_write_switch_moved";
+                    case "LISTING_CONTENT_CHANGE" -> "content_write_switch_moved";
+                    default -> "listing_description_write_switch_moved";
+                })
                 .addKeyValue("action", enable ? "ENABLE" : "DISABLE")
                 .addKeyValue("scopeKind", scopeKind)
                 .addKeyValue("inFlightCommandCount", inFlight)

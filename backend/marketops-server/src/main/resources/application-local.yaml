@@ -32,6 +32,10 @@ marketops:
   # policies are published (`make availability-policies`) every card only names the missing policy.
   availability:
     worker-enabled: ${MARKETOPS_AVAILABILITY_WORKER_ENABLED:true}
+  # W2 (the same authorization as W1): this workstation carries out confirmed title and
+  # description changes. The worker only tries; a command whose gate is shut waits.
+  content-write:
+    worker-enabled: ${MARKETOPS_CONTENT_WRITE_WORKER_ENABLED:true}
   # Secrets are read from a directory outside the repository. The model key
   # lives at <mount>/ai/dashscope-api-key; `make ai-provider` installs it.
   secrets:
@@ -230,6 +234,38 @@ marketops:
         methods: [POST]
         headers: [accept, content-type, client-id, api-key]
         max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      # W2 (Owner decisions 2026-10-02): a listing's title and description, written by its
+      # seller article (POST /v1/product/attributes/update, attributes 4180 and 4191), the
+      # platform task asked about (POST /v1/product/import/info) and the card read back
+      # (POST /v1/product/info/description). Official OpenAPI, saved 2026-10-01. A title of
+      # 255 characters and a description of 6000 escaped as JSON stay well inside 32 KiB.
+      - key: platform:OZON:write
+        host: api-seller.ozon.ru
+        path-prefix: /v1/product/attributes/update
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 32768
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      - key: platform:OZON:write
+        host: api-seller.ozon.ru
+        path-prefix: /v1/product/import/info
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 4096
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      - key: platform:OZON:write
+        host: api-seller.ozon.ru
+        path-prefix: /v1/product/info/description
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 4096
         max-response-bytes: 8388608
         timeout-millis: 30000
 

@@ -25,6 +25,7 @@ import {
   Unavailable,
   useExplanation,
 } from './AiInterpretation';
+import { ContentWriteEditor } from '../content/ContentWriteEditor';
 
 type Loaded =
   | { readonly kind: 'loading' }
@@ -496,14 +497,23 @@ function ContentDrafts({
           <Provenance explanation={explanation} />
         </Flex>
       )}
+      <ContentWriteEditor
+        context={context}
+        platformListingVariantId={product.variantId}
+        draftTitle={drafts.find(({ draft }) => draft.field === 'TITLE')?.draft.text ?? null}
+        draftDescription={
+          drafts.find(({ draft }) => draft.field === 'DESCRIPTION')?.draft.text ?? null
+        }
+        draftInvocationId={explanation?.invocationId ?? null}
+      />
     </Flex>
   );
 }
 
 /**
  * The content optimization of one listing inside its drawer: what Ozon's content rating finds
- * missing, what the card says now, and Russian drafts to review and copy into the seller back
- * office. Nothing here changes the listing.
+ * missing, what the card says now, Russian drafts to review, and — confirmed by an Owner — writing
+ * the final title and description to Ozon (W2).
  */
 export function ListingContentOptimization({
   context,
