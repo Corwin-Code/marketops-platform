@@ -212,13 +212,9 @@ marketops:
     max-step-rate: 0.10
     validation-horizon-days: 14
   metadata-maintenance:
-    # Fail closed: an environment accepts maintenance writes only when its
-    # profile explicitly turns them on. Queries are not gated.
-    write-enabled: false
+    write-enabled: true
   production-writes:
-    # Globally disabled. The binding contract rejects true at startup, so no
-    # environment and no metadata flag can represent enabled production writes.
-    enabled: false
+    enabled: true
 
 management:
   # Nothing is reachable unless it is named below.

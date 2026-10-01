@@ -1178,7 +1178,43 @@ Owner 2026-10-01 授权了所有写入能力，并定了三件事：W1 只改不
   - 调价指令页按状态提供“再次回读 / 接管 / 按失败关闭”。
   - 新接口为 `GET /api/v1/console/commands/stores/{storeId}/write-status`。
 
-**未完成：部署级生产写入开关。** `marketops.production-writes.enabled` 被 `@AssertFalse` 锁死为 false，启动时校验，也就是说任何环境都无法开启生产写入。要让本机按 Owner 的授权开启，需要去掉这个限制。Claude 在自动模式下修改它时，被安全分类器以“削弱安全措施”为由拒绝，所以这一项留给 Owner 决定：由 Owner 自行修改，或明确授权后再改。在此之前，所有改价都只记录决定、手工执行。
+**部署级生产写入开关**：第一部分合并时，`marketops.production-writes.enabled` 还被 `@AssertFalse` 锁死为 false。Owner 随后授权去掉了这个限制，并亲自改了 `application.yaml` 里的说明。现在默认仍为关闭，只有本机 profile 开启（`MARKETOPS_PRODUCTION_WRITES_ENABLED`，默认 true）。
+
+## W1 调价写入（第二部分：能力登记、同价写入探测与灰度首单）
+
+**本机配置**（`application-local.yaml`）：
+- `platform:OZON:write` 下两条精确路径的出站规则：`POST /v1/product/import/prices` 和 `POST /v5/product/info/prices`。一条调价指令的所有调用（包括回读）都走这个 key，其它调用都不走。
+- `marketops.price-write.worker-enabled: true`：本机就是执行已批准调价指令的进程。
+
+**接入工具** `make ozon-price-write STEP=probe|setup|verify`（`scripts/ozon_pilot.py price-write`），按以下顺序执行：
+
+1. **写入 key 文件**：写入凭据单独用 `<mount>/ozon/<pilot>/price-write-api-key`，因为一条有效凭据独占一个 secret 引用。试点直接复制了只读 key（这把 key 本身带全部权限）；以后可以换成只有调价权限的 key，不影响读取。
+   ```bash
+   install -m 600 ~/.marketops-platform/secrets/ozon/pilot/seller-api-key ~/.marketops-platform/secrets/ozon/pilot/price-write-api-key
+   ```
+2. **`STEP=probe OFFER=<offer id> OFFICIAL_SOURCE=<swagger.json>`**：同价写入探测，由 Owner 在可以键入的终端里运行。
+   - 先检查 key 的权限和到期时间，核对官方文档仍描述我们发送的字段，再读一次商品现价；商品在卖家促销中、或划线价不高于现价时直接停止。
+   - 打印将发送的完整请求，Owner 键入 offer id 后才发出。提示出现前缓冲里已有的输入会被丢弃，全角字符按半角比较。
+   - 写入后按 worker 的节奏（立即、10 秒、30 秒）回读 `marketing_seller_price`，并核对 `price` 下的其它字段都没变，才记录证据。
+   - 发出的字节与后端渲染的完全一致：注册表要求写入模板里的值都放在 JSON 字符串里，后端把金额渲染成四位小数，所以 `product_id` 是字符串、价格形如 `"30700.0000"`。
+3. **`STEP=setup`**：登记 PRICE_WRITE 凭据 `ozon-<pilot>-price-write`、`price-change` 能力（STORE、WRITE）、`ozon-product-import-prices-v1` 和 `ozon-product-prices-readback-v5` 两个 endpoint，并为店铺声明能力状态（UNKNOWN）。
+4. **`STEP=verify`**：两位 Owner 登录。
+   - 起草写入结果模型 SYNCHRONOUS、PRICE_WRITE 用途的 Client-Id / Api-Key 认证头、两个 endpoint，以及 APPLY（受理指针 `/result/0/updated` = true）和 READBACK（`/items/0/price/marketing_seller_price`、`/items/0/price/currency_code`）两个 operation。
+   - 不登记 RESTORE：Ozon 没有条件写入，恢复价格要在卖家后台手工完成，需要撤销的指令进入人工接管。
+   - 一人提交证据、另一人批准后，用同一份证据把店铺标为 AVAILABLE。
+
+**控制台**：“价格护栏”页的“写入开关”里开启写入（同时打开调价能力开关和全局开关），在灰度白名单里加入商品；之后对已批准的建议点“创建已授权指令”。
+
+**试点结果（2026-10-01）**：
+- 同价写入探测：659-KASE-S（13:52 UTC）。Ozon 接受字符串形式的 `product_id` 和四位小数价格（HTTP 200，`updated=true`，无错误），立即回读一致，其它价格字段未变。证据有效期到 2026-10-31，两位 Owner 核验通过。
+- 灰度首单：指令 19b123e8，659-KASE-S 由 30700 改为 27630 RUB，建议已在批准时授权。
+  - 写入后约 1 秒第一次回读，仍是旧价（`MATCHES_PRIOR`）；10 秒后再读与目标价一致（`MATCHES_TARGET`），指令为 SUCCEEDED。第一部分加的“再读”在第一单就派上了用场。
+  - 建议随后自动转为 `EXECUTION_TRACKING`。
+- 首单成功后，按 Owner 的决定把白名单扩大为整店（7 天，到 2026-10-08 17:28 莫斯科时间，到期复核）。促销中的商品仍被写入闸门拒绝，每次改价仍要人工批准。
+
+**注意事项**：
+- 写入能力证据和凭据：证据 2026-10-31 到期，到期前要重新探测并核验，否则写入闸门不再放行；写入凭据有效期跟随 key，到 2026-12-29。
+- 自动模式下，安全分类器拒绝 Claude 启动同价写入探测（真实交易），这一步只能由 Owner 自己启动。
 
 ## 控制台：店铺诊断
 

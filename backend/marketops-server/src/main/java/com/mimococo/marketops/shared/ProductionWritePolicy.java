@@ -4,14 +4,12 @@ import com.mimococo.marketops.shared.internal.config.ProductionWriteProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * The global production-write gate as seen by application code.
+ * The deployment's production-write switch as seen by application code.
  *
- * <p>Production writes are disabled for the whole product. The binding contract
- * behind this policy fails application startup when the property is configured
- * {@code true}, because no controlled-write capability exists that could make
- * such a configuration legitimate; a metadata flag therefore has nothing it
- * could override. Consumers use this policy to refuse any transition that
- * would represent an enabled platform write.
+ * <p>Off unless the environment turns it on ({@code marketops.production-writes.enabled}). While it is
+ * off, consumers refuse anything that would enable or perform a platform write: enabling a
+ * write-capability flag from the registry or the console, and a price worker's write or restore. It is
+ * one gate among several, never a substitute for the database's write gate.
  */
 @Component
 public class ProductionWritePolicy {

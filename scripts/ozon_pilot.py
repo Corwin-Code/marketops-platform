@@ -31,6 +31,15 @@ read-only key may not call.
              approve it as the other, through the authenticated console API.
   run        Queue one manual run of the capability's job and execute it.
   normalize  Turn what the capability's job stored into canonical facts.
+  price-write probe|setup|verify
+             The price write capability (W1, Owner authorization 2026-10-01). ``probe``
+             sets one listing in no seller promotion (``--offer``) to the price it
+             already has through POST /v1/product/import/prices, after the Owner types
+             the offer id, and reads it back; ``setup`` registers the PRICE_WRITE
+             credential, the capability, its two endpoints and the store's row;
+             ``verify`` drafts the write protocol, has two Owners submit and approve the
+             evidence, and marks the store available. The write key is read from
+             <mount>/ozon/<pilot>/price-write-api-key, a key file of its own.
 
 Secrets. The Api-Key is read only by ``probe``, which sends it to api-seller.ozon.ru
 and nowhere else and never prints it; the backend resolves its own copy from the
@@ -64,6 +73,7 @@ import stat
 import sys
 import tempfile
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -1567,6 +1577,11 @@ class Pilot:
         self.api_key_file = self.secret_dir / "seller-api-key"
         self.client_id_file = self.secret_dir / "client-id"
         self.secret_reference = f"secret-ref://ozon/{code}/seller-api-key"
+        # The price write credential (W1) names a key file of its own: a reference belongs to one live
+        # credential, and the write key can be rotated or narrowed without touching the read key.
+        self.price_write_credential_code = f"ozon-{code}-price-write"
+        self.price_write_key_file = self.secret_dir / "price-write-api-key"
+        self.price_write_secret_reference = f"secret-ref://ozon/{code}/price-write-api-key"
         self.mount = mount
         self.evidence_dir = evidence_root / "ozon" / code
 
@@ -1705,13 +1720,17 @@ def tls_context(ca_file: str | None) -> ssl.SSLContext:
 
 # --- probe ------------------------------------------------------------------------
 
-def post_ozon(path: str, body: dict | None, client_id: str, api_key: str,
+def post_ozon(path: str, body: dict | bytes | None, client_id: str, api_key: str,
               context: ssl.SSLContext, method: str = "POST") -> tuple[int, str, bytes]:
-    """One Seller API call exactly as the registered endpoint sends it (POST, or GET without a body)."""
+    """One Seller API call exactly as the registered endpoint sends it (POST, or GET without a body).
+
+    A body given as bytes is sent exactly as it is: a rendered write template, byte for byte what the
+    backend will send.
+    """
     headers = {"Client-Id": client_id, "Api-Key": api_key, "Accept": "application/json"}
     payload = None
     if body is not None:
-        payload = json.dumps(body, separators=(",", ":")).encode("utf-8")
+        payload = body if isinstance(body, bytes) else json.dumps(body, separators=(",", ":")).encode("utf-8")
         headers["Content-Type"] = "application/json"
     connection = http.client.HTTPSConnection(OZON_HOST, 443, timeout=REQUEST_TIMEOUT_SECONDS,
                                              context=context)
@@ -1784,8 +1803,11 @@ def mutating_methods(document: dict) -> set[str]:
 
 
 def check_key(pilot: Pilot, args: argparse.Namespace, client_id: str, api_key: str,
-              context: ssl.SSLContext) -> dict | None:
+              context: ssl.SSLContext, writes_expected: bool = False) -> dict | None:
     """Call /v1/roles, keep the answer, and refuse a key that can change the store.
+
+    A write capability's probe passes ``writes_expected``: its key must be able to change the store,
+    so the roles that can are listed rather than refused.
 
     Returns what the evidence needs, or ``None`` after printing why nothing can
     be recorded.
@@ -1838,11 +1860,14 @@ def check_key(pilot: Pilot, args: argparse.Namespace, client_id: str, api_key: s
         print("roles that can change the store:")
         for name, found in sorted(writers.items(), key=lambda item: -len(item[1])):
             print(f"  - {name}: {len(found)} methods, e.g. {', '.join(found[:3])}")
-        if not args.allow_write_roles:
+        if writes_expected:
+            print("a write capability is being probed: these roles are expected")
+        elif not args.allow_write_roles:
             print("no evidence recorded: generate a key with read-only roles only and probe again "
                   "(or pass --allow-write-roles to accept these roles on purpose)")
             return None
-        print("--allow-write-roles given: recording evidence for a key that can change the store")
+        else:
+            print("--allow-write-roles given: recording evidence for a key that can change the store")
     return {"testedAt": tested_at, "keyExpires": key_expires, "granted": granted, "writers": writers,
             "document": document, "rolesFile": file_name, "rolesDigest": digest,
             "sourceFile": source_file, "sourceDigest": source_digest}
@@ -2212,8 +2237,11 @@ def find_capability(admin: Admin, capability: dict) -> dict | None:
 
 
 def find_endpoint(admin: Admin, capability: dict) -> dict | None:
-    return admin.find("/endpoints", {"platformCode": PLATFORM},
-                      lambda item: item.get("endpointCode") == capability["endpoint"]["code"])
+    return find_endpoint_code(admin, capability["endpoint"]["code"])
+
+
+def find_endpoint_code(admin: Admin, code: str) -> dict | None:
+    return admin.find("/endpoints", {"platformCode": PLATFORM}, lambda item: item.get("endpointCode") == code)
 
 
 def find_job(admin: Admin, pilot: Pilot, capability: dict, account_id: str) -> dict | None:
@@ -2609,6 +2637,585 @@ def command_verify(args: argparse.Namespace) -> int:
                       "validUntil": approved.get("validUntil"), "reviewedBy": reviewer_name},
                      ensure_ascii=False, indent=2))
     return 0 if approved.get("state") == "APPROVED" else 1
+
+
+# --- price write (W1) -----------------------------------------------------------------------
+# The Owner authorized the platform's write capabilities on 2026-10-01 and decided how the price
+# capability is evidenced: a same-price write, run by the Owner, that sets one listing's price to the
+# value it already has and reads it back. Facts from the official OpenAPI document saved that day
+# (info.version 2.1):
+#   - POST /v1/product/import/prices (ProductAPI_ImportProductsPrices) takes prices[] (at most 1000)
+#     of {product_id (int64) or offer_id, price, old_price, min_price, currency_code,
+#     auto_action_enabled, auto_add_to_ozon_actions_list_enabled, price_strategy_enabled, ...}; a
+#     product's price may change at most 10 times an hour. With both product_id and offer_id the
+#     change goes to offer_id's product, so only product_id is sent. The three switches go as UNKNOWN,
+#     documented as "change nothing"; old_price, min_price and the rest are left out. The answer is
+#     result[] of {product_id, offer_id, updated, errors[]{code, message}}.
+#   - price is the ceiling without promotions; old_price, the crossed-out price, must stay above it.
+#   - POST /v5/product/info/prices filters by product_id (strings); items[0].price
+#     .marketing_seller_price is the price with the seller's promotions, which for a listing in none
+#     of them (the only listings W1 changes) is the price just written.
+# The registry demands every value of a write template inside a JSON string, and the backend renders
+# an amount at four decimals. The probe sends exactly those bytes, so its evidence covers the product
+# id as a string and the four-decimal price too.
+PRICE_APPLY_PATH = "/v1/product/import/prices"
+PRICE_READBACK_PATH = "/v5/product/info/prices"
+PRICE_APPLY_TEMPLATE = ('{"prices":[{"product_id":"{nativeVariantKey}","price":"{targetPrice}",'
+                        '"currency_code":"{currencyCode}","auto_action_enabled":"UNKNOWN",'
+                        '"auto_add_to_ozon_actions_list_enabled":"UNKNOWN","price_strategy_enabled":"UNKNOWN"}]}')
+PRICE_READBACK_TEMPLATE = ('{"cursor":"","filter":{"product_id":["{nativeVariantKey}"],"visibility":"ALL"},'
+                           '"limit":1}')
+PRICE_ACCEPTED_POINTER = "/result/0/updated"
+PRICE_OBSERVED_POINTER = "/items/0/price/marketing_seller_price"
+PRICE_CURRENCY_POINTER = "/items/0/price/currency_code"
+# The documented item fields the apply sends, and the switches among them it leaves as they are.
+PRICE_APPLY_FIELDS = ("product_id", "price", "currency_code", "auto_action_enabled",
+                      "auto_add_to_ozon_actions_list_enabled", "price_strategy_enabled")
+PRICE_UNCHANGED_SWITCHES = ("auto_action_enabled", "auto_add_to_ozon_actions_list_enabled",
+                            "price_strategy_enabled")
+# The backend's money scale, and the worker's reads again 10 and 30 seconds after an accepted price
+# that does not show yet.
+PRICE_SCALE = decimal.Decimal("0.0001")
+PRICE_REREAD_DELAYS_SECONDS = (10, 30)
+# What the backend accepts as an observed price (PriceWriteAnswers.observed).
+OBSERVED_PRICE = re.compile(r"[0-9]{1,14}([.][0-9]{1,4})?")
+TEMPLATE_PLACEHOLDER = re.compile(r"\{([a-zA-Z][a-zA-Z0-9]{0,31})\}")
+
+PRICE_WRITE = {
+    "code": "price-change",
+    "display": "Ozon price change: one listing's price without promotions, read back",
+    "description": "Sets one listing's price ceiling without promotions (POST /v1/product/import/prices) "
+                   "and reads back the price with the seller's promotions (POST /v5/product/info/prices); "
+                   "W1 changes only listings in no seller promotion. Official docs checked 2026-10-01.",
+    "manifest": "price-write-latest.json",
+    "suffix": "price-write",
+    "endpoints": {
+        "APPLY": {
+            "code": "ozon-product-import-prices-v1", "api_version": "v1", "read_write": "WRITE",
+            "schema_version": "productImportProductsPricesResponse", "idempotency": "NO",
+            "rate_note": "Ozon: a product's price may change at most 10 times per hour; at most 50 "
+                         "requests/s per Client-Id across methods. Our cap: 10/min, one product per "
+                         "request. https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "Answers at once whether Ozon took the price; a readback tells whether it holds.",
+            "definition": {
+                "http_method": "POST", "path_template": PRICE_APPLY_PATH, "operation_function": "PRICE_APPLY",
+                "query_template": None, "body_template": None, "response_content_type": "application/json",
+                "continuation_pointer": None, "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": None,
+            },
+        },
+        "READBACK": {
+            "code": "ozon-product-prices-readback-v5", "api_version": "v5", "read_write": "READ",
+            "schema_version": "v5GetProductInfoPricesResponse", "idempotency": "YES",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, one product per request. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "The price the store holds at the moment of the answer.",
+            "definition": {
+                "http_method": "POST", "path_template": PRICE_READBACK_PATH,
+                "operation_function": "PRICE_READBACK", "query_template": None, "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 60,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": None,
+            },
+        },
+    },
+}
+# The same two headers as reading, recorded for the price write credential.
+PRICE_WRITE_HEADERS = tuple(dict(header, credential_purpose="PRICE_WRITE") for header in HEADER_DEFINITIONS)
+
+
+def price_operations(endpoint_ids: dict[str, str]) -> dict[str, dict]:
+    """The two operations the write capability records, bound to its endpoints.
+
+    There is no RESTORE: Ozon has no conditional write, so a price is restored by hand in the seller
+    office, and a command that has to be undone ends in manual resolution.
+    """
+    return {
+        "APPLY": {"operation": "APPLY", "endpoint_id": endpoint_ids["APPLY"],
+                  "request_template": PRICE_APPLY_TEMPLATE, "accepted_pointer": PRICE_ACCEPTED_POINTER,
+                  "accepted_value": True, "owner_label": OWNER_LABEL},
+        "READBACK": {"operation": "READBACK", "endpoint_id": endpoint_ids["READBACK"],
+                     "request_template": PRICE_READBACK_TEMPLATE,
+                     "observed_price_pointer": PRICE_OBSERVED_POINTER,
+                     "observed_currency_pointer": PRICE_CURRENCY_POINTER, "owner_label": OWNER_LABEL},
+    }
+
+
+def render_write_template(template: str, values: dict[str, str]) -> bytes:
+    """Render a recorded write template the way the backend does: each value escaped for a JSON string."""
+    def value(match: re.Match) -> str:
+        name = match.group(1)
+        if name not in values:
+            sys.exit(f"the template names {{{name}}}, which nothing here supplies")
+        return json.dumps(values[name], ensure_ascii=False)[1:-1]
+    rendered = TEMPLATE_PLACEHOLDER.sub(value, template)
+    if not isinstance(json.loads(rendered), dict):
+        sys.exit("a rendered write template must be a JSON object")
+    return rendered.encode("utf-8")
+
+
+def schema_at(document: dict, schema: object) -> dict:
+    """A schema of the official document with its references followed."""
+    for _ in range(16):
+        if not (isinstance(schema, dict) and "$ref" in schema):
+            break
+        node: object = document
+        for part in str(schema["$ref"]).lstrip("#/").split("/"):
+            node = node.get(part) if isinstance(node, dict) else None
+        schema = node
+    return schema if isinstance(schema, dict) else {}
+
+
+def json_schema(document: dict, operation: dict, response: str | None = None) -> dict:
+    """The JSON schema of an operation's request, or of one of its answers."""
+    holder = operation.get("requestBody") if response is None else (operation.get("responses") or {}).get(response)
+    content = (schema_at(document, holder).get("content") or {}).get("application/json") or {}
+    return schema_at(document, content.get("schema"))
+
+
+def price_write_refusal(document: dict) -> str | None:
+    """Why the official document no longer describes the registered price write, or None."""
+    paths = document.get("paths") or {}
+    apply = (paths.get(PRICE_APPLY_PATH) or {}).get("post")
+    readback = (paths.get(PRICE_READBACK_PATH) or {}).get("post")
+    if not isinstance(apply, dict) or not isinstance(readback, dict):
+        return f"the official document no longer describes POST {PRICE_APPLY_PATH} and POST {PRICE_READBACK_PATH}"
+    prices = schema_at(document, (json_schema(document, apply).get("properties") or {}).get("prices"))
+    fields = schema_at(document, prices.get("items")).get("properties") or {}
+    missing = [name for name in PRICE_APPLY_FIELDS if name not in fields]
+    if missing:
+        return f"the documented price item no longer has {', '.join(missing)}"
+    for switch in PRICE_UNCHANGED_SWITCHES:
+        if "UNKNOWN" not in (schema_at(document, fields[switch]).get("enum") or []):
+            return f"{switch} no longer documents UNKNOWN, the value that changes nothing"
+    result = schema_at(document, (json_schema(document, apply, "200").get("properties") or {}).get("result"))
+    if not {"product_id", "updated", "errors"} <= set(schema_at(document, result.get("items")).get("properties") or {}):
+        return "the documented answer no longer has result[].product_id, updated and errors"
+    product_filter = schema_at(document, (json_schema(document, readback).get("properties") or {}).get("filter"))
+    if "product_id" not in (product_filter.get("properties") or {}):
+        return f"POST {PRICE_READBACK_PATH} no longer filters by product_id"
+    return None
+
+
+def pointer_value(document: object, pointer: str) -> object:
+    """The value a JSON pointer addresses, or None."""
+    node = document
+    for part in pointer.lstrip("/").split("/"):
+        part = part.replace("~1", "/").replace("~0", "~")
+        if isinstance(node, list) and part.isdigit() and int(part) < len(node):
+            node = node[int(part)]
+        elif isinstance(node, dict) and part in node:
+            node = node[part]
+        else:
+            return None
+    return node
+
+
+def amount(value: object) -> decimal.Decimal | None:
+    """A price Ozon states as a number or a string, or None when it is neither."""
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None
+    try:
+        return decimal.Decimal(str(value))
+    except decimal.InvalidOperation:
+        return None
+
+
+def only_item(answer: dict | None, product_id: str) -> dict | None:
+    """The single item of a one-product price answer, when it is about this product."""
+    items = (answer or {}).get("items")
+    if isinstance(items, list) and len(items) == 1 and isinstance(items[0], dict) \
+            and str(items[0].get("product_id")) == product_id:
+        return items[0]
+    return None
+
+
+def readback_observation(answer: dict | None,
+                         product_id: str) -> tuple[decimal.Decimal | None, str | None, str | None]:
+    """(price, currency, why not) at the registered pointers, read the way the backend reads them."""
+    if only_item(answer, product_id) is None:
+        return None, None, "the answer is not about exactly this one product"
+    value = pointer_value(answer, PRICE_OBSERVED_POINTER)
+    if isinstance(value, bool):
+        value = None
+    # Jackson renders a JSON number the way Python's repr does for prices this size.
+    text = value if isinstance(value, str) else repr(value) if isinstance(value, (int, float)) else None
+    if text is None or not OBSERVED_PRICE.fullmatch(text) or decimal.Decimal(text) <= 0:
+        return None, None, "no price the backend can read at the registered pointer"
+    currency = pointer_value(answer, PRICE_CURRENCY_POINTER)
+    if not isinstance(currency, str) or not re.fullmatch("[A-Z]{3}", currency):
+        return None, None, "no currency the backend can read at the registered pointer"
+    return decimal.Decimal(text), currency, None
+
+
+def typed_confirmation(prompt: str, expected: str) -> bool:
+    """Whether a person typed ``expected`` after the prompt appeared.
+
+    Anything already waiting in the terminal is discarded first: a pasted command often carries a
+    trailing line break, and that empty line must not answer the question. Full-width characters an
+    input method produces count as their plain forms.
+    """
+    try:
+        import termios
+        if sys.stdin.isatty():
+            termios.tcflush(sys.stdin, termios.TCIFLUSH)
+    except (ImportError, OSError):
+        pass
+    try:
+        typed = unicodedata.normalize("NFKC", input(prompt)).strip()
+    except EOFError:
+        print("\nnothing sent: no one could type the confirmation; run the probe in an interactive terminal")
+        return False
+    if typed == expected:
+        return True
+    print("nothing sent: nothing was typed" if not typed else f"nothing sent: {typed!r} is not {expected}")
+    return False
+
+
+def subject_status(admin: Admin, capability_id: str, store_id: str) -> dict | None:
+    """The store's subject row of a capability, when it is declared."""
+    views = admin.require("GET", f"/capability-subject-statuses?capabilityId={capability_id}&limit=50", None, 200)
+    return next((view["status"] for view in views
+                 if isinstance(view.get("status"), dict) and view["status"].get("storeId") == store_id), None)
+
+
+def price_write_probe(args: argparse.Namespace) -> int:
+    """Set one listing's price to the value it already has, read it back, and keep it all as evidence."""
+    pilot = pilot_from(args)
+    if not args.offer:
+        sys.exit("name the listing with --offer <offer_id> (make ozon-price-write STEP=probe OFFER=<offer_id>)")
+    product = next((item for item in catalog_products(pilot) if str(item.get("offer_id")) == args.offer), None)
+    if product is None or not str(product.get("id") or "").isdigit():
+        sys.exit(f"{args.offer} is not in the newest catalog probe; probe the catalog first")
+    product_id = str(product["id"])
+    client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
+    api_key = read_secret(pilot, pilot.price_write_key_file, "price write Api-Key")
+    context = tls_context(args.ca_file)
+
+    key = check_key(pilot, args, client_id, api_key, context, writes_expected=True)
+    if key is None:
+        return 1
+    granted = {method for methods in key["granted"].values() for method in methods}
+    missing = [path for path in (PRICE_APPLY_PATH, PRICE_READBACK_PATH) if path not in granted]
+    if missing:
+        print(f"the key has no role that allows {', '.join(missing)}; nothing sent")
+        return 1
+    refusal = price_write_refusal(key["document"])
+    if refusal:
+        print(f"nothing sent: {refusal}")
+        return 1
+
+    stamp = f"{key['testedAt']:%Y%m%d-%H%M%S}z"
+    readback_body = render_write_template(PRICE_READBACK_TEMPLATE, {"nativeVariantKey": product_id})
+
+    def call(path: str, body: bytes, label: str) -> tuple[dict, dict | None]:
+        status, content_type, answer_bytes = post_ozon(path, body, client_id, api_key, context)
+        file_name = f"{PRICE_WRITE['suffix']}-{stamp}-{label}.json"
+        private_write(pilot.evidence_dir / file_name, answer_bytes)
+        try:
+            answer = json.loads(answer_bytes) if content_type == "application/json" else None
+        except ValueError:
+            answer = None
+        return ({"file": file_name, "sha256": hashlib.sha256(answer_bytes).hexdigest(), "status": status,
+                 "contentType": content_type}, answer if isinstance(answer, dict) else None)
+
+    before_page, before = call(PRICE_READBACK_PATH, readback_body, "before")
+    item = only_item(before, product_id)
+    if before_page["status"] != 200 or item is None:
+        print(f"POST {PRICE_READBACK_PATH} -> HTTP {before_page['status']}: no single price for {args.offer}; "
+              "nothing sent")
+        return 1
+    prices = item.get("price") if isinstance(item.get("price"), dict) else {}
+    seller, promoted, crossed = (amount(prices.get(name)) for name in ("price", "marketing_seller_price", "old_price"))
+    currency = prices.get("currency_code")
+    if seller is None or seller <= 0 or not isinstance(currency, str) or not re.fullmatch("[A-Z]{3}", currency):
+        print("the listing's price or currency is not readable; nothing sent")
+        return 1
+    if promoted is not None and promoted != seller:
+        print("the listing is in a seller promotion (its price with promotions differs from its price); W1 "
+              "writes only listings in none, so probe one of those; nothing sent")
+        return 1
+    if crossed is not None and 0 < crossed <= seller:
+        print("the crossed-out price is not above the price, which Ozon refuses; nothing sent")
+        return 1
+
+    target = format(seller.quantize(PRICE_SCALE), "f")
+    apply_body = render_write_template(PRICE_APPLY_TEMPLATE, {"nativeVariantKey": product_id,
+                                                              "targetPrice": target, "currencyCode": currency})
+    print(f"\n{args.offer} (product_id {product_id}): price {seller} {currency}, crossed-out "
+          f"{crossed if crossed else 'none'}, with seller promotions {promoted if promoted is not None else 'none'}")
+    print(f"The same-price write sends POST {OZON_BASE_URL}{PRICE_APPLY_PATH} with exactly:\n  {apply_body.decode()}")
+    print("This is a real write to the store. It sets the price the listing already has, so nothing a buyer "
+          "sees changes; it counts toward the 10 price changes an hour Ozon allows a product.")
+    if not typed_confirmation(f"Type the offer id ({args.offer}) to send it, anything else stops: ", args.offer):
+        return 1
+
+    apply_page, applied = call(PRICE_APPLY_PATH, apply_body, "apply")
+    results = (applied or {}).get("result")
+    first = results[0] if isinstance(results, list) and results and isinstance(results[0], dict) else {}
+    errors = [error for error in first.get("errors") or [] if isinstance(error, dict)]
+    print(f"POST {PRICE_APPLY_PATH} -> HTTP {apply_page['status']}: updated={first.get('updated')!r}, "
+          f"errors {sorted({str(error.get('code')) for error in errors}) or 'none'}")
+    if apply_page["status"] != 200 or pointer_value(applied, PRICE_ACCEPTED_POINTER) is not True or errors \
+            or str(first.get("product_id")) != product_id:
+        for error in errors[:5]:
+            print(f"  {error.get('code')}: {error.get('message')}")
+        print("nothing recorded: Ozon did not take the price the way the registered acceptance reads it")
+        return 1
+
+    readbacks, matched, changed = [], False, []
+    for index, delay in enumerate((0,) + PRICE_REREAD_DELAYS_SECONDS):
+        if delay:
+            print(f"the price does not show yet; reading again in {delay} s")
+            time.sleep(delay)
+        page, after = call(PRICE_READBACK_PATH, readback_body, f"readback{index}")
+        observed, observed_currency, why = readback_observation(after, product_id)
+        page["observed"] = None if observed is None else format(observed, "f")
+        readbacks.append(page)
+        if page["status"] == 200 and why is None and observed == decimal.Decimal(target) \
+                and observed_currency == currency:
+            matched = True
+            after_item = only_item(after, product_id) or {}
+            after_prices = after_item.get("price") if isinstance(after_item.get("price"), dict) else {}
+            changed = sorted(name for name in set(prices) | set(after_prices)
+                             if prices.get(name) != after_prices.get(name))
+            break
+        print(f"readback {index + 1}: HTTP {page['status']}, {why or 'the price written does not show yet'}")
+    del api_key
+    if not matched:
+        print("nothing recorded: no readback showed the price written; look at the listing in the seller office")
+        return 1
+    if changed:
+        print(f"nothing recorded: the same-price write changed other price fields ({', '.join(changed)}); "
+              "look at them in the seller office before going on")
+        return 1
+    print(f"readback {len(readbacks)}: {PRICE_OBSERVED_POINTER} = {target} {currency}, as written; "
+          "no other price field changed")
+
+    bundle = {"capability": PRICE_WRITE["code"], "testedAt": iso(key["testedAt"]), "offerId": args.offer,
+              "productId": product_id, "targetPrice": target, "currencyCode": currency,
+              "applyTemplate": PRICE_APPLY_TEMPLATE, "readbackTemplate": PRICE_READBACK_TEMPLATE,
+              "applyRequest": apply_body.decode("utf-8"), "readbackRequest": readback_body.decode("utf-8"),
+              "acceptedPointer": PRICE_ACCEPTED_POINTER, "observedPricePointer": PRICE_OBSERVED_POINTER,
+              "observedCurrencyPointer": PRICE_CURRENCY_POINTER, "before": before_page, "apply": apply_page,
+              "readbacks": readbacks, "otherPriceFieldsChanged": changed}
+    bundle_name = f"{PRICE_WRITE['suffix']}-{stamp}-bundle.json"
+    data = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    private_write(pilot.evidence_dir / bundle_name, data)
+    valid_until = min(key["testedAt"] + EVIDENCE_WINDOW, key["keyExpires"])
+    manifest = {
+        "pilot": pilot.code,
+        "capability": PRICE_WRITE["code"],
+        "testedAt": iso(key["testedAt"]),
+        "validUntil": iso(valid_until),
+        "keyExpiresAt": iso(key["keyExpires"]),
+        "roles": [{"name": name, "methods": len(methods)} for name, methods in key["granted"].items()],
+        "writeRolesAccepted": sorted(key["writers"]),
+        "evidenceClass": "REAL_ACCOUNT",
+        "accountEvidenceRef": pilot.evidence_ref(bundle_name),
+        "accountEvidenceSha256": hashlib.sha256(data).hexdigest(),
+        "officialSourceUrl": OFFICIAL_SOURCE_URL,
+        "officialSourceSha256": key["sourceDigest"],
+        "officialSourceFile": str(key["sourceFile"]),
+        "offerId": args.offer,
+    }
+    private_write(pilot.manifest(PRICE_WRITE), (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode())
+    print(f"evidence recorded, valid until {iso(valid_until)}; summary kept at {pilot.manifest(PRICE_WRITE)}")
+    print("next: make ozon-price-write STEP=setup")
+    return 0
+
+
+def price_write_setup(args: argparse.Namespace) -> int:
+    """Register the price write credential, capability and endpoints, and declare the store's row."""
+    pilot = pilot_from(args)
+    manifest = load_manifest(pilot, PRICE_WRITE)
+    if not (pilot.price_write_key_file.is_file() and pilot.price_write_key_file.stat().st_size > 0):
+        sys.exit(f"price write Api-Key: {pilot.price_write_key_file} does not exist")
+    admin = Admin(args.api, args.operator)
+    now = utc_now()
+    result: dict[str, object] = {}
+    org = organization(admin, args.organization_code)
+    account = pilot_account(admin, pilot, org["id"])
+    store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
+    if account is None or store is None:
+        sys.exit("the pilot account or store is not registered; run the read setup first")
+
+    credentials = admin.require("GET", f"/credentials?marketplaceAccountId={account['id']}&limit=50", None, 200)
+    if any((c.get("credential") or c).get("code") == pilot.price_write_credential_code for c in credentials):
+        result["credential"] = "already registered"
+    else:
+        admin.require("POST", "/credentials", {
+            "marketplaceAccountId": account["id"], "code": pilot.price_write_credential_code,
+            "displayName": "Ozon Seller API 调价写入 key", "purposeCode": "PRICE_WRITE", "scopeMode": "ACCOUNT",
+            "secretReference": pilot.price_write_secret_reference, "effectiveFrom": iso(now),
+            "expiresAt": manifest["keyExpiresAt"], "custodianLabel": OWNER_LABEL, "storeIds": []}, 201)
+        result["credential"] = f"PRICE_WRITE registered, expires {manifest['keyExpiresAt']}"
+
+    registered = find_capability(admin, PRICE_WRITE)
+    if registered is None:
+        registered = admin.require("POST", "/capabilities", {
+            "platformCode": PLATFORM, "capabilityCode": PRICE_WRITE["code"],
+            "displayName": PRICE_WRITE["display"], "description": PRICE_WRITE["description"],
+            "appliesTo": "STORE", "readWriteClass": "WRITE", "subscriptionRequired": "NO",
+            "ownerLabel": OWNER_LABEL}, 201)
+        result["capability"] = f"{PRICE_WRITE['code']} registered"
+    else:
+        result["capability"] = f"{PRICE_WRITE['code']} already registered"
+
+    for operation, spec in PRICE_WRITE["endpoints"].items():
+        definition = spec["definition"]
+        endpoint = find_endpoint_code(admin, spec["code"])
+        if endpoint is None:
+            endpoint = admin.require("POST", "/endpoints", {
+                "platformCode": PLATFORM, "endpointCode": spec["code"], "apiVersion": spec["api_version"],
+                "httpMethod": definition["http_method"], "pathTemplate": definition["path_template"],
+                "capabilityId": registered["id"], "readWriteClass": spec["read_write"],
+                "paginationModel": definition["pagination_model"],
+                "rateLimitPerMinute": definition["rate_limit_per_minute"], "rateLimitNote": spec["rate_note"],
+                "quotaNote": None, "idempotencySupport": spec["idempotency"], "lateDataBehavior": None,
+                "freshnessExpectation": spec["freshness"], "businessKeyNote": None,
+                "schemaVersion": spec["schema_version"], "ownerLabel": OWNER_LABEL}, 201)
+            result[f"endpoint {operation}"] = f"{spec['code']} registered"
+        elif endpoint.get("capabilityId") != registered["id"]:
+            sys.exit(f"endpoint {spec['code']} exists under another capability")
+        else:
+            result[f"endpoint {operation}"] = f"{spec['code']} already registered"
+
+    subject = subject_status(admin, registered["id"], store["id"])
+    if subject is None:
+        admin.require("POST", "/capability-subject-statuses",
+                      {"capabilityId": registered["id"], "storeId": store["id"]}, 201)
+        result["store"] = "declared, availability UNKNOWN until the evidence is verified"
+    else:
+        result["store"] = f"already declared, availability {subject.get('availability')}"
+    result.update({"marketplaceAccountId": account["id"], "storeId": store["id"], "capabilityId": registered["id"]})
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print("next: make ozon-price-write STEP=verify (two Owners sign in)")
+    return 0
+
+
+def price_write_verify(args: argparse.Namespace) -> int:
+    """Draft the write protocol, submit the same-price evidence as one Owner, approve it as another,
+    and mark the store available on the strength of it."""
+    pilot = pilot_from(args)
+    manifest = load_manifest(pilot, PRICE_WRITE)
+    source = Path(manifest["officialSourceFile"])
+    if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != manifest["officialSourceSha256"]:
+        sys.exit(f"the official source kept at {source} changed since the probe; run the probe again")
+    admin = Admin(args.api, args.operator)
+    org = organization(admin, args.organization_code)
+    account = pilot_account(admin, pilot, org["id"])
+    store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
+    registered = find_capability(admin, PRICE_WRITE)
+    endpoints = {operation: find_endpoint_code(admin, spec["code"])
+                 for operation, spec in PRICE_WRITE["endpoints"].items()}
+    subject = None if registered is None or store is None else subject_status(admin, registered["id"], store["id"])
+    if account is None or store is None or registered is None or None in endpoints.values() or subject is None:
+        sys.exit("the price write rows are missing; run make ozon-price-write STEP=setup first")
+
+    marker = pilot.evidence_dir / f"{PRICE_WRITE['suffix']}-verified.json"
+    done = json.loads(marker.read_text(encoding="utf-8")) if marker.is_file() else {}
+    if (not args.again and done.get("evidenceSha256") == manifest["accountEvidenceSha256"]
+            and parse_instant(done["validUntil"]) > utc_now() and registered.get("verificationState") == "VERIFIED"):
+        print(f"{PRICE_WRITE['code']} is already verified with this evidence (case {done['case']}, valid until "
+              f"{done['validUntil']}); nothing submitted. Pass --again to submit a new case.")
+    else:
+        print("Two different Owners are needed: one submits the evidence, the other approves it.")
+        submitter_name, submitter_token = sign_in(args, "Submitting Owner")
+        reviewer_name, reviewer_token = sign_in(args, "Reviewing Owner")
+        if submitter_name == reviewer_name:
+            sys.exit("the reviewing Owner must be a different person from the submitting Owner")
+        submitter = Console(args.api, submitter_token)
+        reviewer = Console(args.api, reviewer_token)
+        scope = f"/accounts/{account['id']}/capabilities/{registered['id']}"
+
+        snapshot = submitter.call("GET", scope, None, 200)["snapshot"]
+        if differs(snapshot.get("profile"), PROFILE_DEFINITION):
+            sys.exit("the Ozon profile differs from this script; verify the read capabilities first")
+        capability = snapshot.get("capability") or {}
+        if capability.get("write_result_model") != "SYNCHRONOUS":
+            submitter.call("POST", f"{scope}/draft", {"kind": "CAPABILITY", "id": None,
+                           "expectedVersion": capability["version"],
+                           "definition": {"write_result_model": "SYNCHRONOUS"}}, 201)
+            print("drafted the write result model: SYNCHRONOUS")
+        header_ids = []
+        for definition in PRICE_WRITE_HEADERS:
+            row = next((h for h in snapshot.get("headers") or []
+                        if str(h.get("header_name", "")).lower() == definition["header_name"].lower()), None)
+            if differs(row, definition):
+                if row is not None and row.get("verification_state") == "VERIFIED":
+                    sys.exit(f"the verified {definition['header_name']} write header differs; open a registry "
+                             "revision first")
+                created = submitter.call("POST", f"{scope}/draft", {
+                    "kind": "HEADER", "id": None if row is None else row["id"],
+                    "expectedVersion": -1 if row is None else row["version"], "definition": definition}, 201)
+                header_ids.append(created["id"])
+                print(f"drafted the {definition['header_name']} header for price writes")
+            else:
+                header_ids.append(row["id"])
+        for operation, spec in PRICE_WRITE["endpoints"].items():
+            row = next((e for e in snapshot.get("endpoints") or [] if e.get("id") == endpoints[operation]["id"]), None)
+            if row is None:
+                sys.exit(f"endpoint {spec['code']} is not under capability {PRICE_WRITE['code']}")
+            if differs(row, spec["definition"]):
+                if row.get("verification_state") == "VERIFIED":
+                    sys.exit(f"the verified {spec['code']} endpoint differs; open a registry revision first")
+                submitter.call("POST", f"{scope}/draft", {"kind": "ENDPOINT", "id": row["id"],
+                               "expectedVersion": row["version"], "definition": spec["definition"]}, 201)
+                print(f"drafted the {spec['code']} endpoint")
+        for operation, definition in price_operations({op: found["id"] for op, found in endpoints.items()}).items():
+            rows = [o for o in snapshot.get("operations") or [] if o.get("operation") == operation]
+            if len(rows) > 1:
+                sys.exit(f"the capability records {len(rows)} {operation} operations; review them first")
+            row = rows[0] if rows else None
+            if differs(row, definition):
+                if row is not None and row.get("verification_state") == "VERIFIED":
+                    sys.exit(f"the verified {operation} operation differs; open a registry revision first")
+                submitter.call("POST", f"{scope}/draft", {
+                    "kind": "OPERATION", "id": None if row is None else row["id"],
+                    "expectedVersion": -1 if row is None else row["version"], "definition": definition}, 201)
+                print(f"drafted the {operation} operation")
+
+        digest = submitter.call("GET", scope, None, 200)["digest"]
+        evidence = {key: manifest[key] for key in ("officialSourceUrl", "officialSourceSha256",
+                                                   "accountEvidenceRef", "accountEvidenceSha256",
+                                                   "evidenceClass", "testedAt", "validUntil")}
+        case = submitter.call("POST", f"{scope}/cases", {
+            "endpointIds": [endpoints["APPLY"]["id"], endpoints["READBACK"]["id"]], "authHeaderIds": header_ids,
+            "evidence": evidence, "expectedDigest": digest}, 201)
+        print(f"{submitter_name} submitted case {case['id']}")
+        submitted = reviewer.call("GET", f"/cases/{case['id']}", None, 200)
+        reviewer.call("POST", f"/cases/{case['id']}/review",
+                      {"expectedVersion": submitted["version"], "approve": True}, 204)
+        approved = reviewer.call("GET", f"/cases/{case['id']}", None, 200)
+        print(json.dumps({"capability": PRICE_WRITE["code"], "case": case["id"], "state": approved.get("state"),
+                          "currentEvidence": approved.get("currentEvidence"),
+                          "validUntil": approved.get("validUntil"), "reviewedBy": reviewer_name},
+                         ensure_ascii=False, indent=2))
+        if approved.get("state") != "APPROVED":
+            return 1
+        private_write(marker, (json.dumps({"case": case["id"], "evidenceSha256": manifest["accountEvidenceSha256"],
+                                           "validUntil": approved.get("validUntil") or manifest["validUntil"],
+                                           "reviewedBy": reviewer_name}, indent=2) + "\n").encode())
+
+    # The evidence is a write on this store's own account, so the store is available on its strength.
+    subject = subject_status(admin, registered["id"], store["id"])
+    if subject.get("availability") == "AVAILABLE" and subject.get("evidenceRef") == manifest["accountEvidenceRef"]:
+        print("the store is already marked available for price writes with this evidence")
+    else:
+        admin.require("POST", f"/capability-subject-statuses/{subject['id']}/availability", {
+            "expectedVersion": subject["version"], "availability": "AVAILABLE",
+            "evidenceRef": manifest["accountEvidenceRef"],
+            "verifiedSourceTitle": f"Same-price write of {manifest['offerId']} on the pilot account, read back, "
+                                   f"{manifest['testedAt']}"}, 200)
+        print("the store is marked available for price writes")
+    print("next: in the console's 写入开关, turn the switches on and allowlist the canary listing")
+    return 0
+
+
+def command_price_write(args: argparse.Namespace) -> int:
+    return {"probe": price_write_probe, "setup": price_write_setup, "verify": price_write_verify}[args.step](args)
 
 
 # --- economics projection profile (guardrail prerequisites, part two) -----------------------
@@ -3055,6 +3662,31 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--again", action="store_true",
                         help="submit a new case even though this evidence is already verified")
     verify.set_defaults(handler=command_verify)
+
+    price_write = commands.add_parser(
+        "price-write", help="the price write capability (W1): same-price probe, registration, two-Owner verification")
+    price_write.add_argument("step", choices=["probe", "setup", "verify"],
+                             help="probe (talks to Ozon only), then setup, then verify")
+    price_write.add_argument("--pilot", default="pilot", help="short code of the pilot account (default: pilot)")
+    price_write.add_argument("--secret-mount", help="secret mount; default: MARKETOPS_SECRET_MOUNT_DIRECTORY "
+                                                    f"or {DEFAULT_SECRET_MOUNT}")
+    price_write.add_argument("--evidence-root", help=f"evidence directory; default: {DEFAULT_EVIDENCE_ROOT}")
+    price_write.add_argument("--api", default="http://127.0.0.1:8080", help="backend base URL")
+    price_write.add_argument("--operator", default="owner-local", help="operator recorded in the audit")
+    price_write.add_argument("--organization-code", help="organization code when there is more than one")
+    price_write.add_argument("--offer", help="probe: the offer id (seller article) of a listing in no seller promotion")
+    price_write.add_argument("--ca-file", help="probe: trusted root bundle for api-seller.ozon.ru")
+    price_write.add_argument("--official-source-file", help="probe: the OpenAPI document saved from "
+                                                            f"{OFFICIAL_SOURCE_URL} in a browser")
+    price_write.add_argument("--issuer", default=DEFAULT_ISSUER, help="verify: OIDC issuer")
+    price_write.add_argument("--client-id", default=DEFAULT_CLIENT_ID, help="verify: console OIDC client")
+    price_write.add_argument("--redirect-uri", default=DEFAULT_REDIRECT_URI,
+                             help="verify: registered console redirect URI")
+    price_write.add_argument("--audience", default=DEFAULT_AUDIENCE, help="verify: API audience")
+    price_write.add_argument("--oidc-ca-file", help=f"verify: CA for the issuer; default: {LOCAL_OIDC_CA} when present")
+    price_write.add_argument("--again", action="store_true",
+                             help="verify: submit a new case even though this evidence is already verified")
+    price_write.set_defaults(handler=command_price_write, allow_write_roles=False)
 
     profile = commands.add_parser("economics-profile",
                                   help="generate the store's economics profile from its tariffs; two Owners verify it")
