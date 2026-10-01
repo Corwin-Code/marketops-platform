@@ -865,21 +865,21 @@ python3 scripts/ozon_pilot.py probe --pilot pilot --capability discount-requests
 - P8 先做建议与审阅。护栏在试点上缺这些前提：商业策略、经济性 profile、新鲜度水位、零订单下的完整度口径、履约方式声明。这些放到开启写入（W1）前的单独阶段做。认可某条建议的话，在 Ozon 卖家后台手工调价，再回平台记录。
 
 - **规则 `PRICE_HEADROOM`**（V0026，规则 v1，严重度 INFO，不阻断写入）：
-  - 触发条件：近 7 天搜索人数 ≥ 需求下限（1,000）、有库存、下单 0、预估利润率高于下限（15%），而且买家价降到目标利润价的幅度 ≥ 最小降价空间（新阈值 `price-headroom-minimum-rate: 0.03`）；
+  - 触发条件：近 7 天搜索人数 ≥ 需求下限（1,000）、有库存、下单 0、预估利润率高于下限（15%），而且买家价降到目标利润价的幅度 ≥ 最小降价空间（`price-headroom-minimum-rate: 0.03`，Owner 2026-10-01 按建议值决定）；
   - 买家价高于可比的 Ozon 竞品最低价时交给价格差规则处理，本规则判为通过（`condition=PRICE_GAP_RULES_APPLY`）；
   - 细节记录可降空间 `priceRoom`、预估利润率、利润率下限、搜索人数、目标利润价。其中比例可以出境给 Qwen，目标利润价不出境。
 - **建议生成**（`PriceSuggestionService`）：
   - 依据：店铺最新一次 7 天计算。依次看 `PRICE_GAP_REDUCIBLE`、`PRICE_GAP_PARTIAL`、`PRICE_HEADROOM`；有结构性价差、无库存或不可售的商品不给建议。
   - 价格只来自确定性计算：
     - 不低于目标利润价（向上取整到整卢布，保证守住下限）；
-    - 单次最多降 `max-step-rate`（10%，向上取整，保证降幅不超过上限）；
+    - 单次最多降 `max-step-rate`（10%，向上取整，保证降幅不超过上限；Owner 2026-10-01 按建议值决定，冷却期 `validation-horizon-days` 14 天同）；
     - 可降价追平竞品时，不低于竞品最低价。竞品价是 C 级平台分析数据，只用来限定一条候选，由人审阅，不会授权自动改价（HR-07）。
   - 价格都是买家价（含卖家促销）。
   - 利润率估算：用与诊断同一时点的费率和成本，经新的 `ListingPriceEstimateQuery` 计算，与 P3/P7 同一口径（共用 `ListingEconomicsInputs`）。
   - 建议内容：`targetPrice`；预期效果里记依据、现价、目标价、降幅、可调区间（下限 = 守住利润率下限的最低价，上限 = 现价）、现在和目标价下的利润率、竞品价、搜索人数。风险按降幅：5% 以内为低，10% 以内为中。验证期 14 天。依据（规则结论和指标值）都挂在建议上。
   - 流程：提出（DRAFT）→ 记录一次护栏预览 → VALIDATED → READY_FOR_REVIEW。VALIDATED 的含义是“护栏已为预览评估过”，不要求通过；批准时护栏会重新评估。
   - 何时生成：
-    - 定时采集后的 7 天自动重算之后，生成数量记进 RECALCULATED 事件的 `priceSuggestions`；
+    - 定时采集后的 7 天自动重算之后，新增、更新、撤下的条数分别记进 RECALCULATED 事件的 `priceSuggestions`、`priceSuggestionsRefreshed`、`priceSuggestionsWithdrawn`（试点 2026-10-01 01:00 UTC 的定时重算已自动跑过一次）；
     - 页面上点“重新计算诊断”之后；
     - 也可以调用 `POST /api/v1/console/workflow/stores/{storeId}/price-suggestions`，需要 `RECOMMENDATION_MANAGE`。
   - 保持一致：
@@ -911,6 +911,51 @@ python3 scripts/ozon_pilot.py probe --pilot pilot --capability discount-requests
   - 13 条建议都是 `PRICE_HEADROOM`，全部进入待审阅；
   - 护栏预览全部为 BLOCK：没有生效的定价策略、所需指标缺失（单件目标利润、安全缓冲）、缺少经济性 profile；
   - `PRICE_GAP_REDUCIBLE` / `PARTIAL` 为 0。
+
+## P8：定价建议闭环（第二部分：买家折扣申请）
+
+买家可以在 Ozon 上申请以更低的价格买某个商品，这是买家直接说出的“愿意付的价格”。Owner 2026-10-01 决定把它放在 P8 接入。
+
+- **接口**：`POST /v2/actions/discounts-task/list`（官方 OpenAPI 2026-10-01 核对）。列出所有状态（`NEW` 待处理、`APPROVED` 已批准、`DECLINED` 已拒绝）的申请，每页最多 50 条。批准和拒绝是旁边的写方法（`/v1/actions/discounts-task/approve`、`/decline`），平台不调用。
+- **试点探测（2026-10-01）**：
+  - 共 331 条申请（2026-04-16 至 09-27），批准 329、拒绝 2、待处理 0；6 个整页加 1 个 31 条的页，id 降序、无重复，再往后一页为空；
+  - 涉及 64 个 SKU，只有 8 个在当前商品目录里（11 条申请）；
+  - 两条被拒绝的申请都是在创建 48 小时后、到期时被拒，处理人为空；
+  - 申请里的“原价”是买家申请时看到的买家价（含当时的促销），不能直接和现价比：目录内商品的申请原价只有现在卖家价的 15%–50%。2026-10-01 00:10 UTC 采集的价格里，14 个商品的买家价平均上涨 54%，其中 8 个不再有促销价；时间上与促销“Акция для товаров со схемой FBS”（15 个商品参加）在 2026-09-30 21:00 UTC 结束吻合。
+- **采集引擎：新的分页模型 `LAST_RECORD_KEY`**：
+  - 应答里没有位置字段，下一页要带上一页最后一条记录的 id（`last_id`；官方说第一次请求留空）；
+  - 端点记录 `continuation_pointer` 为记录内的 id 指针（`/id`），`records_pointer` 为 `/tasks`，结束规则只能是 `EMPTY_RECORDS`，即拿到空页才结束；
+  - 请求模板用新占位符 `{lastRecordKey}`：第一页渲染为 `null`（proto3 JSON 把它当作未填），之后渲染为上一页最后一条的 id。只接受正整数，因为它以裸 JSON 数字放进请求体；下一页的 id 与刚问过的相同时按 schema drift 停下，避免反复请求同一页；
+  - 页大小写在模板里（`"limit":50`）：这个接口只允许 5–50，而 `{limit}` 渲染为 100；以空页结束，所以不依赖页大小。每次运行最多 20 次调用，即一次最多读 1000 条申请；
+  - V0027 扩展了分页模型和检查点的取值、占位符白名单，并约束 `{lastRecordKey}` 只能用在这个模型下。V0013 的证据审批已经要求翻页端点有 `continuation_pointer`，这个模型满足。
+- **数据集 `DISCOUNT_REQUEST`**（V0027）：
+  - 每条申请一条记录，按店铺归属，表 `core.discount_request_observation`（只追加），每次采集都写一次。因为多数申请的 SKU 已不在目录里，读取时再按 SKU 关联到商品（目录里恰好一个变体有这个 SKU 时）；
+  - 读：申请 id、SKU、商品名、状态、申请时间、处理时间、到期时间（新申请的处理期限）、原价、买家要价、要求的折扣（%）、要求的数量、批准价、批准的数量、是否自动处理；
+  - 应答不带币种：金额按店铺币种记录（试点店铺和 41 个商品标价都是 RUB）；店铺没有币种时不记金额；
+  - **不读**：处理申请的卖家员工（邮箱、姓、名、父称）；`approved_discount`（文档说单位是卢布，试点 329 条批准申请里它都是相对原价的百分比，与批准价重复）；`edited_till`（试点上都等于处理时间）；`min_auto_price`、`reduction_factor` 和自动处理设置（诊断用不到）。不读的字段只以字段路径记入漂移，不存取值。
+- **定时采集**：每日快照，排在仓库之后。出站白名单为 `/v2/actions/discounts-task/list` 精确路径。
+- **控制台接口**：`GET /api/v1/console/stores/{storeId}/discount-requests?subjectId=&limit=`，需要 `DIAGNOSTIC_VIEW`，读取记审计。返回：
+  - 数据时间；
+  - 计数：总数、批准、拒绝、待处理、SKU 数（其中在目录里的）、目录内商品的申请数、要求折扣中位数、最早和最近一次申请、待处理申请最早的处理期限；
+  - 按月（UTC）申请数；
+  - 店铺范围时，返回申请最多的 10 个 SKU；
+  - 最新的申请（默认 20 条）。
+
+  带 `subjectId` 时只看这个商品。
+- **页面**：
+  - 店铺诊断新增“买家折扣申请”：计数、按月分布、申请最多的商品（在目录里的可以点开商品详情）。有待处理的申请时提示到 Ozon 卖家后台处理，并给出最早的期限；
+  - 商品详情在“调价建议”下面显示这个商品的申请：一句汇总，加申请明细表（申请时间、状态、原价、买家要价和折扣、批准价、处理方式或处理期限）。
+- **探测与接入步骤**：
+
+  ```bash
+  python3 scripts/ozon_pilot.py probe --pilot pilot --capability discount-requests --official-source-file ~/Downloads/swagger.json --allow-write-roles
+  make ozon-setup CAPABILITY=discount-requests API=http://127.0.0.1:9999 OPERATOR=claude-for-owner
+  make ozon-verify CAPABILITY=discount-requests API=http://127.0.0.1:9999
+  make ozon-run CAPABILITY=discount-requests API=http://127.0.0.1:9999
+  make ozon-normalize CAPABILITY=discount-requests API=http://127.0.0.1:9999
+  ```
+
+  探测按后端的请求方式翻页（第一页 `last_id` 为 `null`，到空页结束）。`ozon-verify` 现在会检查探测证据的结束方式是否符合当前定义的结束规则；按旧定义（短页结束）记录的证据会被拒绝，并提示重新探测。
 
 ## 控制台：店铺诊断
 

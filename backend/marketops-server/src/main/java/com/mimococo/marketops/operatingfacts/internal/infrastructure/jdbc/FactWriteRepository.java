@@ -912,6 +912,68 @@ public class FactWriteRepository {
                 .update();
     }
 
+    /** Record one buyer's discount request as one answer stated it. */
+    public void insertDiscountRequest(UUID id, UUID organizationId, UUID provenanceId, UUID storeId,
+                                      String sourceFactKey, Instant observedAt, DiscountRequest request) {
+        jdbc.sql("""
+                        INSERT INTO core.discount_request_observation (
+                            id, organization_id, provenance_id, store_id, source_fact_key, observed_at,
+                            native_request_key, native_item_key, product_name, status, requested_at, moderated_at,
+                            expires_at, currency_code, original_price, requested_price, requested_discount_percent,
+                            requested_quantity, approved_price, approved_quantity, auto_moderated)
+                        VALUES (:id, :organizationId, :provenanceId, :storeId, :sourceFactKey, :observedAt,
+                            :requestKey, :itemKey, :productName, :status, :requestedAt, :moderatedAt,
+                            :expiresAt, :currencyCode, :originalPrice, :requestedPrice, :requestedDiscountPercent,
+                            :requestedQuantity, :approvedPrice, :approvedQuantity, :autoModerated)
+                        ON CONFLICT (organization_id, source_fact_key) DO NOTHING
+                        """)
+                .param("id", id)
+                .param("organizationId", organizationId)
+                .param("provenanceId", provenanceId)
+                .param("storeId", storeId)
+                .param("sourceFactKey", sourceFactKey)
+                .param("observedAt", Timestamp.from(observedAt))
+                .param("requestKey", request.nativeRequestKey())
+                .param("itemKey", request.nativeItemKey())
+                .param("productName", request.productName())
+                .param("status", request.status())
+                .param("requestedAt", timestamp(request.requestedAt()))
+                .param("moderatedAt", timestamp(request.moderatedAt()))
+                .param("expiresAt", timestamp(request.expiresAt()))
+                .param("currencyCode", request.currencyCode())
+                .param("originalPrice", request.originalPrice())
+                .param("requestedPrice", request.requestedPrice())
+                .param("requestedDiscountPercent", request.requestedDiscountPercent())
+                .param("requestedQuantity", request.requestedQuantity())
+                .param("approvedPrice", request.approvedPrice())
+                .param("approvedQuantity", request.approvedQuantity())
+                .param("autoModerated", request.autoModerated())
+                .update();
+    }
+
+    /** The store's currency, or empty when the store records none. */
+    public java.util.Optional<String> storeCurrency(UUID storeId) {
+        return jdbc.sql("""
+                        SELECT store.currency_code
+                          FROM core.store AS store
+                         WHERE store.id = :storeId AND store.currency_code IS NOT NULL
+                        """)
+                .param("storeId", storeId)
+                .query(String.class)
+                .optional();
+    }
+
+    /**
+     * What one discount request states; amounts in {@code currencyCode}, every part {@code null}
+     * when unsaid. The employee who handled the request is never read.
+     */
+    public record DiscountRequest(String nativeRequestKey, String nativeItemKey, String productName, String status,
+                                  Instant requestedAt, Instant moderatedAt, Instant expiresAt, String currencyCode,
+                                  BigDecimal originalPrice, BigDecimal requestedPrice,
+                                  BigDecimal requestedDiscountPercent, Integer requestedQuantity,
+                                  BigDecimal approvedPrice, Integer approvedQuantity, Boolean autoModerated) {
+    }
+
     /** What a rating summary states about the store. */
     public record RatingSummary(Boolean premium, Boolean premiumPlus, Boolean penaltyScoreExceeded,
                                 Instant localizationCalculatedAt, BigDecimal localizationPercentage) {

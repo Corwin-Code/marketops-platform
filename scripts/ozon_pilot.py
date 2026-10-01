@@ -571,6 +571,26 @@ def inspect_delivery_methods(answers: list[dict], pilot: "Pilot") -> tuple[list[
 DISCOUNT_TASK_PAGE = 50
 
 
+def accepted_end_signals(rule: str) -> set[str]:
+    """How a listing may end under a recorded end rule: the backend ends on JSON null always, and
+    on the other signals only when the endpoint's rule names them."""
+    return {"JSON_NULL",
+            *({"EMPTY_RECORDS"} if rule in ("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS") else ()),
+            *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
+            *({"SHORT_PAGE"} if rule in ("SHORT_PAGE", "SHORT_PAGE_OR_NOT_FOUND") else ()),
+            *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ()),
+            *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ())}
+
+
+def evidence_end_signal(pilot: "Pilot", manifest: dict) -> str | None:
+    """How the listing the probe kept as evidence ended, or None when the bundle does not say."""
+    reference = str(manifest.get("accountEvidenceRef") or "")
+    bundle = pilot.evidence_dir / reference.rsplit("/", 1)[-1]
+    if not reference or not bundle.is_file():
+        return None
+    return json.loads(bundle.read_text(encoding="utf-8")).get("endSignal")
+
+
 def catalog_category(pilot: "Pilot") -> tuple[str, str] | None:
     """The one (description_category_id, type_id) pair of the newest catalog probe, or None when
     the catalog holds none or several: Ozon answers attributes per category and product type, and
@@ -1295,25 +1315,40 @@ CAPABILITIES = {
             "definition": {
                 "http_method": "POST", "path_template": "/v2/actions/discounts-task/list",
                 "operation_function": "READ_DATA", "query_template": None,
-                "body_template": '{"status":"ALL","limit":50}',
-                "response_content_type": "application/json", "continuation_pointer": None,
-                # A page shorter than the 50 asked for is the last one (pilot 2026-10-01: 331
-                # requests on six full pages and one of 31, the request after it empty).
-                "pagination_model": "NONE", "rate_limit_per_minute": 10,
-                "continuation_end_rule": "SHORT_PAGE", "records_pointer": "/tasks",
+                # last_id is the id of the previous page's last request; null on the first page,
+                # which the documentation asks to leave empty. The method allows 5-50 per page,
+                # below the 100 that {limit} renders, so the size is part of the template.
+                "body_template": '{"status":"ALL","limit":50,"last_id":{lastRecordKey}}',
+                "response_content_type": "application/json",
+                # The key lives inside the last record; the list ends with an empty page (pilot
+                # 2026-10-01: 331 requests on six full pages and one of 31, the request after it empty).
+                "continuation_pointer": "/id", "pagination_model": "LAST_RECORD_KEY",
+                "rate_limit_per_minute": 10,
+                "continuation_end_rule": "EMPTY_RECORDS", "records_pointer": "/tasks",
             },
-            # The backend registration pages nothing yet: paging after the last record's id is built
-            # in the probe only, until the dataset is mapped.
-            "probe_body": lambda cursor, context: dict({"status": "ALL", "limit": DISCOUNT_TASK_PAGE},
-                                                       **({"last_id": int(cursor)} if cursor else {})),
+            # Exactly what runs send: last_id null on the first page, then the last request's id.
+            "probe_body": lambda cursor, context: {"status": "ALL", "limit": DISCOUNT_TASK_PAGE,
+                                                   "last_id": int(cursor) if cursor else None},
             "token_key": None,
             "records_key": "tasks",
-            "computed": "LAST_RECORD_ID",
-            "page": DISCOUNT_TASK_PAGE,
+            "computed": "LAST_RECORD_KEY",
         },
-        "job": {"suffix": "discount-requests", "dataset": "DISCOUNT_REQUEST", "display": "Ozon 试点：买家求降价"},
-        "probe_only": True,
-        "mapping": None,
+        "job": {"suffix": "discount-requests", "dataset": "DISCOUNT_REQUEST", "display": "Ozon 试点：买家折扣申请"},
+        # One record per request. Not read: the employee who handled it (email, first_name,
+        # last_name, patronymic); approved_discount (documented as roubles, stated as percent of
+        # the original price on 329 of 329 pilot requests); edited_till, min_auto_price,
+        # reduction_factor and auto_moderated_info. The answer states no currency: the backend
+        # records the amounts in the store's currency.
+        "mapping": {
+            "dataset": "DISCOUNT_REQUEST", "version": 1, "record_pointer": "/tasks", "child_pointer": None,
+            "fields": {"nativeRequestKey": "/id", "nativeItemKey": "/sku", "productName": "/name",
+                       "status": "/status", "requestedAt": "/created_at", "moderatedAt": "/moderated_at",
+                       "expiresAt": "/end_at", "originalPrice": "/original_price",
+                       "requestedPrice": "/requested_price", "requestedDiscountPercent": "/requested_discount",
+                       "requestedQuantity": "/requested_quantity_max", "approvedPrice": "/approved_price",
+                       "approvedQuantity": "/approved_quantity_max", "autoModerated": "/is_auto_moderated"},
+            "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
+        },
         "inspect": inspect_discount_tasks,
     },
     "warehouses": {
@@ -1893,12 +1928,16 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
             # The answer names its last record and whether more follow.
             last = answer.get("last_id")
             token = str(last) if answer.get("has_next") and last not in (None, "", 0, "0") else None
-        elif computed == "LAST_RECORD_ID":
-            # The answer carries no position: the next page asks after its last record's id, and the
-            # short-page rule decides where the list ends.
+        elif computed == "LAST_RECORD_KEY":
+            # The answer carries no position: the next page asks after its last record's id, the
+            # way the backend reads it (a positive whole number), and an empty page ends the list.
             last = records[-1].get("id") if isinstance(records, list) and records \
                 and isinstance(records[-1], dict) else None
-            token = str(last) if last is not None else None
+            token = str(last) if isinstance(last, int) and not isinstance(last, bool) and last > 0 else None
+            if isinstance(records, list) and records and (token is None or token == cursor):
+                print(f"page {index + 1}: the last record has no usable id, or the same id as the page "
+                      "before; paging after it would ask for the same page again, nothing recorded")
+                return None
         else:
             token = answer.get(endpoint["token_key"])
         if not isinstance(records, list) or not (token is None or isinstance(token, str)):
@@ -1941,9 +1980,15 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
         if computed == "SINGLE":
             end_signal = "JSON_NULL"
             break
-        if computed in ("LAST_ID", "LAST_RECORD_ID"):
+        if computed == "LAST_ID":
             if token is None:
-                end_signal = "HAS_NEXT_FALSE" if computed == "LAST_ID" else "SHORT_PAGE"
+                end_signal = "HAS_NEXT_FALSE"
+                break
+            cursor = token
+            continue
+        if computed == "LAST_RECORD_KEY":
+            if not records:
+                end_signal = "EMPTY_RECORDS"
                 break
             cursor = token
             continue
@@ -1962,15 +2007,7 @@ def probe_pages(pilot: Pilot, capability: dict, key: dict, client_id: str, api_k
     if end_signal is None:
         print(f"the listing did not end within {MAXIMUM_PROBE_PAGES} pages; nothing recorded")
         return None
-    # The backend ends a listing on JSON null always, and on the other signals
-    # only when the endpoint's recorded rule names them.
-    accepted = {"JSON_NULL",
-                *({"EMPTY_RECORDS"} if rule in ("EMPTY_RECORDS", "EMPTY_TOKEN_OR_RECORDS") else ()),
-                *({"EMPTY_TOKEN"} if rule in ("EMPTY_TOKEN", "EMPTY_TOKEN_OR_RECORDS") else ()),
-                *({"SHORT_PAGE"} if short_rule else ()),
-                *({"NOT_FOUND_AFTER_CURSOR"} if rule == "SHORT_PAGE_OR_NOT_FOUND" else ()),
-                *({"KEYS_EXHAUSTED"} if rule == "KEYS_EXHAUSTED" else ())}
-    if end_signal not in accepted:
+    if end_signal not in accepted_end_signals(rule):
         print(f"the listing ended with {end_signal}, which the registered rule {rule} does not accept")
         return None
     after_note = ""
@@ -2482,6 +2519,13 @@ def command_verify(args: argparse.Namespace) -> int:
     source = Path(manifest["officialSourceFile"])
     if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != manifest["officialSourceSha256"]:
         sys.exit(f"the official source kept at {source} changed since the probe; run the probe again")
+    # Evidence of a listing that ended another way was recorded for an earlier definition, and says
+    # nothing about how this one pages.
+    rule = capability["endpoint"]["definition"]["continuation_end_rule"]
+    ended = evidence_end_signal(pilot, manifest)
+    if ended is not None and ended not in accepted_end_signals(rule):
+        sys.exit(f"the probe evidence ended with {ended}, which the end rule {rule} does not accept: it "
+                 "was recorded for an earlier definition; run the probe again")
     admin = Admin(args.api, args.operator)
     org = organization(admin, args.organization_code)
     account = pilot_account(admin, pilot, org["id"])

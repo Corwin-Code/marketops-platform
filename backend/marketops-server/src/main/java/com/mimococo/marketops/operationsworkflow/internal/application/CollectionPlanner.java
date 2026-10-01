@@ -60,6 +60,8 @@ final class CollectionPlanner {
         // The store's own standing: its ratings and its warehouses.
         cadences.put("SELLER_RATING", Cadence.DAILY_SNAPSHOT);
         cadences.put("FBS_WAREHOUSE", Cadence.DAILY_SNAPSHOT);
+        // Buyers' discount requests: the whole list, every state, with every snapshot (P8).
+        cadences.put("DISCOUNT_REQUEST", Cadence.DAILY_SNAPSHOT);
         cadences.put("TRAFFIC", Cadence.DAILY_WINDOW);
         cadences.put("LISTING_SEARCH", Cadence.WEEKLY_WINDOW);
         cadences.put("LISTING_SEARCH_TERM", Cadence.WEEKLY_WINDOW);

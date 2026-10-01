@@ -290,6 +290,15 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         values.put(OFFSET_PLACEHOLDER, position.isEmpty() ? "0" : position);
         values.put(PAGE_PLACEHOLDER, position.isEmpty() ? "1" : position);
         pageIndex(position).ifPresent(index -> values.put(PAGE_INDEX_PLACEHOLDER, index));
+        // The key of the previous page's last record, for a source that pages after it; null asks
+        // for the first page, which a proto3 JSON body reads as an absent field. A position that
+        // is not such a key is not put, so a template naming it is refused rather than sent with
+        // source text in a bare JSON position.
+        if (position.isEmpty()) {
+            values.put(EndpointCallSpec.LAST_RECORD_KEY_PLACEHOLDER, "null");
+        } else if (EndpointCallSpec.RECORD_KEY.matcher(position).matches()) {
+            values.put(EndpointCallSpec.LAST_RECORD_KEY_PLACEHOLDER, position);
+        }
         values.put(LIMIT_PLACEHOLDER, DEFAULT_PAGE_SIZE);
         specs.runWindow(request.runId()).ifPresent(window -> {
             values.put(WINDOW_FROM_PLACEHOLDER, window.from().toString());

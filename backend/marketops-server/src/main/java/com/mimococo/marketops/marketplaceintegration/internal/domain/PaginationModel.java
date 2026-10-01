@@ -6,6 +6,8 @@ public enum PaginationModel {
     OFFSET,
     PAGE,
     DATE_WINDOW,
+    /** The next page asks after the key of the previous page's last record; an empty page ends. */
+    LAST_RECORD_KEY,
     NONE,
     UNKNOWN
 }
