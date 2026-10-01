@@ -52,6 +52,7 @@ import {
   TechnicalDetails,
 } from '../ui';
 import { CommandSubject } from './CommandSubject';
+import { CommandOutcomeCard } from '../outcomes/CommandOutcomeCard';
 
 /** What the timeline needs in order to load itself. */
 export interface CommandTimelineProps {
@@ -463,7 +464,11 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
   }));
 
   let gateNotice: ReactNode = null;
-  if (gate.kind === 'failed') {
+  if (TERMINAL.has(command.state)) {
+    // A finished command will not be sent again; whether the gate is open now says nothing about it
+    // (P10 moves a succeeded command's proposal on, which the gate reads as no longer current).
+    gateNotice = null;
+  } else if (gate.kind === 'failed') {
     gateNotice = (
       <section aria-label={commandText.gateLabel} data-testid="gate-unknown" data-state="unknown">
         <Flex vertical gap={6}>
@@ -659,11 +664,12 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
         </Space>
       </SectionCard>
 
-      {/*
-        The effect of a change is not a tab here: the outcome records the
-        console can read belong to advertising commands, and none are kept
-        against price commands.
-      */}
+      {/* The effect of a succeeded change, followed for fourteen days against the fourteen before (P10). */}
+      {command.state === 'SUCCEEDED' ? (
+        <div style={{ marginBottom: 16 }}>
+          <CommandOutcomeCard context={context} commandId={command.id} />
+        </div>
+      ) : null}
       <Card style={{ marginBottom: 16 }}>
         <Tabs
           items={[

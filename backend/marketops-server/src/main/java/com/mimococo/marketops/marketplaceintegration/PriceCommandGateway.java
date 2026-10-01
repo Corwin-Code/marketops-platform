@@ -40,6 +40,12 @@ public interface PriceCommandGateway {
     List<PriceCommandView> needingOperator(UUID storeId, int limit);
 
     /**
+     * Commands of one store that succeeded — a readback observed the intended price — oldest first,
+     * without their attempts and readbacks: the price changes whose effect is followed (P10).
+     */
+    List<PriceCommandView> succeeded(UUID storeId, int limit);
+
+    /**
      * The verified price-change capability of one marketplace, if there is one.
      *
      * <p>A caller asking for a command must name the capability the write goes

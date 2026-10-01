@@ -179,6 +179,23 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
     }
 
     @Override
+    public com.mimococo.marketops.operatingfacts.ListingWindowRecord windowRecord(UUID platformListingVariantId,
+                                                                               FactWindow window) {
+        return delegate.windowRecord(platformListingVariantId, window);
+    }
+
+    @Override
+    public java.util.List<com.mimococo.marketops.operatingfacts.SearchDemandSnapshot> searchDemandWithin(
+            UUID platformListingVariantId, FactWindow window) {
+        return delegate.searchDemandWithin(platformListingVariantId, window);
+    }
+
+    @Override
+    public java.util.List<java.time.LocalDate> storeOrderDays(UUID storeId, FactWindow window) {
+        return delegate.storeOrderDays(storeId, window);
+    }
+
+    @Override
     public ReturnTotals returns(UUID platformListingVariantId, FactWindow window) {
         return delegate.returns(platformListingVariantId, window);
     }

@@ -78,6 +78,23 @@ public interface OperatingFactQuery {
     TrafficTotals traffic(UUID platformListingVariantId, FactWindow window);
 
     /**
+     * Everything stated about one listing variant inside a window that the comparison of a period
+     * before an action with the period after it reads (P10): daily ordered units, price snapshots,
+     * stock snapshots and sellability, oldest first. Absent days are absent, never zero.
+     */
+    ListingWindowRecord windowRecord(UUID platformListingVariantId, FactWindow window);
+
+    /** The search periods of one listing variant that lie wholly inside a window, oldest first. */
+    List<SearchDemandSnapshot> searchDemandWithin(UUID platformListingVariantId, FactWindow window);
+
+    /**
+     * The UTC days inside a window on which the store has a daily order record for any listing,
+     * oldest first: the days its listings' orders can be read for. A listing without a record on such
+     * a day had nothing a source reported; on any other day nothing is known.
+     */
+    List<java.time.LocalDate> storeOrderDays(UUID storeId, FactWindow window);
+
+    /**
      * Sales at one stage over a window.
      *
      * <p>A retained stage requires the window length it was retained for,
