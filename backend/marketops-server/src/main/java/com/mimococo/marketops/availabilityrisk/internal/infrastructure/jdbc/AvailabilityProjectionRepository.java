@@ -302,13 +302,13 @@ public class AvailabilityProjectionRepository {
                     (id, child_id, organization_id, calculation_id, window_code,
                      period_start, period_end, completed_units, daily_rate, observed_days,
                      coverage_ratio, sample_sufficient, censored, censoring_reason,
-                     outlier_share, eligibility)
+                     outlier_share, eligibility, unit_basis)
                 VALUES
                 """ + valuesClause(rows.size(),
                         "id", "childId", "organizationId", "calculationId", "windowCode",
                         "periodStart", "periodEnd", "completedUnits", "dailyRate", "observedDays",
                         "coverageRatio", "sampleSufficient", "censored", "censoringReason",
-                        "outlierShare", "eligibility"));
+                        "outlierShare", "eligibility", "unitBasis"));
         for (int index = 0; index < rows.size(); index++) {
             DemandWindowRow row = rows.get(index);
             spec = spec.param("id" + index, row.id())
@@ -326,7 +326,8 @@ public class AvailabilityProjectionRepository {
                     .param("censored" + index, row.censored())
                     .param("censoringReason" + index, row.censoringReason())
                     .param("outlierShare" + index, row.outlierShare())
-                    .param("eligibility" + index, row.eligibility());
+                    .param("eligibility" + index, row.eligibility())
+                    .param("unitBasis" + index, row.unitBasis());
         }
         spec.update();
     }
@@ -397,7 +398,8 @@ public class AvailabilityProjectionRepository {
                                                           ChildKind childKind,
                                                           UUID productVariantId,
                                                           UUID platformListingVariantId,
-                                                          String fulfillmentModeCode) {
+                                                          String fulfillmentModeCode,
+                                                          String unitBasis) {
         return jdbc.sql("""
                         SELECT observation.daily_rate, observation.window_code,
                                observation.period_end
@@ -411,6 +413,7 @@ public class AvailabilityProjectionRepository {
                          WHERE observation.organization_id = :organizationId
                            AND observation.eligibility = 'ELIGIBLE'
                            AND observation.daily_rate IS NOT NULL
+                           AND observation.unit_basis = :unitBasis
                            AND child.child_kind = :childKind
                            AND card.product_variant_id = :productVariantId
                            AND (child.child_kind = 'COMPANY'
@@ -424,6 +427,7 @@ public class AvailabilityProjectionRepository {
                 .param("productVariantId", productVariantId)
                 .param("listingVariantId", platformListingVariantId)
                 .param("fulfillmentModeCode", fulfillmentModeCode)
+                .param("unitBasis", unitBasis)
                 .query((rows, rowNumber) -> new CarriedForwardRow(
                         rows.getBigDecimal("daily_rate"),
                         rows.getString("window_code"),
@@ -486,6 +490,6 @@ public class AvailabilityProjectionRepository {
                                   BigDecimal observedDays, BigDecimal coverageRatio,
                                   boolean sampleSufficient, boolean censored,
                                   String censoringReason, BigDecimal outlierShare,
-                                  String eligibility) {
+                                  String eligibility, String unitBasis) {
     }
 }

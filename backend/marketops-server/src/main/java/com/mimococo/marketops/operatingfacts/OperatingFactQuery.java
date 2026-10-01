@@ -84,6 +84,13 @@ public interface OperatingFactQuery {
      */
     ListingWindowRecord windowRecord(UUID platformListingVariantId, FactWindow window);
 
+    /**
+     * Units ordered per UTC day of one listing variant inside a window, oldest first, for the days it
+     * has a record for. A day without a record is absent, never zero: whether the store's order facts
+     * covered that day is {@link #storeOrderDays}.
+     */
+    List<ListingWindowRecord.DayOrders> dailyOrderedUnits(UUID platformListingVariantId, FactWindow window);
+
     /** The search periods of one listing variant that lie wholly inside a window, oldest first. */
     List<SearchDemandSnapshot> searchDemandWithin(UUID platformListingVariantId, FactWindow window);
 

@@ -42,6 +42,12 @@ public enum RiskCause {
 
     /** Demand cannot be observed and the carry-forward period has expired. */
     DEMAND_UNOBSERVABLE(BusinessRoleCode.TECH_DATA, true),
+    /**
+     * Demand is not observable yet: watching this listing began inside every window, so none could
+     * be watched for long enough (P9). Nothing is broken and nobody can hurry it, so it raises no
+     * case; it resolves on its own once a window has been watched for long enough.
+     */
+    DEMAND_WARMING_UP(BusinessRoleCode.TECH_DATA, false),
 
     /** Profit evidence is stale, incomplete or conflicted. */
     PROFIT_DATA_BLOCKED(BusinessRoleCode.FINANCE_ANALYST, true),

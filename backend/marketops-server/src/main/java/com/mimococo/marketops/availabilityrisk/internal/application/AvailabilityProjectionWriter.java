@@ -9,7 +9,6 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.RankFactor;
 import com.mimococo.marketops.availabilityrisk.internal.domain.SupplyComponent;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityProjectionRepository;
 import com.mimococo.marketops.shared.IdGenerator;
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -192,39 +191,20 @@ public class AvailabilityProjectionWriter {
     private AvailabilityProjectionRepository.DemandWindowRow demandWindowRow(
             VariantRisk risk, UUID childId, UUID calculationId, DemandWindowEvidence window,
             UUID id) {
-        boolean sufficient = risk.policies().demand() != null
-                && window.completedUnits() != null
-                && window.completedUnits() >= risk.policies().demand().minimumSampleUnits();
-        String eligibility = eligibilityOf(window, risk, sufficient);
+        DemandPolicyEngine.WindowEligibility eligibility = risk.policies().demand() == null
+                ? DemandPolicyEngine.WindowEligibility.DATA_BLOCKED
+                : DemandPolicyEngine.classify(window, risk.policies().demand());
+        boolean sufficient = risk.policies().demand() != null && window.units() != null
+                && (window.units() >= risk.policies().demand().minimumSampleUnits()
+                    || (window.units() == 0
+                        && risk.policies().demand().demandSource().observedZeroIsEvidence()));
         return new AvailabilityProjectionRepository.DemandWindowRow(id, childId,
                 risk.organizationId(), calculationId, window.window().name(),
-                window.periodStart(), window.periodEnd(), window.completedUnits(),
+                window.periodStart(), window.periodEnd(), window.units(),
                 window.dailyRate(), window.observedDays(), window.coverageRatio(), sufficient,
                 window.censored(),
                 window.censoringReason() == null ? null : window.censoringReason().name(),
-                window.largestSingleDayShare(), eligibility);
-    }
-
-    private String eligibilityOf(DemandWindowEvidence window, VariantRisk risk,
-                                 boolean sufficient) {
-        if (!window.observed()) {
-            return DemandPolicyEngine.WindowEligibility.DATA_BLOCKED.name();
-        }
-        if (risk.policies().demand() == null) {
-            return DemandPolicyEngine.WindowEligibility.DATA_BLOCKED.name();
-        }
-        if (window.coverageRatio().compareTo(risk.policies().demand().minimumCoverageRatio()) < 0) {
-            return DemandPolicyEngine.WindowEligibility.CENSORED.name();
-        }
-        if (!sufficient) {
-            return DemandPolicyEngine.WindowEligibility.LOW_SAMPLE.name();
-        }
-        BigDecimal share = window.largestSingleDayShare();
-        if (share != null
-                && share.compareTo(risk.policies().demand().outlierShareRatio()) > 0) {
-            return DemandPolicyEngine.WindowEligibility.OUTLIER_REVIEW.name();
-        }
-        return DemandPolicyEngine.WindowEligibility.ELIGIBLE.name();
+                window.largestSingleDayShare(), eligibility.name(), window.basis().name());
     }
 
     /**

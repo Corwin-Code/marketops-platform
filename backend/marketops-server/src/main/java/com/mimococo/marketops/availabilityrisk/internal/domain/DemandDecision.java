@@ -58,6 +58,14 @@ public record DemandDecision(
                 && evidenceState != RiskEvidenceState.UNKNOWN;
     }
 
+    /**
+     * Whether demand is simply not observable yet: watching began inside every window and no window
+     * was ever eligible. A demand decision is {@code UNKNOWN} for exactly this reason and no other.
+     */
+    public boolean warmingUp() {
+        return evidenceState == RiskEvidenceState.UNKNOWN;
+    }
+
     /** The evidence for one window, or {@code null} when it was not evaluated. */
     public DemandWindowEvidence window(DemandWindow window) {
         return windows.stream().filter(evidence -> evidence.window() == window)

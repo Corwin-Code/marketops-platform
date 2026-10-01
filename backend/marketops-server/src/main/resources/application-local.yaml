@@ -27,6 +27,11 @@ marketops:
   # commands. The worker only tries; a command whose write gate is shut stays where it is.
   price-write:
     worker-enabled: ${MARKETOPS_PRICE_WRITE_WORKER_ENABLED:true}
+  # P9 (Owner decision 2026-10-02): this workstation recalculates stock and availability risk —
+  # the accepted-fact scan every 30 seconds and the full sweep every hour. Until the availability
+  # policies are published (`make availability-policies`) every card only names the missing policy.
+  availability:
+    worker-enabled: ${MARKETOPS_AVAILABILITY_WORKER_ENABLED:true}
   # Secrets are read from a directory outside the repository. The model key
   # lives at <mount>/ai/dashscope-api-key; `make ai-provider` installs it.
   secrets:

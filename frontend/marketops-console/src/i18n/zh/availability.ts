@@ -62,6 +62,7 @@ export const CAUSE_LABELS: CodeLabels = {
   LEAD_TIME_POLICY_MISSING: '缺少适用的提前期与安全库存策略',
   DEMAND_POLICY_MISSING: '没有生效的需求策略版本',
   DEMAND_UNOBSERVABLE: '无法观测需求',
+  DEMAND_WARMING_UP: '需求尚在积累观察',
   PROFIT_DATA_BLOCKED: '利润数据过期、不完整或冲突',
   RETURN_QUALITY_REVIEW: '退货与质量数据需要人工判断',
   NONE: '无需处理',
@@ -116,6 +117,24 @@ export const BLOCKER_LABELS: CodeLabels = {
   COMPANY_SUPPLY_OWNERSHIP_NOT_DECLARED: '库存归属未声明',
   COMPANY_SUPPLY_STALE_OBSERVATION: '库存观测已过期',
   COMPANY_SUPPLY_QUANTITY_NOT_REPORTED: '库存数量未上报',
+  COMPANY_SUPPLY_STOCK_STATE_NOT_REPORTED: '库存状态未上报',
+  COMPANY_SUPPLY_CONFLICTING_SOURCES: '库存来源相互矛盾',
+  CHANNEL_DEMAND_WARMING_UP: '渠道需求观察时长不足，尚无法判断',
+  COMPANY_DEMAND_WARMING_UP: '公司需求观察时长不足，尚无法判断',
+  RETURN_QUALITY_POLICY_UNRESOLVED: '退货质量策略未解析',
+  RETURN_QUALITY_NO_EVIDENCE: '没有退货与质量证据',
+  RETURN_QUALITY_INCOMPLETE: '退货与质量证据不完整',
+  RETURN_QUALITY_STALE: '退货与质量证据已过期',
+  RETURN_QUALITY_CONFLICTED: '退货与质量证据相互矛盾',
+  RETURN_QUALITY_EVIDENCE_UNRESOLVED: '销售或退货数据无法核对',
+  SUPPLIER_OR_PRODUCT_DEFECT_RATE_HIGH: '质量类退货占比超过护栏',
+  RETURN_OR_RETENTION_GUARDRAIL_BREACHED: '退货率或保留率超过护栏',
+};
+
+/** Which unit a demand window counted. */
+export const UNIT_BASIS_LABELS: CodeLabels = {
+  COMPLETED_SALES: '完成件数',
+  ORDERED_UNITS: '下单件数',
 };
 
 /** Visible reasons behind a queue position. */

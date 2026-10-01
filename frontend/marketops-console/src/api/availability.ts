@@ -34,7 +34,10 @@ export interface AvailabilityDemandWindow {
   readonly windowCode: string;
   readonly periodStart: string;
   readonly periodEnd: string;
-  readonly completedUnits: number | null;
+  /** Units counted in {@link unitBasis}, or null when no source answered. */
+  readonly units: number | null;
+  /** COMPLETED_SALES or ORDERED_UNITS: which unit the window counted. */
+  readonly unitBasis: string;
   readonly dailyRate: string | null;
   readonly observedDays: string | null;
   readonly coverageRatio: string | null;
@@ -564,7 +567,8 @@ function parseDemandWindow(body: unknown): AvailabilityDemandWindow | undefined 
     windowCode,
     periodStart,
     periodEnd,
-    completedUnits: optionalInteger(r.completedUnits),
+    units: optionalInteger(r.units),
+    unitBasis: optionalText(r.unitBasis) ?? 'COMPLETED_SALES',
     dailyRate: decimal(r.dailyRate),
     observedDays: decimal(r.observedDays),
     coverageRatio: decimal(r.coverageRatio),

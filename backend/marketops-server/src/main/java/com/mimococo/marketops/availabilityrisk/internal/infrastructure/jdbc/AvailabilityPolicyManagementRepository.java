@@ -66,12 +66,12 @@ public class AvailabilityPolicyManagementRepository {
                              deceleration_ratio, outlier_share_ratio, minimum_coverage_ratio,
                              carry_forward_max_days, stock_freshness_max_minutes, owner_user_id,
                              reason, evidence_reference, effective_from, effective_to, status,
-                             policy_version, created_at)
+                             policy_version, created_at, demand_source)
                         VALUES (:id, :organizationId, :minimumSampleUnits, :accelerationRatio,
                                 :decelerationRatio, :outlierShareRatio, :minimumCoverageRatio,
                                 :carryForwardMaxDays, :stockFreshnessMaxMinutes, :ownerUserId,
                                 :reason, :evidenceReference, :effectiveFrom, :effectiveTo,
-                                'ACTIVE', :version, :createdAt)
+                                'ACTIVE', :version, :createdAt, :demandSource)
                         """)
                 .param("id", id).param("organizationId", draft.organizationId())
                 .param("minimumSampleUnits", draft.minimumSampleUnits())
@@ -81,6 +81,7 @@ public class AvailabilityPolicyManagementRepository {
                 .param("minimumCoverageRatio", draft.minimumCoverageRatio())
                 .param("carryForwardMaxDays", draft.carryForwardMaxDays())
                 .param("stockFreshnessMaxMinutes", draft.stockFreshnessMaxMinutes())
+                .param("demandSource", draft.demandSource())
                 .param("ownerUserId", ownerUserId).param("reason", draft.reason())
                 .param("evidenceReference", draft.evidenceReference())
                 .param("effectiveFrom", Timestamp.from(draft.effectiveFrom()))
@@ -517,7 +518,7 @@ public class AvailabilityPolicyManagementRepository {
                               BigDecimal outlierShareRatio, BigDecimal minimumCoverageRatio,
                               int carryForwardMaxDays, int stockFreshnessMaxMinutes,
                               String reason, String evidenceReference, Instant effectiveFrom,
-                              Instant effectiveTo, UUID supersedesPolicyId) {
+                              Instant effectiveTo, UUID supersedesPolicyId, String demandSource) {
     }
 
     public record ActivationDraft(UUID organizationId, int highSustainedCycles,

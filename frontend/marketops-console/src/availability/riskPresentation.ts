@@ -1,6 +1,7 @@
 import { codeLabel } from '../i18n/labels';
 import {
   CAUSE_LABELS,
+  DEMAND_WINDOW_LABELS,
   FULFILLMENT_MODE_LABELS,
   LANE_LABELS,
   PLATFORM_LABELS,
@@ -216,4 +217,44 @@ export function modeLabel(code: string): string {
 /** Why somebody is needed, in words rather than a code. */
 export function causeLabel(code: string): string {
   return codeLabel(CAUSE_LABELS, code);
+}
+
+/**
+ * The demand selection reason in words, or undefined when the backend wrote one this table does not
+ * know (the drawer then shows only the original text). The calculation writes these sentences in
+ * English; the patterns follow the demand policy engine word for word.
+ */
+export function demandReasonText(reason: string): string | undefined {
+  const exact: Readonly<Record<string, string>> = {
+    'sustained recent acceleration: D7 exceeds D14 beyond the policy ratio':
+      '近期持续加速：近 7 天日均高于近 14 天，超过策略比例，取近 7 天。',
+    'sustained recent deceleration: D7 falls below D14 beyond the policy ratio':
+      '近期持续放缓：近 7 天日均低于近 14 天，超过策略比例，取近 7 天。',
+    'window conflict: a large recent step is not sustained across the longer window':
+      '窗口冲突：近期的大幅变化没有在更长的窗口中延续，无法选定需求。',
+    'carried forward: every recent window is materially censored':
+      '沿用上次有效值：近期每个窗口的可观测时间都不足。',
+    'carry-forward expired while observation remained censored': '沿用期已过，而窗口仍然观测不足。',
+    'every recent window is materially censored and nothing eligible was ever observed':
+      '近期每个窗口的可观测时间都不足，且从未有过可用的窗口。',
+    'censoring is mixed with another ineligible state; carry-forward is forbidden':
+      '观测不足与其他不可用状态并存，不能沿用上次结果。',
+    'one day dominates every window; an unexplained outlier needs review':
+      '每个窗口都由某一天主导，需要人工复核这个异常值。',
+    'every window is below the policy minimum sample': '每个窗口的件数都低于策略的最小样本。',
+    'no source answered for any window': '没有任何窗口取到数据。',
+    'no active demand-observation policy version is in force': '没有生效的需求策略版本。',
+  };
+  const known = exact[reason];
+  if (known !== undefined) return known;
+  const baseline = /^stable baseline: longest eligible window (D7|D14|D30)$/.exec(reason);
+  if (baseline !== null) {
+    return `需求平稳：取最长的可用窗口（${codeLabel(DEMAND_WINDOW_LABELS, baseline[1])}）。`;
+  }
+  const warming = /^not observable yet: watching began (\S+), inside every window$/.exec(reason);
+  if (warming?.[1] !== undefined) {
+    const day = warming[1].slice(0, 10);
+    return `需求尚在积累观察：${day} 才开始同时记录库存与可售状态，还没有窗口被观察到足够长的时间；观察满后自动判断。`;
+  }
+  return undefined;
 }

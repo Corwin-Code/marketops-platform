@@ -159,15 +159,25 @@ public final class DemandPolicyEngine {
         return Trend.STABLE;
     }
 
-    private static WindowEligibility classify(DemandWindowEvidence evidence,
-                                              DemandPolicySettings settings) {
+    /**
+     * The verdict for one window under one policy version. The projection stores exactly this, so
+     * a stored window and the decision made from it can never disagree.
+     */
+    public static WindowEligibility classify(DemandWindowEvidence evidence,
+                                             DemandPolicySettings settings) {
         if (evidence == null || !evidence.observed()) {
             return WindowEligibility.DATA_BLOCKED;
         }
         if (evidence.coverageRatio().compareTo(settings.minimumCoverageRatio()) < 0) {
             return WindowEligibility.CENSORED;
         }
-        if (evidence.completedUnits() < settings.minimumSampleUnits()) {
+        // Counting ordered units, a window observable for enough of its length in which nobody
+        // ordered is the answer itself: zero demand, so nothing runs out (Owner decision
+        // 2026-10-02). The minimum sample still guards every positive count against noise.
+        if (evidence.units() == 0 && settings.demandSource().observedZeroIsEvidence()) {
+            return WindowEligibility.ELIGIBLE;
+        }
+        if (evidence.units() < settings.minimumSampleUnits()) {
             return WindowEligibility.LOW_SAMPLE;
         }
         BigDecimal share = evidence.largestSingleDayShare();
@@ -211,6 +221,19 @@ public final class DemandPolicyEngine {
                     "carry-forward expired while observation remained censored",
                     RiskEvidenceState.DATA_BLOCKED, RiskConfidence.UNUSABLE,
                     List.copyOf(evidence), lastEligible.observedAt(), expiry);
+        }
+        // Watching began inside even the shortest window and nothing was ever eligible: no window
+        // could have been watched for long enough yet. That is a wait, not a defect, and it ends
+        // on its own once a window has been watched for long enough.
+        DemandWindowEvidence shortest = evidence.stream()
+                .filter(one -> one.window() == DemandWindow.D7).findFirst().orElse(null);
+        if (allCensored && lastEligible == null && shortest != null
+                && shortest.observationBegan() != null) {
+            return new DemandDecision(null, null,
+                    "not observable yet: watching began " + shortest.observationBegan()
+                            + ", inside every window",
+                    RiskEvidenceState.UNKNOWN, RiskConfidence.UNUSABLE,
+                    List.copyOf(evidence), null, null);
         }
         String reason;
         if (allCensored) {

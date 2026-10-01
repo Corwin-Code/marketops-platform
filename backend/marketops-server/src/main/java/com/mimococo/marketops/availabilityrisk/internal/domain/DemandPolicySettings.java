@@ -21,6 +21,7 @@ import java.util.UUID;
  * @param minimumCoverageRatio how much of a window must be observable
  * @param carryForwardMax how long a last-eligible answer may be carried
  * @param stockFreshnessMax how old a stock observation may be and still be current
+ * @param demandSource which unit the windows count
  */
 public record DemandPolicySettings(
         UUID policyId,
@@ -31,7 +32,8 @@ public record DemandPolicySettings(
         BigDecimal outlierShareRatio,
         BigDecimal minimumCoverageRatio,
         Duration carryForwardMax,
-        Duration stockFreshnessMax) {
+        Duration stockFreshnessMax,
+        DemandSource demandSource) {
 
     public DemandPolicySettings {
         Objects.requireNonNull(policyId, "policyId");
@@ -41,6 +43,7 @@ public record DemandPolicySettings(
         Objects.requireNonNull(minimumCoverageRatio, "minimumCoverageRatio");
         Objects.requireNonNull(carryForwardMax, "carryForwardMax");
         Objects.requireNonNull(stockFreshnessMax, "stockFreshnessMax");
+        Objects.requireNonNull(demandSource, "demandSource");
         if (minimumSampleUnits < 1) {
             throw new IllegalArgumentException("minimumSampleUnits must be at least one");
         }

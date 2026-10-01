@@ -21,6 +21,7 @@ import {
   PROFIT_LANE_LABELS,
   RANK_FACTOR_LABELS,
   RISK_CONFIDENCE_LABELS,
+  UNIT_BASIS_LABELS,
   WINDOW_ELIGIBILITY_LABELS,
 } from '../i18n/zh/availability';
 import { cardDetailText as text, riskQueueText } from '../i18n/zh/availabilityRisks';
@@ -35,7 +36,13 @@ import {
   VariantName,
 } from '../ui';
 import type { SectionCollapseItem, SectionFlag } from '../ui';
-import { causeLabel, childLabel, laneIsSafe, presentEvidence } from './riskPresentation';
+import {
+  causeLabel,
+  childLabel,
+  demandReasonText,
+  laneIsSafe,
+  presentEvidence,
+} from './riskPresentation';
 import {
   EVIDENCE_COLORS,
   LANE_COLORS,
@@ -303,6 +310,7 @@ function ChildRisk({
 
   const censored = child.demandWindows.filter((window) => window.censored).length;
   const lowSample = child.demandWindows.filter((window) => !window.sampleSufficient).length;
+  const reasonText = demandReasonText(child.demandSelectionReason);
   const blockerFlags: SectionFlag[] = child.blockerCodes.map((code) => ({
     key: `blocker:${code}`,
     label: codeLabel(BLOCKER_LABELS, code),
@@ -379,7 +387,9 @@ function ChildRisk({
           pagination={false}
           rowKey="windowCode"
           dataSource={[...child.demandWindows]}
-          columns={DEMAND_WINDOW_COLUMNS}
+          columns={demandWindowColumns(
+            codeLabel(UNIT_BASIS_LABELS, child.demandWindows[0]?.unitBasis),
+          )}
           onRow={(window) =>
             ({ 'data-eligibility': window.eligibility }) as React.HTMLAttributes<HTMLElement>
           }
@@ -394,10 +404,17 @@ function ChildRisk({
     flags: [...evidenceFlags, ...blockerFlags],
     children: (
       <Flex vertical gap={2}>
+        {reasonText !== undefined && <Typography.Text>{reasonText}</Typography.Text>}
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {text.reasonHint}
         </Typography.Text>
-        <Typography.Text lang="en">{child.demandSelectionReason}</Typography.Text>
+        {reasonText === undefined ? (
+          <Typography.Text lang="en">{child.demandSelectionReason}</Typography.Text>
+        ) : (
+          <Typography.Text lang="en" type="secondary" style={{ fontSize: 12 }}>
+            {child.demandSelectionReason}
+          </Typography.Text>
+        )}
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {text.calculatedAt} <DateTime value={child.calculatedAt} />
         </Typography.Text>
@@ -498,15 +515,16 @@ const RANK_FACTOR_COLUMNS: TableColumnsType<AvailabilityRankFactor> = [
   },
 ];
 
-const DEMAND_WINDOW_COLUMNS: TableColumnsType<AvailabilityDemandWindow> = [
+/** The window table; the unit column is named after the unit the windows counted. */
+const demandWindowColumns = (unitTitle: string): TableColumnsType<AvailabilityDemandWindow> => [
   {
     title: text.window,
     dataIndex: 'windowCode',
     render: (code: string) => <CodeTag labels={DEMAND_WINDOW_LABELS} code={code} />,
   },
   {
-    title: text.completedUnits,
-    dataIndex: 'completedUnits',
+    title: unitTitle,
+    dataIndex: 'units',
     align: 'right',
     render: (units: number | null) => (units === null ? text.notObserved : text.unitsValue(units)),
   },

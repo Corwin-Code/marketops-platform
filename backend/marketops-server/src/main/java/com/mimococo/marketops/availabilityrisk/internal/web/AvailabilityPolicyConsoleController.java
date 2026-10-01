@@ -26,6 +26,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -153,7 +154,8 @@ class AvailabilityPolicyConsoleController {
                         body.decelerationRatio(), body.outlierShareRatio(),
                         body.minimumCoverageRatio(), body.carryForwardMaxDays(),
                         body.stockFreshnessMaxMinutes(), body.reason(), body.evidenceReference(),
-                        body.effectiveFrom(), body.effectiveTo(), body.supersedesPolicyId()));
+                        body.effectiveFrom(), body.effectiveTo(), body.supersedesPolicyId(),
+                        body.demandSource() == null ? "COMPLETED_SALES" : body.demandSource()));
     }
 
     @PostMapping("/activation")
@@ -265,7 +267,8 @@ class AvailabilityPolicyConsoleController {
                       @Min(1) @Max(43200) int stockFreshnessMaxMinutes,
                       @NotBlank String reason, @NotBlank String evidenceReference,
                       @NotNull Instant effectiveFrom, Instant effectiveTo,
-                      UUID supersedesPolicyId) {
+                      UUID supersedesPolicyId,
+                      @Pattern(regexp = "COMPLETED_SALES|ORDERED_UNITS") String demandSource) {
     }
 
     record ActivationBody(@Min(1) int highSustainedCycles,

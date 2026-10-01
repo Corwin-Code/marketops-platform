@@ -13,7 +13,7 @@ import java.time.Instant;
  * @param windowCode {@code D7}, {@code D14} or {@code D30}
  * @param periodStart inclusive start
  * @param periodEnd exclusive end
- * @param completedUnits units completed, or {@code null} when no source answered
+ * @param units units counted in {@code unitBasis}, or {@code null} when no source answered
  * @param dailyRate units per observable day, or {@code null}
  * @param observedDays days the listing could actually sell in
  * @param coverageRatio the share of the window that was observable
@@ -22,10 +22,11 @@ import java.time.Instant;
  * @param censoringReason why, or {@code null}
  * @param outlierShare the busiest day's share, or {@code null}
  * @param eligibility the policy verdict for this window
+ * @param unitBasis {@code COMPLETED_SALES} or {@code ORDERED_UNITS}: which unit the window counted
  */
 public record DemandWindowView(
-        String windowCode, Instant periodStart, Instant periodEnd, Integer completedUnits,
+        String windowCode, Instant periodStart, Instant periodEnd, Integer units,
         BigDecimal dailyRate, BigDecimal observedDays, BigDecimal coverageRatio,
         boolean sampleSufficient, boolean censored, String censoringReason,
-        BigDecimal outlierShare, String eligibility) {
+        BigDecimal outlierShare, String eligibility, String unitBasis) {
 }

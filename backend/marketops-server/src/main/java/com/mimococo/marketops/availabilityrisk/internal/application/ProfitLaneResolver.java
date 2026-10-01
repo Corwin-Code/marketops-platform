@@ -9,6 +9,8 @@ import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.analyticsdecision.ValueState;
 import com.mimococo.marketops.availabilityrisk.ProfitLane;
 import com.mimococo.marketops.availabilityrisk.internal.domain.ProfitAssessment;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -54,9 +56,10 @@ public class ProfitLaneResolver {
      * invented at the internal-variant level where no metric authority writes.
      */
     public ProfitAssessment resolve(UUID platformListingVariantId, Instant asOf) {
-        Optional<MetricValueView> settled = metrics.current(
+        Optional<Figure> settled = figure(metrics.current(
                 MetricCode.SETTLED_CONTRIBUTION_PROFIT, SubjectKind.PLATFORM_LISTING_VARIANT,
-                platformListingVariantId, MetricWindow.D30);
+                platformListingVariantId, MetricWindow.D30), MetricCode.SETTLED_UNITS,
+                platformListingVariantId);
         AuthorityResult settledResult = assess(settled, asOf,
                 ProfitLane.CONFIRMED_ELIGIBLE,
                 "fresh complete positive settled contribution profit");
@@ -67,9 +70,10 @@ public class ProfitLaneResolver {
         // Operational evidence is a fallback only when the settled authority
         // genuinely has no applicable value. A current settled loss is a
         // business answer, not an invitation to ask a weaker authority.
-        Optional<MetricValueView> operational = metrics.current(
+        Optional<Figure> operational = figure(metrics.current(
                 MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT, SubjectKind.PLATFORM_LISTING_VARIANT,
-                platformListingVariantId, MetricWindow.D30);
+                platformListingVariantId, MetricWindow.D30), MetricCode.COMPLETED_UNITS,
+                platformListingVariantId);
         AuthorityResult operationalResult = assess(operational, asOf,
                 ProfitLane.OPERATIONAL_ELIGIBLE,
                 "settled profit unavailable; fresh complete positive operational profit");
@@ -77,11 +81,30 @@ public class ProfitLaneResolver {
             return operationalResult.assessment();
         }
 
-        // Neither authority produced an eligible answer. Say which of the two
-        // failure shapes it was, because they route to different people: a
-        // stale or conflicted figure is a data repair, a confidently negative
-        // one is a commercial decision.
-        MetricValueView candidate = operational.orElse(null);
+        // Neither authority has sales to speak from. The estimated unit profit
+        // (price less the stated tariffs and the unit cost) may still make the
+        // stockout worth the queue, as an estimate and visibly so (P9, Owner
+        // decision 2026-10-02). Only a positive, fresh estimate speaks: an
+        // estimated loss is no complete figure, so it cannot rule the item out.
+        Optional<MetricValueView> projected = metrics.current(
+                MetricCode.PROJECTED_UNIT_PROFIT, SubjectKind.PLATFORM_LISTING_VARIANT,
+                platformListingVariantId, MetricWindow.D30);
+        if (projected.isPresent() && projected.get().valueState() == ValueState.AVAILABLE
+                && projected.get().numericValue() != null
+                && projected.get().numericValue().signum() > 0
+                && freshEstimate(projected.get(), asOf)
+                && !blocked(projected.get().confidenceState())) {
+            MetricValueView estimate = projected.get();
+            return new ProfitAssessment(ProfitLane.PROVISIONAL, estimate.numericValue(),
+                    estimate.currencyCode(), estimate.metricValueId(),
+                    "no sales to settle or operate on; positive estimated unit profit");
+        }
+
+        // No authority produced an eligible answer. Say which failure shape it
+        // was, because they route to different people: a stale or conflicted
+        // figure is a data repair, a confidently negative one is a commercial
+        // decision.
+        MetricValueView candidate = operational.map(Figure::metric).orElse(null);
         if (candidate == null) {
             return ProfitAssessment.unknown("no profit authority published a value");
         }
@@ -95,8 +118,9 @@ public class ProfitLaneResolver {
                     candidate.metricValueId(),
                     "profit evidence is stale, incomplete or conflicted");
         }
-        if (candidate.numericValue() != null && candidate.numericValue().signum() <= 0) {
-            return new ProfitAssessment(ProfitLane.NOT_PROFITABLE, candidate.numericValue(),
+        BigDecimal perUnit = operational.get().perUnit();
+        if (perUnit != null && perUnit.signum() <= 0) {
+            return new ProfitAssessment(ProfitLane.NOT_PROFITABLE, perUnit,
                     candidate.currencyCode(), candidate.metricValueId(),
                     "fresh complete profit is zero or negative");
         }
@@ -104,39 +128,77 @@ public class ProfitLaneResolver {
     }
 
     /**
-     * Accept one authority's value, or decline and let the ladder continue.
+     * One authority's figure and what it comes to per unit.
+     *
+     * @param metric the stored total over the window
+     * @param perUnit the total divided by the units it was earned on, or {@code null} when the
+     *        total is not available
+     */
+    private record Figure(MetricValueView metric, BigDecimal perUnit) {
+    }
+
+    /**
+     * Read a contribution-profit total per unit.
+     *
+     * <p>The settled and operational figures are totals over their window,
+     * and the stockout question is about the units that cannot be sold, so
+     * the total is divided by the units it was earned on. Without units to
+     * divide by — nothing sold, or the count itself unavailable — the total
+     * says nothing about one unit, and the authority counts as having no
+     * applicable value so the ladder continues.
+     */
+    private Optional<Figure> figure(Optional<MetricValueView> total, MetricCode unitsCode,
+                                    UUID platformListingVariantId) {
+        if (total.isEmpty()) {
+            return Optional.empty();
+        }
+        MetricValueView metric = total.get();
+        if (metric.valueState() != ValueState.AVAILABLE || metric.numericValue() == null) {
+            return Optional.of(new Figure(metric, null));
+        }
+        Optional<MetricValueView> units = metrics.current(unitsCode,
+                SubjectKind.PLATFORM_LISTING_VARIANT, platformListingVariantId, MetricWindow.D30);
+        if (units.isEmpty() || units.get().valueState() != ValueState.AVAILABLE
+                || units.get().numericValue() == null
+                || units.get().numericValue().signum() <= 0) {
+            return Optional.empty();
+        }
+        return Optional.of(new Figure(metric, metric.numericValue()
+                .divide(units.get().numericValue(), MathContext.DECIMAL64)));
+    }
+
+    /**
+     * Accept one authority's figure, or decline and let the ladder continue.
      *
      * <p>An explicitly estimated positive value is accepted as
      * {@link ProfitLane#PROVISIONAL} rather than as its authority's own lane.
      * It is still ranked — hiding a real risk because its profit is estimated
      * would be worse — but it is visibly marked as an estimate.
      */
-    private AuthorityResult assess(Optional<MetricValueView> value, Instant asOf,
+    private AuthorityResult assess(Optional<Figure> value, Instant asOf,
                                    ProfitLane lane, String reason) {
-        if (value.isEmpty()) {
+        if (value.isEmpty() || value.get().perUnit() == null) {
             return AuthorityResult.unavailable();
         }
-        MetricValueView metric = value.get();
-        if (metric.valueState() != ValueState.AVAILABLE || metric.numericValue() == null) {
-            return AuthorityResult.unavailable();
-        }
+        MetricValueView metric = value.get().metric();
+        BigDecimal perUnit = value.get().perUnit();
         if (!fresh(metric, asOf) || blocked(metric.confidenceState())) {
             return AuthorityResult.decisive(new ProfitAssessment(
                     ProfitLane.PROFIT_DATA_BLOCKED, null, null, metric.metricValueId(),
                     "profit evidence is stale, incomplete or conflicted"));
         }
-        if (metric.numericValue().signum() <= 0) {
+        if (perUnit.signum() <= 0) {
             return AuthorityResult.decisive(new ProfitAssessment(ProfitLane.NOT_PROFITABLE,
-                    metric.numericValue(), metric.currencyCode(), metric.metricValueId(),
+                    perUnit, metric.currencyCode(), metric.metricValueId(),
                     "fresh complete profit is zero or negative"));
         }
         if (metric.estimated() || metric.confidenceState() == ConfidenceState.ESTIMATED_EXPLAINED) {
             return AuthorityResult.decisive(new ProfitAssessment(
-                    ProfitLane.PROVISIONAL, metric.numericValue(),
+                    ProfitLane.PROVISIONAL, perUnit,
                     metric.currencyCode(), metric.metricValueId(),
                     "positive only through an explicit estimate"));
         }
-        return AuthorityResult.decisive(new ProfitAssessment(lane, metric.numericValue(),
+        return AuthorityResult.decisive(new ProfitAssessment(lane, perUnit,
                 metric.currencyCode(), metric.metricValueId(), reason));
     }
 
@@ -154,6 +216,17 @@ public class ProfitLaneResolver {
     private boolean fresh(MetricValueView metric, Instant asOf) {
         Instant source = metric.oldestSourceTime();
         return source != null && !source.plus(FRESHNESS_BOUND).isBefore(asOf);
+    }
+
+    /**
+     * Whether an estimate is current. Ozon states no time of its own for a price, so an estimate
+     * priced from it carries no source time; it is then as current as the calculation that produced
+     * it, which reads the newest price snapshot after every scheduled collection. When collection
+     * stops, the calculations stop with it and the estimate ages out under the same bound.
+     */
+    private boolean freshEstimate(MetricValueView metric, Instant asOf) {
+        Instant basis = metric.oldestSourceTime() != null ? metric.oldestSourceTime() : metric.periodEnd();
+        return basis != null && !basis.plus(FRESHNESS_BOUND).isBefore(asOf);
     }
 
     private static boolean blocked(ConfidenceState confidence) {
