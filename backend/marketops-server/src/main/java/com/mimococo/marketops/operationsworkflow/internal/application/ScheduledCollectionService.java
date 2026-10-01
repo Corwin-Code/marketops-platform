@@ -98,6 +98,7 @@ public class ScheduledCollectionService {
     private final StoreRecalculation recalculation;
     private final AiCopilot copilot;
     private final PriceSuggestionService priceSuggestions;
+    private final FeedWatermarkKeeper watermarks;
     private final MetadataAuditRecorder auditRecorder;
     private final ScheduledCollectionProperties properties;
     private final ObjectMapper objectMapper;
@@ -111,6 +112,7 @@ public class ScheduledCollectionService {
                                StoreRecalculation recalculation,
                                AiCopilot copilot,
                                PriceSuggestionService priceSuggestions,
+                               FeedWatermarkKeeper watermarks,
                                MetadataAuditRecorder auditRecorder,
                                ScheduledCollectionProperties properties,
                                ObjectMapper objectMapper,
@@ -123,6 +125,7 @@ public class ScheduledCollectionService {
         this.recalculation = recalculation;
         this.copilot = copilot;
         this.priceSuggestions = priceSuggestions;
+        this.watermarks = watermarks;
         this.auditRecorder = auditRecorder;
         this.properties = properties;
         this.objectMapper = objectMapper;
@@ -271,6 +274,9 @@ public class ScheduledCollectionService {
         }
         int recalculated = 0;
         if (executed == 0 && settled) {
+            // The guardrail's freshness first, so the suggestions after a recalculation are previewed
+            // against the newest collections.
+            refreshWatermarks(policy);
             recalculated = recalculate(policy, lastCollected, now);
             interpretWeekly(policy, now);
         }
@@ -395,6 +401,18 @@ public class ScheduledCollectionService {
             }
         }
         return recalculated;
+    }
+
+    /** The guardrail's freshness watermarks; a failure is logged and holds back nothing else. */
+    private void refreshWatermarks(Policy policy) {
+        try {
+            watermarks.refresh(policy.organizationId(), policy.storeId());
+        } catch (RuntimeException failed) {
+            log.atWarn().addKeyValue("event", "feed_watermarks_failed")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("failureType", failed.getClass().getSimpleName())
+                    .log("Feed watermarks could not be refreshed");
+        }
     }
 
     /**
