@@ -196,6 +196,11 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
     }
 
     @Override
+    public com.mimococo.marketops.operatingfacts.StoreOrderTotals storeOrders(UUID storeId, FactWindow window) {
+        return delegate.storeOrders(storeId, window);
+    }
+
+    @Override
     public ReturnTotals returns(UUID platformListingVariantId, FactWindow window) {
         return delegate.returns(platformListingVariantId, window);
     }

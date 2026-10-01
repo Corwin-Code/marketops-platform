@@ -101,7 +101,7 @@ export function OutcomeTable({
   ];
 
   return (
-    <SectionCard>
+    <SectionCard title={text.tableTitle}>
       <Alert type="info" showIcon style={{ marginBottom: 16 }} title={text.rules} />
       {load.kind === 'loading' ? <LoadingState /> : null}
       {load.kind === 'failed' ? <FailureAlert failure={load.failure} /> : null}

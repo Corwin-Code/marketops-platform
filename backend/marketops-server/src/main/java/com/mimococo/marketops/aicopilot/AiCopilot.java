@@ -57,6 +57,15 @@ public interface AiCopilot {
     Optional<AiDiagnosis> latestPromotionReview(UUID organizationId, UUID storeId, MetricWindow window);
 
     /**
+     * Ask a model what came of a store's followed actions in one week and what to adjust (P10). The
+     * answer authorises nothing; an unchanged week hands out the recorded answer again.
+     */
+    AiDiagnosis reviewWeek(UUID requestedByUserId, UUID organizationId, UUID storeId, WeeklyReviewInput input);
+
+    /** The newest recorded weekly review of one store, in any state. */
+    Optional<AiDiagnosis> latestWeeklyReview(UUID organizationId, UUID storeId);
+
+    /**
      * The most recent recorded explanation of one listing variant for a window,
      * in whatever state it ended, or empty when nobody has asked yet.
      *
