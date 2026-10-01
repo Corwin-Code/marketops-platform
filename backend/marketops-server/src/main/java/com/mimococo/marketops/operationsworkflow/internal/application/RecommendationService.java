@@ -88,6 +88,16 @@ public class RecommendationService
      * compares against it, so a decision is always about the facts the reviewer
      * actually saw.
      */
+    /**
+     * Whether a listing proposal still rests on the canonical values it was made from: the guardrail
+     * refuses one whose digest no longer matches (ENTITY_VERSION_CHANGED), so its proposer replaces it.
+     */
+    @Transactional(readOnly = true)
+    public boolean restsOnCurrentValues(RecommendationView proposal) {
+        return EntityVersion.of(metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT, proposal.subjectId(),
+                proposal.window())).equals(proposal.entityVersionDigest());
+    }
+
     @Transactional
     public UUID propose(String operator, UUID organizationId, UUID storeId, UUID subjectId,
                         ActionKind actionKind, String origin, UUID aiInvocationId,

@@ -158,7 +158,8 @@ public class PriceSuggestionService {
             paused += jumped && called.isPresent() ? 1 : 0;
             Optional<RecommendationView> live = recommendations.live(variantId, ActionKind.PRICE_CHANGE);
             if (live.isPresent() && (!ours(live.get())
-                    || (suggestion.isPresent() && same(live.get(), suggestion.get())))) {
+                    || (suggestion.isPresent() && same(live.get(), suggestion.get())
+                            && recommendations.restsOnCurrentValues(live.get())))) {
                 standing++;
                 continue;
             }
@@ -204,6 +205,8 @@ public class PriceSuggestionService {
     /**
      * Whether a standing suggestion already says what the newest findings say: the same price and every
      * figure behind it, so a reviewer never reads a margin or a demand the calculation has moved past.
+     * It must also rest on the current values (checked by the caller): the guardrail refuses a proposal
+     * whose facts changed since, so one with the same figures but newer facts is replaced too.
      */
     private static boolean same(RecommendationView live, Suggestion suggestion) {
         String target = live.proposedParameters().get("targetPrice");

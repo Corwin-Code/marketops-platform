@@ -34,6 +34,7 @@ import {
   SectionCard,
 } from '../ui';
 import type { TagColor } from '../ui';
+import { FeedFreshnessSection } from './FeedFreshness';
 
 /** What the page needs in order to load itself. */
 export interface DataCollectionViewProps {
@@ -491,6 +492,12 @@ export function DataCollectionView({
           ))}
         </Flex>
       </SectionCard>
+
+      <FeedFreshnessSection
+        key={`freshness-${String(generation)}`}
+        context={context}
+        storeId={storeId}
+      />
 
       <SectionCard title={text.eventsTitle}>
         {data.events.length === 0 ? (

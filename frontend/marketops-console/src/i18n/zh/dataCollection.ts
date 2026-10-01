@@ -142,3 +142,67 @@ export const REASON_LABELS: Readonly<Record<string, string>> = {
   JOB_NOT_EXECUTABLE: '采集任务不可执行（任务、授权或服务账号已失效）',
   BLOCKED: '运行被卡住，需要人处理',
 };
+
+/** The feeds of the price guardrail's freshness check. */
+export const FEED_LABELS: Readonly<Record<string, string>> = {
+  PRICE: '价格',
+  STOCK: '库存',
+  SALES: '销售（下单）',
+  RETURNS: '退货',
+  FINANCE_FEES: '财务费用',
+  ADVERTISING: '广告',
+  INTERNAL_COST: '内部成本',
+  COMMERCIAL_INPUTS: '商业输入（单件目标利润、安全缓冲）',
+};
+
+/** Where an attestation stands. */
+export const ATTESTATION_STATE_LABELS: Readonly<Record<string, string>> = {
+  STANDING: '有效',
+  LAPSED: '已失效',
+  REVOKED: '已撤销',
+  EXPIRED: '已到期',
+};
+
+/** How fresh each feed of the price guardrail is, and the Owner's statements about feeds not collected. */
+export const feedFreshnessText = {
+  title: '护栏数据新鲜度',
+  hint: '调价建议在平台内审批前，护栏要求价格、库存、销售、退货、财务费用、广告、内部成本、商业输入 8 个数据源都足够新（不超过商业策略规定的时长）。平台在每次定时采集完成后记录已采集的数据源；平台不采集的退货、财务费用、广告，由你声明“本店目前没有”后据此记录。',
+  feed: '数据源',
+  effectiveAt: '数据截至',
+  effectiveHint:
+    '护栏从这个时间算数据的年龄：采集类为采集完成时间，销售为下单数据的截止时间，定期确认的为最近一次确认时间。',
+  age: '已过',
+  ageDays: (days: number, hours: number): string => `${String(days)} 天 ${String(hours)} 小时`,
+  ageHours: (hours: number, minutes: number): string =>
+    `${String(hours)} 小时 ${String(minutes)} 分钟`,
+  evidence: '依据',
+  evidenceCollection: '定时采集',
+  evidenceAttestation: '你的声明',
+  evidenceFinanceInputs: '财务输入',
+  missingCollected: '尚无记录，等下一次定时采集完成',
+  missingAttestable: '平台不采集，声明本店没有后才会记录',
+  missingCommercialInputs: '尚无记录，录入单件目标利润和安全缓冲后才会记录',
+  attestationsTitle: '数据源声明',
+  attest: '声明不适用',
+  attestTitle: '声明本店没有这些数据',
+  attestConsequence:
+    '声明后，平台每天据此记录这些数据源“已核验无数据”。出现订单后，退货和财务费用的声明自动失效，需要接入真实采集；声明到期后需要重新声明。需要 COMMERCIAL_POLICY_MANAGE 授权，并且登录时间不能太久。',
+  feedsLabel: '数据源',
+  feedsRequired: '请至少选择一个数据源',
+  statement: '声明',
+  statementDefault: '本店目前没有订单，也没有投放广告。',
+  statementRequired: '请填写声明',
+  validDays: '有效天数',
+  attested: '已记录声明',
+  attestedAt: '声明时间',
+  expiresAt: '到期',
+  state: '状态',
+  lapsedBecauseOrders: '已有订单',
+  noAttestations: '还没有声明',
+  revoke: '撤销',
+  revokeTitle: '撤销声明',
+  revokeConsequence: '撤销后不再据此记录；这个数据源的记录会在策略规定的时长后过期，护栏随之拦截。',
+  reason: '原因',
+  reasonRequired: '请填写原因',
+  revoked: '已撤销',
+} as const;
