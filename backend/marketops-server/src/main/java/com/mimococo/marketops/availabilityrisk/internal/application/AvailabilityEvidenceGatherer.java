@@ -5,6 +5,7 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.ChannelObservatio
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindow;
 import com.mimococo.marketops.availabilityrisk.internal.domain.InboundConsignment;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindowEvidence;
+import com.mimococo.marketops.availabilityrisk.internal.domain.DemandSource;
 import com.mimococo.marketops.availabilityrisk.internal.domain.Sellability;
 import com.mimococo.marketops.availabilityrisk.internal.domain.SupplyDistinctness;
 import com.mimococo.marketops.availabilityrisk.internal.domain.ReturnQualityAssessment;
@@ -13,6 +14,7 @@ import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.Avai
 import com.mimococo.marketops.operatingfacts.AvailabilityObservation;
 import com.mimococo.marketops.operatingfacts.DailySaleTotal;
 import com.mimococo.marketops.operatingfacts.FactWindow;
+import com.mimococo.marketops.operatingfacts.ListingWindowRecord;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.SalesTotals;
@@ -28,11 +30,16 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -180,14 +187,20 @@ public class AvailabilityEvidenceGatherer {
     public List<DemandWindowEvidence> channelDemandWindows(UUID listingVariantId,
                                                            String fulfillmentModeCode,
                                                            boolean modeAttributable,
+                                                           OrderCoverage orders,
                                                            Instant asOf) {
+        if (orders != null) {
+            return orderedChannelWindows(listingVariantId, fulfillmentModeCode, modeAttributable,
+                    orders);
+        }
         List<DemandWindowEvidence> evidence = new ArrayList<>();
         for (DemandWindow window : DemandWindow.values()) {
             FactWindow factWindow = FactWindow.endingAt(asOf, Duration.ofDays(window.days()));
             if (!modeAttributable) {
                 evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
                         factWindow.periodEnd(), null, BigDecimal.ZERO,
-                        DemandWindowEvidence.CensoringReason.SOURCE_STALE, null));
+                        DemandWindowEvidence.CensoringReason.SOURCE_STALE, null,
+                        DemandSource.COMPLETED_SALES, null));
                 continue;
             }
             SalesTotals sales = facts.sales(listingVariantId, SaleStage.COMPLETED, null, factWindow);
@@ -200,14 +213,190 @@ public class AvailabilityEvidenceGatherer {
         return List.copyOf(evidence);
     }
 
+    /**
+     * The days the store's order facts cover and the instant ordered-unit windows end at (P9, Owner
+     * decision 2026-10-02).
+     *
+     * <p>Daily order facts arrive a couple of days late, so a window ending now would always miss its
+     * newest days and read the lag as missing demand. The windows end instead with the newest day the
+     * order facts cover — but never longer ago than the policy lets old evidence stand in for current
+     * ({@code maximumAge}, the carry-forward bound): when the facts stop arriving, the days after the
+     * newest one count against the window until it is censored. A day is covered when any listing of
+     * the store has a record for it; across several stores only the days all of them cover count.
+     *
+     * @param end the exclusive end of every window, a UTC midnight
+     * @param days the covered UTC days
+     */
+    public record OrderCoverage(Instant end, Set<LocalDate> days) {
+
+        public OrderCoverage {
+            days = Set.copyOf(days);
+        }
+
+        /** The window of the given length ending at {@link #end}. */
+        public FactWindow window(DemandWindow window) {
+            return FactWindow.endingAt(end, Duration.ofDays(window.days()));
+        }
+
+        /** The covered days inside a window. */
+        public Set<LocalDate> daysIn(FactWindow window) {
+            Set<LocalDate> inside = new TreeSet<>();
+            for (LocalDate day : days) {
+                Instant start = day.atStartOfDay(ZoneOffset.UTC).toInstant();
+                if (!start.isBefore(window.periodStart()) && start.isBefore(window.periodEnd())) {
+                    inside.add(day);
+                }
+            }
+            return inside;
+        }
+    }
+
+    /** Where the order facts of the given stores leave the windows, as of an instant. */
+    public OrderCoverage orderCoverage(Collection<UUID> storeIds, Instant asOf, Duration maximumAge) {
+        LocalDate today = LocalDate.ofInstant(asOf, ZoneOffset.UTC);
+        LocalDate oldestEnd = today.minusDays(Math.max(0, maximumAge.toDays()));
+        FactWindow lookback = new FactWindow(oldestEnd.minusDays(DemandWindow.D30.days())
+                .atStartOfDay(ZoneOffset.UTC).toInstant(), asOf);
+        LocalDate end = null;
+        Set<LocalDate> covered = null;
+        for (UUID storeId : new TreeSet<>(storeIds)) {
+            List<LocalDate> days = facts.storeOrderDays(storeId, lookback);
+            LocalDate storeEnd = days.isEmpty() ? today
+                    : max(days.get(days.size() - 1).plusDays(1), oldestEnd);
+            end = end == null || storeEnd.isBefore(end) ? storeEnd : end;
+            if (covered == null) {
+                covered = new TreeSet<>(days);
+            } else {
+                covered.retainAll(days);
+            }
+        }
+        return new OrderCoverage((end == null ? today : end).atStartOfDay(ZoneOffset.UTC).toInstant(),
+                covered == null ? Set.of() : covered);
+    }
+
+    private static LocalDate max(LocalDate left, LocalDate right) {
+        return left.isAfter(right) ? left : right;
+    }
+
+    /**
+     * The three ordered-unit windows of one exact channel.
+     *
+     * <p>Units are summed over the covered days, a covered day without a record for the listing
+     * counting as zero. The listing counts as observed only for the time it could sell on a covered
+     * day: an order cannot be read for an uncovered day, and an absent order on a day it could not
+     * sell says nothing about demand.
+     */
+    private List<DemandWindowEvidence> orderedChannelWindows(UUID listingVariantId,
+                                                             String fulfillmentModeCode,
+                                                             boolean modeAttributable,
+                                                             OrderCoverage orders) {
+        List<DemandWindowEvidence> evidence = new ArrayList<>();
+        for (DemandWindow window : DemandWindow.values()) {
+            FactWindow factWindow = orders.window(window);
+            if (!modeAttributable) {
+                evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
+                        factWindow.periodEnd(), null, BigDecimal.ZERO,
+                        DemandWindowEvidence.CensoringReason.SOURCE_STALE, null,
+                        DemandSource.ORDERED_UNITS, null));
+                continue;
+            }
+            Set<LocalDate> covered = orders.daysIn(factWindow);
+            Map<LocalDate, Long> byDay = orderedByDay(listingVariantId, factWindow, covered);
+            Integer units = covered.isEmpty() ? null
+                    : (int) byDay.values().stream().mapToLong(Long::longValue).sum();
+            List<AvailabilityObservation> timeline = facts.availabilityObservations(
+                    listingVariantId, fulfillmentModeCode, factWindow);
+            BigDecimal observed = daysWithin(mergedSaleable(List.of(timeline), factWindow), covered);
+            evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
+                    factWindow.periodEnd(), units, observed,
+                    censoringReason(timeline, observed, factWindow), largestShare(byDay, units),
+                    DemandSource.ORDERED_UNITS, observationBegan(timeline, factWindow)));
+        }
+        return List.copyOf(evidence);
+    }
+
+    /** The company's ordered-unit windows: every channel's orders, observable on any channel. */
+    private List<DemandWindowEvidence> orderedCompanyWindows(List<ChannelSubject> channels,
+                                                             OrderCoverage orders) {
+        List<UUID> listingVariantIds = channels.stream()
+                .map(channel -> channel.observation().platformListingVariantId())
+                .distinct().toList();
+        List<DemandWindowEvidence> evidence = new ArrayList<>();
+        for (DemandWindow window : DemandWindow.values()) {
+            FactWindow factWindow = orders.window(window);
+            Set<LocalDate> covered = orders.daysIn(factWindow);
+            Map<LocalDate, Long> byDay = new HashMap<>();
+            for (UUID listingVariantId : listingVariantIds) {
+                orderedByDay(listingVariantId, factWindow, covered)
+                        .forEach((day, units) -> byDay.merge(day, units, Long::sum));
+            }
+            Integer units = covered.isEmpty() || listingVariantIds.isEmpty() ? null
+                    : (int) byDay.values().stream().mapToLong(Long::longValue).sum();
+            List<List<AvailabilityObservation>> timelines = new ArrayList<>();
+            for (ChannelSubject channel : channels) {
+                ChannelObservation observation = channel.observation();
+                if (!"UNKNOWN".equals(observation.fulfillmentModeCode())) {
+                    timelines.add(facts.availabilityObservations(
+                            observation.platformListingVariantId(),
+                            observation.fulfillmentModeCode(), factWindow));
+                }
+            }
+            BigDecimal observed = daysWithin(mergedSaleable(timelines, factWindow), covered);
+            List<AvailabilityObservation> allObservations = timelines.stream()
+                    .flatMap(List::stream).toList();
+            DemandWindowEvidence.CensoringReason reason = listingVariantIds.isEmpty()
+                    ? DemandWindowEvidence.CensoringReason.SOURCE_STALE
+                    : censoringReason(allObservations, observed, factWindow);
+            evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
+                    factWindow.periodEnd(), units, observed, reason, largestShare(byDay, units),
+                    DemandSource.ORDERED_UNITS, companyObservationBegan(timelines, factWindow)));
+        }
+        return List.copyOf(evidence);
+    }
+
+    /** One listing's ordered units per covered day; a covered day without a record is zero. */
+    private Map<LocalDate, Long> orderedByDay(UUID listingVariantId, FactWindow window,
+                                              Set<LocalDate> covered) {
+        Map<LocalDate, Long> byDay = new HashMap<>();
+        for (LocalDate day : covered) {
+            byDay.put(day, 0L);
+        }
+        for (ListingWindowRecord.DayOrders day : facts.dailyOrderedUnits(listingVariantId, window)) {
+            if (covered.contains(day.day())) {
+                byDay.merge(day.day(), day.orderedUnits(), Long::sum);
+            }
+        }
+        return byDay;
+    }
+
+    /** How much of the saleable time falls on the covered days, in days. */
+    static BigDecimal daysWithin(List<TimeInterval> saleable, Set<LocalDate> covered) {
+        long minutes = 0;
+        for (LocalDate day : covered) {
+            Instant dayStart = day.atStartOfDay(ZoneOffset.UTC).toInstant();
+            Instant dayEnd = dayStart.plus(Duration.ofDays(1));
+            for (TimeInterval interval : saleable) {
+                Instant start = interval.start().isAfter(dayStart) ? interval.start() : dayStart;
+                Instant end = interval.end().isBefore(dayEnd) ? interval.end() : dayEnd;
+                if (end.isAfter(start)) {
+                    minutes += Duration.between(start, end).toMinutes();
+                }
+            }
+        }
+        return BigDecimal.valueOf(minutes).divide(MINUTES_PER_DAY, RATIO);
+    }
+
     /** Retained/return/QC guardrail for one exact listing. */
-    public ReturnQualityAssessment returnQuality(UUID listingVariantId,
+    public ReturnQualityAssessment returnQuality(UUID listingVariantId, UUID storeId,
                                                  ReturnQualityPolicyVersion policy,
                                                  Instant asOf) {
         if (policy == null) {
             return ReturnQualityAssessment.blocked("RETURN_QUALITY_POLICY_UNRESOLVED", true);
         }
         FactWindow window = FactWindow.endingAt(asOf, Duration.ofDays(30));
+        if (nothingSold(listingVariantId, storeId, window)) {
+            return ReturnQualityAssessment.clear();
+        }
         ReturnQualityEvidence authority = facts.returnQualityEvidence(listingVariantId, window,
                 policy.evidenceFreshnessMaximum(), asOf);
         switch (authority.state()) {
@@ -261,6 +450,24 @@ public class AvailabilityEvidenceGatherer {
     }
 
     /**
+     * Whether the listing sold nothing in the window at all (P9, Owner decision 2026-10-02): no
+     * completed sale in the ledger and no unit ordered on any day the store's order facts cover.
+     * Nothing sold means nothing can come back, so there is no return or quality question to hold the
+     * risk on. It takes at least one covered day: with no order facts at all, nothing is known.
+     */
+    private boolean nothingSold(UUID listingVariantId, UUID storeId, FactWindow window) {
+        SalesTotals completed = facts.sales(listingVariantId, SaleStage.COMPLETED, null, window);
+        if (completed.evidence().present() && (!completed.available() || completed.units() > 0)) {
+            return false;
+        }
+        if (storeId == null || facts.storeOrderDays(storeId, window).isEmpty()) {
+            return false;
+        }
+        return facts.dailyOrderedUnits(listingVariantId, window).stream()
+                .mapToLong(ListingWindowRecord.DayOrders::orderedUnits).sum() == 0;
+    }
+
+    /**
      * The three demand windows for the company, summed across every channel.
      *
      * <p>A window is observable for the company when it was observable on any
@@ -268,7 +475,11 @@ public class AvailabilityEvidenceGatherer {
      * available, so the best-covered channel is the honest denominator.
      */
     public List<DemandWindowEvidence> companyDemandWindows(List<ChannelSubject> channels,
+                                                           OrderCoverage orders,
                                                            Instant asOf) {
+        if (orders != null) {
+            return orderedCompanyWindows(channels, orders);
+        }
         List<UUID> listingVariantIds = channels.stream()
                 .map(channel -> channel.observation().platformListingVariantId())
                 .distinct().toList();
@@ -305,7 +516,8 @@ public class AvailabilityEvidenceGatherer {
                     : censoringReason(allObservations, unionObservedDays, factWindow);
             evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
                     factWindow.periodEnd(), units, unionObservedDays, reason,
-                    largestShare(byDay, units)));
+                    largestShare(byDay, units), DemandSource.COMPLETED_SALES,
+                    companyObservationBegan(timelines, factWindow)));
         }
         return List.copyOf(evidence);
     }
@@ -322,7 +534,8 @@ public class AvailabilityEvidenceGatherer {
         }
         return new DemandWindowEvidence(window, factWindow.periodStart(), factWindow.periodEnd(),
                 units, observed, censoringReason(timeline, observed, factWindow),
-                largestShare(byDay, units));
+                largestShare(byDay, units), DemandSource.COMPLETED_SALES,
+                observationBegan(timeline, factWindow));
     }
 
     /**
@@ -359,6 +572,16 @@ public class AvailabilityEvidenceGatherer {
     /** Duration of the union of saleable intervals across every channel/mode. */
     static BigDecimal unionObservedDays(List<List<AvailabilityObservation>> timelines,
                                         FactWindow window) {
+        long minutes = 0;
+        for (TimeInterval interval : mergedSaleable(timelines, window)) {
+            minutes += Duration.between(interval.start(), interval.end()).toMinutes();
+        }
+        return BigDecimal.valueOf(minutes).divide(MINUTES_PER_DAY, RATIO);
+    }
+
+    /** The saleable intervals of every timeline inside the window, merged where they overlap. */
+    static List<TimeInterval> mergedSaleable(List<List<AvailabilityObservation>> timelines,
+                                             FactWindow window) {
         List<TimeInterval> intervals = new ArrayList<>();
         for (List<AvailabilityObservation> timeline : timelines) {
             for (int index = 0; index < timeline.size(); index++) {
@@ -378,7 +601,7 @@ public class AvailabilityEvidenceGatherer {
         }
         intervals.sort(java.util.Comparator.comparing(TimeInterval::start)
                 .thenComparing(TimeInterval::end));
-        long minutes = 0;
+        List<TimeInterval> merged = new ArrayList<>();
         Instant start = null;
         Instant end = null;
         for (TimeInterval interval : intervals) {
@@ -390,18 +613,53 @@ public class AvailabilityEvidenceGatherer {
                     end = interval.end();
                 }
             } else {
-                minutes += Duration.between(start, end).toMinutes();
+                merged.add(new TimeInterval(start, end));
                 start = interval.start();
                 end = interval.end();
             }
         }
         if (start != null) {
-            minutes += Duration.between(start, end).toMinutes();
+            merged.add(new TimeInterval(start, end));
         }
-        return BigDecimal.valueOf(minutes).divide(MINUTES_PER_DAY, RATIO);
+        return merged;
     }
 
     private record TimeInterval(Instant start, Instant end) {
+    }
+
+    /**
+     * When stock and sellability were first both stated inside the window, or {@code null} when
+     * they already were at its start (or never were). A subject first watched inside a window could
+     * not have been watched for all of it, which is a wait rather than a defect.
+     */
+    static Instant observationBegan(List<AvailabilityObservation> timeline, FactWindow window) {
+        for (AvailabilityObservation observation : timeline) {
+            if (observation.observedAt() != null && observation.availableUnits() != null
+                    && !"UNKNOWN".equals(observation.sellable())) {
+                return observation.observedAt().isAfter(window.periodStart())
+                        ? observation.observedAt() : null;
+            }
+        }
+        return null;
+    }
+
+    /** The company's watch began with its earliest channel's, unless one was watched from the start. */
+    static Instant companyObservationBegan(List<List<AvailabilityObservation>> timelines,
+                                           FactWindow window) {
+        Instant earliest = null;
+        for (List<AvailabilityObservation> timeline : timelines) {
+            boolean stated = timeline.stream().anyMatch(observation ->
+                    observation.availableUnits() != null && !"UNKNOWN".equals(observation.sellable()));
+            if (!stated) {
+                continue;
+            }
+            Instant began = observationBegan(timeline, window);
+            if (began == null) {
+                return null;
+            }
+            earliest = earliest == null || began.isBefore(earliest) ? began : earliest;
+        }
+        return earliest;
     }
 
     /** Why observation was incomplete, or {@code null} when it was not. */

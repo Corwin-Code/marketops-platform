@@ -185,6 +185,30 @@ public final class CompanyRiskCalculator {
             blockers.add("COMPANY_SUPPLY_NOT_OBSERVED");
         }
 
+        // A company that provably holds none of the variant now is out of it now,
+        // whatever the demand turns out to be — the same rule as a channel with
+        // nothing on it (Owner decision 2026-10-02: out of stock stays CRITICAL).
+        // Its demand cannot be watched while it holds nothing, so waiting for
+        // demand would turn a stock-out into a data defect.
+        if (complete && supply.present() && supply.provenUnits() == 0) {
+            return new ChildRisk(ChildKind.COMPANY, AvailabilityLane.CRITICAL,
+                    RiskEvidenceState.CONFIRMED, RiskConfidence.HIGH,
+                    shortageCause(observation, asOf, horizonEnd, freshnessMaxMinutes), supply,
+                    demand, leadTime, profit, BigDecimal.ZERO, asOf, ConservativeProof.of(List.of(
+                            ProofTerm.of("COMPANY_PROVEN_ZERO",
+                                    "every company holding is fresh, classified and holds no"
+                                            + " sellable unit", BigDecimal.ZERO))),
+                    List.copyOf(blockers));
+        }
+
+        if (demand.warmingUp()) {
+            blockers.add("COMPANY_DEMAND_WARMING_UP");
+            return new ChildRisk(ChildKind.COMPANY, AvailabilityLane.UNRESOLVED,
+                    RiskEvidenceState.UNKNOWN, RiskConfidence.UNUSABLE,
+                    RiskCause.DEMAND_WARMING_UP, supply, demand, leadTime, profit, null, null,
+                    ConservativeProof.none(), List.copyOf(blockers));
+        }
+
         // Demand is decisive too. An unusable demand answer means the horizon
         // question has no arithmetic, and zero would answer it falsely.
         if (!demand.usable()) {

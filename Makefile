@@ -23,7 +23,8 @@ OPERATOR ?= owner-local
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify ozon-price-write economics-profile ozon-run ozon-resolve ozon-normalize pilot-catalog
+        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify ozon-price-write economics-profile \
+        availability-policies ozon-run ozon-resolve ozon-normalize pilot-catalog
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -112,6 +113,9 @@ ozon-price-write: require-repo-root ## Ozon pilot price write (W1): STEP=probe O
 economics-profile: require-repo-root ## Guardrail: generate the pilot store's economics profile from its tariffs; two Owners verify it
 	@python3 scripts/ozon_pilot.py economics-profile --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
 	  $(if $(DAYS),--days "$(DAYS)")
+
+availability-policies: require-repo-root ## P9: publish the stock and availability policies the Owner decided (Owner sign-in)
+	@python3 scripts/ozon_pilot.py availability-policies --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)"
 
 ozon-run: require-repo-root ## Ozon pilot: run CAPABILITY's job (windowed: DAYS=<n> DATE=<last UTC day>)
 	@python3 scripts/ozon_pilot.py run --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \

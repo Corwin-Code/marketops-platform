@@ -289,7 +289,7 @@ public class AvailabilityQueryRepository {
                         SELECT calculation_id, window_code, period_start, period_end,
                                completed_units, daily_rate, observed_days, coverage_ratio,
                                sample_sufficient, censored, censoring_reason, outlier_share,
-                               eligibility
+                               eligibility, unit_basis
                           FROM mart.demand_window_observation
                          WHERE organization_id = :organizationId
                            AND calculation_id = ANY (:calculationIds)
@@ -310,7 +310,8 @@ public class AvailabilityQueryRepository {
                                 rows.getBoolean("censored"),
                                 rows.getString("censoring_reason"),
                                 rows.getBigDecimal("outlier_share"),
-                                rows.getString("eligibility"))))
+                                rows.getString("eligibility"),
+                                rows.getString("unit_basis"))))
                 .list();
     }
 

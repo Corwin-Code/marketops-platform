@@ -10,6 +10,7 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalcul
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandDecision;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngine;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicySettings;
+import com.mimococo.marketops.availabilityrisk.internal.domain.DemandSource;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindow;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindowEvidence;
 import com.mimococo.marketops.availabilityrisk.internal.domain.InboundConsignment;
@@ -116,6 +117,10 @@ public class AvailabilityRiskCalculationService implements com.mimococo.marketop
         List<AvailabilityEvidenceGatherer.ChannelSubject> subjects =
                 reading.channelSubjects(productVariantId, asOf);
         List<VariantRisk.ScoredChild> children = new ArrayList<>();
+        // Which unit the windows count is the policy version's to say (V0034). Without a version
+        // the windows are still gathered, for display, in the Slice 002 default.
+        DemandSource source = demandSettings == null
+                ? DemandSource.COMPLETED_SALES : demandSettings.demandSource();
 
         for (AvailabilityEvidenceGatherer.ChannelSubject subject : subjects) {
             UUID listingVariantId = subject.observation().platformListingVariantId();
@@ -127,18 +132,21 @@ public class AvailabilityRiskCalculationService implements com.mimococo.marketop
                     && !"UNKNOWN".equals(subject.observation().fulfillmentModeCode());
             List<DemandWindowEvidence> windows =
                     reading.channelDemandWindows(listingVariantId,
-                            subject.observation().fulfillmentModeCode(), modeAttributable, asOf);
+                            subject.observation().fulfillmentModeCode(), modeAttributable,
+                            orderCoverage(reading, source,
+                                    List.of(subject.observation().storeId()), demandSettings,
+                                    asOf), asOf);
             DemandDecision demand = demandSettings == null
                     ? missingDemandPolicy()
                     : DemandPolicyEngine.decide(windows, demandSettings,
                             carriedForward(ChildKind.CHANNEL, organizationId, productVariantId,
                                     listingVariantId,
-                                    subject.observation().fulfillmentModeCode()), asOf);
+                                    subject.observation().fulfillmentModeCode(), source), asOf);
             ProfitAssessment assessment = profit.resolve(listingVariantId, asOf);
             ChildRisk risk = ChannelRiskCalculator.calculate(subject.observation(), demand,
                     leadTime, assessment, freshnessMinutes, asOf);
             ReturnQualityAssessment quality = reading.returnQuality(
-                    listingVariantId, returnQuality, asOf);
+                    listingVariantId, subject.observation().storeId(), returnQuality, asOf);
             if (quality.state() != ReturnQualityAssessment.State.CLEAR) {
                 risk = risk.qualityReview(quality.blockerCode(),
                         quality.state() == ReturnQualityAssessment.State.POLICY_BLOCKED);
@@ -149,12 +157,15 @@ public class AvailabilityRiskCalculationService implements com.mimococo.marketop
         }
 
         List<DemandWindowEvidence> companyWindows =
-                reading.companyDemandWindows(subjects, asOf);
+                reading.companyDemandWindows(subjects,
+                        orderCoverage(reading, source, subjects.stream()
+                                .map(subject -> subject.observation().storeId()).distinct()
+                                .toList(), demandSettings, asOf), asOf);
         DemandDecision companyDemand = demandSettings == null
                 ? missingDemandPolicy()
                 : DemandPolicyEngine.decide(companyWindows, demandSettings,
                         carriedForward(ChildKind.COMPANY, organizationId, productVariantId,
-                                null, null), asOf);
+                                null, null, source), asOf);
         BigDecimal observedCompanyDemand=companyDemand.selectedRate();
         if (scenario!=null) {
             boolean current=companyDemand.evidenceState()==com.mimococo.marketops.availabilityrisk.RiskEvidenceState.CONFIRMED
@@ -256,12 +267,27 @@ public class AvailabilityRiskCalculationService implements com.mimococo.marketop
     private CarriedForwardDemand carriedForward(ChildKind childKind, UUID organizationId,
                                                 UUID productVariantId,
                                                 UUID platformListingVariantId,
-                                                String fulfillmentModeCode) {
+                                                String fulfillmentModeCode,
+                                                DemandSource source) {
         return projection.lastEligibleDemand(organizationId, childKind, productVariantId,
-                        platformListingVariantId, fulfillmentModeCode)
+                        platformListingVariantId, fulfillmentModeCode, source.name())
                 .map(row -> new CarriedForwardDemand(row.dailyRate(),
                         DemandWindow.valueOf(row.windowCode()), row.periodEnd()))
                 .orElse(null);
+    }
+
+    /**
+     * Where the order facts leave ordered-unit windows, or {@code null} when the windows count
+     * completed sales. Old evidence may stand in for current only as long as the policy carries a
+     * last answer forward, so that bound also caps how old the newest covered day may be.
+     */
+    private static AvailabilityEvidenceGatherer.OrderCoverage orderCoverage(
+            AvailabilityEvidenceGatherer reading, DemandSource source, List<UUID> storeIds,
+            DemandPolicySettings settings, Instant asOf) {
+        if (source != DemandSource.ORDERED_UNITS || settings == null) {
+            return null;
+        }
+        return reading.orderCoverage(storeIds, asOf, settings.carryForwardMax());
     }
 
     private static ProfitAssessment strongestProfit(List<VariantRisk.ScoredChild> children) {

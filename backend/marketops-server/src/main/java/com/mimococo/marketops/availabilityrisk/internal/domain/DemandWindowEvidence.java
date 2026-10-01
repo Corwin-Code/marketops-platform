@@ -17,19 +17,25 @@ import java.util.Objects;
  * @param window which window this is
  * @param periodStart inclusive start
  * @param periodEnd exclusive end
- * @param completedUnits completed units observed, or {@code null} when no source answered
+ * @param units units observed in the basis the policy names, or {@code null} when no source answered
  * @param observedDays days on which the listing could actually sell
  * @param censoringReason why observation was incomplete, or {@code null}
  * @param largestSingleDayShare the biggest share one day contributed, or {@code null}
+ * @param basis which unit {@code units} counts
+ * @param observationBegan when stock and sellability were first both stated for the subject, when
+ *        that happened inside this window; {@code null} when they were stated from its start, or
+ *        never
  */
 public record DemandWindowEvidence(
         DemandWindow window,
         Instant periodStart,
         Instant periodEnd,
-        Integer completedUnits,
+        Integer units,
         BigDecimal observedDays,
         CensoringReason censoringReason,
-        BigDecimal largestSingleDayShare) {
+        BigDecimal largestSingleDayShare,
+        DemandSource basis,
+        Instant observationBegan) {
 
     private static final MathContext RATE_CONTEXT = new MathContext(12, RoundingMode.HALF_UP);
 
@@ -38,14 +44,15 @@ public record DemandWindowEvidence(
         Objects.requireNonNull(periodStart, "periodStart");
         Objects.requireNonNull(periodEnd, "periodEnd");
         Objects.requireNonNull(observedDays, "observedDays");
+        Objects.requireNonNull(basis, "basis");
         if (!periodEnd.isAfter(periodStart)) {
             throw new IllegalArgumentException("periodEnd must be after periodStart");
         }
         if (observedDays.signum() < 0) {
             throw new IllegalArgumentException("observedDays cannot be negative");
         }
-        if (completedUnits != null && completedUnits < 0) {
-            throw new IllegalArgumentException("completedUnits cannot be negative");
+        if (units != null && units < 0) {
+            throw new IllegalArgumentException("units cannot be negative");
         }
     }
 
@@ -83,15 +90,15 @@ public record DemandWindowEvidence(
      * demand rate six sevenths lower than the truth.
      */
     public BigDecimal dailyRate() {
-        if (completedUnits == null || observedDays.signum() <= 0) {
+        if (units == null || observedDays.signum() <= 0) {
             return null;
         }
-        return BigDecimal.valueOf(completedUnits).divide(observedDays, RATE_CONTEXT);
+        return BigDecimal.valueOf(units).divide(observedDays, RATE_CONTEXT);
     }
 
     /** Whether any source answered for this window at all. */
     public boolean observed() {
-        return completedUnits != null;
+        return units != null;
     }
 
     /** Whether observation was materially incomplete. */

@@ -72,7 +72,6 @@ export const cardDetailText = {
   contribution: '贡献',
   note: '系统说明',
   window: '窗口',
-  completedUnits: '完成件数',
   unitsValue: (n: number): string => `${String(n)} 件`,
   notObserved: '未观测',
   dailyRate: '日均',

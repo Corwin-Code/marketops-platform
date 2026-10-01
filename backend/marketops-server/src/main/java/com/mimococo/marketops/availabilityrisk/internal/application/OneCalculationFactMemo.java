@@ -57,6 +57,9 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
     private final Map<SalesKey,SalesTotals> sales = new HashMap<>();
     private final Map<WindowKey,List<DailySaleTotal>> dailyUnits = new HashMap<>();
     private final Map<ObservationKey,List<AvailabilityObservation>> observations = new HashMap<>();
+    private final Map<WindowKey,List<com.mimococo.marketops.operatingfacts.ListingWindowRecord.DayOrders>>
+            dailyOrders = new HashMap<>();
+    private final Map<WindowKey,List<java.time.LocalDate>> orderDays = new HashMap<>();
 
     OneCalculationFactMemo(OperatingFactQuery delegate) {
         this.delegate = delegate;
@@ -192,7 +195,16 @@ final class OneCalculationFactMemo implements OperatingFactQuery {
 
     @Override
     public java.util.List<java.time.LocalDate> storeOrderDays(UUID storeId, FactWindow window) {
-        return delegate.storeOrderDays(storeId, window);
+        // Keyed by the store, in the identity slot: every channel of the calculation asks it again.
+        return orderDays.computeIfAbsent(new WindowKey(storeId, window),
+                key -> delegate.storeOrderDays(key.listingVariantId(), key.window()));
+    }
+
+    @Override
+    public java.util.List<com.mimococo.marketops.operatingfacts.ListingWindowRecord.DayOrders> dailyOrderedUnits(
+            UUID platformListingVariantId, FactWindow window) {
+        return dailyOrders.computeIfAbsent(new WindowKey(platformListingVariantId, window),
+                key -> delegate.dailyOrderedUnits(key.listingVariantId(), key.window()));
     }
 
     @Override

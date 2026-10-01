@@ -318,6 +318,16 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public List<com.mimococo.marketops.operatingfacts.ListingWindowRecord.DayOrders> dailyOrderedUnits(
+            UUID platformListingVariantId, FactWindow window) {
+        return facts.dailyOrderedUnits(platformListingVariantId, window.periodStart(), window.periodEnd()).stream()
+                .map(row -> new com.mimococo.marketops.operatingfacts.ListingWindowRecord.DayOrders(
+                        row.day(), row.orderedUnits()))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<com.mimococo.marketops.operatingfacts.SearchDemandSnapshot> searchDemandWithin(
             UUID platformListingVariantId, FactWindow window) {
         return facts.searchDemandWithin(platformListingVariantId, window.periodStart(), window.periodEnd()).stream()

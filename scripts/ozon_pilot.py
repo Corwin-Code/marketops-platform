@@ -3287,6 +3287,83 @@ def command_economics_profile(args: argparse.Namespace) -> int:
     return 0
 
 
+# --- stock and availability policies (P9) -----------------------------------------------
+
+# What the Owner decided on 2026-10-02 for stock and availability risk on the pilot's real data. The
+# values are published as policy versions the Owner owns; changing one is publishing a new version.
+AVAILABILITY_DECISION = "Owner decision 2026-10-02 (P9: stock and availability risk on real data)"
+AVAILABILITY_POLICIES = [
+    # The FBS stock Ozon shows is the company's own deliverable stock; there is no internal warehouse.
+    ("ownership", "FBS stock is the company's deliverable stock", {
+        "fulfillmentModeCode": "SELLER_FULFILLED", "distinctness": "PHYSICALLY_DISTINCT",
+        "mirroredWarehouseId": None}),
+    # Replenishment takes 7 to 14 days; 7 days of safety stock on top.
+    ("lead-time", "replenishment 7-14 days, 7 days of safety stock", {
+        "scopeKind": "ORGANIZATION", "productVariantId": None, "supplierCode": None, "routeCode": None,
+        "categoryCode": None, "leadTimeDaysMin": 7, "leadTimeDaysMax": 14, "safetyDays": 7}),
+    # Ordered units until completed sales exist; a window watched for 70 % of its length with no order
+    # is zero demand. Stock older than 48 hours is stale; a last rate is carried at most 7 days. The
+    # busiest-day share is not reviewed (1 = off): at this volume one order is all of a window.
+    ("demand", "Ozon ordered units as demand; zero orders over a watched window is zero demand", {
+        "demandSource": "ORDERED_UNITS", "minimumSampleUnits": 1, "accelerationRatio": 1.5,
+        "decelerationRatio": 0.5, "outlierShareRatio": 1, "minimumCoverageRatio": 0.7,
+        "carryForwardMaxDays": 7, "stockFreshnessMaxMinutes": 2880}),
+    # Listings that sold nothing pass (decided in code); these thresholds apply once there are sales.
+    ("return-quality", "listings that sold nothing pass; thresholds for when sales exist", {
+        "maximumReturnRatio": 0.5, "minimumRetentionRatio": 0.5, "maximumDefectReturnRatio": 0.05,
+        "evidenceFreshnessMaxMinutes": 10080}),
+    ("priority", "default ranking weights within a lane", {
+        "timeWeight": 0.4, "profitWeight": 0.3, "velocityWeight": 0.2, "lifecycleWeight": 0.1,
+        "confidenceWeight": -0.05}),
+    # CRITICAL opens a case on the pass that finds it, HIGH after three consecutive passes.
+    ("activation", "CRITICAL opens a case at once, HIGH after 3 consecutive passes", {
+        "highSustainedCycles": 3, "criticalActionSlaMinutes": 1440, "highActionSlaMinutes": 4320,
+        "blockerActionSlaMinutes": 2880, "outcomeSlaMinutes": 10080, "verificationWindowMinutes": 1440}),
+]
+
+
+def command_availability_policies(args: argparse.Namespace) -> int:
+    """Publish the stock and availability policies the Owner decided on 2026-10-02 (P9).
+
+    The plan is printed before the Owner signs in, so the sign-in is the confirmation (Ctrl-C publishes
+    nothing). A kind that already has a version in force is left alone: publishing a different value is
+    publishing a new version that supersedes it, in the console or through the API.
+    """
+    pilot = pilot_from(args)
+    admin = Admin(args.api, args.operator)
+    org = organization(admin, args.organization_code)
+    store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
+    if store is None:
+        sys.exit(f"no store {pilot.store_code}; run the setup step first")
+    print(f"Stock and availability policies for organization {org.get('code')}, store {pilot.store_code}:")
+    for kind, summary, values in AVAILABILITY_POLICIES:
+        shown = ", ".join(f"{key}={value}" for key, value in values.items() if value is not None)
+        print(f"  {kind:<15} {summary}\n  {'':<15} {shown}")
+    print("Publishing needs the policy-management grant and a fresh sign-in (Ctrl-C publishes nothing).")
+    owner, token = sign_in(args, "Owner")
+    now = iso(utc_now())
+    published = []
+    for kind, summary, values in AVAILABILITY_POLICIES:
+        body = dict(values)
+        if kind == "ownership":
+            body["storeId"] = store["id"]
+        if kind == "lead-time":
+            body["lastReviewedAt"] = now
+        body.update({"reason": summary, "evidenceReference": AVAILABILITY_DECISION,
+                     "effectiveFrom": now, "effectiveTo": None,
+                     "supersedesPolicyId": None})
+        answer = console_call(args.api, token, "POST", f"/availability/policies/{kind}", body, 200, 409)
+        if isinstance(answer, dict) and answer.get("id"):
+            published.append({"kind": kind, "policy": answer["id"], "version": answer.get("version")})
+            print(f"  {kind:<15} published version {answer.get('version')}")
+        else:
+            published.append({"kind": kind, "policy": None, "left": "a version is already in force"})
+            print(f"  {kind:<15} left alone: a version is already in force")
+    print(json.dumps({"publishedBy": owner, "policies": published}, ensure_ascii=False, indent=2))
+    print("Every product variant is queued for recalculation; the availability worker picks them up.")
+    return 0
+
+
 # --- internal catalogue (plan phase P2) -------------------------------------------------
 
 # The internal catalogue's code rule (core.product.code, core.product_variant.sku_code) and the
@@ -3703,6 +3780,21 @@ def main(argv: list[str] | None = None) -> int:
     profile.add_argument("--oidc-ca-file", help=f"CA for the issuer; default: {LOCAL_OIDC_CA} when present")
     profile.add_argument("--days", type=int, default=30, help="how long the profile stays verified (1-90, default 30)")
     profile.set_defaults(handler=command_economics_profile)
+
+    policies = commands.add_parser("availability-policies",
+                                   help="publish the stock and availability policies the Owner decided (P9)")
+    policies.add_argument("--pilot", default="pilot", help="short code of the pilot account (default: pilot)")
+    policies.add_argument("--api", default="http://127.0.0.1:8080", help="backend base URL")
+    policies.add_argument("--operator", default="owner-local", help="operator recorded in the audit")
+    policies.add_argument("--organization-code", help="organization code when there is more than one")
+    policies.add_argument("--secret-mount", help=argparse.SUPPRESS)
+    policies.add_argument("--evidence-root", help=argparse.SUPPRESS)
+    policies.add_argument("--issuer", default=DEFAULT_ISSUER, help="OIDC issuer")
+    policies.add_argument("--client-id", default=DEFAULT_CLIENT_ID, help="console OIDC client")
+    policies.add_argument("--redirect-uri", default=DEFAULT_REDIRECT_URI, help="registered console redirect URI")
+    policies.add_argument("--audience", default=DEFAULT_AUDIENCE, help="API audience")
+    policies.add_argument("--oidc-ca-file", help=f"CA for the issuer; default: {LOCAL_OIDC_CA} when present")
+    policies.set_defaults(handler=command_availability_policies)
 
     run = commands.add_parser("run", help="queue and execute one manual run of the capability's job")
     common(run)

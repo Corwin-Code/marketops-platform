@@ -1,6 +1,7 @@
 package com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc;
 
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicySettings;
+import com.mimococo.marketops.availabilityrisk.internal.domain.DemandSource;
 import com.mimococo.marketops.availabilityrisk.internal.domain.LeadTimeResolution;
 import com.mimococo.marketops.availabilityrisk.internal.domain.SupplyDistinctness;
 import com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicy;
@@ -101,7 +102,8 @@ public class AvailabilityPolicyRepository {
                         SELECT policy.id, policy.policy_version, policy.minimum_sample_units,
                                policy.acceleration_ratio, policy.deceleration_ratio,
                                policy.outlier_share_ratio, policy.minimum_coverage_ratio,
-                               policy.carry_forward_max_days, policy.stock_freshness_max_minutes
+                               policy.carry_forward_max_days, policy.stock_freshness_max_minutes,
+                               policy.demand_source
                           FROM core.demand_observation_policy AS policy
                          WHERE policy.organization_id = :organizationId
                            AND policy.status IN ('ACTIVE', 'RETIRED')
@@ -120,7 +122,8 @@ public class AvailabilityPolicyRepository {
                         rows.getBigDecimal("outlier_share_ratio"),
                         rows.getBigDecimal("minimum_coverage_ratio"),
                         Duration.ofDays(rows.getInt("carry_forward_max_days")),
-                        Duration.ofMinutes(rows.getInt("stock_freshness_max_minutes"))))
+                        Duration.ofMinutes(rows.getInt("stock_freshness_max_minutes")),
+                        DemandSource.valueOf(rows.getString("demand_source"))))
                 .optional();
     }
 

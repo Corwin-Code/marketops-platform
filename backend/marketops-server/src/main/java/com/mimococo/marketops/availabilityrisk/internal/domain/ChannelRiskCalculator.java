@@ -102,6 +102,13 @@ public final class ChannelRiskCalculator {
             blockers.add("CHANNEL_SELLABILITY_UNKNOWN");
         }
 
+        if (demand.warmingUp()) {
+            blockers.add("CHANNEL_DEMAND_WARMING_UP");
+            return new ChildRisk(ChildKind.CHANNEL, AvailabilityLane.UNRESOLVED,
+                    RiskEvidenceState.UNKNOWN, RiskConfidence.UNUSABLE,
+                    RiskCause.DEMAND_WARMING_UP, supply, demand, leadTime, profit,
+                    null, null, ConservativeProof.none(), List.copyOf(blockers));
+        }
         if (!demand.usable()) {
             blockers.add("CHANNEL_DEMAND_" + demand.evidenceState().name());
             return new ChildRisk(ChildKind.CHANNEL, AvailabilityLane.REVIEW,
