@@ -216,4 +216,70 @@ public class InternalReferenceRepository {
                 .param("now", java.sql.Timestamp.from(now))
                 .update();
     }
+
+    /** A store of the organization, with its currency ({@code null} when it names none). */
+    public Optional<StoreCurrency> storeCurrency(UUID organizationId, UUID storeId) {
+        return jdbc.sql("""
+                        SELECT currency_code FROM core.store
+                         WHERE id = :storeId AND organization_id = :organizationId
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .query((rows, rowNumber) -> new StoreCurrency(rows.getString("currency_code")))
+                .optional();
+    }
+
+    /**
+     * The versions of some finance inputs that apply to a store, its own and the organization's, newest
+     * first: at most {@code limit} of them.
+     */
+    public java.util.List<FinanceInputVersion> financeInputVersions(UUID organizationId, UUID storeId,
+                                                                    java.util.List<String> inputCodes, int limit) {
+        return jdbc.sql("""
+                        SELECT input.id, input.input_code, input.scope_kind, input.value_kind, input.rate_value,
+                               input.amount_value, input.currency_code, input.effective_from, input.effective_to,
+                               input.status, input.reason, provenance.evidence_note, provenance.recorded_by_user_id
+                          FROM core.finance_input_version AS input
+                          JOIN core.fact_provenance AS provenance ON provenance.id = input.provenance_id
+                         WHERE input.organization_id = :organizationId
+                           AND input.input_code IN (:inputCodes)
+                           AND (input.scope_kind = 'ORGANIZATION'
+                                OR (input.scope_kind = 'STORE' AND input.store_ref_id = :storeId))
+                         ORDER BY input.effective_from DESC, input.created_at DESC, input.id DESC
+                         LIMIT :limit
+                        """)
+                .param("organizationId", organizationId)
+                .param("storeId", storeId)
+                .param("inputCodes", inputCodes)
+                .param("limit", limit)
+                .query((rows, rowNumber) -> {
+                    java.sql.Timestamp effectiveTo = rows.getTimestamp("effective_to");
+                    return new FinanceInputVersion(rows.getObject("id", UUID.class), rows.getString("input_code"),
+                            rows.getString("scope_kind"), rows.getString("value_kind"),
+                            rows.getBigDecimal("rate_value"), rows.getBigDecimal("amount_value"),
+                            rows.getString("currency_code"), rows.getTimestamp("effective_from").toInstant(),
+                            effectiveTo == null ? null : effectiveTo.toInstant(), rows.getString("status"),
+                            rows.getString("reason"), rows.getString("evidence_note"),
+                            rows.getObject("recorded_by_user_id", UUID.class));
+                })
+                .list();
+    }
+
+    /** A store and its currency. */
+    public record StoreCurrency(String currencyCode) {
+    }
+
+    /**
+     * One finance input version.
+     *
+     * @param reason why it ended, when it did
+     * @param evidenceNote what the person or file that recorded it said
+     * @param recordedByUserId who entered it, when a person did
+     */
+    public record FinanceInputVersion(UUID id, String inputCode, String scopeKind, String valueKind,
+                                      java.math.BigDecimal rateValue, java.math.BigDecimal amountValue,
+                                      String currencyCode, java.time.Instant effectiveFrom,
+                                      java.time.Instant effectiveTo, String status, String reason,
+                                      String evidenceNote, UUID recordedByUserId) {
+    }
 }

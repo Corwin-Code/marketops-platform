@@ -20,8 +20,10 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +45,9 @@ public class CommercialPolicyService {
 
     static final String POLICY_ENTITY_TYPE = "commercial-policy";
     static final String AUTHORIZATION_ENTITY_TYPE = "policy-authorization";
+
+    /** What a policy can say it is trying to achieve (ops.commercial_policy_objective_ck). */
+    private static final Set<String> LIFECYCLE_OBJECTIVES = Set.of("HERO", "GROWTH", "MATURE", "REPAIR", "EXIT");
 
     private final PolicyRepository policies;
     private final BusinessAuthorization authorization;
@@ -80,6 +85,10 @@ public class CommercialPolicyService {
         }
         String policyCode = MetadataFieldPolicy.requireRegistryCode(draft.policyCode());
         String reason = MetadataFieldPolicy.requireText("reason", draft.reason());
+        if (!LIFECYCLE_OBJECTIVES.contains(draft.lifecycleObjective())) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        requireTypedLimits(draft.limits());
         requireCompleteLimits(draft.limits());
 
         policies.endActiveVersions(actor.organizationId(), policyCode, now);
@@ -105,6 +114,48 @@ public class CommercialPolicyService {
                                 Integer.toString(draft.limits().size()))),
                 reason, null));
         return id;
+    }
+
+    /**
+     * Publish a new version of a store's own policy (Owner decisions 2026-10-01).
+     *
+     * <p>The code is the store's, so publishing one store's version never ends another store's; the
+     * version follows the store's last one and the amounts are in the store's currency.
+     */
+    @Transactional
+    public UUID publishForStore(AuthenticatedActor actor, UUID storeId, String lifecycleObjective,
+                                List<LimitDraft> limits, String reason) {
+        authorization.require(actor, ActionScopeCode.COMMERCIAL_POLICY_MANAGE,
+                ResourceScope.organization(actor.organizationId()));
+        PolicyRepository.StoreScope store = policies.storeScope(actor.organizationId(), storeId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        if (store.currencyCode() == null) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        String policyCode = storePolicyCode(storeId);
+        return publish(actor, new PolicyDraft(policyCode,
+                policies.latestVersion(actor.organizationId(), policyCode) + 1, "STORE", null, storeId, null,
+                lifecycleObjective, store.currencyCode(), limits, reason));
+    }
+
+    /** A store's policy page: the policy in force for its listings, the store's own versions and the vocabulary. */
+    @Transactional(readOnly = true)
+    public StorePolicyView storeView(AuthenticatedActor actor, UUID storeId) {
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(storeId));
+        UUID organizationId = actor.organizationId();
+        PolicyRepository.StoreScope store = policies.storeScope(organizationId, storeId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        Instant now = clock.instant();
+        Optional<PolicyRepository.PolicyDetail> inForce =
+                policies.inForceForStore(organizationId, store.platformCode(), storeId, now);
+        return new StorePolicyView(storeId, now, store.currencyCode(), policies.limitKinds(),
+                inForce.orElse(null), inForce.map(policy -> policies.limits(policy.id())).orElse(List.of()),
+                policies.versions(organizationId, storePolicyCode(storeId)), actor.userId());
+    }
+
+    /** One code per store, so versions of one store's policy never end another's. */
+    static String storePolicyCode(UUID storeId) {
+        return "store-" + storeId;
     }
 
     /**
@@ -187,6 +238,39 @@ public class CommercialPolicyService {
     }
 
     /**
+     * Every limit is one the vocabulary knows, configured once, in the column its kind names and
+     * within its range. A rate stored as an amount would read as unconfigured, and the guardrail
+     * would skip that check without a word.
+     */
+    private void requireTypedLimits(List<LimitDraft> limits) {
+        Map<String, String> valueKinds = policies.limitKinds().stream()
+                .collect(Collectors.toMap(PolicyRepository.LimitKind::code, PolicyRepository.LimitKind::valueKind));
+        Set<String> seen = new HashSet<>();
+        for (LimitDraft limit : limits) {
+            String valueKind = limit == null ? null : valueKinds.get(limit.limitCode());
+            if (valueKind == null || !seen.add(limit.limitCode()) || !typed(limit, valueKind)) {
+                throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+            }
+        }
+    }
+
+    private static boolean typed(LimitDraft limit, String valueKind) {
+        int values = (limit.rateValue() == null ? 0 : 1) + (limit.amountValue() == null ? 0 : 1)
+                + (limit.countValue() == null ? 0 : 1) + (limit.durationSeconds() == null ? 0 : 1);
+        if (values != 1) {
+            return false;
+        }
+        return switch (valueKind) {
+            case "RATE" -> limit.rateValue() != null && limit.rateValue().signum() >= 0
+                    && limit.rateValue().compareTo(BigDecimal.ONE) <= 0;
+            case "AMOUNT" -> limit.amountValue() != null && limit.amountValue().signum() >= 0;
+            case "COUNT" -> limit.countValue() != null && limit.countValue() >= 0;
+            case "DURATION_SECONDS" -> limit.durationSeconds() != null && limit.durationSeconds() >= 0;
+            default -> false;
+        };
+    }
+
+    /**
      * Every limit a price write needs must be present.
      *
      * <p>Checked against the recorded vocabulary rather than a list written
@@ -238,6 +322,21 @@ public class CommercialPolicyService {
      */
     public record LimitDraft(String limitCode, BigDecimal rateValue, BigDecimal amountValue,
                              Integer countValue, Long durationSeconds) {
+    }
+
+    /**
+     * A store's policy page.
+     *
+     * @param currencyCode the store's currency, the one its policy amounts are in
+     * @param inForce the policy the store's listings are checked against now, or {@code null}
+     * @param limits the limits of the policy in force
+     * @param versions the store's own policy versions, newest first
+     * @param viewerId who is asking
+     */
+    public record StorePolicyView(UUID storeId, Instant generatedAt, String currencyCode,
+                                  List<PolicyRepository.LimitKind> limitKinds,
+                                  PolicyRepository.PolicyDetail inForce, List<PolicyRepository.LimitRow> limits,
+                                  List<PolicyRepository.PolicyDetail> versions, UUID viewerId) {
     }
 
     /**

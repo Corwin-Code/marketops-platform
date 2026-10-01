@@ -1,5 +1,7 @@
 import { Link } from 'react-router';
-import { Alert, Space } from 'antd';
+import { Alert, Flex, Space } from 'antd';
+import { CommercialInputsSection } from '../guardrails/CommercialInputsSection';
+import { CommercialPolicySection } from '../guardrails/CommercialPolicySection';
 import { EconomicsProfileSection } from '../guardrails/EconomicsProfileSection';
 import { guardrailsText as text } from '../i18n/zh/guardrails';
 import { pageDescriptions, pages } from '../i18n/zh/shell';
@@ -21,9 +23,12 @@ export function GuardrailsPage({ context, storeId }: ConsolePageProps): React.JS
             <Link to={ROUTES.dataCollection}>{text.openDataCollection}</Link>
           </Space>
         }
-        description={text.policyComing}
       />
-      <EconomicsProfileSection key={storeId} context={context} storeId={storeId} />
+      <Flex vertical gap={16} key={storeId}>
+        <CommercialPolicySection context={context} storeId={storeId} />
+        <CommercialInputsSection context={context} storeId={storeId} />
+        <EconomicsProfileSection context={context} storeId={storeId} />
+      </Flex>
     </Page>
   );
 }
