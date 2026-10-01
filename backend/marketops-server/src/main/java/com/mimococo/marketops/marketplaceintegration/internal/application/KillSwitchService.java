@@ -17,6 +17,7 @@ import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.shared.MetadataFieldPolicy;
 import com.mimococo.marketops.shared.OperationRejectedException;
+import com.mimococo.marketops.shared.ProductionWritePolicy;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -59,6 +60,7 @@ public class KillSwitchService {
     private final PriceCommandRepository commands;
     private final ListingDescriptionCommandRepository descriptionCommands;
     private final BusinessAuthorization authorization;
+    private final ProductionWritePolicy productionWrites;
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
     private final Clock clock;
@@ -67,6 +69,7 @@ public class KillSwitchService {
                       PriceCommandRepository commands,
                       ListingDescriptionCommandRepository descriptionCommands,
                       BusinessAuthorization authorization,
+                      ProductionWritePolicy productionWrites,
                       MetadataAuditRecorder auditRecorder,
                       IdGenerator idGenerator,
                       Clock clock) {
@@ -74,6 +77,7 @@ public class KillSwitchService {
         this.commands = commands;
         this.descriptionCommands = descriptionCommands;
         this.authorization = authorization;
+        this.productionWrites = productionWrites;
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
         this.clock = clock;
@@ -92,12 +96,19 @@ public class KillSwitchService {
      * <p>Gated on a recent authentication because it widens real commercial
      * exposure. The direction that reduces exposure is always available; the
      * direction that increases it is a decision somebody is accountable for.
+     *
+     * <p>Also gated on the deployment's production-write switch, like the
+     * registry's own flag command: a deployment whose writes are off cannot
+     * switch one on from the console either.
      */
     @Transactional
     public UUID enable(AuthenticatedActor actor, String scopeKind, String scopeReference,
                        UUID storeId, String reason) {
         if (!actor.stepUpSatisfiedAt(clock.instant())) {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+        if (!productionWrites.productionWritesEnabled()) {
+            throw OperationRejectedException.of(ErrorCode.PRODUCTION_WRITE_DISABLED);
         }
         return move(actor, scopeKind, scopeReference, storeId, reason, true);
     }
@@ -117,6 +128,9 @@ public class KillSwitchService {
                                               String scopeReference, UUID storeId, String reason) {
         if (!actor.stepUpSatisfiedAt(clock.instant())) {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+        if (!productionWrites.productionWritesEnabled()) {
+            throw OperationRejectedException.of(ErrorCode.PRODUCTION_WRITE_DISABLED);
         }
         return move(actor, LISTING_DESCRIPTION_WRITE_FLAG, "LISTING_DESCRIPTION_CHANGE",
                 scopeKind, scopeReference, storeId, reason, true);

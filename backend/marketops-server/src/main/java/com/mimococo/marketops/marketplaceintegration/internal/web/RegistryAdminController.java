@@ -4,6 +4,7 @@ import com.mimococo.marketops.adminobservability.audit.OperatorAttribution;
 import com.mimococo.marketops.marketplaceintegration.CapabilityDirectory;
 import com.mimococo.marketops.marketplaceintegration.CapabilityUsability;
 import com.mimococo.marketops.marketplaceintegration.internal.application.RegistryService;
+import com.mimococo.marketops.marketplaceintegration.internal.domain.Availability;
 import com.mimococo.marketops.marketplaceintegration.internal.domain.CapabilityAppliesTo;
 import com.mimococo.marketops.marketplaceintegration.internal.domain.CapabilitySubjectStatus;
 import com.mimococo.marketops.marketplaceintegration.internal.domain.PaginationModel;
@@ -202,6 +203,17 @@ class RegistryAdminController {
                 request.marketplaceAccountId(), request.storeId());
     }
 
+    /** Record, with its evidence, whether a verified capability is available for one subject. */
+    @PostMapping(value = "/capability-subject-statuses/{id}/availability",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    CapabilitySubjectStatus recordSubjectAvailability(
+            @RequestAttribute(OperatorAttribution.REQUEST_ATTRIBUTE) String operator,
+            @PathVariable UUID id,
+            @Valid @RequestBody SubjectAvailabilityRequest request) {
+        return registryService.recordSubjectAvailability(operator, id, request.expectedVersion(),
+                request.availability(), request.evidenceRef(), request.verifiedSourceTitle());
+    }
+
     /** Matrix view of one capability's subjects with fail-closed usability. */
     @GetMapping(value = "/capability-subject-statuses",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -330,6 +342,13 @@ class RegistryAdminController {
             @NotNull UUID capabilityId,
             UUID marketplaceAccountId,
             UUID storeId) {
+    }
+
+    record SubjectAvailabilityRequest(
+            long expectedVersion,
+            @NotNull Availability availability,
+            @NotBlank String evidenceRef,
+            @NotBlank String verifiedSourceTitle) {
     }
 
     record RequirementRequest(

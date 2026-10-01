@@ -76,12 +76,22 @@ public class PriceCommandResolutionService {
      * <p>This is the only way out of an unknown result that does not involve a
      * person deciding by hand, and it is why there is no transition from unknown
      * back to executing: the write is never repeated, only observed.
+     *
+     * <p>A mismatch or a command taken over by hand may be read again too (V0031):
+     * a marketplace can apply a price a little after it accepted it, and the
+     * readback that observes it is what lets the command succeed. The command
+     * goes back to waiting for a readback first, which is where the worker
+     * picks the request up.
      */
     @Transactional
     public PriceCommandView readback(AuthenticatedActor actor, UUID commandId, String reason) {
         PriceCommandRepository.CommandRow command = require(actor, commandId);
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
-        if (command.state() != PriceCommandState.UNKNOWN_REQUIRES_READBACK) {
+        if (command.state() == PriceCommandState.READBACK_MISMATCH
+                || command.state() == PriceCommandState.MANUAL_RESOLUTION) {
+            commands.transition(commandId, command.fenceToken(), command.leaseOwner(),
+                    PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
+        } else if (command.state() != PriceCommandState.UNKNOWN_REQUIRES_READBACK) {
             throw OperationRejectedException.of(ErrorCode.COMMAND_STATE_INVALID);
         }
         commands.requestReadback(commandId, command.fenceToken());

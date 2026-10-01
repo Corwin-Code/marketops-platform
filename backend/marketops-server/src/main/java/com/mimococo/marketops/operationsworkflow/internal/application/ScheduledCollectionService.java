@@ -99,6 +99,7 @@ public class ScheduledCollectionService {
     private final AiCopilot copilot;
     private final PriceSuggestionService priceSuggestions;
     private final FeedWatermarkKeeper watermarks;
+    private final CommandOutcomeReconciler commandOutcomes;
     private final MetadataAuditRecorder auditRecorder;
     private final ScheduledCollectionProperties properties;
     private final ObjectMapper objectMapper;
@@ -113,6 +114,7 @@ public class ScheduledCollectionService {
                                AiCopilot copilot,
                                PriceSuggestionService priceSuggestions,
                                FeedWatermarkKeeper watermarks,
+                               CommandOutcomeReconciler commandOutcomes,
                                MetadataAuditRecorder auditRecorder,
                                ScheduledCollectionProperties properties,
                                ObjectMapper objectMapper,
@@ -126,6 +128,7 @@ public class ScheduledCollectionService {
         this.copilot = copilot;
         this.priceSuggestions = priceSuggestions;
         this.watermarks = watermarks;
+        this.commandOutcomes = commandOutcomes;
         this.auditRecorder = auditRecorder;
         this.properties = properties;
         this.objectMapper = objectMapper;
@@ -277,6 +280,7 @@ public class ScheduledCollectionService {
             // The guardrail's freshness first, so the suggestions after a recalculation are previewed
             // against the newest collections.
             refreshWatermarks(policy);
+            reconcileCommandOutcomes(policy);
             recalculated = recalculate(policy, lastCollected, now);
             interpretWeekly(policy, now);
         }
@@ -401,6 +405,18 @@ public class ScheduledCollectionService {
             }
         }
         return recalculated;
+    }
+
+    /** Carry finished price commands back to their proposals; a failure is logged and holds back nothing else. */
+    private void reconcileCommandOutcomes(Policy policy) {
+        try {
+            commandOutcomes.reconcile(policy.storeId());
+        } catch (RuntimeException failed) {
+            log.atWarn().addKeyValue("event", "command_outcomes_failed")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("failureType", failed.getClass().getSimpleName())
+                    .log("Price command outcomes could not be carried back to their proposals");
+        }
     }
 
     /** The guardrail's freshness watermarks; a failure is logged and holds back nothing else. */

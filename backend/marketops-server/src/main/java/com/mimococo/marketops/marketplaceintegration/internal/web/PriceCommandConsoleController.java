@@ -166,6 +166,16 @@ class PriceCommandConsoleController {
                 request.scopeReference(), request.storeId(), request.reason()));
     }
 
+    /**
+     * How far a store is from taking price writes: the deployment's switch, the capability and what
+     * still stands in the way (V0031).
+     */
+    @GetMapping(value = "/stores/{storeId}/write-status", produces = MediaType.APPLICATION_JSON_VALUE)
+    PriceCommandService.WriteStatus writeStatus(AuthenticatedActor actor, @PathVariable UUID storeId) {
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(storeId));
+        return commands.writeStatus(storeId);
+    }
+
     /** Which price-write switches exist and what state they are in. */
     @GetMapping(value = "/kill-switch", produces = MediaType.APPLICATION_JSON_VALUE)
     List<KillSwitchRepository.FlagRow> switches(AuthenticatedActor actor) {

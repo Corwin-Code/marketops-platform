@@ -29,6 +29,7 @@ import { dialog } from '../i18n/zh/common';
 import {
   ACTION_KIND_LABELS,
   FULFILLMENT_MODE_LABELS,
+  GATE_REASON_LABELS,
   GUARDRAIL_DETAIL_LABELS,
   GUARDRAIL_REASON_HINTS,
   GUARDRAIL_REASON_LABELS,
@@ -438,6 +439,8 @@ function ReviewDrawerBody({
    * decision and the price is changed by hand in the back office (Owner decision 2026-10-01).
    */
   const [writeUsable, setWriteUsable] = useState<boolean | undefined>(undefined);
+  /** What stands between this proposal and a platform write, when something does. */
+  const [writeReasons, setWriteReasons] = useState<readonly string[]>([]);
   const [manualDeciding, setManualDeciding] = useState<PriceDecisionKind | undefined>(undefined);
   /** False once the drawer is gone, so a late answer neither navigates nor closes anything. */
   const live = useRef(true);
@@ -517,7 +520,9 @@ function ReviewDrawerBody({
     let active = true;
     void fetchPriceWriteCapability(context, recommendationId).then((outcome) => {
       // A failed check counts as no capability: the approval then only records the decision.
-      if (active) setWriteUsable(outcome.ok && outcome.value);
+      if (!active) return;
+      setWriteUsable(outcome.ok && outcome.value.usable);
+      setWriteReasons(outcome.ok ? outcome.value.reasons : []);
     });
     return () => {
       active = false;
@@ -735,6 +740,7 @@ function ReviewDrawerBody({
         ? text.writeChecking
         : writeBlockedReason;
   const targetPrice = formatMoney(recommendation.proposedParameters.targetPrice ?? null, currency);
+  const writeBlockers = writeReasons.map((code) => codeLabel(GATE_REASON_LABELS, code)).join('、');
   const proposedPrice = formatMoney(preview?.proposedPrice, preview?.currencyCode ?? null);
   const policyVerdict = policyPreview?.preview ?? undefined;
   const policyGuard: WriteGuard | undefined =
@@ -851,7 +857,9 @@ function ReviewDrawerBody({
               impact={<WriteImpact preview={preview} identity={identity} subjectId={subjectId} />}
               {...(guard === undefined ? {} : { guard })}
               consequence={
-                writeUsable === true ? text.consequence : text.manualConsequence(proposedPrice)
+                writeUsable === true
+                  ? text.consequence
+                  : text.manualConsequence(proposedPrice, writeBlockers)
               }
               confirmText={
                 writeUsable === true ? text.confirmPrice(proposedPrice) : text.confirmApprove
@@ -1065,7 +1073,7 @@ function ReviewDrawerBody({
             </div>
           )}
           {authorized && !commandExists && writeUsable === false && (
-            <Alert type="info" showIcon title={text.manualHint(targetPrice)} />
+            <Alert type="info" showIcon title={text.manualHint(targetPrice, writeBlockers)} />
           )}
           <Descriptions bordered size="small" column={{ xs: 1, md: 2 }} items={summaryItems} />
 

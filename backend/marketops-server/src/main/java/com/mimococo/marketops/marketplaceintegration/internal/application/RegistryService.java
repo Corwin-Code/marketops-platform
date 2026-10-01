@@ -544,6 +544,47 @@ public class RegistryService {
         return status;
     }
 
+    /**
+     * Record, with its evidence, whether a verified capability is available for one subject (V0031).
+     *
+     * <p>Until now a subject's availability started UNKNOWN and could not move, so the price write gate
+     * refused every store. Only a verified capability can be declared AVAILABLE, and every declaration
+     * other than UNKNOWN carries its evidence, as the schema demands; UNAVAILABLE needs no verified
+     * capability, because withdrawing availability must always be possible.
+     */
+    @Transactional
+    public CapabilitySubjectStatus recordSubjectAvailability(String operator, UUID statusId, long expectedVersion,
+                                                             Availability availability, String evidenceRef,
+                                                             String verifiedSourceTitle) {
+        CapabilitySubjectStatus current = subjectStatuses.findById(
+                        Objects.requireNonNullElse(statusId, new UUID(0, 0)))
+                .orElseThrow(() -> OperationRejectedException.forEntity(ErrorCode.RESOURCE_NOT_FOUND,
+                        AuditSourceDomain.MARKETPLACE_INTEGRATION.dbValue(), SUBJECT_STATUS_ENTITY_TYPE,
+                        statusId, null));
+        if (availability == null || availability == Availability.UNKNOWN) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        String validEvidence = MetadataFieldPolicy.requireText("evidenceRef", evidenceRef);
+        String validTitle = MetadataFieldPolicy.requireText("verifiedSourceTitle", verifiedSourceTitle);
+        if (availability == Availability.AVAILABLE
+                && requireCapability(current.capabilityId()).verificationState() != VerificationState.VERIFIED) {
+            throw OperationRejectedException.forEntity(ErrorCode.INVALID_STATE_TRANSITION,
+                    AuditSourceDomain.MARKETPLACE_INTEGRATION.dbValue(), SUBJECT_STATUS_ENTITY_TYPE,
+                    current.id(), null);
+        }
+        Instant now = clock.instant();
+        if (!subjectStatuses.recordAvailability(current.id(), expectedVersion, availability.name(), now,
+                validEvidence, validTitle)) {
+            throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+        }
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.MARKETPLACE_INTEGRATION, operator, AuditAction.STATUS_CHANGE,
+                SUBJECT_STATUS_ENTITY_TYPE, current.id(), null,
+                Map.of("availability", new FieldChange(current.availability().name(), availability.name())),
+                validEvidence, null));
+        return subjectStatuses.findById(current.id()).orElseThrow();
+    }
+
     /** Register one platform permission-requirement evidence row. */
     @Transactional
     public PermissionRequirement createRequirement(String operator,

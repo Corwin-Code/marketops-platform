@@ -122,6 +122,67 @@ public class PriceCommandRepository {
                 .optional();
     }
 
+    /** The registered price-change capability of one marketplace, whether verified or not. */
+    public Optional<UUID> registeredPriceChangeCapability(String platformCode) {
+        return jdbc.sql("""
+                        SELECT id FROM platform.platform_capability
+                         WHERE platform_code = :platformCode
+                           AND capability_code = 'price-change'
+                           AND read_write_class = 'WRITE'
+                           AND status = 'ACTIVE'
+                           AND deprecated_at IS NULL
+                        """)
+                .param("platformCode", platformCode)
+                .query(UUID.class)
+                .optional();
+    }
+
+    /** The price-change capability of a store's marketplace, verified or not, with its verification state. */
+    public Optional<StoreCapability> storePriceCapability(UUID storeId) {
+        return jdbc.sql("""
+                        SELECT capability.id, capability.verification_state
+                          FROM core.store AS store
+                          JOIN core.marketplace_account AS account ON account.id = store.marketplace_account_id
+                          JOIN platform.platform_capability AS capability
+                            ON capability.platform_code = account.platform_code
+                         WHERE store.id = :storeId
+                           AND capability.capability_code = 'price-change'
+                           AND capability.read_write_class = 'WRITE'
+                           AND capability.status = 'ACTIVE'
+                           AND capability.deprecated_at IS NULL
+                        """)
+                .param("storeId", storeId)
+                .query((rows, rowNumber) -> new StoreCapability(rows.getObject("id", UUID.class),
+                        rows.getString("verification_state")))
+                .optional();
+    }
+
+    /** The marketplace a store sells on. */
+    public Optional<String> storePlatform(UUID storeId) {
+        return jdbc.sql("""
+                        SELECT account.platform_code
+                          FROM core.store AS store
+                          JOIN core.marketplace_account AS account ON account.id = store.marketplace_account_id
+                         WHERE store.id = :storeId
+                        """)
+                .param("storeId", storeId)
+                .query(String.class)
+                .optional();
+    }
+
+    /** A store's price-change capability and how far it is verified. */
+    public record StoreCapability(UUID capabilityId, String verificationState) {
+    }
+
+    /** What stands between a listing variant (or the store) and a price write (ops.price_write_readiness). */
+    public List<String> priceWriteReadiness(UUID storeId, UUID listingVariantId) {
+        return jdbc.sql("SELECT unnest(ops.price_write_readiness(:store, CAST(:variant AS uuid)))")
+                .param("store", storeId)
+                .param("variant", listingVariantId)
+                .query(String.class)
+                .list();
+    }
+
     /** Claim a command an operator authorised a restore for. */
     public long leaseCompensation(UUID commandId, String leaseOwner, int leaseSeconds) {
         return jdbc.sql("SELECT ops.lease_price_compensation(:commandId, :owner, :seconds)")
