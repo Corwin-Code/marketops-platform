@@ -73,6 +73,7 @@ import stat
 import sys
 import tempfile
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -2848,6 +2849,30 @@ def readback_observation(answer: dict | None,
     return decimal.Decimal(text), currency, None
 
 
+def typed_confirmation(prompt: str, expected: str) -> bool:
+    """Whether a person typed ``expected`` after the prompt appeared.
+
+    Anything already waiting in the terminal is discarded first: a pasted command often carries a
+    trailing line break, and that empty line must not answer the question. Full-width characters an
+    input method produces count as their plain forms.
+    """
+    try:
+        import termios
+        if sys.stdin.isatty():
+            termios.tcflush(sys.stdin, termios.TCIFLUSH)
+    except (ImportError, OSError):
+        pass
+    try:
+        typed = unicodedata.normalize("NFKC", input(prompt)).strip()
+    except EOFError:
+        print("\nnothing sent: no one could type the confirmation; run the probe in an interactive terminal")
+        return False
+    if typed == expected:
+        return True
+    print("nothing sent: nothing was typed" if not typed else f"nothing sent: {typed!r} is not {expected}")
+    return False
+
+
 def subject_status(admin: Admin, capability_id: str, store_id: str) -> dict | None:
     """The store's subject row of a capability, when it is declared."""
     views = admin.require("GET", f"/capability-subject-statuses?capabilityId={capability_id}&limit=50", None, 200)
@@ -2923,13 +2948,7 @@ def price_write_probe(args: argparse.Namespace) -> int:
     print(f"The same-price write sends POST {OZON_BASE_URL}{PRICE_APPLY_PATH} with exactly:\n  {apply_body.decode()}")
     print("This is a real write to the store. It sets the price the listing already has, so nothing a buyer "
           "sees changes; it counts toward the 10 price changes an hour Ozon allows a product.")
-    try:
-        typed = input(f"Type the offer id ({args.offer}) to send it, anything else stops: ").strip()
-    except EOFError:
-        print("\nnothing sent: no one could type the confirmation; run the probe in an interactive terminal")
-        return 1
-    if typed != args.offer:
-        print("nothing sent")
+    if not typed_confirmation(f"Type the offer id ({args.offer}) to send it, anything else stops: ", args.offer):
         return 1
 
     apply_page, applied = call(PRICE_APPLY_PATH, apply_body, "apply")
