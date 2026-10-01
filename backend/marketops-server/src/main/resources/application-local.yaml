@@ -18,6 +18,11 @@ marketops:
   # its Owner puts scheduled collection in force in the console.
   data-collection:
     enabled: ${MARKETOPS_DATA_COLLECTION_ENABLED:true}
+  # The Owner authorized the platform's write capabilities on 2026-10-01: the workstation
+  # may turn write switches on. Nothing is written by this alone; every price write still
+  # needs a verified capability, the switches, the allowlist, an approval and the gate.
+  production-writes:
+    enabled: ${MARKETOPS_PRODUCTION_WRITES_ENABLED:true}
   # Secrets are read from a directory outside the repository. The model key
   # lives at <mount>/ai/dashscope-api-key; `make ai-provider` installs it.
   secrets:
