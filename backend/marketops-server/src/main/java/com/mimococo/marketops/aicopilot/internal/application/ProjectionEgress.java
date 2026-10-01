@@ -163,21 +163,27 @@ final class ProjectionEgress {
     }
 
     /** The detail keys of each rule that may be sent, and how each is written. */
-    private static final Map<String, Map<String, Kind>> DETAIL_KEYS = Map.of(
-            "PRICE_GAP_REDUCIBLE", priceGapKeys(),
-            "PRICE_GAP_PARTIAL", priceGapKeys(),
-            "PRICE_GAP_STRUCTURAL", priceGapKeys(),
-            "DEMAND_NOT_CONVERTING", keys("searchUsers", Kind.COUNT, "orderedUnits", Kind.COUNT,
-                    "platformAvailableUnits", Kind.COUNT, "demandSearchUsersFloor", Kind.COUNT),
-            "LOW_SEARCH_EXPOSURE", keys("searchUsers", Kind.COUNT, "platformAvailableUnits", Kind.COUNT,
-                    "lowExposureSearchUsers", Kind.COUNT),
-            "CONTENT_BELOW_TARGET", keys("contentRating", Kind.SCORE, "contentRatingFloor", Kind.SCORE),
-            "LISTING_NOT_SELLABLE", keys("listingSellable", Kind.YES_NO),
-            "STOCKOUT_RISK", keys("platformAvailableUnits", Kind.COUNT, "stockCoverDays", Kind.COUNT,
-                    "stockCoverDaysFloor", Kind.COUNT),
-            "PROMOTION_OPPORTUNITY", keys("promotionMargin", Kind.RATIO, "minimumUnitMarginRate", Kind.RATIO),
-            "PRICE_HEADROOM", keys("searchUsers", Kind.COUNT, "projectedUnitMargin", Kind.RATIO,
-                    "minimumUnitMarginRate", Kind.RATIO, "priceRoom", Kind.RATIO));
+    private static final Map<String, Map<String, Kind>> DETAIL_KEYS = Map.ofEntries(
+            Map.entry("PRICE_GAP_REDUCIBLE", priceGapKeys()),
+            Map.entry("PRICE_GAP_PARTIAL", priceGapKeys()),
+            Map.entry("PRICE_GAP_STRUCTURAL", priceGapKeys()),
+            Map.entry("DEMAND_NOT_CONVERTING", keys("searchUsers", Kind.COUNT, "orderedUnits", Kind.COUNT,
+                    "platformAvailableUnits", Kind.COUNT, "demandSearchUsersFloor", Kind.COUNT)),
+            Map.entry("LOW_SEARCH_EXPOSURE", keys("searchUsers", Kind.COUNT, "platformAvailableUnits", Kind.COUNT,
+                    "lowExposureSearchUsers", Kind.COUNT)),
+            Map.entry("CONTENT_BELOW_TARGET", keys("contentRating", Kind.SCORE, "contentRatingFloor", Kind.SCORE)),
+            Map.entry("LISTING_NOT_SELLABLE", keys("listingSellable", Kind.YES_NO)),
+            Map.entry("STOCKOUT_RISK", keys("platformAvailableUnits", Kind.COUNT, "stockCoverDays", Kind.COUNT,
+                    "stockCoverDaysFloor", Kind.COUNT)),
+            Map.entry("PROMOTION_OPPORTUNITY", keys("promotionMargin", Kind.RATIO,
+                    "minimumUnitMarginRate", Kind.RATIO)),
+            Map.entry("PRICE_HEADROOM", keys("searchUsers", Kind.COUNT, "projectedUnitMargin", Kind.RATIO,
+                    "minimumUnitMarginRate", Kind.RATIO, "priceRoom", Kind.RATIO)),
+            // Both prices are what buyers were offered on the marketplace; the rise is named after
+            // the comparison it makes, so it is not attached to another price.
+            Map.entry("BUYER_PRICE_JUMP", keys("buyerPrice", Kind.PRICE, "recentLowBuyerPrice", Kind.PRICE,
+                    "riseOverRecentLow", Kind.RATIO, "buyerPriceJumpMinimumRate", Kind.RATIO,
+                    "lookbackDays", Kind.COUNT)));
 
     private enum Kind { COUNT, RATIO, SIGNED_RATIO, SCORE, YES_NO, PRICE }
 

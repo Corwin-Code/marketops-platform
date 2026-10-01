@@ -84,6 +84,56 @@ public class FactQueryRepository {
     }
 
     /**
+     * The price observation whose buyer price (the promotion price when there is one, the selling
+     * price otherwise) was lowest from an inclusive instant to an exclusive one, among those in the
+     * currency of the newest observation before that end; the newest of equal lows.
+     */
+    public Optional<PriceRow> lowestBuyerPrice(UUID listingVariantId, Instant from, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT price.id, price.observed_at, price.currency_code,
+                               price.list_price, price.selling_price, price.discount_price,
+                               price.promotion_active, price.provenance_id,
+                               provenance.source_time
+                          FROM core.listing_price_observation AS price
+                          JOIN core.fact_provenance AS provenance
+                            ON provenance.id = price.provenance_id
+                         WHERE price.platform_listing_variant_id = :listingVariantId
+                           AND price.observed_at >= :from AND price.observed_at < :asOf
+                           AND coalesce(price.discount_price, price.selling_price) > 0
+                           AND price.currency_code = (
+                               SELECT newest.currency_code
+                                 FROM core.listing_price_observation AS newest
+                                WHERE newest.platform_listing_variant_id = :listingVariantId
+                                  AND newest.observed_at < :asOf
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_price_observation", "newest")
+                        + """
+                                ORDER BY newest.observed_at DESC, newest.id DESC
+                                LIMIT 1)
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_price_observation", "price")
+                        + """
+                         ORDER BY coalesce(price.discount_price, price.selling_price),
+                                  price.observed_at DESC, price.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new PriceRow(
+                        rows.getObject("id", UUID.class),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("currency_code"),
+                        rows.getBigDecimal("list_price"),
+                        rows.getBigDecimal("selling_price"),
+                        rows.getBigDecimal("discount_price"),
+                        rows.getString("promotion_active"),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .optional();
+    }
+
+    /**
      * The most recent price before an exclusive instant with its competitor
      * price, seller cost and tariffs.
      */
@@ -1185,6 +1235,58 @@ public class FactQueryRepository {
                 .param("storeId", storeId)
                 .param("asOf", Timestamp.from(asOf))
                 .param("freshFrom", Timestamp.from(asOf.minus(PROMOTION_SNAPSHOT_LIFETIME)))
+                .query((rows, rowNumber) -> new PromotionRow(
+                        rows.getObject("platform_promotion_id", UUID.class),
+                        rows.getString("native_promotion_key"),
+                        rows.getTimestamp("observed_at").toInstant(),
+                        rows.getString("title"),
+                        rows.getString("promotion_kind"),
+                        rows.getString("description"),
+                        instantOrNull(rows, "starts_at"),
+                        instantOrNull(rows, "ends_at"),
+                        instantOrNull(rows, "freezes_at"),
+                        (Integer) rows.getObject("candidate_count"),
+                        (Integer) rows.getObject("participant_count"),
+                        (Integer) rows.getObject("banned_count"),
+                        (Boolean) rows.getObject("participating"),
+                        (Boolean) rows.getObject("voucher"),
+                        (Boolean) rows.getObject("targeted"),
+                        rows.getString("discount_kind"),
+                        rows.getBigDecimal("discount_value"),
+                        rows.getObject("provenance_id", UUID.class),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
+    /**
+     * The store's promotions whose newest observation before an exclusive instant says they ended
+     * from an inclusive instant up to that one, each as that observation described it; newest end
+     * first.
+     */
+    public List<PromotionRow> endedPromotions(UUID storeId, Instant from, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT ended.*
+                          FROM (SELECT DISTINCT ON (observation.platform_promotion_id)
+                                       observation.platform_promotion_id, promotion.native_promotion_key,
+                                       observation.observed_at, observation.title, observation.promotion_kind,
+                                       observation.description, observation.starts_at, observation.ends_at,
+                                       observation.freezes_at, observation.candidate_count,
+                                       observation.participant_count, observation.banned_count,
+                                       observation.participating, observation.voucher, observation.targeted,
+                                       observation.discount_kind, observation.discount_value,
+                                       observation.provenance_id, provenance.source_time
+                                  FROM core.promotion_observation AS observation
+                                  JOIN core.platform_promotion AS promotion
+                                    ON promotion.id = observation.platform_promotion_id
+                                  JOIN core.fact_provenance AS provenance ON provenance.id = observation.provenance_id
+                                 WHERE promotion.store_id = :storeId AND observation.observed_at < :asOf
+                                 ORDER BY observation.platform_promotion_id, observation.observed_at DESC) AS ended
+                         WHERE ended.ends_at >= :from AND ended.ends_at < :asOf
+                         ORDER BY ended.ends_at DESC, ended.native_promotion_key
+                        """)
+                .param("storeId", storeId)
+                .param("from", Timestamp.from(from))
+                .param("asOf", Timestamp.from(asOf))
                 .query((rows, rowNumber) -> new PromotionRow(
                         rows.getObject("platform_promotion_id", UUID.class),
                         rows.getString("native_promotion_key"),

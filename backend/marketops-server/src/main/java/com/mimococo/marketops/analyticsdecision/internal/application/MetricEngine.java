@@ -21,6 +21,7 @@ import com.mimococo.marketops.operatingfacts.FinanceInputSnapshot;
 import com.mimococo.marketops.operatingfacts.InternalStockSnapshot;
 import com.mimococo.marketops.operatingfacts.ListingPriceTerms;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
+import com.mimococo.marketops.operatingfacts.PriceSnapshot;
 import com.mimococo.marketops.operatingfacts.PromotionSnapshot;
 import com.mimococo.marketops.operatingfacts.ReturnTotals;
 import com.mimococo.marketops.operatingfacts.SaleStage;
@@ -268,12 +269,15 @@ public class MetricEngine {
                         merge(completed.evidence(),
                                 evidenceOf(metrics.get(
                                         MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT)))));
-        facts.latestPrice(listingVariantId, periodEnd).ifPresentOrElse(
+        Optional<PriceSnapshot> newestPrice =
+                facts.latestPrice(listingVariantId, periodEnd);
+        newestPrice.ifPresentOrElse(
                 price -> putMoney(metrics, MetricCode.OBSERVED_SELLING_PRICE,
                         price.effectivePrice(), price.evidence()),
                 () -> metrics.put(MetricCode.OBSERVED_SELLING_PRICE,
                         absent(MetricCode.OBSERVED_SELLING_PRICE,
                                 ConfidenceState.INCOMPLETE)));
+        recentLowBuyerPrice(metrics, listingVariantId, periodEnd, newestPrice);
         PriceEconomicsCalculator.Solution priceSolution = solvePrices(
                 economicsResolution, metrics);
         metrics.put(MetricCode.BREAK_EVEN_PRICE, projectedPriceMetric(
@@ -341,6 +345,30 @@ public class MetricEngine {
         Optional<ListingUnitEconomics.Scheme> scheme = scheme(storeFulfillmentModes, stock);
         unitEconomics(metrics, terms, scheme, unitCost);
         promotionMargin(metrics, storeId, listingVariantId, periodEnd, terms, scheme, unitCost);
+    }
+
+    /**
+     * The lowest price a buyer was offered in the configured lookback before the window end, which
+     * the buyer price jump rule compares the newest buyer price with. It cites the lowest and the
+     * newest observation and is as fresh as the newest: an old low is the point of the comparison,
+     * not stale data. Not available without a lookback, a newest price or a low in its currency.
+     */
+    private void recentLowBuyerPrice(Map<MetricCode, ComputedMetric> metrics, UUID listingVariantId,
+                                     Instant periodEnd,
+                                     Optional<PriceSnapshot> newest) {
+        MetricCode code = MetricCode.RECENT_LOW_BUYER_PRICE;
+        Integer days = properties.getThresholds().getBuyerPriceJumpLookbackDays();
+        Optional<PriceSnapshot> low = days == null || days < 1
+                || newest.isEmpty() ? Optional.empty()
+                : facts.lowestBuyerPrice(listingVariantId, periodEnd.minus(Duration.ofDays(days)), periodEnd);
+        if (newest.isEmpty() || low.isEmpty()) {
+            metrics.put(code, absent(code, ConfidenceState.INCOMPLETE));
+            return;
+        }
+        List<UUID> cited = new ArrayList<>(low.get().evidence().provenanceIds());
+        newest.get().evidence().provenanceIds().stream().filter(id -> !cited.contains(id)).forEach(cited::add);
+        putMoney(metrics, code, low.get().effectivePrice(),
+                FactEvidence.of(cited, newest.get().evidence().oldestSourceTime()));
     }
 
     /**

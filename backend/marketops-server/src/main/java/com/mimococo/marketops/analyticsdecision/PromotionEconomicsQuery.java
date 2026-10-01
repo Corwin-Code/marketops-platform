@@ -22,6 +22,13 @@ public interface PromotionEconomicsQuery {
     List<PromotionEconomics> forStore(UUID organizationId, UUID storeId, Instant asOf);
 
     /**
+     * The store's promotions that ended from an inclusive instant up to an exclusive one, as their
+     * newest snapshot described them; a promotion the store took part in can explain a buyer price
+     * that rose when it ended.
+     */
+    List<PromotionSnapshot> endedForStore(UUID organizationId, UUID storeId, Instant from, Instant asOf);
+
+    /**
      * One promotion and its products.
      *
      * @param minimumMarginRate the margin floor the verdicts compare with, or {@code null} when unset

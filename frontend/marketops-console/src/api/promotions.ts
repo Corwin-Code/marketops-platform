@@ -94,6 +94,68 @@ export function fetchStorePromotions(
   );
 }
 
+/** One promotion that ended, as its newest snapshot described it. */
+export interface EndedPromotion {
+  readonly promotionId: string;
+  readonly nativePromotionKey: string;
+  readonly title: string | null;
+  readonly promotionKind: string | null;
+  readonly startsAt: string | null;
+  readonly endsAt: string;
+  /** Whether the store took part, as that snapshot said. */
+  readonly participating: boolean | null;
+  readonly participantCount: number | null;
+}
+
+/** The store's promotions that ended in the last days, newest end first. */
+export interface EndedPromotions {
+  readonly from: string;
+  readonly to: string;
+  readonly promotions: readonly EndedPromotion[];
+}
+
+/** Load the store's promotions that ended in the last `days` days. */
+export function fetchEndedPromotions(
+  context: ConsoleRequest,
+  storeId: string,
+  days: number,
+): Promise<ConsoleOutcome<EndedPromotions>> {
+  return request(
+    context,
+    `/api/v1/console/diagnosis/stores/${encodeURIComponent(storeId)}/promotions/ended?days=${String(days)}`,
+    parseEndedPromotions,
+  );
+}
+
+/** Validate an answer; anything that does not match the contract is `undefined`. */
+export function parseEndedPromotions(body: unknown): EndedPromotions | undefined {
+  if (!isRecord(body) || !Array.isArray(body.promotions)) return undefined;
+  const from = text(body.from);
+  const to = text(body.to);
+  if (from === undefined || to === undefined) return undefined;
+  const promotions: EndedPromotion[] = [];
+  for (const value of body.promotions) {
+    if (!isRecord(value)) return undefined;
+    const promotionId = text(value.promotionId);
+    const nativePromotionKey = text(value.nativePromotionKey);
+    const endsAt = text(value.endsAt);
+    if (promotionId === undefined || nativePromotionKey === undefined || endsAt === undefined) {
+      return undefined;
+    }
+    promotions.push({
+      promotionId,
+      nativePromotionKey,
+      title: optionalText(value.title),
+      promotionKind: optionalText(value.promotionKind),
+      startsAt: optionalText(value.startsAt),
+      endsAt,
+      participating: flag(value.participating),
+      participantCount: integer(value.participantCount),
+    });
+  }
+  return { from, to, promotions };
+}
+
 /** Validate an answer; anything that does not match the contract is `undefined`. */
 export function parseStorePromotions(body: unknown): StorePromotions | undefined {
   if (!isRecord(body) || !Array.isArray(body.promotions)) return undefined;

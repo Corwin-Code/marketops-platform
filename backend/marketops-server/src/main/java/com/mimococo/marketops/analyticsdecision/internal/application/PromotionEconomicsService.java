@@ -56,6 +56,12 @@ class PromotionEconomicsService implements PromotionEconomicsQuery {
         return result;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromotionSnapshot> endedForStore(UUID organizationId, UUID storeId, Instant from, Instant asOf) {
+        return facts.endedPromotions(storeId, from, asOf);
+    }
+
     private static ItemEconomics economics(PromotionSnapshot.Item item, ListingEconomicsInputs.Inputs inputs,
                                            BigDecimal floor) {
         List<String> missing = new ArrayList<>(inputs.missing());

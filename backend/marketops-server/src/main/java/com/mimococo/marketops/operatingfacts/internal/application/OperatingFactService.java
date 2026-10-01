@@ -79,6 +79,19 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<PriceSnapshot> lowestBuyerPrice(UUID platformListingVariantId, Instant from, Instant asOf) {
+        return facts.lowestBuyerPrice(platformListingVariantId, from, asOf).map(row -> new PriceSnapshot(
+                row.id(),
+                row.observedAt(),
+                money(row.listPrice(), row.currencyCode()),
+                money(row.sellingPrice(), row.currencyCode()),
+                money(row.discountPrice(), row.currencyCode()),
+                row.promotionActive(),
+                FactEvidence.of(List.of(row.provenanceId()), row.sourceTime())));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<com.mimococo.marketops.operatingfacts.ListingPriceTerms> latestPriceTerms(
             UUID platformListingVariantId, Instant asOf) {
         return facts.latestPriceTerms(platformListingVariantId, asOf).map(row ->
@@ -208,6 +221,23 @@ public class OperatingFactService implements OperatingFactQuery {
                     row.discountValue(), items.getOrDefault(row.promotionId(), List.of()),
                     FactEvidence.of(provenance.stream().distinct().toList(), row.sourceTime()));
         }).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<com.mimococo.marketops.operatingfacts.PromotionSnapshot> endedPromotions(UUID storeId, Instant from,
+                                                                                       Instant asOf) {
+        if (storeId == null) {
+            return List.of();
+        }
+        return facts.endedPromotions(storeId, from, asOf).stream()
+                .map(row -> new com.mimococo.marketops.operatingfacts.PromotionSnapshot(row.promotionId(),
+                        row.nativePromotionKey(), row.observedAt(), row.title(), row.promotionKind(), row.description(),
+                        row.startsAt(), row.endsAt(), row.freezesAt(), row.candidateCount(), row.participantCount(),
+                        row.bannedCount(), row.participating(), row.voucher(), row.targeted(), row.discountKind(),
+                        row.discountValue(), List.of(),
+                        FactEvidence.of(List.of(row.provenanceId()), row.sourceTime())))
+                .toList();
     }
 
     private static com.mimococo.marketops.operatingfacts.ListingContentSnapshot.RatingGroup ratingGroup(

@@ -55,6 +55,7 @@ public class DiagnosisEngine {
     private static final String CONTENT_BELOW_TARGET = "CONTENT_BELOW_TARGET";
     private static final String PROMOTION_OPPORTUNITY = "PROMOTION_OPPORTUNITY";
     private static final String PRICE_HEADROOM = "PRICE_HEADROOM";
+    private static final String BUYER_PRICE_JUMP = "BUYER_PRICE_JUMP";
 
     /** The version of every rule this release evaluates. */
     public static final int RULE_VERSION = 1;
@@ -105,6 +106,7 @@ public class DiagnosisEngine {
         outcomes.add(evaluateContentBelowTarget(metrics));
         outcomes.add(evaluatePromotionOpportunity(metrics));
         outcomes.add(evaluatePriceHeadroom(metrics));
+        outcomes.add(evaluateBuyerPriceJump(metrics));
         return List.copyOf(outcomes);
     }
 
@@ -362,6 +364,46 @@ public class DiagnosisEngine {
         return demand && headroom
                 ? RuleOutcome.triggered(PRICE_HEADROOM, DiagnosisFindingView.Severity.INFO, detail, read)
                 : RuleOutcome.clear(PRICE_HEADROOM, detail, read);
+    }
+
+    /**
+     * The buyer price is well above the lowest one buyers were offered in the lookback, most often
+     * because a promotion ended or the price was raised: buyers who saw the lower price now see a
+     * much higher one. A warning, because it can stop sales from one day to the next; a person
+     * decides whether to join a promotion again or to change the price. Once the higher price has
+     * held for the whole lookback, the low catches up and the finding clears.
+     */
+    private RuleOutcome evaluateBuyerPriceJump(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric price = metrics.get(MetricCode.OBSERVED_SELLING_PRICE);
+        ComputedMetric low = metrics.get(MetricCode.RECENT_LOW_BUYER_PRICE);
+        Optional<RuleOutcome> unavailable = requireAvailable(BUYER_PRICE_JUMP, price, low);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        BigDecimal leastRise = properties.getThresholds().getBuyerPriceJumpMinimumRate();
+        Integer lookbackDays = properties.getThresholds().getBuyerPriceJumpLookbackDays();
+        if (leastRise == null || lookbackDays == null) {
+            return RuleOutcome.declined(BUYER_PRICE_JUMP, THRESHOLD_NOT_CONFIGURED, Map.of());
+        }
+        if (low.numericValue().signum() <= 0
+                || !java.util.Objects.equals(price.currencyCode(), low.currencyCode())) {
+            return RuleOutcome.declined(BUYER_PRICE_JUMP, REQUIRED_METRIC_UNAVAILABLE,
+                    detail("metric", MetricCode.RECENT_LOW_BUYER_PRICE.name()));
+        }
+        // Rounded down, so a rise shown at the least rise really reaches it.
+        BigDecimal rise = price.numericValue().divide(low.numericValue(), 4, java.math.RoundingMode.DOWN)
+                .subtract(BigDecimal.ONE);
+        Map<String, String> detail = new LinkedHashMap<>();
+        detail.put("buyerPrice", price.numericValue().toPlainString());
+        detail.put("recentLowBuyerPrice", low.numericValue().toPlainString());
+        detail.put("currencyCode", String.valueOf(price.currencyCode()));
+        detail.put("riseOverRecentLow", rise.toPlainString());
+        detail.put("buyerPriceJumpMinimumRate", leastRise.toPlainString());
+        detail.put("lookbackDays", Integer.toString(lookbackDays));
+        List<ComputedMetric> read = List.of(price, low);
+        return rise.compareTo(leastRise) >= 0
+                ? RuleOutcome.triggered(BUYER_PRICE_JUMP, DiagnosisFindingView.Severity.WARNING, detail, read)
+                : RuleOutcome.clear(BUYER_PRICE_JUMP, detail, read);
     }
 
     /**

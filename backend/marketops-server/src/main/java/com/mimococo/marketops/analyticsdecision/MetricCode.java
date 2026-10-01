@@ -57,7 +57,8 @@ public enum MetricCode {
     PROJECTED_UNIT_MARGIN(MetricDomain.PROFIT),
     PROJECTED_BREAK_EVEN_PRICE(MetricDomain.PROFIT),
     TARGET_MARGIN_PRICE(MetricDomain.PROFIT),
-    PROMOTION_BEST_MARGIN(MetricDomain.PROFIT);
+    PROMOTION_BEST_MARGIN(MetricDomain.PROFIT),
+    RECENT_LOW_BUYER_PRICE(MetricDomain.PROFIT);
 
     /** The version of every definition this release computes. */
     public static final int DEFINITION_VERSION = 2;

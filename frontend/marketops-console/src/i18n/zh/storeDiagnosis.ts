@@ -297,6 +297,12 @@ export const CONCLUSION_TEXT: Readonly<
     meaning: '平台状态为隐藏或已删除。',
     next: '到 Ozon 后台查看隐藏原因并处理。',
   },
+  BUYER_PRICE_JUMP: {
+    title: '买家价大幅上涨',
+    meaning:
+      '买家价比近 7 天的最低买家价高出 20% 以上，多半是促销结束或改了价：之前看到低价的买家，现在看到的是高得多的价格。',
+    next: '看看页面顶部提示里同期结束的促销；如果要回到原来的价格，到“促销活动”页挑选可参加的活动，或在 Ozon 卖家后台调价。',
+  },
   DEMAND_NOT_CONVERTING: {
     title: '有需求不成交',
     meaning: '近 7 天有不少于 1,000 人搜索、有库存，但没有下单。',
@@ -358,6 +364,10 @@ export const FINDING_DETAIL_LABELS: Readonly<Record<string, string>> = {
   listingSellable: '是否可售',
   projectedUnitMargin: '预估利润率',
   priceRoom: '守住利润率下限时最多可降',
+  recentLowBuyerPrice: '近期最低买家价',
+  riseOverRecentLow: '比近期最低价高',
+  buyerPriceJumpMinimumRate: '“大幅上涨”阈值',
+  lookbackDays: '回看天数',
 };
 
 /** The price suggestion of one product, in its detail drawer (P8). */
@@ -403,6 +413,25 @@ export const priceSuggestionText = {
       .map((part, index) => (index === 0 ? `，${part}` : `、${part}`))
       .join(''),
   suggestionsFailed: '调价建议生成失败，稍后可重新计算再试。',
+} as const;
+
+/** Buyer prices that rose sharply in the last days, at the top of the store diagnosis. */
+export const priceJumpText = {
+  title: (listings: number, days: number): string =>
+    `近 ${String(days)} 天有 ${String(listings)} 个商品的买家价大幅上涨`,
+  rise: (lowest: string, highest: string): string =>
+    lowest === highest
+      ? `比近期最低买家价高 ${lowest}。`
+      : `比近期最低买家价高 ${lowest} 到 ${highest}。`,
+  endedPromotion: (title: string, endedOn: string, participants: number | null): string =>
+    `同期结束、本店参加过的促销：“${title}”（${endedOn} 结束` +
+    (participants === null ? '）。' : `，参加的商品 ${String(participants)} 个）。`),
+  noEndedPromotion: (days: number): string =>
+    `近 ${String(days)} 天没有本店参加的促销结束，上涨可能是改了价。`,
+  meaning:
+    '之前看到低价的买家，现在看到的是高得多的价格。如果要回到原来的价格，可以参加新的活动或在 Ozon 卖家后台调价。',
+  showProducts: '查看商品',
+  openPromotions: '打开“促销活动”',
 } as const;
 
 /** Buyers' requests to buy a product at a lower price (P8). */

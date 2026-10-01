@@ -24,6 +24,12 @@ public interface OperatingFactQuery {
     Optional<PriceSnapshot> latestPrice(UUID platformListingVariantId, Instant asOf);
 
     /**
+     * The observed price whose buyer price was lowest from an inclusive instant to an exclusive one,
+     * in the currency of the most recent price before that end.
+     */
+    Optional<PriceSnapshot> lowestBuyerPrice(UUID platformListingVariantId, Instant from, Instant asOf);
+
+    /**
      * The newest price before an exclusive instant with the competitor price,
      * the seller's unit cost and the tariffs the marketplace stated with it.
      */
@@ -57,6 +63,13 @@ public interface OperatingFactQuery {
      * snapshot was recorded.
      */
     List<PromotionSnapshot> currentPromotions(UUID storeId, Instant asOf);
+
+    /**
+     * The store's promotions that ended from an inclusive instant up to an exclusive one, each as its
+     * newest snapshot before that end described it (whether the store took part, how many
+     * products did); without their products. Newest end first.
+     */
+    List<PromotionSnapshot> endedPromotions(UUID storeId, Instant from, Instant asOf);
 
     /** The most recent observed availability, per fulfillment mode. */
     StockSnapshot latestStock(UUID platformListingVariantId, Instant asOf);
