@@ -20,6 +20,8 @@ export interface SuggestionPass {
   readonly standing: number;
   /** Listings left alone because a decision about them is recent. */
   readonly cooling: number;
+  /** Listings whose suggestion waits because their buyer price has just jumped. */
+  readonly paused: number;
   readonly failed: number;
 }
 
@@ -115,6 +117,7 @@ function parseSuggestionPass(body: unknown): SuggestionPass | undefined {
   const withdrawn = count(body.withdrawn);
   const standing = count(body.standing);
   const cooling = count(body.cooling);
+  const paused = count(body.paused);
   const failed = count(body.failed);
   if (
     expired === undefined ||
@@ -123,6 +126,7 @@ function parseSuggestionPass(body: unknown): SuggestionPass | undefined {
     withdrawn === undefined ||
     standing === undefined ||
     cooling === undefined ||
+    paused === undefined ||
     failed === undefined
   ) {
     return undefined;
@@ -135,6 +139,7 @@ function parseSuggestionPass(body: unknown): SuggestionPass | undefined {
     withdrawn,
     standing,
     cooling,
+    paused,
     failed,
   };
 }

@@ -301,7 +301,7 @@ export const CONCLUSION_TEXT: Readonly<
     title: '买家价大幅上涨',
     meaning:
       '买家价比近 7 天的最低买家价高出 20% 以上，多半是促销结束或改了价：之前看到低价的买家，现在看到的是高得多的价格。',
-    next: '看看页面顶部提示里同期结束的促销；如果要回到原来的价格，到“促销活动”页挑选可参加的活动，或在 Ozon 卖家后台调价。',
+    next: '看看页面顶部提示里同期结束的促销；如果要回到原来的价格，到“促销活动”页挑选可参加的活动，或在 Ozon 卖家后台调价。这些商品的调价建议暂停，价格稳定后按新价格重新计算。',
   },
   DEMAND_NOT_CONVERTING: {
     title: '有需求不成交',
@@ -403,16 +403,25 @@ export const priceSuggestionText = {
   decidedApplied: (price: string): string => `已在 Ozon 后台改价为 ${price}`,
   decidedNotApplied: '已决定不采纳',
   decidedAt: '记录于',
-  suggestionsGenerated: (proposed: number, refreshed: number, withdrawn: number): string =>
+  suggestionsGenerated: (
+    proposed: number,
+    refreshed: number,
+    withdrawn: number,
+    paused: number,
+  ): string =>
     [
       proposed > 0 ? `新增 ${String(proposed)} 条调价建议` : '',
       refreshed > 0 ? `更新 ${String(refreshed)} 条` : '',
       withdrawn > 0 ? `撤下 ${String(withdrawn)} 条` : '',
+      paused > 0 ? `${String(paused)} 个商品买家价刚大幅上涨，调价建议暂停` : '',
     ]
       .filter((part) => part !== '')
       .map((part, index) => (index === 0 ? `，${part}` : `、${part}`))
       .join(''),
   suggestionsFailed: '调价建议生成失败，稍后可重新计算再试。',
+  pausedTitle: '调价建议已暂停',
+  paused:
+    '这个商品的买家价近几天大幅上涨。建议依据的搜索和“没人下单”大多发生在原来更低的价格下，按新价格再降一步没有依据。价格稳定后，会按新价格重新计算。',
 } as const;
 
 /** Buyer prices that rose sharply in the last days, at the top of the store diagnosis. */
@@ -429,7 +438,7 @@ export const priceJumpText = {
   noEndedPromotion: (days: number): string =>
     `近 ${String(days)} 天没有本店参加的促销结束，上涨可能是改了价。`,
   meaning:
-    '之前看到低价的买家，现在看到的是高得多的价格。如果要回到原来的价格，可以参加新的活动或在 Ozon 卖家后台调价。',
+    '之前看到低价的买家，现在看到的是高得多的价格。如果要回到原来的价格，可以参加新的活动或在 Ozon 卖家后台调价。这些商品的调价建议已暂停，价格稳定后按新价格重新计算。',
   showProducts: '查看商品',
   openPromotions: '打开“促销活动”',
 } as const;

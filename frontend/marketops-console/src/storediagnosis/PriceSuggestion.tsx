@@ -1,4 +1,4 @@
-import { App, Button, Descriptions, Flex, Form, Input, Space, Tag, Typography } from 'antd';
+import { Alert, App, Button, Descriptions, Flex, Form, Input, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import type { ConsoleFailure, ConsoleRequest, Recommendation } from '../api/console';
@@ -82,10 +82,13 @@ export function PriceSuggestionSection({
   context,
   storeId,
   subjectId,
+  pausedByPriceJump,
 }: {
   readonly context: ConsoleRequest;
   readonly storeId: string;
   readonly subjectId: string;
+  /** The listing's buyer price has just jumped: suggestions wait for it to settle. */
+  readonly pausedByPriceJump: boolean;
 }): React.JSX.Element | null {
   const navigate = useNavigate();
   const { message } = App.useApp();
@@ -117,12 +120,23 @@ export function PriceSuggestionSection({
   );
 
   if (suggestion === undefined) {
-    if (decision === undefined) return null;
+    const pausedNote = pausedByPriceJump && (
+      <Alert type="warning" showIcon title={text.pausedTitle} description={text.paused} />
+    );
+    if (decision === undefined) {
+      return pausedByPriceJump ? (
+        <Flex vertical gap={8}>
+          {title}
+          {pausedNote}
+        </Flex>
+      ) : null;
+    }
     // Nothing open: say what was decided about the last one.
     const recorded = decision;
     return (
       <Flex vertical gap={8}>
         {title}
+        {pausedNote}
         <Typography.Text>
           {recorded.decision === 'APPLIED_IN_SELLER_OFFICE'
             ? text.decidedApplied(formatMoney(recorded.appliedPrice, recorded.currencyCode))
