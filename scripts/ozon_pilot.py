@@ -2923,7 +2923,12 @@ def price_write_probe(args: argparse.Namespace) -> int:
     print(f"The same-price write sends POST {OZON_BASE_URL}{PRICE_APPLY_PATH} with exactly:\n  {apply_body.decode()}")
     print("This is a real write to the store. It sets the price the listing already has, so nothing a buyer "
           "sees changes; it counts toward the 10 price changes an hour Ozon allows a product.")
-    if input(f"Type the offer id ({args.offer}) to send it, anything else stops: ").strip() != args.offer:
+    try:
+        typed = input(f"Type the offer id ({args.offer}) to send it, anything else stops: ").strip()
+    except EOFError:
+        print("\nnothing sent: no one could type the confirmation; run the probe in an interactive terminal")
+        return 1
+    if typed != args.offer:
         print("nothing sent")
         return 1
 
