@@ -166,6 +166,10 @@ public final class AnalyticsProperties {
 
         private BigDecimal priceHeadroomMinimumRate;
 
+        private BigDecimal buyerPriceJumpMinimumRate;
+
+        private Integer buyerPriceJumpLookbackDays;
+
         /** Least share of profit inputs that must resolve canonically. */
         public BigDecimal getMinimumDataCompleteness() {
             return minimumDataCompleteness;
@@ -317,6 +321,29 @@ public final class AnalyticsProperties {
         /** Bind the least price room. */
         public void setPriceHeadroomMinimumRate(BigDecimal value) {
             this.priceHeadroomMinimumRate = value;
+        }
+
+        /**
+         * The least share by which the buyer price must exceed the lowest buyer price of the
+         * lookback for the rise to count as a jump (0.20 = 20 %); no default.
+         */
+        public BigDecimal getBuyerPriceJumpMinimumRate() {
+            return buyerPriceJumpMinimumRate;
+        }
+
+        /** Bind the least buyer price rise. */
+        public void setBuyerPriceJumpMinimumRate(BigDecimal value) {
+            this.buyerPriceJumpMinimumRate = value;
+        }
+
+        /** How many days before the window end the lowest buyer price is looked for; no default. */
+        public Integer getBuyerPriceJumpLookbackDays() {
+            return buyerPriceJumpLookbackDays;
+        }
+
+        /** Bind the buyer price lookback. */
+        public void setBuyerPriceJumpLookbackDays(Integer value) {
+            this.buyerPriceJumpLookbackDays = value;
         }
     }
 }

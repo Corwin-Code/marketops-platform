@@ -59,6 +59,7 @@ import type { ReferenceLabel } from './AiInterpretation';
 import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
 import { CollectionHealth } from './CollectionHealth';
 import { ListingDiscountRequests, StoreDiscountRequestsSection } from './DiscountRequests';
+import { PriceJumpAlert } from './PriceJumpAlert';
 import { PriceSuggestionSection } from './PriceSuggestion';
 import type { StandingLoad } from './StoreStanding';
 import { StandingAlerts, StoreStandingSection } from './StoreStanding';
@@ -534,6 +535,14 @@ export function StoreDiagnosisView({
       {/* Keyed by the refresh generation, so a refresh asks again. */}
       <CollectionHealth key={generation} context={context} storeId={storeId} />
       <StandingAlerts load={standingLoad} />
+      <PriceJumpAlert
+        context={context}
+        storeId={storeId}
+        load={findingsLoad}
+        onShowProducts={() => {
+          patch({ [RULE_PARAM]: 'BUYER_PRICE_JUMP' });
+        }}
+      />
       <SectionCard
         title={text.summaryTitle}
         extra={

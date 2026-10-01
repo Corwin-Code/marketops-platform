@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -62,6 +63,23 @@ class PromotionConsoleController {
         return new StorePromotions(storeId, now, text(floor), found.stream()
                 .map(promotion -> promotion(promotion, identities))
                 .toList());
+    }
+
+    /**
+     * The store's promotions that ended in the last days (1 to 31, 7 by default), newest end first:
+     * one the store took part in can explain buyer prices that rose when it ended.
+     */
+    @GetMapping(value = "/stores/{storeId}/promotions/ended", produces = MediaType.APPLICATION_JSON_VALUE)
+    EndedPromotions endedPromotions(AuthenticatedActor actor, @PathVariable UUID storeId,
+                                    @RequestParam(required = false, defaultValue = "7") int days) {
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(storeId));
+        Instant now = clock.instant();
+        Instant from = now.minus(java.time.Duration.ofDays(Math.clamp(days, 1, 31)));
+        return new EndedPromotions(storeId, from, now, promotions.endedForStore(actor.organizationId(), storeId,
+                from, now).stream().map(promotion -> new EndedPromotion(promotion.promotionId(),
+                        promotion.nativePromotionKey(), promotion.title(), promotion.promotionKind(),
+                        promotion.startsAt(), promotion.endsAt(), promotion.participating(),
+                        promotion.participantCount(), promotion.observedAt())).toList());
     }
 
     private static Promotion promotion(PromotionEconomics economics, Map<UUID, SubjectIdentity> identities) {
@@ -106,6 +124,21 @@ class PromotionConsoleController {
      * @param minimumMarginRate the margin floor the verdicts compare with, as a ratio, or {@code null}
      */
     record StorePromotions(UUID storeId, Instant generatedAt, String minimumMarginRate, List<Promotion> promotions) {
+    }
+
+    /** The promotions that ended from {@code from} to {@code to}, newest end first. */
+    record EndedPromotions(UUID storeId, Instant from, Instant to, List<EndedPromotion> promotions) {
+    }
+
+    /**
+     * One ended promotion as its newest snapshot described it.
+     *
+     * @param participating whether the store took part, as that snapshot said
+     * @param observedAt when that snapshot was read
+     */
+    record EndedPromotion(UUID promotionId, String nativePromotionKey, String title, String promotionKind,
+                          Instant startsAt, Instant endsAt, Boolean participating, Integer participantCount,
+                          Instant observedAt) {
     }
 
     /** One promotion as the newest snapshot described it. */

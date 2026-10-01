@@ -89,6 +89,7 @@ const METRIC_GROUPS: Readonly<Record<string, MetricGroup>> = {
   PROJECTED_UNIT_PROFIT: 'profit',
   PROJECTED_UNIT_MARGIN: 'profit',
   PROMOTION_BEST_MARGIN: 'profit',
+  RECENT_LOW_BUYER_PRICE: 'profit',
   PROJECTED_BREAK_EVEN_PRICE: 'profit',
   TARGET_MARGIN_PRICE: 'profit',
   PLATFORM_COMPETITOR_MIN_PRICE: 'profit',

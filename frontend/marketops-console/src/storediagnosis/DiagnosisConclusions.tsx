@@ -20,6 +20,7 @@ export const WITHOUT_STOCK = 'WITHOUT_STOCK';
 export const CONCLUSION_ORDER: readonly string[] = [
   WITHOUT_STOCK,
   'LISTING_NOT_SELLABLE',
+  'BUYER_PRICE_JUMP',
   'DEMAND_NOT_CONVERTING',
   'PRICE_GAP_STRUCTURAL',
   'PRICE_GAP_PARTIAL',
@@ -213,12 +214,15 @@ function detailValue(key: string, value: string, currency: string | null): strin
     case 'platformCompetitorMinPrice':
     case 'breakEvenPrice':
     case 'targetMarginPrice':
+    case 'recentLowBuyerPrice':
       return formatMoney(value, currency);
     case 'premiumOverCompetitor':
     case 'minimumUnitMarginRate':
     case 'promotionMargin':
     case 'projectedUnitMargin':
     case 'priceRoom':
+    case 'riseOverRecentLow':
+    case 'buyerPriceJumpMinimumRate':
       return formatPercent(value);
     case 'contentRating':
     case 'contentRatingFloor':

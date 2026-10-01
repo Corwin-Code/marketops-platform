@@ -58,6 +58,7 @@ export const METRIC_LABELS: CodeLabels = {
   PROJECTED_BREAK_EVEN_PRICE: '预估保本价',
   TARGET_MARGIN_PRICE: '目标利润价',
   PROMOTION_BEST_MARGIN: '可参加活动的最佳利润率',
+  RECENT_LOW_BUYER_PRICE: '近期最低买家价',
 };
 
 /** Deterministic diagnosis rule codes (DiagnosisEngine, rule version 1). */
@@ -80,6 +81,7 @@ export const RULE_LABELS: CodeLabels = {
   CONTENT_BELOW_TARGET: '内容待提升',
   PROMOTION_OPPORTUNITY: '可参加活动',
   PRICE_HEADROOM: '有降价空间',
+  BUYER_PRICE_JUMP: '买家价大幅上涨',
 };
 
 /** What a rule concluded. */
