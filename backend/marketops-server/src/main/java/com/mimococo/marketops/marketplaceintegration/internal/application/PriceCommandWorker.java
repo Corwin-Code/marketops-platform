@@ -10,6 +10,7 @@ import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.shared.Money;
+import com.mimococo.marketops.shared.ProductionWritePolicy;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
@@ -52,6 +53,14 @@ public class PriceCommandWorker {
     /** How long to wait before a retriable condition is tried again. */
     private static final int RETRY_DELAY_SECONDS = 60;
 
+    /**
+     * Pauses before reading the platform again when an accepted price is not
+     * showing yet. A marketplace may apply a price a little after accepting it;
+     * the reads stay inside one lease, and a price still not showing after them
+     * is a mismatch an operator can read again later (V0031).
+     */
+    private static final int[] REREAD_DELAYS_SECONDS = {10, 30};
+
     /** Refusal raised by the database when the write gate is closed. */
     private static final String GATE_CLOSED = "MO032";
 
@@ -66,6 +75,7 @@ public class PriceCommandWorker {
     private final com.mimococo.marketops.marketplaceintegration.RawCustody custody;
     private final ListingIdentityDirectory listings;
     private final CredentialDirectory credentials;
+    private final ProductionWritePolicy productionWrites;
     private final IdGenerator idGenerator;
     private final Clock clock;
     private final String workerName;
@@ -75,6 +85,7 @@ public class PriceCommandWorker {
                        com.mimococo.marketops.marketplaceintegration.RawCustody custody,
                        ListingIdentityDirectory listings,
                        CredentialDirectory credentials,
+                       ProductionWritePolicy productionWrites,
                        IdGenerator idGenerator,
                        Clock clock) {
         this.commands = commands;
@@ -82,6 +93,7 @@ public class PriceCommandWorker {
         this.custody = custody;
         this.listings = listings;
         this.credentials = credentials;
+        this.productionWrites = productionWrites;
         this.idGenerator = idGenerator;
         this.clock = clock;
         this.workerName = WorkerIdentity.current();
@@ -123,6 +135,17 @@ public class PriceCommandWorker {
      */
     public boolean advance(UUID commandId) {
         PriceCommandState initial = currentState(commandId);
+        if (writesNext(initial, commandId) && !productionWrites.productionWritesEnabled()) {
+            // The deployment's production-write switch is off: nothing that changes a
+            // price leaves this process, whatever the database switches say. The
+            // command keeps its state; readbacks still run, they only observe.
+            log.atInfo()
+                    .addKeyValue("event", "price_command_production_writes_disabled")
+                    .addKeyValue("commandId", commandId)
+                    .addKeyValue("correlationId", CorrelationId.current())
+                    .log("A price write waits: production writes are disabled for this deployment");
+            return false;
+        }
         if (initial == PriceCommandState.COMPENSATION_PENDING) {
             return compensate(commandId);
         }
@@ -167,6 +190,9 @@ public class PriceCommandWorker {
      * to putting a price back.
      */
     public boolean compensate(UUID commandId) {
+        if (!productionWrites.productionWritesEnabled()) {
+            return false;
+        }
         long fence;
         try {
             fence = commands.leaseCompensation(commandId, workerName, LEASE_SECONDS);
@@ -291,6 +317,13 @@ public class PriceCommandWorker {
                     PriceCommandState.READBACK_PENDING.name(), null, null, null);
         }
         Optional<UUID> readback = observe(command, fence, "MATCHES_TARGET");
+        for (int delay : REREAD_DELAYS_SECONDS) {
+            if (readback.isPresent() || currentState(command.id()) != PriceCommandState.READBACK_PENDING
+                    || !pause(delay)) {
+                break;
+            }
+            readback = observe(command, fence, "MATCHES_TARGET");
+        }
         if (readback.isPresent()) {
             commands.transition(command.id(), fence, workerName,
                     PriceCommandState.SUCCEEDED.name(), null, null, readback.get());
@@ -401,6 +434,32 @@ public class PriceCommandWorker {
                 .addKeyValue("retryBudgetRemaining", command.retryBudgetRemaining() - 1)
                 .addKeyValue("correlationId", CorrelationId.current())
                 .log("A price command will be tried again");
+    }
+
+    /**
+     * Whether advancing this command next would change a price: a restore, or a
+     * claim from waiting whose last attempt was not an observation.
+     */
+    private boolean writesNext(PriceCommandState state, UUID commandId) {
+        if (state == PriceCommandState.COMPENSATION_PENDING) {
+            return true;
+        }
+        if (state != PriceCommandState.PENDING && state != PriceCommandState.RETRY_WAIT) {
+            return false;
+        }
+        PriceWriteRequest.Operation next = resumePurpose(commandId);
+        return next == PriceWriteRequest.Operation.APPLY || next == PriceWriteRequest.Operation.RESTORE;
+    }
+
+    /** Wait before reading again; false when the worker is being stopped. */
+    private static boolean pause(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000L);
+            return true;
+        } catch (InterruptedException stopping) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 
     /** What the previous attempt was doing, so a retry resumes rather than repeats. */

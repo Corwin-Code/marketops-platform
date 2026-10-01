@@ -15,6 +15,7 @@ import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.StoreFindingsQuery;
 import com.mimococo.marketops.analyticsdecision.StoreFindingsQuery.ListingResult;
 import com.mimococo.marketops.analyticsdecision.ValueState;
+import com.mimococo.marketops.marketplaceintegration.PriceChangeHistory;
 import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
@@ -110,6 +111,7 @@ public class PriceSuggestionService {
     private final ListingPriceEstimateQuery estimates;
     private final RecommendationService recommendations;
     private final PriceDecisionRepository decisions;
+    private final PriceChangeHistory changes;
     private final GuardrailService guardrails;
     private final PriceSuggestionProperties properties;
     private final TransactionTemplate transactions;
@@ -117,12 +119,14 @@ public class PriceSuggestionService {
 
     PriceSuggestionService(StoreFindingsQuery findings, ListingPriceEstimateQuery estimates,
                            RecommendationService recommendations, PriceDecisionRepository decisions,
-                           GuardrailService guardrails, PriceSuggestionProperties properties,
-                           PlatformTransactionManager transactionManager, Clock clock) {
+                           PriceChangeHistory changes, GuardrailService guardrails,
+                           PriceSuggestionProperties properties, PlatformTransactionManager transactionManager,
+                           Clock clock) {
         this.findings = findings;
         this.estimates = estimates;
         this.recommendations = recommendations;
         this.decisions = decisions;
+        this.changes = changes;
         this.guardrails = guardrails;
         this.properties = properties;
         this.transactions = new TransactionTemplate(transactionManager);
@@ -214,12 +218,15 @@ public class PriceSuggestionService {
                 && live.expectedEffect().equals(suggestion.expectedEffect());
     }
 
-    /** Whether a decision about the listing is younger than the validation horizon. */
+    /**
+     * Whether a decision about the listing, or a price the platform changed itself, is younger than the
+     * validation horizon: a change is given time to show its effect before the next one is suggested.
+     */
     private boolean coolingDown(UUID organizationId, UUID listingVariantId, Instant now) {
-        return decisions.latestDecidedAt(organizationId, listingVariantId)
-                .map(decided -> decided.isAfter(now.minus(java.time.Duration.ofDays(
-                        properties.getValidationHorizonDays()))))
-                .orElse(false);
+        Instant horizon = now.minus(java.time.Duration.ofDays(properties.getValidationHorizonDays()));
+        return decisions.latestDecidedAt(organizationId, listingVariantId).map(decided -> decided.isAfter(horizon))
+                .orElse(false)
+                || changes.lastChangeAt(listingVariantId, now).map(changed -> changed.isAfter(horizon)).orElse(false);
     }
 
     private void propose(UUID organizationId, UUID storeId, UUID runId, UUID listingVariantId, Suggestion suggestion) {

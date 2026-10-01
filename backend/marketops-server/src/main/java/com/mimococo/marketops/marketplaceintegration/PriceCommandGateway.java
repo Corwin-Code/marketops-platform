@@ -48,4 +48,18 @@ public interface PriceCommandGateway {
      * a command for it cannot even be created.
      */
     Optional<UUID> priceChangeCapability(String platformCode);
+
+    /**
+     * The registered price-change capability of one marketplace, verified or not: what its capability
+     * switch is keyed by. Empty when the marketplace has none.
+     */
+    Optional<UUID> registeredPriceChangeCapability(String platformCode);
+
+    /**
+     * What stands between a listing variant (or, given none, the store) and a price write before any
+     * command exists: an unregistered, unverified or unavailable capability, a closed switch, a listing
+     * off the allowlist or in a seller promotion. Empty when a command created now would find the gate
+     * open on all of these (ops.price_write_readiness, V0031).
+     */
+    List<String> priceWriteReadiness(UUID storeId, UUID listingVariantId);
 }

@@ -5,6 +5,8 @@ import {
   Card,
   Descriptions,
   Flex,
+  Form,
+  Input,
   Space,
   Steps,
   Tabs,
@@ -18,6 +20,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { fetchCommand, fetchGate } from '../api/console';
+import { resolveCommand } from '../api/priceWrites';
 import type { CommandReadback, ConsoleFailure, ConsoleRequest, PriceCommand } from '../api/console';
 import { STORE_TIMEZONE_LABEL, toStoreDayjs } from '../format';
 import { actions, codeLabel } from '../i18n';
@@ -35,9 +38,10 @@ import {
   READBACK_MATCH_COLORS,
   READBACK_MATCH_LABELS,
 } from '../i18n/zh/pricing';
-import { commandNotice, commandText } from '../i18n/zh/pricingFollowUp';
+import { commandActionText, commandNotice, commandText } from '../i18n/zh/pricingFollowUp';
 import { subjectPath } from '../layout/navigation';
 import {
+  ActionModal,
   CodeTag,
   DateTime,
   EmptyState,
@@ -200,7 +204,7 @@ function alertType(state: string, unresolved: boolean): 'success' | 'info' | 'wa
  * the operator when that happens while they are watching.
  */
 export function CommandTimeline({ context, commandId }: CommandTimelineProps): React.JSX.Element {
-  const { notification } = App.useApp();
+  const { message, notification } = App.useApp();
   const [command, setCommand] = useState<PriceCommand | undefined>(undefined);
   const [gate, setGate] = useState<GateState>({ kind: 'loading' });
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
@@ -336,6 +340,7 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
   }
 
   const unresolved = UNRESOLVED.has(command.state);
+  const operatorActions = OPERATOR_ACTIONS.filter((action) => action.states.has(command.state));
   const steps = lifecycle(command.state);
   const lastStepTitle =
     steps.current === 4
@@ -598,6 +603,50 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
                 : {})}
             />
           </div>
+          {operatorActions.length > 0 && (
+            <Space size={8} wrap>
+              {operatorActions.map((action) => (
+                <ActionModal<{ readonly reason?: string }>
+                  key={action.action}
+                  trigger={{
+                    label: commandActionText[action.label],
+                    size: 'small',
+                    danger: action.action === 'closure',
+                  }}
+                  title={commandActionText[action.title]}
+                  consequence={commandActionText[action.consequence]}
+                  danger={action.action === 'closure'}
+                  width={520}
+                  onSubmit={async (values) => {
+                    const outcome = await resolveCommand(
+                      context,
+                      command.id,
+                      action.action,
+                      (values.reason ?? '').trim(),
+                    );
+                    if (!outcome.ok) return outcome.failure;
+                    void message.success(commandActionText.done);
+                    setTick((value) => value + 1);
+                    return undefined;
+                  }}
+                >
+                  <Form.Item
+                    name="reason"
+                    label={commandActionText.reason}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: commandActionText.reasonRequired,
+                      },
+                    ]}
+                  >
+                    <Input.TextArea rows={2} maxLength={500} showCount />
+                  </Form.Item>
+                </ActionModal>
+              ))}
+            </Space>
+          )}
           <Descriptions bordered size="small" column={{ xs: 1, md: 2, xl: 3 }} items={details} />
           {gateNotice}
           <TechnicalDetails
@@ -650,6 +699,40 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
     </section>
   );
 }
+
+/**
+ * What an operator may do in each state, as the command transitions allow (V0031): read the platform
+ * again, take the command over, or close it as failed. The write itself is never repeated.
+ */
+const OPERATOR_ACTIONS: readonly {
+  readonly action: 'readback' | 'manual-resolution' | 'closure';
+  readonly label: 'readback' | 'takeOver' | 'close';
+  readonly title: 'readbackTitle' | 'takeOverTitle' | 'closeTitle';
+  readonly consequence: 'readbackConsequence' | 'takeOverConsequence' | 'closeConsequence';
+  readonly states: ReadonlySet<string>;
+}[] = [
+  {
+    action: 'readback',
+    label: 'readback',
+    title: 'readbackTitle',
+    consequence: 'readbackConsequence',
+    states: new Set(['UNKNOWN_REQUIRES_READBACK', 'READBACK_MISMATCH', 'MANUAL_RESOLUTION']),
+  },
+  {
+    action: 'manual-resolution',
+    label: 'takeOver',
+    title: 'takeOverTitle',
+    consequence: 'takeOverConsequence',
+    states: new Set(['UNKNOWN_REQUIRES_READBACK', 'READBACK_MISMATCH', 'RETRY_WAIT']),
+  },
+  {
+    action: 'closure',
+    label: 'close',
+    title: 'closeTitle',
+    consequence: 'closeConsequence',
+    states: new Set(['PENDING', 'RETRY_WAIT', 'MANUAL_RESOLUTION']),
+  },
+];
 
 /** Say what a command's state means, rather than showing the code alone. */
 export function describeState(state: string): string {

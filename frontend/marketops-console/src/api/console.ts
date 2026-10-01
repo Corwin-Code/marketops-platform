@@ -1445,23 +1445,33 @@ export function decide(
   );
 }
 
+/** Whether a price proposal's write could happen now, and what stands in its way. */
+export interface PriceWriteReadiness {
+  readonly usable: boolean;
+  /** Codes of what stands in the way, e.g. GLOBAL_SWITCH_DISABLED; empty when usable. */
+  readonly reasons: readonly string[];
+}
+
 /**
- * Whether the proposal's platform takes price writes now (a verified price-change capability). Until
- * it does, an approval only records the decision and the price is changed by hand in the back office.
+ * Whether a price proposal's write could happen now. Until it can, an approval only records the
+ * decision and the price is changed by hand in the back office.
  */
 export function fetchPriceWriteCapability(
   context: ConsoleRequest,
   recommendationId: string,
-): Promise<ConsoleOutcome<boolean>> {
+): Promise<ConsoleOutcome<PriceWriteReadiness>> {
   return request(
     context,
     `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}/price-write-capability`,
-    (body) =>
-      typeof body === 'object' &&
-      body !== null &&
-      typeof (body as Record<string, unknown>).usable === 'boolean'
-        ? ((body as Record<string, unknown>).usable as boolean)
-        : undefined,
+    (body) => {
+      if (typeof body !== 'object' || body === null) return undefined;
+      const record = body as Record<string, unknown>;
+      if (typeof record.usable !== 'boolean' || !Array.isArray(record.reasons)) return undefined;
+      return {
+        usable: record.usable,
+        reasons: record.reasons.filter((reason): reason is string => typeof reason === 'string'),
+      };
+    },
   );
 }
 

@@ -36,9 +36,12 @@ import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.Money;
 import com.mimococo.marketops.shared.OperationRejectedException;
+import com.mimococo.marketops.shared.ProductionWritePolicy;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -80,6 +83,7 @@ public class ExecutionService {
     private final ListingIdentityDirectory listings;
     private final OperatingFactQuery facts;
     private final BusinessAuthorization authorization;
+    private final ProductionWritePolicy productionWrites;
     private final MetadataAuditRecorder auditRecorder;
     private final Clock clock;
 
@@ -97,6 +101,7 @@ public class ExecutionService {
                      ListingIdentityDirectory listings,
                      OperatingFactQuery facts,
                      BusinessAuthorization authorization,
+                     ProductionWritePolicy productionWrites,
                      MetadataAuditRecorder auditRecorder,
                      Clock clock) {
         this.recommendations = recommendations;
@@ -110,25 +115,43 @@ public class ExecutionService {
         this.listings = listings;
         this.facts = facts;
         this.authorization = authorization;
+        this.productionWrites = productionWrites;
         this.auditRecorder = auditRecorder;
         this.clock = clock;
     }
 
     /**
-     * Whether the platform of a price proposal takes price writes now: a verified price-change
-     * capability. Without one, an approval only records the decision (Owner decision 2026-10-01: the
-     * platform's writes are connected later, on the Owner's authorization).
+     * Whether a price proposal's write could happen now, and what stands in its way: the deployment's
+     * production-write switch and everything ops.price_write_readiness checks (capability registered,
+     * verified and available for the store, the switches, the allowlist, no seller promotion). Until
+     * nothing does, an approval only records the decision and the price is changed by hand (Owner
+     * decisions 2026-10-01), so no command waits in PENDING for a gate that is shut.
      */
     @Transactional(readOnly = true)
-    public boolean priceWriteUsable(AuthenticatedActor actor, UUID recommendationId) {
+    public PriceWriteReadiness priceWriteReadiness(AuthenticatedActor actor, UUID recommendationId) {
         RecommendationView proposal = recommendations.require(recommendationId);
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(proposal.storeId()));
         if (proposal.actionKind() != ActionKind.PRICE_CHANGE) {
-            return false;
+            return new PriceWriteReadiness(false, List.of("NOT_A_PRICE_CHANGE"));
         }
-        return listings.variantContext(proposal.subjectId(), clock.instant())
-                .map(context -> commands.priceChangeCapability(context.platformCode()).isPresent())
-                .orElse(false);
+        return readiness(proposal);
+    }
+
+    private PriceWriteReadiness readiness(RecommendationView proposal) {
+        List<String> reasons = new ArrayList<>();
+        if (!productionWrites.productionWritesEnabled()) {
+            reasons.add("PRODUCTION_WRITES_DISABLED");
+        }
+        reasons.addAll(commands.priceWriteReadiness(proposal.storeId(), proposal.subjectId()));
+        return new PriceWriteReadiness(reasons.isEmpty(), List.copyOf(reasons));
+    }
+
+    /**
+     * Whether a price write could happen now.
+     *
+     * @param reasons what stands in its way; empty when usable
+     */
+    public record PriceWriteReadiness(boolean usable, List<String> reasons) {
     }
 
     /**
@@ -185,7 +208,10 @@ public class ExecutionService {
         ListingVariantContext context = listings
                 .variantContext(proposal.subjectId(), now)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.MAPPING_UNRESOLVED));
-        if (commands.priceChangeCapability(context.platformCode()).isEmpty()) {
+        if (commands.priceChangeCapability(context.platformCode()).isEmpty()
+                || !readiness(proposal).usable()) {
+            // A command the gate would hold in PENDING is not created: the approval stands, and the
+            // price is changed by hand until the write is ready (V0031).
             throw OperationRejectedException.of(ErrorCode.CAPABILITY_NOT_USABLE);
         }
 

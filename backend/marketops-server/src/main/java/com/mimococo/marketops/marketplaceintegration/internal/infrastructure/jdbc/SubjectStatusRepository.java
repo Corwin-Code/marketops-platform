@@ -5,6 +5,7 @@ import com.mimococo.marketops.marketplaceintegration.internal.domain.CapabilityS
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +50,28 @@ public class SubjectStatusRepository {
                 .param("updatedAt", Timestamp.from(status.updatedAt()))
                 .param("version", status.version())
                 .update();
+    }
+
+    /**
+     * Record an availability with its provenance, if the row is still at the version read; false when
+     * it moved meanwhile.
+     */
+    public boolean recordAvailability(UUID id, long expectedVersion, String availability, Instant verifiedAt,
+                                      String evidenceRef, String verifiedSourceTitle) {
+        return jdbc.sql("""
+                        UPDATE platform.capability_subject_status
+                           SET availability = :availability, last_verified_at = :verifiedAt,
+                               evidence_ref = :evidenceRef, verified_source_title = :title,
+                               updated_at = :verifiedAt, version = version + 1
+                         WHERE id = :id AND version = :expectedVersion
+                        """)
+                .param("availability", availability)
+                .param("verifiedAt", Timestamp.from(verifiedAt))
+                .param("evidenceRef", evidenceRef)
+                .param("title", verifiedSourceTitle)
+                .param("id", id)
+                .param("expectedVersion", expectedVersion)
+                .update() == 1;
     }
 
     /** Load one subject-status row. */

@@ -429,6 +429,12 @@ export const GATE_REASON_LABELS: CodeLabels = {
   MAPPING_UNRESOLVED: '商品映射未解决',
   MAPPING_CONFLICT_OPEN: '存在未解决的映射冲突',
   GUARDRAIL_NOT_PASSED: '护栏校验未通过',
+  LISTING_IN_SELLER_PROMOTION: '商品正在参加卖家促销',
+  CROSSED_OUT_PRICE_NOT_ABOVE_TARGET: '划线价不高于目标价',
+  PRODUCTION_WRITES_DISABLED: '本部署未开启生产写入',
+  CAPABILITY_NOT_REGISTERED: '平台调价能力尚未登记',
+  STORE_NOT_FOUND: '店铺不存在',
+  NOT_A_PRICE_CHANGE: '不是调价建议',
 };
 
 /** Price command states. */
@@ -707,12 +713,12 @@ export const reviewText = {
   createNote: '备注（可选，不会保存；授权理由已在批准时记录）',
   commandCreated: '已创建调价指令',
   commandFailed: '决定已记录，但创建指令失败；可稍后点“创建已授权指令”重试。',
-  manualConsequence: (price: string) =>
-    `确认后只记录你的决定，不会创建调价指令：Ozon 调价写入尚未启用，要等 Owner 授权后统一接入。批准后请到 Ozon 卖家后台把买家价手工改为 ${price}，再回到这里点“已在 Ozon 后台改价”记录。`,
+  manualConsequence: (price: string, blockers: string) =>
+    `确认后只记录你的决定，不会创建调价指令：平台调价写入尚未就绪${blockers === '' ? '' : `（${blockers}）`}。批准后请到 Ozon 卖家后台把买家价手工改为 ${price}，再回到这里点“已在 Ozon 后台改价”记录。`,
   confirmApprove: '确认批准',
   approvedManual: '已批准；请到 Ozon 卖家后台手工调价，然后回到这里记录',
-  manualHint: (price: string) =>
-    `已批准。Ozon 调价写入尚未启用（等 Owner 授权后统一接入），平台不会创建调价指令。请到 Ozon 卖家后台把买家价手工改为 ${price}，然后点“已在 Ozon 后台改价”记录；决定不改就点“不采纳”。`,
+  manualHint: (price: string, blockers: string) =>
+    `已批准。平台调价写入尚未就绪${blockers === '' ? '' : `（${blockers}）`}，不会创建调价指令。请到 Ozon 卖家后台把买家价手工改为 ${price}，然后点“已在 Ozon 后台改价”记录；决定不改就点“不采纳”。`,
   writeChecking: '正在检查平台写入能力',
   rejected: '已驳回该建议',
   notReviewable: (state: string) => `当前状态为“${state}”，不可审批`,

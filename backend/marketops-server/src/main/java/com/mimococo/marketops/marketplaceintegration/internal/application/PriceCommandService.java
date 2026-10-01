@@ -6,6 +6,7 @@ import com.mimococo.marketops.marketplaceintegration.PriceCommandRequest;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandView;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PriceCommandRepository;
 import com.mimococo.marketops.shared.CorrelationId;
+import com.mimococo.marketops.shared.ProductionWritePolicy;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -35,8 +36,37 @@ public class PriceCommandService implements PriceCommandGateway, PriceChangeHist
     static final String ENTITY_TYPE = "price-command";
 
     private final PriceCommandRepository commands;
-    PriceCommandService(PriceCommandRepository commands) {
+    private final ProductionWritePolicy productionWrites;
+
+    PriceCommandService(PriceCommandRepository commands, ProductionWritePolicy productionWrites) {
         this.commands = commands;
+        this.productionWrites = productionWrites;
+    }
+
+    /**
+     * How far a store is from taking price writes: the deployment's production-write switch, the
+     * marketplace's price-change capability, and what ops.price_write_readiness finds for the store.
+     */
+    @Transactional(readOnly = true)
+    public WriteStatus writeStatus(UUID storeId) {
+        Optional<PriceCommandRepository.StoreCapability> capability = commands.storePriceCapability(storeId);
+        return new WriteStatus(storeId, commands.storePlatform(storeId).orElse(null),
+                productionWrites.productionWritesEnabled(),
+                capability.map(PriceCommandRepository.StoreCapability::capabilityId).orElse(null),
+                capability.map(PriceCommandRepository.StoreCapability::verificationState).orElse(null),
+                commands.priceWriteReadiness(storeId, null));
+    }
+
+    /**
+     * A store's price-write status.
+     *
+     * @param platformCode the marketplace the store sells on
+     * @param capabilityId the marketplace's price-change capability, or {@code null} when none is registered
+     * @param capabilityVerification its verification state
+     * @param reasons what ops.price_write_readiness finds for the store, the allowlist and promotions aside
+     */
+    public record WriteStatus(UUID storeId, String platformCode, boolean productionWritesEnabled,
+                              UUID capabilityId, String capabilityVerification, List<String> reasons) {
     }
 
     @Override
@@ -93,6 +123,18 @@ public class PriceCommandService implements PriceCommandGateway, PriceChangeHist
     @Transactional(readOnly = true)
     public Optional<UUID> priceChangeCapability(String platformCode) {
         return commands.priceChangeCapability(platformCode);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<UUID> registeredPriceChangeCapability(String platformCode) {
+        return commands.registeredPriceChangeCapability(platformCode);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> priceWriteReadiness(UUID storeId, UUID listingVariantId) {
+        return commands.priceWriteReadiness(storeId, listingVariantId);
     }
 
     /** Why the write gate is currently closed for a command, if it is. */

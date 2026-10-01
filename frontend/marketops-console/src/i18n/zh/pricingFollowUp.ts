@@ -90,3 +90,21 @@ export const commandText = {
 export const commandNotice = {
   changedTitle: (state: string): string => `调价指令状态：${state}`,
 } as const;
+
+/** What an operator can do about a command that stopped moving (W1, 2026-10-01). */
+export const commandActionText = {
+  readback: '再次回读',
+  readbackTitle: '再次读取 Ozon 上的价格',
+  readbackConsequence:
+    '平台会再读一次 Ozon 上的价格，不会重复改价；读到目标价时指令记为成功。需要近期登录。',
+  takeOver: '接管',
+  takeOverTitle: '由人工接管这条指令',
+  takeOverConsequence: '指令不再自动处理，之后可以再次回读或按失败关闭。需要近期登录。',
+  close: '按失败关闭',
+  closeTitle: '按失败关闭这条指令',
+  closeConsequence:
+    '指令结束，不再发出任何请求；如果 Ozon 上的价格已经变化，需要到卖家后台手工处理。需要近期登录。',
+  reason: '原因',
+  reasonRequired: '请填写原因',
+  done: '已处理',
+} as const;
