@@ -77,8 +77,10 @@ export function ContentWriteEditor({
     return <FailureAlert failure={loaded.failure} />;
   }
   const { current } = loaded;
+  const { titleWritable } = current;
   const haveCurrent = current.title !== null && current.description !== null;
-  const titleChanged = current.title !== null && !sameContent(title, current.title);
+  const titleChanged =
+    titleWritable && current.title !== null && !sameContent(title, current.title);
   const descriptionChanged =
     current.description !== null && !sameContent(description, current.description);
   const live = latest !== null && !TERMINAL_CONTENT_STATES.has(latest.state);
@@ -86,7 +88,7 @@ export function ContentWriteEditor({
   const descriptionLength = characterCount(description.trim());
   const problems: string[] = [];
   if (!haveCurrent) problems.push(text.noCurrent);
-  if (titleLength === 0 || titleLength > current.titleLimit)
+  if (titleWritable && (titleLength === 0 || titleLength > current.titleLimit))
     problems.push(text.titleLimit(current.titleLimit));
   if (descriptionLength === 0 || descriptionLength > current.descriptionLimit) {
     problems.push(`${text.fieldDescription}：1–${String(current.descriptionLimit)}`);
@@ -120,11 +122,11 @@ export function ContentWriteEditor({
           )}
           {!haveCurrent && <Typography.Text type="warning">{text.noCurrent}</Typography.Text>}
           <Space size={8} wrap>
-            {(draftTitle !== null || draftDescription !== null) && (
+            {((titleWritable && draftTitle !== null) || draftDescription !== null) && (
               <Button
                 size="small"
                 onClick={() => {
-                  if (draftTitle !== null) setTitle(draftTitle);
+                  if (titleWritable && draftTitle !== null) setTitle(draftTitle);
                   if (draftDescription !== null) setDescription(draftDescription);
                   setSource(draftInvocationId);
                 }}
@@ -147,7 +149,7 @@ export function ContentWriteEditor({
             <Space size={6}>
               <Typography.Text>{text.fieldTitle}</Typography.Text>
               <Tag color={titleChanged ? 'processing' : 'default'}>
-                {titleChanged ? text.changed : text.unchanged}
+                {!titleWritable ? text.locked : titleChanged ? text.changed : text.unchanged}
               </Tag>
             </Space>
             <Input
@@ -155,10 +157,16 @@ export function ContentWriteEditor({
               value={title}
               maxLength={current.titleLimit}
               showCount
+              disabled={!titleWritable}
               onChange={(event) => {
                 setTitle(event.target.value);
               }}
             />
+            {!titleWritable && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {text.titleLocked}
+              </Typography.Text>
+            )}
           </Flex>
           <Flex vertical gap={4}>
             <Space size={6}>
@@ -228,7 +236,8 @@ export function ContentWriteEditor({
               onConfirm={async (reason) => {
                 const outcome = await confirmContentChange(context, {
                   platformListingVariantId,
-                  title: title.trim(),
+                  // A title the platform cannot change goes back exactly as the card holds it.
+                  title: titleWritable ? title.trim() : (current.title ?? '').trim(),
                   description: description.trim(),
                   sourceInvocationId: source,
                   reason: reason.trim() === '' ? null : reason.trim(),
