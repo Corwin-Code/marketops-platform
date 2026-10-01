@@ -29,6 +29,7 @@ import type {
 import { fetchStoreDiagnosis } from '../api/storeDiagnosis';
 import type { ListingFindings } from '../api/storeFindings';
 import { fetchStoreFindings, recalculateStore } from '../api/storeFindings';
+import { generatePriceSuggestions } from '../api/priceSuggestions';
 import { fetchStoreStanding } from '../api/storeStanding';
 import { formatDecimal, formatPercent } from '../format';
 import { actions } from '../i18n';
@@ -36,6 +37,7 @@ import {
   FULFILLMENT_MODE_LABELS,
   PRICE_INDEX_LABELS,
   storeDiagnosisText as text,
+  priceSuggestionText,
 } from '../i18n/zh/storeDiagnosis';
 import {
   CodeTag,
@@ -56,6 +58,7 @@ import { METRIC_LABELS } from '../i18n/zh/pricing';
 import type { ReferenceLabel } from './AiInterpretation';
 import { ListingAiExplanation, StoreAiSummary } from './AiInterpretation';
 import { CollectionHealth } from './CollectionHealth';
+import { PriceSuggestionSection } from './PriceSuggestion';
 import type { StandingLoad } from './StoreStanding';
 import { StandingAlerts, StoreStandingSection } from './StoreStanding';
 import { ListingContentOptimization } from './ContentOptimization';
@@ -678,14 +681,28 @@ export function StoreDiagnosisView({
         recalculating={recalculating}
         onRecalculate={() => {
           setRecalculating(true);
-          void recalculateStore(context, storeId).then((outcome) => {
-            setRecalculating(false);
-            if (outcome.ok) {
-              void message.success(text.recalculateDone(outcome.value));
-              setGeneration((value) => value + 1);
-            } else {
+          void recalculateStore(context, storeId).then(async (outcome) => {
+            if (!outcome.ok) {
+              setRecalculating(false);
               void message.error(failureMessage(outcome.failure));
+              return;
             }
+            // Fresh findings may call for price suggestions; the scheduler does the same after its
+            // own recalculations.
+            const suggested = await generatePriceSuggestions(context, storeId);
+            setRecalculating(false);
+            void message.success(
+              text.recalculateDone(outcome.value) +
+                (suggested.ok
+                  ? priceSuggestionText.suggestionsGenerated(
+                      suggested.value.proposed,
+                      suggested.value.refreshed,
+                      suggested.value.withdrawn,
+                    )
+                  : ''),
+            );
+            if (!suggested.ok) void message.warning(priceSuggestionText.suggestionsFailed);
+            setGeneration((value) => value + 1);
           });
         }}
       />
@@ -828,6 +845,13 @@ function ProductDrawer({
             listing={listing}
             product={product}
             withoutStock={withoutStock(product)}
+          />
+
+          <PriceSuggestionSection
+            key={`price-${product.variantId}`}
+            context={context}
+            storeId={storeId}
+            subjectId={product.variantId}
           />
 
           <ListingAiExplanation

@@ -79,6 +79,7 @@ export const RULE_LABELS: CodeLabels = {
   LOW_SEARCH_EXPOSURE: '搜索曝光不足',
   CONTENT_BELOW_TARGET: '内容待提升',
   PROMOTION_OPPORTUNITY: '可参加活动',
+  PRICE_HEADROOM: '有降价空间',
 };
 
 /** What a rule concluded. */

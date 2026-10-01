@@ -54,11 +54,11 @@ public class AiDiagnosisService implements AiCopilot {
 
     /** The prompt template this release sends, and its version. */
     private static final String PROMPT_TEMPLATE_CODE = "sku-growth-profit-diagnosis";
-    private static final int PROMPT_VERSION = 9;
+    private static final int PROMPT_VERSION = 11;
 
     /** The store summary's prompt template and version. */
     private static final String STORE_PROMPT_CODE = "store-diagnosis";
-    private static final int STORE_PROMPT_VERSION = 6;
+    private static final int STORE_PROMPT_VERSION = 7;
 
     /** The content drafts' prompt template and version. */
     private static final String CONTENT_PROMPT_CODE = "listing-content-draft";
@@ -75,7 +75,7 @@ public class AiDiagnosisService implements AiCopilot {
     /** The listing assistance projection and prompt, which build on the listing projection. */
     private static final String LISTING_ASSISTANCE_CODE = "LISTING_ASSISTANCE";
     private static final int LISTING_ASSISTANCE_VERSION = 2;
-    private static final int LISTING_ASSISTANCE_PROMPT_VERSION = 8;
+    private static final int LISTING_ASSISTANCE_PROMPT_VERSION = 10;
 
     /** Longest rendered projection sent; the gateway bounds a request body and a call to 60 seconds. */
     private static final int MAXIMUM_PROJECTION_CHARACTERS = 64_000;
@@ -134,7 +134,11 @@ public class AiDiagnosisService implements AiCopilot {
             the window, so realized profit cannot be judged yet. STOCKOUT_RISK means the listing has \
             no platform stock or will run out within the safety horizon; PROMOTION_OPPORTUNITY means \
             the listing can join a marketplace promotion and keep the minimum unit margin at its \
-            highest price. searchTerms.* are the terms buyers \
+            highest price; PRICE_HEADROOM means buyers look for the listing and nobody orders it, and \
+            its buyer price can fall by priceRoom before the estimated unit margin reaches the \
+            minimum, so a lower price is worth a try; the platform has already proposed that price \
+            for review, so a PRICE_CHANGE recommendation about it quotes priceRoom and has no \
+            proposedParameters. searchTerms.* are the terms buyers \
             searched from search.periodStart to search.lastDay, with how many searched and ordered. \
             Competitor prices and search data are platform analytics: evidence for a diagnosis, not \
             proof of a cause.
@@ -215,7 +219,8 @@ public class AiDiagnosisService implements AiCopilot {
             minimum margin; LOW_SEARCH_EXPOSURE means few buyers find the listing in search; \
             CONTENT_BELOW_TARGET means the platform's content rating is below target; \
             PROMOTION_OPPORTUNITY means the listing can join a marketplace promotion and keep the \
-            minimum margin at the promotion's highest price. listings.* \
+            minimum margin at the promotion's highest price; PRICE_HEADROOM means buyers searched and \
+            nobody ordered while the price can still come down and keep the minimum margin. listings.* \
             describes the listings that matter most, by severity and then by search demand: their \
             conclusions (listings.ruleCode with listings.findingRef), values (listings.metricCode \
             with listings.displayValue, exactly how you may quote it, and listings.valueRef; \

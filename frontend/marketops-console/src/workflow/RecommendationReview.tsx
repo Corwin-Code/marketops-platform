@@ -37,8 +37,10 @@ import {
   RECOMMENDATION_STATE_LABELS,
   RISK_COLORS,
   RISK_LABELS,
+  RULE_LABELS,
   reviewText as text,
 } from '../i18n/zh/pricing';
+import { priceSuggestionText as suggestionText } from '../i18n/zh/storeDiagnosis';
 import {
   ActionModal,
   CodeTag,
@@ -553,7 +555,11 @@ function ReviewDrawerBody({
   }
 
   const identity = recommendation.identity ?? pageIdentity;
-  const currency = preview?.currencyCode ?? recommendation.proposedParameters.currencyCode ?? null;
+  const currency =
+    preview?.currencyCode ??
+    recommendation.proposedParameters.currencyCode ??
+    recommendation.expectedEffect.currencyCode ??
+    null;
   const decisionState = recommendation.state;
   const commandExists = COMMAND_STATES.includes(decisionState);
   const authorized = AUTHORIZED_STATES.includes(decisionState);
@@ -888,6 +894,7 @@ function ReviewDrawerBody({
           label: codeLabel(PARAMETER_LABELS, name),
           children: <ParameterValue name={name} value={value} currency={currency} />,
         }))),
+    ...suggestionItems(recommendation.expectedEffect, currency),
   ];
 
   const previewItems: DescriptionsProps['items'] =
@@ -1067,6 +1074,55 @@ function ReviewDrawerBody({
 }
 
 /** Say what went wrong in terms of what the operator can do about it. */
+/**
+ * What a deterministic price suggestion rests on (P8): the rule behind it, the range it keeps, the
+ * estimated margin now and at the suggested price, and the competitor price and demand it saw.
+ */
+function suggestionItems(
+  effect: Readonly<Record<string, string>>,
+  currency: string | null,
+): NonNullable<DescriptionsProps['items']> {
+  if (effect.basis === undefined) return [];
+  const items: NonNullable<DescriptionsProps['items']> = [
+    { key: 'basis', label: suggestionText.basis, children: codeLabel(RULE_LABELS, effect.basis) },
+  ];
+  if (effect.rangeLower !== undefined && effect.rangeUpper !== undefined) {
+    items.push({
+      key: 'range',
+      label: suggestionText.range,
+      children: suggestionText.rangeValue(
+        formatMoney(effect.rangeLower, currency),
+        formatMoney(effect.rangeUpper, currency),
+      ),
+    });
+  }
+  if (effect.marginNow !== undefined && effect.marginAtTarget !== undefined) {
+    items.push({
+      key: 'margin',
+      label: suggestionText.margin,
+      children: suggestionText.marginChange(
+        formatPercent(effect.marginNow),
+        formatPercent(effect.marginAtTarget),
+      ),
+    });
+  }
+  if (effect.competitorMinPrice !== undefined) {
+    items.push({
+      key: 'competitor',
+      label: suggestionText.competitor,
+      children: formatMoney(effect.competitorMinPrice, currency),
+    });
+  }
+  if (effect.searchUsers !== undefined) {
+    items.push({
+      key: 'searchUsers',
+      label: suggestionText.searchUsers,
+      children: formatDecimal(effect.searchUsers, { maxFractionDigits: 0 }),
+    });
+  }
+  return items;
+}
+
 export function describeFailure(failure: ConsoleFailure): string {
   return failureMessage(failure);
 }

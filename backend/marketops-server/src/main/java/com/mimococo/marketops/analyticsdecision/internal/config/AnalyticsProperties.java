@@ -164,6 +164,8 @@ public final class AnalyticsProperties {
 
         private BigDecimal contentRatingFloor;
 
+        private BigDecimal priceHeadroomMinimumRate;
+
         /** Least share of profit inputs that must resolve canonically. */
         public BigDecimal getMinimumDataCompleteness() {
             return minimumDataCompleteness;
@@ -302,6 +304,19 @@ public final class AnalyticsProperties {
         /** Bind the content rating floor. */
         public void setContentRatingFloor(BigDecimal value) {
             this.contentRatingFloor = value;
+        }
+
+        /**
+         * The least share by which the buyer price may fall and still keep the minimum unit margin
+         * for the price to count as having room to move; no default.
+         */
+        public BigDecimal getPriceHeadroomMinimumRate() {
+            return priceHeadroomMinimumRate;
+        }
+
+        /** Bind the least price room. */
+        public void setPriceHeadroomMinimumRate(BigDecimal value) {
+            this.priceHeadroomMinimumRate = value;
         }
     }
 }

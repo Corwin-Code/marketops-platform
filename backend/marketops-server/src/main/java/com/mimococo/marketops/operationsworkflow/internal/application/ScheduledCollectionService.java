@@ -97,6 +97,7 @@ public class ScheduledCollectionService {
     private final FactNormalization normalization;
     private final StoreRecalculation recalculation;
     private final AiCopilot copilot;
+    private final PriceSuggestionService priceSuggestions;
     private final MetadataAuditRecorder auditRecorder;
     private final ScheduledCollectionProperties properties;
     private final ObjectMapper objectMapper;
@@ -109,6 +110,7 @@ public class ScheduledCollectionService {
                                FactNormalization normalization,
                                StoreRecalculation recalculation,
                                AiCopilot copilot,
+                               PriceSuggestionService priceSuggestions,
                                MetadataAuditRecorder auditRecorder,
                                ScheduledCollectionProperties properties,
                                ObjectMapper objectMapper,
@@ -120,6 +122,7 @@ public class ScheduledCollectionService {
         this.normalization = normalization;
         this.recalculation = recalculation;
         this.copilot = copilot;
+        this.priceSuggestions = priceSuggestions;
         this.auditRecorder = auditRecorder;
         this.properties = properties;
         this.objectMapper = objectMapper;
@@ -373,10 +376,11 @@ public class ScheduledCollectionService {
             }
             try {
                 StoreRecalculation.Result result = recalculation.recalculate(policy.storeId(), window);
+                Integer suggested = window == MetricWindow.D7 ? suggestPrices(policy) : null;
                 record(policy, null, "RECALCULATED", window.name(), null, result.calculationRunId(),
                         detail("window", window.name(), "periodEnd", boundary.toString(),
                                 "subjectCount", result.subjectCount(), "valueCount", result.valueCount(),
-                                "findingCount", result.findingCount()));
+                                "findingCount", result.findingCount(), "priceSuggestions", suggested));
                 recalculated++;
             } catch (RuntimeException failedRun) {
                 log.atWarn().addKeyValue("event", "scheduled_recalculation_failed")
@@ -387,6 +391,24 @@ public class ScheduledCollectionService {
             }
         }
         return recalculated;
+    }
+
+    /**
+     * Price suggestions from the fresh seven-day findings (P8). A failure here is logged and leaves the
+     * recalculation recorded as done: the suggestions are asked for again after the next one.
+     *
+     * @return how many suggestions entered the review, or {@code null} when the pass failed
+     */
+    private Integer suggestPrices(Policy policy) {
+        try {
+            return priceSuggestions.generate(policy.organizationId(), policy.storeId()).proposed();
+        } catch (RuntimeException failed) {
+            log.atWarn().addKeyValue("event", "scheduled_price_suggestions_failed")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("failureType", failed.getClass().getSimpleName())
+                    .log("Price suggestions after a scheduled recalculation failed");
+            return null;
+        }
     }
 
     /**

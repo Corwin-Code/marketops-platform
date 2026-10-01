@@ -332,6 +332,11 @@ export const CONCLUSION_TEXT: Readonly<
     meaning: '有 Ozon 活动可以参加，按活动允许的最高价仍能保住 15% 利润率。',
     next: '打开“促销活动”页查看活动、逐个商品的测算和 AI 建议；在卖家后台参加后回来记录决定。',
   },
+  PRICE_HEADROOM: {
+    title: '有降价空间',
+    meaning: '有不少人搜索、有库存，但没人下单；降价后仍能守住 15% 利润率。',
+    next: '打开商品详情查看调价建议；在 Ozon 卖家后台调价后回来记录。',
+  },
 };
 
 /** Names of the values a finding compared. */
@@ -351,7 +356,54 @@ export const FINDING_DETAIL_LABELS: Readonly<Record<string, string>> = {
   contentRating: '内容评分',
   contentRatingFloor: '评分阈值',
   listingSellable: '是否可售',
+  projectedUnitMargin: '预估利润率',
+  priceRoom: '守住利润率下限时最多可降',
 };
+
+/** The price suggestion of one product, in its detail drawer (P8). */
+export const priceSuggestionText = {
+  title: '调价建议',
+  hint: '由诊断规则按确定性算法给出：不低于守住利润率下限的价格，单次降幅有上限。价格指买家价（含卖家促销）。平台不会自动改价。',
+  basis: '依据',
+  priceChange: '买家价',
+  changeRate: (rate: string): string => `（${rate}）`,
+  range: '可调区间',
+  rangeValue: (lower: string, upper: string): string => `${lower} ~ ${upper}`,
+  rangeHint: '下限是守住利润率下限的最低价，上限是现价；建议价已按单次最大降幅收敛。',
+  margin: '预估利润率',
+  marginChange: (now: string, target: string): string => `${now} → ${target}`,
+  competitor: 'Ozon 竞品最低价',
+  searchUsers: '近 7 天搜索人数',
+  guardrail: '平台护栏',
+  guardrailPassed: '已通过',
+  guardrailFailed: '未通过，平台内暂不能审批改价：',
+  guardrailNotYet: '尚未评估',
+  guardrailHint:
+    '写入前的护栏前提（商业策略、经济性 profile、数据新鲜度等）还没有就绪。认可这条建议的话，请在 Ozon 卖家后台手工调价，然后回来记录。',
+  openReview: '打开审阅',
+  applied: '已在 Ozon 后台改价',
+  notApplied: '不采纳',
+  appliedTitle: '记录：已在 Ozon 后台改价',
+  appliedPrice: '实际设置的买家价',
+  appliedPriceRequired: '请填写实际设置的买家价',
+  notAppliedTitle: '记录：不采纳这条建议',
+  note: '备注（可选）',
+  reason: '原因（可选）',
+  saved: '已记录',
+  decidedApplied: (price: string): string => `已在 Ozon 后台改价为 ${price}`,
+  decidedNotApplied: '已决定不采纳',
+  decidedAt: '记录于',
+  suggestionsGenerated: (proposed: number, refreshed: number, withdrawn: number): string =>
+    [
+      proposed > 0 ? `新增 ${String(proposed)} 条调价建议` : '',
+      refreshed > 0 ? `更新 ${String(refreshed)} 条` : '',
+      withdrawn > 0 ? `撤下 ${String(withdrawn)} 条` : '',
+    ]
+      .filter((part) => part !== '')
+      .map((part, index) => (index === 0 ? `，${part}` : `、${part}`))
+      .join(''),
+  suggestionsFailed: '调价建议生成失败，稍后可重新计算再试。',
+} as const;
 
 /** Ozon's price index classes, as its own documentation names them. */
 export const PRICE_INDEX_LABELS: Readonly<Record<string, string>> = {

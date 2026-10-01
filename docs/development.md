@@ -857,6 +857,61 @@ python3 scripts/ozon_pilot.py probe --pilot pilot --capability discount-requests
 
   然后两个能力各跑一次 `make ozon-run` 和 `make ozon-normalize`，之后由定时采集每天更新。
 
+## P8：定价建议闭环（第一部分：建议与审阅）
+
+目标：确定性规则给出调价建议，进入现有的“审核调价建议”。平台不改价，真实写入仍由 `marketops.production-writes.enabled: false` 全局关闭。Owner 2026-10-01 的两项决定：
+
+- 加一条“有需求不成交且利润有空间”的降价规则（`PRICE_HEADROOM`）。按原计划只有 `PRICE_GAP_REDUCIBLE` / `PRICE_GAP_PARTIAL` 会产生改价建议，而试点 14 个有竞品价的商品全是结构性价差，这两条规则一条建议也给不出来。
+- P8 先做建议与审阅。护栏在试点上缺这些前提：商业策略、经济性 profile、新鲜度水位、零订单下的完整度口径、履约方式声明。这些放到开启写入（W1）前的单独阶段做。认可某条建议的话，在 Ozon 卖家后台手工调价，再回平台记录。
+
+- **规则 `PRICE_HEADROOM`**（V0026，规则 v1，严重度 INFO，不阻断写入）：
+  - 触发条件：近 7 天搜索人数 ≥ 需求下限（1,000）、有库存、下单 0、预估利润率高于下限（15%），而且买家价降到目标利润价的幅度 ≥ 最小降价空间（新阈值 `price-headroom-minimum-rate: 0.03`）；
+  - 买家价高于可比的 Ozon 竞品最低价时交给价格差规则处理，本规则判为通过（`condition=PRICE_GAP_RULES_APPLY`）；
+  - 细节记录可降空间 `priceRoom`、预估利润率、利润率下限、搜索人数、目标利润价。其中比例可以出境给 Qwen，目标利润价不出境。
+- **建议生成**（`PriceSuggestionService`）：
+  - 依据：店铺最新一次 7 天计算。依次看 `PRICE_GAP_REDUCIBLE`、`PRICE_GAP_PARTIAL`、`PRICE_HEADROOM`；有结构性价差、无库存或不可售的商品不给建议。
+  - 价格只来自确定性计算：
+    - 不低于目标利润价（向上取整到整卢布，保证守住下限）；
+    - 单次最多降 `max-step-rate`（10%，向上取整，保证降幅不超过上限）；
+    - 可降价追平竞品时，不低于竞品最低价。竞品价是 C 级平台分析数据，只用来限定一条候选，由人审阅，不会授权自动改价（HR-07）。
+  - 价格都是买家价（含卖家促销）。
+  - 利润率估算：用与诊断同一时点的费率和成本，经新的 `ListingPriceEstimateQuery` 计算，与 P3/P7 同一口径（共用 `ListingEconomicsInputs`）。
+  - 建议内容：`targetPrice`；预期效果里记依据、现价、目标价、降幅、可调区间（下限 = 守住利润率下限的最低价，上限 = 现价）、现在和目标价下的利润率、竞品价、搜索人数。风险按降幅：5% 以内为低，10% 以内为中。验证期 14 天。依据（规则结论和指标值）都挂在建议上。
+  - 流程：提出（DRAFT）→ 记录一次护栏预览 → VALIDATED → READY_FOR_REVIEW。VALIDATED 的含义是“护栏已为预览评估过”，不要求通过；批准时护栏会重新评估。
+  - 何时生成：
+    - 定时采集后的 7 天自动重算之后，生成数量记进 RECALCULATED 事件的 `priceSuggestions`；
+    - 页面上点“重新计算诊断”之后；
+    - 也可以调用 `POST /api/v1/console/workflow/stores/{storeId}/price-suggestions`，需要 `RECOMMENDATION_MANAGE`。
+  - 保持一致：
+    - 每次先让过期的建议到期；
+    - 本服务提出、还没人决定的建议，若最新计算给出的价格或依据数字有变化，就作废重提（`SUPERSEDED_BY_NEWER_CALCULATION`）；若不再需要，就撤下（`NO_LONGER_SUGGESTED`）；
+    - 某个商品记录过决定后，验证期（14 天）内不再给新建议。
+- **手工决定**（`PriceDecisionService`，表 `ops.price_decision`，只追加，一条建议一条）：
+  - `POST /api/v1/console/workflow/recommendations/{id}/price-decision`，需要 `RECOMMENDATION_MANAGE`（已有授权，不需要第二重验证）：
+    - `APPLIED_IN_SELLER_OFFICE`：记下实际设置的买家价，建议转为 CANCELLED（原因 `APPLIED_IN_SELLER_OFFICE`）；
+    - `NOT_APPLIED`：可附原因，建议转为 REJECTED（还在草稿时转为 CANCELLED）。
+  - 两种决定都不是“批准”：批准是授权平台写入，必须护栏通过；这里平台什么也没写。
+  - `GET …/stores/{storeId}/price-decisions?subjectId=`，需要 `DIAGNOSTIC_VIEW`。
+- **页面**：
+  - 店铺诊断的结论里新增“有降价空间”；“重新计算诊断”之后会同时生成建议，并提示新增、更新、撤下各几条；
+  - 商品详情新增“调价建议”：依据、买家价 现价 → 目标价（降幅）、可调区间、预估利润率变化、竞品价、搜索人数、护栏结论（未通过时列出原因并说明怎么做），以及“已在 Ozon 后台改价”“不采纳”“打开审阅”三个按钮；
+  - “审核调价建议”的审阅抽屉也显示依据、可调区间和利润率变化，币种取建议自己的币种。
+- **AI**：
+  - 商品解读提示词 v11（Listing 辅助 v10）、店铺周诊断 v7，讲清 `PRICE_HEADROOM`。模型若建议改价，只引用可降空间这个比例，不自己算价格、不填价格参数（平台已经给出建议价）；
+  - 投影的规则细节加入 `PRICE_HEADROOM` 的搜索人数、预估利润率、利润率下限和可降空间。
+- **试点结果（2026-10-01）**：
+
+  | 商品 | 数量 | 降幅 | 预估利润率变化 |
+  | --- | --- | --- | --- |
+  | 659 系列 | 5 个 | 单次 10% | 34.81% → 33.87%（NIBAI-M 25.59% → 23.63%） |
+  | W-2618-KASE | 3 个 | 8.1%–10% | 降到 15%–16.09% |
+  | W-657 | 4 个 | 5.47%（降到下限） | 降到 15% |
+  | W-2643-D54-4XL | 1 个 | 6.56% | 降到 15% |
+
+  - 13 条建议都是 `PRICE_HEADROOM`，全部进入待审阅；
+  - 护栏预览全部为 BLOCK：没有生效的定价策略、所需指标缺失（单件目标利润、安全缓冲）、缺少经济性 profile；
+  - `PRICE_GAP_REDUCIBLE` / `PARTIAL` 为 0。
+
 ## 控制台：店铺诊断
 
 控制台首页（导航里的"店铺概览 → 店铺诊断"，路径 `/store/diagnosis`）按商品汇总平台给出的各项信号，用来回答"为什么卖不动"。

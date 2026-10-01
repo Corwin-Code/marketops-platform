@@ -54,6 +54,7 @@ public class DiagnosisEngine {
     private static final String LOW_SEARCH_EXPOSURE = "LOW_SEARCH_EXPOSURE";
     private static final String CONTENT_BELOW_TARGET = "CONTENT_BELOW_TARGET";
     private static final String PROMOTION_OPPORTUNITY = "PROMOTION_OPPORTUNITY";
+    private static final String PRICE_HEADROOM = "PRICE_HEADROOM";
 
     /** The version of every rule this release evaluates. */
     public static final int RULE_VERSION = 1;
@@ -103,6 +104,7 @@ public class DiagnosisEngine {
         outcomes.add(evaluateLowSearchExposure(metrics));
         outcomes.add(evaluateContentBelowTarget(metrics));
         outcomes.add(evaluatePromotionOpportunity(metrics));
+        outcomes.add(evaluatePriceHeadroom(metrics));
         return List.copyOf(outcomes);
     }
 
@@ -297,6 +299,69 @@ public class DiagnosisEngine {
                 ? RuleOutcome.triggered(PROMOTION_OPPORTUNITY, DiagnosisFindingView.Severity.INFO, detail,
                         List.of(margin))
                 : RuleOutcome.clear(PROMOTION_OPPORTUNITY, detail, List.of(margin));
+    }
+
+    /**
+     * Buyers look for an in-stock listing and nobody orders it, and its buyer price can come down
+     * before the estimated unit margin reaches the minimum: a lower price is worth trying. The room
+     * is the share by which the buyer price can fall to the target margin price; less than the
+     * configured least room is not worth a change. A buyer price above a comparable competitor price
+     * is the price-gap rules' case, so it is clear here. Informational: a person decides, and the
+     * price suggestion it leads to never goes below the target margin price.
+     */
+    private RuleOutcome evaluatePriceHeadroom(Map<MetricCode, ComputedMetric> metrics) {
+        ComputedMetric search = metrics.get(MetricCode.SEARCH_USERS);
+        ComputedMetric ordered = metrics.get(MetricCode.ORDERED_UNITS);
+        ComputedMetric available = metrics.get(MetricCode.PLATFORM_AVAILABLE_UNITS);
+        ComputedMetric price = metrics.get(MetricCode.OBSERVED_SELLING_PRICE);
+        ComputedMetric margin = metrics.get(MetricCode.PROJECTED_UNIT_MARGIN);
+        ComputedMetric target = metrics.get(MetricCode.TARGET_MARGIN_PRICE);
+        Optional<RuleOutcome> unavailable = requireAvailable(PRICE_HEADROOM, search, ordered, available, price,
+                margin, target);
+        if (unavailable.isPresent()) {
+            return unavailable.get();
+        }
+        Long demandFloor = properties.getThresholds().getDemandSearchUsersFloor();
+        BigDecimal marginFloor = properties.getThresholds().getMinimumUnitMarginRate();
+        BigDecimal leastRoom = properties.getThresholds().getPriceHeadroomMinimumRate();
+        if (demandFloor == null || marginFloor == null || leastRoom == null) {
+            return RuleOutcome.declined(PRICE_HEADROOM, THRESHOLD_NOT_CONFIGURED, Map.of());
+        }
+        if (price.numericValue().signum() <= 0
+                || !java.util.Objects.equals(price.currencyCode(), target.currencyCode())) {
+            return RuleOutcome.declined(PRICE_HEADROOM, REQUIRED_METRIC_UNAVAILABLE,
+                    detail("metric", MetricCode.TARGET_MARGIN_PRICE.name()));
+        }
+        // Rounded down, so a room shown at the least room really reaches it.
+        BigDecimal room = BigDecimal.ONE.subtract(target.numericValue()
+                .divide(price.numericValue(), 4, java.math.RoundingMode.UP));
+        Map<String, String> detail = new LinkedHashMap<>();
+        detail.put("searchUsers", search.numericValue().toPlainString());
+        detail.put("orderedUnits", ordered.numericValue().toPlainString());
+        detail.put("platformAvailableUnits", available.numericValue().toPlainString());
+        detail.put("buyerPrice", price.numericValue().toPlainString());
+        detail.put("currencyCode", String.valueOf(price.currencyCode()));
+        detail.put("targetMarginPrice", target.numericValue().toPlainString());
+        detail.put("projectedUnitMargin", margin.numericValue().toPlainString());
+        detail.put("minimumUnitMarginRate", marginFloor.toPlainString());
+        detail.put("priceRoom", room.toPlainString());
+        detail.put("priceHeadroomMinimumRate", leastRoom.toPlainString());
+        detail.put("demandSearchUsersFloor", Long.toString(demandFloor));
+        List<ComputedMetric> read = new ArrayList<>(List.of(search, ordered, available, price, margin, target));
+        ComputedMetric competitor = metrics.get(MetricCode.PLATFORM_COMPETITOR_MIN_PRICE);
+        if (competitor != null && competitor.valueState() == ValueState.AVAILABLE
+                && java.util.Objects.equals(price.currencyCode(), competitor.currencyCode())
+                && price.numericValue().compareTo(competitor.numericValue()) > 0) {
+            detail.put("condition", "PRICE_GAP_RULES_APPLY");
+            read.add(competitor);
+            return RuleOutcome.clear(PRICE_HEADROOM, detail, read);
+        }
+        boolean demand = search.numericValue().compareTo(BigDecimal.valueOf(demandFloor)) >= 0
+                && available.numericValue().signum() > 0 && ordered.numericValue().signum() == 0;
+        boolean headroom = margin.numericValue().compareTo(marginFloor) > 0 && room.compareTo(leastRoom) >= 0;
+        return demand && headroom
+                ? RuleOutcome.triggered(PRICE_HEADROOM, DiagnosisFindingView.Severity.INFO, detail, read)
+                : RuleOutcome.clear(PRICE_HEADROOM, detail, read);
     }
 
     /**
