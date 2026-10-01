@@ -23,6 +23,10 @@ marketops:
   # needs a verified capability, the switches, the allowlist, an approval and the gate.
   production-writes:
     enabled: ${MARKETOPS_PRODUCTION_WRITES_ENABLED:true}
+  # W1 (the same authorization): this workstation is the process that executes approved price
+  # commands. The worker only tries; a command whose write gate is shut stays where it is.
+  price-write:
+    worker-enabled: ${MARKETOPS_PRICE_WRITE_WORKER_ENABLED:true}
   # Secrets are read from a directory outside the repository. The model key
   # lives at <mount>/ai/dashscope-api-key; `make ai-provider` installs it.
   secrets:
@@ -195,6 +199,29 @@ marketops:
       - key: platform:OZON:read
         host: api-seller.ozon.ru
         path-prefix: /v4/product/info/stocks
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      # Price writes (W1, Owner authorization 2026-10-01; official OpenAPI 2026-10-01): the
+      # apply (POST /v1/product/import/prices, one product per request) and its readback
+      # (POST /v5/product/info/prices filtered to that product). Every call of a price
+      # command, readbacks included, leaves under this key and nothing else does. Exact
+      # paths: a write rule never covers a neighbouring method.
+      - key: platform:OZON:write
+        host: api-seller.ozon.ru
+        path-prefix: /v1/product/import/prices
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
+      - key: platform:OZON:write
+        host: api-seller.ozon.ru
+        path-prefix: /v5/product/info/prices
+        exact-path: true
         methods: [POST]
         headers: [accept, content-type, client-id, api-key]
         max-request-bytes: 16384

@@ -23,7 +23,7 @@ OPERATOR ?= owner-local
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify economics-profile ozon-run ozon-resolve ozon-normalize pilot-catalog
+        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify ozon-price-write economics-profile ozon-run ozon-resolve ozon-normalize pilot-catalog
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' Makefile \
@@ -102,6 +102,12 @@ owner-grant: require-repo-root ## Local: grant the person LOGIN (default owner) 
 ozon-verify: require-repo-root ## Ozon pilot: submit and approve CAPABILITY's probe evidence as two Owners
 	@python3 scripts/ozon_pilot.py verify --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
 	  --capability "$(CAPABILITY)" $(if $(AGAIN),--again)
+
+ozon-price-write: require-repo-root ## Ozon pilot price write (W1): STEP=probe OFFER=<offer id> OFFICIAL_SOURCE=<swagger.json>, then STEP=setup, STEP=verify
+	@test -n "$(STEP)" || { echo 'usage: make ozon-price-write STEP=probe|setup|verify [OFFER=<offer id>]' >&2; exit 2; }
+	@python3 scripts/ozon_pilot.py price-write "$(STEP)" --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  $(if $(OFFER),--offer "$(OFFER)") $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)") \
+	  $(if $(AGAIN),--again)
 
 economics-profile: require-repo-root ## Guardrail: generate the pilot store's economics profile from its tariffs; two Owners verify it
 	@python3 scripts/ozon_pilot.py economics-profile --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
