@@ -61,6 +61,7 @@ export const INDEX_LABELS: Record<string, string> = {
 export const outcomesText = {
   rules:
     '改动当天不计入。改动后第 9 天先给出 7 天对 7 天的初步读数，第 16 天给出 14 天对 14 天的结论（下单数据晚 2 天到）。下单件数决定结论；前后都没有下单时，看先行信号：搜索人数变化 20% 以上、Ozon 价格指数等级变化。改动后断货、进入促销、价格没有保持，或该商品还有其它动作时，判为无法判断。结论出来后，对应的调价建议自动关闭。',
+  tableTitle: '动作效果',
   empty:
     '还没有需要跟踪的动作。平台改价成功、在后台手工改价并记录、或记录参加/退出促销后，会出现在这里。',
   columns: {
@@ -104,9 +105,39 @@ export const outcomesText = {
   arrow: ' → ',
   priceChange: (from: string, to: string) => `${from} → ${to}`,
   ruleVersion: (version: number) => `判定规则 v${String(version)}`,
+  // The weekly review.
+  weekly: {
+    title: '周复盘',
+    hint: '每周一自动保存上一周的快照，并请 Qwen 写「哪些有效、下一步怎么调」；也可以随时生成本周至今的复盘（周一会生成正式版）。只发平台算好的比例和结论，不发成本或利润金额。',
+    aiTitle: 'Qwen 周复盘',
+    aiNone: '还没有周复盘。点“生成”会保存本周至今的快照并请 Qwen 复盘。',
+    aiActions: '下一步建议',
+    week: (start: string, end: string) => `${start} ~ ${end}`,
+    provisional: '本周至今（临时），周一会生成正式复盘',
+    final: '正式复盘',
+    noReview: '还没有周快照。每周一自动生成；也可以在下方生成本周至今的复盘。',
+    orders: (from: string, to: string) => `最近 7 天下单（${from} ~ ${to}）`,
+    ordersValue: (units: number, listings: number | null, days: number) =>
+      `${String(units)} 件${listings === null ? '' : `，${String(listings)} 个商品有下单`}（覆盖 ${String(days)}/7 天）`,
+    noOrdersData: '没有下单数据',
+    activity: '本周动作',
+    activityValue: (acted: number, readings: number, observing: number) =>
+      `生效 ${String(acted)} 个，出读数 ${String(readings)} 次，仍在观察 ${String(observing)} 个`,
+    verdicts: '已出结论',
+    verdictsValue: (
+      improved: number,
+      unchanged: number,
+      regressed: number,
+      indeterminate: number,
+    ) =>
+      `改善 ${String(improved)}，无变化 ${String(unchanged)}，变差 ${String(regressed)}，无法判断 ${String(indeterminate)}`,
+    actionsLabel: '复盘涉及的动作',
+    observingShort: '观察中',
+    history: '往周',
+  },
   // The effect section of a price command's timeline.
   commandTitle: '执行后的效果',
   commandNotFollowed:
     '指令成功后，平台会自动开始跟踪效果：改动后第 9 天给出初步读数，第 16 天给出结论。',
-  openOutcomes: '查看全部效果跟踪',
+  openOutcomes: '查看效果复盘',
 } as const;

@@ -509,6 +509,37 @@ public class FactQueryRepository {
                 .list();
     }
 
+    /** The store's daily order facts over a window, summed across its listings (P10). */
+    public com.mimococo.marketops.operatingfacts.StoreOrderTotals storeOrders(UUID storeId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT count(DISTINCT CAST(traffic.period_start AT TIME ZONE 'UTC' AS date)) AS days,
+                               sum(traffic.ordered_units) AS units,
+                               count(DISTINCT traffic.platform_listing_variant_id)
+                                   FILTER (WHERE traffic.ordered_units > 0) AS listings
+                          FROM core.listing_traffic_observation AS traffic
+                          JOIN core.platform_listing_variant AS variant
+                            ON variant.id = traffic.platform_listing_variant_id
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                         WHERE listing.store_id = :storeId
+                           AND traffic.period_start >= :from
+                           AND traffic.period_end <= :to
+                        """
+                        + NOT_SUPERSEDED.formatted("core.listing_traffic_observation", "traffic"))
+                .param("storeId", storeId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> {
+                    int days = rows.getInt("days");
+                    return days == 0
+                            ? new com.mimococo.marketops.operatingfacts.StoreOrderTotals(0, null, null)
+                            : new com.mimococo.marketops.operatingfacts.StoreOrderTotals(days,
+                                    rows.getObject("units") == null ? 0L : rows.getLong("units"),
+                                    rows.getInt("listings"));
+                })
+                .single();
+    }
+
     /** Sales at one stage over a window, one row per currency. */
     public List<MoneyGroupRow> sales(UUID listingVariantId,
                                      String saleStage,

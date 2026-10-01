@@ -101,6 +101,7 @@ public class ScheduledCollectionService {
     private final FeedWatermarkKeeper watermarks;
     private final CommandOutcomeReconciler commandOutcomes;
     private final ActionOutcomeTracker actionOutcomes;
+    private final WeeklyReviewService weeklyReviews;
     private final MetadataAuditRecorder auditRecorder;
     private final ScheduledCollectionProperties properties;
     private final ObjectMapper objectMapper;
@@ -117,6 +118,7 @@ public class ScheduledCollectionService {
                                FeedWatermarkKeeper watermarks,
                                CommandOutcomeReconciler commandOutcomes,
                                ActionOutcomeTracker actionOutcomes,
+                               WeeklyReviewService weeklyReviews,
                                MetadataAuditRecorder auditRecorder,
                                ScheduledCollectionProperties properties,
                                ObjectMapper objectMapper,
@@ -132,6 +134,7 @@ public class ScheduledCollectionService {
         this.watermarks = watermarks;
         this.commandOutcomes = commandOutcomes;
         this.actionOutcomes = actionOutcomes;
+        this.weeklyReviews = weeklyReviews;
         this.auditRecorder = auditRecorder;
         this.properties = properties;
         this.objectMapper = objectMapper;
@@ -287,6 +290,7 @@ public class ScheduledCollectionService {
             trackActionOutcomes(policy);
             recalculated = recalculate(policy, lastCollected, now);
             interpretWeekly(policy, now);
+            reviewWeekly(policy, now);
         }
         return new StoreOutcome(executed, recalculated);
     }
@@ -519,6 +523,45 @@ public class ScheduledCollectionService {
                     detail("failureType", failure.getClass().getSimpleName()));
         }
     }
+
+    /**
+     * The weekly review (P10, Owner decision 2026-10-01): on Mondays (UTC), once the day's collection slot
+     * has started, the week just ended is kept as a final snapshot and the model asked about its followed
+     * actions. A failed attempt is tried again after a pause.
+     */
+    private void reviewWeekly(Policy policy, Instant now) {
+        LocalDate today = LocalDate.ofInstant(now, ZoneOffset.UTC);
+        Instant slot = CollectionPlanner.slotStart(now, properties.getDailyAt());
+        if (today.getDayOfWeek() != java.time.DayOfWeek.MONDAY
+                || !LocalDate.ofInstant(slot, ZoneOffset.UTC).equals(today)) {
+            return;
+        }
+        LocalDate week = today.minusDays(7);
+        Instant attempted = weeklyReviewAttempts.get(policy.storeId());
+        if (weeklyReviews.done(policy.storeId(), week)
+                || (attempted != null && attempted.isAfter(now.minus(INTERPRETATION_BACKOFF)))) {
+            return;
+        }
+        weeklyReviewAttempts.put(policy.storeId(), now);
+        try {
+            WeeklyReviewService.Review review = weeklyReviews.review(null, policy.organizationId(), policy.storeId(),
+                    week);
+            log.atInfo().addKeyValue("event", "weekly_review_kept")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("weekStart", week)
+                    .addKeyValue("actions", review.actions().size())
+                    .addKeyValue("invocationId", review.aiInvocationId())
+                    .log("The week's followed actions were reviewed");
+        } catch (RuntimeException failure) {
+            log.atWarn().addKeyValue("event", "weekly_review_failed")
+                    .addKeyValue("storeId", policy.storeId())
+                    .addKeyValue("failureType", failure.getClass().getSimpleName())
+                    .log("The weekly review failed");
+        }
+    }
+
+    /** When each store's weekly review was last attempted, for the pause after a failure. */
+    private final java.util.Map<UUID, Instant> weeklyReviewAttempts = new java.util.concurrent.ConcurrentHashMap<>();
 
     /** The target a live run was made for, named like the planner names it. */
     private String keyOf(Cadence cadence, RunRecord run) {

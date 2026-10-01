@@ -4,8 +4,8 @@
  * preliminary (7 against 7 days) and final (14 against 14 days) before/after readings.
  */
 
-import type { ConsoleOutcome, ConsoleRequest } from './console';
-import { request } from './console';
+import type { AiExplanation, ConsoleOutcome, ConsoleRequest } from './console';
+import { AI_REQUEST_TIMEOUT_MS, parseAiExplanation, request } from './console';
 
 /** One stage's comparison of the days after an action with the days before it. */
 export interface OutcomeReading {
@@ -73,6 +73,115 @@ export interface FollowedAction {
 export interface CommandOutcome {
   readonly followed: boolean;
   readonly action: FollowedAction | null;
+}
+
+/** One action as a week's snapshot keeps it, with its newest reading up to the week's end. */
+export interface WeeklyReviewAction {
+  readonly actionRef: string;
+  readonly listingVariantId: string;
+  readonly offerId: string | null;
+  readonly title: string | null;
+  readonly actionKind: string;
+  readonly source: string;
+  readonly actedOn: string;
+  readonly priorPrice: string | null;
+  readonly targetPrice: string | null;
+  readonly currencyCode: string | null;
+  /** NONE, PRELIMINARY or FINAL. */
+  readonly stage: string;
+  /** OBSERVING before any reading, else the reading's verdict. */
+  readonly verdict: string;
+  readonly leadingSignal: string | null;
+  readonly reasons: readonly string[];
+  readonly ordersBefore: number | null;
+  readonly ordersAfter: number | null;
+}
+
+/** One week's snapshot of the store's followed actions. */
+export interface WeeklyReview {
+  readonly id: string;
+  readonly weekStart: string;
+  readonly weekEnd: string;
+  /** Whether the snapshot was taken after its week ended; a provisional one is taken again. */
+  readonly weekComplete: boolean;
+  readonly ordersFrom: string | null;
+  readonly ordersTo: string | null;
+  readonly ordersDaysCovered: number;
+  readonly orderedUnits: number | null;
+  readonly listingsWithOrders: number | null;
+  readonly actionsActed: number;
+  readonly readingsRecorded: number;
+  readonly actionsObserving: number;
+  readonly improvedCount: number;
+  readonly unchangedCount: number;
+  readonly regressedCount: number;
+  readonly indeterminateCount: number;
+  readonly actions: readonly WeeklyReviewAction[];
+  readonly aiInvocationId: string | null;
+  readonly compiledAt: string;
+}
+
+/** Why a week was kept without the model's answer: it names no followed action. */
+export const NO_ACTION_TO_REVIEW = '本周还没有需要复盘的动作，已保存快照，没有调用 Qwen。';
+
+/** Load a store's newest weekly snapshots, newest week first. */
+export function fetchWeeklyReviews(
+  context: ConsoleRequest,
+  storeId: string,
+): Promise<ConsoleOutcome<readonly WeeklyReview[]>> {
+  return request(
+    context,
+    `/api/v1/console/outcomes/stores/${encodeURIComponent(storeId)}/weekly-reviews`,
+    (body) => listOf(body, parseWeeklyReview),
+  );
+}
+
+/** The newest recorded weekly review answer, or `null` when none was ever asked for. */
+export function fetchLatestWeeklyReviewExplanation(
+  context: ConsoleRequest,
+  storeId: string,
+): Promise<ConsoleOutcome<AiExplanation | null>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/stores/${encodeURIComponent(storeId)}/weekly-review/latest`,
+    (body) => (body === undefined || body === null ? null : parseAiExplanation(body)),
+  );
+}
+
+/**
+ * Review the week still running: a provisional snapshot and the model's answer about it. Resolves to
+ * the answer, read from the explanations it is recorded under.
+ */
+export async function requestWeeklyReview(
+  context: ConsoleRequest,
+  storeId: string,
+): Promise<ConsoleOutcome<AiExplanation>> {
+  const reviewed = await request(
+    context,
+    `/api/v1/console/outcomes/stores/${encodeURIComponent(storeId)}/weekly-reviews`,
+    parseWeeklyReview,
+    { method: 'POST' },
+    AI_REQUEST_TIMEOUT_MS,
+  );
+  if (!reviewed.ok) return reviewed;
+  const invocationId = reviewed.value.aiInvocationId;
+  if (invocationId === null) {
+    // A week naming no followed action is kept without asking the model.
+    return {
+      ok: false,
+      failure: {
+        kind: 'refused',
+        status: 409,
+        detail: NO_ACTION_TO_REVIEW,
+        code: 'NO_ACTION_TO_REVIEW',
+      },
+    };
+  }
+  return request(
+    context,
+    `/api/v1/console/explanations/${encodeURIComponent(invocationId)}`,
+    parseAiExplanation,
+  );
 }
 
 /** Load a store's followed actions, newest first. */
@@ -154,6 +263,98 @@ export function parseFollowedAction(value: unknown): FollowedAction | undefined 
     finalDueOn,
     preliminary,
     finalReading,
+  };
+}
+
+function parseWeeklyAction(value: unknown): WeeklyReviewAction | undefined {
+  if (!isRecord(value) || !Array.isArray(value.reasons)) return undefined;
+  const actionRef = text(value.actionRef);
+  const listingVariantId = text(value.listingVariantId);
+  const actionKind = text(value.actionKind);
+  const source = text(value.source);
+  const actedOn = text(value.actedOn);
+  const stage = text(value.stage);
+  const verdict = text(value.verdict);
+  if (
+    actionRef === undefined ||
+    listingVariantId === undefined ||
+    actionKind === undefined ||
+    source === undefined ||
+    actedOn === undefined ||
+    stage === undefined ||
+    verdict === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    actionRef,
+    listingVariantId,
+    offerId: text(value.offerId) ?? null,
+    title: text(value.title) ?? null,
+    actionKind,
+    source,
+    actedOn,
+    priorPrice: decimal(value.priorPrice),
+    targetPrice: decimal(value.targetPrice),
+    currencyCode: text(value.currencyCode) ?? null,
+    stage,
+    verdict,
+    leadingSignal: text(value.leadingSignal) ?? null,
+    reasons: value.reasons.filter((reason): reason is string => typeof reason === 'string'),
+    ordersBefore: count(value.ordersBefore),
+    ordersAfter: count(value.ordersAfter),
+  };
+}
+
+/** Validate one weekly snapshot. */
+export function parseWeeklyReview(value: unknown): WeeklyReview | undefined {
+  if (!isRecord(value) || !Array.isArray(value.actions)) return undefined;
+  const id = text(value.id);
+  const weekStart = text(value.weekStart);
+  const weekEnd = text(value.weekEnd);
+  const compiledAt = text(value.compiledAt);
+  const numbers = [
+    value.ordersDaysCovered,
+    value.actionsActed,
+    value.readingsRecorded,
+    value.actionsObserving,
+    value.improvedCount,
+    value.unchangedCount,
+    value.regressedCount,
+    value.indeterminateCount,
+  ];
+  if (
+    id === undefined ||
+    weekStart === undefined ||
+    weekEnd === undefined ||
+    compiledAt === undefined ||
+    typeof value.weekComplete !== 'boolean' ||
+    numbers.some((number) => typeof number !== 'number')
+  ) {
+    return undefined;
+  }
+  const actions = value.actions.map(parseWeeklyAction);
+  if (actions.some((action) => action === undefined)) return undefined;
+  return {
+    id,
+    weekStart,
+    weekEnd,
+    weekComplete: value.weekComplete,
+    ordersFrom: text(value.ordersFrom) ?? null,
+    ordersTo: text(value.ordersTo) ?? null,
+    ordersDaysCovered: value.ordersDaysCovered as number,
+    orderedUnits: count(value.orderedUnits),
+    listingsWithOrders: count(value.listingsWithOrders),
+    actionsActed: value.actionsActed as number,
+    readingsRecorded: value.readingsRecorded as number,
+    actionsObserving: value.actionsObserving as number,
+    improvedCount: value.improvedCount as number,
+    unchangedCount: value.unchangedCount as number,
+    regressedCount: value.regressedCount as number,
+    indeterminateCount: value.indeterminateCount as number,
+    actions: actions.filter((action): action is WeeklyReviewAction => action !== undefined),
+    aiInvocationId: text(value.aiInvocationId) ?? null,
+    compiledAt,
   };
 }
 

@@ -94,6 +94,9 @@ public interface OperatingFactQuery {
      */
     List<java.time.LocalDate> storeOrderDays(UUID storeId, FactWindow window);
 
+    /** The store's daily order facts over a window, summed across its listings (P10). */
+    StoreOrderTotals storeOrders(UUID storeId, FactWindow window);
+
     /**
      * Sales at one stage over a window.
      *

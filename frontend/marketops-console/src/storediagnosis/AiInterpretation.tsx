@@ -17,6 +17,7 @@ import {
   requestPromotionReview,
   requestStoreExplanation,
 } from '../api/console';
+import { fetchLatestWeeklyReviewExplanation, requestWeeklyReview } from '../api/outcomes';
 import { AI_CLAIM_LABELS_ZH, AiClaimGroups } from '../diagnosis/AiExplanationPanel';
 import { codeLabel } from '../i18n';
 import {
@@ -37,7 +38,7 @@ type Loaded =
   | { readonly kind: 'loaded'; readonly explanation: AiExplanation | null }
   | { readonly kind: 'failed'; readonly failure: ConsoleFailure };
 
-type Source = 'store' | 'listing' | 'content' | 'promotion';
+type Source = 'store' | 'listing' | 'content' | 'promotion' | 'weekly';
 
 /** Read the newest recorded answer of a source. */
 function latest(
@@ -55,6 +56,8 @@ function latest(
       return fetchLatestContentDraft(context, listingVariantId ?? '', storeId, 'D7');
     case 'promotion':
       return fetchLatestPromotionReview(context, storeId, 'D7');
+    case 'weekly':
+      return fetchLatestWeeklyReviewExplanation(context, storeId);
   }
 }
 
@@ -74,6 +77,8 @@ function ask(
       return requestContentDraft(context, listingVariantId ?? '', storeId, 'D7');
     case 'promotion':
       return requestPromotionReview(context, storeId, 'D7');
+    case 'weekly':
+      return requestWeeklyReview(context, storeId);
   }
 }
 
@@ -86,6 +91,7 @@ export function useExplanation(
   source: Source,
   storeId: string,
   listingVariantId: string | undefined,
+  onAnswered?: () => void,
 ): {
   readonly loaded: Loaded;
   readonly waitedSeconds: number | null;
@@ -138,6 +144,7 @@ export function useExplanation(
       } else {
         setRequestFailure(outcome.failure);
       }
+      onAnswered?.();
     });
   };
 
@@ -316,18 +323,22 @@ export function AiSummaryCard({
   source,
   labels,
   referenceLabel,
+  onAnswered,
 }: {
   readonly context: ConsoleRequest;
   readonly storeId: string;
-  readonly source: 'store' | 'promotion';
+  readonly source: 'store' | 'promotion' | 'weekly';
   readonly labels: AiSummaryLabels;
   readonly referenceLabel: ReferenceLabel;
+  /** Called after an explicit request finished, answered or not. */
+  readonly onAnswered?: () => void;
 }): React.JSX.Element {
   const { loaded, waitedSeconds, generate, reload, requestFailure } = useExplanation(
     context,
     source,
     storeId,
     undefined,
+    onAnswered,
   );
   const explanation = loaded.kind === 'loaded' ? loaded.explanation : null;
   const accepted = explanation?.claims.filter((claim) => claim.accepted) ?? [];

@@ -111,6 +111,22 @@ class AiConsoleController {
         return ResponseEntity.ok(response(latest.get()));
     }
 
+    /**
+     * The newest recorded weekly review of one store, in any state; 204 when none. Asking for one is
+     * the workflow's: it keeps the week the review is about (P10).
+     */
+    @GetMapping(value = "/stores/{storeId}/weekly-review/latest", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ExplanationResponse> latestWeeklyReview(AuthenticatedActor actor, @PathVariable UUID storeId) {
+        authorization.require(actor, ActionScopeCode.EVIDENCE_VIEW, ResourceScope.store(storeId));
+        Optional<AiDiagnosis> latest = copilot.latestWeeklyReview(actor.organizationId(), storeId);
+        if (latest.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.AI_INVOCATION, latest.get().invocationId()));
+        return ResponseEntity.ok(response(latest.get()));
+    }
+
     /** One recorded explanation and its claims, accepted and rejected alike. */
     @GetMapping(value = "/{invocationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ExplanationResponse invocation(AuthenticatedActor actor, @PathVariable UUID invocationId) {

@@ -335,6 +335,12 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
+    public com.mimococo.marketops.operatingfacts.StoreOrderTotals storeOrders(UUID storeId, FactWindow window) {
+        return facts.storeOrders(storeId, window.periodStart(), window.periodEnd());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public TrafficTotals traffic(UUID platformListingVariantId, FactWindow window) {
         return facts.traffic(platformListingVariantId, window.periodStart(), window.periodEnd())
                 .map(row -> new TrafficTotals(
