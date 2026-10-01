@@ -23,7 +23,7 @@ OPERATOR ?= owner-local
 
 .PHONY: help require-repo-root require-env-local env-init bootstrap \
         up down reset backend-run backend-build frontend-install frontend-dev frontend-build \
-        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify ozon-price-write economics-profile \
+        ai-provider ozon-probe ozon-setup ozon-reviewer owner-grant ozon-verify ozon-price-write ozon-content-write economics-profile \
         availability-policies ozon-run ozon-resolve ozon-normalize pilot-catalog
 
 help: ## Show the available targets
@@ -107,6 +107,12 @@ ozon-verify: require-repo-root ## Ozon pilot: submit and approve CAPABILITY's pr
 ozon-price-write: require-repo-root ## Ozon pilot price write (W1): STEP=probe OFFER=<offer id> OFFICIAL_SOURCE=<swagger.json>, then STEP=setup, STEP=verify
 	@test -n "$(STEP)" || { echo 'usage: make ozon-price-write STEP=probe|setup|verify [OFFER=<offer id>]' >&2; exit 2; }
 	@python3 scripts/ozon_pilot.py price-write "$(STEP)" --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
+	  $(if $(OFFER),--offer "$(OFFER)") $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)") \
+	  $(if $(AGAIN),--again)
+
+ozon-content-write: require-repo-root ## Ozon pilot title and description write (W2): STEP=probe OFFER=<offer id>, then STEP=setup, STEP=verify
+	@test -n "$(STEP)" || { echo 'usage: make ozon-content-write STEP=probe|setup|verify [OFFER=<offer id>]' >&2; exit 2; }
+	@python3 scripts/ozon_pilot.py content-write "$(STEP)" --api "$(API)" --operator "$(OPERATOR)" --pilot "$(PILOT)" \
 	  $(if $(OFFER),--offer "$(OFFER)") $(if $(OFFICIAL_SOURCE),--official-source-file "$(OFFICIAL_SOURCE)") \
 	  $(if $(AGAIN),--again)
 
