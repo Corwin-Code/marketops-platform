@@ -30,7 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>Neither is an approval. An approval authorizes the platform to write and needs the guardrails to
  * pass; here the platform writes nothing. A suggestion applied by hand leaves the platform's path as
  * CANCELLED with the reason APPLIED_IN_SELLER_OFFICE, one not applied is REJECTED (CANCELLED while it
- * was still a draft), and the decision itself, with the buyer price that was set, is kept beside it.
+ * was still a draft or already approved), and the decision itself, with the buyer price that was set, is
+ * kept beside it.
  */
 @Service
 public class PriceDecisionService {
@@ -43,9 +44,14 @@ public class PriceDecisionService {
     /** Decided against. */
     public static final String NOT_APPLIED = "NOT_APPLIED";
 
-    /** The states in which a suggestion still waits for a person. */
+    /**
+     * The states in which a suggestion still waits for a person: before review, or approved while no
+     * command carries it. Until the platform's price writes are enabled (Owner decision 2026-10-01),
+     * an approval only records the decision, and the person then changes the price by hand.
+     */
     private static final Set<RecommendationState> OPEN = Set.of(RecommendationState.DRAFT,
-            RecommendationState.VALIDATED, RecommendationState.READY_FOR_REVIEW);
+            RecommendationState.VALIDATED, RecommendationState.READY_FOR_REVIEW, RecommendationState.APPROVED,
+            RecommendationState.POLICY_AUTHORIZED);
 
     /** A price as ops.price_decision keeps it: up to fourteen whole digits and four decimals. */
     private static final BigDecimal PRICE_LIMIT = new BigDecimal("100000000000000");

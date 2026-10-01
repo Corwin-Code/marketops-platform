@@ -1115,12 +1115,16 @@ Owner 2026-10-01 的四项决定：
   - 重算后，两项指标变为 `CANONICAL_CONFIRMED`，零订单商品的数据完整度从 0.125 升到 0.375；
   - 在审建议因指标输入摘要变化作废重提，新建议带着新的护栏预览。
 
-### 审批
+### 审批（Owner 2026-10-01 决定：写入能力未启用时只记录决定）
 
 - `ApprovalService.approve` 只记录决定，并把建议转为 `APPROVED`；
-- 但控制台的“批准调价”在记录决定后，会立即调用 `POST /api/v1/console/workflow/recommendations/{id}/command` 创建调价指令；
-- `ExecutionService.createCommand` 要求平台登记了已核验的 `price-change` 写入能力（`platform.platform_capability`），目前没有任何平台登记，所以会以 `CAPABILITY_NOT_USABLE` 拒绝，不生成指令，也不调用 Ozon；
-- 抽屉随后显示“决定已记录，但创建指令失败”，并提供“创建已授权指令”重试。在 W1 登记写入能力之前，重试也会被同样拒绝。真实写入仍属于 W1。
+- 平台能否接受调价写入，看是否登记了已核验的 `price-change` 写入能力（`platform.platform_capability`）。目前没有任何平台登记。新增 `GET /api/v1/console/workflow/recommendations/{id}/price-write-capability`（`DIAGNOSTIC_VIEW`）返回 `{usable}`；
+- 写入能力不可用时，审核抽屉的行为：
+  - 批准对话框说明“只记录你的决定，不会创建调价指令”，按钮为“确认批准”，批准后不再调用创建指令的接口；
+  - 隐藏“按常设授权批准”和“创建已授权指令”；
+  - 已批准的建议显示手工调价提示，并提供“已在 Ozon 后台改价”“不采纳”两个记录入口；
+- `PriceDecisionService` 现在也接受“已批准、尚未生成指令”（`APPROVED`、`POLICY_AUTHORIZED`）的建议记录手工决定，记录后建议转为 `CANCELLED`，决定保存在 `ops.price_decision`；
+- 写入能力可用时，行为不变：批准后创建指令，经写入闸门检查。写入能力等 Owner 授权后统一接入（W1）。
 
 ### 试点（2026-10-01）
 
@@ -1134,12 +1138,15 @@ Owner 2026-10-01 的四项决定：
   - 7 条在审建议作废重提，新建议的护栏预览全部 PASS，没有拦截原因，调价后利润率都不低于 15%；
 - 05:14，经 Owner 同意批准 659-KASE-S 的建议（目标价下调 10%）：
   - 记录了 APPROVAL PASS 和批准决定，step-up 满足，建议转为 `APPROVED`；
-  - 随后创建指令被 `CAPABILITY_NOT_USABLE` 拒绝，调价指令仍为 0 条，Ozon 价格没有变化。
+  - 随后创建指令被 `CAPABILITY_NOT_USABLE` 拒绝，调价指令仍为 0 条，Ozon 价格没有变化；
+- 按 Owner 的决定改为“写入能力未启用时只记录决定”后，在控制台核对：
+  - 659-KASE-S（已批准）的抽屉显示手工调价提示，只有“已在 Ozon 后台改价”“不采纳”两个按钮；
+  - 659-KASE-M（待审核）的批准对话框显示“只记录你的决定”，按钮为“确认批准”，“按常设授权批准”已隐藏；
+- 修复经济性 profile 草稿撤回的 500：PgJDBC 把时间戳参数按未指定类型发送，`CASE WHEN … THEN NULL ELSE :at END` 因此被推断为 text，写入 `reviewed_at` 时报错，现在显式转换为 timestamptz。修复后，Owner 04:15 重复生成的草稿由 Claude 代为撤回（`SUPERSEDED`）。
 
 ### 已知项
 
-- 审核抽屉里的“保本价”是求解器给出的阈值：在 profile 适用区间的下限处已经不亏时，直接显示区间下限，真实保本价更低；
-- 在 W1 之前，控制台批准后总会出现一次“创建指令失败”的提示；是否改为“写入能力未启用时只记录决定，并提示到卖家后台手工调价后记录决定”，待 Owner 决定。
+- 审核抽屉里的“保本价”是求解器给出的阈值：在 profile 适用区间的下限处已经不亏时，直接显示区间下限，真实保本价更低。
 
 ## 控制台：店铺诊断
 
