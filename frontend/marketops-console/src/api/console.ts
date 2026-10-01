@@ -1445,6 +1445,26 @@ export function decide(
   );
 }
 
+/**
+ * Whether the proposal's platform takes price writes now (a verified price-change capability). Until
+ * it does, an approval only records the decision and the price is changed by hand in the back office.
+ */
+export function fetchPriceWriteCapability(
+  context: ConsoleRequest,
+  recommendationId: string,
+): Promise<ConsoleOutcome<boolean>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}/price-write-capability`,
+    (body) =>
+      typeof body === 'object' &&
+      body !== null &&
+      typeof (body as Record<string, unknown>).usable === 'boolean'
+        ? ((body as Record<string, unknown>).usable as boolean)
+        : undefined,
+  );
+}
+
 /** Create the command for an authorized proposal. */
 export function createCommand(
   context: ConsoleRequest,

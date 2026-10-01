@@ -707,6 +707,13 @@ export const reviewText = {
   createNote: '备注（可选，不会保存；授权理由已在批准时记录）',
   commandCreated: '已创建调价指令',
   commandFailed: '决定已记录，但创建指令失败；可稍后点“创建已授权指令”重试。',
+  manualConsequence: (price: string) =>
+    `确认后只记录你的决定，不会创建调价指令：Ozon 调价写入尚未启用，要等 Owner 授权后统一接入。批准后请到 Ozon 卖家后台把买家价手工改为 ${price}，再回到这里点“已在 Ozon 后台改价”记录。`,
+  confirmApprove: '确认批准',
+  approvedManual: '已批准；请到 Ozon 卖家后台手工调价，然后回到这里记录',
+  manualHint: (price: string) =>
+    `已批准。Ozon 调价写入尚未启用（等 Owner 授权后统一接入），平台不会创建调价指令。请到 Ozon 卖家后台把买家价手工改为 ${price}，然后点“已在 Ozon 后台改价”记录；决定不改就点“不采纳”。`,
+  writeChecking: '正在检查平台写入能力',
   rejected: '已驳回该建议',
   notReviewable: (state: string) => `当前状态为“${state}”，不可审批`,
   previewMissing: '请先完成调价影响检查',

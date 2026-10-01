@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import {
   createCommand,
   decide,
+  fetchPriceWriteCapability,
   fetchRecommendation,
   fetchRecommendationCommand,
   requestImpactPreview,
@@ -20,6 +21,8 @@ import type {
   Recommendation,
   SubjectIdentity,
 } from '../api/console';
+import type { PriceDecisionKind } from '../api/priceSuggestions';
+import { recordPriceDecision } from '../api/priceSuggestions';
 import { formatDecimal, formatMoney, formatPercent, isDecimal } from '../format';
 import { codeLabel } from '../i18n';
 import { dialog } from '../i18n/zh/common';
@@ -41,6 +44,7 @@ import {
   reviewText as text,
 } from '../i18n/zh/pricing';
 import { priceSuggestionText as suggestionText } from '../i18n/zh/storeDiagnosis';
+import { DecimalField } from '../listing/ListingActionFields';
 import {
   ActionModal,
   CodeTag,
@@ -69,6 +73,17 @@ const COMMAND_STATES: readonly string[] = [
 const AUTHORIZED_STATES: readonly string[] = ['APPROVED', 'POLICY_AUTHORIZED'];
 /** States in which nothing more can be decided. */
 const FINISHED_STATES: readonly string[] = ['REJECTED', 'EXPIRED', 'CANCELLED', 'CLOSED'];
+
+/** What a person records after changing, or deciding not to change, the price by hand. */
+interface ManualDecisionValues {
+  readonly appliedPrice?: string;
+  readonly note?: string;
+}
+
+/** At most four decimals and above zero, as the decision record requires. */
+function isPrice(value: string): boolean {
+  return /^\d+(\.\d{1,4})?$/.test(value) && Number(value) > 0;
+}
 /** Refusals that mean the proposal changed under the reviewer. */
 const STALE_CODES: readonly string[] = ['VERSION_CONFLICT', 'RECOMMENDATION_STALE'];
 
@@ -418,6 +433,12 @@ function ReviewDrawerBody({
   );
   const [policyFailure, setPolicyFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [policyChecking, setPolicyChecking] = useState(false);
+  /**
+   * Whether the platform takes price writes now. Until it does, an approval only records the
+   * decision and the price is changed by hand in the back office (Owner decision 2026-10-01).
+   */
+  const [writeUsable, setWriteUsable] = useState<boolean | undefined>(undefined);
+  const [manualDeciding, setManualDeciding] = useState<PriceDecisionKind | undefined>(undefined);
   /** False once the drawer is gone, so a late answer neither navigates nor closes anything. */
   const live = useRef(true);
   useEffect(() => {
@@ -490,6 +511,18 @@ function ReviewDrawerBody({
     previewed.current.add(key);
     void runPreviewRef.current();
   }, [recommendationId, state, version, actionKind]);
+
+  useEffect(() => {
+    if (actionKind !== 'PRICE_CHANGE') return;
+    let active = true;
+    void fetchPriceWriteCapability(context, recommendationId).then((outcome) => {
+      // A failed check counts as no capability: the approval then only records the decision.
+      if (active) setWriteUsable(outcome.ok && outcome.value);
+    });
+    return () => {
+      active = false;
+    };
+  }, [context, recommendationId, actionKind]);
 
   const reload = async (): Promise<void> => {
     setReloading(true);
@@ -585,6 +618,15 @@ function ReviewDrawerBody({
       // The current preview already covers this proposal; do not re-evaluate it
       // merely because the decision bumped the version.
       previewed.current.add(`${recommendation.id}:${String(nextVersion)}`);
+      if (writeUsable !== true) {
+        // No command while the platform takes no price writes: the decision is recorded and the
+        // person changes the price by hand, then records it here.
+        if (!live.current) return undefined;
+        onChanged();
+        setRecommendation({ ...recommendation, state: decided.value.state, version: nextVersion });
+        void message.success(text.approvedManual);
+        return undefined;
+      }
       // The drawer keeps showing the decision being sent until the command
       // exists or has failed, so no second create can start in between.
       const created = await createCommand(context, recommendation.id, nextVersion);
@@ -689,7 +731,10 @@ function ReviewDrawerBody({
   const approveBlockedReason: ReactNode =
     decisionState !== 'READY_FOR_REVIEW'
       ? text.notReviewable(codeLabel(RECOMMENDATION_STATE_LABELS, decisionState))
-      : writeBlockedReason;
+      : writeUsable === undefined
+        ? text.writeChecking
+        : writeBlockedReason;
+  const targetPrice = formatMoney(recommendation.proposedParameters.targetPrice ?? null, currency);
   const proposedPrice = formatMoney(preview?.proposedPrice, preview?.currencyCode ?? null);
   const policyVerdict = policyPreview?.preview ?? undefined;
   const policyGuard: WriteGuard | undefined =
@@ -719,6 +764,29 @@ function ReviewDrawerBody({
           void openCommand();
         }}
       />
+    );
+  } else if (authorized && writeUsable !== true) {
+    // Approved while the platform takes no price writes: what is left is recording what was done.
+    footer = (
+      <Flex gap={8} wrap>
+        <Button
+          type="primary"
+          disabled={writeUsable === undefined}
+          onClick={() => {
+            setManualDeciding('APPLIED_IN_SELLER_OFFICE');
+          }}
+        >
+          {suggestionText.applied}
+        </Button>
+        <Button
+          disabled={writeUsable === undefined}
+          onClick={() => {
+            setManualDeciding('NOT_APPLIED');
+          }}
+        >
+          {suggestionText.notApplied}
+        </Button>
+      </Flex>
     );
   } else if (authorized) {
     footer =
@@ -768,10 +836,12 @@ function ReviewDrawerBody({
               trigger={{ label: text.approve, type: 'primary', ...approveTrigger }}
               onClick={() => undefined}
             />
-            <TriggerButton
-              trigger={{ label: text.policyApprove, ...approveTrigger }}
-              onClick={() => undefined}
-            />
+            {writeUsable === true && (
+              <TriggerButton
+                trigger={{ label: text.policyApprove, ...approveTrigger }}
+                onClick={() => undefined}
+              />
+            )}
           </>
         ) : (
           <>
@@ -780,46 +850,54 @@ function ReviewDrawerBody({
               title={text.approve}
               impact={<WriteImpact preview={preview} identity={identity} subjectId={subjectId} />}
               {...(guard === undefined ? {} : { guard })}
-              consequence={text.consequence}
-              confirmText={text.confirmPrice(proposedPrice)}
+              consequence={
+                writeUsable === true ? text.consequence : text.manualConsequence(proposedPrice)
+              }
+              confirmText={
+                writeUsable === true ? text.confirmPrice(proposedPrice) : text.confirmApprove
+              }
               reasonLabel={text.decisionReason}
               onConfirm={(reason) => decideAndCreate('approval', reason)}
             />
-            <WriteConfirmModal
-              trigger={{ label: text.policyApprove, ...approveTrigger }}
-              title={text.policyTitle}
-              onOpen={() => {
-                void checkPolicy();
-              }}
-              impact={
-                <WriteImpact
-                  preview={policyVerdict ?? preview}
-                  identity={identity}
-                  subjectId={subjectId}
-                  extra={
-                    policyPreview?.usable === true ? (
-                      <Typography.Text>
-                        {text.policyScope(
-                          policyPreview.scopeKind,
-                          policyPreview.maxChangeRate === null
-                            ? null
-                            : formatPercent(policyPreview.maxChangeRate),
-                          policyPreview.remainingUses,
-                        )}
-                      </Typography.Text>
-                    ) : undefined
-                  }
-                />
-              }
-              {...(policyGuard === undefined ? {} : { guard: policyGuard })}
-              {...(policyBlockedReason === undefined ? {} : { blockedReason: policyBlockedReason })}
-              consequence={text.policyConsequence}
-              confirmText={text.confirmPolicyPrice(
-                formatMoney(policyVerdict?.proposedPrice ?? preview.proposedPrice, currency),
-              )}
-              reasonLabel={text.decisionReason}
-              onConfirm={(reason) => decideAndCreate('policy-authorization', reason)}
-            />
+            {writeUsable === true && (
+              <WriteConfirmModal
+                trigger={{ label: text.policyApprove, ...approveTrigger }}
+                title={text.policyTitle}
+                onOpen={() => {
+                  void checkPolicy();
+                }}
+                impact={
+                  <WriteImpact
+                    preview={policyVerdict ?? preview}
+                    identity={identity}
+                    subjectId={subjectId}
+                    extra={
+                      policyPreview?.usable === true ? (
+                        <Typography.Text>
+                          {text.policyScope(
+                            policyPreview.scopeKind,
+                            policyPreview.maxChangeRate === null
+                              ? null
+                              : formatPercent(policyPreview.maxChangeRate),
+                            policyPreview.remainingUses,
+                          )}
+                        </Typography.Text>
+                      ) : undefined
+                    }
+                  />
+                }
+                {...(policyGuard === undefined ? {} : { guard: policyGuard })}
+                {...(policyBlockedReason === undefined
+                  ? {}
+                  : { blockedReason: policyBlockedReason })}
+                consequence={text.policyConsequence}
+                confirmText={text.confirmPolicyPrice(
+                  formatMoney(policyVerdict?.proposedPrice ?? preview.proposedPrice, currency),
+                )}
+                reasonLabel={text.decisionReason}
+                onConfirm={(reason) => decideAndCreate('policy-authorization', reason)}
+              />
+            )}
           </>
         )}
         <ActionModal<{ readonly reason?: string }>
@@ -986,6 +1064,9 @@ function ReviewDrawerBody({
               </Flex>
             </div>
           )}
+          {authorized && !commandExists && writeUsable === false && (
+            <Alert type="info" showIcon title={text.manualHint(targetPrice)} />
+          )}
           <Descriptions bordered size="small" column={{ xs: 1, md: 2 }} items={summaryItems} />
 
           <section
@@ -1069,6 +1150,61 @@ function ReviewDrawerBody({
           </section>
         </Space>
       </section>
+      <ActionModal<ManualDecisionValues>
+        open={manualDeciding !== undefined}
+        onClose={() => {
+          setManualDeciding(undefined);
+        }}
+        title={
+          manualDeciding === 'APPLIED_IN_SELLER_OFFICE'
+            ? suggestionText.appliedTitle
+            : suggestionText.notAppliedTitle
+        }
+        initialValues={
+          manualDeciding === 'APPLIED_IN_SELLER_OFFICE'
+            ? { appliedPrice: recommendation.proposedParameters.targetPrice ?? '' }
+            : {}
+        }
+        width={520}
+        onSubmit={async (values) => {
+          if (manualDeciding === undefined) return undefined;
+          const price = (values.appliedPrice ?? '').trim();
+          const note = (values.note ?? '').trim();
+          const outcome = await recordPriceDecision(context, recommendation.id, {
+            decision: manualDeciding,
+            appliedPrice: manualDeciding === 'APPLIED_IN_SELLER_OFFICE' ? price : null,
+            note: note === '' ? null : note,
+            expectedVersion: recommendation.version,
+          });
+          if (!outcome.ok) return outcome.failure;
+          void message.success(suggestionText.saved);
+          await reload();
+          return undefined;
+        }}
+      >
+        {manualDeciding === 'APPLIED_IN_SELLER_OFFICE' && (
+          <Form.Item<ManualDecisionValues>
+            name="appliedPrice"
+            label={`${suggestionText.appliedPrice}${currency === null ? '' : `（${currency}）`}`}
+            rules={[
+              {
+                validator: (_: unknown, value: string | undefined) =>
+                  value !== undefined && isPrice(value.trim())
+                    ? Promise.resolve()
+                    : Promise.reject(new Error(suggestionText.appliedPriceRequired)),
+              },
+            ]}
+          >
+            <DecimalField ariaLabel={suggestionText.appliedPrice} />
+          </Form.Item>
+        )}
+        <Form.Item<ManualDecisionValues>
+          name="note"
+          label={manualDeciding === 'NOT_APPLIED' ? suggestionText.reason : suggestionText.note}
+        >
+          <Input.TextArea rows={2} maxLength={500} showCount />
+        </Form.Item>
+      </ActionModal>
     </DetailDrawer>
   );
 }

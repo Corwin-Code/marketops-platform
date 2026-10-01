@@ -172,6 +172,17 @@ class ApprovalConsoleController {
                 request.expectedVersion());
     }
 
+    /** Whether the proposal's platform takes price writes now; without it an approval only records the decision. */
+    @GetMapping(value = "/recommendations/{recommendationId}/price-write-capability",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    PriceWriteCapability priceWriteCapability(AuthenticatedActor actor, @PathVariable UUID recommendationId) {
+        return new PriceWriteCapability(execution.priceWriteUsable(actor, recommendationId));
+    }
+
+    /** Whether a price write can be carried out on the platform now. */
+    record PriceWriteCapability(boolean usable) {
+    }
+
     /** Create the command for an authorized proposal. */
     @PostMapping(value = "/recommendations/{recommendationId}/command",
             produces = MediaType.APPLICATION_JSON_VALUE)

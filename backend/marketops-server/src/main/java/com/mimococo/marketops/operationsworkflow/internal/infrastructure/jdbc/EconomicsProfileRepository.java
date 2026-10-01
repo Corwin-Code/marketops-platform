@@ -153,7 +153,9 @@ public class EconomicsProfileRepository {
                         UPDATE ops.economics_profile_draft
                            SET state = CASE WHEN CAST(:reviewer AS uuid) IS NULL THEN 'SUPERSEDED' ELSE 'REJECTED' END,
                                reviewed_by_user_id = CAST(:reviewer AS uuid),
-                               reviewed_at = CASE WHEN CAST(:reviewer AS uuid) IS NULL THEN NULL ELSE :at END,
+                               -- Cast, because the driver leaves a timestamp untyped and an untyped CASE reads as text.
+                               reviewed_at = CASE WHEN CAST(:reviewer AS uuid) IS NULL THEN NULL
+                                                  ELSE CAST(:at AS timestamptz) END,
                                review_note = :note, version = version + 1
                          WHERE id = :id AND state = 'SUBMITTED' AND version = :expectedVersion
                         """)

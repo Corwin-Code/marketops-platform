@@ -115,6 +115,23 @@ public class ExecutionService {
     }
 
     /**
+     * Whether the platform of a price proposal takes price writes now: a verified price-change
+     * capability. Without one, an approval only records the decision (Owner decision 2026-10-01: the
+     * platform's writes are connected later, on the Owner's authorization).
+     */
+    @Transactional(readOnly = true)
+    public boolean priceWriteUsable(AuthenticatedActor actor, UUID recommendationId) {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW, ResourceScope.store(proposal.storeId()));
+        if (proposal.actionKind() != ActionKind.PRICE_CHANGE) {
+            return false;
+        }
+        return listings.variantContext(proposal.subjectId(), clock.instant())
+                .map(context -> commands.priceChangeCapability(context.platformCode()).isPresent())
+                .orElse(false);
+    }
+
+    /**
      * Create the command for an authorized proposal.
      *
      * <p>Idempotent: a proposal that already has a command returns it rather
