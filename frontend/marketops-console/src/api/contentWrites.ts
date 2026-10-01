@@ -75,6 +75,8 @@ export interface ContentCurrent {
   readonly observedAt: string | null;
   readonly titleLimit: number;
   readonly descriptionLimit: number;
+  /** Whether a change may carry a new title; `false` while Ozon keeps titles written this way. */
+  readonly titleWritable: boolean;
   readonly latestCommand: ContentCommand | null;
 }
 
@@ -321,7 +323,8 @@ function parseCurrent(value: unknown): ContentCurrent | undefined {
     platformListingVariantId === undefined ||
     storeId === undefined ||
     typeof value.titleLimit !== 'number' ||
-    typeof value.descriptionLimit !== 'number'
+    typeof value.descriptionLimit !== 'number' ||
+    typeof value.titleWritable !== 'boolean'
   ) {
     return undefined;
   }
@@ -339,6 +342,7 @@ function parseCurrent(value: unknown): ContentCurrent | undefined {
     observedAt: text(value.observedAt) ?? null,
     titleLimit: value.titleLimit,
     descriptionLimit: value.descriptionLimit,
+    titleWritable: value.titleWritable,
     latestCommand,
   };
 }

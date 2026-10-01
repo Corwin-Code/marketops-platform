@@ -57,6 +57,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from collections.abc import Callable
 import base64
 import decimal
 import getpass
@@ -1577,13 +1578,19 @@ class Pilot:
         self.api_key_file = self.secret_dir / "seller-api-key"
         self.client_id_file = self.secret_dir / "client-id"
         self.secret_reference = f"secret-ref://ozon/{code}/seller-api-key"
-        # The price write credential (W1) names a key file of its own: a reference belongs to one live
-        # credential, and the write key can be rotated or narrowed without touching the read key.
-        self.price_write_credential_code = f"ozon-{code}-price-write"
-        self.price_write_key_file = self.secret_dir / "price-write-api-key"
-        self.price_write_secret_reference = f"secret-ref://ozon/{code}/price-write-api-key"
         self.mount = mount
         self.evidence_dir = evidence_root / "ozon" / code
+
+    def write_key(self, capability: dict) -> tuple[str, Path, str]:
+        """A write capability's credential code, key file and secret reference.
+
+        Each write capability (W1 price, W2 content) names a key file of its own: a reference belongs
+        to one live credential, and a write key can be rotated or narrowed without touching the read
+        key or another write key.
+        """
+        suffix = capability["suffix"]
+        return (f"ozon-{self.code}-{suffix}", self.secret_dir / f"{suffix}-api-key",
+                f"secret-ref://ozon/{self.code}/{suffix}-api-key")
 
     def job_code(self, capability: dict) -> str:
         return f"ozon-{self.code}-{capability['job']['suffix']}"
@@ -2689,6 +2696,13 @@ PRICE_WRITE = {
                    "W1 changes only listings in no seller promotion. Official docs checked 2026-10-01.",
     "manifest": "price-write-latest.json",
     "suffix": "price-write",
+    "make": "ozon-price-write",
+    "noun": "price writes",
+    "purpose": "PRICE_WRITE",
+    "model": "SYNCHRONOUS",
+    "key_display": "Ozon Seller API 调价写入 key",
+    "evidence_title": "Same-price write of {offerId} on the pilot account, read back, {testedAt}",
+    "next": "next: in the console's 写入开关, turn the switches on and allowlist the canary listing",
     "endpoints": {
         "APPLY": {
             "code": "ozon-product-import-prices-v1", "api_version": "v1", "read_write": "WRITE",
@@ -2721,8 +2735,11 @@ PRICE_WRITE = {
         },
     },
 }
-# The same two headers as reading, recorded for the price write credential.
-PRICE_WRITE_HEADERS = tuple(dict(header, credential_purpose="PRICE_WRITE") for header in HEADER_DEFINITIONS)
+
+
+def write_headers(capability: dict) -> tuple[dict, ...]:
+    """The same two headers as reading, recorded for a write capability's own credential purpose."""
+    return tuple(dict(header, credential_purpose=capability["purpose"]) for header in HEADER_DEFINITIONS)
 
 
 def price_operations(endpoint_ids: dict[str, str]) -> dict[str, dict]:
@@ -2890,7 +2907,7 @@ def price_write_probe(args: argparse.Namespace) -> int:
         sys.exit(f"{args.offer} is not in the newest catalog probe; probe the catalog first")
     product_id = str(product["id"])
     client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
-    api_key = read_secret(pilot, pilot.price_write_key_file, "price write Api-Key")
+    api_key = read_secret(pilot, pilot.write_key(PRICE_WRITE)[1], "price write Api-Key")
     context = tls_context(args.ca_file)
 
     key = check_key(pilot, args, client_id, api_key, context, writes_expected=True)
@@ -3026,12 +3043,13 @@ def price_write_probe(args: argparse.Namespace) -> int:
     return 0
 
 
-def price_write_setup(args: argparse.Namespace) -> int:
-    """Register the price write credential, capability and endpoints, and declare the store's row."""
+def write_setup(args: argparse.Namespace, capability: dict) -> int:
+    """Register a write capability's credential, capability and endpoints, and declare the store's row."""
     pilot = pilot_from(args)
-    manifest = load_manifest(pilot, PRICE_WRITE)
-    if not (pilot.price_write_key_file.is_file() and pilot.price_write_key_file.stat().st_size > 0):
-        sys.exit(f"price write Api-Key: {pilot.price_write_key_file} does not exist")
+    manifest = load_manifest(pilot, capability)
+    credential_code, key_file, secret_reference = pilot.write_key(capability)
+    if not (key_file.is_file() and key_file.stat().st_size > 0):
+        sys.exit(f"write Api-Key: {key_file} does not exist")
     admin = Admin(args.api, args.operator)
     now = utc_now()
     result: dict[str, object] = {}
@@ -3042,28 +3060,28 @@ def price_write_setup(args: argparse.Namespace) -> int:
         sys.exit("the pilot account or store is not registered; run the read setup first")
 
     credentials = admin.require("GET", f"/credentials?marketplaceAccountId={account['id']}&limit=50", None, 200)
-    if any((c.get("credential") or c).get("code") == pilot.price_write_credential_code for c in credentials):
+    if any((c.get("credential") or c).get("code") == credential_code for c in credentials):
         result["credential"] = "already registered"
     else:
         admin.require("POST", "/credentials", {
-            "marketplaceAccountId": account["id"], "code": pilot.price_write_credential_code,
-            "displayName": "Ozon Seller API 调价写入 key", "purposeCode": "PRICE_WRITE", "scopeMode": "ACCOUNT",
-            "secretReference": pilot.price_write_secret_reference, "effectiveFrom": iso(now),
+            "marketplaceAccountId": account["id"], "code": credential_code,
+            "displayName": capability["key_display"], "purposeCode": capability["purpose"], "scopeMode": "ACCOUNT",
+            "secretReference": secret_reference, "effectiveFrom": iso(now),
             "expiresAt": manifest["keyExpiresAt"], "custodianLabel": OWNER_LABEL, "storeIds": []}, 201)
-        result["credential"] = f"PRICE_WRITE registered, expires {manifest['keyExpiresAt']}"
+        result["credential"] = f"{capability['purpose']} registered, expires {manifest['keyExpiresAt']}"
 
-    registered = find_capability(admin, PRICE_WRITE)
+    registered = find_capability(admin, capability)
     if registered is None:
         registered = admin.require("POST", "/capabilities", {
-            "platformCode": PLATFORM, "capabilityCode": PRICE_WRITE["code"],
-            "displayName": PRICE_WRITE["display"], "description": PRICE_WRITE["description"],
+            "platformCode": PLATFORM, "capabilityCode": capability["code"],
+            "displayName": capability["display"], "description": capability["description"],
             "appliesTo": "STORE", "readWriteClass": "WRITE", "subscriptionRequired": "NO",
             "ownerLabel": OWNER_LABEL}, 201)
-        result["capability"] = f"{PRICE_WRITE['code']} registered"
+        result["capability"] = f"{capability['code']} registered"
     else:
-        result["capability"] = f"{PRICE_WRITE['code']} already registered"
+        result["capability"] = f"{capability['code']} already registered"
 
-    for operation, spec in PRICE_WRITE["endpoints"].items():
+    for operation, spec in capability["endpoints"].items():
         definition = spec["definition"]
         endpoint = find_endpoint_code(admin, spec["code"])
         if endpoint is None:
@@ -3091,15 +3109,16 @@ def price_write_setup(args: argparse.Namespace) -> int:
         result["store"] = f"already declared, availability {subject.get('availability')}"
     result.update({"marketplaceAccountId": account["id"], "storeId": store["id"], "capabilityId": registered["id"]})
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    print("next: make ozon-price-write STEP=verify (two Owners sign in)")
+    print(f"next: make {capability['make']} STEP=verify (two Owners sign in)")
     return 0
 
 
-def price_write_verify(args: argparse.Namespace) -> int:
-    """Draft the write protocol, submit the same-price evidence as one Owner, approve it as another,
-    and mark the store available on the strength of it."""
+def write_verify(args: argparse.Namespace, capability: dict,
+                 operations: Callable[[dict[str, str]], dict[str, dict]]) -> int:
+    """Draft a write protocol, submit the probe's evidence as one Owner, approve it as another, and
+    mark the store available on the strength of it."""
     pilot = pilot_from(args)
-    manifest = load_manifest(pilot, PRICE_WRITE)
+    manifest = load_manifest(pilot, capability)
     source = Path(manifest["officialSourceFile"])
     if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != manifest["officialSourceSha256"]:
         sys.exit(f"the official source kept at {source} changed since the probe; run the probe again")
@@ -3107,18 +3126,18 @@ def price_write_verify(args: argparse.Namespace) -> int:
     org = organization(admin, args.organization_code)
     account = pilot_account(admin, pilot, org["id"])
     store = admin.find("/stores", {"organizationId": org["id"]}, lambda item: item.get("code") == pilot.store_code)
-    registered = find_capability(admin, PRICE_WRITE)
+    registered = find_capability(admin, capability)
     endpoints = {operation: find_endpoint_code(admin, spec["code"])
-                 for operation, spec in PRICE_WRITE["endpoints"].items()}
+                 for operation, spec in capability["endpoints"].items()}
     subject = None if registered is None or store is None else subject_status(admin, registered["id"], store["id"])
     if account is None or store is None or registered is None or None in endpoints.values() or subject is None:
-        sys.exit("the price write rows are missing; run make ozon-price-write STEP=setup first")
+        sys.exit(f"the {capability['code']} rows are missing; run make {capability['make']} STEP=setup first")
 
-    marker = pilot.evidence_dir / f"{PRICE_WRITE['suffix']}-verified.json"
+    marker = pilot.evidence_dir / f"{capability['suffix']}-verified.json"
     done = json.loads(marker.read_text(encoding="utf-8")) if marker.is_file() else {}
     if (not args.again and done.get("evidenceSha256") == manifest["accountEvidenceSha256"]
             and parse_instant(done["validUntil"]) > utc_now() and registered.get("verificationState") == "VERIFIED"):
-        print(f"{PRICE_WRITE['code']} is already verified with this evidence (case {done['case']}, valid until "
+        print(f"{capability['code']} is already verified with this evidence (case {done['case']}, valid until "
               f"{done['validUntil']}); nothing submitted. Pass --again to submit a new case.")
     else:
         print("Two different Owners are needed: one submits the evidence, the other approves it.")
@@ -3133,14 +3152,14 @@ def price_write_verify(args: argparse.Namespace) -> int:
         snapshot = submitter.call("GET", scope, None, 200)["snapshot"]
         if differs(snapshot.get("profile"), PROFILE_DEFINITION):
             sys.exit("the Ozon profile differs from this script; verify the read capabilities first")
-        capability = snapshot.get("capability") or {}
-        if capability.get("write_result_model") != "SYNCHRONOUS":
+        recorded = snapshot.get("capability") or {}
+        if recorded.get("write_result_model") != capability["model"]:
             submitter.call("POST", f"{scope}/draft", {"kind": "CAPABILITY", "id": None,
-                           "expectedVersion": capability["version"],
-                           "definition": {"write_result_model": "SYNCHRONOUS"}}, 201)
-            print("drafted the write result model: SYNCHRONOUS")
+                           "expectedVersion": recorded["version"],
+                           "definition": {"write_result_model": capability["model"]}}, 201)
+            print(f"drafted the write result model: {capability['model']}")
         header_ids = []
-        for definition in PRICE_WRITE_HEADERS:
+        for definition in write_headers(capability):
             row = next((h for h in snapshot.get("headers") or []
                         if str(h.get("header_name", "")).lower() == definition["header_name"].lower()), None)
             if differs(row, definition):
@@ -3151,20 +3170,20 @@ def price_write_verify(args: argparse.Namespace) -> int:
                     "kind": "HEADER", "id": None if row is None else row["id"],
                     "expectedVersion": -1 if row is None else row["version"], "definition": definition}, 201)
                 header_ids.append(created["id"])
-                print(f"drafted the {definition['header_name']} header for price writes")
+                print(f"drafted the {definition['header_name']} header for {capability['noun']}")
             else:
                 header_ids.append(row["id"])
-        for operation, spec in PRICE_WRITE["endpoints"].items():
+        for operation, spec in capability["endpoints"].items():
             row = next((e for e in snapshot.get("endpoints") or [] if e.get("id") == endpoints[operation]["id"]), None)
             if row is None:
-                sys.exit(f"endpoint {spec['code']} is not under capability {PRICE_WRITE['code']}")
+                sys.exit(f"endpoint {spec['code']} is not under capability {capability['code']}")
             if differs(row, spec["definition"]):
                 if row.get("verification_state") == "VERIFIED":
                     sys.exit(f"the verified {spec['code']} endpoint differs; open a registry revision first")
                 submitter.call("POST", f"{scope}/draft", {"kind": "ENDPOINT", "id": row["id"],
                                "expectedVersion": row["version"], "definition": spec["definition"]}, 201)
                 print(f"drafted the {spec['code']} endpoint")
-        for operation, definition in price_operations({op: found["id"] for op, found in endpoints.items()}).items():
+        for operation, definition in operations({op: found["id"] for op, found in endpoints.items()}).items():
             rows = [o for o in snapshot.get("operations") or [] if o.get("operation") == operation]
             if len(rows) > 1:
                 sys.exit(f"the capability records {len(rows)} {operation} operations; review them first")
@@ -3181,15 +3200,16 @@ def price_write_verify(args: argparse.Namespace) -> int:
         evidence = {key: manifest[key] for key in ("officialSourceUrl", "officialSourceSha256",
                                                    "accountEvidenceRef", "accountEvidenceSha256",
                                                    "evidenceClass", "testedAt", "validUntil")}
+        # The review wants every endpoint an operation uses inside the case.
         case = submitter.call("POST", f"{scope}/cases", {
-            "endpointIds": [endpoints["APPLY"]["id"], endpoints["READBACK"]["id"]], "authHeaderIds": header_ids,
+            "endpointIds": [found["id"] for found in endpoints.values()], "authHeaderIds": header_ids,
             "evidence": evidence, "expectedDigest": digest}, 201)
         print(f"{submitter_name} submitted case {case['id']}")
         submitted = reviewer.call("GET", f"/cases/{case['id']}", None, 200)
         reviewer.call("POST", f"/cases/{case['id']}/review",
                       {"expectedVersion": submitted["version"], "approve": True}, 204)
         approved = reviewer.call("GET", f"/cases/{case['id']}", None, 200)
-        print(json.dumps({"capability": PRICE_WRITE["code"], "case": case["id"], "state": approved.get("state"),
+        print(json.dumps({"capability": capability["code"], "case": case["id"], "state": approved.get("state"),
                           "currentEvidence": approved.get("currentEvidence"),
                           "validUntil": approved.get("validUntil"), "reviewedBy": reviewer_name},
                          ensure_ascii=False, indent=2))
@@ -3202,20 +3222,497 @@ def price_write_verify(args: argparse.Namespace) -> int:
     # The evidence is a write on this store's own account, so the store is available on its strength.
     subject = subject_status(admin, registered["id"], store["id"])
     if subject.get("availability") == "AVAILABLE" and subject.get("evidenceRef") == manifest["accountEvidenceRef"]:
-        print("the store is already marked available for price writes with this evidence")
+        print(f"the store is already marked available for {capability['noun']} with this evidence")
     else:
         admin.require("POST", f"/capability-subject-statuses/{subject['id']}/availability", {
             "expectedVersion": subject["version"], "availability": "AVAILABLE",
             "evidenceRef": manifest["accountEvidenceRef"],
-            "verifiedSourceTitle": f"Same-price write of {manifest['offerId']} on the pilot account, read back, "
-                                   f"{manifest['testedAt']}"}, 200)
-        print("the store is marked available for price writes")
-    print("next: in the console's 写入开关, turn the switches on and allowlist the canary listing")
+            "verifiedSourceTitle": capability["evidence_title"].format(offerId=manifest["offerId"],
+                                                                       testedAt=manifest["testedAt"])}, 200)
+        print(f"the store is marked available for {capability['noun']}")
+    print(capability["next"])
     return 0
 
 
 def command_price_write(args: argparse.Namespace) -> int:
-    return {"probe": price_write_probe, "setup": price_write_setup, "verify": price_write_verify}[args.step](args)
+    steps = {"probe": price_write_probe, "setup": lambda given: write_setup(given, PRICE_WRITE),
+             "verify": lambda given: write_verify(given, PRICE_WRITE, price_operations)}
+    return steps[args.step](args)
+
+
+# --- content write (W2) ---------------------------------------------------------------------
+# The Owner decided on 2026-10-02 how a listing's title and description change: the Owner settles the
+# final text and confirms it once, and the confirmation is the approval; title and description are
+# written together, one size of a style first. The capability is evidenced like the price write: a
+# same-text write, run by the Owner, that writes one card's title and description back exactly as Ozon
+# holds them and reads them back. Facts from the official OpenAPI document saved 2026-10-01:
+#   - POST /v1/product/attributes/update (ProductAPI_ProductUpdateAttributes) takes items[] (at most
+#     100) of {offer_id (required), attributes[]{id, complex_id, values[]{dictionary_value_id, value}}}
+#     and answers {task_id (int64)}. Only the attributes the request names change. Product operations
+#     are limited per minute and per day; past a limit it answers 429 with Item-Retry-After (minutes)
+#     and Item-Rate-Limit-Remaining.
+#   - The title is attribute 4180 (at most 255 characters, error name_too_long) and the description
+#     (Аннотация) attribute 4191, as the catalog read records them.
+#   - POST /v1/product/import/info takes {task_id (int64)} and answers result.items[]{offer_id,
+#     product_id, status, errors[]}; status is pending, imported, failed or skipped, which means the
+#     card was not updated because the request held no changes.
+#   - POST /v1/product/info/description takes {offer_id} or {product_id} and answers result{id,
+#     offer_id, name, description}.
+# The registry demands every value of a write template inside a JSON string, so the status enquiry
+# sends the task id as a string; the probe sends exactly those bytes and so evidences that too. The
+# worker writes only while the readback still shows the text the platform's catalog facts hold
+# (attributes 4180 and 4191 of POST /v4/product/info/attributes), so the probe also checks that the
+# two agree, and that the write moved no attribute at all.
+CONTENT_APPLY_PATH = "/v1/product/attributes/update"
+CONTENT_STATUS_PATH = "/v1/product/import/info"
+CONTENT_READBACK_PATH = "/v1/product/info/description"
+CATALOG_ATTRIBUTES_PATH = "/v4/product/info/attributes"
+TITLE_ATTRIBUTE = 4180
+DESCRIPTION_ATTRIBUTE = 4191
+CONTENT_APPLY_TEMPLATE = ('{"items":[{"offer_id":"{offerKey}","attributes":['
+                          '{"complex_id":0,"id":4180,"values":[{"value":"{titleText}"}]},'
+                          '{"complex_id":0,"id":4191,"values":[{"value":"{descriptionText}"}]}]}]}')
+CONTENT_STATUS_TEMPLATE = '{"task_id":"{nativeTaskKey}"}'
+CONTENT_READBACK_TEMPLATE = '{"offer_id":"{offerKey}"}'
+CONTENT_TASK_KEY_POINTER = "/task_id"
+CONTENT_TASK_STATUS_POINTER = "/result/items/0/status"
+CONTENT_TASK_OFFER_POINTER = "/result/items/0/offer_id"
+CONTENT_TASK_ERRORS_POINTER = "/result/items/0/errors"
+CONTENT_TITLE_POINTER = "/result/name"
+CONTENT_DESCRIPTION_POINTER = "/result/description"
+CONTENT_TASK_STATES = ("pending", "imported", "failed", "skipped")
+# How long the probe follows the task (about twelve minutes), and reads the card again when it does
+# not show its text.
+CONTENT_TASK_POLL_SECONDS = (5, 10, 15, 30, 60, 60, 120, 120, 300)
+CONTENT_REREAD_DELAYS_SECONDS = (30, 120)
+# How the backend compares a text read back (ContentText): <br> tags and runs of whitespace count as
+# one space, and the ends are trimmed. Java's \s is narrower than Python's, so it is spelled out.
+JAVA_SPACE = "[ \t\n\x0b\f\r]"
+MARKUP_BREAK = re.compile(f"(?i)<br{JAVA_SPACE}*/?>")
+SPACE_RUN = re.compile(f"{JAVA_SPACE}+")
+
+CONTENT_WRITE = {
+    "code": "listing-content-change",
+    "display": "Ozon listing content change: one card's title and description, read back",
+    "description": "Writes one card's title (attribute 4180) and description (attribute 4191) by its seller "
+                   "article (POST /v1/product/attributes/update), follows the task Ozon opens for it (POST "
+                   "/v1/product/import/info) and reads both back (POST /v1/product/info/description). "
+                   "Official docs checked 2026-10-01.",
+    "manifest": "content-write-latest.json",
+    "suffix": "content-write",
+    "make": "ozon-content-write",
+    "noun": "content writes",
+    "purpose": "CONTENT_WRITE",
+    "model": "ASYNCHRONOUS_TASK",
+    "key_display": "Ozon Seller API 内容写入 key",
+    "evidence_title": "Same-text write of {offerId} on the pilot account, read back, {testedAt}",
+    "next": "next: on the console's 价格护栏 page, under 内容写入开关与白名单, turn the switches on and "
+            "allowlist the canary listing",
+    "endpoints": {
+        "APPLY": {
+            "code": "ozon-product-attributes-update-v1", "api_version": "v1", "read_write": "WRITE",
+            "schema_version": "v1ProductUpdateAttributesResponse", "idempotency": "NO",
+            "rate_note": "Ozon: product operations are limited per minute and per day (POST "
+                         "/v4/product/info/limit states them); past a limit 429 with Item-Retry-After in "
+                         "minutes. Our cap: 10/min, one card per request. https://docs.ozon.ru/api/seller/ "
+                         "checked 2026-10-01",
+            "freshness": "Answers at once with the task Ozon opened; the task and a readback tell whether "
+                         "the text holds.",
+            "definition": {
+                "http_method": "POST", "path_template": CONTENT_APPLY_PATH, "operation_function": "CONTENT_APPLY",
+                "query_template": None, "body_template": None, "response_content_type": "application/json",
+                "continuation_pointer": None, "pagination_model": "NONE", "rate_limit_per_minute": 10,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": None,
+            },
+        },
+        "STATUS_ENQUIRY": {
+            "code": "ozon-product-import-info-v1", "api_version": "v1", "read_write": "READ",
+            "schema_version": "productGetImportProductsInfoResponse", "idempotency": "YES",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, one task per request. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "The task's state at the moment of the answer.",
+            "definition": {
+                "http_method": "POST", "path_template": CONTENT_STATUS_PATH,
+                "operation_function": "CONTENT_STATUS", "query_template": None, "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 60,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": None,
+            },
+        },
+        "READBACK": {
+            "code": "ozon-product-info-description-v1", "api_version": "v1", "read_write": "READ",
+            "schema_version": "productGetProductInfoDescriptionResponse", "idempotency": "YES",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own "
+                         "limit; this method states none. Our cap: 60/min, one card per request. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "The title and description the card holds at the moment of the answer.",
+            "definition": {
+                "http_method": "POST", "path_template": CONTENT_READBACK_PATH,
+                "operation_function": "CONTENT_READBACK", "query_template": None, "body_template": None,
+                "response_content_type": "application/json", "continuation_pointer": None,
+                "pagination_model": "NONE", "rate_limit_per_minute": 60,
+                "continuation_end_rule": "JSON_NULL", "records_pointer": None,
+            },
+        },
+    },
+}
+
+
+def content_operations(endpoint_ids: dict[str, str]) -> dict[str, dict]:
+    """The three operations the content capability records, bound to its endpoints.
+
+    There is no RESTORE: a content change is put back by another approved change. The apply is taken
+    when Ozon names the task it opened; the enquiry counts skipped (nothing to change) as done and
+    lists the task's errors; the readback names where the title and the description are.
+    """
+    return {
+        "APPLY": {"operation": "APPLY", "endpoint_id": endpoint_ids["APPLY"],
+                  "request_template": CONTENT_APPLY_TEMPLATE, "task_key_pointer": CONTENT_TASK_KEY_POINTER,
+                  "owner_label": OWNER_LABEL},
+        "STATUS_ENQUIRY": {"operation": "STATUS_ENQUIRY", "endpoint_id": endpoint_ids["STATUS_ENQUIRY"],
+                           "request_template": CONTENT_STATUS_TEMPLATE,
+                           "task_status_pointer": CONTENT_TASK_STATUS_POINTER, "task_success_value": "imported",
+                           "task_failure_value": "failed", "task_pending_values": ["pending"],
+                           "description_response_binding": {"noChangeValues": ["skipped"],
+                                                            "errorsPointer": CONTENT_TASK_ERRORS_POINTER},
+                           "owner_label": OWNER_LABEL},
+        "READBACK": {"operation": "READBACK", "endpoint_id": endpoint_ids["READBACK"],
+                     "request_template": CONTENT_READBACK_TEMPLATE,
+                     "description_observed_text_pointer": CONTENT_DESCRIPTION_POINTER,
+                     "description_response_binding": {"titlePointer": CONTENT_TITLE_POINTER},
+                     "owner_label": OWNER_LABEL},
+    }
+
+
+def content_write_refusal(document: dict) -> str | None:
+    """Why the official document no longer describes the registered content write, or None."""
+    paths = document.get("paths") or {}
+    apply, status, readback = ((paths.get(path) or {}).get("post")
+                               for path in (CONTENT_APPLY_PATH, CONTENT_STATUS_PATH, CONTENT_READBACK_PATH))
+    if not all(isinstance(operation, dict) for operation in (apply, status, readback)):
+        return (f"the official document no longer describes POST {CONTENT_APPLY_PATH}, POST "
+                f"{CONTENT_STATUS_PATH} and POST {CONTENT_READBACK_PATH}")
+
+    def fields(schema: object) -> dict:
+        return schema_at(document, schema).get("properties") or {}
+
+    def element(schema: object) -> object:
+        return schema_at(document, schema).get("items")
+
+    item = fields(element(fields(json_schema(document, apply)).get("items")))
+    attribute = fields(element(item.get("attributes")))
+    value = fields(element(attribute.get("values")))
+    if "offer_id" not in item or not {"id", "complex_id", "values"} <= set(attribute) or "value" not in value:
+        return ("the documented attribute update no longer has items[].offer_id, attributes[].id, complex_id "
+                "and values[].value")
+    if "task_id" not in fields(json_schema(document, apply, "200")):
+        return "the documented attribute update no longer answers task_id"
+    if "task_id" not in fields(json_schema(document, status)):
+        return f"POST {CONTENT_STATUS_PATH} no longer takes task_id"
+    task = fields(element(fields(fields(json_schema(document, status, "200")).get("result")).get("items")))
+    if not {"offer_id", "status", "errors"} <= set(task):
+        return "the documented task answer no longer has result.items[].offer_id, status and errors"
+    documented = str(schema_at(document, task["status"]).get("description") or "")
+    missing = [state for state in CONTENT_TASK_STATES if f"`{state}`" not in documented]
+    if missing:
+        return f"the documented task states no longer include {', '.join(missing)}"
+    if "offer_id" not in fields(json_schema(document, readback)):
+        return f"POST {CONTENT_READBACK_PATH} no longer takes offer_id"
+    if not {"offer_id", "name", "description"} <= set(fields(fields(json_schema(document, readback, "200"))
+                                                               .get("result"))):
+        return "the documented readback no longer has result.offer_id, name and description"
+    return None
+
+
+def java_whitespace(character: str) -> bool:
+    """Character.isWhitespace: separators other than the no-break spaces, and the controls it names."""
+    return character in "\t\n\x0b\f\r\x1c\x1d\x1e\x1f" or (
+        unicodedata.category(character) in ("Zs", "Zl", "Zp") and character not in "\xa0  ")
+
+
+def normalized_text(text: str | None) -> str:
+    """The comparable form of a text, as the backend's ContentText.normalized makes it."""
+    if text is None:
+        return ""
+    collapsed = SPACE_RUN.sub(" ", MARKUP_BREAK.sub(" ", text))
+    start, end = 0, len(collapsed)
+    while start < end and java_whitespace(collapsed[start]):
+        start += 1
+    while end > start and java_whitespace(collapsed[end - 1]):
+        end -= 1
+    return collapsed[start:end]
+
+
+def card_text(answer: dict | None, offer: str) -> tuple[str | None, str | None, str | None]:
+    """(title, description, why not) of a readback, read at the registered pointers the way the
+    backend reads them: a missing description is unreadable, a null one is empty."""
+    result = (answer or {}).get("result")
+    if not isinstance(result, dict) or str(result.get("offer_id")) != offer:
+        return None, None, "the answer is not about this card"
+    title = pointer_value(answer, CONTENT_TITLE_POINTER)
+    description = pointer_value(answer, CONTENT_DESCRIPTION_POINTER)
+    if not isinstance(title, str) or "description" not in result \
+            or not (description is None or isinstance(description, str)):
+        return None, None, "no title or description the backend can read at the registered pointers"
+    return title, description or "", None
+
+
+def task_key_text(value: object) -> str | None:
+    """A task key as the backend reads one: a string or an integral number, at most 64 characters."""
+    if isinstance(value, bool):
+        return None
+    text = value if isinstance(value, str) else str(value) if isinstance(value, int) else None
+    if text is None or not text.strip() or len(text) > 64 or any(unicodedata.category(c) == "Cc" for c in text):
+        return None
+    return text
+
+
+def catalog_card(answer: dict | None, offer: str) -> dict | None:
+    """The single card of a one-card catalog answer, when it is this card."""
+    items = (answer or {}).get("result")
+    if isinstance(items, list) and len(items) == 1 and isinstance(items[0], dict) \
+            and str(items[0].get("offer_id")) == offer:
+        return items[0]
+    return None
+
+
+def attribute_text(card: dict, attribute_id: int) -> str | None:
+    """The one text a catalog card holds for a plain attribute, or None."""
+    for attribute in card.get("attributes") or []:
+        if isinstance(attribute, dict) and attribute.get("id") == attribute_id and not attribute.get("complex_id"):
+            texts = [value.get("value") for value in attribute.get("values") or [] if isinstance(value, dict)]
+            return texts[0] if len(texts) == 1 and isinstance(texts[0], str) else None
+    return None
+
+
+def card_attributes(card: dict) -> dict[str, str]:
+    """Every attribute of a catalog card as one comparable text, keyed by id and complex id."""
+    found = {}
+    for attribute in card.get("attributes") or []:
+        if isinstance(attribute, dict):
+            values = sorted(json.dumps(value, ensure_ascii=False, sort_keys=True)
+                            for value in attribute.get("values") or [])
+            found[f"{attribute.get('id')}/{attribute.get('complex_id') or 0}"] = "\n".join(values)
+    return found
+
+
+def content_write_probe(args: argparse.Namespace) -> int:
+    """Write one card's title and description back as Ozon holds them, follow the task, read them
+    back, and keep it all as evidence."""
+    pilot = pilot_from(args)
+    if not args.offer:
+        sys.exit("name the card with --offer <offer_id> (make ozon-content-write STEP=probe OFFER=<offer_id>)")
+    product = next((item for item in catalog_products(pilot) if str(item.get("offer_id")) == args.offer), None)
+    if product is None or not str(product.get("id") or "").isdigit():
+        sys.exit(f"{args.offer} is not in the newest catalog probe; probe the catalog first")
+    product_id = str(product["id"])
+    if not args.official_source_file:
+        # The newest official document kept beside the evidence, when none is named.
+        saved = sorted(pilot.evidence_dir.glob("ozon-seller-openapi-*.json"))
+        if not saved:
+            sys.exit(f"save {OFFICIAL_SOURCE_URL} in a browser and name it with OFFICIAL_SOURCE=<file>")
+        args.official_source_file = str(saved[-1])
+    client_id = read_secret(pilot, pilot.client_id_file, "Client-Id")
+    api_key = read_secret(pilot, pilot.write_key(CONTENT_WRITE)[1], "content write Api-Key")
+    context = tls_context(args.ca_file)
+
+    key = check_key(pilot, args, client_id, api_key, context, writes_expected=True)
+    if key is None:
+        return 1
+    granted = {method for methods in key["granted"].values() for method in methods}
+    needed = (CONTENT_APPLY_PATH, CONTENT_STATUS_PATH, CONTENT_READBACK_PATH, CATALOG_ATTRIBUTES_PATH)
+    missing = [path for path in needed if path not in granted]
+    if missing:
+        print(f"the key has no role that allows {', '.join(missing)}; nothing sent")
+        return 1
+    refusal = content_write_refusal(key["document"])
+    if refusal:
+        print(f"nothing sent: {refusal}")
+        return 1
+
+    stamp = f"{key['testedAt']:%Y%m%d-%H%M%S}z"
+    readback_body = render_write_template(CONTENT_READBACK_TEMPLATE, {"offerKey": args.offer})
+    catalog_body = json.dumps({"filter": {"offer_id": [args.offer], "visibility": "ALL"}, "last_id": "",
+                               "limit": 1}, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+    def call(path: str, body: bytes, label: str) -> tuple[dict, dict | None]:
+        status, content_type, answer_bytes = post_ozon(path, body, client_id, api_key, context)
+        file_name = f"{CONTENT_WRITE['suffix']}-{stamp}-{label}.json"
+        private_write(pilot.evidence_dir / file_name, answer_bytes)
+        try:
+            answer = json.loads(answer_bytes) if content_type == "application/json" else None
+        except ValueError:
+            answer = None
+        return ({"file": file_name, "sha256": hashlib.sha256(answer_bytes).hexdigest(), "status": status,
+                 "contentType": content_type}, answer if isinstance(answer, dict) else None)
+
+    before_page, before = call(CONTENT_READBACK_PATH, readback_body, "before")
+    title, description, why = card_text(before, args.offer)
+    if before_page["status"] != 200 or why is not None:
+        print(f"POST {CONTENT_READBACK_PATH} -> HTTP {before_page['status']}: {why or 'no answer'}; nothing sent")
+        return 1
+    if not normalized_text(title) or not normalized_text(description):
+        print("the card has no title or no description to write back; probe a card that has both; nothing sent")
+        return 1
+    catalog_page, catalog = call(CATALOG_ATTRIBUTES_PATH, catalog_body, "attributes-before")
+    card = catalog_card(catalog, args.offer)
+    if catalog_page["status"] != 200 or card is None:
+        print(f"POST {CATALOG_ATTRIBUTES_PATH} -> HTTP {catalog_page['status']}: no single card for {args.offer}; "
+              "nothing sent")
+        return 1
+    # Before it writes, the worker compares the readback with the text the catalog facts hold.
+    disagree = [name for name, attribute, text in (("title (4180)", TITLE_ATTRIBUTE, title),
+                                                     ("description (4191)", DESCRIPTION_ATTRIBUTE, description))
+                if normalized_text(attribute_text(card, attribute)) != normalized_text(text)]
+    if disagree:
+        print(f"the catalog's {' and '.join(disagree)} differs from what POST {CONTENT_READBACK_PATH} answers, so "
+              "the worker would refuse every change of this card as moved; nothing sent")
+        return 1
+    attributes_before = card_attributes(card)
+
+    apply_body = render_write_template(CONTENT_APPLY_TEMPLATE, {"offerKey": args.offer, "titleText": title,
+                                                                "descriptionText": description})
+    print(f"\n{args.offer} (product_id {product_id}): title {len(title)} characters, description "
+          f"{len(description)} characters; the catalog's attributes 4180 and 4191 hold the same text")
+    print(f"The same-text write sends POST {OZON_BASE_URL}{CONTENT_APPLY_PATH} with exactly:\n  {apply_body.decode()}")
+    print("This is a real write to the store. It writes the title and description the card already has, so "
+          "nothing a buyer sees changes, and Ozon should answer skipped (no changes); it counts toward Ozon's "
+          "limits on product updates.")
+    if not typed_confirmation(f"Type the offer id ({args.offer}) to send it, anything else stops: ", args.offer):
+        return 1
+
+    apply_page, applied = call(CONTENT_APPLY_PATH, apply_body, "apply")
+    task_key = task_key_text(pointer_value(applied, CONTENT_TASK_KEY_POINTER))
+    print(f"POST {CONTENT_APPLY_PATH} -> HTTP {apply_page['status']}: task_id {task_key or 'missing'}")
+    if apply_page["status"] != 200 or task_key is None:
+        if isinstance(applied, dict) and applied.get("message"):
+            print(f"  {applied.get('code')}: {applied.get('message')}")
+        print("nothing recorded: Ozon did not name a task the way the registered acceptance reads it; look at the "
+              "card in the seller office")
+        return 1
+
+    status_body = render_write_template(CONTENT_STATUS_TEMPLATE, {"nativeTaskKey": task_key})
+    enquiries, task_status, task_answer, waited = [], None, None, 0
+    for index, delay in enumerate(CONTENT_TASK_POLL_SECONDS):
+        time.sleep(delay)
+        waited += delay
+        page, answer = call(CONTENT_STATUS_PATH, status_body, f"status{index}")
+        found = pointer_value(answer, CONTENT_TASK_STATUS_POINTER)
+        page["taskStatus"] = found if isinstance(found, str) else None
+        enquiries.append(page)
+        if page["status"] != 200:
+            message = answer.get("message") if isinstance(answer, dict) else None
+            print(f"task enquiry {index + 1}: HTTP {page['status']}" + (f" ({message})" if message else ""))
+            if 400 <= page["status"] < 500 and page["status"] != 429:
+                print("nothing recorded: Ozon refused the task enquiry as the registered template sends it (the "
+                      "task id as a string); the write itself changed nothing")
+                return 1
+            continue
+        if pointer_value(answer, "/result/items") == []:
+            print(f"task {task_key} after {waited} s: not listed yet")
+            continue
+        if not isinstance(found, str) or str(pointer_value(answer, CONTENT_TASK_OFFER_POINTER)) != args.offer:
+            print("nothing recorded: the task enquiry does not answer for this card at the registered pointers")
+            return 1
+        if found == "pending":
+            print(f"task {task_key} after {waited} s: pending")
+            continue
+        task_status, task_answer = found, answer
+        break
+    if task_status is None:
+        print(f"nothing recorded: the task was not finished after {waited // 60} minutes; the write changes "
+              "nothing, so the probe can simply run again later")
+        return 1
+    errors = pointer_value(task_answer, CONTENT_TASK_ERRORS_POINTER)
+    errors = [error for error in errors if isinstance(error, dict)] if isinstance(errors, list) else []
+    for error in errors[:5]:
+        print(f"  {error.get('level') or 'error'} {error.get('code')} (attribute {error.get('attribute_id')}): "
+              f"{error.get('message') or error.get('description')}")
+    if task_status not in ("imported", "skipped"):
+        print(f"nothing recorded: the task ended {task_status!r}"
+              + ("" if task_status == "failed" else ", which the registered enquiry does not know"))
+        return 1
+    print(f"task {task_key}: {task_status}" + (" (Ozon found nothing to change)" if task_status == "skipped"
+                                               else " (Ozon processed the card although its text is the same)"))
+
+    readbacks, matched = [], False
+    for index, delay in enumerate((0,) + CONTENT_REREAD_DELAYS_SECONDS):
+        if delay:
+            print(f"the card does not show its text; reading again in {delay} s")
+            time.sleep(delay)
+        page, after = call(CONTENT_READBACK_PATH, readback_body, f"readback{index}")
+        observed_title, observed_description, why = card_text(after, args.offer)
+        page["titleExact"] = observed_title == title
+        page["descriptionExact"] = observed_description == description
+        readbacks.append(page)
+        if page["status"] == 200 and why is None and normalized_text(observed_title) == normalized_text(title) \
+                and normalized_text(observed_description) == normalized_text(description):
+            matched = True
+            break
+        print(f"readback {index + 1}: HTTP {page['status']}, {why or 'the card holds a different text'}")
+    if not matched:
+        print("nothing recorded: no readback showed the card's text; look at the card in the seller office")
+        return 1
+    after_page, after_catalog = call(CATALOG_ATTRIBUTES_PATH, catalog_body, "attributes-after")
+    del api_key
+    after_card = catalog_card(after_catalog, args.offer)
+    if after_page["status"] != 200 or after_card is None:
+        print("nothing recorded: the catalog did not answer for the card after the write; look at it in the "
+              "seller office")
+        return 1
+    attributes_after = card_attributes(after_card)
+    changed = sorted(name for name in set(attributes_before) | set(attributes_after)
+                     if attributes_before.get(name) != attributes_after.get(name))
+    if changed:
+        print(f"nothing recorded: the same-text write changed attributes {', '.join(changed)}; look at them in the "
+              "seller office before going on")
+        return 1
+    print(f"readback {len(readbacks)}: title and description as written; no attribute of the card changed")
+
+    bundle = {"capability": CONTENT_WRITE["code"], "testedAt": iso(key["testedAt"]), "offerId": args.offer,
+              "productId": product_id, "applyTemplate": CONTENT_APPLY_TEMPLATE,
+              "statusTemplate": CONTENT_STATUS_TEMPLATE, "readbackTemplate": CONTENT_READBACK_TEMPLATE,
+              "applyRequest": apply_body.decode("utf-8"), "statusRequest": status_body.decode("utf-8"),
+              "readbackRequest": readback_body.decode("utf-8"), "catalogRequest": catalog_body.decode("utf-8"),
+              "taskKeyPointer": CONTENT_TASK_KEY_POINTER, "taskStatusPointer": CONTENT_TASK_STATUS_POINTER,
+              "taskErrorsPointer": CONTENT_TASK_ERRORS_POINTER, "titlePointer": CONTENT_TITLE_POINTER,
+              "descriptionPointer": CONTENT_DESCRIPTION_POINTER, "taskKey": task_key, "taskStatus": task_status,
+              "before": before_page, "attributesBefore": catalog_page, "apply": apply_page,
+              "enquiries": enquiries, "readbacks": readbacks, "attributesAfter": after_page,
+              "attributesChanged": changed}
+    bundle_name = f"{CONTENT_WRITE['suffix']}-{stamp}-bundle.json"
+    data = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    private_write(pilot.evidence_dir / bundle_name, data)
+    valid_until = min(key["testedAt"] + EVIDENCE_WINDOW, key["keyExpires"])
+    manifest = {
+        "pilot": pilot.code,
+        "capability": CONTENT_WRITE["code"],
+        "testedAt": iso(key["testedAt"]),
+        "validUntil": iso(valid_until),
+        "keyExpiresAt": iso(key["keyExpires"]),
+        "roles": [{"name": name, "methods": len(methods)} for name, methods in key["granted"].items()],
+        "writeRolesAccepted": sorted(key["writers"]),
+        "evidenceClass": "REAL_ACCOUNT",
+        "accountEvidenceRef": pilot.evidence_ref(bundle_name),
+        "accountEvidenceSha256": hashlib.sha256(data).hexdigest(),
+        "officialSourceUrl": OFFICIAL_SOURCE_URL,
+        "officialSourceSha256": key["sourceDigest"],
+        "officialSourceFile": str(key["sourceFile"]),
+        "offerId": args.offer,
+        "taskStatus": task_status,
+    }
+    private_write(pilot.manifest(CONTENT_WRITE),
+                  (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode())
+    print(f"evidence recorded, valid until {iso(valid_until)}; summary kept at {pilot.manifest(CONTENT_WRITE)}")
+    print(f"next: make {CONTENT_WRITE['make']} STEP=setup")
+    return 0
+
+
+def command_content_write(args: argparse.Namespace) -> int:
+    steps = {"probe": content_write_probe, "setup": lambda given: write_setup(given, CONTENT_WRITE),
+             "verify": lambda given: write_verify(given, CONTENT_WRITE, content_operations)}
+    return steps[args.step](args)
 
 
 # --- economics projection profile (guardrail prerequisites, part two) -----------------------
@@ -3764,6 +4261,35 @@ def main(argv: list[str] | None = None) -> int:
     price_write.add_argument("--again", action="store_true",
                              help="verify: submit a new case even though this evidence is already verified")
     price_write.set_defaults(handler=command_price_write, allow_write_roles=False)
+
+    content_write = commands.add_parser(
+        "content-write", help="the content write capability (W2): same-text probe, registration, two-Owner "
+                              "verification")
+    content_write.add_argument("step", choices=["probe", "setup", "verify"],
+                               help="probe (talks to Ozon only), then setup, then verify")
+    content_write.add_argument("--pilot", default="pilot", help="short code of the pilot account (default: pilot)")
+    content_write.add_argument("--secret-mount", help="secret mount; default: MARKETOPS_SECRET_MOUNT_DIRECTORY "
+                                                      f"or {DEFAULT_SECRET_MOUNT}")
+    content_write.add_argument("--evidence-root", help=f"evidence directory; default: {DEFAULT_EVIDENCE_ROOT}")
+    content_write.add_argument("--api", default="http://127.0.0.1:8080", help="backend base URL")
+    content_write.add_argument("--operator", default="owner-local", help="operator recorded in the audit")
+    content_write.add_argument("--organization-code", help="organization code when there is more than one")
+    content_write.add_argument("--offer", help="probe: the offer id (seller article) of a card with a title and a "
+                                               "description")
+    content_write.add_argument("--ca-file", help="probe: trusted root bundle for api-seller.ozon.ru")
+    content_write.add_argument("--official-source-file", help="probe: the OpenAPI document saved from "
+                                                              f"{OFFICIAL_SOURCE_URL} in a browser; default: "
+                                                              "the newest one kept beside the evidence")
+    content_write.add_argument("--issuer", default=DEFAULT_ISSUER, help="verify: OIDC issuer")
+    content_write.add_argument("--client-id", default=DEFAULT_CLIENT_ID, help="verify: console OIDC client")
+    content_write.add_argument("--redirect-uri", default=DEFAULT_REDIRECT_URI,
+                               help="verify: registered console redirect URI")
+    content_write.add_argument("--audience", default=DEFAULT_AUDIENCE, help="verify: API audience")
+    content_write.add_argument("--oidc-ca-file",
+                               help=f"verify: CA for the issuer; default: {LOCAL_OIDC_CA} when present")
+    content_write.add_argument("--again", action="store_true",
+                               help="verify: submit a new case even though this evidence is already verified")
+    content_write.set_defaults(handler=command_content_write, allow_write_roles=False)
 
     profile = commands.add_parser("economics-profile",
                                   help="generate the store's economics profile from its tariffs; two Owners verify it")

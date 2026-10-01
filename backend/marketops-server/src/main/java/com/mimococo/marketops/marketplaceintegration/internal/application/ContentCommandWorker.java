@@ -143,6 +143,7 @@ public class ContentCommandWorker {
                     .addKeyValue("commandId", commandId)
                     .addKeyValue("state", command.state())
                     .addKeyValue("errorClass", failure.getClass().getSimpleName())
+                    .addKeyValue("sqlState", sqlState(failure))
                     .addKeyValue("correlationId", CorrelationId.current())
                     .log("A content command step failed; its lease will expire");
         }
@@ -152,6 +153,15 @@ public class ContentCommandWorker {
     /** Before the write: the gate, the credential, the read of the card, then the write itself. */
     private void pending(CommandRow command, long fence) {
         Instant now = clock.instant();
+        // A write that already left under this command is never sent again, even when the row still
+        // says PENDING: the move after the answer can be lost (a failed statement, a crash). Only an
+        // answer that asked to retry later sends again.
+        Optional<ContentCommandRepository.ApplyTrace> sent = commands.lastApply(command.id())
+                .filter(trace -> !ContentWriteResult.Outcome.RETRIABLE_ERROR.name().equals(trace.outcome()));
+        if (sent.isPresent()) {
+            resume(command, fence, sent.get(), now);
+            return;
+        }
         List<String> reasons = new ArrayList<>(commands.gateReasons(command.id()));
         if (reasons.contains("APPROVAL_EXPIRED")) {
             finish(command, fence, "CANCELLED", "approval_expired", null);
@@ -244,30 +254,63 @@ public class ContentCommandWorker {
         }
     }
 
+    /**
+     * Carry on after a write whose state move was lost, from what its events recorded: a task to
+     * follow when the platform named one, otherwise only readbacks.
+     */
+    private void resume(CommandRow command, long fence, ContentCommandRepository.ApplyTrace sent, Instant now) {
+        if (ContentWriteResult.Outcome.REJECTED.name().equals(sent.outcome())) {
+            finish(command, fence, "FAILED", "platform_rejected", null);
+            return;
+        }
+        Move move = ContentWriteResult.Outcome.ACCEPTED.name().equals(sent.outcome()) && sent.nativeTaskKey() != null
+                ? Move.to("AWAITING_TASK", now).taskKey(sent.nativeTaskKey())
+                : Move.to("UNKNOWN_REQUIRES_READBACK", now).freshReadbacks()
+                        .outcome("apply_answer_lost_with_worker", null);
+        Optional<Resolved> resolved = resolve(command);
+        if (resolved.isPresent()) {
+            move = move.resolved(resolved.get().capability(), resolved.get().credential());
+        }
+        if (commands.move(command.id(), fence, workerName, move, now)) {
+            event(command, fence, "STATE", move.state(), "resumed_after_apply", null);
+        }
+    }
+
     /** Ask what became of the platform task the write opened. */
     private void enquire(CommandRow command, long fence) {
         Instant now = clock.instant();
-        if (command.nativeTaskKey() == null || command.capabilityId() == null) {
-            commands.move(command.id(), fence, workerName, Move.to("AWAITING_READBACK", now).freshReadbacks(), now);
+        Optional<Resolved> resolved = resolve(command);
+        if (resolved.isEmpty()) {
+            commands.move(command.id(), fence, workerName, Move.to(command.state(), now.plus(GATE_RECHECK)), now);
             return;
         }
-        ContentWriteResult status = call(command, fence, "STATUS", request(command, command.capabilityId(),
-                command.credentialId(), ContentWriteRequest.Operation.STATUS_ENQUIRY));
+        UUID capability = resolved.get().capability();
+        UUID credential = resolved.get().credential();
+        if (command.nativeTaskKey() == null) {
+            commands.move(command.id(), fence, workerName,
+                    Move.to("AWAITING_READBACK", now).freshReadbacks().resolved(capability, credential), now);
+            return;
+        }
+        ContentWriteResult status = call(command, fence, "STATUS", request(command, capability, credential,
+                ContentWriteRequest.Operation.STATUS_ENQUIRY));
         Instant answered = clock.instant();
         switch (status.outcome()) {
             case TASK_SUCCEEDED -> commands.move(command.id(), fence, workerName,
-                    Move.to("AWAITING_READBACK", answered).counted(0, 1, 0).freshReadbacks(), answered);
+                    Move.to("AWAITING_READBACK", answered).counted(0, 1, 0).freshReadbacks()
+                            .resolved(capability, credential), answered);
             case TASK_FAILED -> finish(command, fence, "FAILED", "platform_task_failed", status.detail());
             default -> {
                 if (command.taskPolls() + 1 >= TASK_POLL_LIMIT) {
                     // The task never said; the card will.
                     commands.move(command.id(), fence, workerName, Move.to("AWAITING_READBACK", answered)
-                            .counted(0, 1, 0).freshReadbacks().outcome("task_status_unresolved", null), answered);
+                            .counted(0, 1, 0).freshReadbacks().resolved(capability, credential)
+                            .outcome("task_status_unresolved", null), answered);
                 } else {
                     int delay = TASK_POLL_DELAYS_SECONDS[Math.min(command.taskPolls(),
                             TASK_POLL_DELAYS_SECONDS.length - 1)];
                     commands.move(command.id(), fence, workerName,
-                            Move.to("AWAITING_TASK", answered.plusSeconds(delay)).counted(0, 1, 0), answered);
+                            Move.to("AWAITING_TASK", answered.plusSeconds(delay)).counted(0, 1, 0)
+                                    .resolved(capability, credential), answered);
                 }
             }
         }
@@ -276,12 +319,13 @@ public class ContentCommandWorker {
     /** Read the card and compare both fields with the change. */
     private void readback(CommandRow command, long fence) {
         Instant now = clock.instant();
-        if (command.capabilityId() == null) {
+        Optional<Resolved> resolved = resolve(command);
+        if (resolved.isEmpty()) {
             commands.move(command.id(), fence, workerName, Move.to(command.state(), now.plus(GATE_RECHECK)), now);
             return;
         }
-        ContentWriteResult read = call(command, fence, "READBACK", request(command, command.capabilityId(),
-                command.credentialId(), ContentWriteRequest.Operation.READBACK));
+        ContentWriteResult read = call(command, fence, "READBACK", request(command, resolved.get().capability(),
+                resolved.get().credential(), ContentWriteRequest.Operation.READBACK));
         Instant answered = clock.instant();
         boolean matched = read.outcome() == ContentWriteResult.Outcome.OBSERVED
                 && ContentText.compare(read.observedTitle(), command.targetTitle(), command.priorTitle())
@@ -296,7 +340,8 @@ public class ContentCommandWorker {
         if (done <= READBACK_DELAYS_SECONDS.length) {
             commands.move(command.id(), fence, workerName,
                     Move.to(command.state(), answered.plusSeconds(READBACK_DELAYS_SECONDS[done - 1]))
-                            .counted(0, 0, 1), answered);
+                            .counted(0, 0, 1).resolved(resolved.get().capability(), resolved.get().credential()),
+                    answered);
             return;
         }
         String outcome;
@@ -328,6 +373,33 @@ public class ContentCommandWorker {
                     .addKeyValue("correlationId", CorrelationId.current())
                     .log("A content command finished");
         }
+    }
+
+    /**
+     * The capability and credential a command reads with: the ones it recorded, or resolved again
+     * when a lost move left none on the row.
+     */
+    private Optional<Resolved> resolve(CommandRow command) {
+        if (command.capabilityId() != null && command.credentialId() != null) {
+            return Optional.of(new Resolved(command.capabilityId(), command.credentialId()));
+        }
+        return commands.storeCapability(command.storeId())
+                .map(ContentCommandRepository.StoreCapability::capabilityId)
+                .flatMap(capability -> credentials.writeCredential(command.storeId(), capability)
+                        .map(credential -> new Resolved(capability, credential)));
+    }
+
+    /** The SQL state behind a failure, when a database error caused it. */
+    private static String sqlState(Throwable failure) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof java.sql.SQLException sql && sql.getSQLState() != null) {
+                return sql.getSQLState();
+            }
+        }
+        return null;
+    }
+
+    private record Resolved(UUID capability, UUID credential) {
     }
 
     private ContentWriteRequest request(CommandRow command, UUID capability, UUID credential,

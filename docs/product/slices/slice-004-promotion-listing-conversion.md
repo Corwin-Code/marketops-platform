@@ -62,6 +62,8 @@
 
 **试点写入路径（W2，Owner 2026-10-02）**：试点店铺的标题和描述修改不走本 Slice 的治理链，即不需要校准包、独立审核、经营暴露和额度。改走轻量的内容写入链：Owner 改定文本后确认一次即审批，写入前回读、写入后查任务并回读，闸门、白名单和 Kill Switch 与改价一致。详见 `docs/development.md`「W2 内容写入」。本 Slice 的正式路径保留，供将来需要正式评价时使用。
 
+2026-10-02 灰度结果：描述修改生效；Ozon 不接受经 `/v1/product/attributes/update` 修改标题（任务显示已导入、审核通过，标题不变）。因此试点暂时只写描述（Owner 决定）。
+
 **未实现 / 未接入**
 - 未接入真实 Ozon/WB API：Description 能力未验证，adapter 在连接前拒绝；worker 全部默认关闭；仅用合成数据、fake provider 和本地 loopback。
 - LLM 已接入阿里云百炼 `qwen3.8-max`（见 `docs/development.md`）。

@@ -7,8 +7,10 @@ import type { CodeLabels } from '../labels';
 
 /** The editor in the content drawer. */
 export const contentEditorText = {
-  title: '修改标题与描述并写入 Ozon',
-  hint: '在这里改定最终的标题和描述，确认后由平台写入 Ozon：先回读确认卡片仍是下面的当前文本，再写入、查询任务、回读核对。确认即审批，批准 24 小时内有效。',
+  title: '修改描述并写入 Ozon',
+  hint: '在这里改定最终的描述，确认后由平台写入 Ozon：先回读确认卡片仍是下面的当前文本，再写入、查询任务、回读核对。确认即审批，批准 24 小时内有效。',
+  titleLocked:
+    '标题暂时不能在这里修改：2026-10-02 灰度时 Ozon 任务显示已导入、商品卡审核通过，但标题没有变化（这个接口不接受标题修改）。平台只写描述，标题按卡片现有文本原样提交。',
   open: '编辑并写入',
   close: '收起',
   fieldTitle: '标题',
@@ -16,20 +18,21 @@ export const contentEditorText = {
   current: '当前',
   currentObservedAt: '当前文本来自目录快照',
   noCurrent: '还没有这张商品卡的标题或描述快照，暂时不能写入。',
-  useDrafts: '用 Qwen 草稿填入',
+  useDrafts: '用 Qwen 描述草稿填入',
   resetToCurrent: '恢复当前文本',
   changed: '已修改',
   unchanged: '未修改',
-  nothingChanged: '标题和描述都和当前一致，没有要写入的内容。',
+  locked: '暂不可改',
+  nothingChanged: '描述和当前一致，没有要写入的内容。',
   descriptionShort: (n: number): string =>
     `描述现在是 ${String(n)} 个字符：Ozon 内容评分里“描述超过 500 字符”可得 25 分。`,
   titleLimit: (n: number): string => `标题最多 ${String(n)} 个字符（Ozon 官方限制）。`,
   confirm: '确认写入',
   confirmTitle: '确认写入 Ozon',
   confirmConsequence:
-    '确认后，平台会在写入闸门放行时修改 Ozon 上的这张商品卡：写入前先回读，卡片若已被改动就不写；写入后查询任务并回读核对。没改的字段按卡片现有文本原样提交。需要最近登录。',
+    '确认后，平台会在写入闸门放行时修改 Ozon 上这张商品卡的描述：写入前先回读，卡片若已被改动就不写；写入后查询任务并回读核对。标题按卡片现有文本原样提交。需要最近登录。',
   reason: '修改原因',
-  reasonPlaceholder: '可不填，默认为“Owner 确认修改标题与描述”',
+  reasonPlaceholder: '可不填，默认为“Owner 确认修改描述”',
   submitted: '已确认，等待写入',
   liveCommand: '这张商品卡还有一个未完成的修改，完成或关闭后才能再提交。',
   latest: '最近一次修改',

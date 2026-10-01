@@ -1263,6 +1263,43 @@ Owner 2026-10-02 决定：
 - `/v1/product/import/info`
 - `/v1/product/info/description`
 
+## W2 内容写入（第二部分：能力登记、灰度与只改描述）
+
+**试点脚本** `make ozon-content-write STEP=probe|setup|verify`（setup 和 verify 与 W1 共用一套实现）：
+- **写入 key**：`<mount>/ozon/<pilot>/content-write-api-key`，凭证 `ozon-<pilot>-content-write`，用途 `CONTENT_WRITE`。和 W1 一样可以复制全权限 key：`install -m 600 <mount>/ozon/pilot/seller-api-key <mount>/ozon/pilot/content-write-api-key`。
+- **probe**（Owner 在交互终端运行，`OFFER=<货号>`，官方文档默认取证据目录里最新保存的一份）：
+  1. 按官方文档核对三个接口；
+  2. 先回读卡片，并确认目录里的 4180、4191 与回读一致。不一致时 worker 会把这张卡的所有修改判为卡片已被改动，所以这里不一致就一个字都不发；
+  3. 打印确切的请求并要求输入货号确认，把现有标题和描述原样写回；
+  4. 跟踪任务，再回读；
+  5. 比对卡片的全部属性，没有任何变化才记录证据。
+- **setup**：登记凭证、能力 `listing-content-change`、三个端点和店铺可用性行。
+- **verify**：两位 Owner 核验。起草异步任务模型、内容写入认证头、三个端点（`CONTENT_*` 功能）和三条操作，一位提交、另一位审核，再把店铺标为可用。
+
+**真实账户上确认的事实**（2026-10-02）：
+- 原样写回时任务返回 `imported`，不是 `skipped`。官方说明里 `skipped` 指图片或视频链接没变。
+- 查询任务时 `task_id` 用字符串形式被接受；写入约 5 秒后第一次查询，任务已完成。
+- **标题改不动**：灰度首单 W-2643-D17(D22)-XL(2XL) 的结果如下：
+  - 任务 `imported`，没有错误；`/v3/product/info/list` 显示审核通过（`approved`）；
+  - 描述（4191）几分钟内生效；
+  - 标题（4180）在回读和目录里都没有变化。
+
+  也就是说，`/v1/product/attributes/update` 不接受名称修改，而且不报错。
+
+**只改描述**（Owner 2026-10-02 决定）：
+- `ContentChangeService.TITLE_WRITABLE = false`：带新标题的确认会被拒绝；`GET .../content-changes/listings/{variantId}` 返回 `titleWritable`。
+- 编辑器里标题只读并写明原因，「用 Qwen 描述草稿填入」只填描述；标题按卡片现有文本原样提交，回读时标题按目标文本核对。
+- 要改标题需要另行研究，可能要走整卡导入 `/v3/product/import`，影响整张卡，暂不做。
+
+**worker 修复**（灰度首单发现）：
+- 推进状态的语句里，`CASE WHEN :terminal THEN :now ELSE NULL END` 被 Postgres 推断成 text，赋给 timestamptz 报 42804。结果是写入被受理后，指令状态推进失败。已改为 `CAST(:now AS timestamptz)`。
+- 一条指令只要发出过写入，「写入前」流程就不再写：
+  - 按记录的答复转去查任务（已受理且有任务号）或只回读；
+  - 被拒绝就以 `FAILED` 结束；
+  - 只有要求稍后重试的答复才会再写。
+- 查任务和回读时，如果指令上缺能力或凭证，就重新解析。
+- 失败日志带 SQL state。本机 Postgres 容器不记录语句错误，排查时可以用不带参数类型的 `PREPARE` 复现 JDBC 的绑定方式。
+
 ## P10 效果跟踪（第一部分：前后对比）
 
 Owner 2026-10-01 定了四件事：前后各 14 天比较；下单为主，搜索人数与价格指数为辅；观察期满自动记录结论并关闭建议；周复盘每周一自动生成并接 Qwen（第二部分）。

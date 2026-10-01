@@ -47,6 +47,15 @@ public class ContentChangeService {
     /** How long a confirmed change may wait for the gate before it lapses. */
     static final Duration APPROVAL_VALIDITY = Duration.ofHours(24);
 
+    /**
+     * Whether the title can be changed. Ozon keeps the title when /v1/product/attributes/update
+     * names attribute 4180: the canary of 2026-10-02 answered {@code imported}, the card was
+     * approved, and the title stayed while the description changed. Until a supported way to
+     * change it exists, only the description is written (Owner decision 2026-10-02); the title is
+     * sent back as the card holds it.
+     */
+    static final boolean TITLE_WRITABLE = false;
+
     /** Control characters other than a line break or a tab. */
     private static final Pattern CONTROL = Pattern.compile("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]");
 
@@ -75,7 +84,7 @@ public class ContentChangeService {
                 content.flatMap(ContentChangeService::title).orElse(null),
                 content.flatMap(ListingContentSnapshot::description).orElse(null),
                 content.map(ListingContentSnapshot::catalogObservedAt).orElse(null),
-                TITLE_LIMIT, DESCRIPTION_LIMIT,
+                TITLE_LIMIT, DESCRIPTION_LIMIT, TITLE_WRITABLE,
                 commands.latestForListing(actor.organizationId(), platformListingVariantId).orElse(null));
     }
 
@@ -109,11 +118,11 @@ public class ContentChangeService {
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RAW_EVIDENCE_MISSING));
         boolean titleChanged = !ContentText.same(targetTitle, priorTitle);
         boolean descriptionChanged = !ContentText.same(targetDescription, priorDescription);
-        if (!titleChanged && !descriptionChanged) {
+        if ((titleChanged && !TITLE_WRITABLE) || (!titleChanged && !descriptionChanged)) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         String reason = confirmation.reason() == null || confirmation.reason().isBlank()
-                ? "Owner 确认修改标题与描述" : confirmation.reason().strip();
+                ? (titleChanged ? "Owner 确认修改标题与描述" : "Owner 确认修改描述") : confirmation.reason().strip();
         if (reason.length() > 1024) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
@@ -151,10 +160,12 @@ public class ContentChangeService {
      * @param title the title the newest catalog facts carry, or {@code null}
      * @param description the description they carry, or {@code null} when none or too long to keep
      * @param observedAt when those facts were true, or {@code null}
+     * @param titleWritable whether a change may carry a new title (see {@link #TITLE_WRITABLE})
      * @param latestCommand the listing's newest content command, or {@code null}
      */
     public record Current(UUID platformListingVariantId, UUID storeId, String title, String description,
-                          Instant observedAt, int titleLimit, int descriptionLimit, ContentCommandView latestCommand) {
+                          Instant observedAt, int titleLimit, int descriptionLimit, boolean titleWritable,
+                          ContentCommandView latestCommand) {
     }
 
     /**

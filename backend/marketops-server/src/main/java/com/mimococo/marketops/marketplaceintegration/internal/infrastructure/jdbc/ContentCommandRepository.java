@@ -190,7 +190,7 @@ public class ContentCommandRepository {
                                gate_reasons = :gateReasons,
                                outcome_code = coalesce(:outcomeCode, outcome_code),
                                outcome_detail = coalesce(:outcomeDetail, outcome_detail),
-                               terminal_at = CASE WHEN :terminal THEN :now ELSE NULL END,
+                               terminal_at = CASE WHEN :terminal THEN CAST(:now AS timestamptz) ELSE NULL END,
                                lease_owner = NULL, lease_expires_at = NULL,
                                updated_at = :now, version = version + 1
                          WHERE id = :id AND fence = :fence AND lease_owner = :worker AND terminal_at IS NULL
@@ -228,7 +228,7 @@ public class ContentCommandRepository {
                                readbacks = CASE WHEN :resetReadbacks THEN 0 ELSE readbacks END,
                                outcome_code = coalesce(:outcomeCode, outcome_code),
                                outcome_detail = coalesce(:outcomeDetail, outcome_detail),
-                               terminal_at = CASE WHEN :terminal THEN :now ELSE NULL END,
+                               terminal_at = CASE WHEN :terminal THEN CAST(:now AS timestamptz) ELSE NULL END,
                                updated_at = :now, version = version + 1
                          WHERE id = :id AND state = :expectedState AND terminal_at IS NULL
                            AND (lease_owner IS NULL OR lease_expires_at < :now)
@@ -273,6 +273,22 @@ public class ContentCommandRepository {
                 .param("now", Timestamp.from(now))
                 .update();
         return unknown + released;
+    }
+
+    /**
+     * The newest sign that a write left under a command: its last APPLY_STARTED or APPLY event. A
+     * write that began may have changed the card, whatever state the command row still shows.
+     */
+    public Optional<ApplyTrace> lastApply(UUID commandId) {
+        return jdbc.sql("""
+                        SELECT kind, outcome, native_task_key FROM ops.content_command_event
+                         WHERE command_id = :id AND kind IN ('APPLY_STARTED', 'APPLY')
+                         ORDER BY sequence DESC LIMIT 1
+                        """)
+                .param("id", commandId)
+                .query((rows, rowNumber) -> new ApplyTrace(rows.getString("kind"), rows.getString("outcome"),
+                        rows.getString("native_task_key")))
+                .optional();
     }
 
     /** Why the command may not write now; empty when it may. */
@@ -605,6 +621,16 @@ public class ContentCommandRepository {
                            String outcome, String nativeTaskKey, String taskStatus, String observedTitle,
                            String observedDescription, String titleMatch, String descriptionMatch,
                            String detail, UUID actorUserId, Instant recordedAt) {
+    }
+
+    /**
+     * The newest apply-related event of a command.
+     *
+     * @param kind APPLY_STARTED, or APPLY once an answer was recorded
+     * @param outcome how the answer was read, or {@code null} for APPLY_STARTED
+     * @param nativeTaskKey the task the platform opened, when the answer named one
+     */
+    public record ApplyTrace(String kind, String outcome, String nativeTaskKey) {
     }
 
     /** The content capability of a store's marketplace and where it stands. */
