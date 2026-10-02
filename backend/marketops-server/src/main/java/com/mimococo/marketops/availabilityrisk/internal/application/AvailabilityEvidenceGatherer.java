@@ -62,6 +62,13 @@ public class AvailabilityEvidenceGatherer {
     private static final MathContext RATIO = new MathContext(12, RoundingMode.HALF_UP);
     private static final BigDecimal MINUTES_PER_DAY = BigDecimal.valueOf(1440);
 
+    /**
+     * Fewer units than this sold in the 30-day window, and a return ratio says nothing yet (Owner
+     * decision 2026-10-02): the return-quality check does not hold the risk on a sample this small,
+     * the same way a store with no orders is not blocked on a sample too small to read.
+     */
+    static final long MINIMUM_UNITS_FOR_RETURN_QUALITY = 5;
+
     private final OperatingFactQuery facts;
     private final ListingIdentityDirectory listings;
     private final AvailabilityPolicyRepository policies;
@@ -394,7 +401,7 @@ public class AvailabilityEvidenceGatherer {
             return ReturnQualityAssessment.blocked("RETURN_QUALITY_POLICY_UNRESOLVED", true);
         }
         FactWindow window = FactWindow.endingAt(asOf, Duration.ofDays(30));
-        if (nothingSold(listingVariantId, storeId, window)) {
+        if (nothingSold(listingVariantId, storeId, window) || fewSold(listingVariantId, storeId, window)) {
             return ReturnQualityAssessment.clear();
         }
         ReturnQualityEvidence authority = facts.returnQualityEvidence(listingVariantId, window,
@@ -465,6 +472,23 @@ public class AvailabilityEvidenceGatherer {
         }
         return facts.dailyOrderedUnits(listingVariantId, window).stream()
                 .mapToLong(ListingWindowRecord.DayOrders::orderedUnits).sum() == 0;
+    }
+
+    /**
+     * Whether the listing sold fewer than {@link #MINIMUM_UNITS_FOR_RETURN_QUALITY} units in the
+     * window: neither the ledger's completed sales nor the units ordered on the days the store's
+     * order facts cover reach it. Like {@link #nothingSold}, it takes at least one covered day.
+     */
+    private boolean fewSold(UUID listingVariantId, UUID storeId, FactWindow window) {
+        SalesTotals completed = facts.sales(listingVariantId, SaleStage.COMPLETED, null, window);
+        if (completed.available() && completed.units() >= MINIMUM_UNITS_FOR_RETURN_QUALITY) {
+            return false;
+        }
+        if (storeId == null || facts.storeOrderDays(storeId, window).isEmpty()) {
+            return false;
+        }
+        return facts.dailyOrderedUnits(listingVariantId, window).stream()
+                .mapToLong(ListingWindowRecord.DayOrders::orderedUnits).sum() < MINIMUM_UNITS_FOR_RETURN_QUALITY;
     }
 
     /**
