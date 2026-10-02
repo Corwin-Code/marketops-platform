@@ -12,12 +12,19 @@ export function SystemStatusPage({
   readonly fetchImpl?: typeof fetch | undefined;
 }): React.JSX.Element {
   return (
-    <Page title={pages.systemStatus} description={pageDescriptions.systemStatus}>
-      <HealthShell
-        config={config}
-        variant="full"
-        {...(fetchImpl === undefined ? {} : { fetchImpl })}
-      />
-    </Page>
+    <HealthShell
+      config={config}
+      variant="full"
+      frame={(refresh, content) => (
+        <Page
+          title={pages.systemStatus}
+          description={pageDescriptions.systemStatus}
+          extra={refresh}
+        >
+          {content}
+        </Page>
+      )}
+      {...(fetchImpl === undefined ? {} : { fetchImpl })}
+    />
   );
 }

@@ -33,10 +33,25 @@ function cameFromQueue(state: unknown): boolean {
 /** Advertising cases waiting for a person. */
 export function AdvertisingQueuePage({ context }: ConsolePageProps): React.JSX.Element {
   const navigate = useNavigate();
+  const [revision, setRevision] = useState(0);
   return (
-    <Page title={pages.advertisingQueue} description={pageDescriptions.advertisingQueue}>
+    <Page
+      title={pages.advertisingQueue}
+      description={pageDescriptions.advertisingQueue}
+      extra={
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            setRevision((value) => value + 1);
+          }}
+        >
+          {actions.refresh}
+        </Button>
+      }
+    >
       <AdvertisingQueue
         context={context}
+        revision={revision}
         onSelect={(caseId) => {
           void navigate(advertisingCasePath(caseId), { state: FROM_QUEUE_STATE });
         }}

@@ -1,5 +1,5 @@
 import { ReloadOutlined } from '@ant-design/icons';
-import { Alert, Button, Flex, Input, Segmented, Space, Table } from 'antd';
+import { Alert, Button, Flex, Input, Segmented, Space, Table, Typography } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
@@ -169,15 +169,17 @@ export function ListingHealthPanel({
 
   return (
     <section aria-label={text.title} data-state={queue.kind}>
-      <SectionCard
-        title={
+      <SectionCard>
+        {/* Title and controls wrap on a narrow screen instead of the controls
+            squeezing the title out of a card header. */}
+        <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
           <Space size={0}>
-            {text.title}
+            <Typography.Text strong style={{ fontSize: 16 }}>
+              {text.title}
+            </Typography.Text>
             <InfoTip title={t('noScore')} />
           </Space>
-        }
-        extra={
-          <Flex gap={8} wrap align="center" justify="flex-end">
+          <Flex gap={8} wrap align="center">
             <Segmented<string>
               aria-label={t('healthNecessary')}
               value={necessaryState ?? ALL}
@@ -223,8 +225,7 @@ export function ListingHealthPanel({
               {t('refresh')}
             </Button>
           </Flex>
-        }
-      >
+        </Flex>
         {queue.kind === 'failed' && <ListingProblem failure={queue.failure} />}
         {loaded?.truncated === true && (
           <Alert
