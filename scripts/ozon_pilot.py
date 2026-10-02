@@ -238,6 +238,11 @@ AVAILABILITY_SELLABLE = {"AVAILABLE": "true", "HIDDEN": "false", "UNAVAILABLE": 
 # as a cancellation rather than as something a buyer sent back.
 RETURN_KINDS = {"Cancellation": "CANCELLATION", "FullReturn": "DELIVERY_REFUSAL", "PartialReturn": "DELIVERY_REFUSAL",
                 "ClientReturn": "POST_DELIVERY_RETURN", "Unknown": "CANCELLATION"}
+# Ozon's return reasons as the ledger's reason categories. Ozon documents no list of reasons, so only
+# words seen on the pilot account are classified; any other reason is recorded as UNKNOWN, with Ozon's
+# own words kept. Seen 2026-10-02: a buyer refusing a parcel at handover because it did not fit (Ozon
+# typed that return a Cancellation).
+RETURN_REASON_CATEGORIES = {"Покупатель отказался при вручении: товар не подошел": "SIZE_OR_FIT"}
 
 
 def inspect_status(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
@@ -1441,17 +1446,18 @@ CAPABILITIES = {
         },
         "job": {"suffix": "returns", "dataset": "RETURNS", "display": "Ozon 试点：退货"},
         # Returns name the Ozon SKU, resolved through the catalog like the analytics rows. A return
-        # happened on the day it was created, the run's window. Ozon documents no list of reasons, so
-        # the reason is kept in Ozon's own words and recorded as UNKNOWN until real returns show which
-        # words to classify (a later mapping version adds a reasonCategory value map). The answer has
-        # no refund or loss amount, so none is recorded.
+        # happened on the day it was created, the run's window. The reason is kept in Ozon's own words
+        # and classified only where RETURN_REASON_CATEGORIES knows the words (UNKNOWN otherwise). The
+        # answer has no refund or loss amount, so none is recorded.
         "mapping": {
             "dataset": "RETURNS", "version": 1, "record_pointer": "/returns", "child_pointer": None,
             "fields": {"nativeItemKey": "/product/sku", "nativeReturnKey": "/id", "nativeOrderKey": "/posting_number",
                        "quantity": "/product/quantity", "currencyCode": "/product/price/currency_code",
                        "reasonNative": "/return_reason_name"},
             "sources": {"occurredAt": {"kind": "WINDOW_START"},
-                        "returnKind": {"kind": "POINTER", "pointer": "/type", "valueMap": RETURN_KINDS}},
+                        "returnKind": {"kind": "POINTER", "pointer": "/type", "valueMap": RETURN_KINDS},
+                        "reasonCategory": {"kind": "POINTER", "pointer": "/return_reason_name",
+                                           "valueMap": RETURN_REASON_CATEGORIES}},
         },
         "inspect": inspect_returns,
     },
