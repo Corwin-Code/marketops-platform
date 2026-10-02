@@ -47,6 +47,10 @@ public class FactRecorder {
     /** The category a return whose reason nobody classified is recorded under. */
     private static final String UNKNOWN_REASON = "UNKNOWN";
 
+    /** The reason categories a mapping may classify a return under (`ledger.return_fact`, V0037). */
+    private static final Set<String> RETURN_REASON_CATEGORIES = Set.of("QUALITY", "SIZE_OR_FIT",
+            "NOT_AS_DESCRIBED", "DAMAGED_IN_TRANSIT", "CUSTOMER_CHANGED_MIND", "LOGISTICS", "OTHER");
+
     /** The settlement state a source that does not publish one is recorded under. */
     private static final String UNKNOWN_SETTLEMENT = "UNKNOWN";
 
@@ -795,7 +799,7 @@ public class FactRecorder {
                 job.storeId(), key.of(returnKey), returnKey,
                 canonical.text("nativeOrderKey").orElse(null),
                 canonical.requiredText("returnKind"),
-                UNKNOWN_REASON,
+                canonical.text("reasonCategory").filter(RETURN_REASON_CATEGORIES::contains).orElse(UNKNOWN_REASON),
                 canonical.text("reasonNative").orElse(null),
                 canonical.requiredInstant("occurredAt"),
                 Math.toIntExact(canonical.requiredInteger("quantity")),

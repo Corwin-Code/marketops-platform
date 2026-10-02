@@ -63,6 +63,9 @@ final class CollectionPlanner {
         // Buyers' discount requests: the whole list, every state, with every snapshot (P8).
         cadences.put("DISCOUNT_REQUEST", Cadence.DAILY_SNAPSHOT);
         cadences.put("TRAFFIC", Cadence.DAILY_WINDOW);
+        // Returns by the UTC day they were created, each day read once (returns and finance, step
+        // one, Owner decision 2026-10-02).
+        cadences.put("RETURNS", Cadence.DAILY_WINDOW);
         cadences.put("LISTING_SEARCH", Cadence.WEEKLY_WINDOW);
         cadences.put("LISTING_SEARCH_TERM", Cadence.WEEKLY_WINDOW);
         CADENCES = java.util.Collections.unmodifiableMap(cadences);

@@ -94,6 +94,7 @@ export const DATASET_LABELS: Readonly<Record<string, string>> = {
   FBS_WAREHOUSE: 'FBS 仓库',
   DISCOUNT_REQUEST: '买家折扣申请',
   TRAFFIC: '下单件数',
+  RETURNS: '退货',
   LISTING_SEARCH: '搜索汇总',
   LISTING_SEARCH_TERM: '搜索词',
 };
