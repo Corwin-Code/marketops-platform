@@ -1,9 +1,12 @@
+import { ReloadOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { AdvertisingBriefView } from '../advertising/AdvertisingBriefView';
 import { AdvertisingCaseView } from '../advertising/AdvertisingCaseView';
 import { AdvertisingOperations } from '../advertising/AdvertisingOperations';
 import { AdvertisingQueue } from '../advertising/AdvertisingQueue';
+import { actions } from '../i18n';
 import { pageDescriptions, pages } from '../i18n/zh/shell';
 import { advertisingCasePath, ROUTES } from '../layout/navigation';
 import { NotFoundPage } from './NotFoundPage';
@@ -80,9 +83,24 @@ export function AdvertisingCasePage({ context }: ConsolePageProps): React.JSX.El
 
 /** What advertising is doing and what is holding it. */
 export function AdvertisingOperationsPage({ context }: ConsolePageProps): React.JSX.Element {
+  // One refresh for the page: every panel on it reads again.
+  const [revision, setRevision] = useState(0);
   return (
-    <Page title={pages.advertisingOperations} description={pageDescriptions.advertisingOperations}>
-      <AdvertisingOperations context={context} />
+    <Page
+      title={pages.advertisingOperations}
+      description={pageDescriptions.advertisingOperations}
+      extra={
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            setRevision((value) => value + 1);
+          }}
+        >
+          {actions.refresh}
+        </Button>
+      }
+    >
+      <AdvertisingOperations context={context} revision={revision} />
     </Page>
   );
 }
