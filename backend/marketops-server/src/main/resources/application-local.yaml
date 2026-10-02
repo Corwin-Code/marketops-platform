@@ -225,6 +225,18 @@ marketops:
         max-request-bytes: 16384
         max-response-bytes: 8388608
         timeout-millis: 30000
+      # Finance accruals of one day (official OpenAPI 2026-10-02, POST /v1/finance/accrual/by-day, a beta
+      # method paged by last_id). Exact path: its neighbours /v1/finance/accrual/postings and /types
+      # are separate reads.
+      - key: platform:OZON:read
+        host: api-seller.ozon.ru
+        path-prefix: /v1/finance/accrual/by-day
+        exact-path: true
+        methods: [POST]
+        headers: [accept, content-type, client-id, api-key]
+        max-request-bytes: 16384
+        max-response-bytes: 8388608
+        timeout-millis: 30000
       # Price writes (W1, Owner authorization 2026-10-01; official OpenAPI 2026-10-01): the
       # apply (POST /v1/product/import/prices, one product per request) and its readback
       # (POST /v5/product/info/prices filtered to that product). Every call of a price

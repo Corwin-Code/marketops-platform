@@ -95,6 +95,7 @@ export const DATASET_LABELS: Readonly<Record<string, string>> = {
   DISCOUNT_REQUEST: '买家折扣申请',
   TRAFFIC: '下单件数',
   RETURNS: '退货',
+  FINANCE: '财务（按天，存档）',
   LISTING_SEARCH: '搜索汇总',
   LISTING_SEARCH_TERM: '搜索词',
 };
@@ -135,6 +136,7 @@ export const REASON_LABELS: Readonly<Record<string, string>> = {
   EXECUTION_FAILED: '执行出错',
   NORMALIZATION_FAILED: '标准化出错',
   NOTHING_TO_PROCESS: '已全部标准化',
+  ARCHIVED_UNMAPPED: '已存档，暂不标准化（等有真实销售再做映射）',
   READ_RETRY: '读取被限流或中断，稍后重试',
   PAGE_FAILED: '读取出错，稍后重试',
   CALL_CEILING_REACHED: '单次运行的调用数已到上限，下一轮继续',
