@@ -66,10 +66,19 @@ final class CollectionPlanner {
         // Returns by the UTC day they were created, each day read once (returns and finance, step
         // one, Owner decision 2026-10-02).
         cadences.put("RETURNS", Cadence.DAILY_WINDOW);
+        // Finance accruals by day, archived as raw answers (returns and finance, step two).
+        cadences.put("FINANCE", Cadence.DAILY_WINDOW);
         cadences.put("LISTING_SEARCH", Cadence.WEEKLY_WINDOW);
         cadences.put("LISTING_SEARCH_TERM", Cadence.WEEKLY_WINDOW);
         CADENCES = java.util.Collections.unmodifiableMap(cadences);
     }
+
+    /**
+     * Datasets collected only to keep the marketplace's answers until a mapping is verified (Owner
+     * decision 2026-10-02): finance accruals are archived until real sales show how to map them.
+     * Without a mapping their normalization is not a stop: nothing is meant to be normalized yet.
+     */
+    static final java.util.Set<String> ARCHIVE_ONLY = java.util.Set.of("FINANCE");
 
     /** A day is read once this many dates have passed since it: it ended a full day earlier. */
     static final int DAY_LAG_DAYS = 2;

@@ -12,7 +12,9 @@ from POST /v1/product/rating-by-sku), ``queries`` and ``query-details`` (search
 demand and search terms from POST /v1/analytics/product-queries[/details]),
 ``actions`` (GET /v1/actions), ``action-candidates`` and ``action-products`` (POST
 /v2/actions/candidates and /v2/actions/products, one request per action),
-``returns`` (POST /v1/returns/list, the returns created in one UTC day per run). A
+``returns`` (POST /v1/returns/list, the returns created in one UTC day per run),
+``accruals`` (POST /v1/finance/accrual/by-day, one day of finance accruals per run,
+archived without a mapping for now). A
 capability marked ``probe_only`` can be probed but not set up until its real answers
 were checked: the promotion capabilities until their first probe, and
 ``category-attributes`` (POST /v1/description-category/attribute), which the
@@ -556,6 +558,31 @@ def inspect_returns(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str
         refusal = "a return came back on two pages; paging by the last return's id would repeat records"
     elif any(str(item.get("type")) not in RETURN_KINDS for item in returns):
         refusal = "a return type is not in RETURN_KINDS; map it before registering, or normalization stops"
+    return lines, refusal
+
+
+def inspect_accruals(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """Accruals of the probed day: how many, of which categories and types, for which units and SKUs (no
+    amounts printed; accruals carry no buyer data)."""
+    accruals = [item for answer in answers for item in answer.get("accruals") or []]
+    known = set(catalog_skus(pilot))
+    products = [product for item in accruals for product in ((item.get("posting") or {}).get("products") or [])]
+    item_skus = [str(group.get("sku")) for item in accruals for group in ((item.get("item_fees") or {}).get("fees") or [])]
+    type_ids = [fee.get("type_id") for item in accruals for group in ((item.get("item_fees") or {}).get("fees") or [])
+                for fee in group.get("fees") or []]
+    type_ids += [(item.get("non_item_fee") or {}).get("type_id") for item in accruals if item.get("non_item_fee")]
+    ids = [item.get("accrual_id") for item in accruals]
+    lines = [f"accruals {len(accruals)} on {len(answers)} pages, categories "
+             f"{dict(sorted(Counter(str(item.get('accrued_category')) for item in accruals).items()))}",
+             f"units {len({str(item.get('unit_number')) for item in accruals})}, currencies "
+             f"{sorted({str((item.get('total_amount') or {}).get('currency')) for item in accruals})}",
+             f"posting products {len(products)} (SKUs in the catalog probe "
+             f"{sum(1 for product in products if str(product.get('sku')) in known)}), item fee groups {len(item_skus)} "
+             f"(in the catalog probe {sum(1 for sku in item_skus if sku in known)})",
+             f"accrual types {dict(Counter(str(type_id) for type_id in type_ids).most_common(12))}"]
+    refusal = None
+    if len(ids) != len(set(ids)):
+        refusal = "an accrual came back on two pages; paging by last_id would repeat records"
     return lines, refusal
 
 
@@ -1460,6 +1487,40 @@ CAPABILITIES = {
                                            "valueMap": RETURN_REASON_CATEGORIES}},
         },
         "inspect": inspect_returns,
+    },
+    "accruals": {
+        "code": "ozon-finance-accruals-read",
+        "display": "Ozon finance accruals: every accrual Ozon dated one day, kept as raw answers",
+        "description": "Reads every accrual of one day (POST /v1/finance/accrual/by-day, a beta method that "
+                       "replaces /v3/finance/transaction/list, switched off 2026-09-08; paged by last_id; "
+                       "official docs checked 2026-10-02). Archived until real sales show how to map them.",
+        "manifest": "accruals-latest.json",
+        "endpoint": {
+            "code": "ozon-finance-accrual-by-day-v1", "api_version": "v1",
+            "schema_version": "finance.v1.GetFinanceAccrualByDayResponse",
+            "rate_note": "Ozon: a beta method; at most 50 requests/s per Client-Id across methods without their "
+                         "own limit; this method states none, and a page key lives 15 minutes. Our cap: 30/min. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-02",
+            "freshness": "One day per run: the accruals Ozon dated that day, as they stand when asked.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/finance/accrual/by-day",
+                "operation_function": "READ_DATA", "query_template": None,
+                # Every page repeats the day: the docs refuse a last_id with another date (400).
+                "body_template": '{"date":"{windowStartUtcDate}","last_id":"{cursor}"}',
+                "response_content_type": "application/json", "continuation_pointer": "/last_id",
+                "pagination_model": "CURSOR", "rate_limit_per_minute": 30,
+                "continuation_end_rule": "EMPTY_TOKEN_OR_RECORDS", "records_pointer": "/accruals",
+            },
+            "probe_body": lambda cursor, window: {"date": window["from"], "last_id": cursor or ""},
+            "token_key": "last_id",
+            "records_key": "accruals",
+            "window": "DAY",
+        },
+        "job": {"suffix": "accruals", "dataset": "FINANCE", "display": "Ozon 试点：财务（按天，存档）"},
+        # No mapping yet (Owner decision 2026-10-02): the answers are kept as they come, and a mapping
+        # verified once real sales exist normalizes them from the first archived page.
+        "mapping": None,
+        "inspect": inspect_accruals,
     },
     "warehouses": {
         "code": "ozon-fbs-warehouses-read",

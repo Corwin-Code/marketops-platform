@@ -356,6 +356,13 @@ public class ScheduledCollectionService {
                     detail("reason", "NORMALIZATION_FAILED", "failureType", failed.getClass().getSimpleName()));
             return;
         }
+        if (CollectionPlanner.ARCHIVE_ONLY.contains(job.datasetKind())
+                && "PAYLOAD_DECLARATION_NOT_VERIFIED".equals(normalized.lastReason())) {
+            // Kept as raw answers on purpose; a mapping verified later normalizes them from the start.
+            outcome.put("normalization", "ARCHIVED_UNMAPPED");
+            record(policy, job, "COLLECTED", targetKey, run.runId(), null, outcome);
+            return;
+        }
         outcome.put("factsRecorded", normalized.factsRecorded());
         outcome.put("recordsRejected", normalized.recordsRejected());
         outcome.put("normalization", normalized.lastReason());
