@@ -36,6 +36,11 @@ spring:
       # The application role owns nothing and creates nothing, so a connection
       # that is handed back must not carry a transaction the next borrower joins.
       auto-commit: true
+      # The registry's configuration snapshot renders timestamps in the session time zone, and a
+      # verified case keeps its snapshot as text: a session in another zone would read every
+      # capability's evidence as changed and close every gate. So the zone is fixed per environment
+      # instead of following the machine. Locally it stays the zone the evidence was recorded in.
+      connection-init-sql: SET TIME ZONE '${MARKETOPS_DB_SESSION_TIME_ZONE:Asia/Shanghai}'
   flyway:
     enabled: true
     # Migration runs as the owning role, which is the only role allowed to create

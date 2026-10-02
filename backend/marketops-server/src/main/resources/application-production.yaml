@@ -21,6 +21,10 @@ spring:
   flyway:
     enabled: false
     password: ""
+  # Registry evidence recorded here keeps its timestamps in UTC (see application.yaml).
+  datasource:
+    hikari:
+      connection-init-sql: SET TIME ZONE 'UTC'
 
 marketops:
   environment: ${MARKETOPS_ENVIRONMENT:production}
