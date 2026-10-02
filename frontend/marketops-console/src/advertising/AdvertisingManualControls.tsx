@@ -1,12 +1,10 @@
 import {
   Alert,
   App,
-  Button,
   Checkbox,
   DatePicker,
   Form,
   Input,
-  Modal,
   Select,
   Space,
   Table,
@@ -44,12 +42,16 @@ import {
   PROFILE_VERIFICATION_LABELS,
   VERIFICATION_MODE_LABELS,
 } from '../i18n/zh/advertising';
+import { dialog } from '../i18n/zh/common';
+import { ActionModal } from '../ui/ActionModal';
+import type { SubmitOutcome } from '../ui/ActionModal';
 import { CodeTag } from '../ui/CodeTag';
 import { ConfirmButton } from '../ui/ConfirmButton';
 import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
 import { LoadingState } from '../ui/LoadingState';
 import { Money } from '../ui/Money';
+import { idRules } from '../ui/PickOrType';
 import { AbsentValue, ReasonTags, plainDecimal } from './shared';
 
 const ACTION_ORDER: readonly AdvertisingManualAction[] = [
@@ -73,6 +75,26 @@ const CONFIRMATIONS: Partial<Record<AdvertisingManualAction, string>> = {
 
 type Source = AdvertisingManualIndependentObservation['evidenceSource'];
 type Completeness = AdvertisingManualIndependentObservation['completeness'];
+type FieldPath = AdvertisingManualIndependentObservation['exactFieldPath'];
+
+interface ObservationValues {
+  readonly observedValue?: string;
+  readonly evidenceSource?: Source;
+  readonly completeness?: Completeness;
+  readonly observedAt?: Dayjs | null;
+  readonly evidenceReference?: string;
+  readonly directObservationAttested?: boolean;
+}
+
+interface OfficialValues {
+  readonly configurationObservationId?: string;
+}
+
+function fieldPathOf(value: unknown): FieldPath | undefined {
+  return value === 'targetBid' || value === 'targetBudget' || value === 'targetStatus'
+    ? value
+    : undefined;
+}
 
 export function AdvertisingManualPacketControls({
   context,
@@ -86,242 +108,218 @@ export function AdvertisingManualPacketControls({
   const { message } = App.useApp();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<ConsoleFailure>();
-  const [dialog, setDialog] = useState<'INDEPENDENT_VERIFY' | 'OFFICIAL_VERIFY'>();
-  const [observed, setObserved] = useState('');
-  const [configuration, setConfiguration] = useState('');
-  const [observedAt, setObservedAt] = useState<Dayjs | null>(null);
-  const [source, setSource] = useState<Source | undefined>(undefined);
-  const [completeness, setCompleteness] = useState<Completeness | undefined>(undefined);
-  const [evidenceReference, setEvidenceReference] = useState('');
-  const [directAttested, setDirectAttested] = useState(false);
-  const exactFieldPath = packet.packetDetails?.verificationFieldPath;
-  const semanticProfileId = packet.packetDetails?.semanticProfileId;
+  const fieldPath = fieldPathOf(packet.packetDetails?.verificationFieldPath);
+  const rawProfileId = packet.packetDetails?.semanticProfileId;
+  const semanticProfileId =
+    typeof rawProfileId === 'string' && rawProfileId.length > 0 ? rawProfileId : undefined;
   const nativeObjectKey = packet.packetDetails?.nativeObjectKey;
-  const observation: AdvertisingManualIndependentObservation | undefined =
-    observed.trim().length > 0 &&
-    observedAt !== null &&
-    observedAt.isValid() &&
-    source !== undefined &&
-    completeness !== undefined &&
-    evidenceReference.trim().length > 0 &&
-    typeof semanticProfileId === 'string' &&
-    semanticProfileId.length > 0 &&
-    (exactFieldPath === 'targetBid' ||
-      exactFieldPath === 'targetBudget' ||
-      exactFieldPath === 'targetStatus') &&
-    (source !== 'DIRECT_OFFICIAL_CONSOLE' || completeness !== 'COMPLETE' || directAttested)
-      ? {
-          observedValue: observed.trim(),
-          observedAt: storeLocalToIso(observedAt),
-          evidenceSource: source,
-          completeness,
-          exactNativeObjectId: packet.adNativeObjectId,
-          exactFieldPath,
-          semanticProfileId,
-          evidenceReference: evidenceReference.trim(),
-          directObservationAttested: source === 'DIRECT_OFFICIAL_CONSOLE' && directAttested,
-        }
-      : undefined;
   const available = ACTION_ORDER.filter((action) => packet.allowedActions.includes(action));
   if (available.length === 0 || packet.version === undefined) return null;
 
-  async function act(action: AdvertisingManualAction): Promise<void> {
-    setBusy(true);
-    setFailure(undefined);
-    const result = await actOnAdvertisingManualPacket(
-      context,
-      packet,
-      action,
-      action === 'OFFICIAL_VERIFY' ? configuration : observed,
-      action === 'INDEPENDENT_VERIFY' ? observation : undefined,
-    );
-    setBusy(false);
-    if (result.ok) {
-      void message.success(`「${codeLabel(MANUAL_ACTION_LABELS, action)}」已记录`);
-      setDialog(undefined);
-      reload();
-    } else setFailure(result.failure);
+  /** Sends one action; the dialogs keep a failure, the one-click actions show it above. */
+  async function send(
+    action: AdvertisingManualAction,
+    value: string,
+    observation?: AdvertisingManualIndependentObservation,
+  ): Promise<SubmitOutcome> {
+    const result = await actOnAdvertisingManualPacket(context, packet, action, value, observation);
+    if (!result.ok) return result.failure;
+    void message.success(`「${codeLabel(MANUAL_ACTION_LABELS, action)}」已记录`);
+    reload();
+    return undefined;
   }
 
   const fieldName =
-    typeof exactFieldPath === 'string' && Object.hasOwn(FIELD_PATH_LABELS, exactFieldPath)
-      ? FIELD_PATH_LABELS[exactFieldPath]
-      : '不可用';
+    fieldPath === undefined ? '不可用' : (FIELD_PATH_LABELS[fieldPath] ?? fieldPath);
+  const objectKey = typeof nativeObjectKey === 'string' ? nativeObjectKey : packet.adNativeObjectId;
 
   return (
     <section aria-label="人工操作单操作">
       <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-        {failure !== undefined && dialog === undefined && <FailureAlert failure={failure} />}
+        {failure !== undefined && <FailureAlert failure={failure} />}
         <Space size={[8, 8]} wrap>
-          {available.map((action) =>
-            action === 'INDEPENDENT_VERIFY' || action === 'OFFICIAL_VERIFY' ? (
-              <Button
-                key={action}
-                disabled={busy}
-                onClick={() => {
-                  setFailure(undefined);
-                  setDialog(action);
-                }}
-              >
-                {codeLabel(MANUAL_ACTION_LABELS, action)}
-              </Button>
-            ) : (
+          {available.map((action) => {
+            if (action === 'INDEPENDENT_VERIFY') {
+              return (
+                <ActionModal<ObservationValues>
+                  key={action}
+                  trigger={{ label: codeLabel(MANUAL_ACTION_LABELS, action) }}
+                  title="记录你实际观察到的配置"
+                  okText="提交观察"
+                  width={560}
+                  {...(fieldPath === undefined || semanticProfileId === undefined
+                    ? { blockedReason: '该操作单缺少核验字段或配置档案，无法记录观察。' }
+                    : {})}
+                  summary={
+                    <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+                      <Typography.Paragraph style={{ margin: 0 }}>
+                        请确认对象：
+                        <Typography.Text code copyable>
+                          {objectKey}
+                        </Typography.Text>
+                        ，字段：{fieldName}。
+                      </Typography.Paragraph>
+                      <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
+                        填写你看到配置的时间；这并不能确定变更实际生效的时间。未知实际观察时间时无法提交。
+                      </Typography.Paragraph>
+                    </Space>
+                  }
+                  onSubmit={(values) => {
+                    const { observedAt, evidenceSource, completeness } = values;
+                    if (
+                      !observedAt ||
+                      evidenceSource === undefined ||
+                      completeness === undefined ||
+                      fieldPath === undefined ||
+                      semanticProfileId === undefined
+                    )
+                      return Promise.resolve(undefined);
+                    const observedValue = (values.observedValue ?? '').trim();
+                    return send(action, observedValue, {
+                      observedValue,
+                      observedAt: storeLocalToIso(observedAt),
+                      evidenceSource,
+                      completeness,
+                      exactNativeObjectId: packet.adNativeObjectId,
+                      exactFieldPath: fieldPath,
+                      semanticProfileId,
+                      evidenceReference: (values.evidenceReference ?? '').trim(),
+                      directObservationAttested:
+                        evidenceSource === 'DIRECT_OFFICIAL_CONSOLE' &&
+                        values.directObservationAttested === true,
+                    });
+                  }}
+                >
+                  <Form.Item
+                    name="observedValue"
+                    label="独立观察到的精确平台值"
+                    rules={[{ required: true, whitespace: true, message: '请填写观察到的值' }]}
+                  >
+                    <Input maxLength={128} autoFocus />
+                  </Form.Item>
+                  <Form.Item
+                    name="evidenceSource"
+                    label="观察来源"
+                    rules={[{ required: true, message: '请选择观察来源' }]}
+                  >
+                    <Select<Source>
+                      placeholder="选择来源"
+                      options={(['DIRECT_OFFICIAL_CONSOLE', 'SCREENSHOT'] as const).map(
+                        (value) => ({ value, label: OBSERVATION_SOURCE_LABELS[value] }),
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="completeness"
+                    label="观察完整性"
+                    rules={[{ required: true, message: '请选择观察完整性' }]}
+                  >
+                    <Select<Completeness>
+                      placeholder="选择完整性"
+                      options={(['COMPLETE', 'INCOMPLETE'] as const).map((value) => ({
+                        value,
+                        label: COMPLETENESS_LABELS[value],
+                      }))}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="observedAt"
+                    label={`实际观察时间（${STORE_TIMEZONE_LABEL}）`}
+                    rules={[{ required: true, message: '请选择实际观察时间' }]}
+                  >
+                    <DatePicker showTime={{ format: 'HH:mm:ss' }} format="YYYY-MM-DD HH:mm:ss" />
+                  </Form.Item>
+                  <Form.Item
+                    name="evidenceReference"
+                    label="观察证据引用"
+                    rules={[{ required: true, whitespace: true, message: '请填写观察证据引用' }]}
+                  >
+                    <Input maxLength={512} />
+                  </Form.Item>
+                  <Form.Item noStyle dependencies={['evidenceSource', 'completeness']}>
+                    {({ getFieldValue }) => {
+                      const source = getFieldValue('evidenceSource') as Source | undefined;
+                      const completeness = getFieldValue('completeness') as
+                        Completeness | undefined;
+                      return (
+                        <>
+                          {source === 'DIRECT_OFFICIAL_CONSOLE' && (
+                            <Form.Item
+                              name="directObservationAttested"
+                              valuePropName="checked"
+                              dependencies={['completeness']}
+                              rules={[
+                                {
+                                  validator: (_: unknown, checked: boolean | undefined) =>
+                                    completeness !== 'COMPLETE' || checked === true
+                                      ? Promise.resolve()
+                                      : Promise.reject(
+                                          new Error('完整的直接观察需要确认你已在官方后台看到'),
+                                        ),
+                                },
+                              ]}
+                            >
+                              <Checkbox>我已在官方后台直接看到该对象和字段</Checkbox>
+                            </Form.Item>
+                          )}
+                          {(source === 'SCREENSHOT' || completeness === 'INCOMPLETE') && (
+                            <Alert
+                              type="warning"
+                              showIcon
+                              title="截图或不完整的观察只作为证据记录，不能证明配置已生效，也不会释放额度占用。"
+                            />
+                          )}
+                        </>
+                      );
+                    }}
+                  </Form.Item>
+                </ActionModal>
+              );
+            }
+            if (action === 'OFFICIAL_VERIFY') {
+              return (
+                <ActionModal<OfficialValues>
+                  key={action}
+                  trigger={{ label: codeLabel(MANUAL_ACTION_LABELS, action) }}
+                  title="官方证据核验"
+                  consequence="用一条标准官方配置观察核验该操作单的配置是否已生效。"
+                  okText="提交核验"
+                  onSubmit={(values) =>
+                    send(action, (values.configurationObservationId ?? '').trim())
+                  }
+                >
+                  <Form.Item
+                    name="configurationObservationId"
+                    label="标准官方配置观察编号"
+                    extra="暂时没有可选的观察列表，请填写观察编号。"
+                    rules={idRules('观察编号')}
+                  >
+                    <Input placeholder="输入编号（UUID）" autoFocus />
+                  </Form.Item>
+                </ActionModal>
+              );
+            }
+            return (
               <ConfirmButton
                 key={action}
                 type={action === 'APPROVE' ? 'primary' : 'default'}
                 title={CONFIRMATIONS[action] ?? '确认执行该操作？'}
                 disabled={busy}
                 disabledReason="正在处理…"
-                onConfirm={() => act(action)}
+                onConfirm={async () => {
+                  setBusy(true);
+                  setFailure(undefined);
+                  const outcome = await send(action, '');
+                  setBusy(false);
+                  if (outcome !== undefined) setFailure(outcome);
+                }}
               >
                 {codeLabel(MANUAL_ACTION_LABELS, action)}
               </ConfirmButton>
-            ),
-          )}
+            );
+          })}
         </Space>
       </Space>
-
-      <Modal
-        title="记录你实际观察到的配置"
-        open={dialog === 'INDEPENDENT_VERIFY'}
-        okText="提交观察"
-        cancelText="取消"
-        confirmLoading={busy}
-        okButtonProps={{ disabled: observation === undefined }}
-        onOk={() => {
-          void act('INDEPENDENT_VERIFY');
-        }}
-        onCancel={() => {
-          setDialog(undefined);
-        }}
-        destroyOnHidden
-      >
-        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          {failure !== undefined && <FailureAlert failure={failure} />}
-          <Typography.Paragraph style={{ margin: 0 }}>
-            请确认对象：
-            <Typography.Text code copyable>
-              {typeof nativeObjectKey === 'string' ? nativeObjectKey : packet.adNativeObjectId}
-            </Typography.Text>
-            ，字段：{fieldName}。
-          </Typography.Paragraph>
-          <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
-            填写你看到配置的时间；这并不能确定变更实际生效的时间。未知实际观察时间时无法提交。
-          </Typography.Paragraph>
-          <Form layout="vertical">
-            <Form.Item label="独立观察到的精确平台值" required>
-              <Input
-                aria-label="独立观察到的精确平台值"
-                value={observed}
-                maxLength={128}
-                onChange={(event) => {
-                  setObserved(event.target.value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item label="观察来源" required>
-              <Select<Source>
-                aria-label="观察来源"
-                placeholder="选择来源"
-                {...(source === undefined ? {} : { value: source })}
-                options={(['DIRECT_OFFICIAL_CONSOLE', 'SCREENSHOT'] as const).map((value) => ({
-                  value,
-                  label: OBSERVATION_SOURCE_LABELS[value],
-                }))}
-                onChange={(value) => {
-                  setSource(value);
-                  setDirectAttested(false);
-                }}
-              />
-            </Form.Item>
-            <Form.Item label="观察完整性" required>
-              <Select<Completeness>
-                aria-label="观察完整性"
-                placeholder="选择完整性"
-                {...(completeness === undefined ? {} : { value: completeness })}
-                options={(['COMPLETE', 'INCOMPLETE'] as const).map((value) => ({
-                  value,
-                  label: COMPLETENESS_LABELS[value],
-                }))}
-                onChange={(value) => {
-                  setCompleteness(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item label={`实际观察时间（${STORE_TIMEZONE_LABEL}）`} required>
-              <DatePicker
-                aria-label="实际观察时间"
-                showTime={{ format: 'HH:mm:ss' }}
-                format="YYYY-MM-DD HH:mm:ss"
-                value={observedAt}
-                onChange={(value: Dayjs | null) => {
-                  setObservedAt(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item label="观察证据引用" required>
-              <Input
-                aria-label="观察证据引用"
-                value={evidenceReference}
-                maxLength={512}
-                onChange={(event) => {
-                  setEvidenceReference(event.target.value);
-                }}
-              />
-            </Form.Item>
-            {source === 'DIRECT_OFFICIAL_CONSOLE' && (
-              <Form.Item>
-                <Checkbox
-                  checked={directAttested}
-                  onChange={(event) => {
-                    setDirectAttested(event.target.checked);
-                  }}
-                >
-                  我已在官方后台直接看到该对象和字段
-                </Checkbox>
-              </Form.Item>
-            )}
-          </Form>
-          {(source === 'SCREENSHOT' || completeness === 'INCOMPLETE') && (
-            <Alert
-              type="warning"
-              showIcon
-              title="截图或不完整的观察只作为证据记录，不能证明配置已生效，也不会释放额度占用。"
-            />
-          )}
-        </Space>
-      </Modal>
-
-      <Modal
-        title="官方证据核验"
-        open={dialog === 'OFFICIAL_VERIFY'}
-        okText="提交核验"
-        cancelText="取消"
-        confirmLoading={busy}
-        okButtonProps={{ disabled: configuration.trim().length === 0 }}
-        onOk={() => {
-          void act('OFFICIAL_VERIFY');
-        }}
-        onCancel={() => {
-          setDialog(undefined);
-        }}
-        destroyOnHidden
-      >
-        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          {failure !== undefined && <FailureAlert failure={failure} />}
-          <Form layout="vertical">
-            <Form.Item label="标准官方配置观察编号" required>
-              <Input
-                aria-label="标准官方配置观察编号"
-                value={configuration}
-                onChange={(event) => {
-                  setConfiguration(event.target.value);
-                }}
-              />
-            </Form.Item>
-          </Form>
-        </Space>
-      </Modal>
     </section>
   );
 }
@@ -357,8 +355,6 @@ export function AdvertisingManualProposalControls({
   const { message } = App.useApp();
   const [options, setOptions] = useState<AdvertisingManualOptions>();
   const [failure, setFailure] = useState<ConsoleFailure>();
-  const [reason, setReason] = useState('');
-  const [busy, setBusy] = useState(false);
   useEffect(() => {
     let active = true;
     void fetchAdvertisingManualOptions(context, caseId).then((result) => {
@@ -426,38 +422,51 @@ export function AdvertisingManualProposalControls({
       title: '操作',
       key: 'select',
       render: (_, option) => (
-        <ConfirmButton
-          type="primary"
-          size="small"
-          title="确认选定这个精确人工方案？"
-          description="该人工流程不会创建任何 API 指令。"
-          disabled={busy || reason.trim().length === 0 || option.blockerCodes.length > 0}
-          disabledReason={
-            busy
-              ? '正在处理…'
-              : option.blockerCodes.length > 0
-                ? '该方案存在阻断，不可选定'
-                : '请先填写选定理由'
+        <ActionModal<{ readonly reason?: string }>
+          trigger={{
+            label: '选定',
+            type: 'primary',
+            size: 'small',
+            disabled: option.blockerCodes.length > 0,
+            disabledReason: '该方案存在阻断，不可选定',
+          }}
+          title="选定人工执行方案"
+          consequence="选定后生成人工操作单，需背书和批准后由人在平台后台执行；该流程不会创建任何 API 指令。"
+          summary={
+            <Space size={6} wrap>
+              <CodeTag labels={MANUAL_ACTION_KIND_LABELS} code={option.actionKind} />
+              <OptionTarget option={option} />
+            </Space>
           }
-          onConfirm={async () => {
-            setBusy(true);
+          okText="确认选定"
+          onSubmit={async (values) => {
             const result = await selectAdvertisingManualOption(
               context,
               caseId,
               option,
-              reason.trim(),
+              (values.reason ?? '').trim(),
             );
-            setBusy(false);
-            if (result.ok) {
-              void message.success('已选定人工方案');
-              setReason('');
-              setFailure(undefined);
-              reload();
-            } else setFailure(result.failure);
+            if (!result.ok) return result.failure;
+            void message.success('已选定人工方案');
+            setFailure(undefined);
+            reload();
+            return undefined;
           }}
         >
-          选定
-        </ConfirmButton>
+          <Form.Item
+            name="reason"
+            label="选定理由"
+            rules={[{ required: true, whitespace: true, message: dialog.reasonRequired }]}
+          >
+            <Input.TextArea
+              rows={3}
+              maxLength={2000}
+              showCount
+              placeholder={dialog.reasonPlaceholder}
+              autoFocus
+            />
+          </Form.Item>
+        </ActionModal>
       ),
     });
   }
@@ -475,22 +484,6 @@ export function AdvertisingManualProposalControls({
             title="部分人工方案需要先确定策略"
             description={<ReasonTags codes={options.blockerCodes} color="warning" />}
           />
-        )}
-        {canSelect && (
-          <Form layout="vertical" style={{ maxWidth: 720 }}>
-            <Form.Item label="选定理由" required style={{ marginBottom: 0 }}>
-              <Input.TextArea
-                aria-label="选定理由"
-                value={reason}
-                maxLength={2000}
-                showCount
-                rows={2}
-                onChange={(event) => {
-                  setReason(event.target.value);
-                }}
-              />
-            </Form.Item>
-          </Form>
         )}
         {options !== undefined &&
           (options.options.length === 0 ? (

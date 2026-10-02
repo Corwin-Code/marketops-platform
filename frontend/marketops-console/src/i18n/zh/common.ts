@@ -34,6 +34,7 @@ export const actions = {
 export const dialog = {
   reason: '理由',
   reasonPlaceholder: '写明依据，会记入审计',
+  notePlaceholder: '可不填，不会保存',
   reasonRequired: '请填写理由',
   required: '必填',
   impact: '影响',

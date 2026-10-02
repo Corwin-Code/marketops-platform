@@ -28,6 +28,8 @@ export interface WriteConfirmModalProps {
   /** The confirm button, naming the act, e.g. 确认改价为 ₽1,299.00. */
   readonly confirmText: ReactNode;
   readonly reasonLabel?: ReactNode;
+  /** The hint in the empty reason field; say so when what is written is not kept. */
+  readonly reasonPlaceholder?: string;
   /** Whether a reason must be written; true unless the caller says otherwise. */
   readonly reasonRequired?: boolean;
   /** A reason confirmation is refused besides the guard, e.g. still checking. */
@@ -57,6 +59,7 @@ export function WriteConfirmModal({
   consequence,
   confirmText,
   reasonLabel = dialog.reason,
+  reasonPlaceholder = dialog.reasonPlaceholder,
   reasonRequired = true,
   blockedReason,
   onOpen,
@@ -104,7 +107,7 @@ export function WriteConfirmModal({
           rows={3}
           maxLength={500}
           showCount
-          placeholder={dialog.reasonPlaceholder}
+          placeholder={reasonPlaceholder}
           autoFocus
         />
       </Form.Item>
