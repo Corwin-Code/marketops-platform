@@ -43,6 +43,12 @@ export interface HealthShellProps {
   readonly variant?: 'compact' | 'full';
   /** Content rendered above the status, inside the same region. */
   readonly children?: React.ReactNode;
+  /**
+   * The page around the full panel. Given one, the check-again button goes to
+   * the page header the frame draws instead of onto the status card, so the
+   * page keeps a single refresh in the usual place.
+   */
+  readonly frame?: (refresh: React.ReactNode, content: React.ReactNode) => React.ReactNode;
 }
 
 /** Render the console. */
@@ -53,6 +59,7 @@ export function HealthShell({
   retryDelaysMs = HEALTH_RETRY_DELAYS_MS,
   variant = 'compact',
   children,
+  frame,
 }: HealthShellProps): React.JSX.Element {
   const [state, setState] = useState<HealthState>(INITIALISING);
   const [checking, setChecking] = useState(false);
@@ -154,10 +161,14 @@ export function HealthShell({
   );
 
   if (variant === 'full') {
-    return (
+    const content = (
       <>
         {children}
-        <SectionCard title={text.title} extra={refreshButton} state={state.name}>
+        <SectionCard
+          title={text.title}
+          {...(frame === undefined ? { extra: refreshButton } : {})}
+          state={state.name}
+        >
           <section aria-label={text.region} data-state={state.name}>
             <Result
               status={tone === 'processing' ? 'info' : tone}
@@ -186,6 +197,7 @@ export function HealthShell({
         {footer}
       </>
     );
+    return frame === undefined ? content : <>{frame(refreshButton, content)}</>;
   }
 
   return (

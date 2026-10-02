@@ -1,6 +1,5 @@
 import { Button, Flex, Segmented, Space, Table, Typography } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { fetchAdvertisingQueue } from '../api/console';
@@ -19,6 +18,7 @@ import {
 import { CodeTag } from '../ui/CodeTag';
 import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
+import { InfoTip } from '../ui/InfoTip';
 import { LoadingState } from '../ui/LoadingState';
 import { SectionCard } from '../ui/SectionCard';
 import { usePageParam, useSearchParam } from '../ui/useSearchParam';
@@ -31,6 +31,8 @@ export interface AdvertisingQueueProps {
   readonly context: ConsoleRequest;
   /** Called when the operator opens a case. */
   readonly onSelect: (caseId: string) => void;
+  /** Changes when the page's refresh asks for the queue again. */
+  readonly revision?: number;
 }
 
 /** The lanes an operator may narrow to, in the order the product ranks them. */
@@ -61,7 +63,11 @@ function readLane(raw: string | undefined): string | undefined {
  * column has to be able to tell "nothing was spent" from "nobody knows what was
  * spent", because one of those is a finding and the other is a gap.
  */
-export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): React.JSX.Element {
+export function AdvertisingQueue({
+  context,
+  onSelect,
+  revision = 0,
+}: AdvertisingQueueProps): React.JSX.Element {
   // The lane and page live in the address bar, so opening a case and coming
   // back, a reload or a shared link all show the same slice of the queue.
   // They only narrow and page the server's ranking; nothing is re-ordered here.
@@ -86,7 +92,6 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
       { replace: true },
     );
   };
-  const [revision, setRevision] = useState(0);
   const [cases, setCases] = useState<readonly AdvertisingCase[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
@@ -118,7 +123,9 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
           <Button
             type="link"
             style={{ padding: 0, height: 'auto', textAlign: 'left', whiteSpace: 'normal' }}
-            onClick={() => {
+            onClick={(event) => {
+              // The row opens the case too; one click must not open it twice.
+              event.stopPropagation();
               onSelect(row.id);
             }}
           >
@@ -218,34 +225,22 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
       aria-label="广告工作台"
       data-state={failure !== undefined ? 'error' : cases !== undefined ? 'loaded' : 'loading'}
     >
-      <SectionCard
-        title="广告工作台"
-        extra={
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              setRevision((value) => value + 1);
-            }}
-          >
-            {actions.refresh}
-          </Button>
-        }
-      >
+      <SectionCard>
         <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
-            按系统排名排序：止损保护类事项始终排在优化类之前，与金额大小无关。
-          </Typography.Paragraph>
-          <Segmented
-            aria-label="工作类型"
-            value={lane ?? ALL}
-            options={[
-              { label: '全部', value: ALL },
-              ...LANES.map((name) => ({ label: LANE_LABELS[name] ?? name, value: name })),
-            ]}
-            onChange={(value) => {
-              chooseLane(value === ALL ? undefined : value);
-            }}
-          />
+          <Space size={4} align="center" wrap>
+            <Segmented
+              aria-label="工作类型"
+              value={lane ?? ALL}
+              options={[
+                { label: '全部', value: ALL },
+                ...LANES.map((name) => ({ label: LANE_LABELS[name] ?? name, value: name })),
+              ]}
+              onChange={(value) => {
+                chooseLane(value === ALL ? undefined : value);
+              }}
+            />
+            <InfoTip title="排序规则：按系统排名排序，止损保护类事项始终排在优化类之前，与金额大小无关。" />
+          </Space>
           {failure !== undefined ? (
             <FailureAlert failure={failure} />
           ) : cases === undefined ? (
@@ -262,7 +257,22 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
               dataSource={[...cases]}
               pagination={false}
               scroll={{ x: 'max-content' }}
-              onRow={(row) => dataAttributes({ 'data-case-id': row.id, 'data-lane': row.lane })}
+              onRow={(row) =>
+                ({
+                  ...dataAttributes({ 'data-case-id': row.id, 'data-lane': row.lane }),
+                  onClick: () => {
+                    onSelect(row.id);
+                  },
+                  onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+                    if (event.key === 'Enter' && event.target === event.currentTarget) {
+                      onSelect(row.id);
+                    }
+                  },
+                  tabIndex: 0,
+                  'aria-label': `打开广告工单：${row.nativeObjectName ?? row.adNativeObjectId}`,
+                  style: { cursor: 'pointer' },
+                }) as React.HTMLAttributes<HTMLElement>
+              }
               locale={{ emptyText: <EmptyState description="本页暂无事项" /> }}
             />
           )}

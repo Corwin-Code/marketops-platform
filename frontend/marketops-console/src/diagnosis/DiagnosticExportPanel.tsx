@@ -1,4 +1,4 @@
-import { Alert, Button, Descriptions, Progress, Space, Steps, Typography } from 'antd';
+import { Alert, Button, Descriptions, Flex, Progress, Space, Steps } from 'antd';
 import type { StepsProps } from 'antd';
 import { DownloadOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useRef, useState } from 'react';
@@ -16,7 +16,7 @@ import {
   EXPORT_STATE_LABELS,
   EXPORT_WINDOW_LABELS,
 } from '../i18n/zh/pricing';
-import { CodeTag, DateTime, SectionCard } from '../ui';
+import { CodeTag, DateTime, InfoTip, SectionCard } from '../ui';
 
 /** Where the job is on its way to a downloadable file. */
 function exportSteps(job: ExportJob | undefined): {
@@ -240,22 +240,32 @@ export function DiagnosticExportPanel({
 
   return (
     <section aria-label="诊断导出" data-state={job?.state ?? 'idle'}>
-      <SectionCard title="导出店铺诊断" extra={actionsBar}>
+      <SectionCard
+        title={
+          <Space size={4}>
+            <span>导出店铺诊断</span>
+            <InfoTip title="导出近 30 天的店铺与商品指标、规则结论和证据引用，在后台生成。" />
+          </Space>
+        }
+      >
         <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          <Typography.Text type="secondary">
-            导出近 30 天的店铺与商品指标、规则结论和证据引用，在后台生成。
-          </Typography.Text>
-          <Steps
-            size="small"
-            current={steps.current}
-            status={steps.status}
-            items={[
-              { title: '提交请求' },
-              { title: '排队' },
-              { title: '生成' },
-              { title: job?.state === 'EXPIRED' ? '已过期' : '可下载' },
-            ]}
-          />
+          {/* The next step's button sits beside the steps it moves along. */}
+          <Flex gap={16} wrap align="center">
+            <div style={{ flex: '1 1 360px', minWidth: 0 }}>
+              <Steps
+                size="small"
+                current={steps.current}
+                status={steps.status}
+                items={[
+                  { title: '提交请求' },
+                  { title: '排队' },
+                  { title: '生成' },
+                  { title: job?.state === 'EXPIRED' ? '已过期' : '可下载' },
+                ]}
+              />
+            </div>
+            {actionsBar}
+          </Flex>
           {job !== undefined && (
             <Descriptions
               bordered

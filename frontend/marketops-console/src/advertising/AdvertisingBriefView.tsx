@@ -1,6 +1,6 @@
-import { Alert, Collapse, Descriptions, Flex, Space, Table, Tag, Timeline, Typography } from 'antd';
+import { Alert, Button, Collapse, Flex, Space, Table, Tag, Timeline, Typography } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   fetchAdvertisingBrief,
   fetchAdvertisingBriefHistory,
@@ -26,9 +26,11 @@ import { CodeTag } from '../ui/CodeTag';
 import { DateTime } from '../ui/DateTime';
 import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
+import { InfoTip } from '../ui/InfoTip';
 import { LoadingState } from '../ui/LoadingState';
 import { Money } from '../ui/Money';
 import { SectionCard } from '../ui/SectionCard';
+import { SectionCollapse } from '../ui/SectionCollapse';
 import { AbsentValue, IdText, ReasonTags, dataAttributes } from './shared';
 
 /** What the brief surface needs in order to load itself. */
@@ -171,6 +173,14 @@ export function AdvertisingBriefView({
     };
   }, [context, briefKind, periodKey]);
 
+  // The earlier readings are folded; the restatement notice opens them on request.
+  const [historyOpen, setHistoryOpen] = useState<readonly string[]>([]);
+  const historyRef = useRef<HTMLElement>(null);
+  const showHistory = (): void => {
+    setHistoryOpen(['history']);
+    historyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const kindTitle = codeLabel(BRIEF_KIND_LABELS, briefKind);
 
   if (failure !== undefined) {
@@ -226,32 +236,19 @@ export function AdvertisingBriefView({
         }
       >
         <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          <Descriptions
-            bordered
-            size="small"
-            column={{ xs: 1, md: 2, xl: 3 }}
-            items={[
-              { key: 'asOf', label: '数据截止', children: <DateTime value={brief.asOf} /> },
-              {
-                key: 'published',
-                label: '发布时间',
-                children: <DateTime value={brief.publishedAt} />,
-              },
-              {
-                key: 'revision',
-                label: '版本',
-                children: (
-                  <Space size={4}>
-                    <span>第 {brief.revisionNo} 版</span>
-                    <CodeTag labels={REVISION_KIND_LABELS} code={brief.revisionKind} />
-                  </Space>
-                ),
-              },
-            ]}
-          />
-          <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
-            数据截止时间不是生成时间：晚发布的简报描述的仍是它所标明的截止时刻。
-          </Typography.Paragraph>
+          <Flex gap={12} wrap align="center" aria-label="简报版本">
+            <Typography.Text type="secondary">
+              数据截止 <DateTime value={brief.asOf} />
+              <InfoTip title="数据截止时间不是生成时间：晚发布的简报描述的仍是它所标明的截止时刻。" />
+            </Typography.Text>
+            <Typography.Text type="secondary">
+              发布 <DateTime value={brief.publishedAt} />
+            </Typography.Text>
+            <Space size={4}>
+              <Typography.Text type="secondary">第 {brief.revisionNo} 版</Typography.Text>
+              <CodeTag labels={REVISION_KIND_LABELS} code={brief.revisionKind} />
+            </Space>
+          </Flex>
           {brief.restatement ? (
             <div role="status" data-restatement="true">
               <Alert
@@ -267,7 +264,19 @@ export function AdvertisingBriefView({
                         <IdText value={brief.lateFactReference} />
                       </span>
                     )}
-                    <span>之前的版本保留在下方，未作修改。</span>
+                    {history.length > 1 && (
+                      <span>
+                        之前的版本按原样保留，未作修改。
+                        <Button
+                          type="link"
+                          size="small"
+                          style={{ padding: 0, height: 'auto' }}
+                          onClick={showHistory}
+                        >
+                          查看之前的版本
+                        </Button>
+                      </span>
+                    )}
                   </Flex>
                 }
               />
@@ -345,30 +354,49 @@ export function AdvertisingBriefView({
           />
 
           {history.length <= 1 ? null : (
-            <section aria-label="之前的版本" data-readings={history.length}>
-              <Typography.Title level={5}>之前的版本</Typography.Title>
-              <Typography.Paragraph type="secondary">
-                按发布时的原样保留。一旦有人可能据此行动，简报就不再修改。
-              </Typography.Paragraph>
-              <Timeline
-                items={history.map((reading) => ({
-                  key: reading.id,
-                  content: (
-                    <div data-revision={reading.revisionNo}>
-                      <Space size={6} wrap>
-                        <Typography.Text strong>第 {reading.revisionNo} 版</Typography.Text>
-                        <CodeTag labels={REVISION_KIND_LABELS} code={reading.revisionKind} />
-                        <Typography.Text type="secondary">截止</Typography.Text>
-                        <DateTime value={reading.asOf} />
-                        <Typography.Text type="secondary">发布</Typography.Text>
-                        <DateTime value={reading.publishedAt} />
-                        {reading.lateFactReference === undefined ? null : (
-                          <IdText value={reading.lateFactReference} prefix="迟到数据" />
-                        )}
+            <section aria-label="之前的版本" data-readings={history.length} ref={historyRef}>
+              <SectionCollapse
+                openKeys={historyOpen}
+                onOpenChange={setHistoryOpen}
+                items={[
+                  {
+                    key: 'history',
+                    title: '之前的版本',
+                    summary: `${String(history.length)} 版 · 按发布时原样保留`,
+                    children: (
+                      <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+                        <Typography.Text type="secondary">
+                          一旦有人可能据此行动，简报就不再修改。
+                        </Typography.Text>
+                        <Timeline
+                          items={history.map((reading) => ({
+                            key: reading.id,
+                            content: (
+                              <div data-revision={reading.revisionNo}>
+                                <Space size={6} wrap>
+                                  <Typography.Text strong>
+                                    第 {reading.revisionNo} 版
+                                  </Typography.Text>
+                                  <CodeTag
+                                    labels={REVISION_KIND_LABELS}
+                                    code={reading.revisionKind}
+                                  />
+                                  <Typography.Text type="secondary">截止</Typography.Text>
+                                  <DateTime value={reading.asOf} />
+                                  <Typography.Text type="secondary">发布</Typography.Text>
+                                  <DateTime value={reading.publishedAt} />
+                                  {reading.lateFactReference === undefined ? null : (
+                                    <IdText value={reading.lateFactReference} prefix="迟到数据" />
+                                  )}
+                                </Space>
+                              </div>
+                            ),
+                          }))}
+                        />
                       </Space>
-                    </div>
-                  ),
-                }))}
+                    ),
+                  },
+                ]}
               />
             </section>
           )}

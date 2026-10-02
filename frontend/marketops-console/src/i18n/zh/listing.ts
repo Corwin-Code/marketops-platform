@@ -178,7 +178,6 @@ export const LISTING_TEXT = {
   operationsReviewBoundary:
     '当前队列、每日行动简报与每周证据复盘来自同一数据库快照；阶段、限制、责任和证据保持分开。',
   operationsReviewStore: '复盘店铺 ID',
-  operationsReviewLoad: '加载／刷新复盘',
   reviewTimezone: '经营时区',
   reviewCurrent: '当前工作队列',
   reviewDaily: '每日行动简报',
