@@ -121,19 +121,23 @@ export function AvailabilityQueue({ context }: AvailabilityQueueProps): React.JS
     patch({ [VARIANT_PARAM]: productVariantId });
   };
 
+  // May shrink to the card's width, so the lane switch scrolls instead of widening the page.
   const toolbar = (
-    <Flex gap={8} wrap align="center" justify="flex-end">
-      <Segmented<string>
-        aria-label={text.laneFilter}
-        value={lane ?? ALL}
-        options={[
-          { value: ALL, label: text.allLanes },
-          ...LANES.map((code) => ({ value: code, label: codeLabel(LANE_LABELS, code) })),
-        ]}
-        onChange={(value) => {
-          patch({ [LANE_PARAM]: value === ALL ? undefined : value, [PAGE_PARAM]: undefined });
-        }}
-      />
+    <Flex gap={8} wrap align="center" style={{ minWidth: 0 }}>
+      {/* Seven options outgrow a phone: the control scrolls inside its own box, not the page. */}
+      <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+        <Segmented<string>
+          aria-label={text.laneFilter}
+          value={lane ?? ALL}
+          options={[
+            { value: ALL, label: text.allLanes },
+            ...LANES.map((code) => ({ value: code, label: codeLabel(LANE_LABELS, code) })),
+          ]}
+          onChange={(value) => {
+            patch({ [LANE_PARAM]: value === ALL ? undefined : value, [PAGE_PARAM]: undefined });
+          }}
+        />
+      </div>
       <Input.Search
         aria-label={text.searchLabel}
         placeholder={text.searchPlaceholder}
@@ -254,7 +258,15 @@ export function AvailabilityQueue({ context }: AvailabilityQueueProps): React.JS
 
   return (
     <section aria-label={availabilityText.queueTitle} data-state={queue.kind}>
-      <SectionCard title={availabilityText.queueTitle} extra={toolbar}>
+      <SectionCard>
+        {/* Title and controls wrap on a narrow screen instead of the controls
+            squeezing the title out of a card header. */}
+        <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
+          <Typography.Text strong style={{ fontSize: 16 }}>
+            {availabilityText.queueTitle}
+          </Typography.Text>
+          {toolbar}
+        </Flex>
         {queue.kind === 'failed' && <FailureAlert failure={queue.failure} />}
         {queue.kind === 'loading' && <LoadingState />}
         {loaded?.items.length === 0 && !(page > 1 && (loaded.total ?? 0) > 0) && (

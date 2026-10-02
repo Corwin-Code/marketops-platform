@@ -543,16 +543,21 @@ export function StoreDiagnosisView({
           patch({ [RULE_PARAM]: 'BUYER_PRICE_JUMP' });
         }}
       />
-      <SectionCard
-        title={text.summaryTitle}
-        extra={
-          <Space size={8}>
-            <Typography.Text type="secondary">{text.generatedAt}</Typography.Text>
-            <DateTime value={diagnosis.generatedAt} />
+      <SectionCard>
+        {/* Title and controls wrap on a narrow screen instead of the controls
+            squeezing the title out of a card header. */}
+        <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
+          <Typography.Text strong style={{ fontSize: 16 }}>
+            {text.summaryTitle}
+          </Typography.Text>
+          <Flex gap={8} wrap align="center">
+            <Space size={8}>
+              <Typography.Text type="secondary">{text.generatedAt}</Typography.Text>
+              <DateTime value={diagnosis.generatedAt} />
+            </Space>
             {refresh}
-          </Space>
-        }
-      >
+          </Flex>
+        </Flex>
         <Row gutter={[12, 12]}>
           <Col xs={12} md={6}>
             <Card size="small">

@@ -481,10 +481,15 @@ export function ListingManualPackets({
   };
 
   return (
-    <SectionCard
-      title={t('packets')}
-      extra={
-        <Flex gap={8} wrap align="center">
+    <SectionCard>
+      {/* Title and controls wrap on a narrow screen instead of the controls
+          squeezing the title out of a card header. */}
+      <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
+        <Typography.Text strong style={{ fontSize: 16 }}>
+          {t('packets')}
+        </Typography.Text>
+        {/* May shrink to the card's width, so the action picker narrows instead of sticking out. */}
+        <Flex gap={8} wrap align="center" style={{ minWidth: 0 }}>
           <Segmented<string>
             value={byAction ? 'action' : 'mine'}
             options={[
@@ -507,21 +512,24 @@ export function ListingManualPackets({
                 }}
               />
             ) : (
-              <Flex align="center" gap={0}>
-                <Select<string>
-                  style={{ width: 280 }}
-                  aria-label={packetText.actionFilter}
-                  placeholder={packetText.actionFilter}
-                  loading={actions.loading}
-                  allowClear
-                  showSearch={{ optionFilterProp: 'search' }}
-                  value={selectedAction ?? null}
-                  options={actionOptions(actions.value ?? [])}
-                  onChange={(next: string | undefined) => {
-                    patch({ [VIEW_KEY]: 'action', [ACTION_KEY]: next });
-                  }}
-                />
-                <InfoTip title={packetText.actionFilterHelp} />
+              <Flex align="center" wrap style={{ minWidth: 0, rowGap: 8 }}>
+                {/* On a phone the select narrows beside its hint and the lookup wraps below. */}
+                <Flex align="center" style={{ minWidth: 0 }}>
+                  <Select<string>
+                    style={{ width: 280, minWidth: 0 }}
+                    aria-label={packetText.actionFilter}
+                    placeholder={packetText.actionFilter}
+                    loading={actions.loading}
+                    allowClear
+                    showSearch={{ optionFilterProp: 'search' }}
+                    value={selectedAction ?? null}
+                    options={actionOptions(actions.value ?? [])}
+                    onChange={(next: string | undefined) => {
+                      patch({ [VIEW_KEY]: 'action', [ACTION_KEY]: next });
+                    }}
+                  />
+                  <InfoTip title={packetText.actionFilterHelp} />
+                </Flex>
                 <IdLookup
                   label={packetText.actionFilterManual}
                   title={packetText.actionFilterManualTitle}
@@ -554,8 +562,7 @@ export function ListingManualPackets({
             {t('refresh')}
           </Button>
         </Flex>
-      }
-    >
+      </Flex>
       <section
         aria-label={t('packets')}
         data-state={loadKey === undefined ? 'idle' : current === undefined ? 'loading' : 'loaded'}
