@@ -11,7 +11,8 @@ per day), ``status`` (POST /v3/product/info/list), ``content`` (the content rati
 from POST /v1/product/rating-by-sku), ``queries`` and ``query-details`` (search
 demand and search terms from POST /v1/analytics/product-queries[/details]),
 ``actions`` (GET /v1/actions), ``action-candidates`` and ``action-products`` (POST
-/v2/actions/candidates and /v2/actions/products, one request per action). A
+/v2/actions/candidates and /v2/actions/products, one request per action),
+``returns`` (POST /v1/returns/list, the returns created in one UTC day per run). A
 capability marked ``probe_only`` can be probed but not set up until its real answers
 were checked: the promotion capabilities until their first probe, and
 ``category-attributes`` (POST /v1/description-category/attribute), which the
@@ -231,6 +232,17 @@ def catalog_product_ids(pilot: "Pilot") -> list[str]:
 
 
 AVAILABILITY_SELLABLE = {"AVAILABLE": "true", "HIDDEN": "false", "UNAVAILABLE": "false"}
+# Ozon's return types (POST /v1/returns/list, official docs checked 2026-10-01) as the ledger's return
+# kinds: a cancellation before delivery, a full or partial refusal at delivery, a customer return after
+# delivery. `Unknown` is Ozon's technical return of an order that could not be delivered, so it counts
+# as a cancellation rather than as something a buyer sent back.
+RETURN_KINDS = {"Cancellation": "CANCELLATION", "FullReturn": "DELIVERY_REFUSAL", "PartialReturn": "DELIVERY_REFUSAL",
+                "ClientReturn": "POST_DELIVERY_RETURN", "Unknown": "CANCELLATION"}
+# Ozon's return reasons as the ledger's reason categories. Ozon documents no list of reasons, so only
+# words seen on the pilot account are classified; any other reason is recorded as UNKNOWN, with Ozon's
+# own words kept. Seen 2026-10-02: a buyer refusing a parcel at handover because it did not fit (Ozon
+# typed that return a Cancellation).
+RETURN_REASON_CATEGORIES = {"Покупатель отказался при вручении: товар не подошел": "SIZE_OR_FIT"}
 
 
 def inspect_status(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
@@ -524,6 +536,29 @@ def inspect_discount_tasks(answers: list[dict], pilot: "Pilot") -> tuple[list[st
     return lines, refusal
 
 
+def inspect_returns(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
+    """Returns of the probed day: how many, of which types and schemes, with which reasons, for known
+    products (no prices printed; the answer carries no buyer data, only pickup points)."""
+    returns = [item for answer in answers for item in answer.get("returns") or []]
+    known = set(catalog_skus(pilot))
+    products = [item.get("product") or {} for item in returns]
+    ids = [item.get("id") for item in returns]
+    lines = [f"returns {len(returns)} on {len(answers)} pages, types "
+             f"{dict(sorted(Counter(str(item.get('type')) for item in returns).items()))}, schemes "
+             f"{dict(sorted(Counter(str(item.get('schema')) for item in returns).items()))}",
+             f"for SKUs in the catalog probe {sum(1 for product in products if str(product.get('sku')) in known)}, "
+             f"currencies {sorted({str((product.get('price') or {}).get('currency_code')) for product in products})}, "
+             f"quantity missing {sum(1 for product in products if not isinstance(product.get('quantity'), int))}",
+             f"reasons {dict(Counter(str(item.get('return_reason_name')) for item in returns).most_common(12))}",
+             f"ids {'descending' if ids == sorted(ids, reverse=True) else 'ascending' if ids == sorted(ids) else 'unordered'}"]
+    refusal = None
+    if len(ids) != len(set(ids)):
+        refusal = "a return came back on two pages; paging by the last return's id would repeat records"
+    elif any(str(item.get("type")) not in RETURN_KINDS for item in returns):
+        refusal = "a return type is not in RETURN_KINDS; map it before registering, or normalization stops"
+    return lines, refusal
+
+
 def inspect_warehouse_restrictions(answers: list[dict], pilot: "Pilot") -> tuple[list[str], str | None]:
     """Which warehouses hold products Ozon cannot deliver from them."""
     ids = [str(item) for answer in answers for item in answer.get("warehouse_ids") or []]
@@ -679,6 +714,24 @@ TRAFFIC_FIELDS = {"hits_view_search": "impressions", "session_view_pdp": "visits
 # value per row came back), which would shift every positional pointer. Only the
 # metrics open to every seller are registered.
 TRAFFIC_METRIC_SET = "basic"
+
+
+# The largest page the returns list allows (official maximum 500, checked 2026-10-01).
+RETURNS_PAGE = 500
+
+
+def returns_body(window_from: str, window_to: str, last_id: str) -> str:
+    """The returns request exactly as the registered template renders it: the returns created in the
+    window (the only filter, as the docs require one at most), paged after the last return's id."""
+    return (f'{{"filter":{{"logistic_return_date":{{"time_from":"{window_from}","time_to":"{window_to}"}}}},'
+            f'"limit":{RETURNS_PAGE},"last_id":{last_id}}}')
+
+
+def returns_probe_body(cursor: str | None, window: dict) -> dict:
+    """The returns request for a probed UTC day, with the window instants the backend renders:
+    the start of the day and the start of the next one, and `null` before the first page."""
+    next_day = (datetime.strptime(window["to"], "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+    return json.loads(returns_body(f"{window['from']}T00:00:00Z", f"{next_day}T00:00:00Z", cursor or "null"))
 
 
 def traffic_body(window_from: str, window_to: str, limit: str, offset: str) -> str:
@@ -1361,6 +1414,52 @@ CAPABILITIES = {
             "sources": {"observedAt": {"kind": "OBSERVATION_TIME"}},
         },
         "inspect": inspect_discount_tasks,
+    },
+    "returns": {
+        "code": "ozon-returns-read",
+        "display": "Ozon returns: FBO and FBS returns and cancellations, by the UTC day they were created",
+        "description": "Reads the returns created in one UTC day per run (POST /v1/returns/list filtered by "
+                       "logistic_return_date, paged after the last return's id; official docs checked "
+                       "2026-10-01).",
+        "manifest": "returns-latest.json",
+        "endpoint": {
+            "code": "ozon-returns-list-v1", "api_version": "v1", "schema_version": "v1GetReturnsListResponse",
+            "rate_note": "Ozon: at most 50 requests/s per Client-Id across methods without their own limit; "
+                         "this method states none. Our cap: 30/min, 500 returns per page. "
+                         "https://docs.ozon.ru/api/seller/ checked 2026-10-01",
+            "freshness": "One UTC day per run: the returns created that day, as they stand when asked.",
+            "definition": {
+                "http_method": "POST", "path_template": "/v1/returns/list",
+                "operation_function": "READ_DATA", "query_template": None,
+                "body_template": returns_body("{windowFrom}", "{windowTo}", "{lastRecordKey}"),
+                "response_content_type": "application/json", "continuation_pointer": "/id",
+                # The answer names no position: the next page asks after the last return's id, and an
+                # empty page ends the day (has_next is not read, so the last call comes back empty).
+                "pagination_model": "LAST_RECORD_KEY", "rate_limit_per_minute": 30,
+                "continuation_end_rule": "EMPTY_RECORDS", "records_pointer": "/returns",
+            },
+            "probe_body": returns_probe_body,
+            "token_key": None,
+            "records_key": "returns",
+            "computed": "LAST_RECORD_KEY",
+            "window": "DAY",
+        },
+        "job": {"suffix": "returns", "dataset": "RETURNS", "display": "Ozon 试点：退货"},
+        # Returns name the Ozon SKU, resolved through the catalog like the analytics rows. A return
+        # happened on the day it was created, the run's window. The reason is kept in Ozon's own words
+        # and classified only where RETURN_REASON_CATEGORIES knows the words (UNKNOWN otherwise). The
+        # answer has no refund or loss amount, so none is recorded.
+        "mapping": {
+            "dataset": "RETURNS", "version": 1, "record_pointer": "/returns", "child_pointer": None,
+            "fields": {"nativeItemKey": "/product/sku", "nativeReturnKey": "/id", "nativeOrderKey": "/posting_number",
+                       "quantity": "/product/quantity", "currencyCode": "/product/price/currency_code",
+                       "reasonNative": "/return_reason_name"},
+            "sources": {"occurredAt": {"kind": "WINDOW_START"},
+                        "returnKind": {"kind": "POINTER", "pointer": "/type", "valueMap": RETURN_KINDS},
+                        "reasonCategory": {"kind": "POINTER", "pointer": "/return_reason_name",
+                                           "valueMap": RETURN_REASON_CATEGORIES}},
+        },
+        "inspect": inspect_returns,
     },
     "warehouses": {
         "code": "ozon-fbs-warehouses-read",
