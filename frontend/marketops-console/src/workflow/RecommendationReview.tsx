@@ -822,6 +822,7 @@ function ReviewDrawerBody({
           consequence={text.createConsequence}
           confirmText={text.confirmPrice(proposedPrice)}
           reasonLabel={text.createNote}
+          reasonPlaceholder={dialog.notePlaceholder}
           reasonRequired={false}
           onConfirm={() => createAuthorized()}
         />

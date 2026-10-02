@@ -31,11 +31,14 @@ import {
   JOURNAL_EVENT_LABELS,
   ROLE_LABELS,
 } from '../i18n/zh/advertising';
+import { dialog } from '../i18n/zh/common';
+import { ActionModal } from '../ui/ActionModal';
+import type { SubmitOutcome } from '../ui/ActionModal';
 import { CodeTag } from '../ui/CodeTag';
-import { ConfirmButton } from '../ui/ConfirmButton';
 import { DateTime } from '../ui/DateTime';
 import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
+import { idRules } from '../ui/PickOrType';
 import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
 import { IdText, field, fieldText } from './shared';
 import type { AdRow } from './shared';
@@ -48,26 +51,84 @@ const allowedOf = (row: Row): readonly string[] =>
     ? row.allowedActions.filter((item): item is string => typeof item === 'string')
     : [];
 
+/** The longest reason or reference the console sends. */
+const TEXT_LIMIT = 2000;
+const EVIDENCE_LIMIT = 512;
+const PICKER_FORMAT = 'YYYY-MM-DD HH:mm';
+
 const EXCEPTION_ACTIONS = {
   ENDORSE: {
     route: 'endorsement',
     label: '背书例外',
-    confirm: '确认为该例外背书？',
+    title: '为例外背书',
+    consequence: '背书人必须独立于申请人；背书后还需批准，例外才会生效。',
     danger: false,
   },
   APPROVE: {
     route: 'approval',
     label: '批准例外',
-    confirm: '确认批准该例外？批准后在到期前接受该风险。',
+    title: '批准例外',
+    consequence: '批准后，在到期前接受该风险。',
     danger: false,
   },
   END: {
     route: 'end',
     label: '结束例外并重建决策',
-    confirm: '确认结束该例外？相关决策将被重新计算。',
+    title: '结束例外',
+    consequence: '结束后不再接受该风险，相关决策将被重新计算。',
     danger: true,
   },
 } as const;
+
+interface ReasonValues {
+  readonly reason?: string;
+}
+
+interface RepairValues {
+  readonly evidenceReference?: string;
+  readonly reason?: string;
+}
+
+interface AssignValues {
+  readonly assigneeUserId?: string;
+}
+
+interface ExceptionValues {
+  readonly expiresAt?: Dayjs | null;
+  readonly reviewDueAt?: Dayjs | null;
+  readonly evidenceReference?: string;
+  readonly reason?: string;
+}
+
+/** Whether a store-local time the operator picked is still ahead of now. */
+function isFuture(value: Dayjs): boolean {
+  return new Date(storeLocalToIso(value)).getTime() > Date.now();
+}
+
+/** The reason a dialog records; it takes the focus only when it is the dialog's first field. */
+function ReasonField({
+  label,
+  first = true,
+}: {
+  readonly label: string;
+  readonly first?: boolean;
+}): React.JSX.Element {
+  return (
+    <Form.Item
+      name="reason"
+      label={label}
+      rules={[{ required: true, whitespace: true, message: dialog.reasonRequired }]}
+    >
+      <Input.TextArea
+        rows={3}
+        maxLength={TEXT_LIMIT}
+        showCount
+        placeholder={dialog.reasonPlaceholder}
+        autoFocus={first}
+      />
+    </Form.Item>
+  );
+}
 
 export function AdvertisingResponsibilityControls({
   context,
@@ -83,14 +144,6 @@ export function AdvertisingResponsibilityControls({
   const [journal, setJournal] = useState<readonly Row[]>();
   const [exceptions, setExceptions] = useState<readonly Row[]>();
   const [failure, setFailure] = useState<ConsoleFailure>();
-  const [reason, setReason] = useState('');
-  // The repair evidence and the exception evidence are two different
-  // references; one shared field made typing in either fill the other.
-  const [repairEvidence, setRepairEvidence] = useState('');
-  const [exceptionEvidence, setExceptionEvidence] = useState('');
-  const [assignee, setAssignee] = useState('');
-  const [expires, setExpires] = useState<Dayjs | null>(null);
-  const [reviewDue, setReviewDue] = useState<Dayjs | null>(null);
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Row>();
   const allowed = workflow.allowedActions;
@@ -103,25 +156,37 @@ export function AdvertisingResponsibilityControls({
       active = false;
     };
   }, [context, workflow]);
-  async function perform(operation: Promise<ConsoleOutcome<Row>>, success: string): Promise<void> {
+
+  /** A dialog's action: a failure stays in the dialog, success reloads the authority. */
+  async function submit(
+    operation: Promise<ConsoleOutcome<Row>>,
+    success: string,
+  ): Promise<SubmitOutcome> {
+    const result = await operation;
+    if (!result.ok) return result.failure;
+    void message.success(success);
+    setFailure(undefined);
+    setReview(undefined);
+    reload();
+    return undefined;
+  }
+
+  /** A one-click action without inputs; its failure is shown above the controls. */
+  async function run(operation: Promise<ConsoleOutcome<Row>>, success: string): Promise<void> {
     setBusy(true);
     setFailure(undefined);
     const result = await operation;
     setBusy(false);
     if (result.ok) {
       void message.success(success);
-      setReason('');
-      setReview(undefined);
       reload();
     } else setFailure(result.failure);
   }
+
   const task =
     workflow.taskId === undefined ? undefined : `tasks/${encodeURIComponent(workflow.taskId)}`;
-  const showReason =
-    allowed.some((action) => action.startsWith('TASK_') || action === 'EXCEPTION_REQUEST') ||
-    exceptions?.some((row) => allowedOf(row).length > 0) === true;
-  const noReason = reason.trim().length === 0;
-  const busyReason = '正在处理…';
+  const versionMissing =
+    workflow.taskVersion === undefined ? '任务版本未确定，请刷新后重试' : undefined;
 
   const exceptionColumns: TableColumnsType<Row> = [
     {
@@ -165,26 +230,41 @@ export function AdvertisingResponsibilityControls({
           {(['ENDORSE', 'APPROVE', 'END'] as const)
             .filter((action) => allowedOf(row).includes(action))
             .map((action) => (
-              <ConfirmButton
+              <ActionModal<ReasonValues>
                 key={action}
-                size="small"
+                trigger={{
+                  label: EXCEPTION_ACTIONS[action].label,
+                  size: 'small',
+                  danger: EXCEPTION_ACTIONS[action].danger,
+                }}
+                title={EXCEPTION_ACTIONS[action].title}
+                consequence={EXCEPTION_ACTIONS[action].consequence}
+                summary={
+                  <Space size={6} wrap>
+                    <CodeTag
+                      labels={EXCEPTION_STATE_LABELS}
+                      code={field(row, 'state')}
+                      colors={EXCEPTION_STATE_COLORS}
+                    />
+                    <Typography.Text type="secondary">到期</Typography.Text>
+                    <DateTime value={field(row, 'expiresAt')} />
+                  </Space>
+                }
+                okText={EXCEPTION_ACTIONS[action].label}
                 danger={EXCEPTION_ACTIONS[action].danger}
-                title={EXCEPTION_ACTIONS[action].confirm}
-                disabled={busy || noReason}
-                disabledReason={busy ? busyReason : '请先填写操作理由'}
-                onConfirm={() =>
-                  perform(
+                onSubmit={(values) =>
+                  submit(
                     advertisingControl(
                       context,
                       `exceptions/${encodeURIComponent(text(row.id))}/${EXCEPTION_ACTIONS[action].route}`,
-                      { expectedVersion: row.version, reason },
+                      { expectedVersion: row.version, reason: (values.reason ?? '').trim() },
                     ),
                     `「${EXCEPTION_ACTIONS[action].label}」已记录`,
                   )
                 }
               >
-                {EXCEPTION_ACTIONS[action].label}
-              </ConfirmButton>
+                <ReasonField label="操作理由" />
+              </ActionModal>
             ))}
         </Space>
       ),
@@ -195,22 +275,6 @@ export function AdvertisingResponsibilityControls({
     <section aria-label="责任与例外">
       <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
         {failure !== undefined && <FailureAlert failure={failure} />}
-        {showReason && (
-          <Form layout="vertical" style={{ maxWidth: 720 }}>
-            <Form.Item label="操作理由" style={{ marginBottom: 0 }}>
-              <Input.TextArea
-                aria-label="操作理由"
-                value={reason}
-                maxLength={2000}
-                showCount
-                rows={2}
-                onChange={(event) => {
-                  setReason(event.target.value);
-                }}
-              />
-            </Form.Item>
-          </Form>
-        )}
         {task !== undefined && (
           <Space orientation="vertical" size="small" style={{ width: '100%' }}>
             <Space size={[8, 8]} wrap>
@@ -219,10 +283,7 @@ export function AdvertisingResponsibilityControls({
                   type="primary"
                   loading={busy}
                   onClick={() => {
-                    void perform(
-                      advertisingControl(context, `${task}/acknowledgement`),
-                      '已确认接手',
-                    );
+                    void run(advertisingControl(context, `${task}/acknowledgement`), '已确认接手');
                   }}
                 >
                   确认接手
@@ -233,7 +294,7 @@ export function AdvertisingResponsibilityControls({
                   disabled={busy || workflow.taskVersion === undefined}
                   onClick={() => {
                     if (workflow.taskId !== undefined)
-                      void perform(
+                      void run(
                         actOnAdvertisingTask(context, workflow.taskId, 'start', {
                           expectedVersion: workflow.taskVersion,
                         }),
@@ -244,20 +305,82 @@ export function AdvertisingResponsibilityControls({
                   开始处理
                 </Button>
               )}
+              {allowed.includes('TASK_ASSIGN') && (
+                <ActionModal<AssignValues>
+                  trigger={{
+                    label: '指派负责人',
+                    disabled: versionMissing !== undefined,
+                    disabledReason: versionMissing,
+                  }}
+                  title="指派负责人"
+                  consequence="指派后由该用户负责处理此事项。负责人必须符合该任务的角色与范围，否则会被拒绝。"
+                  okText="指派"
+                  onSubmit={(values) => {
+                    if (workflow.taskId === undefined) return Promise.resolve(undefined);
+                    return submit(
+                      actOnAdvertisingTask(context, workflow.taskId, 'assignment', {
+                        assigneeUserId: (values.assigneeUserId ?? '').trim(),
+                        expectedVersion: workflow.taskVersion,
+                      }),
+                      '已指派负责人',
+                    );
+                  }}
+                >
+                  <Form.Item
+                    name="assigneeUserId"
+                    label="负责人用户编号"
+                    extra="暂时没有可选的人员列表，请填写对方的用户编号。"
+                    rules={idRules('负责人用户编号')}
+                  >
+                    <Input placeholder="输入编号（UUID）" autoFocus />
+                  </Form.Item>
+                </ActionModal>
+              )}
+              {allowed.includes('TASK_ACTION') && (
+                <ActionModal<RepairValues>
+                  trigger={{ label: '记录已完成的修复', type: 'primary' }}
+                  title="记录已完成的数据或映射修复"
+                  consequence="记录一次已经完成的数据或映射修复，作为该任务的处理证据。"
+                  okText="记录修复"
+                  onSubmit={(values) =>
+                    submit(
+                      advertisingControl(context, `${task}/action`, {
+                        actionKind: 'DATA_OR_MAPPING_REPAIR',
+                        evidenceReference: (values.evidenceReference ?? '').trim(),
+                        reason: (values.reason ?? '').trim(),
+                      }),
+                      '已记录修复',
+                    )
+                  }
+                >
+                  <Form.Item
+                    name="evidenceReference"
+                    label="修复证据编号"
+                    rules={[{ required: true, whitespace: true, message: '请填写修复证据编号' }]}
+                  >
+                    <Input maxLength={EVIDENCE_LIMIT} autoFocus />
+                  </Form.Item>
+                  <ReasonField label="操作理由" first={false} />
+                </ActionModal>
+              )}
               {allowed.includes('TASK_REOPEN') && (
-                <ConfirmButton
-                  title="确认重新打开该任务？"
-                  disabled={busy || noReason}
-                  disabledReason={busy ? busyReason : '请先填写操作理由'}
-                  onConfirm={() =>
-                    perform(
-                      advertisingControl(context, `${task}/reopen`, { escalated: false, reason }),
+                <ActionModal<ReasonValues>
+                  trigger={{ label: '重新打开任务' }}
+                  title="重新打开任务"
+                  consequence="任务回到待处理，不会升级。"
+                  okText="重新打开"
+                  onSubmit={(values) =>
+                    submit(
+                      advertisingControl(context, `${task}/reopen`, {
+                        escalated: false,
+                        reason: (values.reason ?? '').trim(),
+                      }),
                       '已重新打开',
                     )
                   }
                 >
-                  重新打开任务
-                </ConfirmButton>
+                  <ReasonField label="操作理由" />
+                </ActionModal>
               )}
               <Button
                 disabled={busy}
@@ -272,73 +395,6 @@ export function AdvertisingResponsibilityControls({
                 查看责任日志
               </Button>
             </Space>
-            {allowed.includes('TASK_ASSIGN') && (
-              <Form layout="vertical" style={{ maxWidth: 720 }}>
-                <Form.Item label="指派负责人（符合条件的用户编号）" style={{ marginBottom: 0 }}>
-                  <Space.Compact style={{ width: '100%' }}>
-                    <Input
-                      aria-label="负责人用户编号"
-                      value={assignee}
-                      onChange={(event) => {
-                        setAssignee(event.target.value);
-                      }}
-                    />
-                    <Button
-                      disabled={
-                        busy || assignee.trim().length === 0 || workflow.taskVersion === undefined
-                      }
-                      onClick={() => {
-                        if (workflow.taskId !== undefined)
-                          void perform(
-                            actOnAdvertisingTask(context, workflow.taskId, 'assignment', {
-                              assigneeUserId: assignee,
-                              expectedVersion: workflow.taskVersion,
-                            }),
-                            '已指派负责人',
-                          );
-                      }}
-                    >
-                      指派
-                    </Button>
-                  </Space.Compact>
-                </Form.Item>
-              </Form>
-            )}
-            {allowed.includes('TASK_ACTION') && (
-              <Form layout="vertical" style={{ maxWidth: 720 }}>
-                <Form.Item
-                  label="数据或映射修复的证据编号"
-                  help="需同时填写操作理由"
-                  style={{ marginBottom: 0 }}
-                >
-                  <Space.Compact style={{ width: '100%' }}>
-                    <Input
-                      aria-label="修复证据编号"
-                      value={repairEvidence}
-                      onChange={(event) => {
-                        setRepairEvidence(event.target.value);
-                      }}
-                    />
-                    <Button
-                      type="primary"
-                      disabled={busy || noReason || repairEvidence.trim().length === 0}
-                      onClick={() => {
-                        void perform(
-                          advertisingControl(context, `${task}/action`, {
-                            actionKind: 'DATA_OR_MAPPING_REPAIR',
-                            evidenceReference: repairEvidence,
-                            reason,
-                          }),
-                          '已记录修复',
-                        );
-                      }}
-                    >
-                      记录已完成的修复
-                    </Button>
-                  </Space.Compact>
-                </Form.Item>
-              </Form>
-            )}
             {journal !== undefined &&
               (journal.length === 0 ? (
                 <EmptyState description="责任日志暂无记录" />
@@ -369,75 +425,84 @@ export function AdvertisingResponsibilityControls({
           </Space>
         )}
 
-        <Typography.Title level={5} style={{ margin: 0 }}>
-          限时风险接受（例外）
-        </Typography.Title>
-        {allowed.includes('EXCEPTION_REQUEST') && (
-          <Form layout="vertical" style={{ maxWidth: 720 }}>
-            <Flex gap={16} wrap>
-              <Form.Item label={`例外到期时间（${STORE_TIMEZONE_LABEL}）`} required>
-                <DatePicker
-                  aria-label="例外到期时间"
-                  showTime
-                  value={expires}
-                  onChange={(value: Dayjs | null) => {
-                    setExpires(value);
-                  }}
-                />
-              </Form.Item>
-              <Form.Item label={`必须复核时间（${STORE_TIMEZONE_LABEL}）`} required>
-                <DatePicker
-                  aria-label="必须复核时间"
-                  showTime
-                  value={reviewDue}
-                  onChange={(value: Dayjs | null) => {
-                    setReviewDue(value);
-                  }}
-                />
-              </Form.Item>
-            </Flex>
-            <Form.Item label="例外证据引用" required>
-              <Input
-                aria-label="例外证据引用"
-                value={exceptionEvidence}
-                onChange={(event) => {
-                  setExceptionEvidence(event.target.value);
-                }}
-              />
-            </Form.Item>
-            <ConfirmButton
-              type="primary"
-              title="确认为该事项申请限时例外？"
-              description="例外需要背书与批准后才会生效，到期后自动失效。"
-              disabled={
-                busy ||
-                noReason ||
-                !exceptionEvidence.trim() ||
-                expires === null ||
-                reviewDue === null
-              }
-              disabledReason={busy ? busyReason : '请填写操作理由、到期时间、复核时间和证据引用'}
-              onConfirm={() => {
-                if (expires === null || reviewDue === null) return;
-                return perform(
+        <Flex justify="space-between" align="center" wrap gap={8}>
+          <Typography.Title level={5} style={{ margin: 0 }}>
+            限时风险接受（例外）
+          </Typography.Title>
+          {allowed.includes('EXCEPTION_REQUEST') && (
+            <ActionModal<ExceptionValues>
+              trigger={{ label: '申请事项例外', type: 'primary' }}
+              title="申请限时例外"
+              consequence="例外需要背书与批准后才会生效，到期后自动失效。"
+              okText="提交申请"
+              width={560}
+              onSubmit={(values) => {
+                const { expiresAt, reviewDueAt } = values;
+                if (!expiresAt || !reviewDueAt) return Promise.resolve(undefined);
+                return submit(
                   advertisingControl(
                     context,
                     `cases/${encodeURIComponent(workflow.caseId)}/exceptions`,
                     {
-                      expiresAt: storeLocalToIso(expires),
-                      reviewDueAt: storeLocalToIso(reviewDue),
-                      reason,
-                      evidenceReference: exceptionEvidence,
+                      expiresAt: storeLocalToIso(expiresAt),
+                      reviewDueAt: storeLocalToIso(reviewDueAt),
+                      reason: (values.reason ?? '').trim(),
+                      evidenceReference: (values.evidenceReference ?? '').trim(),
                     },
                   ),
                   '已提交例外申请',
                 );
               }}
             >
-              申请事项例外
-            </ConfirmButton>
-          </Form>
-        )}
+              <Flex gap={12} wrap>
+                <Form.Item
+                  name="expiresAt"
+                  label={`例外到期时间（${STORE_TIMEZONE_LABEL}）`}
+                  rules={[
+                    { required: true, message: '请选择到期时间' },
+                    {
+                      validator: (_: unknown, value: Dayjs | null | undefined) =>
+                        !value || isFuture(value)
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('到期时间必须晚于现在')),
+                    },
+                  ]}
+                >
+                  <DatePicker showTime={{ format: 'HH:mm' }} format={PICKER_FORMAT} />
+                </Form.Item>
+                <Form.Item
+                  name="reviewDueAt"
+                  label={`必须复核时间（${STORE_TIMEZONE_LABEL}）`}
+                  dependencies={['expiresAt']}
+                  rules={[
+                    { required: true, message: '请选择复核时间' },
+                    ({ getFieldValue }) => ({
+                      validator: (_: unknown, value: Dayjs | null | undefined) => {
+                        if (!value) return Promise.resolve();
+                        if (!isFuture(value))
+                          return Promise.reject(new Error('复核时间必须晚于现在'));
+                        const until = getFieldValue('expiresAt') as Dayjs | null | undefined;
+                        return until && value.isAfter(until)
+                          ? Promise.reject(new Error('复核时间不能晚于到期时间'))
+                          : Promise.resolve();
+                      },
+                    }),
+                  ]}
+                >
+                  <DatePicker showTime={{ format: 'HH:mm' }} format={PICKER_FORMAT} />
+                </Form.Item>
+              </Flex>
+              <Form.Item
+                name="evidenceReference"
+                label="例外证据引用"
+                rules={[{ required: true, whitespace: true, message: '请填写例外证据引用' }]}
+              >
+                <Input maxLength={EVIDENCE_LIMIT} />
+              </Form.Item>
+              <ReasonField label="申请理由" first={false} />
+            </ActionModal>
+          )}
+        </Flex>
         {exceptions !== undefined && exceptions.length > 0 && (
           <Table<Row>
             size="middle"

@@ -6,8 +6,6 @@ import {
   Divider,
   Drawer,
   Flex,
-  Form,
-  Input,
   Space,
   Steps,
   Typography,
@@ -21,7 +19,7 @@ import {
   previewAdvertisingCandidate,
 } from '../api/console';
 import type {
-  AdvertisingCandidateAction,
+  AdvertisingCandidateAction as AdvertisingCandidateActionCode,
   AdvertisingDecisionPreview,
   ConsoleFailure,
   ConsoleRequest,
@@ -34,7 +32,6 @@ import { actions as commonActions } from '../i18n';
 import {
   ACTION_CLOCK_COLORS,
   ACTION_CLOCK_LABELS,
-  BID_UNIT_LABELS,
   CANDIDATE_BASIS_LABELS,
   CANDIDATE_STATE_COLORS,
   CANDIDATE_STATE_LABELS,
@@ -49,55 +46,27 @@ import {
   TIMELINESS_COLORS,
   TIMELINESS_LABELS,
 } from '../i18n/zh/advertising';
+import type { SubmitOutcome } from '../ui/ActionModal';
 import { CodeTag } from '../ui/CodeTag';
-import { ConfirmButton } from '../ui/ConfirmButton';
 import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
 import { LoadingState } from '../ui/LoadingState';
-import { Money } from '../ui/Money';
+import {
+  AdvertisingCandidateAction,
+  BidChange,
+  candidateActionLabel,
+} from './AdvertisingCandidateActions';
 import { AdvertisingCommandTimeline } from './AdvertisingCommandTimeline';
 import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
 import { AdvertisingResponsibilityControls } from './AdvertisingResponsibilityControls';
 import { AdvertisingTimestamp } from './AdvertisingTimestamp';
 import { AbsentValue, IdText, ReasonTags } from './shared';
 
-/** Button text and confirmation for each candidate action. */
-const ACTION_TEXT: Record<
-  AdvertisingCandidateAction,
-  { readonly label: string; readonly confirm: string; readonly description: string }
-> = {
-  SELECT_CANDIDATE: {
-    label: '选定该候选',
-    confirm: '确认选定这个精确候选？',
-    description: '选定后进入背书与审批流程。',
-  },
-  REJECT_CANDIDATE: {
-    label: '驳回候选',
-    confirm: '确认驳回该候选？',
-    description: '驳回后该候选不能再被选定。',
-  },
-  ENDORSE: {
-    label: '运营背书',
-    confirm: '确认为该候选做运营背书？',
-    description: '背书会重新校验当前授权与范围。',
-  },
-  APPROVE: {
-    label: '批准精确变更',
-    confirm: '确认批准这项精确出价变更？',
-    description: '批准会重新校验当前授权与范围，批准本身不会写入平台。',
-  },
-  CREATE_COMMAND: {
-    label: '创建已批准的指令',
-    confirm: '确认为已批准的变更创建出价指令？',
-    description: '指令创建后将经过写入闸门、回读和审计；会重新校验当前授权。',
-  },
-};
-
 function candidateActions(
   candidate: AdvertisingWorkflowCandidate,
   allowed: readonly string[],
-): AdvertisingCandidateAction[] {
-  const result: AdvertisingCandidateAction[] = [];
+): AdvertisingCandidateActionCode[] {
+  const result: AdvertisingCandidateActionCode[] = [];
   if (candidate.makerUserId === undefined && candidate.state === 'DRAFT')
     result.push('SELECT_CANDIDATE');
   if (candidate.state === 'DRAFT') result.push('REJECT_CANDIDATE');
@@ -265,31 +234,6 @@ function AdvertisingResponseTiming({ slo }: { readonly slo: Workflow['slo'] }): 
   );
 }
 
-/** A candidate's exact native bid change. */
-function BidChange({
-  candidate,
-}: {
-  readonly candidate: AdvertisingWorkflowCandidate;
-}): React.JSX.Element {
-  return (
-    <Space size={6} wrap>
-      <Typography.Text type="secondary">平台出价</Typography.Text>
-      {candidate.currentBidAmount === undefined ? (
-        <AbsentValue label="未确定" />
-      ) : (
-        <Money value={candidate.currentBidAmount} currency={candidate.currency ?? null} />
-      )}
-      <Typography.Text type="secondary">→</Typography.Text>
-      {candidate.targetBidAmount === undefined ? (
-        <AbsentValue label="未确定" />
-      ) : (
-        <Money value={candidate.targetBidAmount} currency={candidate.currency ?? null} strong />
-      )}
-      <CodeTag labels={BID_UNIT_LABELS} code={candidate.unit ?? 'UNRESOLVED'} />
-    </Space>
-  );
-}
-
 /** Each interaction round-trips through the existing workflow authority. */
 export function AdvertisingWorkflow({
   context,
@@ -303,7 +247,6 @@ export function AdvertisingWorkflow({
   const { message } = App.useApp();
   const [workflow, setWorkflow] = useState<Workflow>();
   const [failure, setFailure] = useState<ConsoleFailure>();
-  const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
   const [preview, setPreview] = useState<AdvertisingDecisionPreview>();
@@ -327,10 +270,9 @@ export function AdvertisingWorkflow({
 
   async function act(
     candidate: AdvertisingWorkflowCandidate,
-    action: AdvertisingCandidateAction,
-  ): Promise<void> {
-    setBusy(true);
-    setPreview(undefined);
+    action: AdvertisingCandidateActionCode,
+    reason: string,
+  ): Promise<SubmitOutcome> {
     const result = await actOnAdvertisingCandidate(
       context,
       caseId,
@@ -338,16 +280,12 @@ export function AdvertisingWorkflow({
       candidate.recommendationId,
       action,
       candidate.version,
-      reason.trim(),
+      reason,
     );
-    setBusy(false);
-    if (result.ok) {
-      void message.success(`「${ACTION_TEXT[action].label}」已记录，已重新加载当前授权`);
-      setReason('');
-      setRevision((value) => value + 1);
-    } else {
-      setFailure(result.failure);
-    }
+    if (!result.ok) return result.failure;
+    void message.success(`「${candidateActionLabel(action)}」已记录，已重新加载当前授权`);
+    setRevision((value) => value + 1);
+    return undefined;
   }
 
   async function review(candidate: AdvertisingWorkflowCandidate): Promise<void> {
@@ -511,27 +449,6 @@ export function AdvertisingWorkflow({
             <Divider titlePlacement="start" style={{ margin: '8px 0' }}>
               出价候选
             </Divider>
-            {workflow.allowedActions.length > 0 && (
-              <Form layout="vertical" style={{ maxWidth: 720 }}>
-                <Form.Item
-                  label="决策理由"
-                  required
-                  help="选定、驳回、背书和批准都需要填写理由"
-                  style={{ marginBottom: 0 }}
-                >
-                  <Input.TextArea
-                    aria-label="决策理由"
-                    value={reason}
-                    maxLength={2000}
-                    showCount
-                    rows={3}
-                    onChange={(event) => {
-                      setReason(event.target.value);
-                    }}
-                  />
-                </Form.Item>
-              </Form>
-            )}
             {workflow.candidates.length === 0 ? (
               <EmptyState description="尚未形成有限的出价候选。缺失的证据不能变成手工输入的目标值。" />
             ) : (
@@ -569,24 +486,15 @@ export function AdvertisingWorkflow({
                           />
                           <BidChange candidate={candidate} />
                           <Space size={[8, 8]} wrap>
-                            {available.map((action) => {
-                              const needsReason =
-                                action !== 'CREATE_COMMAND' && reason.trim().length === 0;
-                              return (
-                                <ConfirmButton
-                                  key={action}
-                                  type={action === 'REJECT_CANDIDATE' ? 'default' : 'primary'}
-                                  danger={action === 'REJECT_CANDIDATE'}
-                                  title={ACTION_TEXT[action].confirm}
-                                  description={ACTION_TEXT[action].description}
-                                  disabled={busy || needsReason}
-                                  disabledReason={busy ? '正在处理…' : '请先填写决策理由'}
-                                  onConfirm={() => act(candidate, action)}
-                                >
-                                  {ACTION_TEXT[action].label}
-                                </ConfirmButton>
-                              );
-                            })}
+                            {available.map((action) => (
+                              <AdvertisingCandidateAction
+                                key={action}
+                                context={context}
+                                candidate={candidate}
+                                action={action}
+                                onAct={(reason) => act(candidate, action, reason)}
+                              />
+                            ))}
                             {canReview && (
                               <Button
                                 icon={<FileSearchOutlined />}
