@@ -6,6 +6,12 @@
 # database passwords and the object-store credential are delivered by the
 # platform's secret manager and named by reference.
 
+spring:
+  # Registry evidence recorded here keeps its timestamps in UTC (see application.yaml).
+  datasource:
+    hikari:
+      connection-init-sql: SET TIME ZONE 'UTC'
+
 marketops:
   environment: staging
   metadata-maintenance:
