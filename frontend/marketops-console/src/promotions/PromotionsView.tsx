@@ -484,8 +484,10 @@ function PromotionCard({
   const title = promotion.title ?? promotion.promotionKind ?? promotion.nativePromotionKey;
   return (
     <SectionCard
+      // On a narrow screen a long name wraps, with the tags below it, instead of the header
+      // cutting it off; on one line the padding keeps the header at 56px.
       title={
-        <Space size={8} wrap>
+        <Flex gap={8} wrap align="center" style={{ paddingBlock: 14, whiteSpace: 'normal' }}>
           <span lang="ru">{title}</span>
           {promotion.promotionKind !== null && (
             <Tag style={{ marginInlineEnd: 0 }}>
@@ -500,7 +502,7 @@ function PromotionCard({
           </Tag>
           {promotion.voucher === true && <Tag style={{ marginInlineEnd: 0 }}>{text.voucher}</Tag>}
           {promotion.targeted === true && <Tag style={{ marginInlineEnd: 0 }}>{text.targeted}</Tag>}
-        </Space>
+        </Flex>
       }
     >
       <Flex vertical gap={10}>
