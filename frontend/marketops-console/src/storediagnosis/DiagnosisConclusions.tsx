@@ -136,11 +136,18 @@ export function ConclusionsSection({
               <Card
                 size="small"
                 style={active ? { borderColor: 'var(--ant-color-primary, #1677ff)' } : {}}
+                // On a narrow screen the count wraps below a long conclusion instead of the
+                // header cutting it off; on one line the padding keeps the header at 38px.
                 title={
-                  <Space size={8}>
+                  <Flex
+                    gap={8}
+                    wrap
+                    align="center"
+                    style={{ paddingBlock: 7, whiteSpace: 'normal' }}
+                  >
                     <span>{conclusionTitle(code)}</span>
                     <Tag>{text.affectedProducts(counts.get(code) ?? 0)}</Tag>
-                  </Space>
+                  </Flex>
                 }
                 extra={
                   <Button

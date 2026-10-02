@@ -351,26 +351,33 @@ export function AiSummaryCard({
   const facts = of('FACT');
   const unknowns = of('UNKNOWN');
 
-  const extra = (
-    <Space size={8} wrap>
-      {waitedSeconds !== null && (
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {text.aiWaiting(waitedSeconds)}
-        </Typography.Text>
-      )}
-      <Button icon={<ReloadOutlined />} onClick={reload} disabled={waitedSeconds !== null}>
-        {text.aiReload}
-      </Button>
-      <Button
-        type={explanation === null ? 'primary' : 'default'}
-        icon={<RobotOutlined />}
-        loading={waitedSeconds !== null}
-        onClick={generate}
-      >
-        {explanation === null ? text.aiGenerate : text.aiRegenerate}
-      </Button>
-      <InfoTip title={labels.hint} />
-    </Space>
+  // Title and controls wrap on a narrow screen instead of the controls
+  // squeezing the title out of a card header.
+  const header = (
+    <Flex justify="space-between" align="center" gap={8} wrap>
+      <Typography.Text strong style={{ fontSize: 16 }}>
+        {labels.title}
+      </Typography.Text>
+      <Space size={8} wrap>
+        {waitedSeconds !== null && (
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {text.aiWaiting(waitedSeconds)}
+          </Typography.Text>
+        )}
+        <Button icon={<ReloadOutlined />} onClick={reload} disabled={waitedSeconds !== null}>
+          {text.aiReload}
+        </Button>
+        <Button
+          type={explanation === null ? 'primary' : 'default'}
+          icon={<RobotOutlined />}
+          loading={waitedSeconds !== null}
+          onClick={generate}
+        >
+          {explanation === null ? text.aiGenerate : text.aiRegenerate}
+        </Button>
+        <InfoTip title={labels.hint} />
+      </Space>
+    </Flex>
   );
 
   let body: React.JSX.Element;
@@ -456,8 +463,9 @@ export function AiSummaryCard({
   }
 
   return (
-    <SectionCard title={labels.title} extra={extra}>
+    <SectionCard>
       <Flex vertical gap={10}>
+        {header}
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {aiText.notice}
         </Typography.Text>
