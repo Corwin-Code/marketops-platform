@@ -167,9 +167,9 @@ function ListingPicker({
     labels.unshift(selected);
   }
   return (
-    <Flex gap={8} align="center" wrap>
+    <Flex gap={8} align="center" wrap style={{ minWidth: 0 }}>
       <Select<string>
-        style={{ width: 320 }}
+        style={{ width: 320, maxWidth: '100%' }}
         aria-label={engagementText.listingPicker}
         placeholder={engagementText.listingPickerPlaceholder}
         loading={found.loading}
@@ -816,10 +816,15 @@ export function ListingManualEngagements({
   ];
 
   return (
-    <SectionCard
-      title={t('engagements')}
-      extra={
-        <Flex gap={8} wrap align="center">
+    <SectionCard>
+      {/* Title and controls wrap on a narrow screen instead of the controls
+          squeezing the title out of a card header. */}
+      <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
+        <Typography.Text strong style={{ fontSize: 16 }}>
+          {t('engagements')}
+        </Typography.Text>
+        {/* May shrink to the card's width, so the listing picker narrows instead of sticking out. */}
+        <Flex gap={8} wrap align="center" style={{ minWidth: 0 }}>
           <ListingPicker
             context={context}
             value={listingId}
@@ -836,8 +841,7 @@ export function ListingManualEngagements({
             {t('refresh')}
           </Button>
         </Flex>
-      }
-    >
+      </Flex>
       <section
         aria-label={t('engagements')}
         data-state={loadKey === undefined ? 'idle' : current === undefined ? 'loading' : 'loaded'}

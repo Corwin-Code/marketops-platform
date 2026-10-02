@@ -428,16 +428,21 @@ export function MasterDataView({ context, storeId }: MasterDataViewProps): React
 
   return (
     <Flex vertical gap={16}>
-      <SectionCard
-        title={text.summaryTitle}
-        extra={
-          <Space size={8}>
-            <Typography.Text type="secondary">{text.generatedAt}</Typography.Text>
-            <DateTime value={data.generatedAt} />
+      <SectionCard>
+        {/* Title and controls wrap on a narrow screen instead of the controls
+            squeezing the title out of a card header. */}
+        <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
+          <Typography.Text strong style={{ fontSize: 16 }}>
+            {text.summaryTitle}
+          </Typography.Text>
+          <Flex gap={8} wrap align="center">
+            <Space size={8}>
+              <Typography.Text type="secondary">{text.generatedAt}</Typography.Text>
+              <DateTime value={data.generatedAt} />
+            </Space>
             {refresh}
-          </Space>
-        }
-      >
+          </Flex>
+        </Flex>
         <Row gutter={[12, 12]}>
           {tiles.map((tile) => (
             <Col key={tile.key} xs={12} md={6} xl={3}>

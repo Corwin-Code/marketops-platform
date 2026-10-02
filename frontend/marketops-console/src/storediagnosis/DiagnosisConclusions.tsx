@@ -94,19 +94,26 @@ export function ConclusionsSection({
   counts.set(WITHOUT_STOCK, withoutStockCount);
   const shown = CONCLUSION_ORDER.filter((code) => (counts.get(code) ?? 0) > 0);
 
-  const extra = (
-    <Space size={8} wrap>
-      {run !== null && (
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {text.conclusionsBasis} <DateTime value={run.periodEnd} /> ·{' '}
-          {text.conclusionsCalculatedAt} <DateTime value={run.completedAt ?? run.periodEnd} />
-        </Typography.Text>
-      )}
-      <Button icon={<ReloadOutlined />} loading={recalculating} onClick={onRecalculate}>
-        {text.recalculate}
-      </Button>
-      <InfoTip title={text.recalculateHint} />
-    </Space>
+  // Title and controls wrap on a narrow screen instead of the controls
+  // squeezing the title out of a card header.
+  const header = (
+    <Flex justify="space-between" align="center" gap={8} wrap>
+      <Typography.Text strong style={{ fontSize: 16 }}>
+        {text.conclusionsTitle}
+      </Typography.Text>
+      <Space size={8} wrap>
+        {run !== null && (
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {text.conclusionsBasis} <DateTime value={run.periodEnd} /> ·{' '}
+            {text.conclusionsCalculatedAt} <DateTime value={run.completedAt ?? run.periodEnd} />
+          </Typography.Text>
+        )}
+        <Button icon={<ReloadOutlined />} loading={recalculating} onClick={onRecalculate}>
+          {text.recalculate}
+        </Button>
+        <InfoTip title={text.recalculateHint} />
+      </Space>
+    </Flex>
   );
 
   let body: React.JSX.Element;
@@ -163,8 +170,9 @@ export function ConclusionsSection({
   }
 
   return (
-    <SectionCard title={text.conclusionsTitle} extra={extra}>
+    <SectionCard>
       <Flex vertical gap={12}>
+        {header}
         {body}
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {text.conclusionsNote(premiumPlus)}

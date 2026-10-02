@@ -154,8 +154,9 @@ export function AvailabilityCases({
     (item) => item.subject?.productVariantId === variant,
   )?.subject;
 
+  // May shrink to the card's width, so the view switch scrolls instead of widening the page.
   const toolbar = (
-    <Flex gap={8} wrap align="center" justify="flex-end">
+    <Flex gap={8} wrap align="center" style={{ minWidth: 0 }}>
       {variant === undefined ? null : (
         <Tag
           closable
@@ -168,14 +169,17 @@ export function AvailabilityCases({
           {text.variantFilter(filtered?.displayName ?? filtered?.skuCode ?? variant.slice(0, 8))}
         </Tag>
       )}
-      <Segmented<string>
-        aria-label={text.viewLabel}
-        value={view}
-        options={VIEWS.map((code) => ({ value: code, label: codeLabel(CASE_VIEW_LABELS, code) }))}
-        onChange={(value) => {
-          patch({ [VIEW_PARAM]: value === 'LIVE' ? undefined : value, [PAGE_PARAM]: undefined });
-        }}
-      />
+      {/* The views outgrow a phone: the control scrolls inside its own box, not the page. */}
+      <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+        <Segmented<string>
+          aria-label={text.viewLabel}
+          value={view}
+          options={VIEWS.map((code) => ({ value: code, label: codeLabel(CASE_VIEW_LABELS, code) }))}
+          onChange={(value) => {
+            patch({ [VIEW_PARAM]: value === 'LIVE' ? undefined : value, [PAGE_PARAM]: undefined });
+          }}
+        />
+      </div>
       <Button icon={<ReloadOutlined />} aria-label={text.refreshLabel} onClick={changed}>
         {actions.refresh}
       </Button>
@@ -341,7 +345,15 @@ export function AvailabilityCases({
 
   return (
     <section aria-label={availabilityText.casesTitle} data-state={cases.kind}>
-      <SectionCard title={availabilityText.casesTitle} extra={toolbar}>
+      <SectionCard>
+        {/* Title and controls wrap on a narrow screen instead of the controls
+            squeezing the title out of a card header. */}
+        <Flex justify="space-between" align="center" gap={8} wrap style={{ marginBottom: 12 }}>
+          <Typography.Text strong style={{ fontSize: 16 }}>
+            {availabilityText.casesTitle}
+          </Typography.Text>
+          {toolbar}
+        </Flex>
         {cases.kind === 'failed' && <FailureAlert failure={cases.failure} />}
         {cases.kind === 'loading' && <LoadingState />}
         {loaded?.items.length === 0 && !(page > 1 && (loaded.total ?? 0) > 0) && (
