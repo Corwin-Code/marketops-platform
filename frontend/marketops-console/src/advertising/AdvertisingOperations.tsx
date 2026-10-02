@@ -1,6 +1,5 @@
-import { Alert, Button, Card, Descriptions, Flex, Space, Table, Tag, Typography } from 'antd';
+import { Alert, Card, Descriptions, Flex, Space, Table, Tag, Typography } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { AdvertisingOrchestration } from './AdvertisingOrchestration';
 import { AdvertisingRecoveryControls } from './AdvertisingContainmentControls';
@@ -19,7 +18,7 @@ import type {
 import { ADVERTISING_EXPOSURE_AXES } from '../api/advertising';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
 import { formatDecimal } from '../format';
-import { actions, codeLabel } from '../i18n';
+import { codeLabel } from '../i18n';
 import {
   AXIS_STATE_COLORS,
   AXIS_STATE_LABELS,
@@ -46,15 +45,20 @@ import { CodeTag } from '../ui/CodeTag';
 import { DateTime } from '../ui/DateTime';
 import { EmptyState } from '../ui/EmptyState';
 import { FailureAlert } from '../ui/FailureAlert';
+import { InfoTip } from '../ui/InfoTip';
 import { LoadingState } from '../ui/LoadingState';
 import { Money } from '../ui/Money';
 import { SectionCard } from '../ui/SectionCard';
+import { SectionCollapse } from '../ui/SectionCollapse';
+import type { SectionFlag } from '../ui/SectionCollapse';
 import { AbsentValue, IdText, ReasonTags, dataAttributes } from './shared';
 
 /** What the operations surface needs in order to load itself. */
 export interface AdvertisingOperationsProps {
   /** Where to send the request and who is asking. */
   readonly context: ConsoleRequest;
+  /** Changes when the page's refresh asks every panel to read again. */
+  readonly revision?: number;
 }
 
 /**
@@ -74,8 +78,12 @@ export interface AdvertisingOperationsProps {
  * reading that has gone stale can mislead a person but cannot let a write
  * through.
  */
-export function AdvertisingOperations({ context }: AdvertisingOperationsProps): React.JSX.Element {
-  const [revision, setRevision] = useState(0);
+export function AdvertisingOperations({
+  context,
+  revision = 0,
+}: AdvertisingOperationsProps): React.JSX.Element {
+  // Reads again after an action on this page, besides the page's own refresh.
+  const [ownRevision, setOwnRevision] = useState(0);
   const [reservations, setReservations] = useState<readonly AdvertisingReservation[] | undefined>(
     undefined,
   );
@@ -118,21 +126,16 @@ export function AdvertisingOperations({ context }: AdvertisingOperationsProps): 
     return () => {
       active = false;
     };
-  }, [context, revision]);
+  }, [context, revision, ownRevision]);
 
   const reload = (): void => {
-    setRevision((value) => value + 1);
+    setOwnRevision((value) => value + 1);
   };
-  const refresh = (
-    <Button icon={<ReloadOutlined />} onClick={reload}>
-      {actions.refresh}
-    </Button>
-  );
 
   if (failure !== undefined) {
     return (
       <section aria-label="广告执行" data-state="error">
-        <SectionCard title="广告执行" extra={refresh}>
+        <SectionCard title="广告执行">
           <FailureAlert failure={failure} />
         </SectionCard>
       </section>
@@ -151,8 +154,8 @@ export function AdvertisingOperations({ context }: AdvertisingOperationsProps): 
   return (
     <section aria-label="广告执行" data-state="loaded">
       <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-        <AdvertisingOrchestration context={context} />
-        <ExposurePanel exposure={exposure} refresh={refresh} />
+        <AdvertisingOrchestration context={context} revision={revision + ownRevision} />
+        <ExposurePanel exposure={exposure} />
         <ContainmentPanel containments={containments} context={context} reload={reload} />
         <ReservationPanel reservations={reservations} />
       </Space>
@@ -323,18 +326,45 @@ const AXIS_COLUMNS: TableColumnsType<AxisRow> = [
   },
 ];
 
+/** Axes over their limit, and axes whose headroom is not proven, for a folded header. */
+function envelopeFlags(envelope: AdvertisingExposureEnvelope): SectionFlag[] {
+  const exceeded = ADVERTISING_EXPOSURE_AXES.filter(
+    (code) => envelope.axes[code].state === 'EXCEEDED',
+  ).length;
+  const unknown = ADVERTISING_EXPOSURE_AXES.filter(
+    (code) => envelope.axes[code].state === 'UNKNOWN',
+  ).length;
+  return [
+    ...(exceeded > 0
+      ? [{ key: 'exceeded', label: `${String(exceeded)} 项已超限`, color: 'error' as const }]
+      : []),
+    ...(unknown > 0
+      ? [{ key: 'unknown', label: `${String(unknown)} 项余量未证实`, color: 'warning' as const }]
+      : []),
+  ];
+}
+
 /** The aggregate envelope, one axis at a time. */
 function ExposurePanel({
   exposure,
-  refresh,
 }: {
   readonly exposure: AdvertisingExposure;
-  readonly refresh: React.ReactNode;
 }): React.JSX.Element {
+  const title = (
+    <Space size={8}>
+      <span>暴露额度</span>
+      <CodeTag
+        labels={EXPOSURE_STATUS_LABELS}
+        code={exposure.status}
+        colors={EXPOSURE_STATUS_COLORS}
+      />
+      <InfoTip title="每个维度单独限额，不合并计算，也不显示总百分比。" />
+    </Space>
+  );
   if (exposure.status === 'MASKED') {
     return (
       <section aria-label="暴露额度" data-state="masked">
-        <SectionCard title="暴露额度" extra={refresh}>
+        <SectionCard title={title}>
           <Alert
             type="warning"
             showIcon
@@ -347,39 +377,36 @@ function ExposurePanel({
   }
   return (
     <section aria-label="暴露额度" data-state={exposure.resolved ? 'resolved' : 'unresolved'}>
-      <SectionCard
-        title={
-          <Space size={8}>
-            <span>暴露额度</span>
-            <CodeTag
-              labels={EXPOSURE_STATUS_LABELS}
-              code={exposure.status}
-              colors={EXPOSURE_STATUS_COLORS}
-            />
-          </Space>
-        }
-        extra={refresh}
-      >
+      <SectionCard title={title}>
         <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          <Flex gap={16} wrap align="center">
-            <Typography.Text type="secondary">
-              测量时间：
-              <DateTime value={exposure.measuredAt} />
-            </Typography.Text>
-            <Typography.Text type="secondary">
-              每个维度单独限额，不合并计算，也不显示总百分比。
-            </Typography.Text>
-          </Flex>
+          {/* In the body rather than the card header, where a narrow screen would
+              squeeze the title out. */}
+          <Typography.Text type="secondary">
+            测量时间：
+            <DateTime value={exposure.measuredAt} />
+          </Typography.Text>
           {!exposure.resolved && (
             <Alert
               type="error"
               showIcon
               role="alert"
               title="并非每个店铺都有生效的暴露额度"
-              description="没有当前授权的店铺不能接受新的广告操作。"
+              description={
+                <Flex vertical gap={4}>
+                  <span>没有当前授权的店铺不能接受新的广告操作。</span>
+                  {exposure.unresolvedStoreIds.length > 0 && (
+                    <Flex gap={6} wrap align="center">
+                      <span>未确定的店铺：</span>
+                      {exposure.unresolvedStoreIds.map((id) => (
+                        <IdText key={id} value={id} />
+                      ))}
+                    </Flex>
+                  )}
+                </Flex>
+              }
             />
           )}
-          {exposure.unresolvedStoreIds.length > 0 && (
+          {exposure.resolved && exposure.unresolvedStoreIds.length > 0 && (
             <Flex gap={6} wrap align="center">
               <Typography.Text>未确定的店铺：</Typography.Text>
               {exposure.unresolvedStoreIds.map((id) => (
@@ -387,67 +414,80 @@ function ExposurePanel({
               ))}
             </Flex>
           )}
-          {exposure.envelopes.map((envelope) => (
-            <div key={envelope.envelopeId} data-envelope={envelope.envelopeId}>
-              <Card size="small" type="inner" title={`策略版本 ${String(envelope.policyVersion)}`}>
-                <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-                  <Descriptions
-                    bordered
-                    size="small"
-                    column={{ xs: 1, md: 2, xl: 3 }}
-                    items={[
-                      {
-                        key: 'scope',
-                        label: '范围',
-                        children: (
-                          <Space size={4} wrap>
-                            <CodeTag labels={EXPOSURE_SCOPE_LABELS} code={envelope.scopeKind} />
-                            {envelope.platformCode === undefined ? null : (
-                              <CodeTag labels={PLATFORM_LABELS} code={envelope.platformCode} />
-                            )}
-                            {envelope.storeId === undefined ? null : (
-                              <IdText value={envelope.storeId} prefix="店铺" />
-                            )}
-                          </Space>
-                        ),
-                      },
-                      {
-                        key: 'window',
-                        label: '测量窗口',
-                        children:
-                          envelope.measurementWindowHours === undefined
-                            ? '未知'
-                            : `${String(envelope.measurementWindowHours)} 小时`,
-                      },
-                      {
-                        key: 'retained',
-                        label: '留存周期',
-                        children:
-                          envelope.retainedWindowDays === undefined
-                            ? '未知'
-                            : `${String(envelope.retainedWindowDays)} 天`,
-                      },
-                    ]}
-                  />
-                  <Table<AxisRow>
-                    size="middle"
-                    rowKey="code"
-                    columns={AXIS_COLUMNS}
-                    dataSource={ADVERTISING_EXPOSURE_AXES.map((code) => ({ code, envelope }))}
-                    pagination={false}
-                    scroll={{ x: 'max-content' }}
-                    onRow={(row) => dataAttributes({ 'data-axis': row.code })}
-                  />
-                  {envelope.reasons.length > 0 && (
-                    <Flex gap={6} wrap align="center">
-                      <Typography.Text>未确定或已超限的控制：</Typography.Text>
-                      <ReasonTags codes={envelope.reasons} />
-                    </Flex>
-                  )}
-                </Space>
-              </Card>
-            </div>
-          ))}
+          {exposure.envelopes.length > 0 && (
+            <SectionCollapse
+              items={exposure.envelopes.map((envelope) => ({
+                key: envelope.envelopeId,
+                title: `策略版本 ${String(envelope.policyVersion)}`,
+                summary: `${codeLabel(EXPOSURE_SCOPE_LABELS, envelope.scopeKind)} · 测量窗口 ${
+                  envelope.measurementWindowHours === undefined
+                    ? '未知'
+                    : `${String(envelope.measurementWindowHours)} 小时`
+                }`,
+                flags: envelopeFlags(envelope),
+                defaultOpen: true,
+                children: (
+                  <div data-envelope={envelope.envelopeId}>
+                    <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+                      <Descriptions
+                        bordered
+                        size="small"
+                        column={{ xs: 1, md: 2, xl: 3 }}
+                        items={[
+                          {
+                            key: 'scope',
+                            label: '范围',
+                            children: (
+                              <Space size={4} wrap>
+                                <CodeTag labels={EXPOSURE_SCOPE_LABELS} code={envelope.scopeKind} />
+                                {envelope.platformCode === undefined ? null : (
+                                  <CodeTag labels={PLATFORM_LABELS} code={envelope.platformCode} />
+                                )}
+                                {envelope.storeId === undefined ? null : (
+                                  <IdText value={envelope.storeId} prefix="店铺" />
+                                )}
+                              </Space>
+                            ),
+                          },
+                          {
+                            key: 'window',
+                            label: '测量窗口',
+                            children:
+                              envelope.measurementWindowHours === undefined
+                                ? '未知'
+                                : `${String(envelope.measurementWindowHours)} 小时`,
+                          },
+                          {
+                            key: 'retained',
+                            label: '留存周期',
+                            children:
+                              envelope.retainedWindowDays === undefined
+                                ? '未知'
+                                : `${String(envelope.retainedWindowDays)} 天`,
+                          },
+                        ]}
+                      />
+                      <Table<AxisRow>
+                        size="middle"
+                        rowKey="code"
+                        columns={AXIS_COLUMNS}
+                        dataSource={ADVERTISING_EXPOSURE_AXES.map((code) => ({ code, envelope }))}
+                        pagination={false}
+                        scroll={{ x: 'max-content' }}
+                        onRow={(row) => dataAttributes({ 'data-axis': row.code })}
+                      />
+                      {envelope.reasons.length > 0 && (
+                        <Flex gap={6} wrap align="center">
+                          <Typography.Text>未确定或已超限的控制：</Typography.Text>
+                          <ReasonTags codes={envelope.reasons} />
+                        </Flex>
+                      )}
+                    </Space>
+                  </div>
+                ),
+              }))}
+            />
+          )}
         </Space>
       </SectionCard>
     </section>
@@ -464,22 +504,25 @@ function ContainmentPanel({
   readonly context: ConsoleRequest;
   readonly reload: () => void;
 }): React.JSX.Element {
+  const title = (
+    <Space size={4}>
+      <span>管控</span>
+      <InfoTip title="五类管控互不等同，停止的范围取决于触发的是哪一类。" />
+    </Space>
+  );
   if (containments.length === 0) {
     return (
       <section aria-label="管控" data-state="empty">
-        <SectionCard title="管控">
-          <EmptyState description="当前没有管控，广告执行未被停止" />
+        <SectionCard title={title}>
+          <Typography.Text type="secondary">当前没有管控，广告执行未被停止。</Typography.Text>
         </SectionCard>
       </section>
     );
   }
   return (
     <section aria-label="管控" data-state="loaded">
-      <SectionCard title="管控">
+      <SectionCard title={title}>
         <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
-            五类管控互不等同，停止的范围取决于触发的是哪一类。
-          </Typography.Paragraph>
           {containments.map((hold) => (
             <div key={hold.id} data-kind={hold.containmentKind} data-state={hold.state}>
               <Card
@@ -498,43 +541,26 @@ function ContainmentPanel({
                     />
                   </Space>
                 }
+                extra={
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    启动于 <DateTime value={hold.activatedAt} />
+                  </Typography.Text>
+                }
               >
                 <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-                  <Descriptions
-                    bordered
-                    size="small"
-                    column={{ xs: 1, md: 2, xl: 3 }}
-                    items={[
-                      {
-                        key: 'scope',
-                        label: '范围',
-                        children:
-                          hold.scopeKind === undefined ? (
-                            <AbsentValue label="未命名范围" />
-                          ) : (
-                            <CodeTag labels={CONTAINMENT_SCOPE_LABELS} code={hold.scopeKind} />
-                          ),
-                      },
-                      {
-                        key: 'cause',
-                        label: '原因类别',
-                        children: <CodeTag labels={CAUSE_CLASS_LABELS} code={hold.causeClass} />,
-                      },
-                      {
-                        key: 'activated',
-                        label: '启动时间',
-                        children: <DateTime value={hold.activatedAt} />,
-                      },
-                      {
-                        key: 'reason',
-                        label: '说明',
-                        span: 'filled',
-                        children: hold.reason ?? (
-                          <Typography.Text type="secondary">未记录原因。</Typography.Text>
-                        ),
-                      },
-                    ]}
-                  />
+                  <Flex gap={6} wrap align="center">
+                    {hold.scopeKind === undefined ? (
+                      <AbsentValue label="未命名范围" />
+                    ) : (
+                      <CodeTag labels={CONTAINMENT_SCOPE_LABELS} code={hold.scopeKind} />
+                    )}
+                    <CodeTag labels={CAUSE_CLASS_LABELS} code={hold.causeClass} />
+                  </Flex>
+                  {hold.reason === undefined ? (
+                    <Typography.Text type="secondary">未记录原因。</Typography.Text>
+                  ) : (
+                    <Typography.Text>{hold.reason}</Typography.Text>
+                  )}
                   {hold.outstandingConditions.length === 0 ? (
                     <span data-ready={hold.readyToLift}>
                       {hold.readyToLift ? (
@@ -645,24 +671,26 @@ function ReservationPanel({
 }): React.JSX.Element {
   return (
     <section aria-label="额度占用" data-state={reservations.length === 0 ? 'empty' : 'loaded'}>
-      <SectionCard title="额度占用">
+      <SectionCard
+        title={
+          <Space size={4}>
+            <span>额度占用</span>
+            <InfoTip title="这里只列出真实干预；无人处理的建议不占用任何额度。" />
+          </Space>
+        }
+      >
         {reservations.length === 0 ? (
           <EmptyState description="当前没有额度占用。只有真实干预才会占用额度，所以队列满时这里也可能为空。" />
         ) : (
-          <Space orientation="vertical" size="small" style={{ width: '100%' }}>
-            <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
-              这里只列出真实干预；无人处理的建议不占用任何额度。
-            </Typography.Paragraph>
-            <Table<AdvertisingReservation>
-              size="middle"
-              rowKey="id"
-              columns={RESERVATION_COLUMNS}
-              dataSource={[...reservations]}
-              pagination={false}
-              scroll={{ x: 'max-content' }}
-              onRow={(held) => dataAttributes({ 'data-holding': held.holding })}
-            />
-          </Space>
+          <Table<AdvertisingReservation>
+            size="middle"
+            rowKey="id"
+            columns={RESERVATION_COLUMNS}
+            dataSource={[...reservations]}
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+            onRow={(held) => dataAttributes({ 'data-holding': held.holding })}
+          />
         )}
       </SectionCard>
     </section>

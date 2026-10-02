@@ -1,12 +1,12 @@
-import { ReloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, ReloadOutlined, StopOutlined } from '@ant-design/icons';
 import {
+  Alert,
   App,
   Button,
-  Card,
-  Col,
+  Flex,
   Form,
   Input,
-  Row,
+  Segmented,
   Select,
   Space,
   Switch,
@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { useEffect, useState } from 'react';
-import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import type { ConsoleFailure, ConsoleOutcome, ConsoleRequest } from '../api/console';
 import type { Batch, Containment, RecalculationEntry } from '../api/listingConversion';
 import {
   addBatchMember,
@@ -29,45 +29,81 @@ import {
   reenableContainment,
   stopScope,
 } from '../api/listingConversion';
+import { dialog } from '../i18n/zh/common';
 import { t } from '../i18n/zh/listing';
-import { ConfirmButton, EmptyState, LoadingState, SectionCard, TechnicalDetails } from '../ui';
-import { Code, Hint, IdText, ListingProblem, Stack, When, codeOptions } from './ListingCommon';
+import { governanceText as text } from '../i18n/zh/listingGovernance';
+import {
+  ActionModal,
+  ConfirmButton,
+  EmptyState,
+  InfoTip,
+  InlineInputPopover,
+  LoadingState,
+  SectionCard,
+  TechnicalDetails,
+  idRules,
+  useSearchParam,
+} from '../ui';
+import type { SubmitOutcome } from '../ui';
+import { Code, IdText, ListingProblem, Stack, When, codeOptions } from './ListingCommon';
 
 export interface ListingGovernancePanelProps {
   readonly context: ConsoleRequest;
   readonly storeId: string;
 }
 
+/** The governance view kept in the address bar, so it survives a reload. */
+const VIEW_KEY = 'gview';
+type View = 'containments' | 'batches' | 'recalculation';
+
+function readView(raw: string | undefined): View {
+  return raw === 'batches' || raw === 'recalculation' ? raw : 'containments';
+}
+
+interface StopValues {
+  readonly platformListingId?: string;
+  readonly causeClass?: string;
+  readonly causeOwner?: string;
+  readonly reason?: string;
+  readonly evidence?: string;
+}
+
+interface BatchValues {
+  readonly storeId?: string;
+  readonly code?: string;
+}
+
+const CAUSE_CLASSES = [
+  'LOCAL_COST',
+  'SHARED_VERSION',
+  'PATH_INTEGRITY',
+  'SAFETY_FAILURE',
+  'PLATFORM_INCIDENT',
+] as const;
+const CAUSE_OWNERS = ['OWNER', 'TECH_DATA', 'OPS_LEAD', 'MARKETPLACE_OPERATOR'] as const;
+
 /**
  * Bounded batches, containment and the recalculation queue.
  *
  * Stopping is the fastest control on the page and needs one person and one
- * reason. Re-enabling needs two different people and the database counts them.
+ * reason, so its button stays in view whichever list is shown. Re-enabling
+ * needs two different people and the database counts them. Every action asks
+ * for its own values: an attestation never reuses the evidence typed for a
+ * stop, and each batch takes its own action number.
  */
 export function ListingGovernancePanel({
   context,
   storeId,
 }: ListingGovernancePanelProps): React.JSX.Element {
   const { message } = App.useApp();
+  const [rawView, setRawView] = useSearchParam(VIEW_KEY);
+  const view = readView(rawView);
   const [batches, setBatches] = useState<readonly Batch[] | undefined>(undefined);
   const [containments, setContainments] = useState<readonly Containment[] | undefined>(undefined);
   const [queue, setQueue] = useState<readonly RecalculationEntry[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [generation, setGeneration] = useState(0);
-  const [batchCode, setBatchCode] = useState('');
-  const [batchStoreId, setBatchStoreId] = useState(storeId);
-  const [memberAction, setMemberAction] = useState('');
-  const [stopListing, setStopListing] = useState('');
-  const [causeClass, setCauseClass] = useState('SAFETY_FAILURE');
-  const [causeOwner, setCauseOwner] = useState('OWNER');
-  const [reason, setReason] = useState('');
-  const [evidence, setEvidence] = useState('');
   const [activeOnly, setActiveOnly] = useState(true);
-  const [busy, setBusy] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    setBatchStoreId(storeId);
-  }, [storeId]);
 
   useEffect(() => {
     let active = true;
@@ -88,27 +124,239 @@ export function ListingGovernancePanel({
     };
   }, [context, generation, activeOnly]);
 
-  const settle = (outcome: { readonly ok: boolean; readonly failure?: ConsoleFailure }): void => {
-    setBusy(undefined);
-    if (outcome.ok) {
-      void message.success(t('done'));
-      setFailure(undefined);
-      setGeneration((value) => value + 1);
-    } else if (outcome.failure !== undefined) {
-      setFailure(outcome.failure);
-    }
+  const reload = (): void => {
+    setGeneration((value) => value + 1);
   };
-  const refreshButton = (
-    <Button
-      icon={<ReloadOutlined />}
-      onClick={() => {
-        setGeneration((value) => value + 1);
+
+  /** A dialog's or popover's action: a failure stays where it was raised, success reloads. */
+  async function submit<T>(operation: Promise<ConsoleOutcome<T>>): Promise<SubmitOutcome> {
+    const outcome = await operation;
+    if (!outcome.ok) return outcome.failure;
+    void message.success(t('done'));
+    setFailure(undefined);
+    reload();
+    return undefined;
+  }
+
+  /** A one-click action confirmed in a popover; its failure is shown above the list. */
+  async function run<T>(operation: Promise<ConsoleOutcome<T>>): Promise<void> {
+    const outcome = await submit(operation);
+    if (outcome !== undefined) setFailure(outcome);
+  }
+
+  const stop = (
+    <ActionModal<StopValues>
+      trigger={{ label: t('stopTitle'), type: 'primary', danger: true, icon: <StopOutlined /> }}
+      title={t('stopTitle')}
+      okText={text.stopOk}
+      danger
+      initialValues={{ causeClass: 'SAFETY_FAILURE', causeOwner: 'OWNER' }}
+      onSubmit={(values) => {
+        const listingId = (values.platformListingId ?? '').trim();
+        return submit(
+          stopScope(
+            context,
+            listingId === '' ? 'ORGANIZATION' : 'LISTING',
+            listingId === '' ? undefined : listingId,
+            values.causeClass ?? 'SAFETY_FAILURE',
+            values.causeOwner ?? 'OWNER',
+            (values.reason ?? '').trim(),
+            (values.evidence ?? '').trim(),
+          ),
+        );
       }}
     >
-      {t('refresh')}
-    </Button>
+      <Form.Item
+        name="platformListingId"
+        label={t('stopListingId')}
+        extra={t('stopListingHelp')}
+        rules={idRules(t('listingIdInput'), false)}
+      >
+        <Input placeholder={dialog.optional} autoFocus />
+      </Form.Item>
+      <Form.Item noStyle dependencies={['platformListingId']}>
+        {({ getFieldValue }) => {
+          const whole = String(getFieldValue('platformListingId') ?? '').trim() === '';
+          return (
+            <Alert
+              type={whole ? 'error' : 'warning'}
+              showIcon
+              title={whole ? text.stopConsequenceOrganization : text.stopConsequenceListing}
+              style={{ marginBottom: 16 }}
+            />
+          );
+        }}
+      </Form.Item>
+      <Flex gap={12} wrap>
+        <Form.Item name="causeClass" label={t('cause')} style={{ minWidth: 200, flex: 1 }}>
+          <Select options={codeOptions('containmentCauseClass', CAUSE_CLASSES)} />
+        </Form.Item>
+        <Form.Item name="causeOwner" label={t('causeOwner')} style={{ minWidth: 200, flex: 1 }}>
+          <Select options={codeOptions('causeOwnerRole', CAUSE_OWNERS)} />
+        </Form.Item>
+      </Flex>
+      <Form.Item
+        name="reason"
+        label={t('reason')}
+        rules={[{ required: true, whitespace: true, message: text.reasonRequired }]}
+      >
+        <Input.TextArea rows={2} maxLength={500} showCount placeholder={dialog.reasonPlaceholder} />
+      </Form.Item>
+      <Form.Item name="evidence" label={t('evidence')}>
+        <Input maxLength={512} placeholder={dialog.optional} />
+      </Form.Item>
+    </ActionModal>
   );
-  const stopWhole = stopListing === '';
+
+  const containmentColumns: TableColumnsType<Containment> = [
+    {
+      key: 'scope',
+      title: t('scope'),
+      render: (_, containment) => (
+        <Space size={4} wrap>
+          <Code family="containmentScope" code={containment.scopeKind} />
+          {containment.platformListingId !== undefined && (
+            <IdText value={containment.platformListingId} />
+          )}
+        </Space>
+      ),
+    },
+    {
+      key: 'cause',
+      title: t('cause'),
+      render: (_, containment) => (
+        <Space size={4} wrap>
+          <Code family="containmentCauseClass" code={containment.causeClass} />
+          <Code family="causeOwnerRole" code={containment.causeOwnerRoleCode} />
+        </Space>
+      ),
+    },
+    {
+      key: 'state',
+      title: t('state'),
+      render: (_, containment) => <Code family="containmentState" code={containment.state} />,
+    },
+    {
+      key: 'stoppedAt',
+      title: text.stoppedAt,
+      render: (_, containment) => <When value={containment.stoppedAt} />,
+    },
+    {
+      key: 'reason',
+      title: t('reason'),
+      render: (_, containment) => (
+        <Typography.Text style={{ maxWidth: 280 }} ellipsis={{ tooltip: containment.reason }}>
+          {containment.reason}
+        </Typography.Text>
+      ),
+    },
+    {
+      key: 'attestations',
+      title: text.attestations,
+      render: (_, containment) =>
+        containment.attestations.length === 0 ? (
+          <Typography.Text type="secondary">{text.noAttestations}</Typography.Text>
+        ) : (
+          <Space size={4} wrap>
+            {containment.attestations.map((attestation) => (
+              <Code
+                key={`${attestation.attestationKind}:${attestation.actorUserId}`}
+                family="attestationKind"
+                code={attestation.attestationKind}
+              />
+            ))}
+          </Space>
+        ),
+    },
+    {
+      key: 'actions',
+      title: t('actions'),
+      render: (_, containment) =>
+        containment.state === 'ACTIVE' ? (
+          <Space size={[8, 8]} wrap>
+            <InlineInputPopover
+              trigger={{ label: t('attestRepair'), size: 'small' }}
+              title={text.attestRepairTitle}
+              placeholder={text.evidencePlaceholder}
+              maxLength={512}
+              okText={t('submit')}
+              onSubmit={(value) =>
+                submit(attestContainment(context, containment.id, 'REPAIR_ATTESTATION', value))
+              }
+            />
+            <InlineInputPopover
+              trigger={{ label: t('consent'), size: 'small' }}
+              title={text.consentTitle}
+              placeholder={text.evidencePlaceholder}
+              maxLength={512}
+              okText={t('submit')}
+              onSubmit={(value) =>
+                submit(attestContainment(context, containment.id, 'BUSINESS_CONSENT', value))
+              }
+            />
+            <ConfirmButton
+              type="primary"
+              size="small"
+              title={text.reenableTitle}
+              description={text.reenableHelp}
+              onConfirm={() => run(reenableContainment(context, containment.id))}
+            >
+              {t('reenable')}
+            </ConfirmButton>
+          </Space>
+        ) : null,
+    },
+  ];
+
+  const batchColumns: TableColumnsType<Batch> = [
+    {
+      key: 'code',
+      title: t('batchCode'),
+      render: (_, batch) => <Typography.Text strong>{batch.batchCode}</Typography.Text>,
+    },
+    {
+      key: 'state',
+      title: t('state'),
+      render: (_, batch) => <Code family="batchState" code={batch.state} />,
+    },
+    {
+      key: 'members',
+      title: t('members'),
+      align: 'right',
+      render: (_, batch) => text.memberCount(batch.members.length),
+    },
+    {
+      key: 'store',
+      title: t('batchStoreId'),
+      render: (_, batch) => <IdText value={batch.storeId} />,
+    },
+    {
+      key: 'actions',
+      title: t('actions'),
+      render: (_, batch) =>
+        batch.state === 'OPEN' ? (
+          <Space size={[8, 8]} wrap>
+            <InlineInputPopover
+              trigger={{ label: t('addMember'), size: 'small' }}
+              title={text.addMemberTitle}
+              placeholder={t('actionIdInput')}
+              maxLength={64}
+              okText={t('addMember')}
+              onSubmit={(value) => submit(addBatchMember(context, batch.id, value))}
+            />
+            <ConfirmButton
+              danger
+              size="small"
+              title={text.closeBatchTitle}
+              description={text.closeBatchHelp}
+              onConfirm={() => run(closeBatch(context, batch.id))}
+            >
+              {t('closeBatch')}
+            </ConfirmButton>
+          </Space>
+        ) : null,
+    },
+  ];
 
   const queueColumns: TableColumnsType<RecalculationEntry> = [
     {
@@ -155,352 +403,218 @@ export function ListingGovernancePanel({
     },
   ];
 
+  let body: React.ReactNode;
+  if (view === 'containments') {
+    body =
+      containments === undefined ? (
+        failure === undefined ? (
+          <LoadingState />
+        ) : null
+      ) : containments.length === 0 ? (
+        <EmptyState description={t('noContainments')} />
+      ) : (
+        <Table<Containment>
+          size="middle"
+          rowKey="id"
+          columns={containmentColumns}
+          dataSource={[...containments]}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+          onRow={(containment) =>
+            ({
+              'data-containment': containment.id,
+              'data-containment-state': containment.state,
+            }) as React.HTMLAttributes<HTMLElement>
+          }
+          expandable={{
+            expandedRowRender: (containment) => (
+              <TechnicalDetails>
+                <Space orientation="vertical" size={2}>
+                  <IdText label={t('containmentId')} value={containment.id} />
+                  <IdText label={t('stoppedBy')} value={containment.stoppedByUserId} />
+                  <IdText label={t('listing')} value={containment.platformListingId} />
+                  {containment.attestations.map((attestation) => (
+                    <IdText
+                      key={`${attestation.attestationKind}:${attestation.actorUserId}`}
+                      label={t('attester')}
+                      value={attestation.actorUserId}
+                    />
+                  ))}
+                </Space>
+              </TechnicalDetails>
+            ),
+          }}
+        />
+      );
+  } else if (view === 'batches') {
+    body =
+      batches === undefined ? (
+        failure === undefined ? (
+          <LoadingState />
+        ) : null
+      ) : batches.length === 0 ? (
+        <EmptyState description={t('noBatches')} />
+      ) : (
+        <Table<Batch>
+          size="middle"
+          rowKey="id"
+          columns={batchColumns}
+          dataSource={[...batches]}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+          onRow={(batch) => ({ 'data-batch': batch.id }) as React.HTMLAttributes<HTMLElement>}
+          expandable={{
+            expandedRowRender: (batch) => (
+              <Stack>
+                {batch.members.length === 0 ? (
+                  <Typography.Text type="secondary">{text.noMembers}</Typography.Text>
+                ) : (
+                  <Table
+                    size="small"
+                    rowKey="actionId"
+                    pagination={false}
+                    dataSource={[...batch.members]}
+                    columns={[
+                      {
+                        key: 'seq',
+                        title: t('sequence'),
+                        width: 80,
+                        render: (_, member) => `#${String(member.sequenceNo)}`,
+                      },
+                      {
+                        key: 'action',
+                        title: t('actions'),
+                        render: (_, member) => <IdText value={member.actionId} />,
+                      },
+                      {
+                        key: 'state',
+                        title: t('state'),
+                        render: (_, member) => (
+                          <Code family="actionState" code={member.actionState} />
+                        ),
+                      },
+                      {
+                        key: 'membership',
+                        title: t('membership'),
+                        render: (_, member) => (
+                          <Code family="membershipState" code={member.membershipState} />
+                        ),
+                      },
+                    ]}
+                  />
+                )}
+                <TechnicalDetails>
+                  <IdText label={t('batchId')} value={batch.id} />
+                </TechnicalDetails>
+              </Stack>
+            ),
+          }}
+        />
+      );
+  } else {
+    body =
+      queue === undefined ? (
+        failure === undefined ? (
+          <LoadingState />
+        ) : null
+      ) : queue.length === 0 ? (
+        <EmptyState description={t('noRecalculation')} />
+      ) : (
+        <Table<RecalculationEntry>
+          size="middle"
+          rowKey="id"
+          columns={queueColumns}
+          dataSource={[...queue]}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+          onRow={(entry) =>
+            ({
+              'data-within-target': String(entry.withinTarget),
+            }) as React.HTMLAttributes<HTMLElement>
+          }
+        />
+      );
+  }
+
   return (
     <section
       aria-label={t('tabGovernance')}
       data-state={containments === undefined ? 'loading' : 'loaded'}
     >
-      <Stack>
-        {failure !== undefined && <ListingProblem failure={failure} />}
-
-        <SectionCard title={t('containments')} extra={refreshButton}>
-          <Stack>
-            <Card size="small" type="inner" title={t('stopTitle')}>
-              <Hint>{t('stopHelp')}</Hint>
-              {/* No submit on Enter: stopping must always pass the confirmation. */}
-              <div aria-label={t('stop')} role="form">
-                <Form layout="vertical" component={false}>
-                  <Row gutter={16}>
-                    <Col xs={24} md={12}>
-                      <Form.Item label={t('stopListingId')} extra={t('stopListingHelp')}>
-                        <Input
-                          value={stopListing}
-                          onChange={(e) => {
-                            setStopListing(e.target.value);
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} md={6}>
-                      <Form.Item label={t('cause')}>
-                        <Select
-                          value={causeClass}
-                          onChange={setCauseClass}
-                          options={codeOptions('containmentCauseClass', [
-                            'LOCAL_COST',
-                            'SHARED_VERSION',
-                            'PATH_INTEGRITY',
-                            'SAFETY_FAILURE',
-                            'PLATFORM_INCIDENT',
-                          ])}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} md={6}>
-                      <Form.Item label={t('causeOwner')}>
-                        <Select
-                          value={causeOwner}
-                          onChange={setCauseOwner}
-                          options={codeOptions('causeOwnerRole', [
-                            'OWNER',
-                            'TECH_DATA',
-                            'OPS_LEAD',
-                            'MARKETPLACE_OPERATOR',
-                          ])}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} md={12}>
-                      <Form.Item label={t('reason')}>
-                        <Input
-                          value={reason}
-                          onChange={(e) => {
-                            setReason(e.target.value);
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} md={12}>
-                      <Form.Item label={t('evidence')} extra={t('evidenceSharedHelp')}>
-                        <Input
-                          value={evidence}
-                          onChange={(e) => {
-                            setEvidence(e.target.value);
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                  <ConfirmButton
-                    danger
-                    type="primary"
-                    loading={busy === 'stop'}
-                    title={stopWhole ? '确认停止整个组织的 Listing 行动？' : '确认停止此 Listing？'}
-                    description="停止立即生效；恢复需要两人分别证明。"
-                    onConfirm={() => {
-                      setBusy('stop');
-                      return stopScope(
-                        context,
-                        stopWhole ? 'ORGANIZATION' : 'LISTING',
-                        stopWhole ? undefined : stopListing,
-                        causeClass,
-                        causeOwner,
-                        reason,
-                        evidence,
-                      ).then(settle);
-                    }}
-                  >
-                    {stopWhole ? t('stopAll') : t('stop')}
-                  </ConfirmButton>
-                </Form>
-              </div>
-            </Card>
-            <Space>
-              <Switch checked={activeOnly} onChange={setActiveOnly} aria-label={t('activeOnly')} />
-              <span>{t('activeOnly')}</span>
+      <SectionCard>
+        <Stack>
+          {/* The view switch and its controls wrap onto two lines on a narrow screen
+              instead of squeezing the switch out of a card header. */}
+          <Flex justify="space-between" align="center" gap={8} wrap>
+            <Space size={4} align="center">
+              <Segmented<View>
+                value={view}
+                options={[
+                  { value: 'containments', label: text.viewContainments },
+                  { value: 'batches', label: text.viewBatches },
+                  { value: 'recalculation', label: text.viewRecalculation },
+                ]}
+                onChange={(next) => {
+                  setRawView(next === 'containments' ? undefined : next);
+                }}
+              />
+              {view === 'containments' && <InfoTip title={text.stopTip} />}
             </Space>
-            {containments === undefined && failure === undefined && <LoadingState />}
-            {containments?.length === 0 && <EmptyState description={t('noContainments')} />}
-            {containments?.map((containment) => (
-              <Card
-                key={containment.id}
-                size="small"
-                data-containment={containment.id}
-                data-containment-state={containment.state}
-                title={
-                  <Space wrap>
-                    <Code family="containmentScope" code={containment.scopeKind} />
-                    <Code family="containmentCauseClass" code={containment.causeClass} />
-                    <Code family="containmentState" code={containment.state} />
-                  </Space>
-                }
-                extra={<When value={containment.stoppedAt} />}
-              >
-                <Stack>
-                  <Typography.Text>{containment.reason}</Typography.Text>
-                  {containment.attestations.length > 0 && (
-                    <Space wrap>
-                      {containment.attestations.map((attestation) => (
-                        <Code
-                          key={`${attestation.attestationKind}:${attestation.actorUserId}`}
-                          family="attestationKind"
-                          code={attestation.attestationKind}
-                        />
-                      ))}
-                    </Space>
-                  )}
-                  {containment.state === 'ACTIVE' && (
-                    <Space wrap>
-                      <ConfirmButton
-                        title="确认提交修复证明？"
-                        description="使用上方填写的证据引用。"
-                        onConfirm={() =>
-                          attestContainment(
-                            context,
-                            containment.id,
-                            'REPAIR_ATTESTATION',
-                            evidence,
-                          ).then(settle)
-                        }
-                      >
-                        {t('attestRepair')}
-                      </ConfirmButton>
-                      <ConfirmButton
-                        title="确认提交业务同意？"
-                        description="使用上方填写的证据引用。"
-                        onConfirm={() =>
-                          attestContainment(
-                            context,
-                            containment.id,
-                            'BUSINESS_CONSENT',
-                            evidence,
-                          ).then(settle)
-                        }
-                      >
-                        {t('consent')}
-                      </ConfirmButton>
-                      <ConfirmButton
-                        type="primary"
-                        title="确认恢复？"
-                        description="需已有两名不同人员的证明，由后端核对。"
-                        onConfirm={() => reenableContainment(context, containment.id).then(settle)}
-                      >
-                        {t('reenable')}
-                      </ConfirmButton>
-                    </Space>
-                  )}
-                  <TechnicalDetails>
-                    <Space orientation="vertical" size={2}>
-                      <IdText label={t('containmentId')} value={containment.id} />
-                      <IdText label={t('stoppedBy')} value={containment.stoppedByUserId} />
-                      <IdText label={t('listing')} value={containment.platformListingId} />
-                      {containment.attestations.map((attestation) => (
-                        <IdText
-                          key={`${attestation.attestationKind}:${attestation.actorUserId}`}
-                          label={t('attester')}
-                          value={attestation.actorUserId}
-                        />
-                      ))}
-                    </Space>
-                  </TechnicalDetails>
-                </Stack>
-              </Card>
-            ))}
-          </Stack>
-        </SectionCard>
-
-        <SectionCard title={t('batches')} extra={refreshButton}>
-          <Stack>
-            <Form
-              layout="vertical"
-              aria-label={t('batches')}
-              onFinish={() => {
-                setBusy('batch');
-                void createBatch(context, batchStoreId, batchCode).then(settle);
-              }}
-            >
-              <Row gutter={16}>
-                <Col xs={24} md={12}>
-                  <Form.Item label={t('batchStoreId')} required>
-                    <Input
-                      required
-                      value={batchStoreId}
-                      onChange={(event) => {
-                        setBatchStoreId(event.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item label={t('batchCode')}>
-                    <Input
-                      value={batchCode}
-                      onChange={(e) => {
-                        setBatchCode(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Button type="primary" htmlType="submit" loading={busy === 'batch'}>
-                {t('createBatch')}
+            <Flex gap={8} wrap align="center">
+              {view === 'containments' && (
+                <Space size={4}>
+                  <Switch
+                    size="small"
+                    checked={activeOnly}
+                    onChange={setActiveOnly}
+                    aria-label={t('activeOnly')}
+                  />
+                  <Typography.Text type="secondary">{t('activeOnly')}</Typography.Text>
+                </Space>
+              )}
+              <Button icon={<ReloadOutlined />} onClick={reload}>
+                {t('refresh')}
               </Button>
-            </Form>
-            {batches?.length === 0 && <EmptyState description={t('noBatches')} />}
-            {batches?.map((batch) => (
-              <Card
-                key={batch.id}
-                size="small"
-                data-batch={batch.id}
-                title={
-                  <Space wrap>
-                    <span>{batch.batchCode}</span>
-                    <Code family="batchState" code={batch.state} />
-                    <Typography.Text type="secondary">
-                      {t('members')} {batch.members.length}
-                    </Typography.Text>
-                  </Space>
-                }
-              >
-                <Stack>
-                  {batch.members.length > 0 && (
-                    <Table
-                      size="middle"
-                      rowKey="actionId"
-                      pagination={false}
-                      dataSource={[...batch.members]}
-                      columns={[
-                        {
-                          key: 'seq',
-                          title: t('sequence'),
-                          width: 80,
-                          render: (_, member) => `#${String(member.sequenceNo)}`,
-                        },
-                        {
-                          key: 'action',
-                          title: t('actions'),
-                          render: (_, member) => <IdText value={member.actionId} />,
-                        },
-                        {
-                          key: 'state',
-                          title: t('state'),
-                          render: (_, member) => (
-                            <Code family="actionState" code={member.actionState} />
-                          ),
-                        },
-                        {
-                          key: 'membership',
-                          title: t('membership'),
-                          render: (_, member) => (
-                            <Code family="membershipState" code={member.membershipState} />
-                          ),
-                        },
-                      ]}
-                    />
-                  )}
-                  {batch.state === 'OPEN' && (
-                    <Space wrap align="end">
-                      <Form.Item
-                        label={t('actionIdInput')}
-                        layout="vertical"
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Input
-                          style={{ width: 340 }}
-                          value={memberAction}
-                          onChange={(e) => {
-                            setMemberAction(e.target.value);
-                          }}
-                        />
-                      </Form.Item>
-                      <Button
-                        loading={busy === `member:${batch.id}`}
-                        onClick={() => {
-                          setBusy(`member:${batch.id}`);
-                          void addBatchMember(context, batch.id, memberAction).then(settle);
-                        }}
-                      >
-                        {t('addMember')}
-                      </Button>
-                      <ConfirmButton
-                        danger
-                        title="确认关闭此批次？"
-                        description="关闭后不能再加入成员。"
-                        onConfirm={() => closeBatch(context, batch.id).then(settle)}
-                      >
-                        {t('closeBatch')}
-                      </ConfirmButton>
-                    </Space>
-                  )}
-                  <TechnicalDetails>
-                    <IdText label={t('batchId')} value={batch.id} />
-                  </TechnicalDetails>
-                </Stack>
-              </Card>
-            ))}
-          </Stack>
-        </SectionCard>
-
-        <SectionCard title={t('recalculation')} extra={refreshButton}>
-          {queue === undefined && failure === undefined && <LoadingState />}
-          {queue?.length === 0 && <EmptyState description={t('noRecalculation')} />}
-          {queue !== undefined && queue.length > 0 && (
-            <Table<RecalculationEntry>
-              size="middle"
-              rowKey="id"
-              columns={queueColumns}
-              dataSource={[...queue]}
-              pagination={false}
-              scroll={{ x: 'max-content' }}
-              onRow={(entry) =>
-                ({
-                  'data-within-target': String(entry.withinTarget),
-                }) as React.HTMLAttributes<HTMLElement>
-              }
-            />
-          )}
-        </SectionCard>
-      </Stack>
+              {view === 'batches' && (
+                <ActionModal<BatchValues>
+                  trigger={{ label: t('createBatch'), icon: <PlusOutlined /> }}
+                  title={t('createBatch')}
+                  consequence={text.createBatchConsequence}
+                  okText={t('createBatch')}
+                  initialValues={{ storeId }}
+                  onSubmit={(values) =>
+                    submit(
+                      createBatch(
+                        context,
+                        (values.storeId ?? '').trim(),
+                        (values.code ?? '').trim(),
+                      ),
+                    )
+                  }
+                >
+                  <Form.Item
+                    name="storeId"
+                    label={t('batchStoreId')}
+                    rules={idRules(t('batchStoreId'))}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="code"
+                    label={t('batchCode')}
+                    rules={[{ required: true, whitespace: true, message: text.codeRequired }]}
+                  >
+                    <Input maxLength={64} autoFocus />
+                  </Form.Item>
+                </ActionModal>
+              )}
+              {stop}
+            </Flex>
+          </Flex>
+          {failure !== undefined && <ListingProblem failure={failure} />}
+          {body}
+        </Stack>
+      </SectionCard>
     </section>
   );
 }
