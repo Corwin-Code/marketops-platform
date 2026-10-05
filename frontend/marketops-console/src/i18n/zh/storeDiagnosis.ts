@@ -341,7 +341,7 @@ export const CONCLUSION_TEXT: Readonly<
   PRICE_HEADROOM: {
     title: '有降价空间',
     meaning: '有不少人搜索、有库存，但没人下单；降价后仍能守住 15% 利润率。',
-    next: '打开商品详情查看调价建议；在 Ozon 卖家后台调价后回来记录。',
+    next: '打开商品详情查看调价建议并进入审阅：不在卖家促销中的商品经 Owner 批准后由平台改价；促销中的商品在 Ozon 卖家后台调价后回来记录。',
   },
 };
 
@@ -373,7 +373,7 @@ export const FINDING_DETAIL_LABELS: Readonly<Record<string, string>> = {
 /** The price suggestion of one product, in its detail drawer (P8). */
 export const priceSuggestionText = {
   title: '调价建议',
-  hint: '由诊断规则按确定性算法给出：不低于守住利润率下限的价格，单次降幅有上限。价格指买家价（含卖家促销）。平台不会自动改价。',
+  hint: '由诊断规则按确定性算法给出：不低于守住利润率下限的价格，单次降幅有上限。价格指买家价（含卖家促销）。平台不会自行改价：经 Owner 在审阅里批准后才写入 Ozon，促销中的商品仍在卖家后台手工调价。',
   basis: '依据',
   priceChange: '买家价',
   changeRate: (rate: string): string => `（${rate}）`,
@@ -389,7 +389,7 @@ export const priceSuggestionText = {
   guardrailFailed: '未通过，平台内暂不能审批改价：',
   guardrailNotYet: '尚未评估',
   guardrailHint:
-    '写入前的护栏前提（商业策略、经济性 profile、数据新鲜度等）还没有就绪。认可这条建议的话，请在 Ozon 卖家后台手工调价，然后回来记录。',
+    '护栏没有通过时，平台内不能批准这条改价，原因见上；原因解除后可在“打开审阅”里重新检查并审批。确需马上调价时，在 Ozon 卖家后台手工调价，然后回来记录。',
   openReview: '打开审阅',
   applied: '已在 Ozon 后台改价',
   notApplied: '不采纳',
