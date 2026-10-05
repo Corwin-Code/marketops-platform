@@ -21,11 +21,14 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -39,9 +42,12 @@ import org.springframework.transaction.annotation.Transactional;
  * citing what it rests on: PRICE and STOCK the newest collected and normalized snapshot, SALES the
  * newest ordered-units window, INTERNAL_COST the newest price collection after which the master-data
  * automation reconciled the unit costs, COMMERCIAL_INPUTS the required profit and safety buffer in
- * force. A feed the store does not collect is covered by the Owner's attestation that the store has
- * no data in it: returns and finance fees as far as the ordered units are known to be zero, and only
- * until an ordered unit appears; advertising until the attestation expires.
+ * force. RETURNS and FINANCE_FEES rest on the newest day the store read of its returns and of its
+ * accruals (Owner decision 2026-10-06): once ordered units exist the store has both, and what tells
+ * how fresh they are is how far they were read. A feed the store does not collect is covered by the
+ * Owner's attestation that the store has no data in it: returns and finance fees as far as the
+ * ordered units are known to be zero, and only until an ordered unit appears; advertising until the
+ * attestation expires.
  *
  * <p>A watermark is written only when what it rests on moves on, and a reconciled one at most every
  * twelve hours, so a pass every minute leaves the table as it was. A feed that stops being renewed
@@ -56,6 +62,13 @@ public class FeedWatermarkKeeper {
 
     /** The feeds an attestation may cover. */
     public static final List<String> ATTESTABLE = List.of("RETURNS", "FINANCE_FEES", "ADVERTISING");
+
+    /**
+     * The feeds that rest on a daily collection once the store reads it, each with the dataset read.
+     * The accruals are archived without normalization; that they were read is what the feed's
+     * freshness says.
+     */
+    private static final Map<String, String> READ_DAILY = Map.of("RETURNS", "RETURNS", "FINANCE_FEES", "FINANCE");
 
     /** The finance inputs the guardrail's minimum price rests on. */
     private static final List<String> COMMERCIAL_INPUT_CODES = List.of("REQUIRED_PROFIT_PER_UNIT",
@@ -104,13 +117,18 @@ public class FeedWatermarkKeeper {
                 advance(scope, "PRICE", price.collectedAt(), price.collectedAt(), run(price), now));
         watermarks.latestCollected(storeId, "STOCK", false).ifPresent(stock ->
                 advance(scope, "STOCK", stock.collectedAt(), stock.collectedAt(), run(stock), now));
-        Optional<Collected> sales = watermarks.latestCollected(storeId, "TRAFFIC", false)
-                .filter(traffic -> traffic.windowTo() != null && !traffic.windowTo().isAfter(now));
+        Optional<Collected> sales = readWindow(storeId, "TRAFFIC", now);
         sales.ifPresent(traffic -> advance(scope, "SALES", traffic.windowTo(), traffic.collectedAt(),
                 run(traffic) + "; ordered units through " + traffic.windowTo(), now));
         watermarks.latestCollected(storeId, "PRICE", true).ifPresent(costs ->
                 advance(scope, "INTERNAL_COST", costs.collectedAt(), costs.collectedAt(),
                         run(costs) + "; master-data automation reconciled unit costs", now));
+        Set<String> readDaily = new HashSet<>();
+        READ_DAILY.forEach((feed, dataset) -> readWindow(storeId, dataset, now).ifPresent(read -> {
+            advance(scope, feed, read.windowTo(), read.collectedAt(),
+                    run(read) + "; " + dataset.toLowerCase(Locale.ROOT) + " read through " + read.windowTo(), now);
+            readDaily.add(feed);
+        }));
 
         List<FeedWatermarkRepository.FinanceInput> inputs = watermarks.financeInputsInForce(organizationId, storeId,
                 COMMERCIAL_INPUT_CODES, now);
@@ -133,6 +151,10 @@ public class FeedWatermarkKeeper {
             if (attestation.lapsesOnOrders()) {
                 if (watermarks.orderedSince(organizationId, storeId, attestation.attestedAt().minus(ORDERS_LOOKBACK))) {
                     watermarks.lapse(attestation.id(), now, "ORDERED_UNITS_APPEARED");
+                    continue;
+                }
+                if (readDaily.contains(feed)) {
+                    // The store reads the feed: its watermark rests on what was read, not on the statement.
                     continue;
                 }
                 // No ordered unit as far as the orders are known: nothing to return or to charge for.
@@ -171,6 +193,12 @@ public class FeedWatermarkKeeper {
         }
         watermarks.insert(idGenerator.newId(), scope, feed, sourceUpdatedAt.isAfter(now) ? now : sourceUpdatedAt,
                 now, now, bounded(evidence), now);
+    }
+
+    /** The newest window of a dataset the store read, when the window has ended. */
+    private Optional<Collected> readWindow(UUID storeId, String datasetKind, Instant now) {
+        return watermarks.latestCollected(storeId, datasetKind, false)
+                .filter(read -> read.windowTo() != null && !read.windowTo().isAfter(now));
     }
 
     private static String run(Collected collected) {
