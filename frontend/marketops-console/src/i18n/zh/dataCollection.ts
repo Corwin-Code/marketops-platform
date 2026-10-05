@@ -169,11 +169,11 @@ export const ATTESTATION_STATE_LABELS: Readonly<Record<string, string>> = {
 /** How fresh each feed of the price guardrail is, and the Owner's statements about feeds not collected. */
 export const feedFreshnessText = {
   title: '护栏数据新鲜度',
-  hint: '调价建议在平台内审批前，护栏要求价格、库存、销售、退货、财务费用、广告、内部成本、商业输入 8 个数据源都足够新（不超过商业策略规定的时长）。平台在每次定时采集完成后记录已采集的数据源；平台不采集的退货、财务费用、广告，由你声明“本店目前没有”后据此记录。',
+  hint: '调价建议在平台内审批前，护栏要求价格、库存、销售、退货、财务费用、广告、内部成本、商业输入 8 个数据源都足够新（不超过商业策略规定的时长）。平台在每次定时采集完成后记录已采集的数据源；退货和财务费用已接入每日采集的店铺，这两项也按采集读到的最新一天记录。平台不采集的数据源（如广告），由你声明“本店目前没有”后据此记录。',
   feed: '数据源',
   effectiveAt: '数据截至',
   effectiveHint:
-    '护栏从这个时间算数据的年龄：采集类为采集完成时间，销售为下单数据的截止时间，定期确认的为最近一次确认时间。',
+    '护栏从这个时间算数据的年龄：价格、库存、内部成本为采集完成时间，销售、退货、财务费用为已读取数据的截止时间，定期确认的为最近一次确认时间。',
   age: '已过',
   ageDays: (days: number, hours: number): string => `${String(days)} 天 ${String(hours)} 小时`,
   ageHours: (hours: number, minutes: number): string =>
@@ -189,7 +189,7 @@ export const feedFreshnessText = {
   attest: '声明不适用',
   attestTitle: '声明本店没有这些数据',
   attestConsequence:
-    '声明后，平台每天据此记录这些数据源“已核验无数据”。出现订单后，退货和财务费用的声明自动失效，需要接入真实采集；声明到期后需要重新声明。需要 COMMERCIAL_POLICY_MANAGE 授权，并且登录时间不能太久。',
+    '声明后，平台每天据此记录这些数据源“已核验无数据”。出现订单后，退货和财务费用的声明自动失效，改由每日采集记录；已接入每日采集的店铺，这两项不看声明。声明到期后需要重新声明。需要 COMMERCIAL_POLICY_MANAGE 授权，并且登录时间不能太久。',
   feedsLabel: '数据源',
   feedsRequired: '请至少选择一个数据源',
   statement: '声明',
