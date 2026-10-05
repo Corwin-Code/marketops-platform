@@ -41,7 +41,8 @@ export const ACTION_LABELS: Record<string, string> = {
   PRICE_CHANGE: '调价',
   PROMOTION_JOINED: '参加促销',
   PROMOTION_LEFT: '退出促销',
-  CONTENT_CHANGE: '改标题与描述',
+  // The pilot writes the description only: Ozon ignores the title on this route (2026-10-02).
+  CONTENT_CHANGE: '改描述',
 };
 
 /** Who did it. */

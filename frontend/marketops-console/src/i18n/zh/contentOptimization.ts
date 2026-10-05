@@ -10,7 +10,7 @@ function count(value: number): string {
 
 export const contentText = {
   title: '内容优化',
-  hint: '数据来自每天采集的 Ozon 商品目录和内容评分。草稿只供审核：请复制到 Ozon 卖家后台手工修改，系统不会改动商品。',
+  hint: '数据来自每天采集的 Ozon 商品目录和内容评分。AI 草稿只供审核，生成草稿不会改动商品；要改描述，在下方“修改描述并写入 Ozon”改定后由 Owner 确认写入。标题和属性仍需在 Ozon 卖家后台修改。',
   none: '还没有采集到这个商品的内容，下次每日采集后显示。',
   observedAt: '采集于',
 
@@ -49,7 +49,8 @@ export const contentText = {
   draftsNone: '还没有生成过这个商品的内容草稿。',
   draftsGenerate: '生成俄语草稿',
   draftsRegenerate: '重新生成',
-  draftsNotice: 'AI 草稿只供参考：核对后复制到 Ozon 卖家后台，修改需要 Ozon 审核通过后生效。',
+  draftsNotice:
+    'AI 草稿只供参考：描述草稿核对后可填入下方“修改描述并写入 Ozon”，由 Owner 确认后写入；标题和属性建议仍需在 Ozon 卖家后台修改，Ozon 审核通过后生效。',
   draftFields: { TITLE: '标题草稿', DESCRIPTION: '描述草稿', ATTRIBUTE: '属性建议' } as Readonly<
     Record<string, string>
   >,
